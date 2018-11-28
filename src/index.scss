@@ -1,0 +1,244 @@
+@import 'styles/variables';
+@import 'styles/fonts';
+@import 'styles/animations';
+
+@import 'styles/alert';
+@import 'styles/button';
+@import 'styles/console';
+@import 'styles/header';
+@import 'styles/heading';
+@import 'styles/info';
+@import 'styles/loading';
+@import 'styles/loggingout';
+@import 'styles/popup';
+@import 'styles/select';
+@import 'styles/view';
+@import 'styles/wallets';
+
+$select-input-bg-focus: $off-white;
+$select-input-border-radius: 0;
+$select-input-box-shadow-focus: none;
+$select-input-height: 40px;
+$select-padding-horizontal: 15px;
+$select-menu-max-height: 300px;
+$select-option-focused-bg: darken($off-white, 3%);
+$select-option-selected-bg: $off-white;
+@import '../node_modules/react-select/scss/default';
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    &.noscroll {
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+    }
+}
+
+body {
+    font-size: 12px;
+    font-family: 'PingFang SC', Helvetica, Arial, sans-serif;
+    margin: 0;
+    background: #012142;
+}
+
+h1 {
+    font-weight: 500;
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+h2 {
+    font-size: 18px;
+    font-weight: 400;
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+p {
+    line-height: 1.4;
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+a {
+    color: black;
+}
+
+label {
+    display: block;
+}
+
+input[type=number],
+input[type=text],
+input[type=password] {
+    border: 1px solid $light-grey;
+    height: 35px;
+    padding: 0 8px;
+
+    &:disabled {
+        color: $mid-grey;
+    }
+
+    &:focus {
+        outline: none;
+    }
+}
+
+input[type=checkbox] {
+    margin: 0 5px 0 0;
+    vertical-align: middle;
+}
+
+::-webkit-input-placeholder {
+    color: $mid-grey;
+}
+
+::-moz-placeholder {
+    color: $mid-grey;
+}
+
+:-ms-input-placeholder {
+    color: $mid-grey;
+}
+
+:-moz-placeholder {
+    color: $mid-grey;
+}
+
+select {
+    background-color: white;
+    border: 1px solid $light-grey;
+    border-radius: 0;
+    height: 35px;
+    padding: 0 10px;
+    appearance: none;
+}
+
+select:focus {
+    background-color: $off-white;
+    outline: none;
+}
+
+button {
+    background-color: white;
+    border: 1px solid $light-grey;
+    height: 35px;
+    min-width: 120px;
+    position: relative;
+    cursor: pointer;
+}
+
+button:focus {
+    outline: none;
+}
+
+button:disabled {
+    color: $mid-grey;
+    cursor: not-allowed;
+}
+
+button:not(:disabled):hover {
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
+}
+
+button:not(:disabled):active {
+    background-color: $off-white;
+}
+
+button .loading:after {
+    height: 12px;
+    width: 12px;
+    border-width: 1px;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table tbody tr:nth-child(even) {
+    background-color: white;
+}
+
+table tbody tr:nth-child(odd) {
+    background-color: $off-white;
+}
+
+table tr {
+    border: 1px solid $light-grey;
+}
+
+table th,
+table td {
+    height: 35px;
+    padding: 0 10px;
+    text-align: left;
+    white-space: nowrap;
+}
+
+table th {
+    font-weight: 500;
+}
+
+.left {
+    text-align: left;
+}
+
+.center {
+    text-align: center;
+}
+
+.right {
+    text-align: right;
+}
+
+.container {
+    width: 100%;
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 0 10px;
+}
+
+.section {
+    padding-top: 60px;
+}
+
+.section:first-child {
+    padding-top: 30px;
+}
+
+.section:last-child {
+    padding-bottom: 60px;
+}
+
+.monospace {
+    font-family: 'Source Code Pro', 'Courier New', Courier, monospace;
+    letter-spacing: 0.5px;
+}
+
+.red {
+    color: $red;
+}
+
+span[role="button"],
+label {
+    user-select: none;
+}
+
+.table--wrapper {
+    display: block;
+    overflow-x: auto;
+}
+
+.truncate {
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    max-width: 250px;
+
+    @media(min-width: $min-sm) {
+        max-width: none;
+    }
+}

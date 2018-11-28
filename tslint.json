@@ -1,0 +1,41 @@
+{
+    "extends": [
+        "tslint:recommended",
+        "tslint-react",
+        "tslint-config-prettier"
+    ],
+    "linterOptions": {
+        "exclude": [
+            "config/**/*.js",
+            "node_modules/**/*.ts",
+            "src/lib/external/*.js"
+        ]
+    },
+    "rules": {
+        "quotemark": [
+            true,
+            "double",
+            "jsx-double"
+        ],
+        "interface-name": false,
+        "jsx-boolean-value": false,
+        "max-classes-per-file": false,
+        "no-console": false,
+        "no-empty-interface": false,
+        "no-var-requires": false,
+        "object-literal-sort-keys": false,
+        "no-implicit-dependencies": false,
+        "ordered-imports": true,
+        "no-object-literal-type-assertion": true,
+        "semicolon": true,
+        "eofline": true,
+        "no-non-null-assertion": true,
+        "no-floating-promises": true,
+        "typedef": [true],
+        "space-before-function-paren": false,
+        "trailing-comma": true,
+        "strict-type-predicates": false,
+        "no-any": true,
+        "indent": [true, "spaces", 4]
+    }
+}

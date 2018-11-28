@@ -1,0 +1,22 @@
+$min-sm: 544px !default;
+$min-md: 768px !default;
+$min-lg: 992px !default;
+$min-xl: 1200px !default;
+$max-xs: ($min-sm - 1px) !default;
+$max-sm: ($min-md - 1px) !default;
+$max-md: ($min-lg - 1px) !default;
+$max-lg: ($min-xl - 1px) !default;
+
+$off-white: #f8fafb;
+$light-grey: #cccccc;
+$mid-grey: #999999;
+$green: #00a500;
+$red: #e00000;
+$orange: #db6500;
+$shadow: rgba(50, 94, 128, 0.2);
+
+$navy: rgba(0, 28, 58, 1);
+
+$cubic-bezier: cubic-bezier(0.8, 0, 0.2, 1);
+
+$path: 'styles/images/';

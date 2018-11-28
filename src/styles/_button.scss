@@ -1,0 +1,55 @@
+.styled-button {
+    background-color: $green;
+    color: white;
+    border: none;
+    position: relative;
+}
+
+.styled-button:before {
+    content: '';
+    background-color: rgba(0, 0, 0, 0.1);
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.2s ease-in-out;
+}
+
+.styled-button:focus {
+    background-color: $green;
+}
+
+.styled-button:focus:before,
+.styled-button:hover:before {
+    transform: scaleX(1);
+    transform-origin: left;
+}
+
+.styled-button:disabled {
+    background-color: white;
+    border: 1px solid $light-grey;
+}
+
+.styled-button.submitting {
+    &:disabled {
+        background-color: $green;
+        border: none;
+    }
+
+    .loading:after {
+        border-color: white transparent white transparent;
+    }
+}
+
+.styled-button:disabled:hover:before {
+    content: none;
+}
+
+.styled-button span {
+    position: relative;
+    z-index: 1;
+    pointer-events: none;
+}
