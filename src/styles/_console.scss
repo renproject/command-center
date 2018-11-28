@@ -1,0 +1,17 @@
+.console {
+    background-color: $off-white;
+    border: 1px solid $light-grey;
+    height: 105px;
+    width: 365px;
+    margin-top: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 10px;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+}
+
+.console::-webkit-scrollbar {
+    /* remove scrollbar space */
+    width: 0px;
+}

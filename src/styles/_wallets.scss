@@ -1,0 +1,136 @@
+$wallet-radius: 4px;
+
+.section.wallets {
+    background-color: $off-white;
+    border-bottom: 1px solid $light-grey;
+    padding: 30px 0;
+}
+
+.wallets--wrapper {
+    @media(min-width: $min-md) {
+        display: flex;
+    }
+}
+
+.wallets--container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    flex-basis: 0;
+    background-color: white;
+    border-radius: $wallet-radius;
+    text-align: center;
+    position: relative;
+    transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out, opacity 0.2s ease-in-out;
+    cursor: pointer;
+
+    &.disabled {
+        border: 1px solid $light-grey;
+    }
+}
+
+.wallets--container.disabled {
+    cursor: not-allowed;
+}
+
+.wallets--container.disabled .wallets--item {
+    pointer-events: none;
+}
+
+.wallets--container:not(.disabled):hover {
+    box-shadow: 0 10px 25px 0 $shadow;
+    transform: scale(1.01);
+}
+
+.wallets--container+.wallets--container {
+    margin-left: 0px;
+    margin-top: 10px;
+
+    @media(min-width: $min-md) {
+        margin-left: 20px;
+        margin-top: 0px;
+    }
+}
+
+.wallets--container .loading {
+    margin-top: 15px;
+}
+
+.wallets--item {
+    height: 100%;
+    width: 100%;
+    padding: 30px 10px;
+
+    .wallets--container.metamask &,
+    .wallets--container.ledger &,
+    .wallets--container.keystore & {
+        color: white;
+        background-size: cover;
+        background-position: center;
+        border-radius: $wallet-radius;
+
+        &:before {
+            content: '';
+            background-color: rgba(0, 0, 0, 0.6);
+            border-radius: $wallet-radius;
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+    }
+}
+
+.wallets--title {
+    font-size: 18px;
+    display: inline-block;
+    position: relative;
+    text-align: left;
+    margin-left: 30px;
+}
+
+.wallets--title:before {
+    content: '';
+    background-size: contain;
+    background-position: center center;
+    background-repeat: no-repeat;
+    height: 25px;
+    width: 20px;
+    position: absolute;
+    top: 50%;
+    left: -30px;
+    transform: translateY(-50%);
+
+    .wallets--container.disabled & {
+        filter: grayscale(100%);
+    }
+
+    .wallets--container.metamask & {
+        background-image: url($path + 'metamask.svg');
+    }
+
+    .wallets--container.ledger & {
+        background-image: url($path + 'ledger.svg');
+    }
+
+    .wallets--container.trezor & {
+        background-image: url($path + 'trezor.svg');
+    }
+
+    .wallets--container.keystore & {
+        background-image: url($path + 'keystore.svg');
+    }
+
+    .wallets--container.key & {
+        background-image: url($path + 'key.svg');
+    }
+}
+
+.wallets--description {
+    margin-top: 10px;
+    margin-bottom: 0;
+    position: relative;
+}
