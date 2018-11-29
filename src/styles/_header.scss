@@ -1,6 +1,4 @@
 .header {
-    background-color: white;
-    border-bottom: 1px solid $light-grey;
     padding: 20px 0;
 
     @media(min-width: $min-sm) {
@@ -15,7 +13,7 @@
 
     @media(min-width: $min-sm) {
         flex-direction: row;
-        height: 50px;
+        height: 80px;
     }
 }
 
@@ -27,8 +25,8 @@
 .header--logo {
     background-image: url('styles/images/logo.svg');
     background-repeat: no-repeat;
-    height: 32px;
-    width: 66px;
+    height: 42px;
+    width: 220px;
 }
 
 .header--menu {
@@ -44,46 +42,26 @@
     }
 }
 
-.header--menu li.active {
-    margin-bottom: -1px;
-    pointer-events: none;
-
-    @media(min-width: $min-sm) {
-        background-color: $off-white;
-    }
+.header--menu li:hover {
+    @media(min-width: $min-sm) {}
 }
 
-.header--menu li:hover {
-    @media(min-width: $min-sm) {
-        background-color: $off-white;
-    }
+.header--menu>li a {
+    color: white;
 }
 
 .header--menu>li {
     display: flex;
     position: relative;
-    border-left: 1px solid $light-grey;
     text-align: center;
-}
+    color: white;
 
-.header--menu>li:first-child {
-    border-left: none;
-
-    @media(min-width: $min-sm) {
-        border-left: 1px solid $light-grey;
-    }
-}
-
-.header--menu>li:last-child {
-    @media(min-width: $min-sm) {
-        border-right: 1px solid $light-grey;
-    }
-}
-
-.header--menu>li>*:first-child {
     display: flex;
     align-items: center;
     margin: 0 20px;
+
+    font-size: 16px;
+    font-weight: 500;
 
     @media(min-width: $min-sm) {
         padding: 0 22px;
@@ -91,12 +69,23 @@
     }
 }
 
+.header--menu li {
+
+    @media(min-width: $min-sm) {}
+}
+
+.header--menu li:last-child {
+    @media(min-width: $min-sm) {}
+}
+
 .header--menu a {
     text-decoration: none;
 }
 
-.header--menu .header--account {
-    display: none;
+.header--menu .header--group {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
 
     @media(min-width: $min-sm) {
         display: flex;
@@ -113,28 +102,58 @@
 }
 
 .header .blocky {
-    height: 20px;
+    height: 50px;
+    border-radius: 25px;
+
     vertical-align: middle;
 }
 
 .header--dropdown {
-    background-color: white;
+    background-color: $blue-dark;
     list-style: none;
-    width: 161px;
+    width: 100%;
     padding: 0;
     position: absolute;
     top: 100%;
     right: -1px;
-    box-shadow: 0 10px 25px 0 $shadow;
     cursor: auto;
 }
 
 .header--dropdown li {
-    border: 1px solid $light-grey;
-    padding: 9px;
+    padding: 9px 18px;
     cursor: pointer;
+    font-weight: 400;
+    font-size: 14px;
+    text-align: left;
 }
 
-.header--dropdown li+li {
-    border-top: none;
+.header--account {
+    display: flex;
+    flex-direction: row;
+}
+
+.header--account--right {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    justify-content: center;
+    font-size: 12px;
+    margin-left: 15px;
+    line-height: 20px;
+}
+
+.header--account--address {
+    color: $light-grey;
+}
+
+.header--account--type::before {
+    content: '';
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    margin-right: 10px;
+    -moz-border-radius: 3.5px;
+    -webkit-border-radius: 3.5px;
+    border-radius: 3.5px;
+    background-color: #3cbc98;
 }

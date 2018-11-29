@@ -8,14 +8,22 @@ $max-md: ($min-lg - 1px) !default;
 $max-lg: ($min-xl - 1px) !default;
 
 $off-white: #f8fafb;
+$dark-grey: #3f3f41;
 $light-grey: #cccccc;
-$mid-grey: #999999;
+// $mid-grey: #999999;
+$mid-grey: #99a6b5;
+
+
 $green: #00a500;
 $red: #e00000;
 $orange: #db6500;
 $shadow: rgba(50, 94, 128, 0.2);
 
 $navy: rgba(0, 28, 58, 1);
+
+$blue-bright: #106dd2;
+$blue-dark: #012142;
+$blue-darkest: #00152B;
 
 $cubic-bezier: cubic-bezier(0.8, 0, 0.2, 1);
 

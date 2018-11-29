@@ -32,7 +32,8 @@ interface HeaderProps extends StoreProps {
 }
 
 interface HeaderState {
-    dropdownVisible: boolean;
+    accountDropdownVisible: boolean;
+    languageDropdownVisible: boolean;
     copied: boolean;
 }
 
@@ -44,17 +45,14 @@ class Header extends React.Component<HeaderProps, HeaderState> {
         super(props, context);
         this.state = {
             copied: false,
-            dropdownVisible: false,
+            accountDropdownVisible: false,
+            languageDropdownVisible: false,
         };
-        this.showDropdown = this.showDropdown.bind(this);
-        this.hideDropdown = this.hideDropdown.bind(this);
-        this.copyToClipboard = this.copyToClipboard.bind(this);
-        this.handleLogOut = this.handleLogOut.bind(this);
     }
 
     public render(): JSX.Element {
         const { address, withMenu } = this.props;
-        const { dropdownVisible, copied } = this.state;
+        const { accountDropdownVisible, languageDropdownVisible, copied } = this.state;
         const route = this.props.location.pathname;
 
         const loggedIn = (address != null);
@@ -67,23 +65,27 @@ class Header extends React.Component<HeaderProps, HeaderState> {
                     </Link>
                     {withMenu ?
                         <ul className="header--menu">
-                            <li className={route === "/home" ? "active" : ""}><Link to="/home"><span>Home</span></Link></li>
-                            <li className="header--logout" onClick={this.handleLogOut}><Link to=""><span>Logout</span></Link></li>
                             {address &&
                                 <li
-                                    className="header--account"
-                                    onMouseEnter={this.showDropdown}
-                                    onMouseLeave={this.hideDropdown}
+                                    className="header--group"
+                                    onMouseEnter={this.showAccountDropDown}
+                                    onMouseLeave={this.hideAccountDropdown}
                                 >
-                                    <Blocky address={address} />
-                                    {dropdownVisible ?
+                                    <div className="header--account">
+                                        <Blocky address={address} />
+                                        <div className="header--account--right">
+                                            <div className="header--account--type">MetaMask</div>
+                                            <div className="header--account--address">{address.substring(0, 8)}...{address.slice(-5)}</div>
+                                        </div>
+                                    </div>
+                                    {accountDropdownVisible ?
                                         <ul className="header--dropdown">
                                             <li role="button" onClick={this.copyToClipboard}>
                                                 <span data-addr={address}>
                                                     {copied ?
                                                         <span>Copied</span>
                                                         :
-                                                        <span>{address.substring(0, 8)}...{address.slice(-5)}</span>
+                                                        <span>Copy to clipboard</span>
                                                     }
                                                 </span>
                                             </li>
@@ -92,6 +94,22 @@ class Header extends React.Component<HeaderProps, HeaderState> {
                                     }
                                 </li>
                             }
+
+                            <li><Link to="/home"><span>User Manual</span></Link></li>
+
+                            <li
+                                className="header--group"
+                                onMouseEnter={this.showLanguageDropDown}
+                                onMouseLeave={this.hideLanguageDropdown}
+                            >
+                                English ﹀
+                                {languageDropdownVisible ?
+                                    <ul className="header--dropdown">
+                                        <li role="button">English</li>
+                                        <li role="button">Chinese</li>
+                                    </ul> : null
+                                }
+                            </li>
                         </ul> : null
                     }
                 </div>
@@ -99,15 +117,23 @@ class Header extends React.Component<HeaderProps, HeaderState> {
         );
     }
 
-    private showDropdown(): void {
-        this.setState({ dropdownVisible: true, copied: false });
+    private showAccountDropDown = (): void => {
+        this.setState({ accountDropdownVisible: true, copied: false });
     }
 
-    private hideDropdown(): void {
-        this.setState({ dropdownVisible: false, copied: false });
+    private hideAccountDropdown = (): void => {
+        this.setState({ accountDropdownVisible: false, copied: false });
     }
 
-    private copyToClipboard(e: React.MouseEvent<HTMLElement>): void {
+    private showLanguageDropDown = (): void => {
+        this.setState({ languageDropdownVisible: true, copied: false });
+    }
+
+    private hideLanguageDropdown = (): void => {
+        this.setState({ languageDropdownVisible: false, copied: false });
+    }
+
+    private copyToClipboard = (e: React.MouseEvent<HTMLElement>): void => {
         const el = e.currentTarget.childNodes[0] as Element;
         const address = el.getAttribute("data-addr");
         if (address) {
@@ -121,7 +147,7 @@ class Header extends React.Component<HeaderProps, HeaderState> {
         this.setState({ copied: true });
     }
 
-    private handleLogOut(): void {
+    private handleLogOut = (): void => {
         const { sdk } = this.props;
         this.props.actions.logout(sdk, { reload: true });
     }

@@ -5,11 +5,13 @@
 @import 'styles/alert';
 @import 'styles/button';
 @import 'styles/console';
+@import 'styles/footer';
 @import 'styles/header';
 @import 'styles/heading';
 @import 'styles/info';
 @import 'styles/loading';
 @import 'styles/loggingout';
+@import 'styles/networkStatistics';
 @import 'styles/popup';
 @import 'styles/select';
 @import 'styles/view';
@@ -42,6 +44,7 @@ body {
     font-family: 'PingFang SC', Helvetica, Arial, sans-serif;
     margin: 0;
     background: #012142;
+    color: $dark-grey;
 }
 
 h1 {
@@ -197,13 +200,13 @@ table th {
 
 .container {
     width: 100%;
-    max-width: 1140px;
+    max-width: 1400px;
     margin: 0 auto;
     padding: 0 10px;
 }
 
 .section {
-    padding-top: 60px;
+    padding: 60px 0;
 }
 
 .section:first-child {

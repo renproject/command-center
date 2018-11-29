@@ -4,7 +4,7 @@ import { getReadOnlyProvider, WalletDetail } from "@Library/wallets/wallet";
 export const Trezor: WalletDetail = {
     name: "Trezor",
     slug: "trezor",
-    description: "Sign using your hardware wallet",
+    description: "Sign using your Trezor hardware wallet",
     enabled: false,
     getWeb3Provider: () => [getReadOnlyProvider(), null],
 };
