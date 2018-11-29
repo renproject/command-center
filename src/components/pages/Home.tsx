@@ -1,5 +1,6 @@
 import * as React from "react";
 
+import Footer from "@Components/Footer";
 import Header from "@Components/Header";
 
 interface ExchangeProps {
@@ -18,6 +19,7 @@ class Exchange extends React.Component<ExchangeProps, ExchangeState> {
             <div className="home">
                 <Header withMenu />
                 <div className="content" />
+                <Footer />
             </div>
         );
     }

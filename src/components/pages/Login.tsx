@@ -5,8 +5,10 @@ import { bindActionCreators, Dispatch } from "redux";
 
 import RenExSDK from "renex-sdk-ts";
 
+import Footer from "@Components/Footer";
 import Header from "@Components/Header";
 import Loading from "@Components/Loading";
+import NetworkStatistics from "@Components/NetworkStatistics";
 import Wallets from "@Components/Wallets";
 
 import { setAlert, SetAlertAction } from "@Actions/alert/alertActions";
@@ -56,9 +58,11 @@ class Home extends React.Component<HomeProps, HomeState> {
                         <div className="overlay" />
                     </>
                 }
-                <Header withMenu={false} />
+                <Header withMenu />
                 <Wallets />
+                <NetworkStatistics />
                 <div className="content" />
+                <Footer />
             </div>
         );
     }

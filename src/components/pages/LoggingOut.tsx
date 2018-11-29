@@ -16,7 +16,7 @@ class LoggingOut extends React.Component<LoggingOutProps, LoggingOutState> {
     public render(): JSX.Element {
         return (
             <div className="logging-out">
-                <Loading />
+                <Loading alt />
             </div>
         );
     }

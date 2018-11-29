@@ -1,9 +1,7 @@
-$wallet-radius: 4px;
+$wallet-radius: 2px;
 
 .section.wallets {
-    background-color: $off-white;
-    border-bottom: 1px solid $light-grey;
-    padding: 30px 0;
+    padding: 50px 0;
 }
 
 .wallets--wrapper {
@@ -12,38 +10,42 @@ $wallet-radius: 4px;
     }
 }
 
-.wallets--container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-grow: 1;
-    flex-basis: 0;
-    background-color: white;
-    border-radius: $wallet-radius;
-    text-align: center;
-    position: relative;
-    transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out, opacity 0.2s ease-in-out;
-    cursor: pointer;
-
-    &.disabled {
-        border: 1px solid $light-grey;
-    }
+.wallets--title {
+    color: white;
+    display: inline-block;
+    font-size: 36px;
+    font-weight: 500;
+    margin-bottom: 50px;
 }
 
-.wallets--container.disabled {
+.wallet--container {
+    flex-grow: 1;
+    flex-basis: 0;
+    border-radius: $wallet-radius;
+    overflow: hidden;
+    position: relative;
+    transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out, opacity 0.2s ease-in-out;
+
+    box-shadow: rgba(0, 0, 0, 0.5) 3px 3px 5px;
+
+    cursor: pointer;
+}
+
+.wallet--container.disabled {
     cursor: not-allowed;
 }
 
-.wallets--container.disabled .wallets--item {
+.wallet--container.disabled .wallet--details {
     pointer-events: none;
 }
 
-.wallets--container:not(.disabled):hover {
-    box-shadow: 0 10px 25px 0 $shadow;
+.wallet--container:not(.disabled):hover {
+    box-shadow: rgba(0, 0, 0, 0.5) 6px 6px 20px;
+
     transform: scale(1.01);
 }
 
-.wallets--container+.wallets--container {
+.wallet--container+.wallet--container {
     margin-left: 0px;
     margin-top: 10px;
 
@@ -53,84 +55,84 @@ $wallet-radius: 4px;
     }
 }
 
-.wallets--container .loading {
+.wallet--container .loading {
     margin-top: 15px;
 }
 
-.wallets--item {
-    height: 100%;
+.wallet--details {
+    background-color: white;
+    height: 120px;
     width: 100%;
-    padding: 30px 10px;
+    padding: 15px 15px 30px 15px;
 
-    .wallets--container.metamask &,
-    .wallets--container.ledger &,
-    .wallets--container.keystore & {
-        color: white;
-        background-size: cover;
-        background-position: center;
-        border-radius: $wallet-radius;
-
-        &:before {
-            content: '';
-            background-color: rgba(0, 0, 0, 0.6);
-            border-radius: $wallet-radius;
-            height: 100%;
-            width: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-            pointer-events: none;
-        }
+    .wallet--container.disabled & {
+        background-color: $mid-grey;
     }
 }
 
-.wallets--title {
+.wallet--title {
     font-size: 18px;
     display: inline-block;
     position: relative;
     text-align: left;
     margin-left: 30px;
+    font-weight: 500;
 }
 
-.wallets--title:before {
+.wallet--title:before {
     content: '';
     background-size: contain;
     background-position: center center;
     background-repeat: no-repeat;
     height: 25px;
-    width: 20px;
+    width: 22px;
     position: absolute;
     top: 50%;
     left: -30px;
     transform: translateY(-50%);
 
-    .wallets--container.disabled & {
+    .wallet--container.disabled & {
         filter: grayscale(100%);
     }
 
-    .wallets--container.metamask & {
+    .wallet--container.metamask & {
         background-image: url($path + 'metamask.svg');
     }
 
-    .wallets--container.ledger & {
+    .wallet--container.ledger & {
         background-image: url($path + 'ledger.svg');
     }
 
-    .wallets--container.trezor & {
+    .wallet--container.trezor & {
         background-image: url($path + 'trezor.svg');
     }
 
-    .wallets--container.keystore & {
+    .wallet--container.keystore & {
         background-image: url($path + 'keystore.svg');
     }
 
-    .wallets--container.key & {
+    .wallet--container.key & {
         background-image: url($path + 'key.svg');
     }
 }
 
-.wallets--description {
+.wallet--description {
     margin-top: 10px;
     margin-bottom: 0;
     position: relative;
+    font-size: 14px;
+}
+
+.wallet--connect {
+    background-color: $blue-bright;
+    padding: 10px;
+    width: 100%;
+    color: white;
+    font-size: 18px;
+    text-align: center;
+    font-weight: 500;
+
+    .wallet--container.disabled & {
+        background-color: $dark-grey;
+    }
 }

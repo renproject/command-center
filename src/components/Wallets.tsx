@@ -29,6 +29,7 @@ class Wallets extends React.Component<WalletsProps> {
         return (
             <div className="section wallets">
                 <div className="container">
+                    <h2 className="wallets--title">Connect your wallet to access your Darknode</h2>
                     <div className="wallets--wrapper">
                         {this.listWallets()}
                     </div>

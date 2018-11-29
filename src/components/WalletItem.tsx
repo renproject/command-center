@@ -59,21 +59,23 @@ class WalletItem extends React.Component<WalletItemProps, WalletItemState> {
         const { slug, enabled, description, name } = walletDetails;
 
         return (
-            <div className={`wallets--container ${slug} ${enabled ? "" : "disabled"}`}>
+            <div
+                className={`wallet--container ${slug} ${enabled ? "" : "disabled"}`}
+                role="button"
+                onClick={this.handleSelectWallet}
+            >
                 <div
-                    className="wallets--item"
-                    role="button"
-                    onClick={this.handleSelectWallet}
+                    className="wallet--details"
                 >
-                    <span className="wallets--title">{name}</span>
-                    <p className="wallets--description">
-                        {!enabled ?
-                            "Coming soon" : null
-                        }
-                        {enabled && description !== "" ?
-                            description : null
-                        }
+                    <span className="wallet--title">{name}</span>
+                    <p className="wallet--description">
+                        {description}
                     </p>
+                </div>
+                <div className="wallet--connect">
+                    {enabled ?
+                        "Connect →" : "Coming soon"
+                    }
                 </div>
             </div>
         );
