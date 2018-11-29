@@ -17,6 +17,7 @@ import Popup from "@Components/popups/Popup";
 import history from "@Library/history";
 
 import { clearPopup, ClearPopupAction, setPopup, SetPopupAction } from "@Actions/popup/popupActions";
+import { updateNetworkStatistics, UpdateNetworkStatisticsAction } from "@Actions/statistics/network";
 import { login, LoginAction, logout, LogoutAction, lookForLogout, LookForLogoutAction } from "@Actions/trader/accountActions";
 import { Wallet } from "@Library/wallets/wallet";
 import { getInjectedWeb3Provider } from "@Library/wallets/web3browser";
@@ -37,6 +38,7 @@ interface AppProps extends StoreProps {
         logout: LogoutAction;
         lookForLogout: LookForLogoutAction;
         setPopup: SetPopupAction;
+        updateNetworkStatistics: UpdateNetworkStatisticsAction;
     };
 }
 
@@ -68,6 +70,7 @@ const ScrollToTop = withRouter(
 class App extends React.Component<AppProps, AppState> {
     private setupLoopsTimeout: NodeJS.Timer | undefined;
     private callLookForLogoutTimeout: NodeJS.Timer | undefined;
+    private callUpdateNetworkStatisticsTimeout: NodeJS.Timer | undefined;
 
     public constructor(props: AppProps, context: object) {
         super(props, context);
@@ -94,6 +97,7 @@ class App extends React.Component<AppProps, AppState> {
         // Clear timeouts
         if (this.setupLoopsTimeout) { clearTimeout(this.setupLoopsTimeout); }
         if (this.callLookForLogoutTimeout) { clearTimeout(this.callLookForLogoutTimeout); }
+        if (this.callUpdateNetworkStatisticsTimeout) { clearTimeout(this.callUpdateNetworkStatisticsTimeout); }
     }
 
     public setupLoops() {
@@ -110,6 +114,18 @@ class App extends React.Component<AppProps, AppState> {
             this.callLookForLogoutTimeout = setTimeout(callLookForLogout, 5 * 1000);
         };
         callLookForLogout().catch(console.error);
+
+        // Update network statistics every 30 seconds
+        const callUpdateNetworkStatistics = async () => {
+            const { sdk } = this.props;
+            try {
+                await this.props.actions.updateNetworkStatistics(sdk);
+            } catch (err) {
+                console.error(err);
+            }
+            this.callUpdateNetworkStatisticsTimeout = setTimeout(callUpdateNetworkStatistics, 30 * 1000);
+        };
+        callUpdateNetworkStatistics().catch(console.error);
     }
 
     public withAccount<T extends React.ComponentClass>(component: T): React.ComponentClass | React.StatelessComponent {
@@ -185,6 +201,7 @@ function mapDispatchToProps(dispatch: Dispatch): { actions: AppProps["actions"] 
             logout,
             lookForLogout,
             setPopup,
+            updateNetworkStatistics,
         }, dispatch)
     };
 }

@@ -7,8 +7,11 @@ import { bindActionCreators } from "redux";
 import { clearAlert, ClearAlertAction } from "@Actions/alert/alertActions";
 import { Alert, ApplicationData } from "@Reducers/types";
 
-interface AlertsProps {
+interface StoreProps {
     alert: Alert;
+}
+
+interface AlertsProps extends StoreProps {
     actions: {
         clearAlert: ClearAlertAction;
     };
@@ -63,7 +66,7 @@ class Alerts extends React.Component<AlertsProps, AlertsState> {
     }
 }
 
-function mapStateToProps(state: ApplicationData) {
+function mapStateToProps(state: ApplicationData): StoreProps {
     return {
         alert: state.alert.alert
     };
