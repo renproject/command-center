@@ -1,6 +1,6 @@
 import bs58 from "bs58";
 
-import { Record } from "../record";
+import { Record } from "./record";
 
 export enum Encodings {
     AUTO = "auto",

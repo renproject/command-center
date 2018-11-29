@@ -7,9 +7,10 @@ import Web3 from "web3";
 
 import { Map, OrderedMap } from "immutable";
 
+import { Record } from "@Library/general/record";
 import { INFURA_URL, networkData } from "@Library/network";
-import { Record } from "@Library/record";
 import { Wallet } from "@Library/wallets/wallet";
+import BigNumber from "bignumber.js";
 
 export interface Serializable<T> {
     serialize(): string;
@@ -20,6 +21,7 @@ export interface ApplicationData {
     trader: TraderData;
     alert: AlertData;
     popup: PopupData;
+    statistics: StatisticsData;
 }
 
 export class TraderData extends Record({
@@ -76,4 +78,9 @@ export class PopupData extends Record({
     popup: null as JSX.Element | null,
     dismissible: true,
     onCancel: (() => null) as () => void,
+}) { }
+
+export class StatisticsData extends Record({
+    darknodeCount: null as BigNumber | null,
+    orderCount: null as BigNumber | null,
 }) { }

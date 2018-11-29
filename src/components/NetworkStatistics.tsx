@@ -1,12 +1,20 @@
 import * as React from "react";
 
+import BigNumber from "bignumber.js";
+
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import { bindActionCreators } from "redux";
 
 import { clearPopup, ClearPopupAction, setPopup, SetPopupAction } from "@Actions/popup/popupActions";
+import { ApplicationData } from "@Reducers/types";
 
-interface NetworkStatisticsProps {
+interface StoreProps {
+    darknodeCount: BigNumber | null;
+    orderCount: BigNumber | null;
+}
+
+interface NetworkStatisticsProps extends StoreProps {
     actions: {
         clearPopup: ClearPopupAction;
         setPopup: SetPopupAction;
@@ -23,6 +31,10 @@ class NetworkStatistics extends React.Component<NetworkStatisticsProps> {
     }
 
     public render(): JSX.Element {
+        const { darknodeCount, orderCount } = this.props;
+        const darknodeCountRender = darknodeCount ? darknodeCount.toFixed() : "-";
+        const orderCountRender = orderCount ? orderCount.toFixed() : "-";
+
         return (
             <div className="section networkStatistics">
                 <div className="container">
@@ -30,12 +42,12 @@ class NetworkStatistics extends React.Component<NetworkStatisticsProps> {
                     <div className="networkStatistics--content">
                         <div className="networkStatistics--content--column">
                             <span className="networkStatistics--content--title">Active darknodes</span>
-                            <p className="networkStatistics--content--value">3013</p>
+                            <p className="networkStatistics--content--value">{darknodeCountRender}</p>
                         </div>
 
                         <div className="networkStatistics--content--column">
                             <span className="networkStatistics--content--title">Volume</span>
-                            <p className="networkStatistics--content--value">$0.03</p>
+                            <p className="networkStatistics--content--value">-</p>
                         </div>
 
                         <div className="networkStatistics--content--column">
@@ -45,7 +57,7 @@ class NetworkStatistics extends React.Component<NetworkStatisticsProps> {
 
                         <div className="networkStatistics--content--column">
                             <span className="networkStatistics--content--title">Number of orders</span>
-                            <p className="networkStatistics--content--value">3</p>
+                            <p className="networkStatistics--content--value">{orderCountRender}</p>
                         </div>
                     </div>
 
@@ -62,6 +74,14 @@ class NetworkStatistics extends React.Component<NetworkStatisticsProps> {
     }
 }
 
+
+function mapStateToProps(state: ApplicationData): StoreProps {
+    return {
+        darknodeCount: state.statistics.darknodeCount,
+        orderCount: state.statistics.orderCount,
+    };
+}
+
 function mapDispatchToProps(dispatch: Dispatch): { actions: NetworkStatisticsProps["actions"] } {
     return {
         actions: bindActionCreators({
@@ -71,4 +91,4 @@ function mapDispatchToProps(dispatch: Dispatch): { actions: NetworkStatisticsPro
     };
 }
 
-export default connect(null, mapDispatchToProps)(NetworkStatistics);
+export default connect(mapStateToProps, mapDispatchToProps)(NetworkStatistics);
