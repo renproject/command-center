@@ -61,7 +61,7 @@ export const logout: LogoutAction = (sdk, options) => async (dispatch) => {
         // history.push("/#/loading");
         // Reload to clear all stores and cancel timeouts
         // (e.g. deposit/withdrawal confirmations)
-        location.replace("../#/");
+        location.replace("./#/");
     }
 };
 
