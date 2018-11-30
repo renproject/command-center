@@ -39,7 +39,8 @@ export const login: LoginAction = (sdk, web3Provider, address, options) => async
 
     if (options.redirect) {
         // Navigate to the Exchange page
-        history.push("/home");
+        // history.push("/#/home");
+        location.replace("/#/home");
     }
 };
 
@@ -57,10 +58,10 @@ export const logout: LogoutAction = (sdk, options) => async (dispatch) => {
     sdk.updateAddress("");
 
     if (options.reload) {
-        history.push("/loading");
+        // history.push("/#/loading");
         // Reload to clear all stores and cancel timeouts
         // (e.g. deposit/withdrawal confirmations)
-        location.replace("/");
+        location.replace("/#/");
     }
 };
 
