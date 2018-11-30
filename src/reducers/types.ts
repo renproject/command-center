@@ -11,6 +11,7 @@ import { Record } from "@Library/general/record";
 import { INFURA_URL, networkData } from "@Library/network";
 import { Wallet } from "@Library/wallets/wallet";
 import BigNumber from "bignumber.js";
+import { number } from "prop-types";
 
 export interface Serializable<T> {
     serialize(): string;
@@ -83,4 +84,13 @@ export class PopupData extends Record({
 export class StatisticsData extends Record({
     darknodeCount: null as BigNumber | null,
     orderCount: null as BigNumber | null,
+    darknodeDetails: null as OrderedMap<string, DarknodeDetails | null> | null,
+}) { }
+
+export class DarknodeDetails extends Record({
+    operationalBalance: new BigNumber(0),
+    averageGasUsage: 0,
+    rewardsEarned: new BigNumber(0),
+    expectedExhaustion: null,
+    lastTopUp: null,
 }) { }

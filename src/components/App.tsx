@@ -16,8 +16,8 @@ import Home from "@Components/pages/Login";
 import Popup from "@Components/popups/Popup";
 import history from "@Library/history";
 
-import { clearPopup, ClearPopupAction, setPopup, SetPopupAction } from "@Actions/popup/popupActions";
-import { updateNetworkStatistics, UpdateNetworkStatisticsAction } from "@Actions/statistics/network";
+import { updateNetworkStatistics, UpdateNetworkStatisticsAction } from "@Actions/statistics/networkActions";
+import { updateOperatorStatistics, UpdateOperatorStatisticsAction } from "@Actions/statistics/operatorActions";
 import { login, LoginAction, logout, LogoutAction, lookForLogout, LookForLogoutAction } from "@Actions/trader/accountActions";
 import { Wallet } from "@Library/wallets/wallet";
 import { getInjectedWeb3Provider } from "@Library/wallets/web3browser";
@@ -33,11 +33,10 @@ interface StoreProps {
 
 interface AppProps extends StoreProps {
     actions: {
-        clearPopup: ClearPopupAction;
         login: LoginAction;
         logout: LogoutAction;
         lookForLogout: LookForLogoutAction;
-        setPopup: SetPopupAction;
+        updateOperatorStatistics: UpdateOperatorStatisticsAction;
         updateNetworkStatistics: UpdateNetworkStatisticsAction;
     };
 }
@@ -71,6 +70,7 @@ class App extends React.Component<AppProps, AppState> {
     private setupLoopsTimeout: NodeJS.Timer | undefined;
     private callLookForLogoutTimeout: NodeJS.Timer | undefined;
     private callUpdateNetworkStatisticsTimeout: NodeJS.Timer | undefined;
+    private callUpdateOperatorStatisticsTimeout: NodeJS.Timer | undefined;
 
     public constructor(props: AppProps, context: object) {
         super(props, context);
@@ -98,6 +98,7 @@ class App extends React.Component<AppProps, AppState> {
         if (this.setupLoopsTimeout) { clearTimeout(this.setupLoopsTimeout); }
         if (this.callLookForLogoutTimeout) { clearTimeout(this.callLookForLogoutTimeout); }
         if (this.callUpdateNetworkStatisticsTimeout) { clearTimeout(this.callUpdateNetworkStatisticsTimeout); }
+        if (this.callUpdateOperatorStatisticsTimeout) { clearTimeout(this.callUpdateOperatorStatisticsTimeout); }
     }
 
     public setupLoops() {
@@ -126,6 +127,18 @@ class App extends React.Component<AppProps, AppState> {
             this.callUpdateNetworkStatisticsTimeout = setTimeout(callUpdateNetworkStatistics, 30 * 1000);
         };
         callUpdateNetworkStatistics().catch(console.error);
+
+        // Update network statistics every 60 seconds
+        const callUpdateOperatorStatistics = async () => {
+            const { sdk } = this.props;
+            try {
+                await this.props.actions.updateOperatorStatistics(sdk);
+            } catch (err) {
+                console.error(err);
+            }
+            this.callUpdateOperatorStatisticsTimeout = setTimeout(callUpdateOperatorStatistics, 60 * 1000);
+        };
+        callUpdateOperatorStatistics().catch(console.error);
     }
 
     public withAccount<T extends React.ComponentClass>(component: T): React.ComponentClass | React.StatelessComponent {
@@ -196,11 +209,10 @@ function mapStateToProps(state: ApplicationData): StoreProps {
 function mapDispatchToProps(dispatch: Dispatch): { actions: AppProps["actions"] } {
     return {
         actions: bindActionCreators({
-            clearPopup,
             login,
             logout,
             lookForLogout,
-            setPopup,
+            updateOperatorStatistics,
             updateNetworkStatistics,
         }, dispatch)
     };

@@ -1,0 +1,93 @@
+.section.operatorStatistics {
+    background-color: $blue-dark;
+    color: white;
+}
+
+.operatorStatistics--title {
+    font-size: 24px;
+    font-weight: 500;
+}
+
+.operatorStatistics--content {
+    @extend .darker-blue-box;
+}
+
+.darknodesStatistics {
+    display: flex;
+    flex-direction: row;
+}
+
+.darknodesStatistics--column {
+    flex-grow: 1;
+    flex-basis: 0;
+}
+
+.darknodesStatistics--title {
+    color: $mid-grey;
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.darknodesStatistics--value {
+    margin-top: 20px;
+    margin-bottom: 0;
+    font-size: 34px;
+    font-weight: 500;
+}
+
+.darknodesList {
+    margin-top: 30px;
+
+    table thead th {
+        color: $mid-grey;
+        font-size: 18px;
+        font-weight: 500;
+        border: none;
+    }
+
+    .darknodeStatistics {
+        border: none;
+        padding: 40px 0;
+        background-color: $blue-darker
+    }
+
+    .darknodeStatistics td {
+        background-color: $blue-darker;
+        color: $light-grey;
+        font-size: 18px;
+        font-weight: 400;
+        padding-top: 10px;
+        padding-right: 30px;
+        font-family: monospace;
+    }
+
+    .darknodeStatistics td:not(:first-child) {
+        border-left: 2px solid #012142;
+        padding-left: 20px;
+    }
+
+    .darknodeStatistics--name {
+        display: flex;
+        color: white;
+        flex-direction: row;
+        justify-content: space-between;
+        flex-grow: 1;
+    }
+
+    .darknodesList--view {
+        background-color: $blue-bright;
+        box-shadow: rgba(0, 0, 0, 0.5) 0px 3px 5px;
+        color: white;
+        border-radius: 2px;
+        cursor: pointer;
+        border: none;
+
+        font-size: 16px;
+        font-weight: 500;
+    }
+
+    .darknodesList--view:active {
+        background-color: darken($blue-bright, 5%);
+        box-shadow: rgba(0, 0, 0, 0.5) 0px 0px 10px;
+    }
+}

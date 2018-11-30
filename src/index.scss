@@ -12,6 +12,7 @@
 @import 'styles/loading';
 @import 'styles/loggingout';
 @import 'styles/networkStatistics';
+@import 'styles/operatorStatistics';
 @import 'styles/popup';
 @import 'styles/select';
 @import 'styles/view';
@@ -244,4 +245,22 @@ label {
     @media(min-width: $min-sm) {
         max-width: none;
     }
+}
+
+.blue-box {
+    padding: 30px;
+    border-radius: 2px;
+    box-shadow: rgba(0, 0, 0, 0.5) 0px 3px 5px;
+}
+
+.dark-blue-box {
+    @extend .blue-box;
+
+    background-color: $blue-dark;
+}
+
+.darker-blue-box {
+    @extend .blue-box;
+
+    background-color: $blue-darker;
 }
