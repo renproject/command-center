@@ -3,7 +3,7 @@ import * as React from "react";
 import Web3 from "web3";
 
 import { connect } from "react-redux";
-import { Redirect, Route, RouteComponentProps, Router, withRouter } from "react-router-dom";
+import { HashRouter, Redirect, Route, RouteComponentProps, withRouter } from "react-router-dom";
 import { Dispatch } from "redux";
 import { bindActionCreators } from "redux";
 
@@ -159,7 +159,8 @@ class App extends React.Component<AppProps, AppState> {
 
     public render(): JSX.Element {
         return (
-            <Router history={history}>
+            <HashRouter>
+                {/* history={history}>*/}
                 <div className="app">
                     <ScrollToTop />
                     <Route path="/" exact component={Home} />
@@ -168,7 +169,7 @@ class App extends React.Component<AppProps, AppState> {
                     <Alerts />
                     <Popup />
                 </div>
-            </Router>
+            </HashRouter>
         );
     }
 
