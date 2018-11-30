@@ -90,4 +90,60 @@
         background-color: darken($blue-bright, 5%);
         box-shadow: rgba(0, 0, 0, 0.5) 0px 0px 10px;
     }
+
+    .darknodeStatistics--hidden {
+        transition: height 0.25s ease-in;
+        background-color: $blue-darker;
+        border: none;
+    }
+
+    .darknodeStatistics--controls {
+        padding: 20px;
+
+        button {
+            background-color: $off-white;
+            box-shadow: rgba(0, 0, 0, 0.5) 0px 3px 5px;
+            color: $dark-grey;
+            border-radius: 2px;
+            cursor: pointer;
+            border: none;
+
+            font-size: 16px;
+            font-weight: 500;
+            margin-right: 20px;
+        }
+    }
+
+    .darknodeStatistics--details {
+        display: flex;
+        flex-direction: row;
+        padding: 20px;
+    }
+
+    .darknodeStatistics--details--column {
+        flex-grow: 1;
+        flex-basis: 0;
+    }
+
+    .darknodeStatistics--details--title {
+        color: $mid-grey;
+        font-size: 18px;
+        font-weight: 500;
+    }
+
+    .darknodeStatistics--details--value {
+        margin-top: 20px;
+        margin-bottom: 0;
+        font-size: 34px;
+        font-weight: 500;
+    }
+
+
+    .hidden {
+        transition: height 0.25s ease-in;
+
+        display: none;
+        height: 0;
+        overflow: hidden;
+    }
 }
