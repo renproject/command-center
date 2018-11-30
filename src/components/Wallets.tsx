@@ -7,13 +7,10 @@ import { bindActionCreators } from "redux";
 
 import WalletItem from "@Components/WalletItem";
 
-import { clearPopup, ClearPopupAction, setPopup, SetPopupAction } from "@Actions/popup/popupActions";
 import { Wallet, WalletList } from "@Library/wallets/wallet";
 
 interface WalletsProps {
     actions: {
-        clearPopup: ClearPopupAction;
-        setPopup: SetPopupAction;
     };
 }
 
@@ -50,8 +47,6 @@ class Wallets extends React.Component<WalletsProps> {
 function mapDispatchToProps(dispatch: Dispatch): { actions: WalletsProps["actions"] } {
     return {
         actions: bindActionCreators({
-            clearPopup,
-            setPopup,
         }, dispatch)
     };
 }

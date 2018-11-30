@@ -6,7 +6,6 @@ import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import { bindActionCreators } from "redux";
 
-import { clearPopup, ClearPopupAction, setPopup, SetPopupAction } from "@Actions/popup/popupActions";
 import { ApplicationData } from "@Reducers/types";
 
 interface StoreProps {
@@ -16,8 +15,6 @@ interface StoreProps {
 
 interface NetworkStatisticsProps extends StoreProps {
     actions: {
-        clearPopup: ClearPopupAction;
-        setPopup: SetPopupAction;
     };
 }
 
@@ -85,8 +82,6 @@ function mapStateToProps(state: ApplicationData): StoreProps {
 function mapDispatchToProps(dispatch: Dispatch): { actions: NetworkStatisticsProps["actions"] } {
     return {
         actions: bindActionCreators({
-            clearPopup,
-            setPopup,
         }, dispatch)
     };
 }
