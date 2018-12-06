@@ -25,9 +25,9 @@ export interface ApplicationData {
 }
 
 export class TraderData extends Record({
+    // Login data
     address: null as string | null,
     sdk: null as RenExSDK | null,
-
     wallet: null as Wallet | null,
 }) implements Serializable<TraderData> {
     public serialize(): string {
@@ -82,6 +82,10 @@ export class StatisticsData extends Record({
     darknodeCount: null as BigNumber | null,
     orderCount: null as BigNumber | null,
     darknodeDetails: null as OrderedMap<string, DarknodeDetails | null> | null,
+
+
+    // Interaction data
+    selectedDarknode: null as string | null,
 }) { }
 
 export class DarknodeDetails extends Record({

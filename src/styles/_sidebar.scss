@@ -1,0 +1,33 @@
+.sidebar {
+    position: fixed;
+    top: 0;
+    border-right: 2px solid #58585B;
+    padding: 30px;
+    height: 100vh;
+    overflow: scroll;
+
+    overflow: scroll;
+    overflow-x: hidden;
+}
+
+.sidebar::-webkit-scrollbar {
+    width: 0px;
+    /* remove scrollbar space */
+    background: transparent;
+    /* optional: just make scrollbar invisible */
+}
+
+/* optional: show position indicator in red */
+.sidebar::-webkit-scrollbar-thumb {
+    background: #FF0000;
+}
+
+.sidebar .blocky {
+    width: 42px;
+    border-radius: 20px;
+    margin: 20px 0;
+}
+
+.sidebar li {
+    height: 80px;
+}

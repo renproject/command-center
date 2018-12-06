@@ -5,7 +5,7 @@ import { bindActionCreators, Dispatch } from "redux";
 
 import Header from "@Components/Header";
 import Loading from "@Components/Loading";
-import OperatorStatistics from "@Components/OperatorStatistics";
+import Sidebar from "@Components/Sidebar";
 
 import { setAlert, SetAlertAction } from "@Actions/alert/alertActions";
 import { login, LoginAction } from "@Actions/trader/accountActions";
@@ -58,7 +58,7 @@ class Home extends React.Component<HomeProps, HomeState> {
                 <Header withMenu />
                 <div className="content" />
                 {address ?
-                    <OperatorStatistics /> :
+                    <Sidebar /> :
                     <></>
                 }
             </div>

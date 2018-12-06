@@ -25,6 +25,9 @@ export default function statisticsReducer(state: StatisticsData = new Statistics
 
             return state.set("darknodeDetails", darknodeDetails);
 
+        case getType(operatorActions.storeSelectedDarknode):
+            return state.set("selectedDarknode", action.payload.selectedDarknode);
+
         default:
             return state;
     }
