@@ -47,7 +47,7 @@ class SelectWeb3Account extends React.Component<SelectWeb3AccountProps, SelectWe
 
         if (error) {
             return (
-                <div className="popup ledger">
+                <div className="popup accounts">
                     <h2>Unable to retrieve accounts</h2>
                     <p>{error}</p>
                     <button onClick={this.getAccounts}>Retry</button>

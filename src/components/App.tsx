@@ -1,7 +1,5 @@
 import * as React from "react";
 
-import Web3 from "web3";
-
 import { connect } from "react-redux";
 import { HashRouter, Redirect, Route, RouteComponentProps, withRouter } from "react-router-dom";
 import { Dispatch } from "redux";
@@ -14,14 +12,12 @@ import Exchange from "@Components/pages/Home";
 import Home from "@Components/pages/Home";
 import LoggingOut from "@Components/pages/LoggingOut";
 import Popup from "@Components/popups/Popup";
-import history from "@Library/history";
 
+import { clearPopup, ClearPopupAction, setPopup, SetPopupAction } from "@Actions/popup/popupActions";
 import { updateNetworkStatistics, UpdateNetworkStatisticsAction } from "@Actions/statistics/networkActions";
 import { updateOperatorStatistics, UpdateOperatorStatisticsAction } from "@Actions/statistics/operatorActions";
 import { login, LoginAction, logout, LogoutAction, lookForLogout, LookForLogoutAction, storeSDK, StoreSDKAction } from "@Actions/trader/accountActions";
 import { Wallet } from "@Library/wallets/wallet";
-import { getInjectedWeb3Provider } from "@Library/wallets/web3browser";
-import { getAccounts } from "@Library/web3";
 import { AlertData, ApplicationData } from "@Reducers/types";
 
 interface StoreProps {
@@ -33,9 +29,11 @@ interface StoreProps {
 
 interface AppProps extends StoreProps {
     actions: {
+        clearPopup: ClearPopupAction;
         login: LoginAction;
         logout: LogoutAction;
         lookForLogout: LookForLogoutAction;
+        setPopup: SetPopupAction;
         storeSDK: StoreSDKAction;
         updateOperatorStatistics: UpdateOperatorStatisticsAction;
         updateNetworkStatistics: UpdateNetworkStatisticsAction;
@@ -85,7 +83,7 @@ class App extends React.Component<AppProps, AppState> {
 
         // Check if user was logged-in already
         this.setState({ checkingReLogin: true });
-        await this.checkWeb3Available();
+        await this.props.actions.login({ redirect: false });
         this.setState({ checkingReLogin: false });
 
         this.setupLoops();
@@ -158,39 +156,6 @@ class App extends React.Component<AppProps, AppState> {
             </HashRouter>
         );
     }
-
-    private async checkWeb3Available(): Promise<boolean> {
-        const { actions } = this.props;
-        let provider;
-        try {
-            provider = await getInjectedWeb3Provider();
-        } catch (error) {
-            // Injected Web3 request was denied
-            return false;
-        }
-
-        const accounts = await getAccounts(new Web3(provider));
-
-        if (accounts.length === 0) {
-            return false;
-        }
-
-        // For now we use first account
-        // TODO: Add support for selecting other accounts other than first
-        const address = accounts[0];
-
-        console.log(address);
-
-        // These are repeated in login, but the page will log-out if the
-        // address is not available immediately
-
-        const sdk = new RenExSDK(provider, { network: "testnet" });
-        actions.storeSDK({ sdk });
-        sdk.updateProvider(provider);
-        sdk.setAddress(address);
-        actions.login(sdk, provider, address, { redirect: false });
-        return true;
-    }
 }
 
 function mapStateToProps(state: ApplicationData): StoreProps {
@@ -205,9 +170,11 @@ function mapStateToProps(state: ApplicationData): StoreProps {
 function mapDispatchToProps(dispatch: Dispatch): { actions: AppProps["actions"] } {
     return {
         actions: bindActionCreators({
+            clearPopup,
             login,
             logout,
             lookForLogout,
+            setPopup,
             storeSDK,
             updateOperatorStatistics,
             updateNetworkStatistics,

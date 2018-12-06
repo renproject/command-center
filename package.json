@@ -4,8 +4,6 @@
     "version": "0.1.0",
     "private": true,
     "dependencies": {
-        "@ledgerhq/hw-transport-u2f": "^4.28.0",
-        "@ledgerhq/web3-subprovider": "^4.28.0",
         "@renex/renex": "^0.3.2",
         "@sentry/browser": "^4.2.4",
         "@sentry/core": "^4.2.4",
