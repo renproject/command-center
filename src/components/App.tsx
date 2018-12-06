@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/browser";
 import * as React from "react";
 
 import { connect } from "react-redux";
@@ -66,9 +67,7 @@ const ScrollToTop = withRouter(
  * and running background app loops
  */
 class App extends React.Component<AppProps, AppState> {
-    private setupLoopsTimeout: NodeJS.Timer | undefined;
     private callLookForLogoutTimeout: NodeJS.Timer | undefined;
-    private callUpdateNetworkStatisticsTimeout: NodeJS.Timer | undefined;
     private callUpdateOperatorStatisticsTimeout: NodeJS.Timer | undefined;
 
     public constructor(props: AppProps, context: object) {
@@ -79,11 +78,14 @@ class App extends React.Component<AppProps, AppState> {
     }
 
     public async componentDidMount(): Promise<void> {
-        const { sdk } = this.props;
-
         // Check if user was logged-in already
         this.setState({ checkingReLogin: true });
-        await this.props.actions.login({ redirect: false });
+        try {
+            await this.props.actions.login({ redirect: false });
+        } catch (err) {
+            console.error(err);
+            Sentry.captureException(err);
+        }
         this.setState({ checkingReLogin: false });
 
         this.setupLoops();
@@ -91,9 +93,7 @@ class App extends React.Component<AppProps, AppState> {
 
     public componentWillUnmount() {
         // Clear timeouts
-        if (this.setupLoopsTimeout) { clearTimeout(this.setupLoopsTimeout); }
         if (this.callLookForLogoutTimeout) { clearTimeout(this.callLookForLogoutTimeout); }
-        if (this.callUpdateNetworkStatisticsTimeout) { clearTimeout(this.callUpdateNetworkStatisticsTimeout); }
         if (this.callUpdateOperatorStatisticsTimeout) { clearTimeout(this.callUpdateOperatorStatisticsTimeout); }
     }
 
@@ -108,21 +108,27 @@ class App extends React.Component<AppProps, AppState> {
                     console.error(err);
                 }
             }
+            if (this.callLookForLogoutTimeout) { clearTimeout(this.callLookForLogoutTimeout); }
             this.callLookForLogoutTimeout = setTimeout(callLookForLogout, 5 * 1000);
         };
         callLookForLogout().catch(console.error);
 
-        // // Update operator statistics every 60 seconds
-        // const callUpdateOperatorStatistics = async () => {
-        //     const { sdk } = this.props;
-        //     try {
-        //         await this.props.actions.updateOperatorStatistics(sdk);
-        //     } catch (err) {
-        //         console.error(err);
-        //     }
-        //     this.callUpdateOperatorStatisticsTimeout = setTimeout(callUpdateOperatorStatistics, 60 * 1000);
-        // };
-        // callUpdateOperatorStatistics().catch(console.error);
+        // Update operator statistics every 60 seconds
+        const callUpdateOperatorStatistics = async () => {
+            const { sdk } = this.props;
+            let timeout = 1;
+            if (sdk) {
+                try {
+                    await this.props.actions.updateOperatorStatistics(sdk);
+                } catch (err) {
+                    console.error(err);
+                }
+                timeout = 60;
+            }
+            if (this.callUpdateOperatorStatisticsTimeout) { clearTimeout(this.callUpdateOperatorStatisticsTimeout); }
+            this.callUpdateOperatorStatisticsTimeout = setTimeout(callUpdateOperatorStatistics, timeout * 1000);
+        };
+        callUpdateOperatorStatistics().catch(console.error);
     }
 
     public withAccount<T extends React.ComponentClass>(component: T): React.ComponentClass | React.StatelessComponent {
