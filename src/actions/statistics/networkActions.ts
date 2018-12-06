@@ -1,4 +1,4 @@
-import RenExSDK from "renex-sdk-ts";
+import RenExSDK from "@renex/renex";
 
 import { Dispatch } from "redux";
 import { createStandardAction } from "typesafe-actions";

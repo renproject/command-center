@@ -7,10 +7,10 @@ import { bindActionCreators } from "redux";
 import { deregisterDarknode, DeregisterDarknodeAction } from "@Actions/trader/darknode";
 import { EncodedData, Encodings } from "@Library/general/encodedData";
 import { ApplicationData, DarknodeDetails } from "@Reducers/types";
-import RenExSDK from "renex-sdk-ts";
+import RenExSDK from "@renex/renex";
 
 interface StoreProps {
-    sdk: RenExSDK;
+    sdk: RenExSDK | null;
 }
 
 interface DarknodeStatisticsProps extends StoreProps {
@@ -87,6 +87,9 @@ class DarknodeStatistics extends React.Component<DarknodeStatisticsProps, Darkno
     }
 
     private handleDeregister = () => {
+        if (!this.props.sdk) {
+            return;
+        }
         this.props.actions.deregisterDarknode(this.props.sdk, this.props.darknodeID);
     }
 }

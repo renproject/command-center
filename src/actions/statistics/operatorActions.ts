@@ -1,4 +1,4 @@
-import RenExSDK from "renex-sdk-ts";
+import RenExSDK from "@renex/renex";
 
 import { List } from "immutable";
 import { Dispatch } from "redux";

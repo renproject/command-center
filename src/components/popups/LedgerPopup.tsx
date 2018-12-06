@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import { Creatable, Option } from "react-select";
-import { Provider } from "web3/types";
+import { Provider } from "web3/providers";
 
 import Loading from "@Components/Loading";
 

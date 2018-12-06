@@ -6,6 +6,7 @@
     "dependencies": {
         "@ledgerhq/hw-transport-u2f": "^4.28.0",
         "@ledgerhq/web3-subprovider": "^4.28.0",
+        "@renex/renex": "^0.3.2",
         "@sentry/browser": "^4.2.4",
         "@sentry/core": "^4.2.4",
         "@types/axios-mock-adapter": "^1.10.0",
@@ -17,6 +18,7 @@
         "@types/react-select": "^1.2.6",
         "@types/redux-logger": "^3.0.6",
         "@types/underscore": "^1.8.9",
+        "@types/web3": "^1.0.14",
         "@types/yup": "^0.24.9",
         "axios": "^0.18.0",
         "axios-mock-adapter": "^1.15.0",
@@ -48,10 +50,9 @@
         "redux-logger": "^3.0.6",
         "redux-persist": "^5.10.0",
         "redux-thunk": "^2.3.0",
-        "renex-sdk-ts": "git+ssh://git@github.com:republicprotocol/renex-sdk-ts.git#legacy",
         "truffle-contract": "^4.0.0-beta.0",
         "typesafe-actions": "^2.0.4",
-        "web3": "1.0.0-beta.35",
+        "web3": "^1.0.0-beta.36",
         "web3-fake-provider": "^0.1.0",
         "yup": "^0.26.6"
     },

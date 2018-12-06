@@ -5,18 +5,17 @@
 @import 'styles/alert';
 @import 'styles/button';
 @import 'styles/console';
-@import 'styles/footer';
+@import 'styles/grid';
 @import 'styles/header';
 @import 'styles/heading';
 @import 'styles/info';
 @import 'styles/loading';
 @import 'styles/loggingout';
-@import 'styles/networkStatistics';
 @import 'styles/operatorStatistics';
 @import 'styles/popup';
+@import 'styles/section';
 @import 'styles/select';
 @import 'styles/view';
-@import 'styles/wallets';
 
 $select-input-bg-focus: $off-white;
 $select-input-border-radius: 0;

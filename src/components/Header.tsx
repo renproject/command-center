@@ -5,8 +5,6 @@ import { connect } from "react-redux";
 import { Link, match, withRouter } from "react-router-dom";
 import { bindActionCreators, Dispatch } from "redux";
 
-import RenExSDK from "renex-sdk-ts";
-
 import { logout, LogoutAction } from "@Actions/trader/accountActions";
 import { ApplicationData } from "@Reducers/types";
 
@@ -14,7 +12,6 @@ import Blocky from "@Components/Blocky";
 
 interface StoreProps {
     address: string | null;
-    sdk: RenExSDK;
 }
 
 interface HeaderProps extends StoreProps {
@@ -65,38 +62,6 @@ class Header extends React.Component<HeaderProps, HeaderState> {
                     </Link>
                     {withMenu ?
                         <ul className="header--menu">
-                            {address &&
-                                <li
-                                    className="header--group"
-                                    onMouseEnter={this.showAccountDropDown}
-                                    onMouseLeave={this.hideAccountDropdown}
-                                >
-                                    <div className="header--account">
-                                        <Blocky address={address} />
-                                        <div className="header--account--right">
-                                            <div className="header--account--type">MetaMask</div>
-                                            <div className="header--account--address">{address.substring(0, 8)}...{address.slice(-5)}</div>
-                                        </div>
-                                    </div>
-                                    {accountDropdownVisible ?
-                                        <ul className="header--dropdown">
-                                            <li role="button" onClick={this.copyToClipboard}>
-                                                <span data-addr={address}>
-                                                    {copied ?
-                                                        <span>Copied</span>
-                                                        :
-                                                        <span>Copy to clipboard</span>
-                                                    }
-                                                </span>
-                                            </li>
-                                            <li role="button" onClick={this.handleLogOut}>Logout</li>
-                                        </ul> : null
-                                    }
-                                </li>
-                            }
-
-                            <li><Link to="/home"><span>User Manual</span></Link></li>
-
                             <li
                                 className="header--group"
                                 onMouseEnter={this.showLanguageDropDown}
@@ -110,6 +75,42 @@ class Header extends React.Component<HeaderProps, HeaderState> {
                                     </ul> : null
                                 }
                             </li>
+
+                            <li><Link to="/home"><span>USD ﹀</span></Link></li>
+
+
+                            <li
+                                className="header--group"
+                                onMouseEnter={this.showAccountDropDown}
+                                onMouseLeave={this.hideAccountDropdown}
+                            >
+                                <div className="header--account">
+                                    <div className="header--blocky">
+                                        {address && <Blocky address={address} />}
+                                    </div>
+                                    <div className="header--account--right">
+                                        <div className={`header--account--type ${address ? "header--account--connected" : ""}`}>MetaMask</div>
+                                        {address ?
+                                            <div className="header--account--address">{address.substring(0, 8)}...{address.slice(-5)}</div> :
+                                            <div className="header--account--address">Not connected</div>
+                                        }
+                                    </div>
+                                </div>
+                                {address && accountDropdownVisible ?
+                                    <ul className="header--dropdown">
+                                        <li role="button" onClick={this.copyToClipboard}>
+                                            <span data-addr={address}>
+                                                {copied ?
+                                                    <span>Copied</span>
+                                                    :
+                                                    <span>Copy to clipboard</span>
+                                                }
+                                            </span>
+                                        </li>
+                                    </ul> : null
+                                }
+                            </li>
+
                         </ul> : null
                     }
                 </div>
@@ -146,17 +147,11 @@ class Header extends React.Component<HeaderProps, HeaderState> {
         }
         this.setState({ copied: true });
     }
-
-    private handleLogOut = (): void => {
-        const { sdk } = this.props;
-        this.props.actions.logout(sdk, { reload: true });
-    }
 }
 
 function mapStateToProps(state: ApplicationData): StoreProps {
     return {
         address: state.trader.address,
-        sdk: state.trader.sdk,
     };
 }
 
