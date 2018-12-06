@@ -159,5 +159,9 @@
     -moz-border-radius: 3.5px;
     -webkit-border-radius: 3.5px;
     border-radius: 3.5px;
-    background-color: #3cbc98;
+    background-color: #F45532;
+
+    &.header--account--connected {
+        background-color: #3CBC98;
+    }
 }

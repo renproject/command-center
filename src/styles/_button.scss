@@ -1,8 +1,16 @@
 .styled-button {
-    background-color: $green;
+    background-color: $blue-bright;
     color: white;
     border: none;
     position: relative;
+
+    font-weight: 900;
+    font-size: 14px;
+
+    &.styled-button--light {
+        background-color: inherit;
+        color: $mid-grey;
+    }
 }
 
 .styled-button:before {
@@ -19,7 +27,11 @@
 }
 
 .styled-button:focus {
-    background-color: $green;
+    background-color: $blue-bright;
+
+    &.styled-button--light {
+        background-color: inherit;
+    }
 }
 
 .styled-button:focus:before,
@@ -35,8 +47,12 @@
 
 .styled-button.submitting {
     &:disabled {
-        background-color: $green;
+        background-color: $blue-bright;
         border: none;
+
+        &.styled-button--light {
+            background-color: inherit;
+        }
     }
 
     .loading:after {

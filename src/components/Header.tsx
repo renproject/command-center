@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import { Link, match, withRouter } from "react-router-dom";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { logout, LogoutAction } from "@Actions/trader/accountActions";
+import { login, LoginAction } from "@Actions/trader/accountActions";
 import { ApplicationData } from "@Reducers/types";
 
 import Blocky from "@Components/Blocky";
@@ -24,7 +24,7 @@ interface HeaderProps extends StoreProps {
     staticContext: undefined;
 
     actions: {
-        logout: LogoutAction;
+        login: LoginAction;
     };
 }
 
@@ -84,7 +84,7 @@ class Header extends React.Component<HeaderProps, HeaderState> {
                                 onMouseEnter={this.showAccountDropDown}
                                 onMouseLeave={this.hideAccountDropdown}
                             >
-                                <div className="header--account">
+                                <div className="header--account" onClick={this.handleLogin}>
                                     <div className="header--blocky">
                                         {address && <Blocky address={address} />}
                                     </div>
@@ -116,6 +116,13 @@ class Header extends React.Component<HeaderProps, HeaderState> {
                 </div>
             </div>
         );
+    }
+
+    private handleLogin = (): void => {
+        const { address } = this.props;
+        if (!address) {
+            this.props.actions.login({ redirect: false });
+        }
     }
 
     private showAccountDropDown = (): void => {
@@ -158,7 +165,7 @@ function mapStateToProps(state: ApplicationData): StoreProps {
 function mapDispatchToProps(dispatch: Dispatch): { actions: HeaderProps["actions"] } {
     return {
         actions: bindActionCreators({
-            logout,
+            login,
         }, dispatch)
     };
 }

@@ -30,8 +30,7 @@ class Popup extends React.Component<PopupProps> {
         return (
             <div className="popup--outer">
                 {popup}
-                <div role="none" className="overlay" onClick={this.onClickHandler} />
-
+                {/* <div role="none" className="overlay" onClick={this.onClickHandler} /> */}
             </div>
         );
     }

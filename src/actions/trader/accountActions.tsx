@@ -1,3 +1,5 @@
+import * as React from "react";
+
 import RenExSDK from "@renex/renex";
 import Web3 from "web3";
 
@@ -6,12 +8,14 @@ import { createStandardAction } from "typesafe-actions";
 
 import history from "@Library/history";
 
+import { clearPopup, setPopup } from "@Actions/popup/popupActions";
 import { storeWallet } from "@Actions/trader/walletActions";
+import NoMetaMask from "@Components/popups/NoMetaMask";
 import { INFURA_URL, networkData } from "@Library/network";
-import { getNetwork } from "@Library/web3";
-import { Provider } from "web3/providers";
+import { getInjectedWeb3Provider } from "@Library/wallets/web3browser";
+import { getAccounts, getNetwork } from "@Library/web3";
 
-interface StoreSDKPayload { sdk: RenExSDK; }
+interface StoreSDKPayload { sdk: RenExSDK | null; }
 export type StoreSDKAction = (payload: StoreSDKPayload) => void;
 export const storeSDK = createStandardAction("STORE_SDK")<StoreSDKPayload>();
 
@@ -19,23 +23,61 @@ type StoreAddressPayload = string | null;
 export type StoreAddressAction = (payload: StoreAddressPayload) => void;
 export const storeAddress = createStandardAction("STORE_ADDRESS")<StoreAddressPayload>();
 
-export type LoginAction = (sdk: RenExSDK, web3Provider: Provider, address: string, options: { redirect: boolean }) => (dispatch: Dispatch) => Promise<void>;
-export const login: LoginAction = (sdk, web3Provider, address, options) => async (dispatch) => {
+export type LoginAction = (options: { redirect: boolean }) => (dispatch: Dispatch) => Promise<void>;
+export const login: LoginAction = (options) => async (dispatch) => {
+
+    const onClick = () => login({ redirect: false })(dispatch);
+
+    const onCancel = () => {
+        dispatch(clearPopup());
+    };
+    dispatch(
+        setPopup(
+            { popup: <NoMetaMask onConnect={onClick} onCancel={onCancel} />, onCancel }
+        )
+    );
+
+
+    let provider;
+    try {
+        provider = await getInjectedWeb3Provider();
+    } catch (error) {
+        // Injected Web3 request was denied
+        return;
+    }
+
+    const accounts = await getAccounts(new Web3(provider));
+
+    if (accounts.length === 0) {
+        return;
+    }
+
+    dispatch(clearPopup());
+
+    // For now we use first account
+    // TODO: Add support for selecting other accounts other than first
+    const address = accounts[0];
+
+    // These are repeated in login, but the page will log-out if the
+    // address is not available immediately
+
     // Check that the provider is using the correct network
-    if (await getNetwork(new Web3(web3Provider)) !== networkData.ethNetwork) {
+    if (await getNetwork(new Web3(provider)) !== networkData.ethNetwork) {
         // dispatch(setAlert({
         //     alert: new Alert({ message: `Invalid Web3 network (expected ${networkData.ethNetworkLabel})` })
         // }));
 
-        logout(sdk, { reload: false })(dispatch).catch(console.error);
+        logout({ reload: false })(dispatch).catch(console.error);
         return;
     }
+
+    const sdk = new RenExSDK(provider, { network: "testnet" });
+    dispatch(storeSDK({ sdk }));
+    sdk.updateProvider(provider);
+    sdk.setAddress(address);
+
     // Store address in the store (and in local storage)
     dispatch(storeAddress(address));
-
-    // Configure SDK
-    sdk.updateProvider(web3Provider);
-    sdk.setAddress(address);
 
     if (options.redirect) {
         // Navigate to the Exchange page
@@ -44,8 +86,8 @@ export const login: LoginAction = (sdk, web3Provider, address, options) => async
     }
 };
 
-export type LogoutAction = (sdk: RenExSDK, options: { reload: boolean }) => (dispatch: Dispatch) => Promise<void>;
-export const logout: LogoutAction = (sdk, options) => async (dispatch) => {
+export type LogoutAction = (options: { reload: boolean }) => (dispatch: Dispatch) => Promise<void>;
+export const logout: LogoutAction = (options) => async (dispatch) => {
 
     // Clear session account in store (and in local storage)
     dispatch(storeAddress(null));
@@ -54,8 +96,7 @@ export const logout: LogoutAction = (sdk, options) => async (dispatch) => {
     dispatch(storeWallet({ wallet: null }));
 
     // Use read-only provider and clear address
-    sdk.updateProvider(new Web3.providers.HttpProvider(INFURA_URL));
-    sdk.setAddress("");
+    dispatch(storeSDK({ sdk: null }));
 
     if (options.reload) {
         // history.push("/#/loading");
@@ -74,6 +115,6 @@ export const lookForLogout: LookForLogoutAction = (sdk) => async (dispatch) => {
     const accounts = (await sdk.getWeb3().eth.getAccounts()).map((address) => address.toLowerCase());
     if (!accounts.includes(sdk.getAddress().toLowerCase())) {
         console.error(`User has logged out of their web3 provider (${sdk.getAddress()} not in [${accounts.join(", ")}])`);
-        logout(sdk, { reload: true })(dispatch).catch(console.error);
+        logout({ reload: true })(dispatch).catch(console.error);
     }
 };
