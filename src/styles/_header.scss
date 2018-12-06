@@ -160,8 +160,8 @@
     -webkit-border-radius: 3.5px;
     border-radius: 3.5px;
     background-color: #F45532;
+}
 
-    &.header--account--connected {
-        background-color: #3CBC98;
-    }
+.header--account--connected::before {
+    background-color: #3CBC98;
 }

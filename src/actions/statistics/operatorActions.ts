@@ -10,6 +10,10 @@ interface StoreDarknodeListPayload { darknodeList: List<string>; }
 export type StoreDarknodeListAction = (payload: StoreDarknodeListPayload) => void;
 export const storeDarknodeList = createStandardAction("STORE_DARKNODE_LIST")<StoreDarknodeListPayload>();
 
+interface StoreSelectedDarknodePayload { selectedDarknode: string; }
+export type StoreSelectedDarknodeAction = (payload: StoreSelectedDarknodePayload) => void;
+export const storeSelectedDarknode = createStandardAction("STORE_SELECTED_DARKNODE")<StoreSelectedDarknodePayload>();
+
 export type UpdateOperatorStatisticsAction = (sdk: RenExSDK) => (dispatch: Dispatch) => Promise<void>;
 export const updateOperatorStatistics: UpdateOperatorStatisticsAction = (sdk) => async (dispatch) => {
     const darknodeList = await getOperatorDarknodes(sdk);

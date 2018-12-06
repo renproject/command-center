@@ -35,7 +35,7 @@ function blockies() {
 
     function createColor() {
         // saturation is the whole color spectrum
-        const h = Math.floor(rand() * 360);
+        const h = Math.floor(rand() * 40 + 20);
         // saturation goes from 40 to 100, it avoids greyish colors
         const s = ((rand() * 60) + 40) + "%";
         // lightness can be anything from 0 to 100, but probabilities are a bell curve around 50%
