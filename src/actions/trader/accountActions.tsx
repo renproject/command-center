@@ -10,8 +10,9 @@ import history from "@Library/history";
 
 import { clearPopup, setPopup } from "@Actions/popup/popupActions";
 import { storeWallet } from "@Actions/trader/walletActions";
+import LoggedOut from "@Components/popups/LoggedOut";
 import NoMetaMask from "@Components/popups/NoMetaMask";
-import { INFURA_URL, networkData } from "@Library/network";
+import { networkData } from "@Library/network";
 import { getInjectedWeb3Provider } from "@Library/wallets/web3browser";
 import { getAccounts, getNetwork } from "@Library/web3";
 
@@ -27,15 +28,17 @@ export type LoginAction = (options: { redirect: boolean }) => (dispatch: Dispatc
 export const login: LoginAction = (options) => async (dispatch) => {
 
     const onClick = () => login({ redirect: false })(dispatch);
-
     const onCancel = () => {
         dispatch(clearPopup());
     };
-    dispatch(
-        setPopup(
-            { popup: <NoMetaMask onConnect={onClick} onCancel={onCancel} />, onCancel }
-        )
-    );
+
+    // Show popup if getInjectedWeb3Provider doesn't return immediately
+    const timeout = setTimeout(() => {
+        dispatch(
+            setPopup(
+                { popup: <NoMetaMask onConnect={onClick} onCancel={onCancel} />, onCancel }
+            ));
+    }, 200);
 
 
     let provider;
@@ -45,6 +48,8 @@ export const login: LoginAction = (options) => async (dispatch) => {
         // Injected Web3 request was denied
         return;
     }
+
+    clearTimeout(timeout);
 
     const accounts = await getAccounts(new Web3(provider));
 
@@ -114,7 +119,18 @@ export const lookForLogout: LookForLogoutAction = (sdk) => async (dispatch) => {
 
     const accounts = (await sdk.getWeb3().eth.getAccounts()).map((address) => address.toLowerCase());
     if (!accounts.includes(sdk.getAddress().toLowerCase())) {
-        console.error(`User has logged out of their web3 provider (${sdk.getAddress()} not in [${accounts.join(", ")}])`);
+        // console.error(`User has logged out of their web3 provider (${sdk.getAddress()} not in [${accounts.join(", ")}])`);
+
+        const onClick = () => login({ redirect: false })(dispatch);
+        const onCancel = () => {
+            dispatch(clearPopup());
+        };
+        dispatch(
+            setPopup(
+                { popup: <LoggedOut onConnect={onClick} onCancel={onCancel} />, onCancel }
+            )
+        );
+
         logout({ reload: true })(dispatch).catch(console.error);
     }
 };
