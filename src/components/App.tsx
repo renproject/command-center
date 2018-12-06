@@ -7,27 +7,27 @@ import { HashRouter, Redirect, Route, RouteComponentProps, withRouter } from "re
 import { Dispatch } from "redux";
 import { bindActionCreators } from "redux";
 
-import RenExSDK from "renex-sdk-ts";
+import RenExSDK from "@renex/renex";
 
 import Alerts from "@Components/Alerts";
 import Exchange from "@Components/pages/Home";
+import Home from "@Components/pages/Home";
 import LoggingOut from "@Components/pages/LoggingOut";
-import Home from "@Components/pages/Login";
 import Popup from "@Components/popups/Popup";
 import history from "@Library/history";
 
 import { updateNetworkStatistics, UpdateNetworkStatisticsAction } from "@Actions/statistics/networkActions";
 import { updateOperatorStatistics, UpdateOperatorStatisticsAction } from "@Actions/statistics/operatorActions";
-import { login, LoginAction, logout, LogoutAction, lookForLogout, LookForLogoutAction } from "@Actions/trader/accountActions";
+import { login, LoginAction, logout, LogoutAction, lookForLogout, LookForLogoutAction, storeSDK, StoreSDKAction } from "@Actions/trader/accountActions";
 import { Wallet } from "@Library/wallets/wallet";
 import { getInjectedWeb3Provider } from "@Library/wallets/web3browser";
-import { includesAddress } from "@Library/web3";
+import { getAccounts } from "@Library/web3";
 import { AlertData, ApplicationData } from "@Reducers/types";
 
 interface StoreProps {
     address: string | null;
     pendingAlerts: AlertData["pendingAlerts"];
-    sdk: RenExSDK;
+    sdk: RenExSDK | null;
     wallet: Wallet | null;
 }
 
@@ -36,6 +36,7 @@ interface AppProps extends StoreProps {
         login: LoginAction;
         logout: LogoutAction;
         lookForLogout: LookForLogoutAction;
+        storeSDK: StoreSDKAction;
         updateOperatorStatistics: UpdateOperatorStatisticsAction;
         updateNetworkStatistics: UpdateNetworkStatisticsAction;
     };
@@ -84,10 +85,7 @@ class App extends React.Component<AppProps, AppState> {
 
         // Check if user was logged-in already
         this.setState({ checkingReLogin: true });
-        const loggedIn = await this.handleReLogin();
-        if (!loggedIn) {
-            this.props.actions.logout(sdk, { reload: false });
-        }
+        await this.checkWeb3Available();
         this.setState({ checkingReLogin: false });
 
         this.setupLoops();
@@ -104,8 +102,8 @@ class App extends React.Component<AppProps, AppState> {
     public setupLoops() {
         // See if the user has logged out every 5 seconds
         const callLookForLogout = async () => {
-            const { sdk, wallet } = this.props;
-            if (sdk.address() && wallet === Wallet.MetaMask) {
+            const { sdk } = this.props;
+            if (sdk) {
                 try {
                     await this.props.actions.lookForLogout(sdk);
                 } catch (err) {
@@ -116,29 +114,17 @@ class App extends React.Component<AppProps, AppState> {
         };
         callLookForLogout().catch(console.error);
 
-        // Update network statistics every 30 seconds
-        const callUpdateNetworkStatistics = async () => {
-            const { sdk } = this.props;
-            try {
-                await this.props.actions.updateNetworkStatistics(sdk);
-            } catch (err) {
-                console.error(err);
-            }
-            this.callUpdateNetworkStatisticsTimeout = setTimeout(callUpdateNetworkStatistics, 30 * 1000);
-        };
-        callUpdateNetworkStatistics().catch(console.error);
-
-        // Update network statistics every 60 seconds
-        const callUpdateOperatorStatistics = async () => {
-            const { sdk } = this.props;
-            try {
-                await this.props.actions.updateOperatorStatistics(sdk);
-            } catch (err) {
-                console.error(err);
-            }
-            this.callUpdateOperatorStatisticsTimeout = setTimeout(callUpdateOperatorStatistics, 60 * 1000);
-        };
-        callUpdateOperatorStatistics().catch(console.error);
+        // // Update operator statistics every 60 seconds
+        // const callUpdateOperatorStatistics = async () => {
+        //     const { sdk } = this.props;
+        //     try {
+        //         await this.props.actions.updateOperatorStatistics(sdk);
+        //     } catch (err) {
+        //         console.error(err);
+        //     }
+        //     this.callUpdateOperatorStatisticsTimeout = setTimeout(callUpdateOperatorStatistics, 60 * 1000);
+        // };
+        // callUpdateOperatorStatistics().catch(console.error);
     }
 
     public withAccount<T extends React.ComponentClass>(component: T): React.ComponentClass | React.StatelessComponent {
@@ -173,28 +159,37 @@ class App extends React.Component<AppProps, AppState> {
         );
     }
 
-    private async handleReLogin(): Promise<boolean> {
-        const { address, actions, sdk } = this.props;
-        if (address) {
-            let provider;
-            try {
-                provider = await getInjectedWeb3Provider();
-            } catch (error) {
-                // Injected Web3 request was denied
-                return false;
-            }
-
-            const included = await includesAddress(new Web3(provider), address);
-            if (included) {
-                // These are repeated in login, but the page will log-out if the
-                // address is not available immediately
-                sdk.updateProvider(provider);
-                sdk.updateAddress(address);
-                actions.login(sdk, provider, address, { redirect: false });
-                return true;
-            }
+    private async checkWeb3Available(): Promise<boolean> {
+        const { actions } = this.props;
+        let provider;
+        try {
+            provider = await getInjectedWeb3Provider();
+        } catch (error) {
+            // Injected Web3 request was denied
+            return false;
         }
-        return false;
+
+        const accounts = await getAccounts(new Web3(provider));
+
+        if (accounts.length === 0) {
+            return false;
+        }
+
+        // For now we use first account
+        // TODO: Add support for selecting other accounts other than first
+        const address = accounts[0];
+
+        console.log(address);
+
+        // These are repeated in login, but the page will log-out if the
+        // address is not available immediately
+
+        const sdk = new RenExSDK(provider, { network: "testnet" });
+        actions.storeSDK({ sdk });
+        sdk.updateProvider(provider);
+        sdk.setAddress(address);
+        actions.login(sdk, provider, address, { redirect: false });
+        return true;
     }
 }
 
@@ -213,6 +208,7 @@ function mapDispatchToProps(dispatch: Dispatch): { actions: AppProps["actions"] 
             login,
             logout,
             lookForLogout,
+            storeSDK,
             updateOperatorStatistics,
             updateNetworkStatistics,
         }, dispatch)

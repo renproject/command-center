@@ -1,4 +1,4 @@
-import { NetworkData } from "renex-sdk-ts";
+import { NetworkData } from "@renex/renex";
 
 export const networkData: NetworkData = window.NETWORK;
 

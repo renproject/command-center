@@ -2,16 +2,15 @@
 
 import * as Sentry from "@sentry/browser";
 
-import RenExSDK, { OrderSettlement } from "renex-sdk-ts";
+import RenExSDK, { OrderSettlement } from "@renex/renex";
 import Web3 from "web3";
 
 import { Map, OrderedMap } from "immutable";
 
 import { Record } from "@Library/general/record";
-import { INFURA_URL, networkData } from "@Library/network";
 import { Wallet } from "@Library/wallets/wallet";
 import BigNumber from "bignumber.js";
-import { number } from "prop-types";
+// import { number } from "prop-types";
 
 export interface Serializable<T> {
     serialize(): string;
@@ -27,23 +26,21 @@ export interface ApplicationData {
 
 export class TraderData extends Record({
     address: null as string | null,
-    sdk: new RenExSDK(new Web3.providers.HttpProvider(INFURA_URL), networkData, "", {
-        minimumTradeVolume: new Web3().utils.toWei("1", "ether"),
-    }),
+    sdk: null as RenExSDK | null,
 
     wallet: null as Wallet | null,
 }) implements Serializable<TraderData> {
     public serialize(): string {
         return JSON.stringify({
-            address: this.address,
+            // address: this.address,
         });
     }
 
     public deserialize(str: string): TraderData {
-        let next = this;
+        const next = this;
         try {
-            const data = JSON.parse(str);
-            next = next.set("address", data.address);
+            // const data = JSON.parse(str);
+            // next = next.set("address", data.address);
         } catch (err) {
             console.error(err);
             Sentry.captureException(`cannot deserialize local storage: ${err}`);

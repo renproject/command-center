@@ -1,4 +1,4 @@
-import RenExSDK from "renex-sdk-ts";
+import RenExSDK from "@renex/renex";
 import Web3 from "web3";
 
 import { Dispatch } from "redux";
@@ -9,7 +9,7 @@ import history from "@Library/history";
 import { storeWallet } from "@Actions/trader/walletActions";
 import { INFURA_URL, networkData } from "@Library/network";
 import { getNetwork } from "@Library/web3";
-import { Provider } from "web3/types";
+import { Provider } from "web3/providers";
 
 interface StoreSDKPayload { sdk: RenExSDK; }
 export type StoreSDKAction = (payload: StoreSDKPayload) => void;
@@ -35,7 +35,7 @@ export const login: LoginAction = (sdk, web3Provider, address, options) => async
 
     // Configure SDK
     sdk.updateProvider(web3Provider);
-    sdk.updateAddress(address);
+    sdk.setAddress(address);
 
     if (options.redirect) {
         // Navigate to the Exchange page
@@ -55,7 +55,7 @@ export const logout: LogoutAction = (sdk, options) => async (dispatch) => {
 
     // Use read-only provider and clear address
     sdk.updateProvider(new Web3.providers.HttpProvider(INFURA_URL));
-    sdk.updateAddress("");
+    sdk.setAddress("");
 
     if (options.reload) {
         // history.push("/#/loading");
@@ -67,13 +67,13 @@ export const logout: LogoutAction = (sdk, options) => async (dispatch) => {
 
 export type LookForLogoutAction = (sdk: RenExSDK) => (dispatch: Dispatch) => Promise<void>;
 export const lookForLogout: LookForLogoutAction = (sdk) => async (dispatch) => {
-    if (!sdk.address()) {
+    if (!sdk.getAddress()) {
         return;
     }
 
-    const accounts = (await sdk.web3().eth.getAccounts()).map((address) => address.toLowerCase());
-    if (!accounts.includes(sdk.address().toLowerCase())) {
-        console.error(`User has logged out of their web3 provider (${sdk.address()} not in [${accounts.join(", ")}])`);
+    const accounts = (await sdk.getWeb3().eth.getAccounts()).map((address) => address.toLowerCase());
+    if (!accounts.includes(sdk.getAddress().toLowerCase())) {
+        console.error(`User has logged out of their web3 provider (${sdk.getAddress()} not in [${accounts.join(", ")}])`);
         logout(sdk, { reload: true })(dispatch).catch(console.error);
     }
 };

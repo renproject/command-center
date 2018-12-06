@@ -1,4 +1,4 @@
-import { Provider } from "web3/types";
+import { Provider } from "web3/providers";
 
 import { WalletDetail } from "@Library/wallets/wallet";
 

@@ -1,7 +1,5 @@
 import * as React from "react";
 
-import RenExSDK from "renex-sdk-ts";
-
 import { connect } from "react-redux";
 
 import Blocky from "@Components/Blocky";
@@ -10,7 +8,6 @@ import Loading from "@Components/Loading";
 import { ApplicationData } from "@Reducers/types";
 
 interface StoreProps {
-    sdk: RenExSDK;
 }
 
 interface SelectWeb3AccountProps extends StoreProps {
@@ -112,7 +109,6 @@ class SelectWeb3Account extends React.Component<SelectWeb3AccountProps, SelectWe
 
 function mapStateToProps(state: ApplicationData): StoreProps {
     return {
-        sdk: state.trader.sdk,
     };
 }
 

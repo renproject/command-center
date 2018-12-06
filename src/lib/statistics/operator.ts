@@ -1,4 +1,4 @@
-import RenExSDK from "renex-sdk-ts";
+import RenExSDK from "@renex/renex";
 
 import { List } from "immutable";
 
@@ -10,7 +10,7 @@ async function getAllDarknodes(sdk: RenExSDK): Promise<string[]> {
     const allDarknodes = [];
     let lastDarknode = NULL;
     do {
-        const darknodes = await sdk._contracts.darknodeRegistry.getDarknodes(lastDarknode, batchSize);
+        const darknodes = await sdk._contracts.darknodeRegistry.getDarknodes(lastDarknode, batchSize.toString());
         allDarknodes.push(...darknodes.filter(addr => addr !== NULL && addr !== lastDarknode));
         [lastDarknode] = darknodes.slice(-1);
     } while (lastDarknode !== NULL);
@@ -41,7 +41,7 @@ export const getOperatorDarknodes = async (sdk: RenExSDK): Promise<List<string>>
     let operatorDarknodes = List<string>();
 
     for (let i = 0; i < darknodes.length; i++) {
-        if (await operatorPromises[i] === sdk.address()) {
+        if (await operatorPromises[i] === sdk.getAddress()) {
             operatorDarknodes = operatorDarknodes.push(darknodes[i]);
         }
     }

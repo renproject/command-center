@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { SimpleConsole } from "renex-sdk-ts";
+import { SimpleConsole } from "@renex/renex";
 
 import { SetPopupPayload } from "@Actions/popup/popupActions";
 import { ErrorCanceledByUser } from "@Library/wallets/wallet";

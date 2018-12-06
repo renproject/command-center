@@ -5,11 +5,11 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 
 import Web3 from "web3";
-import { HttpProvider } from "web3/types";
+import { HttpProvider } from "web3/providers";
 
+import { NetworkData } from "@renex/renex";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
-import { NetworkData } from "renex-sdk-ts";
 
 import App from "@Components/App";
 import configureStore from "@Store/configureStore";
