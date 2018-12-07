@@ -18,4 +18,5 @@ export type UpdateOperatorStatisticsAction = (sdk: RenExSDK) => (dispatch: Dispa
 export const updateOperatorStatistics: UpdateOperatorStatisticsAction = (sdk) => async (dispatch) => {
     const darknodeList = await getOperatorDarknodes(sdk);
     dispatch(storeDarknodeList({ darknodeList }));
+    dispatch(storeSelectedDarknode({ selectedDarknode: darknodeList.first() }));
 };

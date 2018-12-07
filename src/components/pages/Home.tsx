@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
 import Header from "@Components/Header";
+import StatusPage from "@Components/legacy/StatusPage";
 import Loading from "@Components/Loading";
 import Sidebar from "@Components/Sidebar";
 
@@ -15,6 +16,7 @@ import { ApplicationData } from "@Reducers/types";
 
 interface HomeProps {
     address: string;
+    selectedDarknode: string;
     actions: {
         login: LoginAction;
         storeWallet: StoreWalletAction;
@@ -43,7 +45,7 @@ class Home extends React.Component<HomeProps, HomeState> {
     }
 
     public render(): JSX.Element {
-        const { address } = this.props;
+        const { address, selectedDarknode } = this.props;
         const { checkingVerification } = this.state;
         return (
             <div className="login">
@@ -58,7 +60,10 @@ class Home extends React.Component<HomeProps, HomeState> {
                 <Header withMenu />
                 <div className="content" />
                 {address ?
-                    <Sidebar /> :
+                    <>
+                        <Sidebar />
+                        {selectedDarknode ? <StatusPage /> : <></>}
+                    </> :
                     <></>
                 }
             </div>
@@ -69,6 +74,7 @@ class Home extends React.Component<HomeProps, HomeState> {
 function mapStateToProps(state: ApplicationData) {
     return {
         address: state.trader.address,
+        selectedDarknode: state.statistics.selectedDarknode,
     };
 }
 
