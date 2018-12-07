@@ -1,0 +1,149 @@
+.statuspage {
+
+    .balance {
+        display: inline-flex;
+        align-items: center;
+        vertical-align: top;
+    }
+
+    .balance--icon {
+        width: 20px;
+        margin-right: 10px;
+    }
+
+    .balance--title {
+        font-weight: bold;
+        width: 35px;
+        margin-right: 10px;
+    }
+
+    .content {
+        display: flex;
+        color: white;
+
+        @media(max-width: $max-md) {
+            flex-direction: column;
+        }
+    }
+
+    .content>div {
+        flex-grow: 1;
+        background-color: #002247;
+        border: 1px solid $light-grey;
+        padding: 20px;
+    }
+
+    .content>div+div {
+        margin-left: 10px;
+
+        @media(max-width: $max-md) {
+            margin-top: 10px;
+            margin-left: 0;
+        }
+    }
+
+    .fees+.fees {
+        margin-top: 10px;
+    }
+
+    .fees button {
+        position: relative;
+        left: -1px;
+    }
+
+    .header {
+        margin: 20px 0;
+    }
+
+    .header img {
+        width: 250px;
+        height: auto;
+    }
+
+    .status {
+        display: block;
+    }
+
+    .status+.status {
+        margin-top: 10px;
+    }
+
+    .status--title {
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    .status--item {
+        display: flex;
+    }
+
+    .status--item input {
+        flex-grow: 1;
+    }
+
+    .status>button {
+        display: block;
+        margin-top: 10px;
+    }
+
+    .status--item button {
+        position: relative;
+        left: -1px;
+    }
+
+    .topup button {
+        margin-left: 15px;
+    }
+
+    .topup--title {
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    .topup--input {
+        display: inline-flex;
+        align-items: center;
+        vertical-align: top;
+        background-color: #002247;
+        border: 1px solid $light-grey;
+    }
+
+    .topup--input:not(.disabled):hover {
+        box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
+    }
+
+    .topup--input>input[type=number] {
+        flex-grow: 1;
+        border: none;
+        height: 28px; // Subtracted 2px for additional border
+    }
+
+    .topup--input>span {
+        display: inline-block;
+        width: 35px;
+        text-align: center;
+    }
+
+    .lds-dual-ring:after {
+        content: ' ';
+        display: block;
+        width: 20px;
+        height: 20px;
+        margin: 0 auto;
+        border-radius: 50%;
+        border: 2px solid;
+        border-color: white transparent white transparent;
+        animation: lds-dual-ring 1.2s linear infinite;
+    }
+
+    @keyframes lds-dual-ring {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+}

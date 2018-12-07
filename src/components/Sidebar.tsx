@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import { bindActionCreators } from "redux";
 
+import { storeSelectedDarknode, StoreSelectedDarknodeAction } from "@Actions/statistics/operatorActions";
 import { ApplicationData, DarknodeDetails } from "@Reducers/types";
 import { OrderedMap } from "immutable";
 import { Link } from "react-router-dom";
@@ -11,10 +12,12 @@ import Blocky from "./Blocky";
 
 interface StoreProps {
     darknodeDetails: OrderedMap<string, DarknodeDetails | null> | null;
+    selectedDarknode: string | null;
 }
 
 interface SidebarProps extends StoreProps {
     actions: {
+        storeSelectedDarknode: StoreSelectedDarknodeAction;
     };
 }
 
@@ -28,7 +31,7 @@ class Sidebar extends React.Component<SidebarProps> {
     }
 
     public render(): JSX.Element {
-        const { darknodeDetails } = this.props;
+        const { darknodeDetails, selectedDarknode } = this.props;
 
         return (
             <div className="sidebar">
@@ -39,20 +42,23 @@ class Sidebar extends React.Component<SidebarProps> {
                         darknodeDetails.size === 0 ?
                             <span className="sidebar--text">...</span>
                             :
-                            <table>
-                                <tbody>
-                                    <li>O</li>
-                                    <li>....</li>
-                                    {darknodeDetails && darknodeDetails.map((darknodeDetail, darknodeID) => {
-                                        return <li key={darknodeID}>
-                                            <Blocky address={darknodeID} />
-                                        </li>;
-                                    }).valueSeq().toArray()}
-                                </tbody>
-                            </table>
+                            <ul>
+                                <li>O</li>
+                                <li>....</li>
+                                {darknodeDetails && darknodeDetails.map((darknodeDetail, darknodeID) => {
+                                    // tslint:disable-next-line:jsx-no-lambda FIXME
+                                    return <li key={darknodeID} onClick={() => this.onClick(darknodeID)} className={darknodeID === selectedDarknode ? "sidebar--active" : ""}>
+                                        <Blocky address={darknodeID} />
+                                    </li>;
+                                }).valueSeq().toArray()}
+                            </ul>
                 }
             </div>
         );
+    }
+
+    public onClick = (darknodeID: string) => {
+        this.props.actions.storeSelectedDarknode({ selectedDarknode: darknodeID });
     }
 }
 
@@ -60,12 +66,14 @@ class Sidebar extends React.Component<SidebarProps> {
 function mapStateToProps(state: ApplicationData): StoreProps {
     return {
         darknodeDetails: state.statistics.darknodeDetails,
+        selectedDarknode: state.statistics.selectedDarknode,
     };
 }
 
 function mapDispatchToProps(dispatch: Dispatch): { actions: SidebarProps["actions"] } {
     return {
         actions: bindActionCreators({
+            storeSelectedDarknode,
         }, dispatch)
     };
 }

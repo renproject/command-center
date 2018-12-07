@@ -9,12 +9,14 @@ import { createStandardAction } from "typesafe-actions";
 import history from "@Library/history";
 
 import { clearPopup, setPopup } from "@Actions/popup/popupActions";
+import { storeDarknodeList, updateOperatorStatistics } from "@Actions/statistics/operatorActions";
 import { storeWallet } from "@Actions/trader/walletActions";
 import LoggedOut from "@Components/popups/LoggedOut";
 import NoMetaMask from "@Components/popups/NoMetaMask";
 import { networkData } from "@Library/network";
 import { getInjectedWeb3Provider } from "@Library/wallets/web3browser";
 import { getAccounts, getNetwork } from "@Library/web3";
+import { List } from "immutable";
 
 interface StoreSDKPayload { sdk: RenExSDK | null; }
 export type StoreSDKAction = (payload: StoreSDKPayload) => void;
@@ -84,6 +86,9 @@ export const login: LoginAction = (options) => async (dispatch) => {
     // Store address in the store (and in local storage)
     dispatch(storeAddress(address));
 
+    updateOperatorStatistics(sdk)(dispatch)
+        .catch(console.error);
+
     if (options.redirect) {
         // Navigate to the Exchange page
         // history.push("#/home");
@@ -102,6 +107,9 @@ export const logout: LogoutAction = (options) => async (dispatch) => {
 
     // Use read-only provider and clear address
     dispatch(storeSDK({ sdk: null }));
+
+    // Clear darknodes
+    dispatch(storeDarknodeList({ darknodeList: List() }));
 
     if (options.reload) {
         // history.push("/#/loading");
