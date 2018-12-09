@@ -32,9 +32,6 @@ export class Topup extends React.Component<TopupProps, TopupState> {
             pending: false,
             disabled: false
         };
-        this.handleChange = this.handleChange.bind(this);
-        this.handleBlur = this.handleBlur.bind(this);
-        this.sendFunds = this.sendFunds.bind(this);
     }
 
     public render(): JSX.Element {
@@ -62,7 +59,7 @@ export class Topup extends React.Component<TopupProps, TopupState> {
         );
     }
 
-    private handleChange(e: React.ChangeEvent<HTMLInputElement>): void {
+    private handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
         const value = e.target.value;
         this.setState({ value });
 
@@ -75,7 +72,7 @@ export class Topup extends React.Component<TopupProps, TopupState> {
         }
     }
 
-    private handleBlur(e: React.ChangeEvent<HTMLInputElement>): void {
+    private handleBlur = (e: React.ChangeEvent<HTMLInputElement>): void => {
         // Convert input to Wei upon blur.
         const ethAmount = new BigNumber(e.target.value);
         // tslint:disable-next-line:no-non-null-assertion
@@ -86,7 +83,7 @@ export class Topup extends React.Component<TopupProps, TopupState> {
         this.setState({ weiAmount: weiAmount.toFixed(), value: valueBN.toFixed() });
     }
 
-    private async sendFunds(): Promise<void> {
+    private sendFunds = async (): Promise<void> => {
         const ethAddress = await this.props.web3.eth.getAccounts();
         if (!ethAddress[0]) {
             this.setState({ resultMessage: ERROR_UNLOCK_METAMASK, pending: false });

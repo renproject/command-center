@@ -30,7 +30,6 @@ class Alerts extends React.Component<AlertsProps, AlertsState> {
 
     public constructor(props: AlertsProps, context: object) {
         super(props, context);
-        this.handleClose = this.handleClose.bind(this);
     }
 
     public componentWillReceiveProps(nextProps: AlertsProps): void {
@@ -60,7 +59,7 @@ class Alerts extends React.Component<AlertsProps, AlertsState> {
         );
     }
 
-    private handleClose(): void {
+    private handleClose = (): void => {
         if (this.alertInterval) { clearInterval(this.alertInterval); }
         this.props.actions.clearAlert();
     }
