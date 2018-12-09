@@ -24,7 +24,6 @@ export class FeesBlock extends React.Component<FeesProps, FeesState> {
         this.state = {
             disabled: parseFloat(this.props.amount) <= 0
         };
-        this.handleWithdraw = this.handleWithdraw.bind(this);
     }
 
     public render(): JSX.Element {
@@ -38,7 +37,7 @@ export class FeesBlock extends React.Component<FeesProps, FeesState> {
         );
     }
 
-    private async handleWithdraw(): Promise<void> {
+    private handleWithdraw = async (): Promise<void> => {
         this.setState({ disabled: true });
         const contract = new this.props.web3.eth.Contract(contracts.DarknodeRewardVault.ABI, contracts.DarknodeRewardVault.address);
         // tslint:disable-next-line:no-non-null-assertion

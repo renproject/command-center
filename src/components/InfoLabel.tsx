@@ -23,7 +23,6 @@ export class InfoLabel extends React.Component<InfoLabelProps, InfoLabelState> {
             top: 0,
             left: 0,
         };
-        this.onMouseEnter = this.onMouseEnter.bind(this);
     }
 
     public render() {
@@ -37,7 +36,7 @@ export class InfoLabel extends React.Component<InfoLabelProps, InfoLabelState> {
         );
     }
 
-    private onMouseEnter(event: React.MouseEvent<HTMLElement>) {
+    private onMouseEnter = (event: React.MouseEvent<HTMLElement>) => {
         const { top, left, width, height } = event.currentTarget.getBoundingClientRect();
         this.setState({
             top: top - height / 2,

@@ -10,6 +10,9 @@ interface StoreDarknodeListPayload { darknodeList: List<string>; }
 export type StoreDarknodeListAction = (payload: StoreDarknodeListPayload) => void;
 export const storeDarknodeList = createStandardAction("STORE_DARKNODE_LIST")<StoreDarknodeListPayload>();
 
+export type ClearDarknodeListAction = () => void;
+export const clearDarknodeList = createStandardAction("CLEAR_DARKNODE_LIST")();
+
 interface StoreSelectedDarknodePayload { selectedDarknode: string; }
 export type StoreSelectedDarknodeAction = (payload: StoreSelectedDarknodePayload) => void;
 export const storeSelectedDarknode = createStandardAction("STORE_SELECTED_DARKNODE")<StoreSelectedDarknodePayload>();

@@ -28,8 +28,7 @@
 
     .content>div {
         flex-grow: 1;
-        background-color: #002247;
-        border: 1px solid $light-grey;
+        background-color: $blue-dark;
         padding: 20px;
     }
 
@@ -49,15 +48,6 @@
     .fees button {
         position: relative;
         left: -1px;
-    }
-
-    .header {
-        margin: 20px 0;
-    }
-
-    .header img {
-        width: 250px;
-        height: auto;
     }
 
     .status {
@@ -104,7 +94,7 @@
         display: inline-flex;
         align-items: center;
         vertical-align: top;
-        background-color: #002247;
+        background-color: $blue-dark;
         border: 1px solid $light-grey;
     }
 

@@ -1,9 +1,6 @@
 import * as React from "react";
 
-import Web3 from "web3";
-
-import Header from "./Header";
-import contracts, { INFURA_KEY } from "./lib/contracts";
+import contracts from "./lib/contracts";
 import Loading from "./Loading";
 
 import RenExSDK from "@renex/renex";
@@ -12,8 +9,6 @@ import { Token, TokenDetails, Tokens } from "./lib/tokens";
 import { StatusBlock } from "./StatusBlock";
 import { TokenBalance } from "./TokenBalance";
 import { Topup } from "./Topup";
-
-
 
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
@@ -73,7 +68,6 @@ class StatusPage extends React.Component<StatusPageProps, StatusPageState> {
             refreshing: false,
             correctNetwork: true
         };
-        this.refreshInfo = this.refreshInfo.bind(this);
     }
 
     public async componentDidMount(): Promise<void> {
@@ -173,28 +167,15 @@ class StatusPage extends React.Component<StatusPageProps, StatusPageState> {
         }
     }
 
-    public async componentDidUpdate(): Promise<void> {
-        // if (!this.balanceInterval && this.state.darknodeAddress) {
-        //     this.balanceInterval = setInterval(async () => {
-        //         const currentBalance = await this.web3.eth.getBalance(this.state.darknodeAddress);
-        //         if (currentBalance !== this.state.currentBalance) {
-        //             this.setState({ currentBalance });
-        //         }
-        //     }, 5000);
-        // }
-    }
-
     public render(): JSX.Element {
         const { sdk } = this.props;
 
         return (
             <div className="statuspage container">
-                <Header />
                 {
                     this.state.error ?
                         this.state.errorMessage
                         :
-
                         <div className="content">
                             {this.state.success && !!sdk ? <>
                                 <div>
@@ -221,7 +202,7 @@ class StatusPage extends React.Component<StatusPageProps, StatusPageState> {
         );
     }
 
-    private async refreshInfo(): Promise<void> {
+    private refreshInfo = async (): Promise<void> => {
         const { sdk } = this.props;
 
         this.setState({ refreshing: true });

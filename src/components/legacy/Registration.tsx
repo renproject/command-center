@@ -49,12 +49,6 @@ export class Registration extends React.Component<RegistrationProps, Registratio
             errorMessage: "",
             registerEnabled: false, // This is used as an intermediary state for differentiating between approval and registration.
         };
-
-        this.handleClick = this.handleClick.bind(this);
-        this.approveNode = this.approveNode.bind(this);
-        this.registerNode = this.registerNode.bind(this);
-        this.deregisterNode = this.deregisterNode.bind(this);
-        this.refundNode = this.refundNode.bind(this);
     }
 
     public componentDidMount(): void {
@@ -86,7 +80,7 @@ export class Registration extends React.Component<RegistrationProps, Registratio
         );
     }
 
-    private async updateStatus(props: RegistrationProps, statusChanged: boolean): Promise<void> {
+    private updateStatus = async (props: RegistrationProps, statusChanged: boolean): Promise<void> => {
         let { buttonText, disabled } = this.state;
         const { web3, minBond } = this.props;
         const ethAddress = await web3.eth.getAccounts();
@@ -123,7 +117,7 @@ export class Registration extends React.Component<RegistrationProps, Registratio
         this.setState({ buttonText, disabled });
     }
 
-    private async handleClick(): Promise<void> {
+    private handleClick = async (): Promise<void> => {
         const { buttonText, disabled } = this.state;
         this.setState({ buttonText: BUTTON_PENDING, disabled: true, errorMessage: "" });
 
@@ -148,7 +142,7 @@ export class Registration extends React.Component<RegistrationProps, Registratio
         }
     }
 
-    private async approveNode(): Promise<Error | null> {
+    private approveNode = async (): Promise<Error | null> => {
         const { web3, minBond, sdk } = this.props;
         const ethAddress = await web3.eth.getAccounts();
         if (!ethAddress[0]) {
@@ -170,7 +164,7 @@ export class Registration extends React.Component<RegistrationProps, Registratio
         return null;
     }
 
-    private async registerNode(): Promise<Error | null> {
+    private registerNode = async (): Promise<Error | null> => {
         const { web3, minBond, darknodeAddress, publicKey, sdk } = this.props;
         const ethAddress = await web3.eth.getAccounts();
         if (!ethAddress[0]) {
@@ -185,7 +179,7 @@ export class Registration extends React.Component<RegistrationProps, Registratio
         return null;
     }
 
-    private async deregisterNode(): Promise<Error | null> {
+    private deregisterNode = async (): Promise<Error | null> => {
         if (this.props.registrationStatus !== "registered") {
             return new Error("Only registered nodes can be deregistered.");
         }
@@ -206,7 +200,7 @@ export class Registration extends React.Component<RegistrationProps, Registratio
         return null;
     }
 
-    private async refundNode(): Promise<Error | null> {
+    private refundNode = async (): Promise<Error | null> => {
         if (this.props.registrationStatus !== "awaitingRefund") {
             return new Error("The bond for this node cannot be refunded at this stage.");
         }

@@ -21,7 +21,6 @@ export class CopyBlock extends React.Component<CopyBlockProps, CopyBlockState> {
         this.state = {
             copied: false
         };
-        this.handleCopy = this.handleCopy.bind(this);
     }
 
     public render(): JSX.Element {
@@ -44,10 +43,6 @@ export class CopyBlock extends React.Component<CopyBlockProps, CopyBlockState> {
 
     private handleSelect(e: React.MouseEvent<HTMLInputElement>): void {
         e.currentTarget.select();
-    }
-
-    private handleCopy(): void {
-        this.setState({ copied: true });
     }
 }
 

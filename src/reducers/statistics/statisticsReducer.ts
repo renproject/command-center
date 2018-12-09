@@ -18,15 +18,20 @@ export default function statisticsReducer(state: StatisticsData = new Statistics
             return state.set("orderCount", action.payload.orderCount);
 
         case getType(operatorActions.storeDarknodeList):
-            let darknodeDetails = /*state.darknodeDetails || */ OrderedMap<string, DarknodeDetails | null>();
+            let darknodeDetails = state.darknodeDetails || OrderedMap<string, DarknodeDetails | null>();
             for (const darknodeID of action.payload.darknodeList.toArray()) {
                 darknodeDetails = darknodeDetails.set(darknodeID, darknodeDetails.get(darknodeID) || null);
             }
-
             return state.set("darknodeDetails", darknodeDetails);
 
         case getType(operatorActions.storeSelectedDarknode):
             return state.set("selectedDarknode", action.payload.selectedDarknode);
+
+        case getType(operatorActions.clearDarknodeList):
+            return state
+                .set("darknodeDetails", OrderedMap<string, DarknodeDetails | null>())
+                .set("selectedDarknode", null)
+                ;
 
         default:
             return state;

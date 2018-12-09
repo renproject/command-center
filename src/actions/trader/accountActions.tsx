@@ -9,14 +9,13 @@ import { createStandardAction } from "typesafe-actions";
 import history from "@Library/history";
 
 import { clearPopup, setPopup } from "@Actions/popup/popupActions";
-import { storeDarknodeList, updateOperatorStatistics } from "@Actions/statistics/operatorActions";
+import { clearDarknodeList, updateOperatorStatistics } from "@Actions/statistics/operatorActions";
 import { storeWallet } from "@Actions/trader/walletActions";
 import LoggedOut from "@Components/popups/LoggedOut";
 import NoMetaMask from "@Components/popups/NoMetaMask";
 import { networkData } from "@Library/network";
 import { getInjectedWeb3Provider } from "@Library/wallets/web3browser";
 import { getAccounts, getNetwork } from "@Library/web3";
-import { List } from "immutable";
 
 interface StoreSDKPayload { sdk: RenExSDK | null; }
 export type StoreSDKAction = (payload: StoreSDKPayload) => void;
@@ -109,7 +108,7 @@ export const logout: LogoutAction = (options) => async (dispatch) => {
     dispatch(storeSDK({ sdk: null }));
 
     // Clear darknodes
-    dispatch(storeDarknodeList({ darknodeList: List() }));
+    dispatch(clearDarknodeList());
 
     if (options.reload) {
         // history.push("/#/loading");

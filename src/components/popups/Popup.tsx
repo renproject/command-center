@@ -18,7 +18,6 @@ interface PopupProps extends StoreProps {
 class Popup extends React.Component<PopupProps> {
     constructor(props: PopupProps) {
         super(props);
-        this.onClickHandler = this.onClickHandler.bind(this);
     }
 
     public render(): JSX.Element | null {
