@@ -22,7 +22,7 @@ export class TokenBalance extends React.Component<TokenBalanceProps, TokenBalanc
         // tslint:disable-next-line:no-non-null-assertion
         const token = TokenDetails.get(this.props.token)!;
         const amount = new BigNumber(this.props.amount).div(new BigNumber(Math.pow(10, token.digits)));
-        const image = require(`./tokens/${token.icon}`);
+        const image = require(`../../tokens/${token.icon}`);
         return (
             <>
                 <div className="balance">

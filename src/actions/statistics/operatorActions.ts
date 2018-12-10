@@ -9,8 +9,8 @@ import { getOperatorDarknodes } from "@Library/statistics/operator";
 import { DarknodeDetails } from "@Reducers/types";
 
 // Legacy
-import contracts from "../../components/legacy/lib/contracts";
-import { Token, TokenDetails, Tokens } from "../../components/legacy/lib/tokens";
+import contracts from "../../components/statuspage/lib/contracts";
+import { Token, TokenDetails, Tokens } from "../../components/statuspage/lib/tokens";
 
 interface StoreDarknodeListPayload { darknodeList: List<string>; }
 export type StoreDarknodeListAction = (payload: StoreDarknodeListPayload) => void;
@@ -33,11 +33,6 @@ export const updateOperatorStatistics: UpdateOperatorStatisticsAction = (sdk) =>
     dispatch(storeDarknodeList({ darknodeList }));
     dispatch(storeSelectedDarknode({ selectedDarknode: darknodeList.first() }));
 };
-
-interface BalanceItem {
-    token: Token;
-    balance: string;
-}
 
 const getBalances = async (sdk: RenExSDK, darknodeID: string): Promise<OrderedMap<Token, string>> => {
 
