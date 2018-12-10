@@ -1,5 +1,8 @@
 import * as React from "react";
 
+import RenExSDK from "@renex/renex";
+
+import { Map } from "immutable";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
@@ -11,12 +14,16 @@ import Sidebar from "@Components/Sidebar";
 import { setAlert, SetAlertAction } from "@Actions/alert/alertActions";
 import { login, LoginAction } from "@Actions/trader/accountActions";
 import { storeWallet, StoreWalletAction } from "@Actions/trader/walletActions";
-import { ApplicationData } from "@Reducers/types";
+import { ApplicationData, DarknodeDetails } from "@Reducers/types";
 
+interface StoreProps {
+    address: string | null;
+    darknodeDetails: Map<string, DarknodeDetails>;
+    sdk: RenExSDK | null;
+    selectedDarknode: string | null;
+}
 
-interface HomeProps {
-    address: string;
-    selectedDarknode: string;
+interface HomeProps extends StoreProps {
     actions: {
         login: LoginAction;
         storeWallet: StoreWalletAction;
@@ -45,8 +52,10 @@ class Home extends React.Component<HomeProps, HomeState> {
     }
 
     public render(): JSX.Element {
-        const { address, selectedDarknode } = this.props;
+        const { address, selectedDarknode, sdk, darknodeDetails } = this.props;
         const { checkingVerification } = this.state;
+        const details = selectedDarknode ? darknodeDetails.get(selectedDarknode, null) : null;
+
         return (
             <div className="login">
                 {checkingVerification &&
@@ -59,10 +68,10 @@ class Home extends React.Component<HomeProps, HomeState> {
                 }
                 <Header withMenu />
                 <div className="content" />
-                {address ?
+                {sdk && address ?
                     <>
                         <Sidebar />
-                        {selectedDarknode ? <StatusPage /> : <></>}
+                        {selectedDarknode ? <StatusPage sdk={sdk} darknodeID={selectedDarknode} darknodeDetails={details} /> : <></>}
                     </> :
                     <></>
                 }
@@ -71,9 +80,11 @@ class Home extends React.Component<HomeProps, HomeState> {
     }
 }
 
-function mapStateToProps(state: ApplicationData) {
+function mapStateToProps(state: ApplicationData): StoreProps {
     return {
         address: state.trader.address,
+        darknodeDetails: state.statistics.darknodeDetails,
+        sdk: state.trader.sdk,
         selectedDarknode: state.statistics.selectedDarknode,
     };
 }

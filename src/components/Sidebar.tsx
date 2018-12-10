@@ -6,12 +6,11 @@ import { bindActionCreators } from "redux";
 
 import { storeSelectedDarknode, StoreSelectedDarknodeAction } from "@Actions/statistics/operatorActions";
 import { ApplicationData, DarknodeDetails } from "@Reducers/types";
-import { OrderedMap } from "immutable";
-import { Link } from "react-router-dom";
+import { List } from "immutable";
 import Blocky from "./Blocky";
 
 interface StoreProps {
-    darknodeDetails: OrderedMap<string, DarknodeDetails | null> | null;
+    darknodeList: List<string>;
     selectedDarknode: string | null;
 }
 
@@ -31,26 +30,26 @@ class Sidebar extends React.Component<SidebarProps> {
     }
 
     public render(): JSX.Element {
-        const { darknodeDetails, selectedDarknode } = this.props;
+        const { darknodeList, selectedDarknode } = this.props;
 
         return (
             <div className="sidebar">
                 {
-                    darknodeDetails === null ?
+                    darknodeList === null ?
                         <span className="sidebar--text">...</span>
                         :
-                        darknodeDetails.size === 0 ?
+                        darknodeList.size === 0 ?
                             <span className="sidebar--text">...</span>
                             :
                             <ul>
                                 <li>O</li>
                                 <li>....</li>
-                                {darknodeDetails && darknodeDetails.map((darknodeDetail, darknodeID) => {
+                                {darknodeList && darknodeList.map((darknodeID) => {
                                     // tslint:disable-next-line:jsx-no-lambda FIXME
                                     return <li key={darknodeID} onClick={() => this.onClick(darknodeID)} className={darknodeID === selectedDarknode ? "sidebar--active" : ""}>
                                         <Blocky address={darknodeID} />
                                     </li>;
-                                }).valueSeq().toArray()}
+                                }).toArray()}
                             </ul>
                 }
             </div>
@@ -65,7 +64,7 @@ class Sidebar extends React.Component<SidebarProps> {
 
 function mapStateToProps(state: ApplicationData): StoreProps {
     return {
-        darknodeDetails: state.statistics.darknodeDetails,
+        darknodeList: state.statistics.darknodeList,
         selectedDarknode: state.statistics.selectedDarknode,
     };
 }
