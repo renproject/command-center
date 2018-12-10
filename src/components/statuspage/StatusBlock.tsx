@@ -2,8 +2,6 @@ import * as React from "react";
 
 import Web3 from "web3";
 
-// import { CopyToClipboard } from "react-copy-to-clipboard";
-
 import RenExSDK from "@renex/renex";
 import { Registration } from "./Registration";
 
@@ -15,7 +13,7 @@ interface CopyBlockState {
     copied: boolean;
 }
 
-export class CopyBlock extends React.Component<CopyBlockProps, CopyBlockState> {
+class CopyBlock extends React.Component<CopyBlockProps, CopyBlockState> {
     constructor(props: CopyBlockProps) {
         super(props);
         this.state = {

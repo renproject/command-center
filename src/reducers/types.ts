@@ -11,7 +11,7 @@ import { Wallet } from "@Library/wallets/wallet";
 import BigNumber from "bignumber.js";
 // import { number } from "prop-types";
 
-import { Token } from "../components/legacy/lib/tokens";
+import { Token } from "../components/statuspage/lib/tokens";
 
 export interface Serializable<T> {
     serialize(): string;

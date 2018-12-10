@@ -7,9 +7,9 @@ import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
 import Header from "@Components/Header";
-import StatusPage from "@Components/legacy/StatusPage";
 import Loading from "@Components/Loading";
 import Sidebar from "@Components/Sidebar";
+import StatusPage from "@Components/statuspage/StatusPage";
 
 import { setAlert, SetAlertAction } from "@Actions/alert/alertActions";
 import { login, LoginAction } from "@Actions/trader/accountActions";

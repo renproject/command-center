@@ -5,7 +5,7 @@ import RenExSDK from "@renex/renex";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
-import Loading from "./Loading";
+import Loading from "@Components/Loading";
 
 import { updateDarknodeStatistics, UpdateDarknodeStatisticsAction, } from "@Actions/statistics/operatorActions";
 import { ApplicationData, DarknodeDetails } from "@Reducers/types";
@@ -36,11 +36,6 @@ interface StatusPageState {
     errorMessage: JSX.Element | null;
     refreshing: boolean;
     correctNetwork: boolean;
-}
-
-interface BalanceItem {
-    token: Token;
-    balance: string;
 }
 
 class StatusPage extends React.Component<StatusPageProps, StatusPageState> {
@@ -100,7 +95,7 @@ class StatusPage extends React.Component<StatusPageProps, StatusPageState> {
                                         }).valueSeq().toArray()
                                     }
                                 </div>
-                            </> : <Loading fixed />}
+                            </> : <Loading alt />}
                         </div>
                 }
             </div>
