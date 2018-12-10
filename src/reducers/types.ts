@@ -3,14 +3,15 @@
 import * as Sentry from "@sentry/browser";
 
 import RenExSDK, { OrderSettlement } from "@renex/renex";
-import Web3 from "web3";
 
-import { Map, OrderedMap } from "immutable";
+import { List, Map, OrderedMap } from "immutable";
 
 import { Record } from "@Library/general/record";
 import { Wallet } from "@Library/wallets/wallet";
 import BigNumber from "bignumber.js";
 // import { number } from "prop-types";
+
+import { Token } from "../components/legacy/lib/tokens";
 
 export interface Serializable<T> {
     serialize(): string;
@@ -68,30 +69,42 @@ export class Alert extends Record({
 }) { }
 
 export class AlertData extends Record({
+    alert: { message: "" } as Alert,
     pendingAlerts: Map<string, () => Promise<void>>(),
-    alert: { message: "" } as Alert
 }) { }
 
 export class PopupData extends Record({
-    popup: null as JSX.Element | null,
     dismissible: true,
     onCancel: (() => null) as () => void,
+    popup: null as JSX.Element | null,
 }) { }
 
 export class StatisticsData extends Record({
     darknodeCount: null as BigNumber | null,
     orderCount: null as BigNumber | null,
-    darknodeDetails: null as OrderedMap<string, DarknodeDetails | null> | null,
 
+    darknodeDetails: Map<string, DarknodeDetails>(),
+    darknodeList: List<string>(),
+
+    // Network details
+    // minimumBond: 0,
 
     // Interaction data
     selectedDarknode: null as string | null,
 }) { }
 
+
 export class DarknodeDetails extends Record({
-    operationalBalance: new BigNumber(0),
+    ID: "" as string,
+    multiAddress: "" as string,
+    publicKey: "" as string,
+    ethBalance: new BigNumber(0),
+    feesEarned: OrderedMap<Token, string>(),
+
     averageGasUsage: 0,
-    rewardsEarned: new BigNumber(0),
-    expectedExhaustion: null,
     lastTopUp: null,
+    expectedExhaustion: null,
+
+    peers: 0,
+    registrationStatus: "",
 }) { }
