@@ -9,7 +9,6 @@ import { List, Map, OrderedMap } from "immutable";
 import { Record } from "@Library/general/record";
 import { Wallet } from "@Library/wallets/wallet";
 import BigNumber from "bignumber.js";
-// import { number } from "prop-types";
 
 import { Token } from "../components/statuspage/lib/tokens";
 
