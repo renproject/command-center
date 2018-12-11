@@ -1,17 +1,15 @@
 import { combineReducers } from "redux";
 
-import alert from "@Reducers/alert/alertReducer";
-import popup from "@Reducers/popup/popupReducer";
-import statistics from "@Reducers/statistics/statisticsReducer";
-import trader from "@Reducers/trader/traderReducer";
+import { alertReducer } from "@Reducers/alert/alertReducer";
+import { popupReducer } from "@Reducers/popup/popupReducer";
+import { statisticsReducer } from "@Reducers/statistics/statisticsReducer";
+import { traderReducer } from "@Reducers/trader/traderReducer";
 
 import { ApplicationData } from "@Reducers/types";
 
-const rootReducer = combineReducers<ApplicationData>({
-    alert,
-    popup,
-    trader,
-    statistics,
+export const rootReducer = combineReducers<ApplicationData>({
+    alert: alertReducer,
+    popup: popupReducer,
+    trader: traderReducer,
+    statistics: statisticsReducer,
 });
-
-export default rootReducer;

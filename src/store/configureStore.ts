@@ -3,7 +3,7 @@ import thunk from "redux-thunk";
 import { Action, applyMiddleware, createStore, Middleware, Reducer } from "redux";
 import { PersistConfig, persistReducer, persistStore } from "redux-persist";
 
-import rootReducer from "@Reducers/rootReducer";
+import { rootReducer } from "@Reducers/rootReducer";
 import { persistConfig } from "@Store/persistConfig";
 
 const middlewares: Middleware[] = [
@@ -25,7 +25,7 @@ export function typedPersistReducer<S, A extends Action>(config: PersistConfig, 
 
 const persistedReducer = typedPersistReducer(persistConfig, rootReducer);
 
-export default () => {
+export const configureStore = () => {
     const store = createStore(persistedReducer,
         applyMiddleware(...middlewares),
     );

@@ -30,7 +30,7 @@ interface DarknodeStatisticsState {
  * DarknodeStatistics displays stats about an operator's darknodes collectively,
  * as well as a breakdown of each darknode
  */
-class DarknodeStatistics extends React.Component<DarknodeStatisticsProps, DarknodeStatisticsState> {
+class DarknodeStatisticsClass extends React.Component<DarknodeStatisticsProps, DarknodeStatisticsState> {
     public constructor(props: DarknodeStatisticsProps, context: object) {
         super(props, context);
         this.state = {
@@ -109,4 +109,4 @@ function mapDispatchToProps(dispatch: Dispatch): { actions: DarknodeStatisticsPr
     };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(DarknodeStatistics);
+export const DarknodeStatistics = connect(mapStateToProps, mapDispatchToProps)(DarknodeStatisticsClass);

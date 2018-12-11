@@ -6,13 +6,13 @@ import Web3 from "web3";
 import { Dispatch } from "redux";
 import { createStandardAction } from "typesafe-actions";
 
-import history from "@Library/history";
+import { history } from "@Library/history";
 
 import { clearPopup, setPopup } from "@Actions/popup/popupActions";
 import { clearDarknodeList, updateOperatorStatistics } from "@Actions/statistics/operatorActions";
 import { storeWallet } from "@Actions/trader/walletActions";
-import LoggedOut from "@Components/popups/LoggedOut";
-import NoMetaMask from "@Components/popups/NoMetaMask";
+import { LoggedOut } from "@Components/popups/LoggedOut";
+import { NoMetaMask } from "@Components/popups/NoMetaMask";
 import { networkData } from "@Library/network";
 import { getInjectedWeb3Provider } from "@Library/wallets/web3browser";
 import { getAccounts, getNetwork } from "@Library/web3";

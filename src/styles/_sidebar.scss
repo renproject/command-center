@@ -1,7 +1,7 @@
 .sidebar {
     position: fixed;
     top: 0;
-    border-right: 2px solid #58585B;
+    border-right: 2px solid transparentize(#58585B, 1 - 0.2);
     padding: 30px 0;
     height: 100vh;
     overflow: scroll;

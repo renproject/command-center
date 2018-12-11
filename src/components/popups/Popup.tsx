@@ -15,7 +15,7 @@ interface PopupProps extends StoreProps {
  * Popup is a visual component for displaying an arbitrary component in the
  * foreground with the rest of the page in the background
  */
-class Popup extends React.Component<PopupProps> {
+class PopupClass extends React.Component<PopupProps> {
     constructor(props: PopupProps) {
         super(props);
     }
@@ -48,4 +48,4 @@ function mapStateToProps(state: ApplicationData): StoreProps {
     };
 }
 
-export default connect(mapStateToProps)(Popup);
+export const Popup = connect(mapStateToProps)(PopupClass);

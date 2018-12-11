@@ -1,5 +1,72 @@
 .statuspage {
 
+    .statuspage--banner {
+        display: flex;
+        color: white;
+    }
+
+    .statuspage--banner .blocky {
+        $border: 10px;
+        $width: 80px;
+        border-radius: 50%;
+        width: $width + 2*$border;
+        border: $border solid $blue-dark;
+    }
+
+    .statuspage--banner--details {
+        display: flex;
+        flex-direction: column;
+        height: 85px;
+        justify-content: space-between;
+        margin-left: 40px;
+
+        >div {
+            display: flex;
+            align-items: center;
+        }
+    }
+
+    .statuspage--banner--top {
+
+        :not(:first-child) {
+            margin-left: 20px;
+        }
+
+        h3 {
+            font-size: 34px;
+            margin: 0;
+            font-weight: 500;
+        }
+
+        button {
+            border: 1px solid transparentize(white, 1 - 0.4);
+            background: none;
+            color: white;
+            height: 25px;
+            border-radius: 2px;
+            font-size: 12px;
+        }
+    }
+
+    .statuspage--bottom {
+        display: flex;
+        color: white;
+        margin-top: 24px;
+
+        >div+div {
+            margin-left: 22px;
+
+            @media(max-width: $max-md) {
+                margin-top: 22px;
+                margin-left: 0;
+            }
+        }
+    }
+
+    @media(max-width: $max-md) {
+        flex-direction: column;
+    }
+
     .balance {
         display: inline-flex;
         align-items: center;
@@ -17,30 +84,6 @@
         margin-right: 10px;
     }
 
-    .content {
-        display: flex;
-        color: white;
-
-        @media(max-width: $max-md) {
-            flex-direction: column;
-        }
-    }
-
-    .content>div {
-        flex-grow: 1;
-        background-color: $blue-dark;
-        padding: 20px;
-    }
-
-    .content>div+div {
-        margin-left: 10px;
-
-        @media(max-width: $max-md) {
-            margin-top: 10px;
-            margin-left: 0;
-        }
-    }
-
     .fees+.fees {
         margin-top: 10px;
     }
@@ -50,35 +93,43 @@
         left: -1px;
     }
 
-    .status {
-        display: block;
-    }
-
-    .status+.status {
-        margin-top: 10px;
-    }
-
     .status--title {
+        background-color: transparentize($blue-bright, 1 - 0.28);
+        text-transform: uppercase;
+        line-height: 30px;
+        border-radius: 15px;
+        width: 130px;
+        font-weight: 500;
+        text-align: center;
+        font-size: 12px;
+    }
+
+    .status--button {
+        background: none;
+        color: transparentize(white, 1 - 0.4);
+        border: none;
+        height: 30px;
+        text-transform: uppercase;
+        font-size: 12px;
+        border-radius: 15px;
+    }
+
+    .status--button:not(:disabled):active {
+        font-weight: 600;
+    }
+
+    .status--error {
+        color: rgba(255, 130, 130, 1.0);
+        line-height: 30px;
+        border-radius: 15px;
+        font-weight: 500;
+        text-align: center;
+        font-size: 12px;
+    }
+
+    .darknode-info--title {
         font-weight: bold;
         margin-bottom: 5px;
-    }
-
-    .status--item {
-        display: flex;
-    }
-
-    .status--item input {
-        flex-grow: 1;
-    }
-
-    .status>button {
-        display: block;
-        margin-top: 10px;
-    }
-
-    .status--item button {
-        position: relative;
-        left: -1px;
     }
 
     .topup button {
@@ -112,5 +163,27 @@
         display: inline-block;
         width: 35px;
         text-align: center;
+    }
+
+    .statuspage--graphs {
+        display: flex;
+        flex-flow: column;
+        justify-content: space-between;
+
+        background: none !important;
+        padding: 0 !important;
+
+        >div {
+            flex-grow: 1;
+            background-color: $blue-dark;
+            border-radius: 2px;
+            flex-basis: 0;
+
+            padding: 20px;
+        }
+
+        :not(:first-child) {
+            margin-top: 10px;
+        }
     }
 }

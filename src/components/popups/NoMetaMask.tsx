@@ -21,7 +21,7 @@ interface NoMetaMaskState {
  * NoMetaMask is a popup component for prompting a user to select an
  * Ethereum account
  */
-class NoMetaMask extends React.Component<NoMetaMaskProps, NoMetaMaskState> {
+class NoMetaMaskClass extends React.Component<NoMetaMaskProps, NoMetaMaskState> {
     constructor(props: NoMetaMaskProps) {
         super(props);
         this.state = {
@@ -51,4 +51,4 @@ function mapStateToProps(state: ApplicationData): StoreProps {
     };
 }
 
-export default connect(mapStateToProps)(NoMetaMask);
+export const NoMetaMask = connect(mapStateToProps)(NoMetaMaskClass);

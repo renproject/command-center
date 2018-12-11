@@ -11,8 +11,8 @@ import { NetworkData } from "@renex/renex";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 
-import App from "@Components/App";
-import configureStore from "@Store/configureStore";
+import { App } from "@Components/App";
+import { configureStore } from "@Store/configureStore";
 
 import "@Root/index.css";
 

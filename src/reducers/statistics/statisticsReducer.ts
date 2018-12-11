@@ -9,7 +9,7 @@ import { OrderedMap } from "immutable";
 type NetworkAction = ActionType<typeof networkActions>;
 type OperatorActions = ActionType<typeof operatorActions>;
 
-export default function statisticsReducer(state: StatisticsData = new StatisticsData(), action: NetworkAction | OperatorActions) {
+export function statisticsReducer(state: StatisticsData = new StatisticsData(), action: NetworkAction | OperatorActions) {
     switch (action.type) {
         case getType(networkActions.storeDarknodeCount):
             return state.set("darknodeCount", action.payload.darknodeCount);

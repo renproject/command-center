@@ -19,7 +19,7 @@ interface ApprovalPopupState {
  * ApprovalPopup is a popup component that prompts the user to approve a
  * series of Ethereum transactions
  */
-class ApprovalPopup extends React.Component<ApprovalPopupProps, ApprovalPopupState> {
+export class ApprovalPopup extends React.Component<ApprovalPopupProps, ApprovalPopupState> {
 
     constructor(props: ApprovalPopupProps) {
         super(props);
@@ -73,8 +73,6 @@ class ApprovalPopup extends React.Component<ApprovalPopupProps, ApprovalPopupSta
         </div>;
     }
 }
-
-export default ApprovalPopup;
 
 export const newApprovalPopup = (call: (simpleConsole?: SimpleConsole) => Promise<void>, onCancelAction: () => void): SetPopupPayload => ({
     popup: <ApprovalPopup closePopup={onCancelAction} call={call} />,

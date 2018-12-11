@@ -7,7 +7,7 @@ import { bindActionCreators } from "redux";
 import { storeSelectedDarknode, StoreSelectedDarknodeAction } from "@Actions/statistics/operatorActions";
 import { ApplicationData, DarknodeDetails } from "@Reducers/types";
 import { List } from "immutable";
-import Blocky from "./Blocky";
+import { Blocky } from "./Blocky";
 
 interface StoreProps {
     darknodeList: List<string>;
@@ -24,7 +24,7 @@ interface SidebarProps extends StoreProps {
  * Sidebar displays stats about an operator's darknodes collectively,
  * as well as a breakdown of each darknode
  */
-class Sidebar extends React.Component<SidebarProps> {
+class SidebarClass extends React.Component<SidebarProps> {
     public constructor(props: SidebarProps, context: object) {
         super(props, context);
     }
@@ -77,4 +77,4 @@ function mapDispatchToProps(dispatch: Dispatch): { actions: SidebarProps["action
     };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Sidebar);
+export const Sidebar = connect(mapStateToProps, mapDispatchToProps)(SidebarClass);

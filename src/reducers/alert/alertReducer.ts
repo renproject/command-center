@@ -8,7 +8,7 @@ import { Alert, AlertData } from "@Reducers/types";
 export type AlertAction = ActionType<typeof alertActions>;
 export type PendingAlertAction = ActionType<typeof pendingAlertActions>;
 
-export default function alertReducer(state: AlertData = new AlertData(), action: AlertAction | PendingAlertAction) {
+export function alertReducer(state: AlertData = new AlertData(), action: AlertAction | PendingAlertAction) {
     switch (action.type) {
         case getType(alertActions.setAlert):
             return state.set("alert", action.payload.alert);

@@ -7,7 +7,7 @@ import { bindActionCreators } from "redux";
 import { ApplicationData, DarknodeDetails } from "@Reducers/types";
 import { OrderedMap } from "immutable";
 import { Link } from "react-router-dom";
-import DarknodeStatistics from "./DarknodeStatistics";
+import { DarknodeStatistics } from "./DarknodeStatistics";
 
 interface StoreProps {
     darknodeDetails: OrderedMap<string, DarknodeDetails | null> | null;
@@ -22,7 +22,7 @@ interface OperatorStatisticsProps extends StoreProps {
  * OperatorStatistics displays stats about an operator's darknodes collectively,
  * as well as a breakdown of each darknode
  */
-class OperatorStatistics extends React.Component<OperatorStatisticsProps> {
+class OperatorStatisticsClass extends React.Component<OperatorStatisticsProps> {
     public constructor(props: OperatorStatisticsProps, context: object) {
         super(props, context);
     }
@@ -97,4 +97,4 @@ function mapDispatchToProps(dispatch: Dispatch): { actions: OperatorStatisticsPr
     };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(OperatorStatistics);
+export const OperatorStatistics = connect(mapStateToProps, mapDispatchToProps)(OperatorStatisticsClass);

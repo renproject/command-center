@@ -25,7 +25,7 @@ interface AlertsState {
  * Alerts is a visual component for displaying general alert messages.
  * Alerts can represent an Error, a Warning or a Success event.
  */
-class Alerts extends React.Component<AlertsProps, AlertsState> {
+class AlertsClass extends React.Component<AlertsProps, AlertsState> {
     private alertInterval: NodeJS.Timer | undefined;
 
     public constructor(props: AlertsProps, context: object) {
@@ -79,4 +79,4 @@ function mapDispatchToProps(dispatch: Dispatch): { actions: AlertsProps["actions
     };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Alerts);
+export const Alerts = connect(mapStateToProps, mapDispatchToProps)(AlertsClass);

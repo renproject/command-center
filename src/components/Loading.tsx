@@ -10,7 +10,7 @@ interface LoadingState {
 /**
  * Loading is a visual component that renders a spinning animation
  */
-class Loading extends React.Component<LoadingProps, LoadingState> {
+export class Loading extends React.Component<LoadingProps, LoadingState> {
     public render(): JSX.Element {
         const { alt } = this.props;
         return (
@@ -18,5 +18,3 @@ class Loading extends React.Component<LoadingProps, LoadingState> {
         );
     }
 }
-
-export default Loading;

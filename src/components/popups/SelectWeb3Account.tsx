@@ -2,8 +2,8 @@ import * as React from "react";
 
 import { connect } from "react-redux";
 
-import Blocky from "@Components/Blocky";
-import Loading from "@Components/Loading";
+import { Blocky } from "@Components/Blocky";
+import { Loading } from "@Components/Loading";
 
 import { ApplicationData } from "@Reducers/types";
 
@@ -29,7 +29,7 @@ export const KyberVerification = 1;
  * SelectWeb3Account is a popup component for prompting a user to select an
  * Ethereum account
  */
-class SelectWeb3Account extends React.Component<SelectWeb3AccountProps, SelectWeb3AccountState> {
+class SelectWeb3AccountClass extends React.Component<SelectWeb3AccountProps, SelectWeb3AccountState> {
     constructor(props: SelectWeb3AccountProps) {
         super(props);
         this.state = {
@@ -112,4 +112,4 @@ function mapStateToProps(state: ApplicationData): StoreProps {
     };
 }
 
-export default connect(mapStateToProps)(SelectWeb3Account);
+export const SelectWeb3Account = connect(mapStateToProps)(SelectWeb3AccountClass);
