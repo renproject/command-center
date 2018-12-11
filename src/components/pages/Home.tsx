@@ -6,10 +6,10 @@ import { Map } from "immutable";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
-import Header from "@Components/Header";
-import Loading from "@Components/Loading";
-import Sidebar from "@Components/Sidebar";
-import StatusPage from "@Components/statuspage/StatusPage";
+import { Header } from "@Components/Header";
+import { Loading } from "@Components/Loading";
+import { Sidebar } from "@Components/Sidebar";
+import { StatusPage } from "@Components/statuspage/StatusPage";
 
 import { setAlert, SetAlertAction } from "@Actions/alert/alertActions";
 import { login, LoginAction } from "@Actions/trader/accountActions";
@@ -39,7 +39,7 @@ interface HomeState {
  * Home is a page whose principal components are wallet selection to allow users
  * to log-in, and the hidden orderbook
  */
-class Home extends React.Component<HomeProps, HomeState> {
+class HomeClass extends React.Component<HomeProps, HomeState> {
     public constructor(props: HomeProps, context: object) {
         super(props, context);
         this.state = {
@@ -66,7 +66,7 @@ class Home extends React.Component<HomeProps, HomeState> {
                         <div className="overlay" />
                     </>
                 }
-                <Header withMenu />
+                <Header />
                 <div className="content" />
                 {sdk && address ?
                     <>
@@ -99,4 +99,4 @@ function mapDispatchToProps(dispatch: Dispatch): { actions: HomeProps["actions"]
     };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Home);
+export const Home = connect(mapStateToProps, mapDispatchToProps)(HomeClass);

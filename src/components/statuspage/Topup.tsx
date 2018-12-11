@@ -8,7 +8,6 @@ import { ERROR_TRANSACTION_FAILED, ERROR_UNLOCK_METAMASK } from "./Registration"
 
 interface TopupProps {
     web3: Web3;
-    network: string;
     darknodeAddress: string;
 }
 

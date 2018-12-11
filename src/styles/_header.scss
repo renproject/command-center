@@ -1,9 +1,6 @@
 .header {
-    padding: 20px 0;
-
-    @media(min-width: $min-sm) {
-        padding: 0;
-    }
+    padding: 10px 0;
+    margin-bottom: 20px;
 }
 
 .header .container {
@@ -25,19 +22,25 @@
 .header--logo {
     background-image: url('styles/images/logo.svg');
     background-repeat: no-repeat;
-    height: 42px;
-    width: 220px;
+    height: 48px;
+    width: 48px;
+}
+
+.header--counter-weight {
+    @media(min-width: $min-sm) {
+        width: 500px;
+    }
 }
 
 .header--menu {
     display: flex;
-    justify-content: center;
     list-style: none;
     margin: 20px 0 0;
     padding: 0;
 
     @media(min-width: $min-sm) {
-        justify-content: normal;
+        justify-content: flex-end;
+        width: 500px;
         margin: 0;
     }
 }

@@ -6,17 +6,14 @@ import { Link, match, withRouter } from "react-router-dom";
 import { bindActionCreators, Dispatch } from "redux";
 
 import { login, LoginAction } from "@Actions/trader/accountActions";
+import { Blocky } from "@Components/Blocky";
 import { ApplicationData } from "@Reducers/types";
-
-import Blocky from "@Components/Blocky";
 
 interface StoreProps {
     address: string | null;
 }
 
 interface HeaderProps extends StoreProps {
-    withMenu: boolean;
-
     // withRouter props
     history: History;
     location: Location;
@@ -37,7 +34,7 @@ interface HeaderState {
 /**
  * Header is a visual component providing page branding and navigation.
  */
-class Header extends React.Component<HeaderProps, HeaderState> {
+class HeaderClass extends React.Component<HeaderProps, HeaderState> {
     public constructor(props: HeaderProps, context: object) {
         super(props, context);
         this.state = {
@@ -48,7 +45,7 @@ class Header extends React.Component<HeaderProps, HeaderState> {
     }
 
     public render(): JSX.Element {
-        const { address, withMenu } = this.props;
+        const { address } = this.props;
         const { accountDropdownVisible, languageDropdownVisible, copied } = this.state;
         const route = this.props.location.pathname;
 
@@ -57,62 +54,60 @@ class Header extends React.Component<HeaderProps, HeaderState> {
         return (
             <div className="header">
                 <div className="container">
+                    <div className="header--counter-weight" />
                     <Link to={loggedIn ? "/home" : "/"}>
                         <div className="header--logo" />
                     </Link>
-                    {withMenu ?
-                        <ul className="header--menu">
-                            <li
-                                className="header--group"
-                                onMouseEnter={this.showLanguageDropDown}
-                                onMouseLeave={this.hideLanguageDropdown}
-                            >
-                                English ﹀
+                    <ul className="header--menu">
+                        <li
+                            className="header--group"
+                            onMouseEnter={this.showLanguageDropDown}
+                            onMouseLeave={this.hideLanguageDropdown}
+                        >
+                            English ﹀
                                 {languageDropdownVisible ?
-                                    <ul className="header--dropdown">
-                                        <li role="button">English</li>
-                                        <li role="button">Chinese</li>
-                                    </ul> : null
-                                }
-                            </li>
+                                <ul className="header--dropdown">
+                                    <li role="button">English</li>
+                                    <li role="button">Chinese</li>
+                                </ul> : null
+                            }
+                        </li>
 
-                            <li><Link to="/home"><span>USD ﹀</span></Link></li>
+                        <li><Link to="/home"><span>USD ﹀</span></Link></li>
 
 
-                            <li
-                                className="header--group"
-                                onMouseEnter={this.showAccountDropDown}
-                                onMouseLeave={this.hideAccountDropdown}
-                            >
-                                <div className="header--account" onClick={this.handleLogin}>
-                                    <div className="header--blocky">
-                                        {address && <Blocky address={address} />}
-                                    </div>
-                                    <div className="header--account--right">
-                                        <div className={`header--account--type ${address ? "header--account--connected" : ""}`}>MetaMask</div>
-                                        {address ?
-                                            <div className="header--account--address">{address.substring(0, 8)}...{address.slice(-5)}</div> :
-                                            <div className="header--account--address">Not connected</div>
-                                        }
-                                    </div>
+                        <li
+                            className="header--group"
+                            onMouseEnter={this.showAccountDropDown}
+                            onMouseLeave={this.hideAccountDropdown}
+                        >
+                            <div className="header--account" onClick={this.handleLogin}>
+                                <div className="header--blocky">
+                                    {address && <Blocky address={address} />}
                                 </div>
-                                {address && accountDropdownVisible ?
-                                    <ul className="header--dropdown">
-                                        <li role="button" onClick={this.copyToClipboard}>
-                                            <span data-addr={address}>
-                                                {copied ?
-                                                    <span>Copied</span>
-                                                    :
-                                                    <span>Copy to clipboard</span>
-                                                }
-                                            </span>
-                                        </li>
-                                    </ul> : null
-                                }
-                            </li>
-
-                        </ul> : null
-                    }
+                                <div className="header--account--right">
+                                    <div className={`header--account--type ${address ? "header--account--connected" : ""}`}>MetaMask</div>
+                                    {address ?
+                                        <div className="header--account--address">{address.substring(0, 8)}...{address.slice(-5)}</div> :
+                                        <div className="header--account--address">Not connected</div>
+                                    }
+                                </div>
+                            </div>
+                            {address && accountDropdownVisible ?
+                                <ul className="header--dropdown">
+                                    <li role="button" onClick={this.copyToClipboard}>
+                                        <span data-addr={address}>
+                                            {copied ?
+                                                <span>Copied</span>
+                                                :
+                                                <span>Copy to clipboard</span>
+                                            }
+                                        </span>
+                                    </li>
+                                </ul> : null
+                            }
+                        </li>
+                    </ul>
                 </div>
             </div>
         );
@@ -170,4 +165,4 @@ function mapDispatchToProps(dispatch: Dispatch): { actions: HeaderProps["actions
     };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Header));
+export const Header = connect(mapStateToProps, mapDispatchToProps)(withRouter(HeaderClass));

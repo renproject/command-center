@@ -6,7 +6,7 @@ import { PopupData } from "@Reducers/types";
 
 type PopupAction = ActionType<typeof popupActions>;
 
-export default function popupReducer(state: PopupData = new PopupData(), action: PopupAction) {
+export function popupReducer(state: PopupData = new PopupData(), action: PopupAction) {
     switch (action.type) {
         case getType(popupActions.setPopup):
             if (document.documentElement) {

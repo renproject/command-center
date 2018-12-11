@@ -3,7 +3,6 @@ import * as React from "react";
 import Web3 from "web3";
 
 import RenExSDK from "@renex/renex";
-import { Registration } from "./Registration";
 
 interface CopyBlockProps {
     value: string;
@@ -23,11 +22,11 @@ class CopyBlock extends React.Component<CopyBlockProps, CopyBlockState> {
 
     public render(): JSX.Element {
         return (
-            <label className="status">
-                <div className="status--title">
+            <label className="darknode-info">
+                <div className="darknode-info--title">
                     {this.props.children}
                 </div>
-                <span className="status--item">
+                <span className="darknode-info--item">
                     <input type="text" value={this.props.value} onClick={this.handleSelect} readOnly />
                     {/* <CopyToClipboard text={this.props.value} onCopy={this.handleCopy}>
                         <button>
@@ -44,7 +43,7 @@ class CopyBlock extends React.Component<CopyBlockProps, CopyBlockState> {
     }
 }
 
-interface StatusBlockProps {
+interface NetworkBlockProps {
     sdk: RenExSDK;
     web3: Web3;
     registrationStatus: string;
@@ -56,20 +55,21 @@ interface StatusBlockProps {
     minBond: number;
 }
 
-export const StatusBlock = (props: StatusBlockProps) => {
+export const NetworkBlock = (props: NetworkBlockProps) => {
     return (
-        <>
-            <h1>Darknode Information</h1>
-            <Registration sdk={props.sdk} web3={props.web3} minBond={props.minBond} registrationStatus={props.registrationStatus} network={props.network} darknodeAddress={props.darknodeAddress} publicKey={props.publicKey} />
-            <div className="status">
-                <span className="status--title">Network:</span> <span>{props.network}</span>
+        <div className="block network-block">
+            <div className="block--title">
+                <h3>Darknode Information</h3>
             </div>
-            <div className="status">
-                <span className="status--title">Connected Peers:</span> <span>{props.peers}</span>
+            <div className="darknode-info">
+                <span className="darknode-info--title">Network:</span> <span>{props.network}</span>
+            </div>
+            <div className="darknode-info">
+                <span className="darknode-info--title">Connected Peers:</span> <span>{props.peers}</span>
             </div>
             <CopyBlock value={props.multiAddress}>Multi-address</CopyBlock>
             <CopyBlock value={props.darknodeAddress}>Ethereum Address</CopyBlock>
             <CopyBlock value={props.publicKey}>Public Key</CopyBlock>
-        </>
+        </div>
     );
 };

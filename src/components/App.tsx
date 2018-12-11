@@ -8,11 +8,10 @@ import { bindActionCreators } from "redux";
 
 import RenExSDK from "@renex/renex";
 
-import Alerts from "@Components/Alerts";
-import Exchange from "@Components/pages/Home";
-import Home from "@Components/pages/Home";
-import LoggingOut from "@Components/pages/LoggingOut";
-import Popup from "@Components/popups/Popup";
+import { Alerts } from "@Components/Alerts";
+import { Home } from "@Components/pages/Home";
+import { LoggingOut } from "@Components/pages/LoggingOut";
+import { Popup } from "@Components/popups/Popup";
 
 import { clearPopup, ClearPopupAction, setPopup, SetPopupAction } from "@Actions/popup/popupActions";
 import { updateNetworkStatistics, UpdateNetworkStatisticsAction } from "@Actions/statistics/networkActions";
@@ -66,7 +65,7 @@ const ScrollToTop = withRouter(
  * App is the main visual component responsible for displaying different routes
  * and running background app loops
  */
-class App extends React.Component<AppProps, AppState> {
+class AppClass extends React.Component<AppProps, AppState> {
     private callLookForLogoutTimeout: NodeJS.Timer | undefined;
     private callUpdateOperatorStatisticsTimeout: NodeJS.Timer | undefined;
 
@@ -154,7 +153,6 @@ class App extends React.Component<AppProps, AppState> {
                 <div className="app">
                     <ScrollToTop />
                     <Route path="/" exact component={Home} />
-                    <Route path="/home" component={this.withAccount(Exchange)} />
                     <Route path="/loading" component={LoggingOut} />
                     <Alerts />
                     <Popup />
@@ -188,4 +186,4 @@ function mapDispatchToProps(dispatch: Dispatch): { actions: AppProps["actions"] 
     };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export const App = connect(mapStateToProps, mapDispatchToProps)(AppClass);

@@ -11,7 +11,7 @@ interface HeadingState {
 /**
  * Heading is a visual component for displaying a title above another component
  */
-class Heading extends React.Component<HeadingProps, HeadingState> {
+export class Heading extends React.Component<HeadingProps, HeadingState> {
     public render(): JSX.Element {
         const { title, description } = this.props;
         return (
@@ -24,5 +24,3 @@ class Heading extends React.Component<HeadingProps, HeadingState> {
         );
     }
 }
-
-export default Heading;

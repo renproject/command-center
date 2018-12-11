@@ -21,7 +21,7 @@ interface LoggedOutState {
  * LoggedOut is a popup component for prompting a user to select an
  * Ethereum account
  */
-class LoggedOut extends React.Component<LoggedOutProps, LoggedOutState> {
+class LoggedOutClass extends React.Component<LoggedOutProps, LoggedOutState> {
     constructor(props: LoggedOutProps) {
         super(props);
         this.state = {
@@ -51,4 +51,4 @@ function mapStateToProps(state: ApplicationData): StoreProps {
     };
 }
 
-export default connect(mapStateToProps)(LoggedOut);
+export const LoggedOut = connect(mapStateToProps)(LoggedOutClass);

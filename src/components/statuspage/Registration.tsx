@@ -65,16 +65,12 @@ export class Registration extends React.Component<RegistrationProps, Registratio
         const buttonClass = buttonText === BUTTON_DEREGISTER ? "red" : "green";
         return (
             <div className="status">
-                <span className="status--title">Status:</span> <span>{RegistrationStatus[this.props.registrationStatus]}</span>
-                {buttonText ?
-                    <button className={`${buttonClass} hover`} onClick={this.handleClick} disabled={disabled}>
-                        <span>{buttonText}</span>
-                    </button>
-                    :
-                    <button disabled>Loading...</button>
-                }
+                <span className="status--title">{RegistrationStatus[this.props.registrationStatus]}</span>
+                <button className={`status--button ${buttonText ? `${buttonClass} hover` : ""}`} onClick={this.handleClick} disabled={disabled || !buttonText}>
+                    <span>{buttonText || "Loading..."}</span>
+                </button>
                 {errorMessage &&
-                    <p className="warning">{errorMessage}</p>
+                    <span className="status--error">{errorMessage}</span>
                 }
             </div>
         );

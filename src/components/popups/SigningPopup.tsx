@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import Loading from "@Components/Loading";
+import { Loading } from "@Components/Loading";
 
 interface SigningPopupProps {
     data: string[];
@@ -16,7 +16,7 @@ interface SigningPopupState {
  * SigningPopup is a popup component for prompting for a user's ethereum
  * signature
  */
-class SigningPopup extends React.Component<SigningPopupProps, SigningPopupState> {
+export class SigningPopup extends React.Component<SigningPopupProps, SigningPopupState> {
     constructor(props: SigningPopupProps) {
         super(props);
         this.state = {
@@ -60,5 +60,3 @@ class SigningPopup extends React.Component<SigningPopupProps, SigningPopupState>
         this.setState({ signing: false });
     }
 }
-
-export default SigningPopup;

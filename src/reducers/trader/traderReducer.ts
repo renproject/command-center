@@ -8,7 +8,7 @@ import { TraderData } from "@Reducers/types";
 type AccountAction = ActionType<typeof accountActions>;
 type WalletAction = ActionType<typeof walletActions>;
 
-export default function traderReducer(state: TraderData = new TraderData(), action: AccountAction | WalletAction) {
+export function traderReducer(state: TraderData = new TraderData(), action: AccountAction | WalletAction) {
     switch (action.type) {
         case getType(accountActions.storeAddress):
             return state.set("address", action.payload);

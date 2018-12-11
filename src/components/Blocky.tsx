@@ -34,8 +34,9 @@ function blockies() {
     }
 
     function createColor() {
-        // saturation is the whole color spectrum
-        const h = Math.floor(rand() * 40 + 20);
+        // saturation has a 1/4 change of being blue, or orange otherwise
+        const hRaw = rand();
+        const h = (hRaw * 360 >= 180 && hRaw * 360 < 260) ? hRaw * 50 + 200 : hRaw * 35 + 20;
         // saturation goes from 40 to 100, it avoids greyish colors
         const s = ((rand() * 60) + 40) + "%";
         // lightness can be anything from 0 to 100, but probabilities are a bell curve around 50%
@@ -139,7 +140,7 @@ function blockies() {
  * Blocky is a visual component for displaying Ethereum blockies - visual hashes
  * of ethereum addresses
  */
-export default class Blocky extends React.Component<Props, State> {
+export class Blocky extends React.Component<Props, State> {
     private canvas: HTMLCanvasElement | null | undefined;
     private blocky = blockies();
 

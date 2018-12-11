@@ -5,15 +5,16 @@ import RenExSDK from "@renex/renex";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
-import Loading from "@Components/Loading";
+import { Blocky } from "@Components/Blocky";
+import { Loading } from "@Components/Loading";
 
 import { updateDarknodeStatistics, UpdateDarknodeStatisticsAction, } from "@Actions/statistics/operatorActions";
 import { ApplicationData, DarknodeDetails } from "@Reducers/types";
 import { FeesBlock } from "./FeesBlock";
-import { Token } from "./lib/tokens";
-import { StatusBlock } from "./StatusBlock";
+import { GasBlock } from "./GasBlock";
+import { NetworkBlock } from "./NetworkBlock";
+import { Registration } from "./Registration";
 import { TokenBalance } from "./TokenBalance";
-import { Topup } from "./Topup";
 
 interface StoreProps {
 }
@@ -32,13 +33,11 @@ interface StatusPageState {
     network: string;
     success: boolean;
     minBond: number;
-    error: boolean;
-    errorMessage: JSX.Element | null;
     refreshing: boolean;
     correctNetwork: boolean;
 }
 
-class StatusPage extends React.Component<StatusPageProps, StatusPageState> {
+class StatusPageClass extends React.Component<StatusPageProps, StatusPageState> {
 
     public constructor(props: StatusPageProps, context: object) {
         super(props, context);
@@ -46,8 +45,6 @@ class StatusPage extends React.Component<StatusPageProps, StatusPageState> {
             network: "",
             success: false,
             minBond: 0,
-            error: false,
-            errorMessage: null,
             refreshing: false,
             correctNetwork: true
         };
@@ -68,36 +65,37 @@ class StatusPage extends React.Component<StatusPageProps, StatusPageState> {
     }
 
     public render(): JSX.Element {
-        const { sdk, darknodeDetails } = this.props;
+        const { sdk, darknodeDetails, darknodeID } = this.props;
 
         return (
             <div className="statuspage container">
-                {
-                    this.state.error ?
-                        this.state.errorMessage
-                        :
-                        <div className="content">
-                            {darknodeDetails ? <>
-                                <div>
-                                    <StatusBlock sdk={sdk} web3={sdk.getWeb3()} registrationStatus={darknodeDetails.registrationStatus} publicKey={darknodeDetails.publicKey} network={this.state.network} multiAddress={darknodeDetails.multiAddress} darknodeAddress={darknodeDetails.ID} peers={darknodeDetails.peers} minBond={this.state.minBond} />
-                                </div>
-                                <div>
-                                    <h1>Balance</h1>
-                                    <TokenBalance token={Token.ETH} amount={darknodeDetails.ethBalance.toString()} min={0} />
-                                    <h1>Top-up Balance</h1>
-                                    <Topup web3={sdk.getWeb3()} network={this.state.network} darknodeAddress={darknodeDetails.ID} />
-                                    <h1>Fees Earned</h1>
-                                    {
-                                        darknodeDetails.feesEarned.map((balance: string, token: Token) => {
-                                            return (
-                                                <FeesBlock key={token} web3={sdk.getWeb3()} token={token} amount={balance} darknodeAddress={darknodeDetails.ID} network={this.state.network} />
-                                            );
-                                        }).valueSeq().toArray()
-                                    }
-                                </div>
-                            </> : <Loading alt />}
+                {!darknodeDetails ? <Loading alt /> : <>
+                    <div className="statuspage--banner">
+                        <Blocky address={darknodeID} />
+                        <div className="statuspage--banner--details">
+                            <div className="statuspage--banner--top">
+                                <h3>Darknode</h3>
+                                <button>Edit name</button>
+                                <button>View details</button>
+                            </div>
+                            <Registration sdk={this.props.sdk} web3={this.props.sdk.getWeb3()} minBond={this.state.minBond} registrationStatus={darknodeDetails.registrationStatus} network={this.state.network} darknodeAddress={darknodeDetails.ID} publicKey={darknodeDetails.publicKey} />
                         </div>
-                }
+                    </div>
+                    <div className="statuspage--bottom">
+                        <FeesBlock sdk={sdk} darknodeDetails={darknodeDetails} />
+                        <GasBlock sdk={sdk} darknodeDetails={darknodeDetails} />
+                        <NetworkBlock sdk={sdk} web3={sdk.getWeb3()} registrationStatus={darknodeDetails.registrationStatus} publicKey={darknodeDetails.publicKey} network={this.state.network} multiAddress={darknodeDetails.multiAddress} darknodeAddress={darknodeDetails.ID} peers={darknodeDetails.peers} minBond={this.state.minBond} />
+
+                        {/* <div className="statuspage--graphs">
+                            <div>
+                                Income graph
+                            </div>
+                            <div>
+                                Gas graph
+                            </div>
+                        </div> */}
+                    </div>
+                </>}
             </div>
         );
     }
@@ -121,5 +119,5 @@ function mapDispatchToProps(dispatch: Dispatch): { actions: StatusPageProps["act
     };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(StatusPage);
+export const StatusPage = connect(mapStateToProps, mapDispatchToProps)(StatusPageClass);
 

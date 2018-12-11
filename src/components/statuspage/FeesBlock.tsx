@@ -1,48 +1,70 @@
 import * as React from "react";
 
-import Web3 from "web3";
+import RenExSDK from "@renex/renex";
 
-import contracts from "./lib/contracts";
-import { Token, TokenDetails } from "./lib/tokens";
-import { TokenBalance } from "./TokenBalance";
+import { connect } from "react-redux";
+import { bindActionCreators, Dispatch } from "redux";
 
-interface FeesProps {
-    web3: Web3;
-    token: Token;
-    amount: string;
-    darknodeAddress: string;
-    network: string;
+import { ApplicationData, DarknodeDetails } from "@Reducers/types";
+import { FeesItem } from "./FeesItem";
+import { Token } from "./lib/tokens";
+
+interface StoreProps {
 }
 
-interface FeesState {
-    disabled: boolean;
+interface FeesBlockProps extends StoreProps {
+    sdk: RenExSDK;
+    darknodeDetails: DarknodeDetails;
+
+    actions: {
+    };
 }
 
-export class FeesBlock extends React.Component<FeesProps, FeesState> {
-    constructor(props: FeesProps) {
-        super(props);
+interface FeesBlockState {
+}
+
+class FeesBlockClass extends React.Component<FeesBlockProps, FeesBlockState> {
+
+    public constructor(props: FeesBlockProps, context: object) {
+        super(props, context);
         this.state = {
-            disabled: parseFloat(this.props.amount) <= 0
         };
     }
 
     public render(): JSX.Element {
+        const { sdk, darknodeDetails } = this.props;
+
         return (
-            <div className="fees">
-                <TokenBalance token={this.props.token} amount={this.props.amount} />
-                <button disabled={this.state.disabled} onClick={this.handleWithdraw}>
-                    <span>Withdraw</span>
-                </button>
+
+            <div className="block fees-block">
+                <div className="block--title">
+                    <h3>Darknode Income</h3>
+                </div>
+                {
+                    darknodeDetails.feesEarned.map((balance: string, token: Token) => {
+                        return (
+                            <FeesItem key={token} web3={sdk.getWeb3()} token={token} amount={balance} darknodeAddress={darknodeDetails.ID} />
+                        );
+                    }).valueSeq().toArray()
+                }
             </div>
+
         );
     }
 
-    private handleWithdraw = async (): Promise<void> => {
-        this.setState({ disabled: true });
-        const contract = new this.props.web3.eth.Contract(contracts.DarknodeRewardVault.ABI, contracts.DarknodeRewardVault.address);
-        // tslint:disable-next-line:no-non-null-assertion
-        const tokenAddress = TokenDetails.get(this.props.token)!.address;
-        const ethAddress = await this.props.web3.eth.getAccounts();
-        await contract.methods.withdraw(this.props.darknodeAddress, tokenAddress).send({ from: ethAddress[0] });
-    }
 }
+
+function mapStateToProps(state: ApplicationData): StoreProps {
+    return {
+    };
+}
+
+function mapDispatchToProps(dispatch: Dispatch): { actions: FeesBlockProps["actions"] } {
+    return {
+        actions: bindActionCreators({
+        }, dispatch)
+    };
+}
+
+export const FeesBlock = connect(mapStateToProps, mapDispatchToProps)(FeesBlockClass);
+
