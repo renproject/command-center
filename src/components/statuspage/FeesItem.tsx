@@ -3,8 +3,10 @@ import * as React from "react";
 import Web3 from "web3";
 
 import contracts from "./lib/contracts";
+
+import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Token, TokenDetails } from "./lib/tokens";
-import { TokenBalance } from "./TokenBalance";
 
 interface FeesProps {
     web3: Web3;
@@ -27,12 +29,9 @@ export class FeesItem extends React.Component<FeesProps, FeesState> {
 
     public render(): JSX.Element {
         return (
-            <div className="fees">
-                <TokenBalance token={this.props.token} amount={this.props.amount} />
-                <button disabled={this.state.disabled} onClick={this.handleWithdraw}>
-                    <span>Withdraw</span>
-                </button>
-            </div>
+            <button className="withdraw-fees" disabled={this.state.disabled} onClick={this.handleWithdraw}>
+                <FontAwesomeIcon icon={faChevronRight} pull="left" />
+            </button>
         );
     }
 

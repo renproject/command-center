@@ -3,6 +3,7 @@
 @import 'styles/animations';
 
 @import 'styles/alert';
+@import 'styles/block';
 @import 'styles/button';
 @import 'styles/console';
 @import 'styles/grid';
@@ -18,8 +19,6 @@
 @import 'styles/statuspage';
 @import 'styles/view';
 
-
-
 $select-input-bg-focus: $off-white;
 $select-input-border-radius: 0;
 $select-input-box-shadow-focus: none;
@@ -28,7 +27,6 @@ $select-padding-horizontal: 15px;
 $select-menu-max-height: 300px;
 $select-option-focused-bg: darken($off-white, 3%);
 $select-option-selected-bg: $off-white;
-@import '../node_modules/react-select/scss/default';
 
 * {
     box-sizing: border-box;
@@ -266,4 +264,14 @@ label {
     @extend .blue-box;
 
     background-color: $blue-darker;
+}
+
+.scrollable {
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+}
+
+.scrollable::-webkit-scrollbar {
+    /* remove scrollbar space */
+    width: 0px;
 }

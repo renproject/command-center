@@ -67,23 +67,6 @@
         flex-direction: column;
     }
 
-    .balance {
-        display: inline-flex;
-        align-items: center;
-        vertical-align: top;
-    }
-
-    .balance--icon {
-        width: 20px;
-        margin-right: 10px;
-    }
-
-    .balance--title {
-        font-weight: bold;
-        width: 35px;
-        margin-right: 10px;
-    }
-
     .fees+.fees {
         margin-top: 10px;
     }

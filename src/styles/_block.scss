@@ -2,19 +2,222 @@
     flex-grow: 1;
     background-color: $blue-dark;
     border-radius: 2px;
-    padding: 20px;
+    padding: 0;
     flex-basis: 0;
+
+    height: 600px;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.block .svg-inline--fa {
+    margin-top: -2px;
+    margin-right: 10px;
+    font-size: 1.5em
+}
+
+.block--body {
+    flex-grow: 2;
+    display: flex;
 }
 
 .block--title {
     display: flex;
     justify-content: center;
     margin-bottom: 20px;
+    margin-top: 30px;
 
     >h3 {
         text-transform: uppercase;
         font-size: 18px;
         font-weight: 500;
         margin: 0;
+    }
+}
+
+.block--basic {
+    flex-grow: 2;
+    margin: 40px 0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.block--advanced {
+    flex-grow: 2;
+    margin: 10px 0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.block--basic--top {
+    margin: 40px;
+}
+
+.block--basic--show {
+    cursor: pointer;
+    width: 100%;
+    flex-grow: 2;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    font-size: 36px;
+}
+
+.block--basic--hide {
+    cursor: pointer;
+    color: white;
+    font-size: 14px;
+
+    // Position at top left corner
+    position: relative;
+    top: 20px;
+    left: 20px;
+
+    // Don't shift other elements down
+    width: 0;
+    height: 0;
+}
+
+.block--advanced--bottom {
+    margin-top: 20px;
+    width: 100%;
+}
+
+/**** GAS BLOCK *****/
+
+.gas-block {
+    color: $red;
+}
+
+.gas-block--basic--value {
+    font-size: 64px;
+}
+
+.gas-block--basic--unit {
+    margin-left: 5px;
+    font-size: 36px;
+    color: transparentize($red, 1 - 0.6);
+}
+
+.gas-block--advanced--value {
+    font-size: 48px;
+}
+
+.gas-block--advanced--unit {
+    margin-left: 3px;
+    font-size: 24px;
+    color: transparentize($red, 1 - 0.6);
+}
+
+
+/**** FEES BLOCK *****/
+
+.fees-block {
+    color: $green;
+}
+
+.fees-block--basic--value {
+    font-size: 64px;
+}
+
+.fees-block--basic--unit {
+    margin-left: 5px;
+    font-size: 36px;
+    color: transparentize($green, 1 - 0.6);
+}
+
+.fees-block--basic--sign {
+    @extend .fees-block--basic--unit;
+    margin-right: 5px;
+    margin-left: 0;
+}
+
+.fees-block--advanced--value {
+    font-size: 48px;
+}
+
+.fees-block--advanced--unit {
+    margin-left: 3px;
+    font-size: 24px;
+    color: transparentize($green, 1 - 0.6);
+}
+
+.fees-block--advanced--sign {
+    @extend .fees-block--basic--unit;
+    margin-right: 3px;
+    margin-left: 0;
+}
+
+.fees-block--table tbody tr:nth-child(odd),
+.fees-block--table tbody tr:nth-child(even) {
+    background: none;
+    background-color: none;
+    border: none;
+}
+
+.fees-block--table {
+
+    tr {
+        height: 60px;
+    }
+
+    tr:hover td {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    tr td:first-child {
+        padding-left: 40px;
+    }
+
+    tr td:last-child {
+        padding-right: 40px;
+    }
+
+    td {
+        color: white;
+        font-size: 18px;
+        font-weight: 400;
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+
+    button {
+        border: none;
+        background: none;
+        color: white;
+        min-width: auto;
+        font-size: 14px;
+        font-weight: 100;
+
+        padding-right: 0;
+        margin-right: 0;
+
+        svg.svg-inline--fa {
+            padding-right: 0;
+            margin-right: 0;
+        }
+    }
+
+    .fees-block--table--value {
+        font-weight: 500;
+    }
+
+    .fees-block--table--usd {
+        font-size: 14px;
+        color: $green;
+    }
+
+    .fees-block--table--usd-symbol {
+        color: transparentize($green, 1 - 0.6);
+    }
+
+    .fees-block--table--icon {
+        width: 20px;
+        margin-right: 10px;
     }
 }
