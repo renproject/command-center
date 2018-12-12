@@ -1,27 +1,24 @@
 import * as React from "react";
 
 import RenExSDK from "@renex/renex";
+import BigNumber from "bignumber.js";
 
-import { faChevronRight, faStar, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faStar } from "@fortawesome/free-regular-svg-icons";
+import { faChevronRight, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { ApplicationData, DarknodeDetails } from "@Reducers/types";
+import { ApplicationData, Currency, DarknodeDetails } from "@Reducers/types";
 import { Block, BlockBody, BlockTitle } from "./Block";
 import { FeesItem } from "./FeesItem";
 import { Token, TokenDetails } from "./lib/tokens";
 import { TokenBalance } from "./TokenBalance";
 
-interface StoreProps {
-}
 
-interface FeesBlockProps extends StoreProps {
+interface FeesBlockProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     sdk: RenExSDK;
     darknodeDetails: DarknodeDetails;
-
-    actions: {
-    };
 }
 
 interface FeesBlockState {
@@ -59,7 +56,7 @@ class FeesBlockClass extends React.Component<FeesBlockProps, FeesBlockState> {
                         <div className="block--basic">
                             <div className="block--basic--top">
                                 <span className="fees-block--basic--sign">$</span>
-                                <span className="fees-block--basic--value">{0}</span>
+                                <span className="fees-block--basic--value"><TokenBalance token={Token.ETH} convertTo={Currency.USD} amount={darknodeDetails.feesEarnedTotalEth} /></span>
                                 <span className="fees-block--basic--unit">USD</span>
                             </div>
                             <div className="block--basic--show" onClick={this.toggleAdvanced}>
@@ -77,7 +74,7 @@ class FeesBlockClass extends React.Component<FeesBlockProps, FeesBlockState> {
                                 <table className="fees-block--table">
                                     <tbody>
                                         {
-                                            darknodeDetails.feesEarned.map((balance: string, token: Token) => {
+                                            darknodeDetails.feesEarned.map((balance: BigNumber, token: Token) => {
                                                 // tslint:disable-next-line:no-non-null-assertion
                                                 const tokenDetails = TokenDetails.get(token)!;
                                                 const image = require(`../../tokens/${tokenDetails.icon}`);
@@ -85,7 +82,7 @@ class FeesBlockClass extends React.Component<FeesBlockProps, FeesBlockState> {
                                                 return <tr key={token}>
                                                     <td><img className="fees-block--table--icon" src={image} /> <span>{tokenDetails.symbol}</span></td>
                                                     <td className="fees-block--table--value"><TokenBalance token={token} amount={balance} /></td>
-                                                    <td className="fees-block--table--usd">$<TokenBalance token={token} amount={balance} /> <span className="fees-block--table--usd-symbol">USD</span></td>
+                                                    <td className="fees-block--table--usd">$<TokenBalance token={token} amount={balance} convertTo={Currency.USD} /> <span className="fees-block--table--usd-symbol">USD</span></td>
                                                     <td><FeesItem key={token} web3={sdk.getWeb3()} token={token} amount={balance} darknodeAddress={darknodeDetails.ID} /></td>
                                                 </tr>;
                                             }).valueSeq().toArray()
@@ -107,17 +104,15 @@ class FeesBlockClass extends React.Component<FeesBlockProps, FeesBlockState> {
 
 }
 
-function mapStateToProps(state: ApplicationData): StoreProps {
-    return {
-    };
-}
+const mapStateToProps = (state: ApplicationData) => ({
+    store: {
+    },
+});
 
-function mapDispatchToProps(dispatch: Dispatch): { actions: FeesBlockProps["actions"] } {
-    return {
-        actions: bindActionCreators({
-        }, dispatch)
-    };
-}
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+    actions: bindActionCreators({
+    }, dispatch),
+});
 
 export const FeesBlock = connect(mapStateToProps, mapDispatchToProps)(FeesBlockClass);
 

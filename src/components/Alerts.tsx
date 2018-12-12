@@ -4,17 +4,10 @@ import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import { bindActionCreators } from "redux";
 
-import { clearAlert, ClearAlertAction } from "@Actions/alert/alertActions";
-import { Alert, ApplicationData } from "@Reducers/types";
+import { clearAlert } from "@Actions/alert/alertActions";
+import { ApplicationData } from "@Reducers/types";
 
-interface StoreProps {
-    alert: Alert;
-}
-
-interface AlertsProps extends StoreProps {
-    actions: {
-        clearAlert: ClearAlertAction;
-    };
+interface AlertsProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
 }
 
 interface AlertsState {
@@ -33,8 +26,8 @@ class AlertsClass extends React.Component<AlertsProps, AlertsState> {
     }
 
     public componentWillReceiveProps(nextProps: AlertsProps): void {
-        const { message } = nextProps.alert;
-        if (message === null || message === this.props.alert.message) {
+        const { message } = nextProps.store.alert;
+        if (message === null || message === this.props.store.alert.message) {
             return;
         }
 
@@ -46,8 +39,7 @@ class AlertsClass extends React.Component<AlertsProps, AlertsState> {
     }
 
     public render(): JSX.Element | null {
-        const { message } = this.props.alert;
-        const { alertType } = this.props.alert;
+        const { message, alertType } = this.props.store.alert;
         if (message === "") {
             return null;
         }
@@ -65,18 +57,16 @@ class AlertsClass extends React.Component<AlertsProps, AlertsState> {
     }
 }
 
-function mapStateToProps(state: ApplicationData): StoreProps {
-    return {
-        alert: state.alert.alert
-    };
-}
+const mapStateToProps = (state: ApplicationData) => ({
+    store: {
+        alert: state.alert.alert,
+    },
+});
 
-function mapDispatchToProps(dispatch: Dispatch): { actions: AlertsProps["actions"] } {
-    return {
-        actions: bindActionCreators({
-            clearAlert,
-        }, dispatch)
-    };
-}
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+    actions: bindActionCreators({
+        clearAlert,
+    }, dispatch),
+});
 
 export const Alerts = connect(mapStateToProps, mapDispatchToProps)(AlertsClass);

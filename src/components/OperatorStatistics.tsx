@@ -4,18 +4,12 @@ import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import { bindActionCreators } from "redux";
 
-import { ApplicationData, DarknodeDetails } from "@Reducers/types";
-import { OrderedMap } from "immutable";
+import { ApplicationData } from "@Reducers/types";
 import { Link } from "react-router-dom";
 import { DarknodeStatistics } from "./DarknodeStatistics";
 
-interface StoreProps {
-    darknodeDetails: OrderedMap<string, DarknodeDetails | null> | null;
-}
 
-interface OperatorStatisticsProps extends StoreProps {
-    actions: {
-    };
+interface OperatorStatisticsProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
 }
 
 /**
@@ -28,7 +22,7 @@ class OperatorStatisticsClass extends React.Component<OperatorStatisticsProps> {
     }
 
     public render(): JSX.Element {
-        const { darknodeDetails } = this.props;
+        const { darknodeDetails } = this.props.store;
 
         const operationalDarknodes = darknodeDetails === null ? "-" : darknodeDetails.size.toString();
 
@@ -84,17 +78,15 @@ class OperatorStatisticsClass extends React.Component<OperatorStatisticsProps> {
 }
 
 
-function mapStateToProps(state: ApplicationData): StoreProps {
-    return {
+const mapStateToProps = (state: ApplicationData) => ({
+    store: {
         darknodeDetails: state.statistics.darknodeDetails,
-    };
-}
+    },
+});
 
-function mapDispatchToProps(dispatch: Dispatch): { actions: OperatorStatisticsProps["actions"] } {
-    return {
-        actions: bindActionCreators({
-        }, dispatch)
-    };
-}
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+    actions: bindActionCreators({
+    }, dispatch),
+});
 
 export const OperatorStatistics = connect(mapStateToProps, mapDispatchToProps)(OperatorStatisticsClass);

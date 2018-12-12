@@ -1,28 +1,15 @@
 import * as React from "react";
 
-import { History, Location } from "history";
 import { connect } from "react-redux";
-import { Link, match, withRouter } from "react-router-dom";
+import { Link, RouteComponentProps, withRouter } from "react-router-dom";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { login, LoginAction } from "@Actions/trader/accountActions";
+import { login } from "@Actions/trader/accountActions";
 import { Blocky } from "@Components/Blocky";
 import { ApplicationData } from "@Reducers/types";
 
-interface StoreProps {
-    address: string | null;
-}
-
-interface HeaderProps extends StoreProps {
-    // withRouter props
-    history: History;
-    location: Location;
-    match: match;
-    staticContext: undefined;
-
-    actions: {
-        login: LoginAction;
-    };
+interface HeaderProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps>,
+    RouteComponentProps {
 }
 
 interface HeaderState {
@@ -30,6 +17,7 @@ interface HeaderState {
     languageDropdownVisible: boolean;
     copied: boolean;
 }
+
 
 /**
  * Header is a visual component providing page branding and navigation.
@@ -45,7 +33,7 @@ class HeaderClass extends React.Component<HeaderProps, HeaderState> {
     }
 
     public render(): JSX.Element {
-        const { address } = this.props;
+        const { address } = this.props.store;
         const { accountDropdownVisible, languageDropdownVisible, copied } = this.state;
         const route = this.props.location.pathname;
 
@@ -113,10 +101,10 @@ class HeaderClass extends React.Component<HeaderProps, HeaderState> {
         );
     }
 
-    private handleLogin = (): void => {
-        const { address } = this.props;
+    private handleLogin = async (): Promise<void> => {
+        const { address } = this.props.store;
         if (!address) {
-            this.props.actions.login({ redirect: false });
+            await this.props.actions.login({ redirect: false });
         }
     }
 
@@ -151,18 +139,16 @@ class HeaderClass extends React.Component<HeaderProps, HeaderState> {
     }
 }
 
-function mapStateToProps(state: ApplicationData): StoreProps {
-    return {
+const mapStateToProps = (state: ApplicationData) => ({
+    store: {
         address: state.trader.address,
-    };
-}
+    },
+});
 
-function mapDispatchToProps(dispatch: Dispatch): { actions: HeaderProps["actions"] } {
-    return {
-        actions: bindActionCreators({
-            login,
-        }, dispatch)
-    };
-}
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+    actions: bindActionCreators({
+        login,
+    }, dispatch),
+});
 
 export const Header = connect(mapStateToProps, mapDispatchToProps)(withRouter(HeaderClass));

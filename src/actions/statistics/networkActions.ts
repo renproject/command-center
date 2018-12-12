@@ -1,10 +1,16 @@
 import RenExSDK from "@renex/renex";
+import BigNumber from "bignumber.js";
 
 import { Dispatch } from "redux";
 import { createStandardAction } from "typesafe-actions";
 
+import { getPrices } from "@Components/statuspage/lib/tokens";
 import { getDarknodeCount, getOrderCount } from "@Library/statistics/network";
-import BigNumber from "bignumber.js";
+import { TokenPrices } from "@Reducers/types";
+
+interface StoreTokenPricesPayload { tokenPrices: TokenPrices; }
+export type StoreTokenPricesAction = (payload: StoreTokenPricesPayload) => void;
+export const storeTokenPrices = createStandardAction("STORE_TOKEN_PRICES")<StoreTokenPricesPayload>();
 
 interface StoreDarknodeCountPayload { darknodeCount: BigNumber; }
 export type StoreDarknodeCountAction = (payload: StoreDarknodeCountPayload) => void;
@@ -22,3 +28,10 @@ export const updateNetworkStatistics: UpdateNetworkStatisticsAction = (sdk) => a
     const orderCount = await getOrderCount(sdk);
     dispatch(storeOrderCount({ orderCount }));
 };
+
+export type UpdateTokenPricesAction = () => (dispatch: Dispatch) => Promise<void>;
+export const updateTokenPrices: UpdateTokenPricesAction = () => async (dispatch) => {
+    const tokenPrices = await getPrices();
+    dispatch(storeTokenPrices({ tokenPrices }));
+};
+

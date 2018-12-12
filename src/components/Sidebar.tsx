@@ -4,20 +4,11 @@ import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import { bindActionCreators } from "redux";
 
-import { storeSelectedDarknode, StoreSelectedDarknodeAction } from "@Actions/statistics/operatorActions";
-import { ApplicationData, DarknodeDetails } from "@Reducers/types";
-import { List } from "immutable";
+import { storeSelectedDarknode, } from "@Actions/statistics/operatorActions";
+import { ApplicationData } from "@Reducers/types";
 import { Blocky } from "./Blocky";
 
-interface StoreProps {
-    darknodeList: List<string>;
-    selectedDarknode: string | null;
-}
-
-interface SidebarProps extends StoreProps {
-    actions: {
-        storeSelectedDarknode: StoreSelectedDarknodeAction;
-    };
+interface SidebarProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
 }
 
 /**
@@ -30,7 +21,7 @@ class SidebarClass extends React.Component<SidebarProps> {
     }
 
     public render(): JSX.Element {
-        const { darknodeList, selectedDarknode } = this.props;
+        const { darknodeList, selectedDarknode } = this.props.store;
 
         return (
             <div className="sidebar">
@@ -62,19 +53,17 @@ class SidebarClass extends React.Component<SidebarProps> {
 }
 
 
-function mapStateToProps(state: ApplicationData): StoreProps {
-    return {
+const mapStateToProps = (state: ApplicationData) => ({
+    store: {
         darknodeList: state.statistics.darknodeList,
         selectedDarknode: state.statistics.selectedDarknode,
-    };
-}
+    },
+});
 
-function mapDispatchToProps(dispatch: Dispatch): { actions: SidebarProps["actions"] } {
-    return {
-        actions: bindActionCreators({
-            storeSelectedDarknode,
-        }, dispatch)
-    };
-}
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+    actions: bindActionCreators({
+        storeSelectedDarknode,
+    }, dispatch),
+});
 
 export const Sidebar = connect(mapStateToProps, mapDispatchToProps)(SidebarClass);
