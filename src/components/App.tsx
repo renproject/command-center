@@ -12,7 +12,7 @@ import { LoggingOut } from "@Components/pages/LoggingOut";
 import { Popup } from "@Components/popups/Popup";
 
 import { updateTokenPrices } from "@Actions/statistics/networkActions";
-import { updateOperatorStatistics } from "@Actions/statistics/operatorActions";
+import { updateAllDarknodeStatistics, updateOperatorStatistics } from "@Actions/statistics/operatorActions";
 import { login, lookForLogout } from "@Actions/trader/accountActions";
 import { ApplicationData } from "@Reducers/types";
 
@@ -48,6 +48,7 @@ class AppClass extends React.Component<AppProps, AppState> {
     private callUpdatePricesTimeout: NodeJS.Timer | undefined;
     private callLookForLogoutTimeout: NodeJS.Timer | undefined;
     private callUpdateOperatorStatisticsTimeout: NodeJS.Timer | undefined;
+    private callUpdateDarknodeStatisticsTimeout: NodeJS.Timer | undefined;
 
     public constructor(props: AppProps, context: object) {
         super(props, context);
@@ -75,6 +76,7 @@ class AppClass extends React.Component<AppProps, AppState> {
         if (this.callUpdatePricesTimeout) { clearTimeout(this.callUpdatePricesTimeout); }
         if (this.callLookForLogoutTimeout) { clearTimeout(this.callLookForLogoutTimeout); }
         if (this.callUpdateOperatorStatisticsTimeout) { clearTimeout(this.callUpdateOperatorStatisticsTimeout); }
+        if (this.callUpdateDarknodeStatisticsTimeout) { clearTimeout(this.callUpdateDarknodeStatisticsTimeout); }
     }
 
     public setupLoops() {
@@ -112,15 +114,38 @@ class AppClass extends React.Component<AppProps, AppState> {
             if (sdk) {
                 try {
                     await this.props.actions.updateOperatorStatistics(sdk);
+                    timeout = 60;
                 } catch (err) {
                     console.error(err);
+                    timeout = 30;
                 }
-                timeout = 60;
             }
             if (this.callUpdateOperatorStatisticsTimeout) { clearTimeout(this.callUpdateOperatorStatisticsTimeout); }
             this.callUpdateOperatorStatisticsTimeout = setTimeout(callUpdateOperatorStatistics, timeout * 1000);
         };
         callUpdateOperatorStatistics().catch(console.error);
+
+        // Update darknode statistics every 120 seconds
+        const callUpdateDarknodeStatistics = async () => {
+            const { sdk, tokenPrices, darknodeList } = this.props.store;
+            let timeout = 1;
+            console.log("!!!");
+            console.log(sdk && true);
+            console.log(tokenPrices && true);
+            console.log(darknodeList && true);
+            if (sdk && tokenPrices && darknodeList) {
+                try {
+                    await this.props.actions.updateAllDarknodeStatistics(sdk, darknodeList, tokenPrices);
+                    timeout = 120;
+                } catch (err) {
+                    console.error(err);
+                    timeout = 60;
+                }
+            }
+            if (this.callUpdateDarknodeStatisticsTimeout) { clearTimeout(this.callUpdateDarknodeStatisticsTimeout); }
+            this.callUpdateDarknodeStatisticsTimeout = setTimeout(callUpdateDarknodeStatistics, timeout * 1000);
+        };
+        callUpdateDarknodeStatistics().catch(console.error);
     }
 
     public withAccount<T extends React.ComponentClass>(component: T): React.ComponentClass | React.StatelessComponent {
@@ -161,6 +186,8 @@ const mapStateToProps = (state: ApplicationData) => ({
         pendingAlerts: state.alert.pendingAlerts,
         sdk: state.trader.sdk,
         wallet: state.trader.wallet,
+        tokenPrices: state.statistics.tokenPrices,
+        darknodeList: state.statistics.darknodeList,
     },
 });
 
@@ -170,6 +197,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
         lookForLogout,
         updateOperatorStatistics,
         updateTokenPrices,
+        updateAllDarknodeStatistics,
     }, dispatch),
 });
 

@@ -155,3 +155,12 @@ export const updateDarknodeStatistics: UpdateDarknodeStatisticsAction = (sdk, da
 
     dispatch(setDarknodeDetails({ darknodeDetails }));
 };
+
+export type UpdateAllDarknodeStatisticsAction = (sdk: RenExSDK, darknodeList: List<string>, tokenPrices: TokenPrices) => (dispatch: Dispatch) => Promise<void>;
+export const updateAllDarknodeStatistics: UpdateAllDarknodeStatisticsAction = (sdk, darknodeList, tokenPrices) => async (dispatch) => {
+    console.log(darknodeList.toArray());
+    await Promise.all(darknodeList.map((darknodeID) => {
+        console.log(`Calling update for ${darknodeID}`);
+        return updateDarknodeStatistics(sdk, darknodeID, tokenPrices)(dispatch);
+    }).toArray());
+};
