@@ -94,7 +94,7 @@ export class StatisticsData extends Record({
     orderCount: null as BigNumber | null,
 
     darknodeDetails: Map<string, DarknodeDetails>(),
-    darknodeList: List<string>(),
+    darknodeList: null as List<string> | null,
 
     // Network details
     // minimumBond: 0,

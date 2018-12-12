@@ -45,19 +45,6 @@ class StatusPageClass extends React.Component<StatusPageProps, StatusPageState> 
         };
     }
 
-    public async componentDidMount(): Promise<void> {
-        await this.componentWillReceiveProps(this.props);
-    }
-
-    public async componentWillReceiveProps(nextProps: StatusPageProps) {
-        const { sdk, darknodeID, darknodeDetails, store } = nextProps;
-        const { tokenPrices } = store;
-        if (!darknodeDetails && tokenPrices && !this.state.darknodeActionCalled.get(darknodeID)) {
-            await this.props.actions.updateDarknodeStatistics(sdk, darknodeID, tokenPrices);
-            this.setState({ darknodeActionCalled: this.state.darknodeActionCalled.set(darknodeID, true) });
-        }
-    }
-
     public render(): JSX.Element {
         const { sdk, darknodeDetails, darknodeID } = this.props;
 
