@@ -3,12 +3,9 @@ import * as React from "react";
 import { connect } from "react-redux";
 
 import { ApplicationData, PopupData } from "@Reducers/types";
+import { bindActionCreators, Dispatch } from "redux";
 
-interface StoreProps {
-    popup: PopupData;
-}
-
-interface PopupProps extends StoreProps {
+interface PopupProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
 }
 
 /**
@@ -21,7 +18,7 @@ class PopupClass extends React.Component<PopupProps> {
     }
 
     public render(): JSX.Element | null {
-        const { popup } = this.props.popup;
+        const { popup } = this.props.store.popup;
         if (!popup) {
             return null;
         }
@@ -35,17 +32,22 @@ class PopupClass extends React.Component<PopupProps> {
     }
 
     public onClickHandler = () => {
-        const { dismissible, onCancel } = this.props.popup;
+        const { dismissible, onCancel } = this.props.store.popup;
         if (dismissible) {
             onCancel();
         }
     }
 }
 
-function mapStateToProps(state: ApplicationData): StoreProps {
-    return {
-        popup: state.popup
-    };
-}
+const mapStateToProps = (state: ApplicationData) => ({
+    store: {
+        popup: state.popup,
+    },
+});
 
-export const Popup = connect(mapStateToProps)(PopupClass);
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+    actions: bindActionCreators({
+    }, dispatch),
+});
+
+export const Popup = connect(mapStateToProps, mapDispatchToProps)(PopupClass);

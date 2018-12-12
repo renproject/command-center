@@ -1,3 +1,4 @@
+import { Currency, TokenPrices } from "@Reducers/types";
 import RenExSDK from "@renex/renex";
 import { Map } from "immutable";
 
@@ -23,7 +24,9 @@ export interface TokenDetail {
     icon: string;
     address: string;
     digits: number;
+    coingeckoID: string;
 }
+
 
 export let TokenDetails: Map<Token, TokenDetail> = Map();
 
@@ -33,6 +36,7 @@ TokenDetails = TokenDetails.set(Token.ETH, {
     icon: "eth.svg",
     address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
     digits: 18,
+    coingeckoID: "ethereum",
 });
 
 TokenDetails = TokenDetails.set(Token.DGX, {
@@ -41,6 +45,7 @@ TokenDetails = TokenDetails.set(Token.DGX, {
     icon: "dgx.svg",
     address: tmpSDK._networkData.tokens.DGX,
     digits: 9,
+    coingeckoID: "digix-gold",
 });
 
 TokenDetails = TokenDetails.set(Token.REN, {
@@ -49,6 +54,7 @@ TokenDetails = TokenDetails.set(Token.REN, {
     icon: "ren.svg",
     address: tmpSDK._networkData.tokens.REN,
     digits: 18,
+    coingeckoID: "republic-protocol",
 });
 
 TokenDetails = TokenDetails.set(Token.TUSD, {
@@ -57,6 +63,7 @@ TokenDetails = TokenDetails.set(Token.TUSD, {
     icon: "tusd.svg",
     address: tmpSDK._networkData.tokens.TUSD,
     digits: 18,
+    coingeckoID: "true-usd",
 });
 
 TokenDetails = TokenDetails.set(Token.OMG, {
@@ -65,6 +72,7 @@ TokenDetails = TokenDetails.set(Token.OMG, {
     icon: "omg.svg",
     address: tmpSDK._networkData.tokens.OMG,
     digits: 18,
+    coingeckoID: "omisego",
 });
 
 TokenDetails = TokenDetails.set(Token.ZRX, {
@@ -73,4 +81,28 @@ TokenDetails = TokenDetails.set(Token.ZRX, {
     icon: "zrx.svg",
     address: tmpSDK._networkData.tokens.ZRX,
     digits: 18,
+    coingeckoID: "0x",
 });
+
+export async function getPrices(): Promise<TokenPrices> {
+
+    let prices: TokenPrices = Map();
+
+    for (const token of Tokens) {
+
+        const tokenDetails = TokenDetails.get(token, undefined);
+
+        if (!tokenDetails) {
+            continue;
+        }
+
+        const url = `https://api.coingecko.com/api/v3/coins/${tokenDetails.coingeckoID}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`;
+        const response = await fetch(url);
+        const data = await response.json();
+        const price = Map<Currency, number>(data.market_data.current_price);
+
+        prices = prices.set(token, price);
+    }
+
+    return prices;
+}

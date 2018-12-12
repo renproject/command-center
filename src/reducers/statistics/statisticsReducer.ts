@@ -17,6 +17,9 @@ export function statisticsReducer(state: StatisticsData = new StatisticsData(), 
         case getType(networkActions.storeOrderCount):
             return state.set("orderCount", action.payload.orderCount);
 
+        case getType(networkActions.storeTokenPrices):
+            return state.set("tokenPrices", action.payload.tokenPrices);
+
         case getType(operatorActions.storeDarknodeList):
             return state.set("darknodeList", action.payload.darknodeList);
 
@@ -30,8 +33,7 @@ export function statisticsReducer(state: StatisticsData = new StatisticsData(), 
         case getType(operatorActions.clearDarknodeList):
             return state
                 .set("darknodeDetails", OrderedMap<string, DarknodeDetails>())
-                .set("selectedDarknode", null)
-                ;
+                .set("selectedDarknode", null);
 
         default:
             return state;

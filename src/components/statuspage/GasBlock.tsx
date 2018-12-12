@@ -10,19 +10,11 @@ import { bindActionCreators, Dispatch } from "redux";
 import { ApplicationData, DarknodeDetails } from "@Reducers/types";
 import BigNumber from "bignumber.js";
 import { Block, BlockBody, BlockTitle } from "./Block";
-import { Token } from "./lib/tokens";
-import { TokenBalance } from "./TokenBalance";
 import { Topup } from "./Topup";
 
-interface StoreProps {
-}
-
-interface GasBlockProps extends StoreProps {
+interface GasBlockProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     sdk: RenExSDK;
     darknodeDetails: DarknodeDetails;
-
-    actions: {
-    };
 }
 
 interface GasBlockState {
@@ -93,17 +85,15 @@ class GasBlockClass extends React.Component<GasBlockProps, GasBlockState> {
 
 }
 
-function mapStateToProps(state: ApplicationData): StoreProps {
-    return {
-    };
-}
+const mapStateToProps = (state: ApplicationData) => ({
+    store: {
+    },
+});
 
-function mapDispatchToProps(dispatch: Dispatch): { actions: GasBlockProps["actions"] } {
-    return {
-        actions: bindActionCreators({
-        }, dispatch)
-    };
-}
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+    actions: bindActionCreators({
+    }, dispatch),
+});
 
 export const GasBlock = connect(mapStateToProps, mapDispatchToProps)(GasBlockClass);
 

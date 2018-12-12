@@ -4,22 +4,14 @@ import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import { bindActionCreators } from "redux";
 
-import { deregisterDarknode, DeregisterDarknodeAction } from "@Actions/trader/darknode";
+import { deregisterDarknode } from "@Actions/trader/darknode";
 import { EncodedData, Encodings } from "@Library/general/encodedData";
 import { ApplicationData, DarknodeDetails } from "@Reducers/types";
-import RenExSDK from "@renex/renex";
 
-interface StoreProps {
-    sdk: RenExSDK | null;
-}
 
-interface DarknodeStatisticsProps extends StoreProps {
+interface DarknodeStatisticsProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     darknodeID: string;
     darknodeDetails: DarknodeDetails | null;
-
-    actions: {
-        deregisterDarknode: DeregisterDarknodeAction;
-    };
 }
 
 interface DarknodeStatisticsState {
@@ -87,26 +79,24 @@ class DarknodeStatisticsClass extends React.Component<DarknodeStatisticsProps, D
     }
 
     private handleDeregister = () => {
-        if (!this.props.sdk) {
+        if (!this.props.store.sdk) {
             return;
         }
-        this.props.actions.deregisterDarknode(this.props.sdk, this.props.darknodeID);
+        this.props.actions.deregisterDarknode(this.props.store.sdk, this.props.darknodeID);
     }
 }
 
 
-function mapStateToProps(state: ApplicationData): StoreProps {
-    return {
+const mapStateToProps = (state: ApplicationData) => ({
+    store: {
         sdk: state.trader.sdk,
-    };
-}
+    },
+});
 
-function mapDispatchToProps(dispatch: Dispatch): { actions: DarknodeStatisticsProps["actions"] } {
-    return {
-        actions: bindActionCreators({
-            deregisterDarknode,
-        }, dispatch)
-    };
-}
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+    actions: bindActionCreators({
+        deregisterDarknode,
+    }, dispatch),
+});
 
 export const DarknodeStatistics = connect(mapStateToProps, mapDispatchToProps)(DarknodeStatisticsClass);

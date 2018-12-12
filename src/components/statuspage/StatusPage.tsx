@@ -2,31 +2,24 @@ import * as React from "react";
 
 import RenExSDK from "@renex/renex";
 
+import { Map } from "immutable";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
 import { Blocky } from "@Components/Blocky";
 import { Loading } from "@Components/Loading";
 
-import { updateDarknodeStatistics, UpdateDarknodeStatisticsAction, } from "@Actions/statistics/operatorActions";
+import { updateDarknodeStatistics } from "@Actions/statistics/operatorActions";
 import { ApplicationData, DarknodeDetails } from "@Reducers/types";
 import { FeesBlock } from "./FeesBlock";
 import { GasBlock } from "./GasBlock";
 import { NetworkBlock } from "./NetworkBlock";
 import { Registration } from "./Registration";
-import { TokenBalance } from "./TokenBalance";
 
-interface StoreProps {
-}
-
-interface StatusPageProps extends StoreProps {
+interface StatusPageProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     sdk: RenExSDK;
     darknodeID: string;
     darknodeDetails: DarknodeDetails | null;
-
-    actions: {
-        updateDarknodeStatistics: UpdateDarknodeStatisticsAction,
-    };
 }
 
 interface StatusPageState {
@@ -35,6 +28,7 @@ interface StatusPageState {
     minBond: number;
     refreshing: boolean;
     correctNetwork: boolean;
+    darknodeActionCalled: Map<string, boolean>;
 }
 
 class StatusPageClass extends React.Component<StatusPageProps, StatusPageState> {
@@ -46,21 +40,21 @@ class StatusPageClass extends React.Component<StatusPageProps, StatusPageState> 
             success: false,
             minBond: 0,
             refreshing: false,
-            correctNetwork: true
+            correctNetwork: true,
+            darknodeActionCalled: Map(),
         };
     }
 
     public async componentDidMount(): Promise<void> {
-        const { sdk, darknodeID, darknodeDetails } = this.props;
-        if (darknodeID && !darknodeDetails) {
-            await this.props.actions.updateDarknodeStatistics(sdk, darknodeID);
-        }
+        await this.componentWillReceiveProps(this.props);
     }
 
     public async componentWillReceiveProps(nextProps: StatusPageProps) {
-        const { sdk, darknodeID, darknodeDetails } = nextProps;
-        if (darknodeID && !darknodeDetails) {
-            await nextProps.actions.updateDarknodeStatistics(sdk, darknodeID);
+        const { sdk, darknodeID, darknodeDetails, store } = nextProps;
+        const { tokenPrices } = store;
+        if (!darknodeDetails && tokenPrices && !this.state.darknodeActionCalled.get(darknodeID)) {
+            await this.props.actions.updateDarknodeStatistics(sdk, darknodeID, tokenPrices);
+            this.setState({ darknodeActionCalled: this.state.darknodeActionCalled.set(darknodeID, true) });
         }
     }
 
@@ -106,18 +100,17 @@ class StatusPageClass extends React.Component<StatusPageProps, StatusPageState> 
     // }
 }
 
-function mapStateToProps(state: ApplicationData): StoreProps {
-    return {
-    };
-}
+const mapStateToProps = (state: ApplicationData) => ({
+    store: {
+        tokenPrices: state.statistics.tokenPrices,
+    },
+});
 
-function mapDispatchToProps(dispatch: Dispatch): { actions: StatusPageProps["actions"] } {
-    return {
-        actions: bindActionCreators({
-            updateDarknodeStatistics,
-        }, dispatch)
-    };
-}
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+    actions: bindActionCreators({
+        updateDarknodeStatistics,
+    }, dispatch),
+});
 
 export const StatusPage = connect(mapStateToProps, mapDispatchToProps)(StatusPageClass);
 

@@ -1,8 +1,5 @@
 import * as React from "react";
 
-import RenExSDK from "@renex/renex";
-
-import { Map } from "immutable";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
@@ -11,24 +8,12 @@ import { Loading } from "@Components/Loading";
 import { Sidebar } from "@Components/Sidebar";
 import { StatusPage } from "@Components/statuspage/StatusPage";
 
-import { setAlert, SetAlertAction } from "@Actions/alert/alertActions";
-import { login, LoginAction } from "@Actions/trader/accountActions";
-import { storeWallet, StoreWalletAction } from "@Actions/trader/walletActions";
-import { ApplicationData, DarknodeDetails } from "@Reducers/types";
+import { setAlert } from "@Actions/alert/alertActions";
+import { login } from "@Actions/trader/accountActions";
+import { storeWallet } from "@Actions/trader/walletActions";
+import { ApplicationData } from "@Reducers/types";
 
-interface StoreProps {
-    address: string | null;
-    darknodeDetails: Map<string, DarknodeDetails>;
-    sdk: RenExSDK | null;
-    selectedDarknode: string | null;
-}
-
-interface HomeProps extends StoreProps {
-    actions: {
-        login: LoginAction;
-        storeWallet: StoreWalletAction;
-        setAlert: SetAlertAction;
-    };
+interface HomeProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
 }
 
 interface HomeState {
@@ -52,7 +37,7 @@ class HomeClass extends React.Component<HomeProps, HomeState> {
     }
 
     public render(): JSX.Element {
-        const { address, selectedDarknode, sdk, darknodeDetails } = this.props;
+        const { address, selectedDarknode, sdk, darknodeDetails } = this.props.store;
         const { checkingVerification } = this.state;
         const details = selectedDarknode ? darknodeDetails.get(selectedDarknode, null) : null;
 
@@ -80,23 +65,21 @@ class HomeClass extends React.Component<HomeProps, HomeState> {
     }
 }
 
-function mapStateToProps(state: ApplicationData): StoreProps {
-    return {
+const mapStateToProps = (state: ApplicationData) => ({
+    store: {
         address: state.trader.address,
         darknodeDetails: state.statistics.darknodeDetails,
         sdk: state.trader.sdk,
         selectedDarknode: state.statistics.selectedDarknode,
-    };
-}
+    },
+});
 
-function mapDispatchToProps(dispatch: Dispatch): { actions: HomeProps["actions"] } {
-    return {
-        actions: bindActionCreators({
-            login,
-            storeWallet,
-            setAlert,
-        }, dispatch)
-    };
-}
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+    actions: bindActionCreators({
+        login,
+        storeWallet,
+        setAlert,
+    }, dispatch),
+});
 
 export const Home = connect(mapStateToProps, mapDispatchToProps)(HomeClass);

@@ -6,38 +6,17 @@ import { HashRouter, Redirect, Route, RouteComponentProps, withRouter } from "re
 import { Dispatch } from "redux";
 import { bindActionCreators } from "redux";
 
-import RenExSDK from "@renex/renex";
-
 import { Alerts } from "@Components/Alerts";
 import { Home } from "@Components/pages/Home";
 import { LoggingOut } from "@Components/pages/LoggingOut";
 import { Popup } from "@Components/popups/Popup";
 
-import { clearPopup, ClearPopupAction, setPopup, SetPopupAction } from "@Actions/popup/popupActions";
-import { updateNetworkStatistics, UpdateNetworkStatisticsAction } from "@Actions/statistics/networkActions";
-import { updateOperatorStatistics, UpdateOperatorStatisticsAction } from "@Actions/statistics/operatorActions";
-import { login, LoginAction, logout, LogoutAction, lookForLogout, LookForLogoutAction, storeSDK, StoreSDKAction } from "@Actions/trader/accountActions";
-import { Wallet } from "@Library/wallets/wallet";
-import { AlertData, ApplicationData } from "@Reducers/types";
+import { updateTokenPrices } from "@Actions/statistics/networkActions";
+import { updateOperatorStatistics } from "@Actions/statistics/operatorActions";
+import { login, lookForLogout } from "@Actions/trader/accountActions";
+import { ApplicationData } from "@Reducers/types";
 
-interface StoreProps {
-    address: string | null;
-    pendingAlerts: AlertData["pendingAlerts"];
-    sdk: RenExSDK | null;
-    wallet: Wallet | null;
-}
-
-interface AppProps extends StoreProps {
-    actions: {
-        clearPopup: ClearPopupAction;
-        login: LoginAction;
-        logout: LogoutAction;
-        lookForLogout: LookForLogoutAction;
-        setPopup: SetPopupAction;
-        storeSDK: StoreSDKAction;
-        updateOperatorStatistics: UpdateOperatorStatisticsAction;
-        updateNetworkStatistics: UpdateNetworkStatisticsAction;
-    };
+interface AppProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
 }
 
 interface AppState {
@@ -66,6 +45,7 @@ const ScrollToTop = withRouter(
  * and running background app loops
  */
 class AppClass extends React.Component<AppProps, AppState> {
+    private callUpdatePricesTimeout: NodeJS.Timer | undefined;
     private callLookForLogoutTimeout: NodeJS.Timer | undefined;
     private callUpdateOperatorStatisticsTimeout: NodeJS.Timer | undefined;
 
@@ -92,14 +72,27 @@ class AppClass extends React.Component<AppProps, AppState> {
 
     public componentWillUnmount() {
         // Clear timeouts
+        if (this.callUpdatePricesTimeout) { clearTimeout(this.callUpdatePricesTimeout); }
         if (this.callLookForLogoutTimeout) { clearTimeout(this.callLookForLogoutTimeout); }
         if (this.callUpdateOperatorStatisticsTimeout) { clearTimeout(this.callUpdateOperatorStatisticsTimeout); }
     }
 
     public setupLoops() {
         // See if the user has logged out every 5 seconds
+        const callUpdatePrices = async () => {
+            try {
+                await this.props.actions.updateTokenPrices();
+            } catch (err) {
+                console.error(err);
+            }
+            if (this.callUpdatePricesTimeout) { clearTimeout(this.callUpdatePricesTimeout); }
+            this.callUpdatePricesTimeout = setTimeout(callUpdatePrices, 60 * 1000);
+        };
+        callUpdatePrices().catch(console.error);
+
+        // See if the user has logged out every 5 seconds
         const callLookForLogout = async () => {
-            const { sdk } = this.props;
+            const { sdk } = this.props.store;
             if (sdk) {
                 try {
                     await this.props.actions.lookForLogout(sdk);
@@ -114,7 +107,7 @@ class AppClass extends React.Component<AppProps, AppState> {
 
         // Update operator statistics every 60 seconds
         const callUpdateOperatorStatistics = async () => {
-            const { sdk } = this.props;
+            const { sdk } = this.props.store;
             let timeout = 1;
             if (sdk) {
                 try {
@@ -131,7 +124,7 @@ class AppClass extends React.Component<AppProps, AppState> {
     }
 
     public withAccount<T extends React.ComponentClass>(component: T): React.ComponentClass | React.StatelessComponent {
-        const { address } = this.props;
+        const { address } = this.props.store;
         const { checkingReLogin } = this.state;
 
         // show a loading spinner if retrieving the web3 instance is taking a
@@ -162,28 +155,22 @@ class AppClass extends React.Component<AppProps, AppState> {
     }
 }
 
-function mapStateToProps(state: ApplicationData): StoreProps {
-    return {
+const mapStateToProps = (state: ApplicationData) => ({
+    store: {
         address: state.trader.address,
         pendingAlerts: state.alert.pendingAlerts,
         sdk: state.trader.sdk,
         wallet: state.trader.wallet,
-    };
-}
+    },
+});
 
-function mapDispatchToProps(dispatch: Dispatch): { actions: AppProps["actions"] } {
-    return {
-        actions: bindActionCreators({
-            clearPopup,
-            login,
-            logout,
-            lookForLogout,
-            setPopup,
-            storeSDK,
-            updateOperatorStatistics,
-            updateNetworkStatistics,
-        }, dispatch)
-    };
-}
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+    actions: bindActionCreators({
+        login,
+        lookForLogout,
+        updateOperatorStatistics,
+        updateTokenPrices,
+    }, dispatch),
+});
 
 export const App = connect(mapStateToProps, mapDispatchToProps)(AppClass);

@@ -1,15 +1,13 @@
 import * as React from "react";
 
 import { connect } from "react-redux";
+import { bindActionCreators, Dispatch } from "redux";
 
 import { ApplicationData } from "@Reducers/types";
 
 const metamaskIcon = require("../../styles/images/metamask.svg");
 
-interface StoreProps {
-}
-
-interface NoMetaMaskProps extends StoreProps {
+interface NoMetaMaskProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     onConnect: () => void;
     onCancel: () => void;
 }
@@ -46,9 +44,14 @@ class NoMetaMaskClass extends React.Component<NoMetaMaskProps, NoMetaMaskState> 
 }
 
 
-function mapStateToProps(state: ApplicationData): StoreProps {
-    return {
-    };
-}
+const mapStateToProps = (state: ApplicationData) => ({
+    store: {
+    },
+});
 
-export const NoMetaMask = connect(mapStateToProps)(NoMetaMaskClass);
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+    actions: bindActionCreators({
+    }, dispatch),
+});
+
+export const NoMetaMask = connect(mapStateToProps, mapDispatchToProps)(NoMetaMaskClass);

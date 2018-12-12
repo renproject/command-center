@@ -1,5 +1,6 @@
 import * as React from "react";
 
+import BigNumber from "bignumber.js";
 import Web3 from "web3";
 
 import contracts from "./lib/contracts";
@@ -11,7 +12,7 @@ import { Token, TokenDetails } from "./lib/tokens";
 interface FeesProps {
     web3: Web3;
     token: Token;
-    amount: string;
+    amount: string | BigNumber;
     darknodeAddress: string;
 }
 
@@ -23,7 +24,7 @@ export class FeesItem extends React.Component<FeesProps, FeesState> {
     constructor(props: FeesProps) {
         super(props);
         this.state = {
-            disabled: parseFloat(this.props.amount) <= 0
+            disabled: (new BigNumber(this.props.amount)).lt(0)
         };
     }
 

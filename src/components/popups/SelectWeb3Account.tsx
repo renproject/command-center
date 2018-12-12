@@ -1,16 +1,13 @@
 import * as React from "react";
 
 import { connect } from "react-redux";
+import { bindActionCreators, Dispatch } from "redux";
 
 import { Blocky } from "@Components/Blocky";
 import { Loading } from "@Components/Loading";
-
 import { ApplicationData } from "@Reducers/types";
 
-interface StoreProps {
-}
-
-interface SelectWeb3AccountProps extends StoreProps {
+interface SelectWeb3AccountProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     message: string;
     getAccounts(): Promise<string[]>;
     resolve(address: string): void;
@@ -107,9 +104,14 @@ class SelectWeb3AccountClass extends React.Component<SelectWeb3AccountProps, Sel
     }
 }
 
-function mapStateToProps(state: ApplicationData): StoreProps {
-    return {
-    };
-}
+const mapStateToProps = (state: ApplicationData) => ({
+    store: {
+    },
+});
 
-export const SelectWeb3Account = connect(mapStateToProps)(SelectWeb3AccountClass);
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+    actions: bindActionCreators({
+    }, dispatch),
+});
+
+export const SelectWeb3Account = connect(mapStateToProps, mapDispatchToProps)(SelectWeb3AccountClass);

@@ -78,7 +78,18 @@ export class PopupData extends Record({
     popup: null as JSX.Element | null,
 }) { }
 
+export enum Currency {
+    AUD = "aud",
+    USD = "usd",
+    ETH = "eth",
+    BTC = "btc",
+}
+
+export type TokenPrices = Map<Token, Map<Currency, number>>;
+
 export class StatisticsData extends Record({
+    tokenPrices: null as TokenPrices | null,
+
     darknodeCount: null as BigNumber | null,
     orderCount: null as BigNumber | null,
 
@@ -98,7 +109,8 @@ export class DarknodeDetails extends Record({
     multiAddress: "" as string,
     publicKey: "" as string,
     ethBalance: new BigNumber(0),
-    feesEarned: OrderedMap<Token, string>(),
+    feesEarned: OrderedMap<Token, BigNumber>(),
+    feesEarnedTotalEth: new BigNumber(0),
 
     averageGasUsage: 0,
     lastTopUp: null,

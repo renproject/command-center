@@ -1,15 +1,13 @@
 import * as React from "react";
 
 import { connect } from "react-redux";
+import { bindActionCreators, Dispatch } from "redux";
 
 import { ApplicationData } from "@Reducers/types";
 
 const metamaskIcon = require("../../styles/images/metamask.svg");
 
-interface StoreProps {
-}
-
-interface LoggedOutProps extends StoreProps {
+interface LoggedOutProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     onConnect: () => void;
     onCancel: () => void;
 }
@@ -46,9 +44,15 @@ class LoggedOutClass extends React.Component<LoggedOutProps, LoggedOutState> {
 }
 
 
-function mapStateToProps(state: ApplicationData): StoreProps {
-    return {
-    };
-}
+const mapStateToProps = (state: ApplicationData) => ({
+    store: {
+    },
+});
 
-export const LoggedOut = connect(mapStateToProps)(LoggedOutClass);
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+    actions: bindActionCreators({
+    }, dispatch),
+});
+
+
+export const LoggedOut = connect(mapStateToProps, mapDispatchToProps)(LoggedOutClass);
