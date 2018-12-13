@@ -49,7 +49,7 @@ class StatusPageClass extends React.Component<StatusPageProps, StatusPageState> 
         const { sdk, darknodeDetails, darknodeID } = this.props;
 
         return (
-            <div className="statuspage container">
+            <div className="statuspage">
                 {!darknodeDetails ? <Loading alt /> : <>
                     <div className="statuspage--banner">
                         <Blocky address={darknodeID} />

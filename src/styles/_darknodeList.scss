@@ -1,0 +1,77 @@
+.darknode-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+$card-height: 335px;
+$card-top-height: 60px;
+$card-bottom-height: 64px;
+$card-middle-height: $card-height - $card-top-height - $card-bottom-height;
+
+.darknode-card {
+    margin: 10px;
+
+    height: 335px;
+    width: 335px;
+    background-color: $blue-dark;
+
+    box-shadow: 2px 2px 14px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+
+    text-align: center;
+
+    color: #FFFFFF;
+
+
+    cursor: pointer;
+}
+
+.darknode-card--top {
+    height: $card-top-height;
+    width: 100%;
+    background-color: rgb(3, 24, 48);
+    display: block;
+}
+
+.darknode-card--middle {
+    height: $card-middle-height;
+}
+
+.darknode-card .blocky {
+    $border: 10px;
+    $width: 64px;
+    border-radius: 50%;
+    width: $width + 2*$border;
+    border: $border solid $blue-dark;
+
+    margin-top: -$width / 2;
+}
+
+.darknode-card--name {
+    font-weight: normal;
+    font-size: 19px;
+}
+
+.darknode-card--status {
+    font-size: 15px;
+
+    color: #FFFFFF;
+    mix-blend-mode: normal;
+    opacity: 0.4;
+}
+
+.darknode-card--bottom {
+    height: $card-bottom-height;
+    display: flex;
+
+
+    >div {
+        border-top: 2px solid #001B3A;
+        flex-grow: 1;
+    }
+
+    >div+div {
+        border-left: 2px solid #001B3A;
+    }
+}

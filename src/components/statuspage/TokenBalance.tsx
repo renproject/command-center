@@ -11,6 +11,7 @@ interface TokenBalanceProps extends ReturnType<typeof mapStateToProps>, ReturnTy
     token: Token;
     amount: string | BigNumber;
     convertTo?: Currency;
+    digits?: number;
 }
 
 interface TokenBalanceState {
@@ -22,7 +23,7 @@ class TokenBalanceClass extends React.Component<TokenBalanceProps, TokenBalanceS
     }
 
     public render(): JSX.Element {
-        const { token, convertTo, store } = this.props;
+        const { token, convertTo, store, digits } = this.props;
         const { tokenPrices } = store;
 
         const tokenDetails = TokenDetails.get(token, undefined);
@@ -31,7 +32,7 @@ class TokenBalanceClass extends React.Component<TokenBalanceProps, TokenBalanceS
             .div(new BigNumber(Math.pow(10, tokenDetails ? tokenDetails.digits : 0)));
 
         if (!convertTo) {
-            return <>{amount.toFixed()}</>;
+            return <>{digits !== undefined ? amount.toFixed(digits) : amount.toFixed()}</>;
         }
 
         if (!tokenPrices) {
@@ -48,16 +49,17 @@ class TokenBalanceClass extends React.Component<TokenBalanceProps, TokenBalanceS
             return <i>ERR</i>;
         }
 
-        let digits;
+        let defaultDigits;
         switch (convertTo) {
             case Currency.BTC:
             case Currency.ETH:
-                digits = 8; break;
+                defaultDigits = 8; break;
             default:
-                digits = 2;
+                defaultDigits = 2;
         }
+        defaultDigits = digits === undefined ? defaultDigits : digits;
 
-        return <>{amount.multipliedBy(price).toFixed(digits)}</>;
+        return <>{amount.multipliedBy(price).toFixed(defaultDigits)}</>;
     }
 }
 

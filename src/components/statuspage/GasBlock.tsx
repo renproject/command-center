@@ -34,8 +34,7 @@ class GasBlockClass extends React.Component<GasBlockProps, GasBlockState> {
         const { sdk, darknodeDetails } = this.props;
         const { showAdvanced } = this.state;
 
-        const gasValueInWei = darknodeDetails.ethBalance.toString();
-        const gasValue = (new BigNumber(gasValueInWei).div(new BigNumber(Math.pow(10, 18)))).toFixed(3);
+        const gasValue = (darknodeDetails.ethBalance.div(new BigNumber(Math.pow(10, 18)))).toFixed(3);
 
         return (
 
