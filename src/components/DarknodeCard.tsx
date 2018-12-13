@@ -66,7 +66,7 @@ class DarknodeCardClass extends React.Component<DarknodeCardProps, DarknodeCardS
                         <div className="darknode-card--bottom">
                             <div className="darknode-card--rewards">
                                 <FontAwesomeIcon icon={faStar} className="darknode-card--bottom--icon" />
-                                <span className="currency-value">$<TokenBalance token={Token.ETH} convertTo={quoteCurrency} amount={darknodeDetails.feesEarnedTotalEth} /></span> <span className="currency-symbol">USD</span>
+                                <span className="currency-value">$<TokenBalance token={Token.ETH} convertTo={quoteCurrency} amount={darknodeDetails.feesEarnedTotalEth} /></span> <span className="currency-symbol">{quoteCurrency.toUpperCase()}</span>
                             </div>
                             <div className="darknode-card--gas">
                                 <FontAwesomeIcon icon={faFire} className="darknode-card--bottom--icon" />

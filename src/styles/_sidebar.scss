@@ -1,60 +1,31 @@
-.sidebar {
-    position: fixed;
-    top: 0;
-    border-right: 2px solid transparentize(#58585B, 1 - 0.2);
-    padding: 30px 0;
-    height: 100vh;
-    overflow: scroll;
+// .sidebar ul {
+//     padding: 0;
+// }
 
-    overflow: scroll;
-    overflow-x: hidden;
-}
+$collapsed-width: 80px;
 
-.sidebar ul {
-    padding: 0;
-}
-
-.sidebar::-webkit-scrollbar {
-    width: 0px;
-    /* remove scrollbar space */
-    background: transparent;
-    /* optional: just make scrollbar invisible */
-}
-
-/* optional: show position indicator in red */
-.sidebar::-webkit-scrollbar-thumb {
-    background: #FF0000;
-}
-
-$li-width: 42px;
-$li-padding: 30px;
 
 .sidebar .blocky {
-    width: $li-width;
-    border-radius: 20px;
+    width: 42px;
+    border-radius: 50%;
 }
 
 .sidebar li {
-    height: 80px;
-    padding-left: $li-padding;
-    padding-right: $li-padding;
-    border-right: 4px solid rgba(0, 0, 0, 0);
+    height: 100px;
+    border-left: 4px solid rgba(0, 0, 0, 0);
 
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: left;
 
     &:hover {
-        border-right: 4px solid transparentize($blue-bright, 1 - 0.5);
+        border-left: 4px solid transparentize($blue-bright, 1 - 0.5);
+        background-color: $blue-dark;
     }
 }
 
-.sidebar li.sidebar--active {
-    border-right: 4px solid $blue-bright;
-}
-
-.sidebar--nav {
-    margin-bottom: 50px;
+.sidebar .sidebar--nav li {
+    height: 50px;
 }
 
 .sidebar--nav--icon {
@@ -63,8 +34,159 @@ $li-padding: 30px;
     opacity: 0.4;
     font-size: 30px;
     text-align: center;
+}
 
-    >* {
-        width: 42px;
+.sidebar--nav {
+    margin-bottom: 50px;
+}
+
+
+
+
+.sidebar--nav--icon {
+    font-size: 2em;
+}
+
+.sidebar--nav--icon {
+    position: relative;
+    display: table-cell;
+    width: 60px;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 20px;
+}
+
+
+.sidebar:hover {
+    width: 250px;
+    overflow-x: visible;
+
+}
+
+.sidebar li.sidebar--active {
+    border-left: 4px solid $blue-bright;
+}
+
+.sidebar--icon {
+    width: $collapsed-width - 4px * 2;
+    margin-right: 4px;
+    display: flex;
+    justify-content: center;
+}
+
+
+.sidebar {
+    position: fixed;
+    background-color: $blue-darker;
+    border-right: 2px solid transparentize(#58585B, 1 - 0.2);
+    padding: 30px 0;
+
+    top: 0;
+    bottom: 0;
+    left: 0;
+
+    font-weight: normal;
+    font-size: 14px;
+
+    color: #FFFFFF;
+
+    height: 100vh;
+    width: $collapsed-width;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    -webkit-transition: width .05s linear;
+    transition: width .05s linear;
+    -webkit-transform: translateZ(0) scale(1, 1);
+    z-index: 1000;
+}
+
+.sidebar::-webkit-scrollbar {
+    width: 0px;
+    // remove scrollbar
+    background: transparent;
+}
+
+.sidebar>ul {
+    margin: 7px 0;
+}
+
+.sidebar li {
+    position: relative;
+    width: 250px - 2px;
+}
+
+.sidebar li a {
+    position: relative;
+    display: table;
+    border-collapse: collapse;
+    border-spacing: 0;
+
+    font-weight: normal;
+    font-size: 14px;
+
+    color: #FFFFFF;
+
+    -webkit-transform: translateZ(0) scale(1, 1);
+    -webkit-transition: all .1s linear;
+    transition: all .1s linear;
+
+}
+
+.sidebar .sidebar--text {
+    width: 250px - $collapsed-width;
+    font-weight: normal;
+    font-size: 15px;
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+
+    color: #FFFFFF;
+
+    .sidebar--text--details {
+        font-size: 12px;
+        display: flex;
+
+        >* {
+            display: flex;
+        }
     }
+
+    .currency-symbol {
+        font-weight: normal;
+
+        color: #FFFFFF;
+
+        mix-blend-mode: normal;
+        opacity: 0.4;
+
+        margin-left: 5px;
+    }
+
+    .currency-value {
+        font-weight: bold;
+
+        color: #FFFFFF;
+    }
+
+    .sidebar--text--icon {
+        mix-blend-mode: normal;
+        opacity: 0.4;
+
+        margin-right: 0px;
+    }
+}
+
+nav {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
+
+nav ul,
+nav li {
+    outline: 0;
+    margin: 0;
+    padding: 0;
 }
