@@ -19,9 +19,9 @@ export const storeDarknodeList = createStandardAction("STORE_DARKNODE_LIST")<Sto
 export type ClearDarknodeListAction = () => void;
 export const clearDarknodeList = createStandardAction("CLEAR_DARKNODE_LIST")();
 
-interface StoreSelectedDarknodePayload { selectedDarknode: string; }
-export type StoreSelectedDarknodeAction = (payload: StoreSelectedDarknodePayload) => void;
-export const storeSelectedDarknode = createStandardAction("STORE_SELECTED_DARKNODE")<StoreSelectedDarknodePayload>();
+interface StoreQuoteCurrencyPayload { quoteCurrency: Currency; }
+export type StoreQuoteCurrencyAction = (payload: StoreQuoteCurrencyPayload) => void;
+export const storeQuoteCurrency = createStandardAction("SORE_QUOTE_CURRENCY")<StoreQuoteCurrencyPayload>();
 
 interface SetDarknodeDetailsPayload { darknodeDetails: DarknodeDetails; }
 export type SetDarknodeDetailsAction = (payload: SetDarknodeDetailsPayload) => void;

@@ -5,7 +5,6 @@ import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import { bindActionCreators } from "redux";
 
-import { storeSelectedDarknode, } from "@Actions/statistics/operatorActions";
 import { ApplicationData, DarknodeDetails } from "@Reducers/types";
 import { DarknodeCard } from "./DarknodeCard";
 import { Loading } from "./Loading";
@@ -49,7 +48,6 @@ const mapStateToProps = (state: ApplicationData) => ({
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     actions: bindActionCreators({
-        storeSelectedDarknode,
     }, dispatch),
 });
 
