@@ -16,6 +16,7 @@ import { updateAllDarknodeStatistics, updateOperatorStatistics } from "@Actions/
 import { login, lookForLogout } from "@Actions/trader/accountActions";
 import { ApplicationData } from "@Reducers/types";
 import { Darknode } from "./pages/Darknode";
+import { LoggingIn } from "./pages/LoggingIn";
 
 interface AppProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
 }
@@ -147,18 +148,24 @@ class AppClass extends React.Component<AppProps, AppState> {
 
     public withAccount<T extends React.ComponentClass>(component: T): React.ComponentClass | React.StatelessComponent {
         const { address } = this.props.store;
-        const { checkingReLogin } = this.state;
+        // const { checkingReLogin } = this.state;
 
-        // show a loading spinner if retrieving the web3 instance is taking a
-        // while (for example, when requesting MetaMask access)
-        if (checkingReLogin) {
-            return () => <LoggingOut />;
+        if (address) {
+            return component;
+        } else {
+            return LoggingIn;
         }
 
-        if (!address) {
-            return () => <Redirect to="/" />;
-        }
-        return component;
+        // // show a loading spinner if retrieving the web3 instance is taking a
+        // // while (for example, when requesting MetaMask access)
+        // if (checkingReLogin) {
+        //     return () => <LoggingOut />;
+        // }
+
+        // if (!address) {
+        //     return () => <Redirect to="/" />;
+        // }
+        // return component;
     }
 
     public render(): JSX.Element {
@@ -167,7 +174,7 @@ class AppClass extends React.Component<AppProps, AppState> {
                 {/* history={history}>*/}
                 <div className="app">
                     <ScrollToTop />
-                    <Route path="/" exact component={Home} />
+                    <Route path="/" exact component={this.withAccount(Home)} />
                     <Route path="/darknode/:darknodeID" exact component={Darknode} />
                     <Route path="/loading" component={LoggingOut} />
                     <Alerts />

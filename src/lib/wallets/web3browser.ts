@@ -5,16 +5,17 @@ import { Provider } from "web3/providers";
 import { networkData } from "@Library/network";
 import { WalletDetail } from "@Library/wallets/wallet";
 import { getAccounts, getNetwork } from "@Library/web3";
+import { Language } from "@Root/languages/language";
 
-export const ErrorNoWeb3 = "Please ensure you are using MetaMask or a Web3 browser.";
-export const ErrorNoAccounts = "No accounts found. Please ensure your wallet is unlocked.";
-export const ErrorAccountAccessRejected = "Please allow RenEx to access your Ethereum wallet.";
-export const ErrorWrongNetwork = `Please ensure you are on the ${networkData.ethNetworkLabel} network.`;
+export const ErrorNoWeb3 = Language.wallet.mustInstallMetaMask;
+export const ErrorNoAccounts = Language.wallet.noAccounts;
+export const ErrorAccountAccessRejected = Language.wallet.mustConnect;
+export const ErrorWrongNetwork = Language.wallet.mustChangeNetwork;
 
 export const MetaMask: WalletDetail = {
-    name: "MetaMask",
+    name: Language.wallet.metamask,
     slug: "metamask",
-    description: "Sign in using the MetaMask extension or a Web3 browser",
+    description: Language.wallet.metamaskDescription,
     enabled: true,
     getWeb3Provider: async (): Promise<[Provider, string[] | null]> => {
         const provider = await getInjectedWeb3Provider();
@@ -23,7 +24,6 @@ export const MetaMask: WalletDetail = {
 };
 
 export const getInjectedWeb3Provider = async (): Promise<Provider> => {
-
     let provider;
 
     if (window.ethereum) {
