@@ -7,7 +7,6 @@ import RenExSDK, { OrderSettlement } from "@renex/renex";
 import { List, Map, OrderedMap } from "immutable";
 
 import { Record } from "@Library/general/record";
-import { Wallet } from "@Library/wallets/wallet";
 import BigNumber from "bignumber.js";
 
 import { Token } from "../components/statuspage/lib/tokens";
@@ -27,8 +26,8 @@ export interface ApplicationData {
 export class TraderData extends Record({
     // Login data
     address: null as string | null,
+    web3BrowserName: "MetaMask",
     sdk: null as RenExSDK | null,
-    wallet: null as Wallet | null,
 }) implements Serializable<TraderData> {
     public serialize(): string {
         return JSON.stringify({
@@ -69,7 +68,6 @@ export class Alert extends Record({
 
 export class AlertData extends Record({
     alert: { message: "" } as Alert,
-    pendingAlerts: Map<string, () => Promise<void>>(),
 }) { }
 
 export class PopupData extends Record({

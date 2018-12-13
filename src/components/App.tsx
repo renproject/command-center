@@ -129,10 +129,6 @@ class AppClass extends React.Component<AppProps, AppState> {
         const callUpdateDarknodeStatistics = async () => {
             const { sdk, tokenPrices, darknodeList } = this.props.store;
             let timeout = 1;
-            console.log("!!!");
-            console.log(sdk && true);
-            console.log(tokenPrices && true);
-            console.log(darknodeList && true);
             if (sdk && tokenPrices && darknodeList) {
                 try {
                     await this.props.actions.updateAllDarknodeStatistics(sdk, darknodeList, tokenPrices);
@@ -183,9 +179,7 @@ class AppClass extends React.Component<AppProps, AppState> {
 const mapStateToProps = (state: ApplicationData) => ({
     store: {
         address: state.trader.address,
-        pendingAlerts: state.alert.pendingAlerts,
         sdk: state.trader.sdk,
-        wallet: state.trader.wallet,
         tokenPrices: state.statistics.tokenPrices,
         darknodeList: state.statistics.darknodeList,
     },

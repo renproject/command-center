@@ -7,35 +7,29 @@ import { ApplicationData } from "@Reducers/types";
 
 const metamaskIcon = require("../../styles/images/metamask.svg");
 
-interface NoMetaMaskProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
+interface NoWeb3PopupProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
+    message?: string;
     onConnect: () => void;
     onCancel: () => void;
 }
 
-interface NoMetaMaskState {
+interface NoWeb3PopupState {
 }
 
-/**
- * NoMetaMask is a popup component for prompting a user to select an
- * Ethereum account
- */
-class NoMetaMaskClass extends React.Component<NoMetaMaskProps, NoMetaMaskState> {
-    constructor(props: NoMetaMaskProps) {
+class NoWeb3PopupClass extends React.Component<NoWeb3PopupProps, NoWeb3PopupState> {
+    constructor(props: NoWeb3PopupProps) {
         super(props);
         this.state = {
         };
     }
 
-    public async componentDidMount() {
-        //
-    }
-
     public render(): JSX.Element {
+        const { message } = this.props;
         return (
-            <div className="popup no-metamask">
-                <img className="no-metamask--logo" src={metamaskIcon} />
+            <div className="popup no-web3">
+                <img className="no-web3--logo" src={metamaskIcon} />
                 <h2>You must connect a wallet to access your darknodes.</h2>
-                <p>The Darknode Command Center requires permission to view your account address.</p>
+                <p>{message || "The Darknode Command Center requires permission to view your account address."}</p>
                 <button className="styled-button styled-button--light" onClick={this.props.onCancel}>Not now</button>
                 <button className="styled-button" onClick={this.props.onConnect}>Connect</button>
             </div>
@@ -54,4 +48,4 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     }, dispatch),
 });
 
-export const NoMetaMask = connect(mapStateToProps, mapDispatchToProps)(NoMetaMaskClass);
+export const NoWeb3Popup = connect(mapStateToProps, mapDispatchToProps)(NoWeb3PopupClass);
