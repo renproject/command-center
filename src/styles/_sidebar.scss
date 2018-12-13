@@ -36,12 +36,35 @@ $li-padding: 30px;
 
 .sidebar li {
     height: 80px;
-    width: $li-width + ($li-padding * 2);
     padding-left: $li-padding;
     padding-right: $li-padding;
-    border-right: 4px solid rgba(0, 0, 0, 0); // FIXME
+    border-right: 4px solid rgba(0, 0, 0, 0);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+        border-right: 4px solid transparentize($blue-bright, 1 - 0.5);
+    }
 }
 
 .sidebar li.sidebar--active {
     border-right: 4px solid $blue-bright;
+}
+
+.sidebar--nav {
+    margin-bottom: 50px;
+}
+
+.sidebar--nav--icon {
+    color: #FFFFFF;
+    mix-blend-mode: normal;
+    opacity: 0.4;
+    font-size: 30px;
+    text-align: center;
+
+    >* {
+        width: 42px;
+    }
 }

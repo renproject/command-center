@@ -15,6 +15,7 @@ import { updateTokenPrices } from "@Actions/statistics/networkActions";
 import { updateAllDarknodeStatistics, updateOperatorStatistics } from "@Actions/statistics/operatorActions";
 import { login, lookForLogout } from "@Actions/trader/accountActions";
 import { ApplicationData } from "@Reducers/types";
+import { Darknode } from "./pages/Darknode";
 
 interface AppProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
 }
@@ -167,6 +168,7 @@ class AppClass extends React.Component<AppProps, AppState> {
                 <div className="app">
                     <ScrollToTop />
                     <Route path="/" exact component={Home} />
+                    <Route path="/darknode/:darknodeID" exact component={Darknode} />
                     <Route path="/loading" component={LoggingOut} />
                     <Alerts />
                     <Popup />

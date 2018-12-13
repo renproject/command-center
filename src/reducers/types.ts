@@ -87,18 +87,13 @@ export type TokenPrices = Map<Token, Map<Currency, number>>;
 
 export class StatisticsData extends Record({
     tokenPrices: null as TokenPrices | null,
+    quoteCurrency: Currency.USD,
 
     darknodeCount: null as BigNumber | null,
     orderCount: null as BigNumber | null,
 
     darknodeDetails: Map<string, DarknodeDetails>(),
     darknodeList: null as List<string> | null,
-
-    // Network details
-    // minimumBond: 0,
-
-    // Interaction data
-    selectedDarknode: null as string | null,
 }) { }
 
 

@@ -4,9 +4,7 @@ import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
 import { Header } from "@Components/Header";
-import { Loading } from "@Components/Loading";
 import { Sidebar } from "@Components/Sidebar";
-import { StatusPage } from "@Components/statuspage/StatusPage";
 
 import { setAlert } from "@Actions/alert/alertActions";
 import { login } from "@Actions/trader/accountActions";
@@ -33,27 +31,17 @@ class HomeClass extends React.Component<HomeProps, HomeState> {
     }
 
     public render(): JSX.Element {
-        const { address, selectedDarknode, sdk, darknodeDetails, darknodeList } = this.props.store;
-        const { checkingVerification } = this.state;
-        const details = selectedDarknode ? darknodeDetails.get(selectedDarknode, null) : null;
+        const { address, sdk, darknodeDetails, darknodeList } = this.props.store;
 
         return (
             <div className="login">
-                {checkingVerification &&
-                    <>
-                        <div className="popup">
-                            <Loading />
-                        </div>
-                        <div className="overlay" />
-                    </>
-                }
                 <Header />
                 <div className="content" />
                 {sdk && address ?
                     <>
-                        <Sidebar />
+                        <Sidebar selectedDarknode={null} />
                         <div className="container">
-                            {selectedDarknode ? <StatusPage sdk={sdk} darknodeID={selectedDarknode} darknodeDetails={details} /> : <><DarknodeList darknodeDetails={darknodeDetails} darknodeList={darknodeList} /></>}
+                            <DarknodeList darknodeDetails={darknodeDetails} darknodeList={darknodeList} />
                         </div>
                     </> :
                     <></>
@@ -69,7 +57,6 @@ const mapStateToProps = (state: ApplicationData) => ({
         darknodeDetails: state.statistics.darknodeDetails,
         darknodeList: state.statistics.darknodeList,
         sdk: state.trader.sdk,
-        selectedDarknode: state.statistics.selectedDarknode,
     },
 });
 
