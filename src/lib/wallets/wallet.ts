@@ -2,22 +2,14 @@ import Web3 from "web3";
 import ProviderEngine from "web3-provider-engine";
 import FetchSubprovider from "web3-provider-engine/subproviders/fetch";
 
-import { List, Map } from "immutable";
+import { List } from "immutable";
 import { Provider } from "web3/providers";
 
 import { clearPopup } from "@Actions/popup/popupActions";
 import { INFURA_URL } from "@Library/network";
-import { MetaMask } from "@Library/wallets/web3browser";
 import { store } from "index";
 
 export const ErrorCanceledByUser = "Transaction canceled";
-
-export enum Wallet {
-    MetaMask,
-}
-
-// This defines the order in which the wallets are rendered
-export const WalletList = List([Wallet.MetaMask]);
 
 export interface WalletDetail {
     name: string;
@@ -52,6 +44,3 @@ export function PopupPromise<T>(fn: (resolve: (value?: T | PromiseLike<T>) => vo
     });
 }
 
-export const WalletDetails: Map<Wallet, WalletDetail> = Map<Wallet, WalletDetail>()
-    .set(Wallet.MetaMask, MetaMask)
-    ;

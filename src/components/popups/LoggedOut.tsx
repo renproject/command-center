@@ -32,8 +32,8 @@ class LoggedOutClass extends React.Component<LoggedOutProps, LoggedOutState> {
 
     public render(): JSX.Element {
         return (
-            <div className="popup no-metamask">
-                <img className="no-metamask--logo" src={metamaskIcon} />
+            <div className="popup no-web3">
+                <img className="no-web3--logo" src={metamaskIcon} />
                 <h2>Your Web3 account was logged out.</h2>
                 <p>Connect again to continue operating your darknodes.</p>
                 <button className="styled-button styled-button--light" onClick={this.props.onCancel}>Not now</button>

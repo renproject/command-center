@@ -212,29 +212,29 @@
     @extend .styled-button;
 }
 
-.no-metamask {
+.no-web3 {
     width: 450px;
 }
 
-.no-metamask h2 {
+.no-web3 h2 {
     font-size: 24px;
     font-weight: bold;
     margin: 20px 0;
 }
 
-.no-metamask p {
+.no-web3 p {
     font-size: 16px;
     margin: 20px 0;
 }
 
-.no-metamask button {
+.no-web3 button {
     margin: 20px 0;
     min-width: 200px;
     font-size: 18px;
     height: 40px;
 }
 
-.no-metamask--logo {
+.no-web3--logo {
     width: 110px;
     margin: 20px 0;
 }

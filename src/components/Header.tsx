@@ -33,7 +33,7 @@ class HeaderClass extends React.Component<HeaderProps, HeaderState> {
     }
 
     public render(): JSX.Element {
-        const { address } = this.props.store;
+        const { address, web3BrowserName } = this.props.store;
         const { accountDropdownVisible, languageDropdownVisible, copied } = this.state;
         const route = this.props.location.pathname;
 
@@ -74,7 +74,7 @@ class HeaderClass extends React.Component<HeaderProps, HeaderState> {
                                     {address && <Blocky address={address} />}
                                 </div>
                                 <div className="header--account--right">
-                                    <div className={`header--account--type ${address ? "header--account--connected" : ""}`}>MetaMask</div>
+                                    <div className={`header--account--type ${address ? "header--account--connected" : ""}`}>{web3BrowserName}</div>
                                     {address ?
                                         <div className="header--account--address">{address.substring(0, 8)}...{address.slice(-5)}</div> :
                                         <div className="header--account--address">Not connected</div>
@@ -142,6 +142,7 @@ class HeaderClass extends React.Component<HeaderProps, HeaderState> {
 const mapStateToProps = (state: ApplicationData) => ({
     store: {
         address: state.trader.address,
+        web3BrowserName: state.trader.web3BrowserName,
     },
 });
 

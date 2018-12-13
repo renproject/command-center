@@ -10,12 +10,10 @@ import { history } from "@Library/history";
 
 import { clearPopup, setPopup } from "@Actions/popup/popupActions";
 import { clearDarknodeList, updateOperatorStatistics } from "@Actions/statistics/operatorActions";
-import { storeWallet } from "@Actions/trader/walletActions";
 import { LoggedOut } from "@Components/popups/LoggedOut";
-import { NoMetaMask } from "@Components/popups/NoMetaMask";
-import { networkData } from "@Library/network";
+import { NoWeb3Popup } from "@Components/popups/NoWeb3Popup";
 import { getInjectedWeb3Provider } from "@Library/wallets/web3browser";
-import { getAccounts, getNetwork } from "@Library/web3";
+import { getAccounts } from "@Library/web3";
 
 interface StoreSDKPayload { sdk: RenExSDK | null; }
 export type StoreSDKAction = (payload: StoreSDKPayload) => void;
@@ -25,20 +23,27 @@ type StoreAddressPayload = string | null;
 export type StoreAddressAction = (payload: StoreAddressPayload) => void;
 export const storeAddress = createStandardAction("STORE_ADDRESS")<StoreAddressPayload>();
 
+type StoreWeb3BrowserNamePayload = string;
+export type StoreWeb3BrowserNameAction = (payload: StoreWeb3BrowserNamePayload) => void;
+export const storeWeb3BrowserName = createStandardAction("STORE_WEB3_BROWSER_NAME")<StoreWeb3BrowserNamePayload>();
+
 export type LoginAction = (options: { redirect: boolean }) => (dispatch: Dispatch) => Promise<void>;
 export const login: LoginAction = (options) => async (dispatch) => {
+
+    let cancelled = false;
 
     const onClick = () => login({ redirect: false })(dispatch);
     const onCancel = () => {
         dispatch(clearPopup());
+        cancelled = true;
     };
 
-    // Show popup if getInjectedWeb3Provider doesn't return immediately
+    // Show popup if getInjectedWeb3Provider doesn't return immediately, since
+    // the Web3 browser is probably prompting the user to approve access
     const timeout = setTimeout(() => {
-        dispatch(
-            setPopup(
-                { popup: <NoMetaMask onConnect={onClick} onCancel={onCancel} />, onCancel }
-            ));
+        dispatch(setPopup(
+            { popup: <NoWeb3Popup onConnect={onClick} onCancel={onCancel} />, onCancel }
+        ));
     }, 200);
 
 
@@ -46,7 +51,12 @@ export const login: LoginAction = (options) => async (dispatch) => {
     try {
         provider = await getInjectedWeb3Provider();
     } catch (error) {
-        // Injected Web3 request was denied
+        clearTimeout(timeout);
+        if (!cancelled) {
+            dispatch(setPopup(
+                { popup: <NoWeb3Popup onConnect={onClick} onCancel={onCancel} message={error.message} />, onCancel }
+            ));
+        }
         return;
     }
 
@@ -64,19 +74,6 @@ export const login: LoginAction = (options) => async (dispatch) => {
     // TODO: Add support for selecting other accounts other than first
     const address = accounts[0];
 
-    // These are repeated in login, but the page will log-out if the
-    // address is not available immediately
-
-    // Check that the provider is using the correct network
-    if (await getNetwork(new Web3(provider)) !== networkData.ethNetwork) {
-        // dispatch(setAlert({
-        //     alert: new Alert({ message: `Invalid Web3 network (expected ${networkData.ethNetworkLabel})` })
-        // }));
-
-        logout({ reload: false })(dispatch).catch(console.error);
-        return;
-    }
-
     const sdk = new RenExSDK(provider, { network: "testnet" });
     dispatch(storeSDK({ sdk }));
     sdk.updateProvider(provider);
@@ -84,6 +81,35 @@ export const login: LoginAction = (options) => async (dispatch) => {
 
     // Store address in the store (and in local storage)
     dispatch(storeAddress(address));
+
+
+    /*
+    // Check for mobile
+    const { userAgent: ua } = navigator
+    const isIOS = ua.includes('iPhone') // “iPhone OS”
+    const isAndroid = ua.includes('Android')
+    */
+
+    // Check for web3 enabled browsers
+    let web3BrowserName = "Web3 Browser";
+    // tslint:disable:no-any
+    if ((provider as any).isToshi) {
+        // Toshi has become Coinbase wallet
+        web3BrowserName = "Coinbase Wallet";
+    } else if ((provider as any).isCipher) {
+        web3BrowserName = "Cipher";
+    } else if ((provider as any).isStatus) {
+        web3BrowserName = "Status";
+    } else if ((provider as any).isTrust) {
+        web3BrowserName = "Trust";
+    } else if ((provider as any).isMetaMask) {
+        web3BrowserName = "MetaMask";
+    } else if ((window as any).mist) {
+        web3BrowserName = "Mist"; // Not tested
+    }
+    // tslint:enable:no-any
+
+    dispatch(storeWeb3BrowserName(web3BrowserName));
 
     updateOperatorStatistics(sdk)(dispatch)
         .catch(console.error);
@@ -100,9 +126,6 @@ export const logout: LogoutAction = (options) => async (dispatch) => {
 
     // Clear session account in store (and in local storage)
     dispatch(storeAddress(null));
-
-    // Clear Redux stores
-    dispatch(storeWallet({ wallet: null }));
 
     // Use read-only provider and clear address
     dispatch(storeSDK({ sdk: null }));

@@ -10,7 +10,7 @@ import { StatusPage } from "@Components/statuspage/StatusPage";
 
 import { setAlert } from "@Actions/alert/alertActions";
 import { login } from "@Actions/trader/accountActions";
-import { storeWallet } from "@Actions/trader/walletActions";
+import { DarknodeList } from "@Components/DarknodeList";
 import { ApplicationData } from "@Reducers/types";
 
 interface HomeProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
@@ -32,12 +32,8 @@ class HomeClass extends React.Component<HomeProps, HomeState> {
         };
     }
 
-    public async componentDidMount(): Promise<void> {
-        this.props.actions.storeWallet({ wallet: null });
-    }
-
     public render(): JSX.Element {
-        const { address, selectedDarknode, sdk, darknodeDetails } = this.props.store;
+        const { address, selectedDarknode, sdk, darknodeDetails, darknodeList } = this.props.store;
         const { checkingVerification } = this.state;
         const details = selectedDarknode ? darknodeDetails.get(selectedDarknode, null) : null;
 
@@ -56,7 +52,7 @@ class HomeClass extends React.Component<HomeProps, HomeState> {
                 {sdk && address ?
                     <>
                         <Sidebar />
-                        {selectedDarknode ? <StatusPage sdk={sdk} darknodeID={selectedDarknode} darknodeDetails={details} /> : <></>}
+                        {selectedDarknode ? <StatusPage sdk={sdk} darknodeID={selectedDarknode} darknodeDetails={details} /> : <><DarknodeList darknodeDetails={darknodeDetails} darknodeList={darknodeList} /></>}
                     </> :
                     <></>
                 }
@@ -69,6 +65,7 @@ const mapStateToProps = (state: ApplicationData) => ({
     store: {
         address: state.trader.address,
         darknodeDetails: state.statistics.darknodeDetails,
+        darknodeList: state.statistics.darknodeList,
         sdk: state.trader.sdk,
         selectedDarknode: state.statistics.selectedDarknode,
     },
@@ -77,7 +74,6 @@ const mapStateToProps = (state: ApplicationData) => ({
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     actions: bindActionCreators({
         login,
-        storeWallet,
         setAlert,
     }, dispatch),
 });
