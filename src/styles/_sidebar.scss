@@ -3,6 +3,7 @@
 // }
 
 $collapsed-width: 80px;
+$full-width: 360px;
 
 
 .sidebar .blocky {
@@ -58,7 +59,7 @@ $collapsed-width: 80px;
 
 
 .sidebar:hover {
-    width: 250px;
+    width: $full-width;
     overflow-x: visible;
 
 }
@@ -94,10 +95,14 @@ $collapsed-width: 80px;
     width: $collapsed-width;
     overflow-x: hidden;
     overflow-y: scroll;
-    -webkit-transition: width .05s linear;
-    transition: width .05s linear;
+    -webkit-transition: width .1s linear;
+    transition: width .1s linear;
     -webkit-transform: translateZ(0) scale(1, 1);
     z-index: 1000;
+
+    a {
+        text-decoration: none;
+    }
 }
 
 .sidebar::-webkit-scrollbar {
@@ -112,7 +117,7 @@ $collapsed-width: 80px;
 
 .sidebar li {
     position: relative;
-    width: 250px - 2px;
+    width: $full-width - 2px;
 }
 
 .sidebar li a {
@@ -133,7 +138,7 @@ $collapsed-width: 80px;
 }
 
 .sidebar .sidebar--text {
-    width: 250px - $collapsed-width;
+    width: $full-width - $collapsed-width;
     font-weight: normal;
     font-size: 15px;
     display: flex;
@@ -146,15 +151,25 @@ $collapsed-width: 80px;
         font-size: 12px;
         display: flex;
 
-        >* {
+        >div {
             display: flex;
         }
+
+        >div+div {
+            margin-left: 20px;
+        }
+    }
+
+    .sidebar--text--rewards {
+        color: $green;
+    }
+
+    .sidebar--text--gas {
+        color: $red;
     }
 
     .currency-symbol {
         font-weight: normal;
-
-        color: #FFFFFF;
 
         mix-blend-mode: normal;
         opacity: 0.4;
@@ -164,15 +179,13 @@ $collapsed-width: 80px;
 
     .currency-value {
         font-weight: bold;
-
-        color: #FFFFFF;
     }
 
     .sidebar--text--icon {
         mix-blend-mode: normal;
         opacity: 0.4;
 
-        margin-right: 0px;
+        margin-right: 10px;
     }
 }
 

@@ -41,10 +41,12 @@ html {
     }
 }
 
+* {
+    font-family: 'PingFang SC', Helvetica, Arial, sans-serif;
+}
 
 body {
     font-size: 12px;
-    font-family: 'PingFang SC', Helvetica, Arial, sans-serif;
     margin: 0;
     background: $blue-darker;
     color: $dark-grey;

@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
 import { ApplicationData } from "@Reducers/types";
+import { Language } from "@Root/languages/language";
 
 const metamaskIcon = require("../../styles/images/metamask.svg");
 
@@ -28,8 +29,7 @@ class NoWeb3PopupClass extends React.Component<NoWeb3PopupProps, NoWeb3PopupStat
         return (
             <div className="popup no-web3">
                 <img className="no-web3--logo" src={metamaskIcon} />
-                <h2>You must connect a wallet to access your darknodes.</h2>
-                <p>{message || "The Darknode Command Center requires permission to view your account address."}</p>
+                <h2>{message || Language.wallet.mustConnect}</h2>
                 <button className="styled-button styled-button--light" onClick={this.props.onCancel}>Not now</button>
                 <button className="styled-button" onClick={this.props.onConnect}>Connect</button>
             </div>

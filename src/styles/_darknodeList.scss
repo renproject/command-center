@@ -81,23 +81,25 @@ $card-middle-height: $card-height - $card-top-height - $card-bottom-height;
         border-left: 2px solid #001B3A;
     }
 
+    .darknode-card--rewards {
+        font-size: 15px;
+        color: $green;
+    }
+
+    .darknode-card--gas {
+        font-size: 15px;
+        color: $red;
+    }
+
     .currency-symbol {
         font-weight: normal;
-        font-size: 15px;
-
-        color: #FFFFFF;
-
         mix-blend-mode: normal;
         opacity: 0.4;
-
         margin-left: 5px;
     }
 
     .currency-value {
         font-weight: bold;
-        font-size: 15px;
-
-        color: #FFFFFF;
     }
 
     .darknode-card--bottom--icon {
@@ -107,5 +109,23 @@ $card-middle-height: $card-height - $card-top-height - $card-bottom-height;
         opacity: 0.4;
 
         margin-right: 20px;
+    }
+}
+
+
+.background--darknode-list {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    z-index: -1;
+
+    align-items: center;
+
+    mix-blend-mode: normal;
+    opacity: 0.4;
+
+    .darknode-card {
+        cursor: initial;
     }
 }

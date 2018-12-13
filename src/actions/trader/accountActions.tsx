@@ -14,6 +14,7 @@ import { LoggedOut } from "@Components/popups/LoggedOut";
 import { NoWeb3Popup } from "@Components/popups/NoWeb3Popup";
 import { getInjectedWeb3Provider } from "@Library/wallets/web3browser";
 import { getAccounts } from "@Library/web3";
+import { Language } from "@Root/languages/language";
 
 interface StoreSDKPayload { sdk: RenExSDK | null; }
 export type StoreSDKAction = (payload: StoreSDKPayload) => void;
@@ -32,19 +33,36 @@ export const login: LoginAction = (options) => async (dispatch) => {
 
     let cancelled = false;
 
-    const onClick = () => login({ redirect: false })(dispatch);
+    const onClick = () => (login({ redirect: false })(dispatch));
     const onCancel = () => {
         dispatch(clearPopup());
         cancelled = true;
     };
 
+    let promptMessage: string | undefined;
+    try {
+        // tslint:disable-next-line:no-any
+        const ethereum = (window as any).ethereum;
+        if (ethereum && ethereum._metamask) {
+            if (ethereum._metamask.isUnlocked && !(await ethereum._metamask.isUnlocked())) {
+                promptMessage = Language.wallet.mustUnlock;
+            } else if (ethereum._metamask.isApproved && !(await ethereum._metamask.isApproved())) {
+                promptMessage = Language.wallet.mustConnect;
+            }
+        }
+    } catch (error) {
+        // ignore error
+    }
+
+    console.log(promptMessage);
+
     // Show popup if getInjectedWeb3Provider doesn't return immediately, since
     // the Web3 browser is probably prompting the user to approve access
     const timeout = setTimeout(() => {
         dispatch(setPopup(
-            { popup: <NoWeb3Popup onConnect={onClick} onCancel={onCancel} />, onCancel }
+            { popup: <NoWeb3Popup onConnect={onClick} onCancel={onCancel} message={promptMessage} />, onCancel }
         ));
-    }, 200);
+    }, 5 * 1000);
 
 
     let provider;
