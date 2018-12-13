@@ -38,7 +38,7 @@ class SidebarClass extends React.Component<SidebarProps> {
                                 {darknodeList && darknodeList.map((darknodeID) => {
                                     // tslint:disable-next-line:jsx-no-lambda FIXME
                                     return <li key={darknodeID} onClick={() => this.onClick(darknodeID)} className={darknodeID === selectedDarknode ? "sidebar--active" : ""}>
-                                        <Blocky address={darknodeID} />
+                                        <Blocky address={darknodeID} fgColor="#006FE8" bgColor="transparent" />
                                     </li>;
                                 }).toArray()}
                             </ul>

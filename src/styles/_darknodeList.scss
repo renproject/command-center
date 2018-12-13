@@ -45,6 +45,8 @@ $card-middle-height: $card-height - $card-top-height - $card-bottom-height;
     width: $width + 2*$border;
     border: $border solid $blue-dark;
 
+    background-color: $blue-dark;
+
     margin-top: -$width / 2;
 }
 
@@ -69,9 +71,41 @@ $card-middle-height: $card-height - $card-top-height - $card-bottom-height;
     >div {
         border-top: 2px solid #001B3A;
         flex-grow: 1;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 
     >div+div {
         border-left: 2px solid #001B3A;
+    }
+
+    .currency-symbol {
+        font-weight: normal;
+        font-size: 15px;
+
+        color: #FFFFFF;
+
+        mix-blend-mode: normal;
+        opacity: 0.4;
+
+        margin-left: 5px;
+    }
+
+    .currency-value {
+        font-weight: bold;
+        font-size: 15px;
+
+        color: #FFFFFF;
+    }
+
+    .darknode-card--bottom--icon {
+        font-size: 2em;
+
+        mix-blend-mode: normal;
+        opacity: 0.4;
+
+        margin-right: 20px;
     }
 }

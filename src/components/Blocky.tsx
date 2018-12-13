@@ -34,9 +34,8 @@ function blockies() {
     }
 
     function createColor() {
-        // saturation has a 1/4 change of being blue, or orange otherwise
-        const hRaw = rand();
-        const h = (hRaw * 360 >= 180 && hRaw * 360 < 260) ? hRaw * 50 + 200 : hRaw * 35 + 20;
+        // saturation goes from 0 to 360
+        const h = rand() * 360;
         // saturation goes from 40 to 100, it avoids greyish colors
         const s = ((rand() * 60) + 40) + "%";
         // lightness can be anything from 0 to 100, but probabilities are a bell curve around 50%
@@ -152,11 +151,17 @@ export class Blocky extends React.Component<Props, State> {
         this.canvas = null;
     }
 
-    public getOpts = (address: string) => ({
-        seed: address.toUpperCase(),
-        size: 8,
-        scale: 10,
-    })
+    public getOpts = (address: string) => {
+        const { fgColor, bgColor, spotColor } = this.props;
+        return {
+            seed: address.toUpperCase(),
+            size: 8,
+            scale: 10,
+            color: fgColor,
+            spotColor,
+            bgColor,
+        };
+    }
 
     public renderIcon = (address: string | null) => {
         if (address) {
@@ -196,6 +201,9 @@ export class Blocky extends React.Component<Props, State> {
 
 interface Props {
     address: string | null;
+    fgColor?: string,
+    bgColor?: string,
+    spotColor?: string,
 }
 
 interface State {
