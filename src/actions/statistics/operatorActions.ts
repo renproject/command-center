@@ -123,8 +123,8 @@ const getDarknodeStatus = async (sdk: RenExSDK, darknodeID: string): Promise<str
     });
 };
 
-export type UpdateDarknodeStatisticsAction = (sdk: RenExSDK, darknodeID: string, tokenPrices: TokenPrices) => (dispatch: Dispatch) => Promise<void>;
-export const updateDarknodeStatistics: UpdateDarknodeStatisticsAction = (sdk, darknodeID, tokenPrices) => async (dispatch) => {
+export type UpdateDarknodeStatisticsAction = (sdk: RenExSDK, darknodeID: string, tokenPrices: TokenPrices, index?: number) => (dispatch: Dispatch) => Promise<void>;
+export const updateDarknodeStatistics: UpdateDarknodeStatisticsAction = (sdk, darknodeID, tokenPrices, index?) => async (dispatch) => {
     // Get eth Balance
     const ethBalanceBN = await sdk.getWeb3().eth.getBalance(darknodeID);
     const ethBalance = new BigNumber(ethBalanceBN.toString());
@@ -138,6 +138,7 @@ export const updateDarknodeStatistics: UpdateDarknodeStatisticsAction = (sdk, da
 
     const darknodeDetails = new DarknodeDetails({
         ID: darknodeID,
+        name: `Darknode${index ? ` ${index}` : ""}`,
         multiAddress: "" as string,
         publicKey: "" as string,
         ethBalance,
@@ -157,7 +158,7 @@ export const updateDarknodeStatistics: UpdateDarknodeStatisticsAction = (sdk, da
 
 export type UpdateAllDarknodeStatisticsAction = (sdk: RenExSDK, darknodeList: List<string>, tokenPrices: TokenPrices) => (dispatch: Dispatch) => Promise<void>;
 export const updateAllDarknodeStatistics: UpdateAllDarknodeStatisticsAction = (sdk, darknodeList, tokenPrices) => async (dispatch) => {
-    await Promise.all(darknodeList.map((darknodeID) => {
-        return updateDarknodeStatistics(sdk, darknodeID, tokenPrices)(dispatch);
+    await Promise.all(darknodeList.map((darknodeID, index) => {
+        return updateDarknodeStatistics(sdk, darknodeID, tokenPrices, index)(dispatch);
     }).toArray());
 };

@@ -52,7 +52,9 @@ class HomeClass extends React.Component<HomeProps, HomeState> {
                 {sdk && address ?
                     <>
                         <Sidebar />
-                        {selectedDarknode ? <StatusPage sdk={sdk} darknodeID={selectedDarknode} darknodeDetails={details} /> : <><DarknodeList darknodeDetails={darknodeDetails} darknodeList={darknodeList} /></>}
+                        <div className="container">
+                            {selectedDarknode ? <StatusPage sdk={sdk} darknodeID={selectedDarknode} darknodeDetails={details} /> : <><DarknodeList darknodeDetails={darknodeDetails} darknodeList={darknodeList} /></>}
+                        </div>
                     </> :
                     <></>
                 }

@@ -103,9 +103,10 @@ export class StatisticsData extends Record({
 
 
 export class DarknodeDetails extends Record({
-    ID: "" as string,
-    multiAddress: "" as string,
-    publicKey: "" as string,
+    ID: "",
+    name: "Darknode",
+    multiAddress: "",
+    publicKey: "",
     ethBalance: new BigNumber(0),
     feesEarned: OrderedMap<Token, BigNumber>(),
     feesEarnedTotalEth: new BigNumber(0),
