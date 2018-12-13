@@ -4,9 +4,10 @@ import { connect } from "react-redux";
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
 import { bindActionCreators, Dispatch } from "redux";
 
+import { storeQuoteCurrency } from "@Actions/statistics/operatorActions";
 import { login } from "@Actions/trader/accountActions";
 import { Blocky } from "@Components/Blocky";
-import { ApplicationData } from "@Reducers/types";
+import { ApplicationData, Currency } from "@Reducers/types";
 
 interface HeaderProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps>,
     RouteComponentProps {
@@ -15,6 +16,7 @@ interface HeaderProps extends ReturnType<typeof mapStateToProps>, ReturnType<typ
 interface HeaderState {
     accountDropdownVisible: boolean;
     languageDropdownVisible: boolean;
+    currencyDropdownVisible: boolean;
     copied: boolean;
 }
 
@@ -29,12 +31,13 @@ class HeaderClass extends React.Component<HeaderProps, HeaderState> {
             copied: false,
             accountDropdownVisible: false,
             languageDropdownVisible: false,
+            currencyDropdownVisible: false,
         };
     }
 
     public render(): JSX.Element {
-        const { address, web3BrowserName } = this.props.store;
-        const { accountDropdownVisible, languageDropdownVisible, copied } = this.state;
+        const { address, web3BrowserName, quoteCurrency } = this.props.store;
+        const { accountDropdownVisible, languageDropdownVisible, currencyDropdownVisible, copied } = this.state;
         const route = this.props.location.pathname;
 
         const loggedIn = (address != null);
@@ -56,13 +59,25 @@ class HeaderClass extends React.Component<HeaderProps, HeaderState> {
                                 {languageDropdownVisible ?
                                 <ul className="header--dropdown">
                                     <li role="button">English</li>
-                                    <li role="button">Chinese</li>
                                 </ul> : null
                             }
                         </li>
 
-                        <li><Link to="/home"><span>USD ﹀</span></Link></li>
-
+                        <li
+                            className="header--group"
+                            onMouseEnter={this.showCurrencyDropDown}
+                            onMouseLeave={this.hideCurrencyDropdown}
+                        >
+                            {quoteCurrency.toUpperCase()} ﹀
+                                {currencyDropdownVisible ?
+                                <ul className="header--dropdown">
+                                    <li role="button" onClick={this.setCurrencyToUSD}>USD</li>
+                                    <li role="button" onClick={this.setCurrencyToAUD}>AUD</li>
+                                    <li role="button" onClick={this.setCurrencyToBTC}>BTC</li>
+                                    <li role="button" onClick={this.setCurrencyToETH}>ETH</li>
+                                </ul> : null
+                            }
+                        </li>
 
                         <li
                             className="header--group"
@@ -117,11 +132,33 @@ class HeaderClass extends React.Component<HeaderProps, HeaderState> {
     }
 
     private showLanguageDropDown = (): void => {
-        this.setState({ languageDropdownVisible: true, copied: false });
+        this.setState({ languageDropdownVisible: true });
     }
 
     private hideLanguageDropdown = (): void => {
-        this.setState({ languageDropdownVisible: false, copied: false });
+        this.setState({ languageDropdownVisible: false });
+    }
+
+    private showCurrencyDropDown = (): void => {
+        this.setState({ currencyDropdownVisible: true });
+    }
+
+    private hideCurrencyDropdown = (): void => {
+        this.setState({ currencyDropdownVisible: false });
+    }
+
+    // TODO: Get value dynamically
+    private setCurrencyToUSD = (): void => {
+        this.props.actions.storeQuoteCurrency({ quoteCurrency: Currency.USD });
+    }
+    private setCurrencyToAUD = (): void => {
+        this.props.actions.storeQuoteCurrency({ quoteCurrency: Currency.AUD });
+    }
+    private setCurrencyToBTC = (): void => {
+        this.props.actions.storeQuoteCurrency({ quoteCurrency: Currency.BTC });
+    }
+    private setCurrencyToETH = (): void => {
+        this.props.actions.storeQuoteCurrency({ quoteCurrency: Currency.ETH });
     }
 
     private copyToClipboard = (e: React.MouseEvent<HTMLElement>): void => {
@@ -143,12 +180,14 @@ const mapStateToProps = (state: ApplicationData) => ({
     store: {
         address: state.trader.address,
         web3BrowserName: state.trader.web3BrowserName,
+        quoteCurrency: state.statistics.quoteCurrency,
     },
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     actions: bindActionCreators({
         login,
+        storeQuoteCurrency,
     }, dispatch),
 });
 

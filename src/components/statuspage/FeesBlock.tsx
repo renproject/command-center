@@ -58,7 +58,7 @@ class FeesBlockClass extends React.Component<FeesBlockProps, FeesBlockState> {
                             <div className="block--basic--top">
                                 <span className="fees-block--basic--sign">$</span>
                                 <span className="fees-block--basic--value"><TokenBalance token={Token.ETH} convertTo={quoteCurrency} amount={darknodeDetails.feesEarnedTotalEth} /></span>
-                                <span className="fees-block--basic--unit">USD</span>
+                                <span className="fees-block--basic--unit">{quoteCurrency.toUpperCase()}</span>
                             </div>
                             <div className="block--basic--show" onClick={this.toggleAdvanced}>
                                 <FontAwesomeIcon icon={faChevronRight} pull="left" />
@@ -68,7 +68,7 @@ class FeesBlockClass extends React.Component<FeesBlockProps, FeesBlockState> {
                             <div className="block--advanced--top">
                                 <span className="fees-block--advanced--sign">$</span>
                                 <span className="fees-block--advanced--value"><TokenBalance token={Token.ETH} convertTo={quoteCurrency} amount={darknodeDetails.feesEarnedTotalEth} /></span>
-                                <span className="fees-block--advanced--unit">USD</span>
+                                <span className="fees-block--advanced--unit">{quoteCurrency.toUpperCase()}</span>
                             </div>
 
                             <div className="block--advanced--bottom scrollable">
@@ -83,7 +83,7 @@ class FeesBlockClass extends React.Component<FeesBlockProps, FeesBlockState> {
                                                 return <tr key={token}>
                                                     <td><img className="fees-block--table--icon" src={image} /> <span>{tokenDetails.symbol}</span></td>
                                                     <td className="fees-block--table--value"><TokenBalance token={token} amount={balance} /></td>
-                                                    <td className="fees-block--table--usd">$<TokenBalance token={token} amount={balance} convertTo={quoteCurrency} /> <span className="fees-block--table--usd-symbol">USD</span></td>
+                                                    <td className="fees-block--table--usd">$<TokenBalance token={token} amount={balance} convertTo={quoteCurrency} /> <span className="fees-block--table--usd-symbol">{quoteCurrency.toUpperCase()}</span></td>
                                                     <td><FeesItem key={token} web3={sdk.getWeb3()} token={token} amount={balance} darknodeAddress={darknodeDetails.ID} /></td>
                                                 </tr>;
                                             }).valueSeq().toArray()
