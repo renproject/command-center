@@ -52,10 +52,10 @@ class StatusPageClass extends React.Component<StatusPageProps, StatusPageState> 
             <div className="statuspage">
                 {!darknodeDetails ? <Loading alt /> : <>
                     <div className="statuspage--banner">
-                        <Blocky address={darknodeID} />
+                        <Blocky address={darknodeID} fgColor="#006FE8" bgColor="transparent" />
                         <div className="statuspage--banner--details">
                             <div className="statuspage--banner--top">
-                                <h3>Darknode</h3>
+                                <h3>{darknodeDetails ? darknodeDetails.name : `${darknodeID.substr(0, 8)}...`}</h3>
                                 <button>Edit name</button>
                                 <button>View details</button>
                             </div>

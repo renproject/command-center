@@ -138,7 +138,7 @@ export const updateDarknodeStatistics: UpdateDarknodeStatisticsAction = (sdk, da
 
     const darknodeDetails = new DarknodeDetails({
         ID: darknodeID,
-        name: `Darknode${index ? ` ${index}` : ""}`,
+        name: `Darknode${index !== undefined ? ` ${index + 1}` : ""}`,
         multiAddress: "" as string,
         publicKey: "" as string,
         ethBalance,
@@ -161,4 +161,6 @@ export const updateAllDarknodeStatistics: UpdateAllDarknodeStatisticsAction = (s
     await Promise.all(darknodeList.map((darknodeID, index) => {
         return updateDarknodeStatistics(sdk, darknodeID, tokenPrices, index)(dispatch);
     }).toArray());
+
+    // TODO: Sum up rewards
 };
