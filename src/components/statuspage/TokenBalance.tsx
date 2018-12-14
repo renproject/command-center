@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
 import { ApplicationData, Currency } from "@Reducers/types";
-import { Token, TokenDetails } from "./lib/tokens";
+import { Token } from "./lib/tokens";
 
 interface TokenBalanceProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     token: Token;
@@ -15,21 +15,48 @@ interface TokenBalanceProps extends ReturnType<typeof mapStateToProps>, ReturnTy
 }
 
 interface TokenBalanceState {
+    decimals: number;
 }
 
 class TokenBalanceClass extends React.Component<TokenBalanceProps, TokenBalanceState> {
     constructor(props: TokenBalanceProps) {
         super(props);
+        this.state = {
+            decimals: 0,
+        };
+    }
+
+    public async componentDidMount() {
+        const { token, store } = this.props;
+        const { sdk } = store;
+
+        const tokenDetails = await sdk._cachedTokenDetails.get(token);
+
+        const decimals = tokenDetails ? new BigNumber(tokenDetails.decimals.toString()).toNumber() : 0;
+        this.setState({ decimals });
+    }
+
+    public async componentWillReceiveProps(nextProps: TokenBalanceProps) {
+        const { token: nextToken, store } = nextProps;
+        const { sdk } = store;
+        const { token } = this.props;
+
+        if (nextToken !== token) {
+            const tokenDetails = await sdk._cachedTokenDetails.get(nextToken);
+
+            const decimals = tokenDetails ? new BigNumber(tokenDetails.decimals.toString()).toNumber() : 0;
+            this.setState({ decimals });
+        }
     }
 
     public render(): JSX.Element {
         const { token, convertTo, store, digits } = this.props;
-        const { tokenPrices } = store;
+        const { decimals } = this.state;
+        const { tokenPrices, sdk } = store;
 
-        const tokenDetails = TokenDetails.get(token, undefined);
 
         const amount = new BigNumber(this.props.amount)
-            .div(new BigNumber(Math.pow(10, tokenDetails ? tokenDetails.digits : 0)));
+            .div(new BigNumber(Math.pow(10, decimals)));
 
         if (!convertTo) {
             return <>{digits !== undefined ? amount.toFixed(digits) : amount.toFixed()}</>;
@@ -66,6 +93,7 @@ class TokenBalanceClass extends React.Component<TokenBalanceProps, TokenBalanceS
 const mapStateToProps = (state: ApplicationData) => ({
     store: {
         tokenPrices: state.statistics.tokenPrices,
+        sdk: state.trader.sdk,
     },
 });
 

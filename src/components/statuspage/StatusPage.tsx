@@ -7,7 +7,6 @@ import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
 import { Blocky } from "@Components/Blocky";
-import { Loading } from "@Components/Loading";
 
 import { updateDarknodeStatistics } from "@Actions/statistics/operatorActions";
 import { ApplicationData, DarknodeDetails } from "@Reducers/types";
@@ -20,6 +19,7 @@ interface StatusPageProps extends ReturnType<typeof mapStateToProps>, ReturnType
     sdk: RenExSDK;
     darknodeID: string;
     darknodeDetails: DarknodeDetails | null;
+    operator: boolean;
 }
 
 interface StatusPageState {
@@ -46,28 +46,30 @@ class StatusPageClass extends React.Component<StatusPageProps, StatusPageState> 
     }
 
     public render(): JSX.Element {
-        const { sdk, darknodeDetails, darknodeID } = this.props;
+        const { sdk, darknodeDetails, darknodeID, operator } = this.props;
 
         return (
             <div className="statuspage">
-                {!darknodeDetails ? <Loading alt /> : <>
-                    <div className="statuspage--banner">
-                        <Blocky address={darknodeID} fgColor="#006FE8" bgColor="transparent" />
-                        <div className="statuspage--banner--details">
-                            <div className="statuspage--banner--top">
-                                <h3>{darknodeDetails ? darknodeDetails.name : `${darknodeID.substr(0, 8)}...`}</h3>
-                                <button>Edit name</button>
-                                <button>View details</button>
-                            </div>
-                            <Registration sdk={this.props.sdk} web3={this.props.sdk.getWeb3()} minBond={this.state.minBond} registrationStatus={darknodeDetails.registrationStatus} network={this.state.network} darknodeAddress={darknodeDetails.ID} publicKey={darknodeDetails.publicKey} />
+                <div className="statuspage--banner">
+                    <Blocky address={darknodeID} fgColor="#006FE8" bgColor="transparent" />
+                    <div className="statuspage--banner--details">
+                        <div className="statuspage--banner--top">
+                            <h3>{darknodeDetails ? darknodeDetails.name : <span className="monospace">{darknodeID.substring(0, 8)}...{darknodeID.slice(-5)}</span>}</h3>
+                            {operator ? <button>Edit name</button> : null}
+                            <button>View details</button>
                         </div>
+                        {darknodeDetails ?
+                            <Registration sdk={this.props.sdk} operator={operator} minBond={this.state.minBond} registrationStatus={darknodeDetails.registrationStatus} network={this.state.network} darknodeAddress={darknodeDetails.ID} publicKey={darknodeDetails.publicKey} /> :
+                            null
+                        }
                     </div>
-                    <div className="statuspage--bottom">
-                        <FeesBlock sdk={sdk} darknodeDetails={darknodeDetails} />
-                        <GasBlock sdk={sdk} darknodeDetails={darknodeDetails} />
-                        <NetworkBlock sdk={sdk} web3={sdk.getWeb3()} registrationStatus={darknodeDetails.registrationStatus} publicKey={darknodeDetails.publicKey} network={this.state.network} multiAddress={darknodeDetails.multiAddress} darknodeAddress={darknodeDetails.ID} peers={darknodeDetails.peers} minBond={this.state.minBond} />
+                </div>
+                <div className="statuspage--bottom">
+                    <FeesBlock sdk={sdk} operator={operator} darknodeDetails={darknodeDetails} />
+                    <GasBlock sdk={sdk} operator={operator} darknodeDetails={darknodeDetails} />
+                    <NetworkBlock sdk={sdk} darknodeDetails={darknodeDetails} network={this.state.network} minBond={this.state.minBond} />
 
-                        {/* <div className="statuspage--graphs">
+                    {/* <div className="statuspage--graphs">
                             <div>
                                 Income graph
                             </div>
@@ -75,8 +77,7 @@ class StatusPageClass extends React.Component<StatusPageProps, StatusPageState> 
                                 Gas graph
                             </div>
                         </div> */}
-                    </div>
-                </>}
+                </div>
             </div>
         );
     }

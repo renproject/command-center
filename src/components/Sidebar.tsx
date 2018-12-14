@@ -35,12 +35,12 @@ class SidebarClass extends React.Component<SidebarProps> {
             <nav className="sidebar">
                 <ul>
                     <div className="sidebar--nav">
-                        <Link to="/"><li>
+                        <Link className="no-underline" to="/"><li>
                             <div className="sidebar--nav--icon sidebar--icon"><FontAwesomeIcon icon={faCircle} className="darknode-card--bottom--icon" /></div>
                             <div className="sidebar--text">Home</div>
                         </li></Link>
 
-                        <Link to="/"><li>
+                        <Link className="no-underline" to="/"><li>
                             <div className="sidebar--nav--icon sidebar--icon"><FontAwesomeIcon icon={faThLarge} className="darknode-card--bottom--icon" /></div>
                             <div className="sidebar--text">All Darknodes</div>
                         </li></Link>
@@ -49,14 +49,14 @@ class SidebarClass extends React.Component<SidebarProps> {
                     {darknodeList && darknodeList.map((darknodeID) => {
                         const details = darknodeDetails.get(darknodeID);
                         // tslint:disable-next-line:jsx-no-lambda FIXME
-                        return <Link key={darknodeID} to={`/darknode/${darknodeID}`}>
+                        return <Link className="no-underline" key={darknodeID} to={`/darknode/${darknodeID}`}>
                             <li className={darknodeID === selectedDarknode ? "sidebar--active" : ""}>
                                 <div className="sidebar--icon">
                                     <Blocky address={darknodeID} fgColor="#006FE8" bgColor="transparent" />
                                 </div>
                                 <div className="sidebar--text">
                                     <div>
-                                        {details ? details.name : `${darknodeID.substring(0, 8)}...${darknodeID.slice(-5)}`}
+                                        {details ? details.name : <span className="monospace">{darknodeID.substring(0, 8)}...{darknodeID.slice(-5)}</span>}
                                     </div>
                                     <div className="sidebar--text--details">
                                         <div className="sidebar--text--rewards">

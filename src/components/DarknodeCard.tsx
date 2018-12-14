@@ -53,13 +53,14 @@ class DarknodeCardClass extends React.Component<DarknodeCardProps, DarknodeCardS
         const { quoteCurrency } = store;
 
         return (
-            <Link to={`/darknode/${darknodeID}`}>
+            <Link className="no-underline" to={`/darknode/${darknodeID}`}>
                 <div className="darknode-card">
                     <div className="darknode-card--top" />
                     <div className="darknode-card--middle">
 
                         <Blocky address={darknodeID} fgColor="#006FE8" bgColor="transparent" />
-                        <h3 className="darknode-card--name">{darknodeDetails ? darknodeDetails.name : `${darknodeID.substring(0, 8)}...${darknodeID.slice(-5)}`}</h3>
+
+                        <h3 className="darknode-card--name">{darknodeDetails ? darknodeDetails.name : <span className="monospace">{darknodeID.substring(0, 8)}...{darknodeID.slice(-5)}</span>}</h3>
                         <span className="darknode-card--status">{darknodeDetails ? toTitleCase(darknodeDetails.registrationStatus) : ""}</span>
                     </div>
                     {darknodeDetails ?

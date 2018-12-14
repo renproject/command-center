@@ -1,6 +1,7 @@
 import * as React from "react";
 
 import RenExSDK from "@renex/renex";
+import BigNumber from "bignumber.js";
 
 import { faChevronRight, faFire, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -8,13 +9,13 @@ import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
 import { ApplicationData, DarknodeDetails } from "@Reducers/types";
-import BigNumber from "bignumber.js";
 import { Block, BlockBody, BlockTitle } from "./Block";
 import { Topup } from "./Topup";
 
 interface GasBlockProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     sdk: RenExSDK;
-    darknodeDetails: DarknodeDetails;
+    operator: boolean;
+    darknodeDetails: DarknodeDetails | null;
 }
 
 interface GasBlockState {
@@ -31,10 +32,10 @@ class GasBlockClass extends React.Component<GasBlockProps, GasBlockState> {
     }
 
     public render(): JSX.Element {
-        const { sdk, darknodeDetails } = this.props;
+        const { sdk, darknodeDetails, operator } = this.props;
         const { showAdvanced } = this.state;
 
-        const gasValue = (darknodeDetails.ethBalance.div(new BigNumber(Math.pow(10, 18)))).toFixed(3);
+        const gasValue = darknodeDetails ? (darknodeDetails.ethBalance.div(new BigNumber(Math.pow(10, 18)))).toFixed(3) : "";
 
         return (
 
@@ -50,8 +51,7 @@ class GasBlockClass extends React.Component<GasBlockProps, GasBlockState> {
                     </h3>
                 </BlockTitle>
 
-                <BlockBody>
-
+                {darknodeDetails ? <BlockBody>
                     {!showAdvanced ?
                         <div className="block--basic">
                             <div className="block--basic--top">
@@ -68,12 +68,14 @@ class GasBlockClass extends React.Component<GasBlockProps, GasBlockState> {
                                 <span className="gas-block--advanced--unit">ETH</span>
                             </div>
                             <div className="block--advanced--bottom">
-                                <p>Top-up Balance</p>
-                                <Topup web3={sdk.getWeb3()} darknodeAddress={darknodeDetails.ID} />
+                                {operator ? <>
+                                    <p>Top-up Balance</p>
+                                    <Topup sdk={sdk} darknodeAddress={darknodeDetails.ID} />
+                                </> : null}
                             </div>
                         </div>
                     }
-                </BlockBody>
+                </BlockBody> : null}
             </Block>
         );
     }

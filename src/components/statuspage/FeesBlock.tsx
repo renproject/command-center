@@ -12,13 +12,15 @@ import { bindActionCreators, Dispatch } from "redux";
 import { ApplicationData, Currency, DarknodeDetails } from "@Reducers/types";
 import { Block, BlockBody, BlockTitle } from "./Block";
 import { FeesItem } from "./FeesItem";
-import { Token, TokenDetails } from "./lib/tokens";
+import { Token } from "./lib/tokens";
 import { TokenBalance } from "./TokenBalance";
+import { TokenIcon } from "./TokenIcon";
 
 
 interface FeesBlockProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     sdk: RenExSDK;
-    darknodeDetails: DarknodeDetails;
+    operator: boolean;
+    darknodeDetails: DarknodeDetails | null;
 }
 
 interface FeesBlockState {
@@ -35,7 +37,7 @@ class FeesBlockClass extends React.Component<FeesBlockProps, FeesBlockState> {
     }
 
     public render(): JSX.Element {
-        const { sdk, darknodeDetails, store } = this.props;
+        const { sdk, darknodeDetails, store, operator } = this.props;
         const { quoteCurrency } = store;
         const { showAdvanced } = this.state;
 
@@ -52,7 +54,7 @@ class FeesBlockClass extends React.Component<FeesBlockProps, FeesBlockState> {
                     </h3>
                 </BlockTitle>
 
-                <BlockBody>
+                {darknodeDetails ? <BlockBody>
                     {!showAdvanced ?
                         <div className="block--basic">
                             <div className="block--basic--top">
@@ -76,15 +78,11 @@ class FeesBlockClass extends React.Component<FeesBlockProps, FeesBlockState> {
                                     <tbody>
                                         {
                                             darknodeDetails.feesEarned.map((balance: BigNumber, token: Token) => {
-                                                // tslint:disable-next-line:no-non-null-assertion
-                                                const tokenDetails = TokenDetails.get(token)!;
-                                                const image = require(`../../tokens/${tokenDetails.icon}`);
-
                                                 return <tr key={token}>
-                                                    <td><img className="fees-block--table--icon" src={image} /> <span>{tokenDetails.symbol}</span></td>
+                                                    <td><TokenIcon className="fees-block--table--icon" token={token} /> <span>{token}</span></td>
                                                     <td className="fees-block--table--value"><TokenBalance token={token} amount={balance} /></td>
                                                     <td className="fees-block--table--usd">$<TokenBalance token={token} amount={balance} convertTo={quoteCurrency} /> <span className="fees-block--table--usd-symbol">{quoteCurrency.toUpperCase()}</span></td>
-                                                    <td><FeesItem key={token} web3={sdk.getWeb3()} token={token} amount={balance} darknodeAddress={darknodeDetails.ID} /></td>
+                                                    <td><FeesItem operator={operator} key={token} sdk={sdk} token={token} amount={balance} darknodeAddress={darknodeDetails.ID} /></td>
                                                 </tr>;
                                             }).valueSeq().toArray()
                                         }
@@ -94,7 +92,7 @@ class FeesBlockClass extends React.Component<FeesBlockProps, FeesBlockState> {
                         </div>
                     }
 
-                </BlockBody>
+                </BlockBody> : null}
             </Block>
         );
     }
