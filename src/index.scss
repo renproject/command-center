@@ -204,10 +204,11 @@ table th {
 }
 
 .container {
+    $spacing: 80px;
     width: 100%;
-    max-width: 1400px;
+    max-width: 1400px + $spacing * 2;
     margin: 0 auto;
-    padding: 0 10px;
+    padding: 0 $spacing;
 }
 
 .section {

@@ -28,12 +28,12 @@ type StoreWeb3BrowserNamePayload = string;
 export type StoreWeb3BrowserNameAction = (payload: StoreWeb3BrowserNamePayload) => void;
 export const storeWeb3BrowserName = createStandardAction("STORE_WEB3_BROWSER_NAME")<StoreWeb3BrowserNamePayload>();
 
-export type LoginAction = (options: { redirect: boolean }) => (dispatch: Dispatch) => Promise<void>;
+export type LoginAction = (options: { redirect: boolean, immediatePopup: boolean }) => (dispatch: Dispatch) => Promise<void>;
 export const login: LoginAction = (options) => async (dispatch) => {
 
     let cancelled = false;
 
-    const onClick = () => (login({ redirect: false })(dispatch));
+    const onClick = () => (login({ redirect: false, immediatePopup: true })(dispatch));
     const onCancel = () => {
         dispatch(clearPopup());
         cancelled = true;
@@ -56,12 +56,20 @@ export const login: LoginAction = (options) => async (dispatch) => {
 
     console.log(promptMessage);
 
+    if (options.immediatePopup) {
+        dispatch(setPopup(
+            { popup: <NoWeb3Popup onConnect={onClick} onCancel={onCancel} disabled={true} message={promptMessage} />, onCancel }
+        ));
+    }
+
     // Show popup if getInjectedWeb3Provider doesn't return immediately, since
     // the Web3 browser is probably prompting the user to approve access
     const timeout = setTimeout(() => {
-        dispatch(setPopup(
-            { popup: <NoWeb3Popup onConnect={onClick} onCancel={onCancel} message={promptMessage} />, onCancel }
-        ));
+        if (!cancelled) {
+            dispatch(setPopup(
+                { popup: <NoWeb3Popup onConnect={onClick} onCancel={onCancel} message={promptMessage} />, onCancel }
+            ));
+        }
     }, 5 * 1000);
 
 
@@ -169,13 +177,13 @@ export const lookForLogout: LookForLogoutAction = (sdk) => async (dispatch) => {
     if (!accounts.includes(sdk.getAddress().toLowerCase())) {
         // console.error(`User has logged out of their web3 provider (${sdk.getAddress()} not in [${accounts.join(", ")}])`);
 
-        const onClick = () => login({ redirect: false })(dispatch);
+        const onClick = () => login({ redirect: false, immediatePopup: false })(dispatch);
         const onCancel = () => {
             dispatch(clearPopup());
         };
         dispatch(
             setPopup(
-                { popup: <LoggedOut onConnect={onClick} onCancel={onCancel} />, onCancel }
+                { popup: <LoggedOut onConnect={onClick} onCancel={onCancel} newAddress={accounts.length > 0 ? accounts[0] : null} />, onCancel }
             )
         );
 

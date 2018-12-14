@@ -234,3 +234,21 @@
     height: 170px;
     margin: 0;
 }
+
+.popup--description {
+    font-size: 16px;
+    margin: 20px 0;
+}
+
+.popup--logged-out {
+
+    .blocky {
+        width: 20px;
+        margin-bottom: -5px;
+    }
+
+    .blocky--outer {
+        display: inline-block;
+        margin-left: 10px;
+    }
+}

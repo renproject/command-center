@@ -11,6 +11,7 @@ import { ApplicationData, Currency } from "@Reducers/types";
 
 interface HeaderProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps>,
     RouteComponentProps {
+    hideOptions?: boolean;
 }
 
 interface HeaderState {
@@ -36,7 +37,8 @@ class HeaderClass extends React.Component<HeaderProps, HeaderState> {
     }
 
     public render(): JSX.Element {
-        const { address, web3BrowserName, quoteCurrency } = this.props.store;
+        const { hideOptions, store } = this.props;
+        const { address, web3BrowserName, quoteCurrency } = store;
         const { accountDropdownVisible, languageDropdownVisible, currencyDropdownVisible, copied } = this.state;
         const route = this.props.location.pathname;
 
@@ -50,34 +52,40 @@ class HeaderClass extends React.Component<HeaderProps, HeaderState> {
                         <div className="header--logo" />
                     </Link>
                     <ul className="header--menu">
-                        <li
-                            className="header--group"
-                            onMouseEnter={this.showLanguageDropDown}
-                            onMouseLeave={this.hideLanguageDropdown}
-                        >
-                            English ﹀
+                        {!hideOptions ?
+                            <>
+                                <li
+                                    className="header--group"
+                                    onMouseEnter={this.showLanguageDropDown}
+                                    onMouseLeave={this.hideLanguageDropdown}
+                                >
+                                    English ﹀
                                 {languageDropdownVisible ?
-                                <ul className="header--dropdown">
-                                    <li role="button">English</li>
-                                </ul> : null
-                            }
-                        </li>
+                                        <ul className="header--dropdown">
+                                            <li role="button">English</li>
+                                        </ul> : null
+                                    }
+                                </li>
 
-                        <li
-                            className="header--group"
-                            onMouseEnter={this.showCurrencyDropDown}
-                            onMouseLeave={this.hideCurrencyDropdown}
-                        >
-                            {quoteCurrency.toUpperCase()} ﹀
+
+                                <li
+                                    className="header--group"
+                                    onMouseEnter={this.showCurrencyDropDown}
+                                    onMouseLeave={this.hideCurrencyDropdown}
+                                >
+                                    {quoteCurrency.toUpperCase()} ﹀
                                 {currencyDropdownVisible ?
-                                <ul className="header--dropdown">
-                                    <li role="button" onClick={this.setCurrencyToUSD}>USD</li>
-                                    <li role="button" onClick={this.setCurrencyToAUD}>AUD</li>
-                                    <li role="button" onClick={this.setCurrencyToBTC}>BTC</li>
-                                    <li role="button" onClick={this.setCurrencyToETH}>ETH</li>
-                                </ul> : null
-                            }
-                        </li>
+                                        <ul className="header--dropdown">
+                                            <li role="button" onClick={this.setCurrencyToUSD}>USD</li>
+                                            <li role="button" onClick={this.setCurrencyToAUD}>AUD</li>
+                                            <li role="button" onClick={this.setCurrencyToBTC}>BTC</li>
+                                            <li role="button" onClick={this.setCurrencyToETH}>ETH</li>
+                                        </ul> : null
+                                    }
+                                </li>
+                            </>
+
+                            : null}
 
                         <li
                             className="header--group"
@@ -119,7 +127,7 @@ class HeaderClass extends React.Component<HeaderProps, HeaderState> {
     private handleLogin = async (): Promise<void> => {
         const { address } = this.props.store;
         if (!address) {
-            await this.props.actions.login({ redirect: false });
+            await this.props.actions.login({ redirect: false, immediatePopup: true });
         }
     }
 

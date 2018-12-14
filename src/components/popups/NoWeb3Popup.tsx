@@ -10,6 +10,7 @@ const metamaskIcon = require("../../styles/images/metamask.svg");
 
 interface NoWeb3PopupProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     message?: string;
+    disabled?: boolean;
     onConnect: () => void;
     onCancel: () => void;
 }
@@ -25,13 +26,13 @@ class NoWeb3PopupClass extends React.Component<NoWeb3PopupProps, NoWeb3PopupStat
     }
 
     public render(): JSX.Element {
-        const { message } = this.props;
+        const { message, disabled } = this.props;
         return (
             <div className="popup no-web3">
                 <img className="no-web3--logo" src={metamaskIcon} />
                 <h2>{message || Language.wallet.mustConnect}</h2>
                 <button className="styled-button styled-button--light" onClick={this.props.onCancel}>Not now</button>
-                <button className="styled-button" onClick={this.props.onConnect}>Connect</button>
+                <button className="styled-button" disabled={disabled} onClick={this.props.onConnect}>Retry</button>
             </div>
         );
     }
