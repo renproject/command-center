@@ -3,6 +3,7 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
+import { Blocky } from "@Components/Blocky";
 import { ApplicationData } from "@Reducers/types";
 
 const metamaskIcon = require("../../styles/images/metamask.svg");
@@ -10,6 +11,7 @@ const metamaskIcon = require("../../styles/images/metamask.svg");
 interface LoggedOutProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     onConnect: () => void;
     onCancel: () => void;
+    newAddress: string | null;
 }
 
 interface LoggedOutState {
@@ -31,11 +33,20 @@ class LoggedOutClass extends React.Component<LoggedOutProps, LoggedOutState> {
     }
 
     public render(): JSX.Element {
+        const { newAddress } = this.props;
         return (
-            <div className="popup no-web3">
+            <div className="popup no-web3 popup--logged-out">
                 <img className="no-web3--logo" src={metamaskIcon} />
-                <h2>Your Web3 account was logged out.</h2>
-                <p>Connect again to continue operating your darknodes.</p>
+                {newAddress !== null ?
+                    <>
+                        <h2>Your Web3 account has changed.</h2>
+                        <div className="popup--description">Connect to continue as <Blocky address={newAddress} /> <span className="monospace">{newAddress.substring(0, 8)}...{newAddress.slice(-5)}</span>.</div>
+                    </> :
+                    <>
+                        <h2>Your Web3 account has been logged out.</h2>
+                        <div className="popup--description">Select an account to access your darknodes.</div>
+                    </>
+                }
                 <button className="styled-button styled-button--light" onClick={this.props.onCancel}>Not now</button>
                 <button className="styled-button" onClick={this.props.onConnect}>Connect</button>
             </div>

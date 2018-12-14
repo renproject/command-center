@@ -41,7 +41,7 @@ class LoggingInClass extends React.Component<LoggingInProps, LoggingInState> {
 
         return (
             <div className="logging-in">
-                <Header />
+                <Header hideOptions={true} />
                 <div className="darknode-list background--darknode-list">
                     {emptyCard}
                     {emptyCard}

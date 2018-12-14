@@ -63,7 +63,7 @@ class AppClass extends React.Component<AppProps, AppState> {
         // Check if user was logged-in already
         this.setState({ checkingReLogin: true });
         try {
-            await this.props.actions.login({ redirect: false });
+            await this.props.actions.login({ redirect: false, immediatePopup: false });
         } catch (err) {
             console.error(err);
             Sentry.captureException(err);

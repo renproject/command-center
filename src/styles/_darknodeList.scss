@@ -2,6 +2,10 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+
+    // Make up for 10px margin of each card
+    margin-left: -10px;
+    margin-right: -10px;
 }
 
 $card-height: 335px;
