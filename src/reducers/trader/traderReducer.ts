@@ -14,10 +14,6 @@ export function traderReducer(state: TraderData = new TraderData(), action: Acco
         case getType(accountActions.storeWeb3BrowserName):
             return state.set("web3BrowserName", action.payload);
 
-        case getType(accountActions.storeSDK):
-            console.assert(action.payload.sdk !== undefined);
-            return state.set("sdk", action.payload.sdk);
-
         default:
             return state;
     }

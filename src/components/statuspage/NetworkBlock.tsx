@@ -1,8 +1,11 @@
 import * as React from "react";
 
-import Web3 from "web3";
-
 import RenExSDK from "@renex/renex";
+
+import { faServer } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { DarknodeDetails } from "@Reducers/types";
+import { Block, BlockBody, BlockTitle } from "./Block";
 
 interface CopyBlockProps {
     value: string;
@@ -45,31 +48,40 @@ class CopyBlock extends React.Component<CopyBlockProps, CopyBlockState> {
 
 interface NetworkBlockProps {
     sdk: RenExSDK;
-    web3: Web3;
-    registrationStatus: string;
-    publicKey: string;
     network: string;
-    multiAddress: string;
-    darknodeAddress: string;
-    peers: number;
     minBond: number;
+    darknodeDetails: DarknodeDetails | null;
 }
 
 export const NetworkBlock = (props: NetworkBlockProps) => {
+    const { darknodeDetails } = props;
     return (
-        <div className="block network-block">
-            <div className="block--title">
-                <h3>Darknode Information</h3>
-            </div>
-            <div className="darknode-info">
-                <span className="darknode-info--title">Network:</span> <span>{props.network}</span>
-            </div>
-            <div className="darknode-info">
-                <span className="darknode-info--title">Connected Peers:</span> <span>{props.peers}</span>
-            </div>
-            <CopyBlock value={props.multiAddress}>Multi-address</CopyBlock>
-            <CopyBlock value={props.darknodeAddress}>Ethereum Address</CopyBlock>
-            <CopyBlock value={props.publicKey}>Public Key</CopyBlock>
-        </div>
+
+        <Block className="network-block">
+            {/* {showAdvanced ? <div className="block--basic--hide" onClick={this.toggleAdvanced}>
+                <FontAwesomeIcon icon={faTimes} pull="left" />
+            </div> : null} */}
+
+            <BlockTitle>
+                <h3>
+                    <FontAwesomeIcon icon={faServer} pull="left" />
+                    Network Information
+                    </h3>
+            </BlockTitle>
+
+            {darknodeDetails ? <BlockBody>
+                <div className="network-block--info">
+                    <div className="darknode-info">
+                        <span className="darknode-info--title">Network:</span> <span>{props.network}</span>
+                    </div>
+                    <div className="darknode-info">
+                        <span className="darknode-info--title">Connected Peers:</span> <span>{darknodeDetails.peers}</span>
+                    </div>
+                    <CopyBlock value={darknodeDetails.multiAddress}>Multi-address</CopyBlock>
+                    <CopyBlock value={darknodeDetails.ID}>Ethereum Address</CopyBlock>
+                    <CopyBlock value={darknodeDetails.publicKey}>Public Key</CopyBlock>
+                </div>
+            </BlockBody> : null}
+        </Block>
     );
 };

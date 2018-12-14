@@ -1,13 +1,14 @@
 import * as React from "react";
 
-import { BigNumber } from "bignumber.js";
-import Web3 from "web3";
+import RenExSDK from "@renex/renex";
 
-import { Token, TokenDetails } from "./lib/tokens";
+import { BigNumber } from "bignumber.js";
+
+import { Token } from "./lib/tokens";
 import { ERROR_TRANSACTION_FAILED, ERROR_UNLOCK_METAMASK } from "./Registration";
 
 interface TopupProps {
-    web3: Web3;
+    sdk: RenExSDK;
     darknodeAddress: string;
 }
 
@@ -71,11 +72,13 @@ export class Topup extends React.Component<TopupProps, TopupState> {
         }
     }
 
-    private handleBlur = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    private handleBlur = async (e: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
+        const { sdk } = this.props;
         // Convert input to Wei upon blur.
         const ethAmount = new BigNumber(e.target.value);
         // tslint:disable-next-line:no-non-null-assertion
-        const ethMultiplier = new BigNumber(Math.pow(10, TokenDetails.get(Token.ETH)!.digits));
+        const tokenDetails = await sdk._cachedTokenDetails.get(Token.ETH);
+        const ethMultiplier = new BigNumber(Math.pow(10, tokenDetails ? new BigNumber(tokenDetails.addr.toString()).toNumber() : 18));
         let weiAmount = ethAmount.times(ethMultiplier);
         weiAmount = weiAmount.decimalPlaces(0);
         const valueBN = weiAmount.dividedBy(ethMultiplier);
@@ -83,7 +86,8 @@ export class Topup extends React.Component<TopupProps, TopupState> {
     }
 
     private sendFunds = async (): Promise<void> => {
-        const ethAddress = await this.props.web3.eth.getAccounts();
+        const { sdk } = this.props;
+        const ethAddress = await sdk.getWeb3().eth.getAccounts();
         if (!ethAddress[0]) {
             this.setState({ resultMessage: ERROR_UNLOCK_METAMASK, pending: false });
             return;
@@ -92,7 +96,7 @@ export class Topup extends React.Component<TopupProps, TopupState> {
         }
 
         this.setState({ pending: true });
-        this.props.web3.eth.sendTransaction({
+        sdk.getWeb3().eth.sendTransaction({
             from: ethAddress[0],
             to: this.props.darknodeAddress,
             value: this.state.weiAmount,

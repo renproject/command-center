@@ -2,7 +2,7 @@ import * as Sentry from "@sentry/browser";
 import * as React from "react";
 
 import { connect } from "react-redux";
-import { HashRouter, Redirect, Route, RouteComponentProps, withRouter } from "react-router-dom";
+import { HashRouter, Route, RouteComponentProps, withRouter } from "react-router-dom";
 import { Dispatch } from "redux";
 import { bindActionCreators } from "redux";
 
@@ -12,17 +12,17 @@ import { LoggingOut } from "@Components/pages/LoggingOut";
 import { Popup } from "@Components/popups/Popup";
 
 import { updateTokenPrices } from "@Actions/statistics/networkActions";
-import { updateAllDarknodeStatistics, updateOperatorStatistics } from "@Actions/statistics/operatorActions";
+import { updateAllDarknodeStatistics, updateDarknodeStatistics, updateOperatorStatistics } from "@Actions/statistics/operatorActions";
 import { login, lookForLogout } from "@Actions/trader/accountActions";
 import { ApplicationData } from "@Reducers/types";
 import { Darknode } from "./pages/Darknode";
 import { LoggingIn } from "./pages/LoggingIn";
+import { Sidebar } from "./Sidebar";
 
-interface AppProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
+interface AppProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps>, RouteComponentProps {
 }
 
 interface AppState {
-    checkingReLogin: boolean;
 }
 
 // Scroll restoration based on https://reacttraining.com/react-router/web/guides/scroll-restoration
@@ -50,25 +50,26 @@ class AppClass extends React.Component<AppProps, AppState> {
     private callUpdatePricesTimeout: NodeJS.Timer | undefined;
     private callLookForLogoutTimeout: NodeJS.Timer | undefined;
     private callUpdateOperatorStatisticsTimeout: NodeJS.Timer | undefined;
-    private callUpdateDarknodeStatisticsTimeout: NodeJS.Timer | undefined;
+    private callUpdateAllDarknodeStatisticsTimeout: NodeJS.Timer | undefined;
+    private callUpdateSelectedDarknodeStatisticsTimeout: NodeJS.Timer | undefined;
 
     public constructor(props: AppProps, context: object) {
         super(props, context);
         this.state = {
-            checkingReLogin: false,
         };
     }
 
-    public async componentDidMount(): Promise<void> {
-        // Check if user was logged-in already
-        this.setState({ checkingReLogin: true });
+    public componentDidMount = async () => {
+        const { match: { params }, store } = this.props;
+        const { sdk } = store;
+        const { darknodeID } = params as { darknodeID: string };
+
         try {
-            await this.props.actions.login({ redirect: false, immediatePopup: false });
+            await this.props.actions.login(sdk, { redirect: false, showPopup: !darknodeID, immediatePopup: false });
         } catch (err) {
             console.error(err);
             Sentry.captureException(err);
         }
-        this.setState({ checkingReLogin: false });
 
         this.setupLoops();
     }
@@ -78,7 +79,8 @@ class AppClass extends React.Component<AppProps, AppState> {
         if (this.callUpdatePricesTimeout) { clearTimeout(this.callUpdatePricesTimeout); }
         if (this.callLookForLogoutTimeout) { clearTimeout(this.callLookForLogoutTimeout); }
         if (this.callUpdateOperatorStatisticsTimeout) { clearTimeout(this.callUpdateOperatorStatisticsTimeout); }
-        if (this.callUpdateDarknodeStatisticsTimeout) { clearTimeout(this.callUpdateDarknodeStatisticsTimeout); }
+        if (this.callUpdateAllDarknodeStatisticsTimeout) { clearTimeout(this.callUpdateAllDarknodeStatisticsTimeout); }
+        if (this.callUpdateSelectedDarknodeStatisticsTimeout) { clearTimeout(this.callUpdateSelectedDarknodeStatisticsTimeout); }
     }
 
     public setupLoops() {
@@ -96,10 +98,10 @@ class AppClass extends React.Component<AppProps, AppState> {
 
         // See if the user has logged out every 5 seconds
         const callLookForLogout = async () => {
-            const { sdk } = this.props.store;
-            if (sdk) {
+            const { sdk, address, readOnlyProvider } = this.props.store;
+            if (address) {
                 try {
-                    await this.props.actions.lookForLogout(sdk);
+                    await this.props.actions.lookForLogout(sdk, readOnlyProvider);
                 } catch (err) {
                     console.error(err);
                 }
@@ -111,9 +113,9 @@ class AppClass extends React.Component<AppProps, AppState> {
 
         // Update operator statistics every 60 seconds
         const callUpdateOperatorStatistics = async () => {
-            const { sdk } = this.props.store;
+            const { sdk, address } = this.props.store;
             let timeout = 1;
-            if (sdk) {
+            if (address) {
                 try {
                     await this.props.actions.updateOperatorStatistics(sdk);
                     timeout = 60;
@@ -127,61 +129,64 @@ class AppClass extends React.Component<AppProps, AppState> {
         };
         callUpdateOperatorStatistics().catch(console.error);
 
-        // Update darknode statistics every 120 seconds
-        const callUpdateDarknodeStatistics = async () => {
-            const { sdk, tokenPrices, darknodeList } = this.props.store;
-            let timeout = 1;
-            if (sdk && tokenPrices && darknodeList) {
+        // Update all darknode statistics every 120 seconds
+        const callUpdateAllDarknodeStatistics = async () => {
+            const { store } = this.props;
+            const { sdk, tokenPrices, darknodeList } = store;
+            let timeout = 1; // if the action isn't called, try again in 1 second
+            if (tokenPrices && darknodeList) {
                 try {
                     await this.props.actions.updateAllDarknodeStatistics(sdk, darknodeList, tokenPrices);
                     timeout = 120;
                 } catch (err) {
                     console.error(err);
-                    timeout = 60;
+                    timeout = 60;  // try again in half the time
                 }
             }
-            if (this.callUpdateDarknodeStatisticsTimeout) { clearTimeout(this.callUpdateDarknodeStatisticsTimeout); }
-            this.callUpdateDarknodeStatisticsTimeout = setTimeout(callUpdateDarknodeStatistics, timeout * 1000);
+            if (this.callUpdateAllDarknodeStatisticsTimeout) { clearTimeout(this.callUpdateAllDarknodeStatisticsTimeout); }
+            this.callUpdateAllDarknodeStatisticsTimeout = setTimeout(callUpdateAllDarknodeStatistics, timeout * 1000);
         };
-        callUpdateDarknodeStatistics().catch(console.error);
+        callUpdateAllDarknodeStatistics().catch(console.error);
+
+        // Update selected darknode statistics every 30 seconds
+        const callUpdateSelectedDarknodeStatistics = async () => {
+            const { match: { params }, store } = this.props;
+            const { darknodeID } = params as { darknodeID: string };
+
+            const { sdk, tokenPrices } = store;
+            let timeout = 1; // if the action isn't called, try again in 1 second
+            if (tokenPrices && darknodeID) {
+                try {
+                    await this.props.actions.updateDarknodeStatistics(sdk, darknodeID, tokenPrices);
+                    timeout = 30;
+                } catch (err) {
+                    console.error(err);
+                    timeout = 15; // try again in half the time
+                }
+            }
+            if (this.callUpdateSelectedDarknodeStatisticsTimeout) { clearTimeout(this.callUpdateSelectedDarknodeStatisticsTimeout); }
+            this.callUpdateSelectedDarknodeStatisticsTimeout = setTimeout(callUpdateSelectedDarknodeStatistics, timeout * 1000);
+        };
+        callUpdateSelectedDarknodeStatistics().catch(console.error);
     }
 
-    public withAccount<T extends React.ComponentClass>(component: T): React.ComponentClass | React.StatelessComponent {
-        const { address } = this.props.store;
-        // const { checkingReLogin } = this.state;
-
-        if (address) {
-            return component;
-        } else {
-            return LoggingIn;
-        }
-
-        // // show a loading spinner if retrieving the web3 instance is taking a
-        // // while (for example, when requesting MetaMask access)
-        // if (checkingReLogin) {
-        //     return () => <LoggingOut />;
-        // }
-
-        // if (!address) {
-        //     return () => <Redirect to="/" />;
-        // }
-        // return component;
-    }
+    public withAccount = <T extends React.ComponentClass>(component: T): React.ComponentClass | React.StatelessComponent =>
+        this.props.store ? component : LoggingIn
 
     public render(): JSX.Element {
-        return (
-            <HashRouter>
-                {/* history={history}>*/}
-                <div className="app">
-                    <ScrollToTop />
-                    <Route path="/" exact component={this.withAccount(Home)} />
-                    <Route path="/darknode/:darknodeID" exact component={Darknode} />
-                    <Route path="/loading" component={LoggingOut} />
-                    <Alerts />
-                    <Popup />
-                </div>
-            </HashRouter>
-        );
+        const { match: { params }, store } = this.props;
+        const { address } = store;
+        const { darknodeID } = params as { darknodeID: string };
+
+        return <div className="app">
+            <ScrollToTop />
+            {address ? <Sidebar selectedDarknode={darknodeID} /> : null}
+            <Route path="/" exact component={this.withAccount(Home)} />
+            <Route path="/darknode/:darknodeID" exact component={Darknode} />
+            <Route path="/loading" component={LoggingOut} />
+            <Alerts />
+            <Popup />
+        </div>;
     }
 }
 
@@ -189,6 +194,7 @@ const mapStateToProps = (state: ApplicationData) => ({
     store: {
         address: state.trader.address,
         sdk: state.trader.sdk,
+        readOnlyProvider: state.trader.readOnlyProvider,
         tokenPrices: state.statistics.tokenPrices,
         darknodeList: state.statistics.darknodeList,
     },
@@ -201,7 +207,8 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
         updateOperatorStatistics,
         updateTokenPrices,
         updateAllDarknodeStatistics,
+        updateDarknodeStatistics,
     }, dispatch),
 });
 
-export const App = connect(mapStateToProps, mapDispatchToProps)(AppClass);
+export const App = connect(mapStateToProps, mapDispatchToProps)(withRouter(AppClass));

@@ -9,6 +9,7 @@ import { List, Map, OrderedMap } from "immutable";
 import { Record } from "@Library/general/record";
 import BigNumber from "bignumber.js";
 
+import { getReadOnlyProvider } from "@Library/wallets/wallet";
 import { Token } from "../components/statuspage/lib/tokens";
 
 export interface Serializable<T> {
@@ -23,11 +24,14 @@ export interface ApplicationData {
     statistics: StatisticsData;
 }
 
+const readOnlyProvider = getReadOnlyProvider();
+
 export class TraderData extends Record({
     // Login data
     address: null as string | null,
     web3BrowserName: "MetaMask",
-    sdk: null as RenExSDK | null,
+    readOnlyProvider,
+    sdk: new RenExSDK(readOnlyProvider, { network: "testnet" }),
 }) implements Serializable<TraderData> {
     public serialize(): string {
         return JSON.stringify({
@@ -112,4 +116,5 @@ export class DarknodeDetails extends Record({
 
     peers: 0,
     registrationStatus: "",
+    operator: "",
 }) { }

@@ -19,9 +19,6 @@ export interface WalletDetail {
     getWeb3Provider(address?: string): Promise<[Provider, string[] | null]> | [Provider, string[] | null];
 }
 
-
-export const getReadOnlyWeb3 = (): Web3 => new Web3(getReadOnlyProvider());
-
 export const getReadOnlyProvider = (): Provider => {
     const engine = new ProviderEngine();
     engine.addProvider(new FetchSubprovider({ rpcUrl: INFURA_URL }));

@@ -4,7 +4,7 @@ import Web3 from "web3";
 
 import RenExSDK from "@renex/renex";
 import contracts from "./lib/contracts";
-import { Token, TokenDetails } from "./lib/tokens";
+import { Token } from "./lib/tokens";
 
 export const ERROR_UNLOCK_METAMASK = "Please unlock your MetaMask wallet.";
 export const ERROR_TRANSACTION_FAILED = "Transaction failed, please try again.";
@@ -16,8 +16,8 @@ const BUTTON_DEREGISTER = "Deregister";
 const BUTTON_REFUND = "Refund Bond";
 
 interface RegistrationProps {
+    operator: boolean;
     sdk: RenExSDK;
-    web3: Web3;
     minBond: number;
     registrationStatus: string;
     network: string;
@@ -61,25 +61,28 @@ export class Registration extends React.Component<RegistrationProps, Registratio
     }
 
     public render(): JSX.Element {
+        const { operator } = this.props;
         const { buttonText, disabled, errorMessage } = this.state;
         const buttonClass = buttonText === BUTTON_DEREGISTER ? "red" : "green";
         return (
             <div className="status">
                 <span className="status--title">{RegistrationStatus[this.props.registrationStatus]}</span>
-                <button className={`status--button ${buttonText ? `${buttonClass} hover` : ""}`} onClick={this.handleClick} disabled={disabled || !buttonText}>
-                    <span>{buttonText || "Loading..."}</span>
-                </button>
-                {errorMessage &&
-                    <span className="status--error">{errorMessage}</span>
-                }
+                {operator ? <>
+                    <button className={`status--button ${buttonText ? `${buttonClass} hover` : ""}`} onClick={this.handleClick} disabled={disabled || !buttonText}>
+                        <span>{buttonText || "Loading..."}</span>
+                    </button>
+                    {errorMessage &&
+                        <span className="status--error">{errorMessage}</span>
+                    }
+                </> : null}
             </div>
         );
     }
 
     private updateStatus = async (props: RegistrationProps, statusChanged: boolean): Promise<void> => {
         let { buttonText, disabled } = this.state;
-        const { web3, minBond } = this.props;
-        const ethAddress = await web3.eth.getAccounts();
+        const { minBond, sdk } = this.props;
+        const ethAddress = await sdk.getWeb3().eth.getAccounts();
         if (!ethAddress[0]) {
             this.setState({ buttonText: "", disabled: true, errorMessage: "Please unlock your MetaMask wallet." });
             return;
@@ -92,8 +95,8 @@ export class Registration extends React.Component<RegistrationProps, Registratio
         }
         if (props.registrationStatus === "unregistered") {
             // tslint:disable-next-line:no-non-null-assertion
-            const renAddr = TokenDetails.get(Token.REN)!.address;
-            const ercContract = new web3.eth.Contract(contracts.ERC20.ABI, renAddr);
+            const renAddr = (await sdk._cachedTokenDetails.get(Token.REN))!.addr;
+            const ercContract = new (sdk.getWeb3().eth.Contract)(contracts.ERC20.ABI, renAddr);
             const allowed = await ercContract.methods.allowance(ethAddress[0], props.sdk._contracts.darknodeRegistry.address).call();
             if (allowed < minBond && (statusChanged || !buttonText)) {
                 buttonText = BUTTON_APPROVE;
@@ -139,15 +142,15 @@ export class Registration extends React.Component<RegistrationProps, Registratio
     }
 
     private approveNode = async (): Promise<Error | null> => {
-        const { web3, minBond, sdk } = this.props;
-        const ethAddress = await web3.eth.getAccounts();
+        const { minBond, sdk } = this.props;
+        const ethAddress = await sdk.getWeb3().eth.getAccounts();
         if (!ethAddress[0]) {
             return new Error(ERROR_UNLOCK_METAMASK);
         }
 
         // tslint:disable-next-line:no-non-null-assertion
-        const renAddr = TokenDetails.get(Token.REN)!.address;
-        const ercContract = new web3.eth.Contract(contracts.ERC20.ABI, renAddr);
+        const renAddr = (await sdk._cachedTokenDetails.get(Token.REN))!.addr;
+        const ercContract = new (sdk.getWeb3().eth.Contract)(contracts.ERC20.ABI, renAddr);
         const ercBalance = await ercContract.methods.balanceOf(ethAddress[0]).call();
         if (ercBalance < minBond) {
             return new Error("You do not have sufficient REN to register this node.");
@@ -161,8 +164,8 @@ export class Registration extends React.Component<RegistrationProps, Registratio
     }
 
     private registerNode = async (): Promise<Error | null> => {
-        const { web3, minBond, darknodeAddress, publicKey, sdk } = this.props;
-        const ethAddress = await web3.eth.getAccounts();
+        const { minBond, darknodeAddress, publicKey, sdk } = this.props;
+        const ethAddress = await sdk.getWeb3().eth.getAccounts();
         if (!ethAddress[0]) {
             return new Error(ERROR_UNLOCK_METAMASK);
         }
@@ -176,11 +179,12 @@ export class Registration extends React.Component<RegistrationProps, Registratio
     }
 
     private deregisterNode = async (): Promise<Error | null> => {
+        const { sdk } = this.props;
         if (this.props.registrationStatus !== "registered") {
             return new Error("Only registered nodes can be deregistered.");
         }
         // The node has been registered and can be deregistered.
-        const ethAddress = await this.props.web3.eth.getAccounts();
+        const ethAddress = await sdk.getWeb3().eth.getAccounts();
         if (!ethAddress[0]) {
             return new Error(ERROR_UNLOCK_METAMASK);
         }
@@ -197,11 +201,12 @@ export class Registration extends React.Component<RegistrationProps, Registratio
     }
 
     private refundNode = async (): Promise<Error | null> => {
+        const { sdk } = this.props;
         if (this.props.registrationStatus !== "awaitingRefund") {
             return new Error("The bond for this node cannot be refunded at this stage.");
         }
         // The node is awaiting refund.
-        const ethAddress = await this.props.web3.eth.getAccounts();
+        const ethAddress = await sdk.getWeb3().eth.getAccounts();
         if (!ethAddress[0]) {
             return new Error(ERROR_UNLOCK_METAMASK);
         }

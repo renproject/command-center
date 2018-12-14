@@ -48,7 +48,7 @@ class HeaderClass extends React.Component<HeaderProps, HeaderState> {
             <div className="header">
                 <div className="container">
                     <div className="header--counter-weight" />
-                    <Link to={loggedIn ? "/home" : "/"}>
+                    <Link className="no-underline" to={loggedIn ? "/home" : "/"}>
                         <div className="header--logo" />
                     </Link>
                     <ul className="header--menu">
@@ -125,9 +125,9 @@ class HeaderClass extends React.Component<HeaderProps, HeaderState> {
     }
 
     private handleLogin = async (): Promise<void> => {
-        const { address } = this.props.store;
+        const { address, sdk } = this.props.store;
         if (!address) {
-            await this.props.actions.login({ redirect: false, immediatePopup: true });
+            await this.props.actions.login(sdk, { redirect: false, showPopup: true, immediatePopup: true });
         }
     }
 
@@ -189,6 +189,7 @@ const mapStateToProps = (state: ApplicationData) => ({
         address: state.trader.address,
         web3BrowserName: state.trader.web3BrowserName,
         quoteCurrency: state.statistics.quoteCurrency,
+        sdk: state.trader.sdk,
     },
 });
 

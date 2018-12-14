@@ -15,10 +15,7 @@ import { NoWeb3Popup } from "@Components/popups/NoWeb3Popup";
 import { getInjectedWeb3Provider } from "@Library/wallets/web3browser";
 import { getAccounts } from "@Library/web3";
 import { Language } from "@Root/languages/language";
-
-interface StoreSDKPayload { sdk: RenExSDK | null; }
-export type StoreSDKAction = (payload: StoreSDKPayload) => void;
-export const storeSDK = createStandardAction("STORE_SDK")<StoreSDKPayload>();
+import { Provider } from "web3/providers";
 
 type StoreAddressPayload = string | null;
 export type StoreAddressAction = (payload: StoreAddressPayload) => void;
@@ -28,12 +25,12 @@ type StoreWeb3BrowserNamePayload = string;
 export type StoreWeb3BrowserNameAction = (payload: StoreWeb3BrowserNamePayload) => void;
 export const storeWeb3BrowserName = createStandardAction("STORE_WEB3_BROWSER_NAME")<StoreWeb3BrowserNamePayload>();
 
-export type LoginAction = (options: { redirect: boolean, immediatePopup: boolean }) => (dispatch: Dispatch) => Promise<void>;
-export const login: LoginAction = (options) => async (dispatch) => {
+export type LoginAction = (sdk: RenExSDK, options: { redirect: boolean, showPopup: boolean, immediatePopup: boolean }) => (dispatch: Dispatch) => Promise<void>;
+export const login: LoginAction = (sdk, options) => async (dispatch) => {
 
     let cancelled = false;
 
-    const onClick = () => (login({ redirect: false, immediatePopup: true })(dispatch));
+    const onClick = () => (login(sdk, { redirect: false, showPopup: true, immediatePopup: true })(dispatch));
     const onCancel = () => {
         dispatch(clearPopup());
         cancelled = true;
@@ -56,7 +53,7 @@ export const login: LoginAction = (options) => async (dispatch) => {
 
     console.log(promptMessage);
 
-    if (options.immediatePopup) {
+    if (options.showPopup && options.immediatePopup) {
         dispatch(setPopup(
             { popup: <NoWeb3Popup onConnect={onClick} onCancel={onCancel} disabled={true} message={promptMessage} />, onCancel }
         ));
@@ -65,7 +62,7 @@ export const login: LoginAction = (options) => async (dispatch) => {
     // Show popup if getInjectedWeb3Provider doesn't return immediately, since
     // the Web3 browser is probably prompting the user to approve access
     const timeout = setTimeout(() => {
-        if (!cancelled) {
+        if (options.showPopup && !cancelled) {
             dispatch(setPopup(
                 { popup: <NoWeb3Popup onConnect={onClick} onCancel={onCancel} message={promptMessage} />, onCancel }
             ));
@@ -78,7 +75,7 @@ export const login: LoginAction = (options) => async (dispatch) => {
         provider = await getInjectedWeb3Provider();
     } catch (error) {
         clearTimeout(timeout);
-        if (!cancelled) {
+        if (options.showPopup && !cancelled) {
             dispatch(setPopup(
                 { popup: <NoWeb3Popup onConnect={onClick} onCancel={onCancel} message={error.message} />, onCancel }
             ));
@@ -100,8 +97,6 @@ export const login: LoginAction = (options) => async (dispatch) => {
     // TODO: Add support for selecting other accounts other than first
     const address = accounts[0];
 
-    const sdk = new RenExSDK(provider, { network: "testnet" });
-    dispatch(storeSDK({ sdk }));
     sdk.updateProvider(provider);
     sdk.setAddress(address);
 
@@ -147,14 +142,15 @@ export const login: LoginAction = (options) => async (dispatch) => {
     }
 };
 
-export type LogoutAction = (options: { reload: boolean }) => (dispatch: Dispatch) => Promise<void>;
-export const logout: LogoutAction = (options) => async (dispatch) => {
+export type LogoutAction = (sdk: RenExSDK, readOnlyProvider: Provider, options: { reload: boolean }) => (dispatch: Dispatch) => Promise<void>;
+export const logout: LogoutAction = (sdk, readOnlyProvider, options) => async (dispatch) => {
 
     // Clear session account in store (and in local storage)
     dispatch(storeAddress(null));
 
     // Use read-only provider and clear address
-    dispatch(storeSDK({ sdk: null }));
+    sdk.updateProvider(readOnlyProvider);
+    sdk.setAddress("");
 
     // Clear darknodes
     dispatch(clearDarknodeList());
@@ -167,8 +163,8 @@ export const logout: LogoutAction = (options) => async (dispatch) => {
     }
 };
 
-export type LookForLogoutAction = (sdk: RenExSDK) => (dispatch: Dispatch) => Promise<void>;
-export const lookForLogout: LookForLogoutAction = (sdk) => async (dispatch) => {
+export type LookForLogoutAction = (sdk: RenExSDK, readOnlyProvider: Provider) => (dispatch: Dispatch) => Promise<void>;
+export const lookForLogout: LookForLogoutAction = (sdk, readOnlyProvider) => async (dispatch) => {
     if (!sdk.getAddress()) {
         return;
     }
@@ -177,7 +173,7 @@ export const lookForLogout: LookForLogoutAction = (sdk) => async (dispatch) => {
     if (!accounts.includes(sdk.getAddress().toLowerCase())) {
         // console.error(`User has logged out of their web3 provider (${sdk.getAddress()} not in [${accounts.join(", ")}])`);
 
-        const onClick = () => login({ redirect: false, immediatePopup: false })(dispatch);
+        const onClick = () => login(sdk, { redirect: false, showPopup: true, immediatePopup: false })(dispatch);
         const onCancel = () => {
             dispatch(clearPopup());
         };
@@ -187,6 +183,6 @@ export const lookForLogout: LookForLogoutAction = (sdk) => async (dispatch) => {
             )
         );
 
-        logout({ reload: true })(dispatch).catch(console.error);
+        logout(sdk, readOnlyProvider, { reload: true })(dispatch).catch(console.error);
     }
 };

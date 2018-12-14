@@ -10,7 +10,7 @@ import { Currency, DarknodeDetails, TokenPrices } from "@Reducers/types";
 
 // Legacy
 import contracts from "../../components/statuspage/lib/contracts";
-import { Token, TokenDetails, Tokens } from "../../components/statuspage/lib/tokens";
+import { Token, Tokens } from "../../components/statuspage/lib/tokens";
 
 interface StoreDarknodeListPayload { darknodeList: List<string>; }
 export type StoreDarknodeListAction = (payload: StoreDarknodeListPayload) => void;
@@ -40,7 +40,7 @@ const getBalances = async (sdk: RenExSDK, darknodeID: string, tokenPrices: Token
     let feesEarned = OrderedMap<Token, BigNumber>();
 
     const balances = Tokens.map(async (token: Token) => {
-        const tokenDetails = TokenDetails.get(token, undefined);
+        const tokenDetails = await sdk._cachedTokenDetails.get(token);
         if (!tokenDetails) {
             return {
                 balance: new BigNumber(0),
@@ -48,7 +48,7 @@ const getBalances = async (sdk: RenExSDK, darknodeID: string, tokenPrices: Token
             };
         }
 
-        const balance = new BigNumber(await contract.methods.darknodeBalances(darknodeID, tokenDetails.address).call());
+        const balance = new BigNumber(await contract.methods.darknodeBalances(darknodeID, tokenDetails.addr).call());
 
         return {
             balance,
@@ -65,25 +65,30 @@ const getBalances = async (sdk: RenExSDK, darknodeID: string, tokenPrices: Token
 };
 
 
-const sumUpFees = (feesEarned: OrderedMap<Token, BigNumber>, tokenPrices: TokenPrices): BigNumber => {
+const sumUpFees = async (sdk: RenExSDK, feesEarned: OrderedMap<Token, BigNumber>, tokenPrices: TokenPrices): Promise<BigNumber> => {
 
     let totalEth = new BigNumber(0);
 
     for (const token of Tokens) {
-        const tokenDetails = TokenDetails.get(token, undefined);
+        const tokenDetails = await sdk._cachedTokenDetails.get(token);
         if (!tokenDetails) {
             continue;
         }
 
         const price = tokenPrices.get(token, undefined);
         const inEth = feesEarned.get(token, new BigNumber(0))
-            .div(new BigNumber(Math.pow(10, tokenDetails ? tokenDetails.digits : 0)))
+            .div(new BigNumber(Math.pow(10, tokenDetails ? new BigNumber(tokenDetails.decimals.toString()).toNumber() : 0)))
             .multipliedBy(price ? price.get(Currency.ETH, 0) : 0);
         totalEth = totalEth.plus(inEth);
     }
 
     // Convert to wei
     return totalEth.multipliedBy(new BigNumber(10).pow(18));
+};
+
+
+const getDarknodeOperator = async (sdk: RenExSDK, darknodeID: string): Promise<string> => {
+    return sdk._contracts.darknodeRegistry.getDarknodeOwner(darknodeID, {});
 };
 
 const getDarknodeStatus = async (sdk: RenExSDK, darknodeID: string): Promise<string> => {
@@ -131,7 +136,10 @@ export const updateDarknodeStatistics: UpdateDarknodeStatisticsAction = (sdk, da
 
     // Get earned fees
     const feesEarned = await getBalances(sdk, darknodeID, tokenPrices);
-    const feesEarnedTotalEth = sumUpFees(feesEarned, tokenPrices);
+    const feesEarnedTotalEth = await sumUpFees(sdk, feesEarned, tokenPrices);
+
+    // Get darknode operator
+    const operator = await getDarknodeOperator(sdk, darknodeID);
 
     // Get registration status
     const registrationStatus = await getDarknodeStatus(sdk, darknodeID);
@@ -151,6 +159,7 @@ export const updateDarknodeStatistics: UpdateDarknodeStatisticsAction = (sdk, da
 
         peers: 0,
         registrationStatus,
+        operator,
     });
 
     dispatch(setDarknodeDetails({ darknodeDetails }));

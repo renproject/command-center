@@ -4,7 +4,6 @@ import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
 import { Header } from "@Components/Header";
-import { Sidebar } from "@Components/Sidebar";
 
 import { setAlert } from "@Actions/alert/alertActions";
 import { login } from "@Actions/trader/accountActions";
@@ -31,21 +30,14 @@ class HomeClass extends React.Component<HomeProps, HomeState> {
     }
 
     public render(): JSX.Element {
-        const { address, sdk, darknodeDetails, darknodeList } = this.props.store;
+        const { darknodeDetails, darknodeList } = this.props.store;
 
         return (
-            <div className="login">
+            <div>
                 <Header />
-                <div className="content" />
-                {sdk && address ?
-                    <>
-                        <Sidebar selectedDarknode={null} />
-                        <div className="container">
-                            <DarknodeList darknodeDetails={darknodeDetails} darknodeList={darknodeList} />
-                        </div>
-                    </> :
-                    <></>
-                }
+                <div className="container">
+                    <DarknodeList darknodeDetails={darknodeDetails} darknodeList={darknodeList} />
+                </div>
             </div>
         );
     }
