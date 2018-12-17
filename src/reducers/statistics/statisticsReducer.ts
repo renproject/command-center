@@ -11,11 +11,8 @@ type OperatorActions = ActionType<typeof operatorActions>;
 
 export function statisticsReducer(state: StatisticsData = new StatisticsData(), action: NetworkAction | OperatorActions) {
     switch (action.type) {
-        case getType(networkActions.storeDarknodeCount):
-            return state.set("darknodeCount", action.payload.darknodeCount);
-
-        case getType(networkActions.storeOrderCount):
-            return state.set("orderCount", action.payload.orderCount);
+        case getType(networkActions.storeMinimumBond):
+            return state.set("minimumBond", action.payload.minimumBond);
 
         case getType(networkActions.storeTokenPrices):
             return state.set("tokenPrices", action.payload.tokenPrices);

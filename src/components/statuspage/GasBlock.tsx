@@ -13,7 +13,6 @@ import { Block, BlockBody, BlockTitle } from "./Block";
 import { Topup } from "./Topup";
 
 interface GasBlockProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
-    sdk: RenExSDK;
     operator: boolean;
     darknodeDetails: DarknodeDetails | null;
 }
@@ -32,7 +31,7 @@ class GasBlockClass extends React.Component<GasBlockProps, GasBlockState> {
     }
 
     public render(): JSX.Element {
-        const { sdk, darknodeDetails, operator } = this.props;
+        const { darknodeDetails, operator } = this.props;
         const { showAdvanced } = this.state;
 
         const gasValue = darknodeDetails ? (darknodeDetails.ethBalance.div(new BigNumber(Math.pow(10, 18)))).toFixed(3) : "";
@@ -70,7 +69,7 @@ class GasBlockClass extends React.Component<GasBlockProps, GasBlockState> {
                             <div className="block--advanced--bottom">
                                 {operator ? <>
                                     <p>Top-up Balance</p>
-                                    <Topup sdk={sdk} darknodeAddress={darknodeDetails.ID} />
+                                    <Topup darknodeAddress={darknodeDetails.ID} />
                                 </> : null}
                             </div>
                         </div>

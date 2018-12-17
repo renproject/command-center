@@ -9,16 +9,15 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { ApplicationData, Currency, DarknodeDetails } from "@Reducers/types";
+import { Token } from "@Library/tokens";
+import { ApplicationData, DarknodeDetails } from "@Reducers/types";
 import { Block, BlockBody, BlockTitle } from "./Block";
 import { FeesItem } from "./FeesItem";
-import { Token } from "./lib/tokens";
 import { TokenBalance } from "./TokenBalance";
 import { TokenIcon } from "./TokenIcon";
 
 
 interface FeesBlockProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
-    sdk: RenExSDK;
     operator: boolean;
     darknodeDetails: DarknodeDetails | null;
 }
@@ -37,7 +36,7 @@ class FeesBlockClass extends React.Component<FeesBlockProps, FeesBlockState> {
     }
 
     public render(): JSX.Element {
-        const { sdk, darknodeDetails, store, operator } = this.props;
+        const { darknodeDetails, store, operator } = this.props;
         const { quoteCurrency } = store;
         const { showAdvanced } = this.state;
 
@@ -82,7 +81,7 @@ class FeesBlockClass extends React.Component<FeesBlockProps, FeesBlockState> {
                                                     <td><TokenIcon className="fees-block--table--icon" token={token} /> <span>{token}</span></td>
                                                     <td className="fees-block--table--value"><TokenBalance token={token} amount={balance} /></td>
                                                     <td className="fees-block--table--usd">$<TokenBalance token={token} amount={balance} convertTo={quoteCurrency} /> <span className="fees-block--table--usd-symbol">{quoteCurrency.toUpperCase()}</span></td>
-                                                    <td><FeesItem operator={operator} key={token} sdk={sdk} token={token} amount={balance} darknodeAddress={darknodeDetails.ID} /></td>
+                                                    <td><FeesItem operator={operator} key={token} token={token} amount={balance} darknodeID={darknodeDetails.ID} /></td>
                                                 </tr>;
                                             }).valueSeq().toArray()
                                         }

@@ -2,7 +2,7 @@ import * as Sentry from "@sentry/browser";
 import * as React from "react";
 
 import { connect } from "react-redux";
-import { HashRouter, Route, RouteComponentProps, withRouter } from "react-router-dom";
+import { Route, RouteComponentProps, withRouter } from "react-router-dom";
 import { Dispatch } from "redux";
 import { bindActionCreators } from "redux";
 
@@ -11,7 +11,7 @@ import { Home } from "@Components/pages/Home";
 import { LoggingOut } from "@Components/pages/LoggingOut";
 import { Popup } from "@Components/popups/Popup";
 
-import { updateTokenPrices } from "@Actions/statistics/networkActions";
+import { updateNetworkStatistics, updateTokenPrices } from "@Actions/statistics/networkActions";
 import { updateAllDarknodeStatistics, updateDarknodeStatistics, updateOperatorStatistics } from "@Actions/statistics/operatorActions";
 import { login, lookForLogout } from "@Actions/trader/accountActions";
 import { ApplicationData } from "@Reducers/types";
@@ -49,6 +49,7 @@ const ScrollToTop = withRouter(
 class AppClass extends React.Component<AppProps, AppState> {
     private callUpdatePricesTimeout: NodeJS.Timer | undefined;
     private callLookForLogoutTimeout: NodeJS.Timer | undefined;
+    private callUpdateNetworkStatisticsTimeout: NodeJS.Timer | undefined;
     private callUpdateOperatorStatisticsTimeout: NodeJS.Timer | undefined;
     private callUpdateAllDarknodeStatisticsTimeout: NodeJS.Timer | undefined;
     private callUpdateSelectedDarknodeStatisticsTimeout: NodeJS.Timer | undefined;
@@ -78,6 +79,7 @@ class AppClass extends React.Component<AppProps, AppState> {
         // Clear timeouts
         if (this.callUpdatePricesTimeout) { clearTimeout(this.callUpdatePricesTimeout); }
         if (this.callLookForLogoutTimeout) { clearTimeout(this.callLookForLogoutTimeout); }
+        if (this.callUpdateNetworkStatisticsTimeout) { clearTimeout(this.callUpdateNetworkStatisticsTimeout); }
         if (this.callUpdateOperatorStatisticsTimeout) { clearTimeout(this.callUpdateOperatorStatisticsTimeout); }
         if (this.callUpdateAllDarknodeStatisticsTimeout) { clearTimeout(this.callUpdateAllDarknodeStatisticsTimeout); }
         if (this.callUpdateSelectedDarknodeStatisticsTimeout) { clearTimeout(this.callUpdateSelectedDarknodeStatisticsTimeout); }
@@ -110,6 +112,21 @@ class AppClass extends React.Component<AppProps, AppState> {
             this.callLookForLogoutTimeout = setTimeout(callLookForLogout, 5 * 1000);
         };
         callLookForLogout().catch(console.error);
+
+        // Update network statistics every 3600 seconds
+        const callUpdateNetworkStatistics = async () => {
+            const { sdk } = this.props.store;
+            let timeout = 3600;
+            try {
+                await this.props.actions.updateNetworkStatistics(sdk);
+            } catch (err) {
+                console.error(err);
+                timeout = 1; // Retry in a second if an error occurred
+            }
+            if (this.callUpdateNetworkStatisticsTimeout) { clearTimeout(this.callUpdateNetworkStatisticsTimeout); }
+            this.callUpdateNetworkStatisticsTimeout = setTimeout(callUpdateNetworkStatistics, timeout * 1000);
+        };
+        callUpdateNetworkStatistics().catch(console.error);
 
         // Update operator statistics every 60 seconds
         const callUpdateOperatorStatistics = async () => {
@@ -171,7 +188,7 @@ class AppClass extends React.Component<AppProps, AppState> {
     }
 
     public withAccount = <T extends React.ComponentClass>(component: T): React.ComponentClass | React.StatelessComponent =>
-        this.props.store ? component : LoggingIn
+        this.props.store.address ? component : LoggingIn
 
     public render(): JSX.Element {
         const { match: { params }, store } = this.props;
@@ -204,8 +221,9 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     actions: bindActionCreators({
         login,
         lookForLogout,
-        updateOperatorStatistics,
         updateTokenPrices,
+        updateNetworkStatistics,
+        updateOperatorStatistics,
         updateAllDarknodeStatistics,
         updateDarknodeStatistics,
     }, dispatch),

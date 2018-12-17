@@ -64,6 +64,13 @@
         }
     }
 
+    &.statuspage--focused {
+        .statuspage--bottom {
+            mix-blend-mode: normal;
+            opacity: 0.3;
+        }
+    }
+
     @media(max-width: $max-md) {
         flex-direction: column;
     }
@@ -96,6 +103,13 @@
         text-transform: uppercase;
         font-size: 12px;
         border-radius: 15px;
+    }
+
+    &.statuspage--focused {
+        .status--button {
+            background: $blue-bright;
+            color: white;
+        }
     }
 
     .status--button:not(:disabled):active {

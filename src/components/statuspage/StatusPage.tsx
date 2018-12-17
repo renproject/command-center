@@ -9,6 +9,7 @@ import { bindActionCreators, Dispatch } from "redux";
 import { Blocky } from "@Components/Blocky";
 
 import { updateDarknodeStatistics } from "@Actions/statistics/operatorActions";
+import { DarknodeAction } from "@Components/pages/Darknode";
 import { ApplicationData, DarknodeDetails } from "@Reducers/types";
 import { FeesBlock } from "./FeesBlock";
 import { GasBlock } from "./GasBlock";
@@ -16,7 +17,8 @@ import { NetworkBlock } from "./NetworkBlock";
 import { Registration } from "./Registration";
 
 interface StatusPageProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
-    sdk: RenExSDK;
+    action: DarknodeAction;
+    publicKey: string | undefined;
     darknodeID: string;
     darknodeDetails: DarknodeDetails | null;
     operator: boolean;
@@ -25,7 +27,6 @@ interface StatusPageProps extends ReturnType<typeof mapStateToProps>, ReturnType
 interface StatusPageState {
     network: string;
     success: boolean;
-    minBond: number;
     refreshing: boolean;
     correctNetwork: boolean;
     darknodeActionCalled: Map<string, boolean>;
@@ -38,7 +39,6 @@ class StatusPageClass extends React.Component<StatusPageProps, StatusPageState> 
         this.state = {
             network: "",
             success: false,
-            minBond: 0,
             refreshing: false,
             correctNetwork: true,
             darknodeActionCalled: Map(),
@@ -46,10 +46,10 @@ class StatusPageClass extends React.Component<StatusPageProps, StatusPageState> 
     }
 
     public render(): JSX.Element {
-        const { sdk, darknodeDetails, darknodeID, operator } = this.props;
+        const { darknodeDetails, darknodeID, operator, action, publicKey } = this.props;
 
         return (
-            <div className="statuspage">
+            <div className={`statuspage ${action !== DarknodeAction.View ? `statuspage--focused` : ``}`}>
                 <div className="statuspage--banner">
                     <Blocky address={darknodeID} fgColor="#006FE8" bgColor="transparent" />
                     <div className="statuspage--banner--details">
@@ -58,34 +58,25 @@ class StatusPageClass extends React.Component<StatusPageProps, StatusPageState> 
                             {operator ? <button>Edit name</button> : null}
                             <button>View details</button>
                         </div>
-                        {darknodeDetails ?
-                            <Registration sdk={this.props.sdk} operator={operator} minBond={this.state.minBond} registrationStatus={darknodeDetails.registrationStatus} network={this.state.network} darknodeAddress={darknodeDetails.ID} publicKey={darknodeDetails.publicKey} /> :
+
+                        {action === DarknodeAction.Register ?
+                            <Registration operator={true} registrationStatus={"unregistered"} publicKey={publicKey} network={this.state.network} darknodeID={darknodeID} /> :
+                            null
+                        }
+                        {action !== DarknodeAction.Register && darknodeDetails ?
+                            <Registration operator={operator} registrationStatus={darknodeDetails.registrationStatus} network={this.state.network} darknodeID={darknodeID} /> :
                             null
                         }
                     </div>
                 </div>
                 <div className="statuspage--bottom">
-                    <FeesBlock sdk={sdk} operator={operator} darknodeDetails={darknodeDetails} />
-                    <GasBlock sdk={sdk} operator={operator} darknodeDetails={darknodeDetails} />
-                    <NetworkBlock sdk={sdk} darknodeDetails={darknodeDetails} network={this.state.network} minBond={this.state.minBond} />
-
-                    {/* <div className="statuspage--graphs">
-                            <div>
-                                Income graph
-                            </div>
-                            <div>
-                                Gas graph
-                            </div>
-                        </div> */}
+                    <FeesBlock operator={operator} darknodeDetails={darknodeDetails} />
+                    <GasBlock operator={operator} darknodeDetails={darknodeDetails} />
+                    <NetworkBlock darknodeDetails={darknodeDetails} network={this.state.network} />
                 </div>
             </div>
         );
     }
-
-    // private async getMinBond(): Promise<number> {
-    //     const { sdk } = this.props;
-    //     return parseInt(await sdk._contracts.darknodeRegistry.minimumBond(), 10);
-    // }
 }
 
 const mapStateToProps = (state: ApplicationData) => ({

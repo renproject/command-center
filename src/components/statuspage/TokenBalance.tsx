@@ -4,8 +4,8 @@ import { BigNumber } from "bignumber.js";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
+import { Token } from "@Library/tokens";
 import { ApplicationData, Currency } from "@Reducers/types";
-import { Token } from "./lib/tokens";
 
 interface TokenBalanceProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     token: Token;
@@ -80,7 +80,7 @@ class TokenBalanceClass extends React.Component<TokenBalanceProps, TokenBalanceS
         switch (convertTo) {
             case Currency.BTC:
             case Currency.ETH:
-                defaultDigits = 8; break;
+                defaultDigits = 3; break;
             default:
                 defaultDigits = 2;
         }

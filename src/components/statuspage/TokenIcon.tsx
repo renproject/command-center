@@ -3,8 +3,8 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
+import { Token } from "@Library/tokens";
 import { ApplicationData } from "@Reducers/types";
-import { Token } from "./lib/tokens";
 
 interface TokenIconProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     token: Token;

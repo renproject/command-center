@@ -1,14 +1,14 @@
 import * as React from "react";
 
-import RenExSDK from "@renex/renex";
-
+import { ApplicationData } from "@Reducers/types";
 import { BigNumber } from "bignumber.js";
+import { connect } from "react-redux";
+import { bindActionCreators, Dispatch } from "redux";
 
-import { Token } from "./lib/tokens";
-import { ERROR_TRANSACTION_FAILED, ERROR_UNLOCK_METAMASK } from "./Registration";
+import { ERROR_TRANSACTION_FAILED, ERROR_UNLOCK_METAMASK } from "@Actions/trader/darknode";
+import { Token } from "@Library/tokens";
 
-interface TopupProps {
-    sdk: RenExSDK;
+interface TopupProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     darknodeAddress: string;
 }
 
@@ -22,7 +22,7 @@ interface TopupState {
 
 const CONFIRMATION_MESSAGE = "Transaction confirmed, your balances will be updated shortly.";
 
-export class Topup extends React.Component<TopupProps, TopupState> {
+class TopupClass extends React.Component<TopupProps, TopupState> {
     constructor(props: TopupProps) {
         super(props);
         this.state = {
@@ -73,7 +73,7 @@ export class Topup extends React.Component<TopupProps, TopupState> {
     }
 
     private handleBlur = async (e: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
-        const { sdk } = this.props;
+        const { sdk } = this.props.store;
         // Convert input to Wei upon blur.
         const ethAmount = new BigNumber(e.target.value);
         // tslint:disable-next-line:no-non-null-assertion
@@ -86,7 +86,7 @@ export class Topup extends React.Component<TopupProps, TopupState> {
     }
 
     private sendFunds = async (): Promise<void> => {
-        const { sdk } = this.props;
+        const { sdk } = this.props.store;
         const ethAddress = await sdk.getWeb3().eth.getAccounts();
         if (!ethAddress[0]) {
             this.setState({ resultMessage: ERROR_UNLOCK_METAMASK, pending: false });
@@ -107,3 +107,17 @@ export class Topup extends React.Component<TopupProps, TopupState> {
         });
     }
 }
+
+const mapStateToProps = (state: ApplicationData) => ({
+    store: {
+        sdk: state.trader.sdk,
+    },
+});
+
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+    actions: bindActionCreators({
+    }, dispatch),
+});
+
+export const Topup = connect(mapStateToProps, mapDispatchToProps)(TopupClass);
+

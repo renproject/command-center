@@ -1,28 +1,27 @@
 import * as React from "react";
 
-import Web3 from "web3";
+import { ApplicationData } from "@Reducers/types";
+import { connect } from "react-redux";
+import { bindActionCreators, Dispatch } from "redux";
 
-import RenExSDK from "@renex/renex";
-import contracts from "./lib/contracts";
-import { Token } from "./lib/tokens";
+import contracts from "@Library/contracts/contracts";
 
-export const ERROR_UNLOCK_METAMASK = "Please unlock your MetaMask wallet.";
-export const ERROR_TRANSACTION_FAILED = "Transaction failed, please try again.";
+import { approveNode, deregisterNode, refundNode, registerNode } from "@Actions/trader/darknode";
+import { Token } from "@Library/tokens";
+import BigNumber from "bignumber.js";
 
 const BUTTON_PENDING = "Pending...";
 const BUTTON_APPROVE = "Approve";
-const BUTTON_REGISTER = "Register";
+const BUTTON_REGISTER = "Register your darknode";
 const BUTTON_DEREGISTER = "Deregister";
 const BUTTON_REFUND = "Refund Bond";
 
-interface RegistrationProps {
+interface RegistrationProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     operator: boolean;
-    sdk: RenExSDK;
-    minBond: number;
     registrationStatus: string;
     network: string;
-    darknodeAddress: string;
-    publicKey: string;
+    darknodeID: string;
+    publicKey?: string;
 }
 
 interface RegistrationState {
@@ -32,7 +31,15 @@ interface RegistrationState {
     registerEnabled: boolean;
 }
 
-const RegistrationStatus = {
+export enum RegistrationStatus {
+    Unregistered = "unregistered",
+    RegistrationPending = "registrationPending",
+    Registered = "registered",
+    DeregistrationPending = "deregistrationPending",
+    AwaitingRefund = "awaitingRefund",
+}
+
+const statusText = {
     "unregistered": "Unregistered",
     "registrationPending": "Pending registration (waiting for epoch)",
     "registered": "Registered",
@@ -40,7 +47,7 @@ const RegistrationStatus = {
     "awaitingRefund": "Awaiting refund",
 };
 
-export class Registration extends React.Component<RegistrationProps, RegistrationState> {
+class RegistrationClass extends React.Component<RegistrationProps, RegistrationState> {
     constructor(props: RegistrationProps) {
         super(props);
         this.state = {
@@ -64,9 +71,12 @@ export class Registration extends React.Component<RegistrationProps, Registratio
         const { operator } = this.props;
         const { buttonText, disabled, errorMessage } = this.state;
         const buttonClass = buttonText === BUTTON_DEREGISTER ? "red" : "green";
+
+        const showStatus = this.props.registrationStatus !== RegistrationStatus.Unregistered;
+
         return (
             <div className="status">
-                <span className="status--title">{RegistrationStatus[this.props.registrationStatus]}</span>
+                {showStatus ? <span className="status--title">{statusText[this.props.registrationStatus]}</span> : null}
                 {operator ? <>
                     <button className={`status--button ${buttonText ? `${buttonClass} hover` : ""}`} onClick={this.handleClick} disabled={disabled || !buttonText}>
                         <span>{buttonText || "Loading..."}</span>
@@ -81,7 +91,7 @@ export class Registration extends React.Component<RegistrationProps, Registratio
 
     private updateStatus = async (props: RegistrationProps, statusChanged: boolean): Promise<void> => {
         let { buttonText, disabled } = this.state;
-        const { minBond, sdk } = this.props;
+        const { sdk, minimumBond } = this.props.store;
         const ethAddress = await sdk.getWeb3().eth.getAccounts();
         if (!ethAddress[0]) {
             this.setState({ buttonText: "", disabled: true, errorMessage: "Please unlock your MetaMask wallet." });
@@ -97,11 +107,11 @@ export class Registration extends React.Component<RegistrationProps, Registratio
             // tslint:disable-next-line:no-non-null-assertion
             const renAddr = (await sdk._cachedTokenDetails.get(Token.REN))!.addr;
             const ercContract = new (sdk.getWeb3().eth.Contract)(contracts.ERC20.ABI, renAddr);
-            const allowed = await ercContract.methods.allowance(ethAddress[0], props.sdk._contracts.darknodeRegistry.address).call();
-            if (allowed < minBond && (statusChanged || !buttonText)) {
+            const allowed = new BigNumber(await ercContract.methods.allowance(ethAddress[0], sdk._contracts.darknodeRegistry.address).call());
+            if (minimumBond && allowed.lt(minimumBond) && (statusChanged || !buttonText)) {
                 buttonText = BUTTON_APPROVE;
                 disabled = false;
-            } else if (allowed >= minBond && (!this.state.registerEnabled || statusChanged || !buttonText)) {
+            } else if (minimumBond && allowed.gt(minimumBond) && (!this.state.registerEnabled || statusChanged || !buttonText)) {
                 buttonText = BUTTON_REGISTER;
                 disabled = false;
                 this.setState({ registerEnabled: true });
@@ -117,108 +127,58 @@ export class Registration extends React.Component<RegistrationProps, Registratio
     }
 
     private handleClick = async (): Promise<void> => {
+        const { darknodeID, publicKey } = this.props;
+        const { sdk, minimumBond } = this.props.store;
         const { buttonText, disabled } = this.state;
         this.setState({ buttonText: BUTTON_PENDING, disabled: true, errorMessage: "" });
 
-        let error;
-        switch (buttonText) {
-            case BUTTON_APPROVE:
-                error = await this.approveNode();
-                break;
-            case BUTTON_REGISTER:
-                error = await this.registerNode();
-                break;
-            case BUTTON_DEREGISTER:
-                error = await this.deregisterNode();
-                break;
-            case BUTTON_REFUND:
-                error = await this.refundNode();
-                break;
-        }
-        if (error) {
+        try {
+            switch (buttonText) {
+                case BUTTON_APPROVE:
+                    if (!minimumBond) {
+                        throw new Error("Unable to retrieve minimum bond");
+                    }
+                    await this.props.actions.approveNode(sdk, minimumBond);
+                    break;
+                case BUTTON_REGISTER:
+                    if (!publicKey) {
+                        throw new Error("Invalid public key");
+                    }
+                    if (!minimumBond) {
+                        throw new Error("Unable to retrieve minimum bond");
+                    }
+                    await this.props.actions.registerNode(sdk, darknodeID, publicKey, minimumBond);
+                    break;
+                case BUTTON_DEREGISTER:
+                    await this.props.actions.deregisterNode(sdk, darknodeID);
+                    break;
+                case BUTTON_REFUND:
+                    await this.props.actions.refundNode(sdk, darknodeID);
+                    break;
+            }
+        } catch (error) {
             this.setState({ buttonText, disabled, errorMessage: error.message });
             return;
         }
     }
-
-    private approveNode = async (): Promise<Error | null> => {
-        const { minBond, sdk } = this.props;
-        const ethAddress = await sdk.getWeb3().eth.getAccounts();
-        if (!ethAddress[0]) {
-            return new Error(ERROR_UNLOCK_METAMASK);
-        }
-
-        // tslint:disable-next-line:no-non-null-assertion
-        const renAddr = (await sdk._cachedTokenDetails.get(Token.REN))!.addr;
-        const ercContract = new (sdk.getWeb3().eth.Contract)(contracts.ERC20.ABI, renAddr);
-        const ercBalance = await ercContract.methods.balanceOf(ethAddress[0]).call();
-        if (ercBalance < minBond) {
-            return new Error("You do not have sufficient REN to register this node.");
-        }
-        try {
-            await ercContract.methods.approve(sdk._contracts.darknodeRegistry.address, this.props.minBond).send({ from: ethAddress[0] });
-        } catch (error) {
-            return new Error(ERROR_TRANSACTION_FAILED);
-        }
-        return null;
-    }
-
-    private registerNode = async (): Promise<Error | null> => {
-        const { minBond, darknodeAddress, publicKey, sdk } = this.props;
-        const ethAddress = await sdk.getWeb3().eth.getAccounts();
-        if (!ethAddress[0]) {
-            return new Error(ERROR_UNLOCK_METAMASK);
-        }
-
-        try {
-            await sdk._contracts.darknodeRegistry.register(darknodeAddress, publicKey, minBond.toString(), { from: ethAddress[0] });
-        } catch (error) {
-            return new Error(ERROR_TRANSACTION_FAILED);
-        }
-        return null;
-    }
-
-    private deregisterNode = async (): Promise<Error | null> => {
-        const { sdk } = this.props;
-        if (this.props.registrationStatus !== "registered") {
-            return new Error("Only registered nodes can be deregistered.");
-        }
-        // The node has been registered and can be deregistered.
-        const ethAddress = await sdk.getWeb3().eth.getAccounts();
-        if (!ethAddress[0]) {
-            return new Error(ERROR_UNLOCK_METAMASK);
-        }
-        const owner = await this.props.sdk._contracts.darknodeRegistry.getDarknodeOwner(this.props.darknodeAddress);
-        if (owner !== ethAddress[0]) {
-            return new Error("Only the owner can deregister this node.");
-        }
-        try {
-            await this.props.sdk._contracts.darknodeRegistry.deregister(this.props.darknodeAddress, { from: ethAddress[0] });
-        } catch (error) {
-            return new Error(ERROR_TRANSACTION_FAILED);
-        }
-        return null;
-    }
-
-    private refundNode = async (): Promise<Error | null> => {
-        const { sdk } = this.props;
-        if (this.props.registrationStatus !== "awaitingRefund") {
-            return new Error("The bond for this node cannot be refunded at this stage.");
-        }
-        // The node is awaiting refund.
-        const ethAddress = await sdk.getWeb3().eth.getAccounts();
-        if (!ethAddress[0]) {
-            return new Error(ERROR_UNLOCK_METAMASK);
-        }
-        const owner = await this.props.sdk._contracts.darknodeRegistry.getDarknodeOwner(this.props.darknodeAddress);
-        if (owner !== ethAddress[0]) {
-            return new Error("Only the owner can refund the bond for this node.");
-        }
-        try {
-            await this.props.sdk._contracts.darknodeRegistry.refund(this.props.darknodeAddress, { from: ethAddress[0] });
-        } catch (error) {
-            return new Error(ERROR_TRANSACTION_FAILED);
-        }
-        return null;
-    }
 }
+
+
+const mapStateToProps = (state: ApplicationData) => ({
+    store: {
+        sdk: state.trader.sdk,
+        minimumBond: state.statistics.minimumBond,
+    },
+});
+
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+    actions: bindActionCreators({
+        approveNode,
+        registerNode,
+        deregisterNode,
+        refundNode,
+    }, dispatch),
+});
+
+export const Registration = connect(mapStateToProps, mapDispatchToProps)(RegistrationClass);
+
