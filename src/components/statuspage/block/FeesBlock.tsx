@@ -11,10 +11,10 @@ import { bindActionCreators, Dispatch } from "redux";
 
 import { Token } from "@Library/tokens";
 import { ApplicationData, DarknodeDetails } from "@Reducers/types";
+import { TokenBalance } from "../../TokenBalance";
+import { FeesItem } from "../FeesItem";
+import { TokenIcon } from "../TokenIcon";
 import { Block, BlockBody, BlockTitle } from "./Block";
-import { FeesItem } from "./FeesItem";
-import { TokenBalance } from "./TokenBalance";
-import { TokenIcon } from "./TokenIcon";
 
 
 interface FeesBlockProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {

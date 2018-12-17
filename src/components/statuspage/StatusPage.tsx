@@ -11,9 +11,9 @@ import { Blocky } from "@Components/Blocky";
 import { updateDarknodeStatistics } from "@Actions/statistics/operatorActions";
 import { DarknodeAction } from "@Components/pages/Darknode";
 import { ApplicationData, DarknodeDetails } from "@Reducers/types";
-import { FeesBlock } from "./FeesBlock";
-import { GasBlock } from "./GasBlock";
-import { NetworkBlock } from "./NetworkBlock";
+import { FeesBlock } from "./block/FeesBlock";
+import { GasBlock } from "./block/GasBlock";
+import { NetworkBlock } from "./block/NetworkBlock";
 import { Registration } from "./Registration";
 
 interface StatusPageProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {

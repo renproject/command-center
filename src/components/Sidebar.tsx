@@ -12,7 +12,7 @@ import { faStar } from "@fortawesome/free-regular-svg-icons";
 import { Token } from "@Library/tokens";
 import { ApplicationData } from "@Reducers/types";
 import { Blocky } from "./Blocky";
-import { TokenBalance } from "./statuspage/TokenBalance";
+import { TokenBalance } from "./TokenBalance";
 
 interface SidebarProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     selectedDarknode: string | null;

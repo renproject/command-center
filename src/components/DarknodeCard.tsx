@@ -12,7 +12,7 @@ import { faFire } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Token } from "@Library/tokens";
 import { ApplicationData, DarknodeDetails } from "@Reducers/types";
-import { TokenBalance } from "./statuspage/TokenBalance";
+import { TokenBalance } from "./TokenBalance";
 
 const toTitleCase = (title: string) => title.replace(
     /\w\S*/g, (txt) => {

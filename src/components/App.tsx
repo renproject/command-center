@@ -86,7 +86,7 @@ class AppClass extends React.Component<AppProps, AppState> {
     }
 
     public setupLoops() {
-        // See if the user has logged out every 5 seconds
+        // Update token prices every 60 seconds
         const callUpdatePrices = async () => {
             try {
                 await this.props.actions.updateTokenPrices();

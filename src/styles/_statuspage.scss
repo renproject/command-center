@@ -135,16 +135,37 @@
     }
 
     .topup--title {
+        margin-bottom: 10px;
         font-weight: bold;
-        margin-bottom: 5px;
+        font-size: 14px;
+
+        color: #FFFFFF;
+    }
+
+    .topup--input--success {
+        margin-top: 10px;
+        font-weight: bold;
+        font-size: 14px;
+
+        color: $green;
+    }
+
+    .topup--input--warning {
+        margin-top: 10px;
+        font-weight: bold;
+        font-size: 14px;
+
+        color: $red;
     }
 
     .topup--input {
         display: inline-flex;
         align-items: center;
         vertical-align: top;
-        background-color: $blue-dark;
-        border: 1px solid $light-grey;
+
+        background: #F5F5F5;
+        border-radius: 2px;
+        height: 42px;
     }
 
     .topup--input:not(.disabled):hover {
@@ -152,15 +173,22 @@
     }
 
     .topup--input>input[type=number] {
-        flex-grow: 1;
+        width: 100%;
         border: none;
-        height: 28px; // Subtracted 2px for additional border
+        height: 42px;
+        background: none;
+        font-weight: 500;
     }
 
     .topup--input>span {
         display: inline-block;
         width: 35px;
         text-align: center;
+    }
+
+    .topup--input>button {
+        background: none;
+        border: none;
     }
 
     .statuspage--graphs {
