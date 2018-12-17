@@ -1,7 +1,5 @@
 import * as React from "react";
 
-import RenExSDK from "@renex/renex";
-
 import { faServer } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { DarknodeDetails } from "@Reducers/types";

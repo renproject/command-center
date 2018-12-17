@@ -9,8 +9,8 @@ import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
 import { ApplicationData, DarknodeDetails } from "@Reducers/types";
+import { Topup } from "../Topup";
 import { Block, BlockBody, BlockTitle } from "./Block";
-import { Topup } from "./Topup";
 
 interface GasBlockProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     operator: boolean;
@@ -67,10 +67,7 @@ class GasBlockClass extends React.Component<GasBlockProps, GasBlockState> {
                                 <span className="gas-block--advanced--unit">ETH</span>
                             </div>
                             <div className="block--advanced--bottom">
-                                {operator ? <>
-                                    <p>Top-up Balance</p>
-                                    <Topup darknodeAddress={darknodeDetails.ID} />
-                                </> : null}
+                                <Topup darknodeAddress={darknodeDetails.ID} />
                             </div>
                         </div>
                     }

@@ -51,8 +51,6 @@ export const login: LoginAction = (sdk, options) => async (dispatch) => {
         // ignore error
     }
 
-    console.log(promptMessage);
-
     if (options.showPopup && options.immediatePopup) {
         dispatch(setPopup(
             { popup: <NoWeb3Popup onConnect={onClick} onCancel={onCancel} disabled={true} message={promptMessage} />, onCancel }
