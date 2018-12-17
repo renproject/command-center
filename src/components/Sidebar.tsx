@@ -9,9 +9,9 @@ import { bindActionCreators } from "redux";
 
 import { faEthereum } from "@fortawesome/free-brands-svg-icons";
 import { faStar } from "@fortawesome/free-regular-svg-icons";
+import { Token } from "@Library/tokens";
 import { ApplicationData } from "@Reducers/types";
 import { Blocky } from "./Blocky";
-import { Token } from "./statuspage/lib/tokens";
 import { TokenBalance } from "./statuspage/TokenBalance";
 
 interface SidebarProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {

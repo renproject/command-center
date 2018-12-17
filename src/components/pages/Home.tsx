@@ -33,7 +33,7 @@ class HomeClass extends React.Component<HomeProps, HomeState> {
         const { darknodeDetails, darknodeList } = this.props.store;
 
         return (
-            <div>
+            <div className="home">
                 <Header />
                 <div className="container">
                     <DarknodeList darknodeDetails={darknodeDetails} darknodeList={darknodeList} />

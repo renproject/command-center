@@ -9,8 +9,8 @@ import { getOperatorDarknodes } from "@Library/statistics/operator";
 import { Currency, DarknodeDetails, TokenPrices } from "@Reducers/types";
 
 // Legacy
-import contracts from "../../components/statuspage/lib/contracts";
-import { Token, Tokens } from "../../components/statuspage/lib/tokens";
+import contracts from "@Library/contracts/contracts";
+import { Token, Tokens } from "@Library/tokens";
 
 interface StoreDarknodeListPayload { darknodeList: List<string>; }
 export type StoreDarknodeListAction = (payload: StoreDarknodeListPayload) => void;
@@ -33,7 +33,7 @@ export const updateOperatorStatistics: UpdateOperatorStatisticsAction = (sdk) =>
     dispatch(storeDarknodeList({ darknodeList }));
 };
 
-const getBalances = async (sdk: RenExSDK, darknodeID: string, tokenPrices: TokenPrices): Promise<OrderedMap<Token, BigNumber>> => {
+const getBalances = async (sdk: RenExSDK, darknodeID: string): Promise<OrderedMap<Token, BigNumber>> => {
 
     const contract = new (sdk.getWeb3().eth.Contract)(contracts.DarknodeRewardVault.ABI, contracts.DarknodeRewardVault.address);
 
@@ -135,7 +135,7 @@ export const updateDarknodeStatistics: UpdateDarknodeStatisticsAction = (sdk, da
     const ethBalance = new BigNumber(ethBalanceBN.toString());
 
     // Get earned fees
-    const feesEarned = await getBalances(sdk, darknodeID, tokenPrices);
+    const feesEarned = await getBalances(sdk, darknodeID);
     const feesEarnedTotalEth = await sumUpFees(sdk, feesEarned, tokenPrices);
 
     // Get darknode operator

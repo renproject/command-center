@@ -1,3 +1,4 @@
+import * as qs from "query-string";
 import * as React from "react";
 
 import { connect } from "react-redux";
@@ -10,6 +11,12 @@ import { StatusPage } from "@Components/statuspage/StatusPage";
 import { setAlert } from "@Actions/alert/alertActions";
 import { login } from "@Actions/trader/accountActions";
 import { ApplicationData } from "@Reducers/types";
+
+export enum DarknodeAction {
+    View,
+    Register,
+    Deregister
+}
 
 interface DarknodeProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps>, RouteComponentProps {
 }
@@ -32,21 +39,37 @@ class DarknodeClass extends React.Component<DarknodeProps, DarknodeState> {
         const { match: { params }, store } = this.props;
         const { sdk, darknodeDetails, address } = store;
         // tslint:disable-next-line:no-any
-        const { darknodeID } = params as { darknodeID: string };
+        const { darknodeID } = params as { darknodeID: string | undefined, action: string | undefined };
         const details = darknodeID ? darknodeDetails.get(darknodeID, null) : null;
         const readOnly = !details || !address || details.operator !== address;
+
+        const queryParams = qs.parse(this.props.location.search);
+        const action = typeof queryParams.action === "string" ? queryParams.action : undefined;
+        const publicKey = typeof queryParams.public_key === "string" ? queryParams.public_key : undefined;
+
+        let darknodeAction;
+        switch (action) {
+            case "register":
+                darknodeAction = DarknodeAction.Register; break;
+            case "deregister":
+                darknodeAction = DarknodeAction.Deregister; break;
+            default:
+                darknodeAction = DarknodeAction.View;
+        }
+
+        if (!address) {
+            darknodeAction = DarknodeAction.View;
+        }
 
         return (
             <div>
                 <Header />
-                <>
-                    <div className="container">
-                        {darknodeID ?
-                            <StatusPage sdk={sdk} darknodeID={darknodeID} operator={!readOnly} darknodeDetails={details} /> :
-                            <div>Darknode not found</div>
-                        }
-                    </div>
-                </>
+                <div className="container">
+                    {darknodeID ?
+                        <StatusPage action={darknodeAction} publicKey={publicKey} darknodeID={darknodeID} operator={!readOnly} darknodeDetails={details} /> :
+                        <div>Darknode not found</div>
+                    }
+                </div>
             </div>
         );
     }

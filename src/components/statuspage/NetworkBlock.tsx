@@ -47,9 +47,7 @@ class CopyBlock extends React.Component<CopyBlockProps, CopyBlockState> {
 }
 
 interface NetworkBlockProps {
-    sdk: RenExSDK;
     network: string;
-    minBond: number;
     darknodeDetails: DarknodeDetails | null;
 }
 

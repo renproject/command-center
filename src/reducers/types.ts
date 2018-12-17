@@ -9,8 +9,8 @@ import { List, Map, OrderedMap } from "immutable";
 import { Record } from "@Library/general/record";
 import BigNumber from "bignumber.js";
 
+import { Token } from "@Library/tokens";
 import { getReadOnlyProvider } from "@Library/wallets/wallet";
-import { Token } from "../components/statuspage/lib/tokens";
 
 export interface Serializable<T> {
     serialize(): string;
@@ -90,6 +90,8 @@ export enum Currency {
 export type TokenPrices = Map<Token, Map<Currency, number>>;
 
 export class StatisticsData extends Record({
+    minimumBond: null as BigNumber | null,
+
     tokenPrices: null as TokenPrices | null,
     quoteCurrency: Currency.USD,
 

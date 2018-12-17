@@ -1,30 +1,29 @@
 import * as React from "react";
 
 import BigNumber from "bignumber.js";
-import Web3 from "web3";
-
-import contracts from "./lib/contracts";
-
-import RenExSDK from "@renex/renex";
 
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { connect } from "react-redux";
+import { bindActionCreators, Dispatch } from "redux";
 
-import { Token } from "./lib/tokens";
+import { withdrawReward } from "@Actions/trader/darknode";
+import { Token } from "@Library/tokens";
+import { ApplicationData } from "@Reducers/types";
 
-interface FeesProps {
+
+interface FeesProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     operator: boolean;
-    sdk: RenExSDK;
     token: Token;
     amount: string | BigNumber;
-    darknodeAddress: string;
+    darknodeID: string;
 }
 
 interface FeesState {
     disabled: boolean;
 }
 
-export class FeesItem extends React.Component<FeesProps, FeesState> {
+class FeesItemClass extends React.Component<FeesProps, FeesState> {
     constructor(props: FeesProps) {
         super(props);
         this.state = {
@@ -41,17 +40,26 @@ export class FeesItem extends React.Component<FeesProps, FeesState> {
     }
 
     private handleWithdraw = async (): Promise<void> => {
-        const { sdk } = this.props;
+        const { store, darknodeID, token } = this.props;
+        const { sdk } = store;
         this.setState({ disabled: true });
-        const contract = new ((sdk.getWeb3()).eth.Contract)(contracts.DarknodeRewardVault.ABI, contracts.DarknodeRewardVault.address);
-        // tslint:disable-next-line:no-non-null-assertion
-        const tokenDetails = await sdk._cachedTokenDetails.get(this.props.token);
 
-        if (!tokenDetails) {
-            throw new Error("Unknown token");
-        }
-
-        const ethAddress = await sdk.getWeb3().eth.getAccounts();
-        await contract.methods.withdraw(this.props.darknodeAddress, tokenDetails.addr).send({ from: ethAddress[0] });
+        this.props.actions.withdrawReward(sdk, darknodeID, token);
     }
 }
+
+
+const mapStateToProps = (state: ApplicationData) => ({
+    store: {
+        sdk: state.trader.sdk,
+    },
+});
+
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+    actions: bindActionCreators({
+        withdrawReward,
+    }, dispatch),
+});
+
+export const FeesItem = connect(mapStateToProps, mapDispatchToProps)(FeesItemClass);
+

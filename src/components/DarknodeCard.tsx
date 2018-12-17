@@ -10,8 +10,8 @@ import { faEthereum } from "@fortawesome/free-brands-svg-icons";
 import { faStar } from "@fortawesome/free-regular-svg-icons";
 import { faFire } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { ApplicationData, Currency, DarknodeDetails } from "@Reducers/types";
-import { Token } from "./statuspage/lib/tokens";
+import { Token } from "@Library/tokens";
+import { ApplicationData, DarknodeDetails } from "@Reducers/types";
 import { TokenBalance } from "./statuspage/TokenBalance";
 
 const toTitleCase = (title: string) => title.replace(
