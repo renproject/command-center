@@ -1,6 +1,6 @@
 .overlay {
     display: block;
-    background-color: rgba(140, 140, 140, 0.6);
+    background-color: rgba(0, 0, 0, 0);
     position: fixed;
     top: 0;
     left: 0;
@@ -97,24 +97,6 @@
     padding-left: 20px;
     font-size: 15px;
     float: left;
-}
-
-.popup.approve .approve--list {
-    list-style: none;
-    margin: 15px 0 0;
-    padding: 0;
-}
-
-.popup.approve .approve--list li {
-    position: relative;
-}
-
-.popup.approve .approve--list li+li {
-    margin-top: 5px;
-}
-
-.popup.approve .approve--list span.active {
-    font-weight: 500;
 }
 
 .popup.approve .approve--tick {
@@ -259,8 +241,17 @@
 
 .approve--list {
     list-style: none;
-    margin: 15px 0 0;
+    width: 200px;
+    margin: 15px auto;
     padding: 0;
+}
+
+p.popup--error {
+    margin: 15px auto;
+    border: 1px solid $red;
+    padding: 10px;
+    width: 300px;
+    font-weight: 500;
 }
 
 .approve--list li {
@@ -291,4 +282,8 @@
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
+}
+
+.popup--blur {
+    filter: blur(2px);
 }

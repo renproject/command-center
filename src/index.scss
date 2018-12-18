@@ -284,3 +284,33 @@ label {
 .no-underline {
     text-decoration: none;
 }
+
+
+.checkbox {
+    appearance: initial;
+    width: 20px;
+    height: 20px;
+    border: none;
+    background: white;
+    position: relative;
+    border: 1px solid #eee;
+    float: left;
+}
+
+.checkbox:checked:after {
+    content: "✔";
+    color: $green;
+
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.checkbox--error:checked:after {
+    content: "✘";
+    color: $red;
+}

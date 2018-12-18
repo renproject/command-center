@@ -21,7 +21,10 @@ export function popupReducer(state: PopupData = new PopupData(), action: PopupAc
             if (document.documentElement) {
                 document.documentElement.classList.remove("noscroll");
             }
-            return state.set("popup", null);
+            return state.set("popup", null)
+                .set("overlay", false)
+                .set("dismissible", true)
+                .set("onCancel", (() => null) as () => void);
         default:
             return state;
     }
