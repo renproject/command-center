@@ -25,9 +25,9 @@ interface RegistrationState {
 const statusText = {
     [RegistrationStatus.Unknown]: "Loading...",
     [RegistrationStatus.Unregistered]: "Unregistered",
-    [RegistrationStatus.RegistrationPending]: "Pending registration (waiting for epoch)",
+    [RegistrationStatus.RegistrationPending]: "Registration pending",
     [RegistrationStatus.Registered]: "Registered",
-    [RegistrationStatus.DeregistrationPending]: "Pending deregistration (waiting for epoch)",
+    [RegistrationStatus.DeregistrationPending]: "Deregistration pending",
     [RegistrationStatus.AwaitingRefund]: "Awaiting refund",
 };
 

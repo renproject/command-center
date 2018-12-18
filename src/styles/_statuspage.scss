@@ -228,3 +228,65 @@
         }
     }
 }
+
+
+.statuspage--banner-right {
+    flex-grow: 1;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.statuspage--notification {
+    width: 450px;
+    height: 70px;
+
+    background: transparentize($blue-bright, 1 - 0.28);
+    border-top-right-radius: 2px;
+    border-bottom-right-radius: 2px;
+
+    display: flex;
+    padding: 10px 20px;
+
+    .svg-inline--fa {
+        margin-top: 5px;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        line-height: 23px;
+        font-size: 14px;
+
+        color: #FFFFFF;
+
+        margin-left: 0;
+        margin-bottom: 5px;
+    }
+
+    span {
+        font-weight: normal;
+        line-height: 23px;
+        font-size: 14px;
+
+        color: #FFFFFF;
+        margin-left: 0;
+    }
+
+    .statuspage--notification--details {
+        display: flex;
+        flex-direction: column;
+        margin-left: 20px;
+    }
+}
+
+.statuspage--notification::before {
+    content: "";
+    width: 5px;
+    left: -25px; // padding and width
+    height: 70px;
+    background-color: $blue-bright;
+    position: relative;
+    top: -10px; // padding
+    border-top-left-radius: 2px;
+    border-bottom-left-radius: 2px;
+}

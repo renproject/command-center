@@ -13,11 +13,13 @@ $card-top-height: 60px;
 $card-bottom-height: 64px;
 $card-middle-height: $card-height - $card-top-height - $card-bottom-height;
 
-.darknode-card {
-    margin: 10px;
+$darknode-card-margin: 10px;
 
-    height: 335px;
-    width: 335px;
+.darknode-card {
+    margin: $darknode-card-margin;
+
+    height: $card-height;
+    width: $card-height;
     background-color: $blue-dark;
 
     box-shadow: 2px 2px 14px rgba(0, 0, 0, 0.1);
@@ -47,6 +49,7 @@ $card-middle-height: $card-height - $card-top-height - $card-bottom-height;
     $width: 64px;
     border-radius: 50%;
     width: $width + 2*$border;
+    height: $width + 2*$border;
     border: $border solid $blue-dark;
 
     background-color: $blue-dark;
@@ -119,9 +122,9 @@ $card-middle-height: $card-height - $card-top-height - $card-bottom-height;
 
 .background--darknode-list {
     position: absolute;
-    height: 100%;
     width: 100%;
-    top: 0;
+    // Position half way down screen
+    top: calc(50% - calc(355px / 2));
     z-index: -1;
 
     align-items: center;
@@ -129,7 +132,17 @@ $card-middle-height: $card-height - $card-top-height - $card-bottom-height;
     mix-blend-mode: normal;
     opacity: 0.4;
 
+    margin: 0;
+
     .darknode-card {
         cursor: initial;
+        // Work around to prevent other rows from showing
+        margin-bottom: 50vh;
+    }
+
+    .blocky {
+        margin-left: auto;
+        margin-right: auto;
+        background-color: #031830;
     }
 }
