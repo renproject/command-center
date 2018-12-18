@@ -9,7 +9,7 @@ import { bindActionCreators } from "redux";
 import { Alerts } from "@Components/Alerts";
 import { Home } from "@Components/pages/Home";
 import { LoggingOut } from "@Components/pages/LoggingOut";
-import { Popup } from "@Components/popups/Popup";
+import { PopupController } from "@Components/popups/PopupController";
 
 import { updateNetworkStatistics, updateTokenPrices } from "@Actions/statistics/networkActions";
 import { updateAllDarknodeStatistics, updateDarknodeStatistics, updateOperatorStatistics } from "@Actions/statistics/operatorActions";
@@ -114,12 +114,13 @@ class AppClass extends React.Component<AppProps, AppState> {
 
         return <div className="app">
             <ScrollToTop />
-            {address ? <Sidebar selectedDarknode={darknodeID} /> : null}
-            <Route path="/" exact component={this.withAccount(Home)} />
-            <Route path="/darknode/:darknodeID" exact component={Darknode} />
-            <Route path="/loading" component={LoggingOut} />
-            <Alerts />
-            <Popup />
+            <PopupController>
+                {address ? <Sidebar selectedDarknode={darknodeID} /> : null}
+                <Route path="/" exact component={this.withAccount(Home)} />
+                <Route path="/darknode/:darknodeID" exact component={Darknode} />
+                <Route path="/loading" component={LoggingOut} />
+                <Alerts />
+            </PopupController>
         </div>;
     }
 

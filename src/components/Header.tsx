@@ -48,7 +48,7 @@ class HeaderClass extends React.Component<HeaderProps, HeaderState> {
             <div className="header">
                 <div className="container">
                     <div className="header--counter-weight" />
-                    <Link className="no-underline" to={loggedIn ? "/home" : "/"}>
+                    <Link className="no-underline" to="/">
                         <div className="header--logo" />
                     </Link>
                     <ul className="header--menu">

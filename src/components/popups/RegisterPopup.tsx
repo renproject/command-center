@@ -62,19 +62,19 @@ export class RegisterPopupClass extends React.Component<RegisterPopupProps, Regi
 
             <ul className="approve--list">
                 {
-                    this.steps.map((step, index: number) =>
-                        <li key={index}>
+                    this.steps.map((step, index: number) => {
+                        const checked = (currentStep > index) || (currentStep === index && !!error);
+                        return <li key={index}>
+                            <input className={`checkbox ${currentStep === index && error ? "checkbox--error" : ""}`} type="checkbox" value="None" id="slideThree" name="check" checked={checked} />
                             <span className={index === currentStep ? "active" : ""}>Step {index + 1}: {step.name}</span>
-                            {currentStep > index ? <span className="approve--tick">✓</span> : null}
-                            {currentStep === index && error ? <span className="approve--cross">x</span> : null}
-                        </li>
-                    )
+                        </li>;
+                    })
                 }
             </ul>
 
             {this.renderError(error)}
 
-            <div className="popup--buttons">
+            < div className="popup--buttons" >
                 {!running ?
                     complete ?
                         <>
@@ -115,7 +115,7 @@ export class RegisterPopupClass extends React.Component<RegisterPopupProps, Regi
             return <p>Transaction canceled</p>;
         }
 
-        return <p className="red">Unable to complete transaction: {error.message}</p>;
+        return <p className="popup--error red">Unable to complete transaction: {error.message}</p>;
     }
 
     private run = async () => {
