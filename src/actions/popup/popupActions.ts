@@ -1,6 +1,6 @@
 import { createStandardAction } from "typesafe-actions";
 
-export interface SetPopupPayload { popup: JSX.Element; dismissible?: boolean; onCancel(): void; }
+export interface SetPopupPayload { popup: JSX.Element; overlay?: boolean; dismissible?: boolean; onCancel(): void; }
 export type SetPopupAction = (payload: SetPopupPayload) => void;
 export const setPopup = createStandardAction("SET_POPUP")<SetPopupPayload>();
 

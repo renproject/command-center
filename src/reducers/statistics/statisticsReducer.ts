@@ -29,6 +29,7 @@ export function statisticsReducer(state: StatisticsData = new StatisticsData(), 
 
         case getType(operatorActions.clearDarknodeList):
             return state
+                .set("darknodeList", null)
                 .set("darknodeDetails", OrderedMap<string, DarknodeDetails>());
 
         default:

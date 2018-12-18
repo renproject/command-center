@@ -1,14 +1,12 @@
 import * as React from "react";
 
-import RenExSDK from "@renex/renex";
-
 import { Map } from "immutable";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
 import { Blocky } from "@Components/Blocky";
 
-import { updateDarknodeStatistics } from "@Actions/statistics/operatorActions";
+import { RegistrationStatus } from "@Actions/statistics/operatorActions";
 import { DarknodeAction } from "@Components/pages/Darknode";
 import { ApplicationData, DarknodeDetails } from "@Reducers/types";
 import { FeesBlock } from "./block/FeesBlock";
@@ -60,7 +58,7 @@ class StatusPageClass extends React.Component<StatusPageProps, StatusPageState> 
                         </div>
 
                         {action === DarknodeAction.Register ?
-                            <Registration operator={true} registrationStatus={"unregistered"} publicKey={publicKey} network={this.state.network} darknodeID={darknodeID} /> :
+                            <Registration operator={true} registrationStatus={darknodeDetails ? darknodeDetails.registrationStatus : RegistrationStatus.Unknown} publicKey={publicKey} network={this.state.network} darknodeID={darknodeID} /> :
                             null
                         }
                         {action !== DarknodeAction.Register && darknodeDetails ?
@@ -87,7 +85,6 @@ const mapStateToProps = (state: ApplicationData) => ({
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     actions: bindActionCreators({
-        updateDarknodeStatistics,
     }, dispatch),
 });
 

@@ -5,7 +5,7 @@ import { BigNumber } from "bignumber.js";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { ERROR_TRANSACTION_FAILED, fundNode } from "@Actions/trader/darknode";
+import { fundNode } from "@Actions/trader/darknode";
 
 interface TopupProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     darknodeAddress: string;
@@ -109,7 +109,7 @@ class TopupClass extends React.Component<TopupProps, TopupState> {
             this.setState({ value: "0", resultMessage: CONFIRMATION_MESSAGE, pending: false });
         } catch (error) {
             console.error(error);
-            this.setState({ resultMessage: ERROR_TRANSACTION_FAILED, pending: false });
+            this.setState({ resultMessage: `Transaction error: ${error.message || error.toString()}`, pending: false });
         }
     }
 }

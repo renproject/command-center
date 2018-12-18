@@ -9,13 +9,14 @@ import { Header } from "@Components/Header";
 import { StatusPage } from "@Components/statuspage/StatusPage";
 
 import { setAlert } from "@Actions/alert/alertActions";
+import { RegistrationStatus } from "@Actions/statistics/operatorActions";
 import { login } from "@Actions/trader/accountActions";
 import { ApplicationData } from "@Reducers/types";
 
 export enum DarknodeAction {
-    View,
-    Register,
-    Deregister
+    View = "view",
+    Register = "register",
+    Deregister = "deregister",
 }
 
 interface DarknodeProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps>, RouteComponentProps {
@@ -25,8 +26,12 @@ interface DarknodeState {
 }
 
 /**
- * Darknode is a page whose principal components are wallet selection to allow users
- * to log-in, and the hidden orderbook
+ * Darknode shows the details of a darknode. The user does not have to be logged
+ * in.
+ * 
+ * URL parameters:
+ *     1) action: either "register" or "deregister"
+ *     2) public_key: only used if action is "register"
  */
 class DarknodeClass extends React.Component<DarknodeProps, DarknodeState> {
     public constructor(props: DarknodeProps, context: object) {
@@ -39,26 +44,25 @@ class DarknodeClass extends React.Component<DarknodeProps, DarknodeState> {
         const { match: { params }, store } = this.props;
         const { sdk, darknodeDetails, address } = store;
         // tslint:disable-next-line:no-any
-        const { darknodeID } = params as { darknodeID: string | undefined, action: string | undefined };
+        let { darknodeID } = params as { darknodeID: string | undefined, action: string | undefined };
+        darknodeID = darknodeID && sdk.getWeb3().utils.toChecksumAddress(darknodeID.toLowerCase());
+
         const details = darknodeID ? darknodeDetails.get(darknodeID, null) : null;
+
         const readOnly = !details || !address || details.operator !== address;
 
         const queryParams = qs.parse(this.props.location.search);
         const action = typeof queryParams.action === "string" ? queryParams.action : undefined;
         const publicKey = typeof queryParams.public_key === "string" ? queryParams.public_key : undefined;
 
-        let darknodeAction;
-        switch (action) {
-            case "register":
-                darknodeAction = DarknodeAction.Register; break;
-            case "deregister":
-                darknodeAction = DarknodeAction.Deregister; break;
-            default:
-                darknodeAction = DarknodeAction.View;
+        let darknodeAction = DarknodeAction.View;
+        // If the URL action is Register, and the darknode has no details or is unregistered
+        if (action === DarknodeAction.Register && (!details || details.registrationStatus === RegistrationStatus.Unregistered)) {
+            darknodeAction = action;
         }
-
-        if (!address) {
-            darknodeAction = DarknodeAction.View;
+        // If the URL action is Deegister, and the darknode is registered  
+        else if (action === DarknodeAction.Deregister && details && details.registrationStatus === RegistrationStatus.Registered) {
+            darknodeAction = action;
         }
 
         return (
@@ -70,7 +74,7 @@ class DarknodeClass extends React.Component<DarknodeProps, DarknodeState> {
                         <div>Darknode not found</div>
                     }
                 </div>
-            </div>
+            </div >
         );
     }
 }

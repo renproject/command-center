@@ -171,16 +171,19 @@ export const lookForLogout: LookForLogoutAction = (sdk, readOnlyProvider) => asy
     if (!accounts.includes(sdk.getAddress().toLowerCase())) {
         // console.error(`User has logged out of their web3 provider (${sdk.getAddress()} not in [${accounts.join(", ")}])`);
 
-        const onClick = () => login(sdk, { redirect: false, showPopup: true, immediatePopup: false })(dispatch);
+        const onClick = async () => {
+            await login(sdk, { redirect: false, showPopup: true, immediatePopup: false })(dispatch);
+        };
         const onCancel = () => {
             dispatch(clearPopup());
         };
+
+        await logout(sdk, readOnlyProvider, { reload: false })(dispatch).catch(console.error);
+
         dispatch(
             setPopup(
                 { popup: <LoggedOut onConnect={onClick} onCancel={onCancel} newAddress={accounts.length > 0 ? accounts[0] : null} />, onCancel }
             )
         );
-
-        logout(sdk, readOnlyProvider, { reload: true })(dispatch).catch(console.error);
     }
 };
