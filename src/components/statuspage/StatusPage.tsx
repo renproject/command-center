@@ -12,6 +12,7 @@ import { ApplicationData, DarknodeDetails } from "@Reducers/types";
 import { FeesBlock } from "./block/FeesBlock";
 import { GasBlock } from "./block/GasBlock";
 import { NetworkBlock } from "./block/NetworkBlock";
+import { Notifications } from "./Notifications";
 import { Registration } from "./Registration";
 
 interface StatusPageProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
@@ -66,6 +67,7 @@ class StatusPageClass extends React.Component<StatusPageProps, StatusPageState> 
                             null
                         }
                     </div>
+                    <Notifications operator={operator} darknodeDetails={darknodeDetails} />
                 </div>
                 <div className="statuspage--bottom">
                     <FeesBlock operator={operator} darknodeDetails={darknodeDetails} />
