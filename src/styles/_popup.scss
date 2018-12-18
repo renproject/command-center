@@ -254,3 +254,41 @@
         margin-left: 10px;
     }
 }
+
+
+
+.approve--list {
+    list-style: none;
+    margin: 15px 0 0;
+    padding: 0;
+}
+
+.approve--list li {
+    position: relative;
+}
+
+.approve--list li+li {
+    margin-top: 5px;
+}
+
+.approve--list span.active {
+    font-weight: 500;
+}
+
+.approve--tick {
+    font-size: 16px;
+    color: $green;
+    margin-left: 5px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.approve--cross {
+    font-size: 16px;
+    color: $red;
+    margin-left: 5px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}

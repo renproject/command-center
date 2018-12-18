@@ -1,7 +1,7 @@
 import RenExSDK from "@renex/renex";
 import BigNumber from "bignumber.js";
 
-import { List, OrderedMap } from "immutable";
+import { List, Map, OrderedMap } from "immutable";
 import { Dispatch } from "redux";
 import { createStandardAction } from "typesafe-actions";
 
@@ -91,6 +91,15 @@ const getDarknodeOperator = async (sdk: RenExSDK, darknodeID: string): Promise<s
     return sdk._contracts.darknodeRegistry.getDarknodeOwner(darknodeID, {});
 };
 
+export enum RegistrationStatus {
+    Unknown = "",
+    Unregistered = "unregistered",
+    RegistrationPending = "registrationPending",
+    Registered = "registered",
+    DeregistrationPending = "deregistrationPending",
+    AwaitingRefund = "awaitingRefund",
+}
+
 const getDarknodeStatus = async (sdk: RenExSDK, darknodeID: string): Promise<string> => {
 
     return new Promise<string>((resolve) => {
@@ -110,17 +119,17 @@ const getDarknodeStatus = async (sdk: RenExSDK, darknodeID: string): Promise<str
                 isRefundable: response[4],
                 isRegistered: response[5],
             };
-            let registrationStatus = "";
+            let registrationStatus = RegistrationStatus.Unknown;
             if (res.isRefunded) {
-                registrationStatus = "unregistered";
+                registrationStatus = RegistrationStatus.Unregistered;
             } else if (res.isPendingRegistration) {
-                registrationStatus = "registrationPending";
+                registrationStatus = RegistrationStatus.RegistrationPending;
             } else if (res.isDeregisterable) {
-                registrationStatus = "registered";
+                registrationStatus = RegistrationStatus.Registered;
             } else if (res.isPendingDeregistration) {
-                registrationStatus = "deregistrationPending";
+                registrationStatus = RegistrationStatus.DeregistrationPending;
             } else if (res.isRefundable) {
-                registrationStatus = "awaitingRefund";
+                registrationStatus = RegistrationStatus.AwaitingRefund;
             }
             resolve(registrationStatus);
         })
@@ -128,8 +137,10 @@ const getDarknodeStatus = async (sdk: RenExSDK, darknodeID: string): Promise<str
     });
 };
 
-export type UpdateDarknodeStatisticsAction = (sdk: RenExSDK, darknodeID: string, tokenPrices: TokenPrices, index?: number) => (dispatch: Dispatch) => Promise<void>;
-export const updateDarknodeStatistics: UpdateDarknodeStatisticsAction = (sdk, darknodeID, tokenPrices, index?) => async (dispatch) => {
+export type UpdateDarknodeStatisticsAction = (sdk: RenExSDK, darknodeID: string, tokenPrices: TokenPrices, previousDetails: DarknodeDetails | undefined, index?: number) => (dispatch: Dispatch) => Promise<void>;
+export const updateDarknodeStatistics: UpdateDarknodeStatisticsAction = (sdk, darknodeID, tokenPrices, previousDetails, index?) => async (dispatch) => {
+    darknodeID = sdk.getWeb3().utils.toChecksumAddress(darknodeID.toLowerCase());
+
     // Get eth Balance
     const ethBalanceBN = await sdk.getWeb3().eth.getBalance(darknodeID);
     const ethBalance = new BigNumber(ethBalanceBN.toString());
@@ -146,7 +157,7 @@ export const updateDarknodeStatistics: UpdateDarknodeStatisticsAction = (sdk, da
 
     const darknodeDetails = new DarknodeDetails({
         ID: darknodeID,
-        name: `Darknode${index !== undefined ? ` ${index + 1}` : ""}`,
+        name: (previousDetails && previousDetails.name) || `Darknode${index !== undefined ? ` ${index + 1}` : ""}`,
         multiAddress: "" as string,
         publicKey: "" as string,
         ethBalance,
@@ -165,10 +176,11 @@ export const updateDarknodeStatistics: UpdateDarknodeStatisticsAction = (sdk, da
     dispatch(setDarknodeDetails({ darknodeDetails }));
 };
 
-export type UpdateAllDarknodeStatisticsAction = (sdk: RenExSDK, darknodeList: List<string>, tokenPrices: TokenPrices) => (dispatch: Dispatch) => Promise<void>;
-export const updateAllDarknodeStatistics: UpdateAllDarknodeStatisticsAction = (sdk, darknodeList, tokenPrices) => async (dispatch) => {
+export type UpdateAllDarknodeStatisticsAction = (sdk: RenExSDK, darknodeList: List<string>, tokenPrices: TokenPrices, previousDarknodeDetails: Map<string, DarknodeDetails>) => (dispatch: Dispatch) => Promise<void>;
+export const updateAllDarknodeStatistics: UpdateAllDarknodeStatisticsAction = (sdk, darknodeList, tokenPrices, previousDarknodeDetails) => async (dispatch) => {
     await Promise.all(darknodeList.map((darknodeID, index) => {
-        return updateDarknodeStatistics(sdk, darknodeID, tokenPrices, index)(dispatch);
+        const previousDetails = previousDarknodeDetails.get(darknodeID);
+        return updateDarknodeStatistics(sdk, darknodeID, tokenPrices, previousDetails, index)(dispatch);
     }).toArray());
 
     // TODO: Sum up rewards

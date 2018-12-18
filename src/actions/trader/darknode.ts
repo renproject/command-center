@@ -25,8 +25,6 @@ export const withdrawReward = (sdk: RenExSDK, darknodeID: string, token: Token) 
 };
 
 
-export const ERROR_TRANSACTION_FAILED = "Transaction failed, please try again.";
-
 export const approveNode = (sdk: RenExSDK, bond: BigNumber) => async (dispatch: Dispatch) => {
 
     const ethAddress = sdk.getAddress();
@@ -35,56 +33,62 @@ export const approveNode = (sdk: RenExSDK, bond: BigNumber) => async (dispatch: 
     const renAddr = (await sdk._cachedTokenDetails.get(Token.REN))!.addr;
     const ercContract = new (sdk.getWeb3().eth.Contract)(contracts.ERC20.ABI, renAddr);
     const ercBalance = new BigNumber(await ercContract.methods.balanceOf(ethAddress).call());
+    const ercAllowance = new BigNumber(await ercContract.methods.allowance(ethAddress, sdk._contracts.darknodeRegistry.address).call());
+
+
+    if (ercAllowance.gte(bond)) {
+        // Already approved
+        return;
+    }
+
     if (ercBalance.lt(bond)) {
-        throw new Error("You do not have sufficient REN to register this node.");
+        throw new Error("You have insufficient REN to register a darknode.");
     }
-    try {
-        await ercContract.methods.approve(sdk._contracts.darknodeRegistry.address, bond).send({ from: ethAddress });
-    } catch (error) {
-        console.error(error);
-        throw new Error(ERROR_TRANSACTION_FAILED);
-    }
-    return null;
+
+
+    return new Promise((resolve, reject) => {
+        ercContract.methods.approve(sdk._contracts.darknodeRegistry.address, bond.toFixed()).send({ from: ethAddress })
+            .on("transactionHash", resolve)
+            .catch(reject);
+    });
 };
 
-export const registerNode = async (sdk: RenExSDK, darknodeID: string, publicKey: string, bond: BigNumber) => async (dispatch: Dispatch) => {
+export const registerNode = (sdk: RenExSDK, darknodeID: string, publicKey: string, bond: BigNumber) => async (dispatch: Dispatch) => {
 
 
     if (!publicKey) {
         throw new Error("Public key required");
     }
 
-    try {
-        await sdk._contracts.darknodeRegistry.register(darknodeID, publicKey, bond.toString(), { from: sdk.getAddress() });
-    } catch (error) {
-        console.error(error);
-        throw new Error(ERROR_TRANSACTION_FAILED);
+    const ethAddress = sdk.getAddress();
+
+    const hardCodedGas = 500000;
+
+    // tslint:disable-next-line:no-non-null-assertion
+    const renAddr = (await sdk._cachedTokenDetails.get(Token.REN))!.addr;
+    const ercContract = new (sdk.getWeb3().eth.Contract)(contracts.ERC20.ABI, renAddr);
+    const ercAllowance = new BigNumber(await ercContract.methods.allowance(ethAddress, sdk._contracts.darknodeRegistry.address).call());
+
+    let gas: number | undefined = hardCodedGas;
+    if (ercAllowance.gte(bond)) {
+        gas = undefined;
     }
-    return null;
+
+    await sdk._contracts.darknodeRegistry.register(darknodeID, publicKey, bond.toFixed(),
+        { from: sdk.getAddress(), gas, }
+    );
 };
 
 export const deregisterNode = (sdk: RenExSDK, darknodeID: string) => async (dispatch: Dispatch) => {
     // The node has been registered and can be deregistered.
 
-    try {
-        await sdk._contracts.darknodeRegistry.deregister(darknodeID, { from: sdk.getAddress() });
-    } catch (error) {
-        console.error(error);
-        throw new Error(ERROR_TRANSACTION_FAILED);
-    }
-    return null;
+    await sdk._contracts.darknodeRegistry.deregister(darknodeID, { from: sdk.getAddress() });
 };
 
 export const refundNode = (sdk: RenExSDK, darknodeID: string) => async (dispatch: Dispatch) => {
     // The node is awaiting refund.
 
-    try {
-        await sdk._contracts.darknodeRegistry.refund(darknodeID, { from: sdk.getAddress() });
-    } catch (error) {
-        console.error(error);
-        throw new Error(ERROR_TRANSACTION_FAILED);
-    }
-    return null;
+    await sdk._contracts.darknodeRegistry.refund(darknodeID, { from: sdk.getAddress() });
 };
 
 export const fundNode = (sdk: RenExSDK, darknodeID: string, ethAmountStr: string) => (dispatch: Dispatch) => {

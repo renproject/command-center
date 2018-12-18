@@ -78,6 +78,7 @@ export class PopupData extends Record({
     dismissible: true,
     onCancel: (() => null) as () => void,
     popup: null as JSX.Element | null,
+    overlay: false,
 }) { }
 
 export enum Currency {

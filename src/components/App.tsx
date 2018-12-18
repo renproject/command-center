@@ -61,9 +61,10 @@ class AppClass extends React.Component<AppProps, AppState> {
     }
 
     public componentDidMount = async () => {
-        const { match: { params }, store } = this.props;
-        const { sdk } = store;
-        const { darknodeID } = params as { darknodeID: string };
+        const { match: { params } } = this.props;
+        const { sdk } = this.props.store;
+        let { darknodeID } = params as { darknodeID: string };
+        darknodeID = darknodeID && sdk.getWeb3().utils.toChecksumAddress(darknodeID.toLowerCase());
 
         try {
             await this.props.actions.login(sdk, { redirect: false, showPopup: !darknodeID, immediatePopup: false });
@@ -73,6 +74,23 @@ class AppClass extends React.Component<AppProps, AppState> {
         }
 
         this.setupLoops();
+    }
+
+    public componentWillReceiveProps = (nextProps: AppProps) => {
+        if (this.props.store.address !== nextProps.store.address) {
+            this.callUpdateOperatorStatistics(nextProps).catch(console.error);
+            this.callUpdateAllDarknodeStatistics(nextProps).catch(console.error);
+        }
+
+
+        const { match: { params: nextParams } } = nextProps;
+        const { match: { params } } = this.props;
+        const { darknodeID: nextDarknodeID } = nextParams as { darknodeID: string };
+        const { darknodeID } = params as { darknodeID: string };
+        if (darknodeID !== nextDarknodeID) {
+            this.callUpdateSelectedDarknodeStatistics(nextProps).catch(console.error);
+        }
+
     }
 
     public componentWillUnmount() {
@@ -85,115 +103,14 @@ class AppClass extends React.Component<AppProps, AppState> {
         if (this.callUpdateSelectedDarknodeStatisticsTimeout) { clearTimeout(this.callUpdateSelectedDarknodeStatisticsTimeout); }
     }
 
-    public setupLoops() {
-        // Update token prices every 60 seconds
-        const callUpdatePrices = async () => {
-            try {
-                await this.props.actions.updateTokenPrices();
-            } catch (err) {
-                console.error(err);
-            }
-            if (this.callUpdatePricesTimeout) { clearTimeout(this.callUpdatePricesTimeout); }
-            this.callUpdatePricesTimeout = setTimeout(callUpdatePrices, 60 * 1000);
-        };
-        callUpdatePrices().catch(console.error);
-
-        // See if the user has logged out every 5 seconds
-        const callLookForLogout = async () => {
-            const { sdk, address, readOnlyProvider } = this.props.store;
-            if (address) {
-                try {
-                    await this.props.actions.lookForLogout(sdk, readOnlyProvider);
-                } catch (err) {
-                    console.error(err);
-                }
-            }
-            if (this.callLookForLogoutTimeout) { clearTimeout(this.callLookForLogoutTimeout); }
-            this.callLookForLogoutTimeout = setTimeout(callLookForLogout, 5 * 1000);
-        };
-        callLookForLogout().catch(console.error);
-
-        // Update network statistics every 3600 seconds
-        const callUpdateNetworkStatistics = async () => {
-            const { sdk } = this.props.store;
-            let timeout = 3600;
-            try {
-                await this.props.actions.updateNetworkStatistics(sdk);
-            } catch (err) {
-                console.error(err);
-                timeout = 1; // Retry in a second if an error occurred
-            }
-            if (this.callUpdateNetworkStatisticsTimeout) { clearTimeout(this.callUpdateNetworkStatisticsTimeout); }
-            this.callUpdateNetworkStatisticsTimeout = setTimeout(callUpdateNetworkStatistics, timeout * 1000);
-        };
-        callUpdateNetworkStatistics().catch(console.error);
-
-        // Update operator statistics every 60 seconds
-        const callUpdateOperatorStatistics = async () => {
-            const { sdk, address } = this.props.store;
-            let timeout = 1;
-            if (address) {
-                try {
-                    await this.props.actions.updateOperatorStatistics(sdk);
-                    timeout = 60;
-                } catch (err) {
-                    console.error(err);
-                    timeout = 30;
-                }
-            }
-            if (this.callUpdateOperatorStatisticsTimeout) { clearTimeout(this.callUpdateOperatorStatisticsTimeout); }
-            this.callUpdateOperatorStatisticsTimeout = setTimeout(callUpdateOperatorStatistics, timeout * 1000);
-        };
-        callUpdateOperatorStatistics().catch(console.error);
-
-        // Update all darknode statistics every 120 seconds
-        const callUpdateAllDarknodeStatistics = async () => {
-            const { store } = this.props;
-            const { sdk, tokenPrices, darknodeList } = store;
-            let timeout = 1; // if the action isn't called, try again in 1 second
-            if (tokenPrices && darknodeList) {
-                try {
-                    await this.props.actions.updateAllDarknodeStatistics(sdk, darknodeList, tokenPrices);
-                    timeout = 120;
-                } catch (err) {
-                    console.error(err);
-                    timeout = 60;  // try again in half the time
-                }
-            }
-            if (this.callUpdateAllDarknodeStatisticsTimeout) { clearTimeout(this.callUpdateAllDarknodeStatisticsTimeout); }
-            this.callUpdateAllDarknodeStatisticsTimeout = setTimeout(callUpdateAllDarknodeStatistics, timeout * 1000);
-        };
-        callUpdateAllDarknodeStatistics().catch(console.error);
-
-        // Update selected darknode statistics every 30 seconds
-        const callUpdateSelectedDarknodeStatistics = async () => {
-            const { match: { params }, store } = this.props;
-            const { darknodeID } = params as { darknodeID: string };
-
-            const { sdk, tokenPrices } = store;
-            let timeout = 1; // if the action isn't called, try again in 1 second
-            if (tokenPrices && darknodeID) {
-                try {
-                    await this.props.actions.updateDarknodeStatistics(sdk, darknodeID, tokenPrices);
-                    timeout = 30;
-                } catch (err) {
-                    console.error(err);
-                    timeout = 15; // try again in half the time
-                }
-            }
-            if (this.callUpdateSelectedDarknodeStatisticsTimeout) { clearTimeout(this.callUpdateSelectedDarknodeStatisticsTimeout); }
-            this.callUpdateSelectedDarknodeStatisticsTimeout = setTimeout(callUpdateSelectedDarknodeStatistics, timeout * 1000);
-        };
-        callUpdateSelectedDarknodeStatistics().catch(console.error);
-    }
-
     public withAccount = <T extends React.ComponentClass>(component: T): React.ComponentClass | React.StatelessComponent =>
         this.props.store.address ? component : LoggingIn
 
     public render(): JSX.Element {
-        const { match: { params }, store } = this.props;
-        const { address } = store;
-        const { darknodeID } = params as { darknodeID: string };
+        const { match: { params } } = this.props;
+        const { address, sdk } = this.props.store;
+        let { darknodeID } = params as { darknodeID: string };
+        darknodeID = darknodeID && sdk.getWeb3().utils.toChecksumAddress(darknodeID.toLowerCase());
 
         return <div className="app">
             <ScrollToTop />
@@ -205,6 +122,128 @@ class AppClass extends React.Component<AppProps, AppState> {
             <Popup />
         </div>;
     }
+
+
+    // Update token prices every 60 seconds
+    private callUpdatePrices = async (props?: AppProps) => {
+        props = props || this.props;
+
+        try {
+            await props.actions.updateTokenPrices();
+        } catch (err) {
+            console.error(err);
+        }
+        if (this.callUpdatePricesTimeout) { clearTimeout(this.callUpdatePricesTimeout); }
+        this.callUpdatePricesTimeout = setTimeout(this.callUpdatePrices, 60 * 1000);
+    }
+
+    // See if the user has logged out every 5 seconds
+    private callLookForLogout = async (props?: AppProps) => {
+        props = props || this.props;
+
+        const { sdk, address, readOnlyProvider } = props.store;
+        if (address) {
+            try {
+                await props.actions.lookForLogout(sdk, readOnlyProvider);
+            } catch (err) {
+                console.error(err);
+            }
+        }
+        if (this.callLookForLogoutTimeout) { clearTimeout(this.callLookForLogoutTimeout); }
+        this.callLookForLogoutTimeout = setTimeout(this.callLookForLogout, 5 * 1000);
+    }
+
+    // Update network statistics every 3600 seconds
+    private callUpdateNetworkStatistics = async (props?: AppProps) => {
+        props = props || this.props;
+
+        const { sdk } = props.store;
+        let timeout = 3600;
+        try {
+            await props.actions.updateNetworkStatistics(sdk);
+        } catch (err) {
+            console.error(err);
+            timeout = 1; // Retry in a second if an error occurred
+        }
+        if (this.callUpdateNetworkStatisticsTimeout) { clearTimeout(this.callUpdateNetworkStatisticsTimeout); }
+        this.callUpdateNetworkStatisticsTimeout = setTimeout(this.callUpdateNetworkStatistics, timeout * 1000);
+    }
+
+    // Update operator statistics every 60 seconds
+    private callUpdateOperatorStatistics = async (props?: AppProps) => {
+        props = props || this.props;
+
+        const { sdk, address } = props.store;
+        let timeout = 1;
+        if (address) {
+            try {
+                await props.actions.updateOperatorStatistics(sdk);
+                timeout = 60;
+            } catch (err) {
+                console.error(err);
+                timeout = 30;
+            }
+        }
+        if (this.callUpdateOperatorStatisticsTimeout) { clearTimeout(this.callUpdateOperatorStatisticsTimeout); }
+        this.callUpdateOperatorStatisticsTimeout = setTimeout(this.callUpdateOperatorStatistics, timeout * 1000);
+    }
+
+    // Update selected darknode statistics every 30 seconds
+    private callUpdateSelectedDarknodeStatistics = async (props?: AppProps) => {
+        props = props || this.props;
+
+        const { match: { params } } = props;
+        const { sdk, tokenPrices, darknodeDetails } = props.store;
+
+        let { darknodeID } = params as { darknodeID: string };
+        darknodeID = darknodeID && sdk.getWeb3().utils.toChecksumAddress(darknodeID.toLowerCase());
+
+        let timeout = 1; // if the action isn't called, try again in 1 second
+        if (tokenPrices && darknodeID) {
+            try {
+                const previousDetails = darknodeDetails.get(darknodeID);
+                await props.actions.updateDarknodeStatistics(sdk, darknodeID, tokenPrices, previousDetails);
+                timeout = 30;
+            } catch (err) {
+                console.error(err);
+                timeout = 15; // try again in half the time
+            }
+        }
+        if (this.callUpdateSelectedDarknodeStatisticsTimeout) { clearTimeout(this.callUpdateSelectedDarknodeStatisticsTimeout); }
+        this.callUpdateSelectedDarknodeStatisticsTimeout = setTimeout(this.callUpdateSelectedDarknodeStatistics, timeout * 1000);
+    }
+
+    // Update all darknode statistics every 120 seconds
+    private callUpdateAllDarknodeStatistics = async (props?: AppProps) => {
+        props = props || this.props;
+
+        const { store } = props;
+        const { sdk, tokenPrices, darknodeList, darknodeDetails } = store;
+        let timeout = 1; // if the action isn't called, try again in 1 second
+        if (tokenPrices && darknodeList) {
+            try {
+                await props.actions.updateAllDarknodeStatistics(sdk, darknodeList, tokenPrices, darknodeDetails);
+                timeout = 120;
+            } catch (err) {
+                console.error(err);
+                timeout = 60;  // try again in half the time
+            }
+        }
+        if (this.callUpdateAllDarknodeStatisticsTimeout) { clearTimeout(this.callUpdateAllDarknodeStatisticsTimeout); }
+        this.callUpdateAllDarknodeStatisticsTimeout = setTimeout(this.callUpdateAllDarknodeStatistics, timeout * 1000);
+    }
+
+    // tslint:disable-next-line:member-ordering
+    public setupLoops() {
+        this.callUpdatePrices().catch(console.error);
+        this.callLookForLogout().catch(console.error);
+        this.callUpdateNetworkStatistics().catch(console.error);
+        this.callUpdateOperatorStatistics().catch(console.error);
+        this.callUpdateSelectedDarknodeStatistics().catch(console.error);
+        this.callUpdateAllDarknodeStatistics().catch(console.error);
+
+    }
+
 }
 
 const mapStateToProps = (state: ApplicationData) => ({
@@ -214,6 +253,7 @@ const mapStateToProps = (state: ApplicationData) => ({
         readOnlyProvider: state.trader.readOnlyProvider,
         tokenPrices: state.statistics.tokenPrices,
         darknodeList: state.statistics.darknodeList,
+        darknodeDetails: state.statistics.darknodeDetails,
     },
 });
 

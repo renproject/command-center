@@ -89,7 +89,7 @@
         text-transform: uppercase;
         line-height: 30px;
         border-radius: 15px;
-        width: 130px;
+        padding: 0 20px;
         font-weight: 500;
         text-align: center;
         font-size: 12px;
@@ -106,9 +106,24 @@
     }
 
     &.statuspage--focused {
+        .status *+* {
+            margin-left: 10px;
+        }
+
         .status--button {
             background: $blue-bright;
             color: white;
+            padding: 0 40px;
+        }
+
+        .status--button:disabled {
+            background: transparentize($blue-bright, 1 - 0.4);
+        }
+
+        .status--button .loading {
+            margin-left: 10px;
+            display: inline-block;
+            margin-bottom: -3px;
         }
     }
 

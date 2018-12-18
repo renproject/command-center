@@ -18,7 +18,7 @@ class PopupClass extends React.Component<PopupProps> {
     }
 
     public render(): JSX.Element | null {
-        const { popup } = this.props.store.popup;
+        const { popup, overlay } = this.props.store.popup;
         if (!popup) {
             return null;
         }
@@ -26,7 +26,7 @@ class PopupClass extends React.Component<PopupProps> {
         return (
             <div className="popup--outer">
                 {popup}
-                {/* <div role="none" className="overlay" onClick={this.onClickHandler} /> */}
+                {overlay ? <div role="none" className="overlay" onClick={this.onClickHandler} /> : null}
             </div>
         );
     }

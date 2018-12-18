@@ -14,7 +14,8 @@ export function popupReducer(state: PopupData = new PopupData(), action: PopupAc
             }
             return state
                 .set("popup", action.payload.popup)
-                .set("dismissible", action.payload.dismissible !== false)
+                .set("dismissible", action.payload.dismissible !== false) // On by default
+                .set("overlay", action.payload.overlay === true) // Off by default
                 .set("onCancel", action.payload.onCancel);
         case getType(popupActions.clearPopup):
             if (document.documentElement) {
