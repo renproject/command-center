@@ -8,24 +8,19 @@ import { createStandardAction } from "typesafe-actions";
 import { getOperatorDarknodes } from "@Library/statistics/operator";
 import { Currency, DarknodeDetails, TokenPrices } from "@Reducers/types";
 
-// Legacy
-import contracts from "@Library/contracts/contracts";
+import { contracts } from "@Library/contracts/contracts";
 import { Token, Tokens } from "@Library/tokens";
 
-interface StoreDarknodeListPayload { darknodeList: List<string>; address: string; }
-export type StoreDarknodeListAction = (payload: StoreDarknodeListPayload) => void;
-export const storeDarknodeList = createStandardAction("STORE_DARKNODE_LIST")<StoreDarknodeListPayload>();
+export const storeDarknodeList = createStandardAction("STORE_DARKNODE_LIST")<{
+    darknodeList: List<string>;
+    address: string;
+}>();
 
-interface StoreQuoteCurrencyPayload { quoteCurrency: Currency; }
-export type StoreQuoteCurrencyAction = (payload: StoreQuoteCurrencyPayload) => void;
-export const storeQuoteCurrency = createStandardAction("SORE_QUOTE_CURRENCY")<StoreQuoteCurrencyPayload>();
+export const storeQuoteCurrency = createStandardAction("SORE_QUOTE_CURRENCY")<{ quoteCurrency: Currency; }>();
 
-interface SetDarknodeDetailsPayload { darknodeDetails: DarknodeDetails; }
-export type SetDarknodeDetailsAction = (payload: SetDarknodeDetailsPayload) => void;
-export const setDarknodeDetails = createStandardAction("UPDATE_DARKNODE_DETAILS")<SetDarknodeDetailsPayload>();
+export const setDarknodeDetails = createStandardAction("UPDATE_DARKNODE_DETAILS")<{ darknodeDetails: DarknodeDetails; }>();
 
-export type UpdateOperatorStatisticsAction = (sdk: RenExSDK, address: string) => (dispatch: Dispatch) => Promise<void>;
-export const updateOperatorStatistics: UpdateOperatorStatisticsAction = (sdk, address) => async (dispatch) => {
+export const updateOperatorStatistics = (sdk: RenExSDK, address: string) => async (dispatch: Dispatch) => {
     const darknodeList = await getOperatorDarknodes(sdk, address);
     dispatch(storeDarknodeList({ darknodeList, address }));
 };
@@ -134,8 +129,7 @@ const getDarknodeStatus = async (sdk: RenExSDK, darknodeID: string): Promise<str
     });
 };
 
-export type UpdateDarknodeStatisticsAction = (sdk: RenExSDK, darknodeID: string, tokenPrices: TokenPrices, previousDetails: DarknodeDetails | undefined, index?: number) => (dispatch: Dispatch) => Promise<void>;
-export const updateDarknodeStatistics: UpdateDarknodeStatisticsAction = (sdk, darknodeID, tokenPrices, previousDetails, index?) => async (dispatch) => {
+export const updateDarknodeStatistics = (sdk: RenExSDK, darknodeID: string, tokenPrices: TokenPrices, previousDetails: DarknodeDetails | undefined, index?: number) => async (dispatch: Dispatch) => {
     darknodeID = sdk.getWeb3().utils.toChecksumAddress(darknodeID.toLowerCase());
 
     // Get eth Balance
@@ -173,8 +167,7 @@ export const updateDarknodeStatistics: UpdateDarknodeStatisticsAction = (sdk, da
     dispatch(setDarknodeDetails({ darknodeDetails }));
 };
 
-export type UpdateAllDarknodeStatisticsAction = (sdk: RenExSDK, darknodeList: List<string>, tokenPrices: TokenPrices, previousDarknodeDetails: Map<string, DarknodeDetails>) => (dispatch: Dispatch) => Promise<void>;
-export const updateAllDarknodeStatistics: UpdateAllDarknodeStatisticsAction = (sdk, darknodeList, tokenPrices, previousDarknodeDetails) => async (dispatch) => {
+export const updateAllDarknodeStatistics = (sdk: RenExSDK, darknodeList: List<string>, tokenPrices: TokenPrices, previousDarknodeDetails: Map<string, DarknodeDetails>) => async (dispatch: Dispatch) => {
     await Promise.all(darknodeList.map((darknodeID, index) => {
         const previousDetails = previousDarknodeDetails.get(darknodeID);
         return updateDarknodeStatistics(sdk, darknodeID, tokenPrices, previousDetails, index)(dispatch);

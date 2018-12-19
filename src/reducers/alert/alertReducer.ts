@@ -4,7 +4,7 @@ import * as alertActions from "@Actions/alert/alertActions";
 
 import { Alert, AlertData } from "@Reducers/types";
 
-export type AlertAction = ActionType<typeof alertActions>;
+type AlertAction = ActionType<typeof alertActions>;
 
 export function alertReducer(state: AlertData = new AlertData(), action: AlertAction) {
     switch (action.type) {

@@ -13,7 +13,7 @@ export const FALCON = "falcon";
 export const TESTNET = "testnet";
 export const MAINNET = "mainnet";
 
-const contracts = (network: string) => {
+const getContractsForNetwork = (network: string) => {
     const ERC20: Contract = {
         ABI: require("./ABIs/ERC20.json"),
         address: ""
@@ -41,4 +41,4 @@ const contracts = (network: string) => {
     return { ERC20, DarknodeRewardVault };
 };
 
-export default contracts("testnet");
+export const contracts = getContractsForNetwork("testnet");

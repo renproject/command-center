@@ -17,17 +17,11 @@ import { getAccounts } from "@Library/web3";
 import { Language } from "@Root/languages/language";
 import { Provider } from "web3/providers";
 
-type StoreAddressPayload = string | null;
-export type StoreAddressAction = (payload: StoreAddressPayload) => void;
-export const storeAddress = createStandardAction("STORE_ADDRESS")<StoreAddressPayload>();
+export const storeAddress = createStandardAction("STORE_ADDRESS")<string | null>();
 
-type StoreWeb3BrowserNamePayload = string;
-export type StoreWeb3BrowserNameAction = (payload: StoreWeb3BrowserNamePayload) => void;
-export const storeWeb3BrowserName = createStandardAction("STORE_WEB3_BROWSER_NAME")<StoreWeb3BrowserNamePayload>();
+export const storeWeb3BrowserName = createStandardAction("STORE_WEB3_BROWSER_NAME")<string>();
 
-export type LoginAction = (sdk: RenExSDK, options: { redirect: boolean, showPopup: boolean, immediatePopup: boolean }) => (dispatch: Dispatch) => Promise<void>;
-export const login: LoginAction = (sdk, options) => async (dispatch) => {
-
+export const login = (sdk: RenExSDK, options: { redirect: boolean, showPopup: boolean, immediatePopup: boolean }) => async (dispatch: Dispatch) => {
     let cancelled = false;
 
     const onClick = () => (login(sdk, { redirect: false, showPopup: true, immediatePopup: true })(dispatch));
@@ -140,8 +134,7 @@ export const login: LoginAction = (sdk, options) => async (dispatch) => {
     }
 };
 
-export type LogoutAction = (sdk: RenExSDK, readOnlyProvider: Provider, options: { reload: boolean }) => (dispatch: Dispatch) => Promise<void>;
-export const logout: LogoutAction = (sdk, readOnlyProvider, options) => async (dispatch) => {
+export const logout = (sdk: RenExSDK, readOnlyProvider: Provider, options: { reload: boolean }) => async (dispatch: Dispatch) => {
 
     // Clear session account in store (and in local storage)
     dispatch(storeAddress(null));
@@ -158,8 +151,7 @@ export const logout: LogoutAction = (sdk, readOnlyProvider, options) => async (d
     }
 };
 
-export type LookForLogoutAction = (sdk: RenExSDK, readOnlyProvider: Provider) => (dispatch: Dispatch) => Promise<void>;
-export const lookForLogout: LookForLogoutAction = (sdk, readOnlyProvider) => async (dispatch) => {
+export const lookForLogout = (sdk: RenExSDK, readOnlyProvider: Provider) => async (dispatch: Dispatch) => {
     if (!sdk.getAddress()) {
         return;
     }

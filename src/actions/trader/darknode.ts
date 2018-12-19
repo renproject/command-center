@@ -1,11 +1,10 @@
 import RenExSDK from "@renex/renex";
+import BigNumber from "bignumber.js";
 
 import { Dispatch } from "redux";
 
-import contracts from "@Library/contracts/contracts";
-
+import { contracts } from "@Library/contracts/contracts";
 import { Token } from "@Library/tokens";
-import BigNumber from "bignumber.js";
 
 export const deregisterDarknode = (sdk: RenExSDK, darknodeID: string) => async (dispatch: Dispatch) => {
     await sdk._contracts.darknodeRegistry.deregister(darknodeID, { from: sdk.getAddress(), gas: 200000 });
