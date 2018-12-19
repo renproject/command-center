@@ -20,9 +20,16 @@ export const storeQuoteCurrency = createStandardAction("SORE_QUOTE_CURRENCY")<{ 
 
 export const setDarknodeDetails = createStandardAction("UPDATE_DARKNODE_DETAILS")<{ darknodeDetails: DarknodeDetails; }>();
 
-export const updateOperatorStatistics = (sdk: RenExSDK, address: string) => async (dispatch: Dispatch) => {
+export const updateOperatorStatistics = (sdk: RenExSDK, address: string, tokenPrices: TokenPrices, previousDarknodeDetails: Map<string, DarknodeDetails>) => async (dispatch: Dispatch) => {
+
     const darknodeList = await getOperatorDarknodes(sdk, address);
     dispatch(storeDarknodeList({ darknodeList, address }));
+
+
+    await Promise.all(darknodeList.map((darknodeID, index) => {
+        const previousDetails = previousDarknodeDetails.get(darknodeID);
+        return updateDarknodeStatistics(sdk, darknodeID, tokenPrices, previousDetails, index)(dispatch);
+    }).toArray());
 };
 
 const getBalances = async (sdk: RenExSDK, darknodeID: string): Promise<OrderedMap<Token, BigNumber>> => {
@@ -85,16 +92,16 @@ const getDarknodeOperator = async (sdk: RenExSDK, darknodeID: string): Promise<s
 
 export enum RegistrationStatus {
     Unknown = "",
-    Unregistered = "unregistered",
-    RegistrationPending = "registrationPending",
-    Registered = "registered",
-    DeregistrationPending = "deregistrationPending",
-    AwaitingRefund = "awaitingRefund",
+    Unregistered = "Unregistered",
+    RegistrationPending = "Registration Pending",
+    Registered = "Registered",
+    DeregistrationPending = "Deregistration Pending",
+    AwaitingRefund = "Awaiting Refund",
 }
 
-const getDarknodeStatus = async (sdk: RenExSDK, darknodeID: string): Promise<string> => {
+const getDarknodeStatus = async (sdk: RenExSDK, darknodeID: string): Promise<RegistrationStatus> => {
 
-    return new Promise<string>((resolve) => {
+    return new Promise<RegistrationStatus>((resolve) => {
         Promise.all([
             sdk._contracts.darknodeRegistry.isPendingRegistration(darknodeID, {}),
             sdk._contracts.darknodeRegistry.isPendingDeregistration(darknodeID, {}),
@@ -125,7 +132,7 @@ const getDarknodeStatus = async (sdk: RenExSDK, darknodeID: string): Promise<str
             }
             resolve(registrationStatus);
         })
-            .catch(console.error);
+            .catch((error) => resolve(RegistrationStatus.Unknown));
     });
 };
 
@@ -165,13 +172,4 @@ export const updateDarknodeStatistics = (sdk: RenExSDK, darknodeID: string, toke
     });
 
     dispatch(setDarknodeDetails({ darknodeDetails }));
-};
-
-export const updateAllDarknodeStatistics = (sdk: RenExSDK, darknodeList: List<string>, tokenPrices: TokenPrices, previousDarknodeDetails: Map<string, DarknodeDetails>) => async (dispatch: Dispatch) => {
-    await Promise.all(darknodeList.map((darknodeID, index) => {
-        const previousDetails = previousDarknodeDetails.get(darknodeID);
-        return updateDarknodeStatistics(sdk, darknodeID, tokenPrices, previousDetails, index)(dispatch);
-    }).toArray());
-
-    // TODO: Sum up rewards
 };

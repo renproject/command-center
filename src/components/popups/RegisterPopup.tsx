@@ -137,17 +137,25 @@ export class RegisterPopupClass extends React.Component<RegisterPopupProps, Regi
     }
 
     private step1 = async () => {
-        const { store: { sdk, minimumBond } } = this.props;
+        const { store: { address, sdk, minimumBond } } = this.props;
         const bond = minimumBond || new BigNumber(100000);
-        await this.props.actions.approveNode(sdk, bond);
+
+        if (!address) {
+            throw new Error("Invalid address");
+        }
+        await this.props.actions.approveNode(sdk, address, bond);
         this.setState({ bond });
 
     }
 
     private step2 = async () => {
-        const { darknodeID, publicKey, store: { sdk, tokenPrices, darknodeDetails } } = this.props;
+        const { darknodeID, publicKey, store: { address, sdk, tokenPrices, darknodeDetails } } = this.props;
         const { bond } = this.state;
-        await this.props.actions.registerNode(sdk, darknodeID, publicKey, bond || new BigNumber(100000));
+
+        if (!address) {
+            throw new Error("Invalid address");
+        }
+        await this.props.actions.registerNode(sdk, address, darknodeID, publicKey, bond || new BigNumber(100000));
         this.setState({ bond });
 
         if (tokenPrices) {
@@ -163,6 +171,7 @@ export class RegisterPopupClass extends React.Component<RegisterPopupProps, Regi
 
 const mapStateToProps = (state: ApplicationData) => ({
     store: {
+        address: state.trader.address,
         sdk: state.trader.sdk,
         minimumBond: state.statistics.minimumBond,
         tokenPrices: state.statistics.tokenPrices,

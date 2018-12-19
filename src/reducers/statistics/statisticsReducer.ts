@@ -3,8 +3,8 @@ import { ActionType, getType } from "typesafe-actions";
 import * as networkActions from "@Actions/statistics/networkActions";
 import * as operatorActions from "@Actions/statistics/operatorActions";
 
-import { DarknodeDetails, StatisticsData } from "@Reducers/types";
-import { OrderedMap } from "immutable";
+import { StatisticsData } from "@Reducers/types";
+import { List } from "immutable";
 
 type NetworkAction = ActionType<typeof networkActions>;
 type OperatorActions = ActionType<typeof operatorActions>;
@@ -18,7 +18,17 @@ export function statisticsReducer(state: StatisticsData = new StatisticsData(), 
             return state.set("tokenPrices", action.payload.tokenPrices);
 
         case getType(operatorActions.storeDarknodeList):
-            return state.set("darknodeList", state.darknodeList.set(action.payload.address, action.payload.darknodeList));
+            let newList = state.darknodeList.get(action.payload.address) || List();
+
+            // Add to list if it's not already in there (this is an inefficient
+            // process but it's only run on a small number of strings every two minutes)
+            action.payload.darknodeList.map((darknodeID) => {
+                if (!newList.contains(darknodeID)) {
+                    newList = newList.push(darknodeID);
+                }
+            });
+
+            return state.set("darknodeList", state.darknodeList.set(action.payload.address, newList));
 
         case getType(operatorActions.storeQuoteCurrency):
             return state.set("quoteCurrency", action.payload.quoteCurrency);

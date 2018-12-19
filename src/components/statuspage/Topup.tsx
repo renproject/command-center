@@ -77,8 +77,11 @@ class TopupClass extends React.Component<TopupProps, TopupState> {
     }
 
     private updateTraderBalance = async (): Promise<BigNumber> => {
-        const { store: { sdk } } = this.props;
-        const traderBalance = new BigNumber((await sdk.getWeb3().eth.getBalance(sdk.getAddress())).toString())
+        const { store: { address, sdk } } = this.props;
+        if (!address) {
+            throw new Error("Invalid address when updating trader balance");
+        }
+        const traderBalance = new BigNumber((await sdk.getWeb3().eth.getBalance(address)).toString())
             .div(new BigNumber(10).exponentiatedBy(18));
         this.setState({ traderBalance });
         return traderBalance;
@@ -98,14 +101,18 @@ class TopupClass extends React.Component<TopupProps, TopupState> {
     }
 
     private sendFunds = async (): Promise<void> => {
-        const { darknodeAddress, store: { sdk } } = this.props;
+        const { darknodeAddress, store: { address, sdk } } = this.props;
         const { value } = this.state;
 
         this.setState({ resultMessage: "", pending: true });
 
+        if (!address) {
+            this.setState({ resultMessage: `Invalid account.`, pending: false });
+            return;
+        }
 
         try {
-            await this.props.actions.fundNode(sdk, darknodeAddress, value);
+            await this.props.actions.fundNode(sdk, address, darknodeAddress, value);
             this.setState({ value: "0", resultMessage: CONFIRMATION_MESSAGE, pending: false });
         } catch (error) {
             console.error(error);
@@ -116,6 +123,7 @@ class TopupClass extends React.Component<TopupProps, TopupState> {
 
 const mapStateToProps = (state: ApplicationData) => ({
     store: {
+        address: state.trader.address,
         sdk: state.trader.sdk,
     },
 });
