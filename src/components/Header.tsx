@@ -1,5 +1,8 @@
 import * as React from "react";
 
+import { faBitcoin, faEthereum } from "@fortawesome/free-brands-svg-icons";
+import { faDollarSign } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { connect } from "react-redux";
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
 import { bindActionCreators, Dispatch } from "redux";
@@ -75,11 +78,11 @@ class HeaderClass extends React.Component<HeaderProps, HeaderState> {
                                 >
                                     {quoteCurrency.toUpperCase()} ﹀
                                 {currencyDropdownVisible ?
-                                        <ul className="header--dropdown">
-                                            <li role="button" onClick={this.setCurrencyToUSD}>USD</li>
-                                            <li role="button" onClick={this.setCurrencyToAUD}>AUD</li>
-                                            <li role="button" onClick={this.setCurrencyToBTC}>BTC</li>
-                                            <li role="button" onClick={this.setCurrencyToETH}>ETH</li>
+                                        <ul className="header--dropdown header--dropdown--currency">
+                                            <li role="button" onClick={this.setCurrencyToUSD}><FontAwesomeIcon icon={faDollarSign} /> USD Dollar (USD)</li>
+                                            <li role="button" onClick={this.setCurrencyToAUD}><FontAwesomeIcon icon={faDollarSign} /> Australian DOllar (AUD)</li>
+                                            <li role="button" onClick={this.setCurrencyToBTC}><FontAwesomeIcon icon={faBitcoin} /> Bitcoin (BTC)</li>
+                                            <li role="button" onClick={this.setCurrencyToETH}><FontAwesomeIcon icon={faEthereum} /> Ethereum (ETH)</li>
                                         </ul> : null
                                     }
                                 </li>
@@ -92,10 +95,8 @@ class HeaderClass extends React.Component<HeaderProps, HeaderState> {
                             onMouseEnter={this.showAccountDropDown}
                             onMouseLeave={this.hideAccountDropdown}
                         >
-                            <div className="header--account" onClick={this.handleLogin}>
-                                <div className="header--blocky">
-                                    {address && <Blocky address={address} />}
-                                </div>
+                            <div className="header--account">
+                                {address && <Blocky address={address} />}
                                 <div className="header--account--right">
                                     <div className={`header--account--type ${address ? "header--account--connected" : ""}`}>{web3BrowserName}</div>
                                     {address ?
@@ -104,17 +105,22 @@ class HeaderClass extends React.Component<HeaderProps, HeaderState> {
                                     }
                                 </div>
                             </div>
-                            {address && accountDropdownVisible ?
+                            {accountDropdownVisible ?
                                 <ul className="header--dropdown">
-                                    <li role="button" onClick={this.copyToClipboard}>
-                                        <span data-addr={address}>
-                                            {copied ?
-                                                <span>Copied</span>
-                                                :
-                                                <span>Copy to clipboard</span>
-                                            }
-                                        </span>
-                                    </li>
+                                    {address ?
+                                        <li role="button" onClick={this.copyToClipboard}>
+                                            <span data-addr={address}>
+                                                {copied ?
+                                                    <span>Copied</span>
+                                                    :
+                                                    <span>Copy to clipboard</span>
+                                                }
+                                            </span>
+                                        </li> :
+                                        <li role="button" onClick={this.handleLogin} className="header--dropdown--highlight">
+                                            Connect {web3BrowserName}
+                                        </li>
+                                    }
                                 </ul> : null
                             }
                         </li>
