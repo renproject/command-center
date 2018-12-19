@@ -3,12 +3,12 @@
 import * as Sentry from "@sentry/browser";
 
 import RenExSDK, { OrderSettlement } from "@renex/renex";
+import BigNumber from "bignumber.js";
 
 import { List, Map, OrderedMap } from "immutable";
 
+import { RegistrationStatus } from "@Actions/statistics/operatorActions";
 import { Record } from "@Library/general/record";
-import BigNumber from "bignumber.js";
-
 import { Token } from "@Library/tokens";
 import { getReadOnlyProvider } from "@Library/wallets/wallet";
 
@@ -119,6 +119,6 @@ export class DarknodeDetails extends Record({
     expectedExhaustion: null,
 
     peers: 0,
-    registrationStatus: "",
+    registrationStatus: "" as RegistrationStatus,
     operator: "",
 }) { }

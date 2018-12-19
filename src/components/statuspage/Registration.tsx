@@ -12,7 +12,7 @@ import { RegisterPopup } from "@Components/popups/RegisterPopup";
 
 interface RegistrationProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     operator: boolean;
-    registrationStatus: string;
+    registrationStatus: RegistrationStatus;
     network: string;
     darknodeID: string;
     publicKey?: string;
@@ -22,7 +22,7 @@ interface RegistrationState {
     disabled: boolean;
 }
 
-const statusText = {
+export const statusText = {
     [RegistrationStatus.Unknown]: "Loading...",
     [RegistrationStatus.Unregistered]: "Unregistered",
     [RegistrationStatus.RegistrationPending]: "Registration pending",
@@ -40,8 +40,10 @@ class RegistrationClass extends React.Component<RegistrationProps, RegistrationS
     }
 
     public render(): JSX.Element {
-        const { operator, registrationStatus } = this.props;
-        const { disabled } = this.state;
+        const { operator, registrationStatus, store: { address } } = this.props;
+        let { disabled } = this.state;
+
+        disabled = disabled || !address;
 
         return (
             <div className="status">
@@ -117,24 +119,33 @@ class RegistrationClass extends React.Component<RegistrationProps, RegistrationS
 
     private handleDeregister = async (): Promise<void> => {
         const { darknodeID } = this.props;
-        const { sdk } = this.props.store;
+        const { sdk, address } = this.props.store;
+
+        if (!address) {
+            return;
+        }
 
         // this.setState({ disabled: true, });
-        await this.props.actions.deregisterNode(sdk, darknodeID);
+        await this.props.actions.deregisterNode(sdk, address, darknodeID);
     }
 
     private handleRefund = async (): Promise<void> => {
         const { darknodeID } = this.props;
-        const { sdk } = this.props.store;
+        const { sdk, address } = this.props.store;
+
+        if (!address) {
+            return;
+        }
 
         // this.setState({ disabled: true, });
-        await this.props.actions.refundNode(sdk, darknodeID);
+        await this.props.actions.refundNode(sdk, address, darknodeID);
     }
 }
 
 
 const mapStateToProps = (state: ApplicationData) => ({
     store: {
+        address: state.trader.address,
         sdk: state.trader.sdk,
         minimumBond: state.statistics.minimumBond,
     },

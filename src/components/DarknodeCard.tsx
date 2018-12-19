@@ -12,6 +12,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Token } from "@Library/tokens";
 import { ApplicationData, Currency, DarknodeDetails } from "@Reducers/types";
 import { CurrencyIcon } from "./CurrencyIcon";
+import { statusText } from "./statuspage/Registration";
 import { TokenBalance } from "./TokenBalance";
 
 const toTitleCase = (title: string) => title.replace(
@@ -61,7 +62,7 @@ class DarknodeCardClass extends React.Component<DarknodeCardProps, DarknodeCardS
                         <Blocky address={darknodeID} fgColor="#006FE8" bgColor="transparent" />
 
                         <h3 className="darknode-card--name">{darknodeDetails ? darknodeDetails.name : <span className="monospace">{darknodeID.substring(0, 8)}...{darknodeID.slice(-5)}</span>}</h3>
-                        <span className="darknode-card--status">{darknodeDetails ? toTitleCase(darknodeDetails.registrationStatus) : ""}</span>
+                        <span className="darknode-card--status">{darknodeDetails ? statusText[darknodeDetails.registrationStatus] : ""}</span>
                     </div>
                     {darknodeDetails ?
                         <div className="darknode-card--bottom">

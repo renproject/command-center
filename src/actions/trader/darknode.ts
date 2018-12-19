@@ -6,8 +6,8 @@ import { Dispatch } from "redux";
 import { contracts } from "@Library/contracts/contracts";
 import { Token } from "@Library/tokens";
 
-export const deregisterDarknode = (sdk: RenExSDK, darknodeID: string) => async (dispatch: Dispatch) => {
-    await sdk._contracts.darknodeRegistry.deregister(darknodeID, { from: sdk.getAddress(), gas: 200000 });
+export const deregisterDarknode = (sdk: RenExSDK, address: string, darknodeID: string) => async (dispatch: Dispatch) => {
+    await sdk._contracts.darknodeRegistry.deregister(darknodeID, { from: address, gas: 200000 });
 };
 
 export const withdrawReward = (sdk: RenExSDK, darknodeID: string, token: Token) => async (dispatch: Dispatch) => {
@@ -24,15 +24,13 @@ export const withdrawReward = (sdk: RenExSDK, darknodeID: string, token: Token) 
 };
 
 
-export const approveNode = (sdk: RenExSDK, bond: BigNumber) => async (dispatch: Dispatch) => {
-
-    const ethAddress = sdk.getAddress();
+export const approveNode = (sdk: RenExSDK, address: string, bond: BigNumber) => async (dispatch: Dispatch) => {
 
     // tslint:disable-next-line:no-non-null-assertion
     const renAddr = (await sdk._cachedTokenDetails.get(Token.REN))!.addr;
     const ercContract = new (sdk.getWeb3().eth.Contract)(contracts.ERC20.ABI, renAddr);
-    const ercBalance = new BigNumber(await ercContract.methods.balanceOf(ethAddress).call());
-    const ercAllowance = new BigNumber(await ercContract.methods.allowance(ethAddress, sdk._contracts.darknodeRegistry.address).call());
+    const ercBalance = new BigNumber(await ercContract.methods.balanceOf(address).call());
+    const ercAllowance = new BigNumber(await ercContract.methods.allowance(address, sdk._contracts.darknodeRegistry.address).call());
 
 
     if (ercAllowance.gte(bond)) {
@@ -46,27 +44,25 @@ export const approveNode = (sdk: RenExSDK, bond: BigNumber) => async (dispatch: 
 
 
     return new Promise((resolve, reject) => {
-        ercContract.methods.approve(sdk._contracts.darknodeRegistry.address, bond.toFixed()).send({ from: ethAddress })
+        ercContract.methods.approve(sdk._contracts.darknodeRegistry.address, bond.toFixed()).send({ from: address })
             .on("transactionHash", resolve)
             .catch(reject);
     });
 };
 
-export const registerNode = (sdk: RenExSDK, darknodeID: string, publicKey: string, bond: BigNumber) => async (dispatch: Dispatch) => {
+export const registerNode = (sdk: RenExSDK, address: string, darknodeID: string, publicKey: string, bond: BigNumber) => async (dispatch: Dispatch) => {
 
 
     if (!publicKey) {
         throw new Error("Public key required");
     }
 
-    const ethAddress = sdk.getAddress();
-
     const hardCodedGas = 500000;
 
     // tslint:disable-next-line:no-non-null-assertion
     const renAddr = (await sdk._cachedTokenDetails.get(Token.REN))!.addr;
     const ercContract = new (sdk.getWeb3().eth.Contract)(contracts.ERC20.ABI, renAddr);
-    const ercAllowance = new BigNumber(await ercContract.methods.allowance(ethAddress, sdk._contracts.darknodeRegistry.address).call());
+    const ercAllowance = new BigNumber(await ercContract.methods.allowance(address, sdk._contracts.darknodeRegistry.address).call());
 
     let gas: number | undefined = hardCodedGas;
     if (ercAllowance.gte(bond)) {
@@ -74,23 +70,23 @@ export const registerNode = (sdk: RenExSDK, darknodeID: string, publicKey: strin
     }
 
     await sdk._contracts.darknodeRegistry.register(darknodeID, publicKey, bond.toFixed(),
-        { from: sdk.getAddress(), gas, }
+        { from: address, gas, }
     );
 };
 
-export const deregisterNode = (sdk: RenExSDK, darknodeID: string) => async (dispatch: Dispatch) => {
+export const deregisterNode = (sdk: RenExSDK, address: string, darknodeID: string) => async (dispatch: Dispatch) => {
     // The node has been registered and can be deregistered.
 
-    await sdk._contracts.darknodeRegistry.deregister(darknodeID, { from: sdk.getAddress() });
+    await sdk._contracts.darknodeRegistry.deregister(darknodeID, { from: address });
 };
 
-export const refundNode = (sdk: RenExSDK, darknodeID: string) => async (dispatch: Dispatch) => {
+export const refundNode = (sdk: RenExSDK, address: string, darknodeID: string) => async (dispatch: Dispatch) => {
     // The node is awaiting refund.
 
-    await sdk._contracts.darknodeRegistry.refund(darknodeID, { from: sdk.getAddress() });
+    await sdk._contracts.darknodeRegistry.refund(darknodeID, { from: address });
 };
 
-export const fundNode = (sdk: RenExSDK, darknodeID: string, ethAmountStr: string) => (dispatch: Dispatch) => {
+export const fundNode = (sdk: RenExSDK, address: string, darknodeID: string, ethAmountStr: string) => (dispatch: Dispatch) => {
     // Convert eth to wei
     const ethAmount = new BigNumber(ethAmountStr);
     const weiAmount = ethAmount.times(new BigNumber(10).exponentiatedBy(18)).decimalPlaces(0);
@@ -99,7 +95,7 @@ export const fundNode = (sdk: RenExSDK, darknodeID: string, ethAmountStr: string
         sdk.getWeb3().eth.sendTransaction({
             to: darknodeID,
             value: weiAmount.toFixed(),
-            from: sdk.getAddress(),
+            from: address,
         })
             .on("receipt", resolve)
             .on("error", reject);

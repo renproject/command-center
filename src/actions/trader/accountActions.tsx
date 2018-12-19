@@ -87,7 +87,7 @@ export const login = (sdk: RenExSDK, options: { redirect: boolean, showPopup: bo
 
     // For now we use first account
     // TODO: Add support for selecting other accounts other than first
-    const address = accounts[0];
+    const address = sdk.getWeb3().utils.toChecksumAddress(accounts[0].toLowerCase());
 
     sdk.updateProvider(provider);
     sdk.setAddress(address);
@@ -124,9 +124,6 @@ export const login = (sdk: RenExSDK, options: { redirect: boolean, showPopup: bo
 
     dispatch(storeWeb3BrowserName(web3BrowserName));
 
-    updateOperatorStatistics(sdk, address)(dispatch)
-        .catch(console.error);
-
     if (options.redirect) {
         // Navigate to the Exchange page
         // history.push("#/home");
@@ -151,14 +148,19 @@ export const logout = (sdk: RenExSDK, readOnlyProvider: Provider, options: { rel
     }
 };
 
-export const lookForLogout = (sdk: RenExSDK, readOnlyProvider: Provider) => async (dispatch: Dispatch) => {
-    if (!sdk.getAddress()) {
+// lookForLogout detects if 1) the user has changed or logged out of their Web3
+// wallet, or if the SDK's selected address has been changed (this should not
+// usually happen) 
+export const lookForLogout = (sdk: RenExSDK, address: string, readOnlyProvider: Provider) => async (dispatch: Dispatch) => {
+    const sdkAddress = sdk.getAddress();
+
+    if (!address && !sdkAddress) {
         return;
     }
 
-    const accounts = (await sdk.getWeb3().eth.getAccounts()).map((address) => address.toLowerCase());
-    if (!accounts.includes(sdk.getAddress().toLowerCase())) {
-        // console.error(`User has logged out of their web3 provider (${sdk.getAddress()} not in [${accounts.join(", ")}])`);
+    const accounts = (await sdk.getWeb3().eth.getAccounts()).map((web3Address) => web3Address.toLowerCase());
+    if (address !== sdkAddress || !accounts.includes(sdkAddress.toLowerCase())) {
+        // console.error(`User has logged out of their web3 provider (${sdkAddress} not in [${accounts.join(", ")}])`);
 
         const onClick = async () => {
             await login(sdk, { redirect: false, showPopup: true, immediatePopup: false })(dispatch);

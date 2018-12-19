@@ -86,7 +86,7 @@ class SidebarClass extends React.Component<SidebarProps> {
 
 const mapStateToProps = (state: ApplicationData) => ({
     store: {
-        darknodeList: state.trader.address ? state.statistics.darknodeList.get(state.trader.address, null) : null,
+        darknodeList: state.trader.address ? state.statistics.darknodeList.get(state.trader.address) : null,
         darknodeDetails: state.statistics.darknodeDetails,
         quoteCurrency: state.statistics.quoteCurrency,
     },
