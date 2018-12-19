@@ -2,6 +2,7 @@ import * as React from "react";
 
 interface LoadingProps {
     alt?: boolean;
+    className?: string;
 }
 
 interface LoadingState {
@@ -12,9 +13,9 @@ interface LoadingState {
  */
 export class Loading extends React.Component<LoadingProps, LoadingState> {
     public render(): JSX.Element {
-        const { alt } = this.props;
+        const { alt, className } = this.props;
         return (
-            <div className={`loading lds-dual-ring ${alt ? "alt" : ""}`} />
+            <div className={`loading lds-dual-ring ${alt ? "alt" : ""} ${className ? className : ""}`} />
         );
     }
 }

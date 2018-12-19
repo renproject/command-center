@@ -7,11 +7,11 @@ import { Link } from "react-router-dom";
 import { Dispatch } from "redux";
 import { bindActionCreators } from "redux";
 
-import { faEthereum } from "@fortawesome/free-brands-svg-icons";
 import { faStar } from "@fortawesome/free-regular-svg-icons";
 import { Token } from "@Library/tokens";
-import { ApplicationData } from "@Reducers/types";
+import { ApplicationData, Currency } from "@Reducers/types";
 import { Blocky } from "./Blocky";
+import { CurrencyIcon } from "./CurrencyIcon";
 import { TokenBalance } from "./TokenBalance";
 
 interface SidebarProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
@@ -62,13 +62,13 @@ class SidebarClass extends React.Component<SidebarProps> {
                                         <div className="sidebar--text--rewards">
                                             {details ? <>
                                                 <FontAwesomeIcon icon={faStar} className="sidebar--text--icon" />
-                                                <span className="currency-value">$<TokenBalance token={Token.ETH} convertTo={quoteCurrency} amount={details.feesEarnedTotalEth} /></span> <span className="currency-symbol">{quoteCurrency.toUpperCase()}</span>
+                                                <span className="currency-value"><CurrencyIcon currency={quoteCurrency} /><TokenBalance token={Token.ETH} convertTo={quoteCurrency} amount={details.feesEarnedTotalEth} /></span> <span className="currency-symbol">{quoteCurrency.toUpperCase()}</span>
                                             </> : null}
                                         </div>
                                         <div className="sidebar--text--gas">
                                             {details ? <>
                                                 <FontAwesomeIcon icon={faFire} className="sidebar--text--icon" />
-                                                <span className="currency-value"><FontAwesomeIcon icon={faEthereum} /><TokenBalance token={Token.ETH} amount={details.ethBalance} digits={3} /></span> <span className="currency-symbol">ETH</span>
+                                                <span className="currency-value"><CurrencyIcon currency={Currency.ETH} /><TokenBalance token={Token.ETH} amount={details.ethBalance} digits={3} /></span> <span className="currency-symbol">ETH</span>
                                             </> : null
                                             }
                                         </div>
@@ -86,7 +86,7 @@ class SidebarClass extends React.Component<SidebarProps> {
 
 const mapStateToProps = (state: ApplicationData) => ({
     store: {
-        darknodeList: state.statistics.darknodeList,
+        darknodeList: state.trader.address ? state.statistics.darknodeList.get(state.trader.address, null) : null,
         darknodeDetails: state.statistics.darknodeDetails,
         quoteCurrency: state.statistics.quoteCurrency,
     },

@@ -6,12 +6,12 @@ import { Link } from "react-router-dom";
 import { bindActionCreators, Dispatch } from "redux";
 
 import { Blocky } from "@Components/Blocky";
-import { faEthereum } from "@fortawesome/free-brands-svg-icons";
 import { faStar } from "@fortawesome/free-regular-svg-icons";
 import { faFire } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Token } from "@Library/tokens";
-import { ApplicationData, DarknodeDetails } from "@Reducers/types";
+import { ApplicationData, Currency, DarknodeDetails } from "@Reducers/types";
+import { CurrencyIcon } from "./CurrencyIcon";
 import { TokenBalance } from "./TokenBalance";
 
 const toTitleCase = (title: string) => title.replace(
@@ -67,11 +67,11 @@ class DarknodeCardClass extends React.Component<DarknodeCardProps, DarknodeCardS
                         <div className="darknode-card--bottom">
                             <div className="darknode-card--rewards">
                                 <FontAwesomeIcon icon={faStar} className="darknode-card--bottom--icon" />
-                                <span className="currency-value">$<TokenBalance token={Token.ETH} convertTo={quoteCurrency} amount={darknodeDetails.feesEarnedTotalEth} /></span> <span className="currency-symbol">{quoteCurrency.toUpperCase()}</span>
+                                <span className="currency-value"><CurrencyIcon currency={quoteCurrency} /><TokenBalance token={Token.ETH} convertTo={quoteCurrency} amount={darknodeDetails.feesEarnedTotalEth} /></span> <span className="currency-symbol">{quoteCurrency.toUpperCase()}</span>
                             </div>
                             <div className="darknode-card--gas">
                                 <FontAwesomeIcon icon={faFire} className="darknode-card--bottom--icon" />
-                                <span className="currency-value"><FontAwesomeIcon icon={faEthereum} /><TokenBalance token={Token.ETH} amount={darknodeDetails.ethBalance} digits={3} /></span> <span className="currency-symbol">ETH</span>
+                                <span className="currency-value"><CurrencyIcon currency={Currency.ETH} /><TokenBalance token={Token.ETH} amount={darknodeDetails.ethBalance} digits={3} /></span> <span className="currency-symbol">ETH</span>
                             </div>
                         </div>
                         : null

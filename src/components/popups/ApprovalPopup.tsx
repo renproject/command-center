@@ -1,8 +1,5 @@
 import * as React from "react";
 
-import { SimpleConsole } from "@renex/renex";
-
-import { SetPopupPayload } from "@Actions/popup/popupActions";
 import { ErrorCanceledByUser } from "@Library/wallets/wallet";
 
 interface ApprovalPopupProps {
@@ -73,9 +70,3 @@ export class ApprovalPopup extends React.Component<ApprovalPopupProps, ApprovalP
         </div>;
     }
 }
-
-export const newApprovalPopup = (call: (simpleConsole?: SimpleConsole) => Promise<void>, onCancelAction: () => void): SetPopupPayload => ({
-    popup: <ApprovalPopup closePopup={onCancelAction} call={call} />,
-    dismissible: false,
-    onCancel: onCancelAction,
-});

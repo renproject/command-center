@@ -1,7 +1,6 @@
 import * as React from "react";
 
-import { faBitcoin, faEthereum } from "@fortawesome/free-brands-svg-icons";
-import { faDollarSign } from "@fortawesome/free-solid-svg-icons";
+import { faAngleDown, faFlag } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { connect } from "react-redux";
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
@@ -11,6 +10,7 @@ import { storeQuoteCurrency } from "@Actions/statistics/operatorActions";
 import { login } from "@Actions/trader/accountActions";
 import { Blocky } from "@Components/Blocky";
 import { ApplicationData, Currency } from "@Reducers/types";
+import { CurrencyIcon } from "./CurrencyIcon";
 
 interface HeaderProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps>,
     RouteComponentProps {
@@ -18,9 +18,9 @@ interface HeaderProps extends ReturnType<typeof mapStateToProps>, ReturnType<typ
 }
 
 interface HeaderState {
-    accountDropdownVisible: boolean;
-    languageDropdownVisible: boolean;
-    currencyDropdownVisible: boolean;
+    accountDropdown: boolean;
+    languageDropdown: boolean;
+    currencyDropdown: boolean;
     copied: boolean;
 }
 
@@ -33,16 +33,16 @@ class HeaderClass extends React.Component<HeaderProps, HeaderState> {
         super(props, context);
         this.state = {
             copied: false,
-            accountDropdownVisible: false,
-            languageDropdownVisible: false,
-            currencyDropdownVisible: false,
+            accountDropdown: false,
+            languageDropdown: false,
+            currencyDropdown: false,
         };
     }
 
     public render(): JSX.Element {
         const { hideOptions, store } = this.props;
         const { address, web3BrowserName, quoteCurrency } = store;
-        const { accountDropdownVisible, languageDropdownVisible, currencyDropdownVisible, copied } = this.state;
+        const { accountDropdown, languageDropdown, currencyDropdown, copied } = this.state;
         const route = this.props.location.pathname;
 
         const loggedIn = (address != null);
@@ -58,31 +58,33 @@ class HeaderClass extends React.Component<HeaderProps, HeaderState> {
                         {!hideOptions ?
                             <>
                                 <li
+                                    data-id="languageDropdown"
                                     className="header--group"
-                                    onMouseEnter={this.showLanguageDropDown}
-                                    onMouseLeave={this.hideLanguageDropdown}
+                                    onMouseEnter={this.showDropdown}
+                                    onMouseLeave={this.hideDropdown}
                                 >
-                                    English ﹀
-                                {languageDropdownVisible ?
-                                        <ul className="header--dropdown">
-                                            <li role="button">English</li>
+                                    English <FontAwesomeIcon icon={faAngleDown} />
+                                    {languageDropdown ?
+                                        <ul className="header--dropdown header--dropdown--options">
+                                            <li role="button" className="header--dropdown--selected"><FontAwesomeIcon icon={faFlag} />English</li>
                                         </ul> : null
                                     }
                                 </li>
 
 
                                 <li
+                                    data-id="currencyDropdown"
                                     className="header--group"
-                                    onMouseEnter={this.showCurrencyDropDown}
-                                    onMouseLeave={this.hideCurrencyDropdown}
+                                    onMouseEnter={this.showDropdown}
+                                    onMouseLeave={this.hideDropdown}
                                 >
-                                    {quoteCurrency.toUpperCase()} ﹀
-                                {currencyDropdownVisible ?
+                                    {quoteCurrency.toUpperCase()} <FontAwesomeIcon icon={faAngleDown} />
+                                    {currencyDropdown ?
                                         <ul className="header--dropdown header--dropdown--currency">
-                                            <li role="button" onClick={this.setCurrencyToUSD}><FontAwesomeIcon icon={faDollarSign} /> USD Dollar (USD)</li>
-                                            <li role="button" onClick={this.setCurrencyToAUD}><FontAwesomeIcon icon={faDollarSign} /> Australian DOllar (AUD)</li>
-                                            <li role="button" onClick={this.setCurrencyToBTC}><FontAwesomeIcon icon={faBitcoin} /> Bitcoin (BTC)</li>
-                                            <li role="button" onClick={this.setCurrencyToETH}><FontAwesomeIcon icon={faEthereum} /> Ethereum (ETH)</li>
+                                            <li role="button" data-id={Currency.USD} className={quoteCurrency === Currency.USD ? "header--dropdown--selected" : ""} onClick={this.setCurrency}><CurrencyIcon currency={Currency.USD} /> USD Dollar (USD)</li>
+                                            <li role="button" data-id={Currency.AUD} className={quoteCurrency === Currency.AUD ? "header--dropdown--selected" : ""} onClick={this.setCurrency}><CurrencyIcon currency={Currency.AUD} /> Australian Dollar (AUD)</li>
+                                            <li role="button" data-id={Currency.BTC} className={quoteCurrency === Currency.BTC ? "header--dropdown--selected" : ""} onClick={this.setCurrency}><CurrencyIcon currency={Currency.BTC} /> Bitcoin (BTC)</li>
+                                            <li role="button" data-id={Currency.ETH} className={quoteCurrency === Currency.ETH ? "header--dropdown--selected" : ""} onClick={this.setCurrency}><CurrencyIcon currency={Currency.ETH} /> Ethereum (ETH)</li>
                                         </ul> : null
                                     }
                                 </li>
@@ -91,9 +93,10 @@ class HeaderClass extends React.Component<HeaderProps, HeaderState> {
                             : null}
 
                         <li
+                            data-id="accountDropdown"
                             className="header--group"
-                            onMouseEnter={this.showAccountDropDown}
-                            onMouseLeave={this.hideAccountDropdown}
+                            onMouseEnter={this.showDropdown}
+                            onMouseLeave={this.hideDropdown}
                         >
                             <div className="header--account">
                                 {address && <Blocky address={address} />}
@@ -105,8 +108,8 @@ class HeaderClass extends React.Component<HeaderProps, HeaderState> {
                                     }
                                 </div>
                             </div>
-                            {accountDropdownVisible ?
-                                <ul className="header--dropdown">
+                            {accountDropdown ?
+                                <ul className={`header--dropdown ${!address ? "header--dropdown--login" : ""}`}>
                                     {address ?
                                         <li role="button" onClick={this.copyToClipboard}>
                                             <span data-addr={address}>
@@ -137,42 +140,25 @@ class HeaderClass extends React.Component<HeaderProps, HeaderState> {
         }
     }
 
-    private showAccountDropDown = (): void => {
-        this.setState({ accountDropdownVisible: true, copied: false });
+    private showDropdown = (e: React.MouseEvent<HTMLLIElement>): void => {
+        const id = e.currentTarget.dataset ? e.currentTarget.dataset.id : undefined;
+        if (id) {
+            this.setState((state) => ({ ...state, [id]: true, copied: false }));
+        }
     }
 
-    private hideAccountDropdown = (): void => {
-        this.setState({ accountDropdownVisible: false, copied: false });
+    private hideDropdown = (e: React.MouseEvent<HTMLLIElement>): void => {
+        const id = e.currentTarget.dataset ? e.currentTarget.dataset.id : undefined;
+        if (id) {
+            this.setState((state) => ({ ...state, [id]: false, copied: false }));
+        }
     }
 
-    private showLanguageDropDown = (): void => {
-        this.setState({ languageDropdownVisible: true });
-    }
-
-    private hideLanguageDropdown = (): void => {
-        this.setState({ languageDropdownVisible: false });
-    }
-
-    private showCurrencyDropDown = (): void => {
-        this.setState({ currencyDropdownVisible: true });
-    }
-
-    private hideCurrencyDropdown = (): void => {
-        this.setState({ currencyDropdownVisible: false });
-    }
-
-    // TODO: Get value dynamically
-    private setCurrencyToUSD = (): void => {
-        this.props.actions.storeQuoteCurrency({ quoteCurrency: Currency.USD });
-    }
-    private setCurrencyToAUD = (): void => {
-        this.props.actions.storeQuoteCurrency({ quoteCurrency: Currency.AUD });
-    }
-    private setCurrencyToBTC = (): void => {
-        this.props.actions.storeQuoteCurrency({ quoteCurrency: Currency.BTC });
-    }
-    private setCurrencyToETH = (): void => {
-        this.props.actions.storeQuoteCurrency({ quoteCurrency: Currency.ETH });
+    private setCurrency = (e: React.MouseEvent<HTMLLIElement>): void => {
+        const id = e.currentTarget.dataset ? e.currentTarget.dataset.id : undefined;
+        if (id) {
+            this.props.actions.storeQuoteCurrency({ quoteCurrency: id as Currency });
+        }
     }
 
     private copyToClipboard = (e: React.MouseEvent<HTMLElement>): void => {

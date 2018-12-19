@@ -2,14 +2,14 @@ import storage from "redux-persist/lib/storage";
 
 import {
     ApplicationData,
-    TraderData
+    StatisticsData
 } from "@Reducers/types";
 import { createTransform, PersistConfig } from "redux-persist";
 
 // Local Storage:
 
-const traderTransform = createTransform<TraderData, string>(
-    (inboundState: TraderData, key: string): string => {
+const statisticsTransform = createTransform<StatisticsData, string>(
+    (inboundState: StatisticsData, key: string): string => {
         try {
             return inboundState.serialize();
         } catch (err) {
@@ -17,20 +17,20 @@ const traderTransform = createTransform<TraderData, string>(
             throw err;
         }
     },
-    (outboundState: string, key: string): TraderData => {
+    (outboundState: string, key: string): StatisticsData => {
         try {
-            return new TraderData().deserialize(outboundState);
+            return new StatisticsData().deserialize(outboundState);
         } catch (err) {
             console.error(`Error deserializing ${key} (${JSON.stringify(outboundState)}): ${err}`);
             throw err;
         }
     },
-    { whitelist: ["trader"] as Array<keyof ApplicationData>, },
+    { whitelist: ["statistics"] as Array<keyof ApplicationData>, },
 );
 
 export const persistConfig: PersistConfig = {
     storage,
     key: "root",
-    whitelist: ["trader"] as Array<keyof ApplicationData>,
-    transforms: [traderTransform],
+    whitelist: ["statistics"] as Array<keyof ApplicationData>,
+    transforms: [statisticsTransform],
 };
