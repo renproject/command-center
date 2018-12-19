@@ -73,7 +73,6 @@
 }
 
 .header--menu li {
-
     @media(min-width: $min-sm) {}
 }
 
@@ -95,7 +94,6 @@
     }
 
     position: relative;
-    cursor: pointer;
 }
 
 .header--menu .header--logout {
@@ -104,34 +102,78 @@
     }
 }
 
-.header--blocky {
-    width: 50px;
-}
-
 .header .blocky {
     height: 50px;
     border-radius: 25px;
 
     vertical-align: middle;
+
+    margin-right: 15px;
 }
 
 .header--dropdown {
-    background-color: $blue-dark;
+    // Add 20px to each side
+    width: calc(100% + 40px);
+    right: -20px;
+
+    background: #FAFAFA;
+    border: 1px solid #E1E1E1;
+
+    text-align: center;
+    border-radius: 2px;
     list-style: none;
-    width: 100%;
     padding: 0;
     position: absolute;
     top: 100%;
-    right: -1px;
     cursor: auto;
 }
 
+.header--dropdown:after,
+.header--dropdown:before {
+    bottom: 100%;
+    left: 50%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+}
+
+$arrow-size: 7px;
+
+.header--dropdown:after {
+    border-color: rgba(255, 255, 255, 0);
+    border-bottom-color: #ffffff;
+    border-width: $arrow-size;
+    margin-left: -$arrow-size;
+}
+
+.header--dropdown:before {
+    border-color: rgba(0, 0, 0, 0);
+    border-bottom-color: #E1E1E1;
+    border-width: $arrow-size + 2px;
+    margin-left: -($arrow-size + 2px);
+}
+
+
+
 .header--dropdown li {
-    padding: 9px 18px;
+    padding: 9px 12px;
     cursor: pointer;
-    font-weight: 400;
-    font-size: 14px;
-    text-align: left;
+
+    font-weight: 500;
+    line-height: normal;
+    font-size: 12px;
+    color: #58585B;
+}
+
+.header--dropdown li+li {
+    border-top: 1px solid #f0f0f0;
+}
+
+.header--dropdown .header--dropdown--highlight {
+    color: $blue-bright;
 }
 
 .header--account {
@@ -145,7 +187,6 @@
     text-align: left;
     justify-content: center;
     font-size: 12px;
-    margin-left: 15px;
     line-height: 20px;
 }
 
@@ -167,4 +208,17 @@
 
 .header--account--connected::before {
     background-color: #3CBC98;
+}
+
+.header--dropdown--currency {
+    text-align: left;
+
+    width: calc(100% + 80px);
+    right: -40px;
+
+    margin-top: -10px;
+
+    .svg-inline--fa {
+        margin-right: 5px;
+    }
 }

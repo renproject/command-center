@@ -120,7 +120,11 @@ $darknode-card-margin: 10px;
 }
 
 
-.background--darknode-list {
+// The outer div allows us to set "overflow: hidden;" so that only the first row
+// is shown
+.background--darknode-list--outer {
+    overflow: hidden;
+
     position: absolute;
     width: 100%;
     // Position half way down screen
@@ -132,8 +136,12 @@ $darknode-card-margin: 10px;
     mix-blend-mode: normal;
     opacity: 0.4;
 
-    margin: 0;
+    height: calc(100vh - calc(50% - calc(355px / 2)));
 
+    margin: 0;
+}
+
+.background--darknode-list {
     .darknode-card {
         cursor: initial;
         // Work around to prevent other rows from showing

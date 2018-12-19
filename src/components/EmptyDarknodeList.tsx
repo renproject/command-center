@@ -11,11 +11,13 @@ export class EmptyDarknodeList extends React.Component {
         </div>;
 
         return (
-            <div className="darknode-list background--darknode-list">
-                {emptyCard}
-                {emptyCard}
-                {emptyCard}
-                {emptyCard}
+            <div className="background--darknode-list--outer">
+                <div className="darknode-list background--darknode-list">
+                    {emptyCard}
+                    {emptyCard}
+                    {emptyCard}
+                    {emptyCard}
+                </div>
             </div>
         );
     }
