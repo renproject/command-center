@@ -37,6 +37,9 @@ export function statisticsReducer(state: StatisticsData = new StatisticsData(), 
             const details = action.payload.darknodeDetails;
             return state.set("darknodeDetails", state.darknodeDetails.set(details.ID, details));
 
+        case getType(operatorActions.setDarknodeName):
+            return state.set("darknodeNames", state.darknodeNames.set(action.payload.darknodeID, action.payload.name));
+
         default:
             return state;
     }

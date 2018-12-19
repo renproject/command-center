@@ -24,6 +24,7 @@ const toTitleCase = (title: string) => title.replace(
 interface DarknodeCardProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     darknodeID: string;
     darknodeDetails: DarknodeDetails | null;
+    name: string | undefined;
 }
 
 interface DarknodeCardState {
@@ -50,7 +51,7 @@ class DarknodeCardClass extends React.Component<DarknodeCardProps, DarknodeCardS
     }
 
     public render(): JSX.Element {
-        const { darknodeID, darknodeDetails, store } = this.props;
+        const { darknodeID, darknodeDetails, name, store } = this.props;
         const { quoteCurrency } = store;
 
         return (
@@ -61,7 +62,7 @@ class DarknodeCardClass extends React.Component<DarknodeCardProps, DarknodeCardS
 
                         <Blocky address={darknodeID} fgColor="#006FE8" bgColor="transparent" />
 
-                        <h3 className="darknode-card--name">{darknodeDetails ? darknodeDetails.name : <span className="monospace">{darknodeID.substring(0, 8)}...{darknodeID.slice(-5)}</span>}</h3>
+                        <h3 className="darknode-card--name">{name ? name : darknodeDetails && darknodeDetails.index !== undefined ? `Darknode ${darknodeDetails.index}` : <span className="monospace">{darknodeID.substring(0, 8)}...{darknodeID.slice(-5)}</span>}</h3>
                         <span className="darknode-card--status">{darknodeDetails ? statusText[darknodeDetails.registrationStatus] : ""}</span>
                     </div>
                     {darknodeDetails ?

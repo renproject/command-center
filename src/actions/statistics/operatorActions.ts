@@ -20,6 +20,8 @@ export const storeQuoteCurrency = createStandardAction("SORE_QUOTE_CURRENCY")<{ 
 
 export const setDarknodeDetails = createStandardAction("UPDATE_DARKNODE_DETAILS")<{ darknodeDetails: DarknodeDetails; }>();
 
+export const setDarknodeName = createStandardAction("UPDATE_DARKNODE_NAME")<{ darknodeID: string, name: string }>();
+
 export const updateOperatorStatistics = (sdk: RenExSDK, address: string, tokenPrices: TokenPrices, previousDarknodeDetails: Map<string, DarknodeDetails>) => async (dispatch: Dispatch) => {
 
     const darknodeList = await getOperatorDarknodes(sdk, address);
@@ -155,7 +157,7 @@ export const updateDarknodeStatistics = (sdk: RenExSDK, darknodeID: string, toke
 
     const darknodeDetails = new DarknodeDetails({
         ID: darknodeID,
-        name: (previousDetails && previousDetails.name) || `Darknode${index !== undefined ? ` ${index + 1}` : ""}`,
+        index: previousDetails && previousDetails.index !== undefined ? previousDetails.index : index,
         multiAddress: "" as string,
         publicKey: "" as string,
         ethBalance,

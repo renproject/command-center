@@ -29,7 +29,7 @@ class SidebarClass extends React.Component<SidebarProps> {
 
     public render(): JSX.Element {
         const { selectedDarknode, store } = this.props;
-        const { darknodeList, darknodeDetails, quoteCurrency } = store;
+        const { darknodeList, darknodeDetails, darknodeNames, quoteCurrency } = store;
 
         return (
             <nav className="sidebar">
@@ -48,6 +48,10 @@ class SidebarClass extends React.Component<SidebarProps> {
 
                     {darknodeList && darknodeList.map((darknodeID) => {
                         const details = darknodeDetails.get(darknodeID);
+                        const storedName = darknodeNames.get(darknodeID);
+                        const name = storedName ? storedName : details && details.index !== undefined ? `Darknode ${details.index}` : <span className="monospace">{darknodeID.substring(0, 8)}...{darknodeID.slice(-5)}</span>;
+
+
                         // tslint:disable-next-line:jsx-no-lambda FIXME
                         return <Link className="no-underline" key={darknodeID} to={`/darknode/${darknodeID}`}>
                             <li className={darknodeID === selectedDarknode ? "sidebar--active" : ""}>
@@ -55,9 +59,7 @@ class SidebarClass extends React.Component<SidebarProps> {
                                     <Blocky address={darknodeID} fgColor="#006FE8" bgColor="transparent" />
                                 </div>
                                 <div className="sidebar--text">
-                                    <div>
-                                        {details ? details.name : <span className="monospace">{darknodeID.substring(0, 8)}...{darknodeID.slice(-5)}</span>}
-                                    </div>
+                                    <div>{name}</div>
                                     <div className="sidebar--text--details">
                                         <div className="sidebar--text--rewards">
                                             {details ? <>
@@ -88,6 +90,7 @@ const mapStateToProps = (state: ApplicationData) => ({
     store: {
         darknodeList: state.trader.address ? state.statistics.darknodeList.get(state.trader.address) : null,
         darknodeDetails: state.statistics.darknodeDetails,
+        darknodeNames: state.statistics.darknodeNames,
         quoteCurrency: state.statistics.quoteCurrency,
     },
 });

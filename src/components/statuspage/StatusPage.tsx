@@ -17,10 +17,12 @@ import { Registration } from "./Registration";
 
 interface StatusPageProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     action: DarknodeAction;
-    publicKey: string | undefined;
+    operator: boolean;
+
     darknodeID: string;
     darknodeDetails: DarknodeDetails | null;
-    operator: boolean;
+    name: string | undefined;
+    publicKey: string | undefined;
 }
 
 interface StatusPageState {
@@ -45,7 +47,7 @@ class StatusPageClass extends React.Component<StatusPageProps, StatusPageState> 
     }
 
     public render(): JSX.Element {
-        const { darknodeDetails, darknodeID, operator, action, publicKey } = this.props;
+        const { darknodeDetails, darknodeID, name, operator, action, publicKey } = this.props;
 
         return (
             <div className={`statuspage ${action !== DarknodeAction.View ? `statuspage--focused` : ``}`}>
@@ -53,7 +55,7 @@ class StatusPageClass extends React.Component<StatusPageProps, StatusPageState> 
                     <Blocky address={darknodeID} fgColor="#006FE8" bgColor="transparent" />
                     <div className="statuspage--banner--details">
                         <div className="statuspage--banner--top">
-                            <h3>{darknodeDetails ? darknodeDetails.name : <span className="monospace">{darknodeID.substring(0, 8)}...{darknodeID.slice(-5)}</span>}</h3>
+                            <h3>{name ? name : darknodeDetails && darknodeDetails.index !== undefined ? `Darknode ${darknodeDetails.index}` : <span className="monospace">{darknodeID.substring(0, 8)}...{darknodeID.slice(-5)}</span>}</h3>
                             {operator ? <button>Edit name</button> : null}
                             <button>View details</button>
                         </div>

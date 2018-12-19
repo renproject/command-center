@@ -12,6 +12,7 @@ import { Loading } from "./Loading";
 interface DarknodeListProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     darknodeList: List<string> | null;
     darknodeDetails: Map<string, DarknodeDetails>;
+    darknodeNames: Map<string, string>;
 }
 
 class DarknodeListClass extends React.Component<DarknodeListProps> {
@@ -20,14 +21,16 @@ class DarknodeListClass extends React.Component<DarknodeListProps> {
     }
 
     public render(): JSX.Element {
-        const { darknodeList, darknodeDetails } = this.props;
+        const { darknodeList, darknodeDetails, darknodeNames } = this.props;
 
         return (
             <div className="darknode-list">
                 {darknodeList === null ? <div className="darknode-list--loading"><Loading alt={true} /></div> : <>
                     {darknodeList && darknodeList.map((darknodeID) => {
-                        const details = darknodeDetails ? darknodeDetails.get(darknodeID) || null : null;
-                        return <DarknodeCard key={darknodeID} darknodeID={darknodeID} darknodeDetails={details} />;
+                        const details = darknodeDetails.get(darknodeID) || null;
+                        const name = darknodeNames.get(darknodeID);
+
+                        return <DarknodeCard key={darknodeID} name={name} darknodeID={darknodeID} darknodeDetails={details} />;
                     }).toArray()}
                     {darknodeList.size === 0 ? <>
                     </> : null}
