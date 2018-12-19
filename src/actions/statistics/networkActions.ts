@@ -7,22 +7,16 @@ import { createStandardAction } from "typesafe-actions";
 import { getPrices } from "@Library/tokens";
 import { TokenPrices } from "@Reducers/types";
 
-interface StoreTokenPricesPayload { tokenPrices: TokenPrices; }
-export type StoreTokenPricesAction = (payload: StoreTokenPricesPayload) => void;
-export const storeTokenPrices = createStandardAction("STORE_TOKEN_PRICES")<StoreTokenPricesPayload>();
+export const storeTokenPrices = createStandardAction("STORE_TOKEN_PRICES")<{ tokenPrices: TokenPrices; }>();
 
-interface StoreMinimumBondPayload { minimumBond: BigNumber; }
-export type StoreMinimumBondAction = (payload: StoreMinimumBondPayload) => void;
-export const storeMinimumBond = createStandardAction("STORE_MINIMUM_BOND")<StoreMinimumBondPayload>();
+export const storeMinimumBond = createStandardAction("STORE_MINIMUM_BOND")<{ minimumBond: BigNumber; }>();
 
-export type UpdateNetworkStatisticsAction = (sdk: RenExSDK) => (dispatch: Dispatch) => Promise<void>;
-export const updateNetworkStatistics: UpdateNetworkStatisticsAction = (sdk) => async (dispatch) => {
+export const updateNetworkStatistics = (sdk: RenExSDK) => async (dispatch: Dispatch) => {
     const minimumBond = new BigNumber(await sdk._contracts.darknodeRegistry.minimumBond());
     dispatch(storeMinimumBond({ minimumBond }));
 };
 
-export type UpdateTokenPricesAction = () => (dispatch: Dispatch) => Promise<void>;
-export const updateTokenPrices: UpdateTokenPricesAction = () => async (dispatch) => {
+export const updateTokenPrices = () => async (dispatch: Dispatch) => {
     const tokenPrices = await getPrices();
     dispatch(storeTokenPrices({ tokenPrices }));
 };
