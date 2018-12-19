@@ -82,6 +82,7 @@ export class StatisticsData extends Record({
     orderCount: null as BigNumber | null,
 
     darknodeDetails: Map<string, DarknodeDetails>(),
+    darknodeNames: Map<string, string>(),
     darknodeList: Map<string, List<string>>(),
 }) implements Serializable<StatisticsData> {
     public serialize(): string {
@@ -95,6 +96,7 @@ export class StatisticsData extends Record({
             // next = next.set("address", data.address);
             return new StatisticsData({
                 darknodeList: data.darknodeList,
+                darknodeNames: data.darknodeNames,
             });
         } catch (err) {
             console.error(err);
@@ -107,7 +109,7 @@ export class StatisticsData extends Record({
 
 export class DarknodeDetails extends Record({
     ID: "",
-    name: "Darknode",
+    index: undefined as number | undefined,
     multiAddress: "",
     publicKey: "",
     ethBalance: new BigNumber(0),

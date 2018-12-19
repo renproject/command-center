@@ -30,13 +30,13 @@ class HomeClass extends React.Component<HomeProps, HomeState> {
     }
 
     public render(): JSX.Element {
-        const { darknodeDetails, darknodeList } = this.props.store;
+        const { darknodeDetails, darknodeNames, darknodeList } = this.props.store;
 
         return (
             <div className="home">
                 <Header />
                 <div className="container">
-                    <DarknodeList darknodeDetails={darknodeDetails} darknodeList={darknodeList} />
+                    <DarknodeList darknodeDetails={darknodeDetails} darknodeNames={darknodeNames} darknodeList={darknodeList} />
                 </div>
             </div>
         );
@@ -47,6 +47,7 @@ const mapStateToProps = (state: ApplicationData) => ({
     store: {
         address: state.trader.address,
         darknodeDetails: state.statistics.darknodeDetails,
+        darknodeNames: state.statistics.darknodeNames,
         darknodeList: state.trader.address ? state.statistics.darknodeList.get(state.trader.address, null) : null,
         sdk: state.trader.sdk,
     },

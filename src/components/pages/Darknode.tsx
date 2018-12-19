@@ -42,12 +42,13 @@ class DarknodeClass extends React.Component<DarknodeProps, DarknodeState> {
 
     public render(): JSX.Element {
         const { match: { params }, store } = this.props;
-        const { sdk, darknodeDetails, address } = store;
+        const { sdk, darknodeDetails, darknodeNames, address } = store;
         // tslint:disable-next-line:no-any
         let { darknodeID } = params as { darknodeID: string | undefined, action: string | undefined };
         darknodeID = darknodeID && sdk.getWeb3().utils.toChecksumAddress(darknodeID.toLowerCase());
 
         const details = darknodeID ? darknodeDetails.get(darknodeID, null) : null;
+        const name = darknodeID ? darknodeNames.get(darknodeID) : undefined;
 
         const readOnly = !details || !address || details.operator !== address;
 
@@ -70,7 +71,7 @@ class DarknodeClass extends React.Component<DarknodeProps, DarknodeState> {
                 <Header />
                 <div className="container">
                     {darknodeID ?
-                        <StatusPage action={darknodeAction} publicKey={publicKey} darknodeID={darknodeID} operator={!readOnly} darknodeDetails={details} /> :
+                        <StatusPage action={darknodeAction} publicKey={publicKey} name={name} darknodeID={darknodeID} operator={!readOnly} darknodeDetails={details} /> :
                         <div>Darknode not found</div>
                     }
                 </div>
@@ -83,6 +84,7 @@ const mapStateToProps = (state: ApplicationData) => ({
     store: {
         address: state.trader.address,
         darknodeDetails: state.statistics.darknodeDetails,
+        darknodeNames: state.statistics.darknodeNames,
         darknodeList: state.trader.address ? state.statistics.darknodeList.get(state.trader.address, null) : null,
         sdk: state.trader.sdk,
     },
