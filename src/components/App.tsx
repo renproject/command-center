@@ -178,7 +178,7 @@ class AppClass extends React.Component<AppProps, AppState> {
         let timeout = 1;
         if (address) {
             try {
-                await props.actions.updateOperatorStatistics(sdk);
+                await props.actions.updateOperatorStatistics(sdk, address);
                 timeout = 60;
             } catch (err) {
                 console.error(err);
@@ -253,7 +253,7 @@ const mapStateToProps = (state: ApplicationData) => ({
         sdk: state.trader.sdk,
         readOnlyProvider: state.trader.readOnlyProvider,
         tokenPrices: state.statistics.tokenPrices,
-        darknodeList: state.statistics.darknodeList,
+        darknodeList: state.trader.address ? state.statistics.darknodeList.get(state.trader.address, null) : null,
         darknodeDetails: state.statistics.darknodeDetails,
     },
 });

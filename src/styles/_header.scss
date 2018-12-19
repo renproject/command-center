@@ -87,10 +87,13 @@
 .header--menu .header--group {
     display: flex;
     justify-content: center;
-    flex-direction: column;
 
     @media(min-width: $min-sm) {
         display: flex;
+    }
+
+    >.svg-inline--fa {
+        margin-left: 10px;
     }
 
     position: relative;
@@ -112,10 +115,6 @@
 }
 
 .header--dropdown {
-    // Add 20px to each side
-    width: calc(100% + 40px);
-    right: -20px;
-
     background: #FAFAFA;
     border: 1px solid #E1E1E1;
 
@@ -126,6 +125,12 @@
     position: absolute;
     top: 100%;
     cursor: auto;
+}
+
+.header--dropdown--login {
+    // Add 20px to each side
+    width: calc(100% + 40px);
+    right: -20px;
 }
 
 .header--dropdown:after,
@@ -159,7 +164,7 @@ $arrow-size: 7px;
 
 
 .header--dropdown li {
-    padding: 9px 12px;
+    padding: 9px 20px;
     cursor: pointer;
 
     font-weight: 500;
@@ -210,15 +215,27 @@ $arrow-size: 7px;
     background-color: #3CBC98;
 }
 
-.header--dropdown--currency {
+.header--dropdown--options {
     text-align: left;
-
-    width: calc(100% + 80px);
-    right: -40px;
-
     margin-top: -10px;
+
+    // Add 10px to each side
+    width: calc(100% + 20px);
+    right: -10px;
 
     .svg-inline--fa {
         margin-right: 5px;
     }
+}
+
+.header--dropdown--currency {
+    @extend .header--dropdown--options;
+
+    // Add 60px to each side
+    width: calc(100% + 120px);
+    right: -60px;
+}
+
+li.header--dropdown--selected {
+    font-weight: 900;
 }

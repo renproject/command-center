@@ -9,7 +9,7 @@ import { createStandardAction } from "typesafe-actions";
 import { history } from "@Library/history";
 
 import { clearPopup, setPopup } from "@Actions/popup/popupActions";
-import { clearDarknodeList, updateOperatorStatistics } from "@Actions/statistics/operatorActions";
+import { updateOperatorStatistics } from "@Actions/statistics/operatorActions";
 import { LoggedOut } from "@Components/popups/LoggedOut";
 import { NoWeb3Popup } from "@Components/popups/NoWeb3Popup";
 import { getInjectedWeb3Provider } from "@Library/wallets/web3browser";
@@ -130,7 +130,7 @@ export const login: LoginAction = (sdk, options) => async (dispatch) => {
 
     dispatch(storeWeb3BrowserName(web3BrowserName));
 
-    updateOperatorStatistics(sdk)(dispatch)
+    updateOperatorStatistics(sdk, address)(dispatch)
         .catch(console.error);
 
     if (options.redirect) {
@@ -149,9 +149,6 @@ export const logout: LogoutAction = (sdk, readOnlyProvider, options) => async (d
     // Use read-only provider and clear address
     sdk.updateProvider(readOnlyProvider);
     sdk.setAddress("");
-
-    // Clear darknodes
-    dispatch(clearDarknodeList());
 
     if (options.reload) {
         // history.push("/#/loading");

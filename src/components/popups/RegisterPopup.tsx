@@ -4,7 +4,6 @@ import BigNumber from "bignumber.js";
 
 import { bindActionCreators, Dispatch } from "redux";
 
-// import { SetPopupPayload } from "@Actions/popup/popupActions";
 import { clearPopup } from "@Actions/popup/popupActions";
 import { updateDarknodeStatistics } from "@Actions/statistics/operatorActions";
 import { approveNode, registerNode } from "@Actions/trader/darknode";
@@ -181,10 +180,3 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
 });
 
 export const RegisterPopup = connect(mapStateToProps, mapDispatchToProps)(RegisterPopupClass);
-
-
-// export const newRegisterPopup = (onCancelAction: () => void): SetPopupPayload => ({
-//     popup: <RegisterPopup cancel={onCancelAction} />,
-//     dismissible: false,
-//     onCancel: onCancelAction,
-// });

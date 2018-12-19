@@ -32,25 +32,7 @@ export class TraderData extends Record({
     web3BrowserName: "MetaMask",
     readOnlyProvider,
     sdk: new RenExSDK(readOnlyProvider, { network: "testnet" }),
-}) implements Serializable<TraderData> {
-    public serialize(): string {
-        return JSON.stringify({
-            // address: this.address,
-        });
-    }
-
-    public deserialize(str: string): TraderData {
-        const next = this;
-        try {
-            // const data = JSON.parse(str);
-            // next = next.set("address", data.address);
-        } catch (err) {
-            console.error(err);
-            Sentry.captureException(`cannot deserialize local storage: ${err}`);
-        }
-        return next;
-    }
-}
+}) { }
 
 export type Settlements = OrderedMap<OrderSettlement, boolean>;
 
@@ -100,8 +82,27 @@ export class StatisticsData extends Record({
     orderCount: null as BigNumber | null,
 
     darknodeDetails: Map<string, DarknodeDetails>(),
-    darknodeList: null as List<string> | null,
-}) { }
+    darknodeList: Map<string, List<string>>(),
+}) implements Serializable<StatisticsData> {
+    public serialize(): string {
+        return JSON.stringify(this.toJS());
+    }
+
+    public deserialize(str: string): StatisticsData {
+        // let next = this;
+        try {
+            const data = JSON.parse(str);
+            // next = next.set("address", data.address);
+            return new StatisticsData({
+                darknodeList: data.darknodeList,
+            });
+        } catch (err) {
+            console.error(err);
+            Sentry.captureException(`cannot deserialize local storage: ${err}`);
+            return this;
+        }
+    }
+}
 
 
 export class DarknodeDetails extends Record({

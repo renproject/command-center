@@ -154,3 +154,14 @@ $darknode-card-margin: 10px;
         background-color: #031830;
     }
 }
+
+.darknode-list--loading {
+    height: 100vh;
+    width: 100vw;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

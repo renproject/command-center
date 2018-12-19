@@ -24,21 +24,14 @@ class DarknodeListClass extends React.Component<DarknodeListProps> {
 
         return (
             <div className="darknode-list">
-                {
-                    darknodeList === null ?
-                        <>
-                            <Loading />
-                        </>
-                        :
-                        <>
-                            {darknodeList && darknodeList.map((darknodeID) => {
-                                const details = darknodeDetails ? darknodeDetails.get(darknodeID) || null : null;
-                                return <DarknodeCard key={darknodeID} darknodeID={darknodeID} darknodeDetails={details} />;
-                            }).toArray()}
-                            {darknodeList.size === 0 ? <>
-                            </> : null}
-                        </>
-                }
+                {darknodeList === null ? <div className="darknode-list--loading"><Loading alt={true} /></div> : <>
+                    {darknodeList && darknodeList.map((darknodeID) => {
+                        const details = darknodeDetails ? darknodeDetails.get(darknodeID) || null : null;
+                        return <DarknodeCard key={darknodeID} darknodeID={darknodeID} darknodeDetails={details} />;
+                    }).toArray()}
+                    {darknodeList.size === 0 ? <>
+                    </> : null}
+                </>}
             </div>
         );
     }

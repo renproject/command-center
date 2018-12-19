@@ -18,7 +18,7 @@ async function getAllDarknodes(sdk: RenExSDK): Promise<string[]> {
     return allDarknodes;
 }
 
-export const getOperatorDarknodes = async (sdk: RenExSDK): Promise<List<string>> => {
+export const getOperatorDarknodes = async (sdk: RenExSDK, address: string): Promise<List<string>> => {
 
     // Currently, the LogDarknodeRegistered logs don't include the registrar, so
     // instead we loop through every darknode and get it's owner
@@ -41,7 +41,7 @@ export const getOperatorDarknodes = async (sdk: RenExSDK): Promise<List<string>>
     let operatorDarknodes = List<string>();
 
     for (let i = 0; i < darknodes.length; i++) {
-        if (await operatorPromises[i] === sdk.getAddress()) {
+        if (await operatorPromises[i] === address) {
             operatorDarknodes = operatorDarknodes.push(darknodes[i]);
         }
     }
