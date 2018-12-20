@@ -48,21 +48,9 @@
     margin-top: 10px;
 }
 
-.popup--buttons {
-    margin-top: 15px;
-}
-
 .popup.open,
 .popup.kyc {
     min-width: 300px;
-}
-
-.popup--buttons>*+* {
-    margin-left: 15px;
-}
-
-.popup .popup--buttons+p {
-    margin-top: 15px;
 }
 
 .popup.accounts h2 {
@@ -96,34 +84,6 @@
     padding-left: 20px;
     font-size: 15px;
     float: left;
-}
-
-.popup.approve .approve--tick {
-    font-size: 16px;
-    color: $green;
-    margin-left: 5px;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-.popup {
-    .approve--loading {
-        margin-top: 15px;
-    }
-
-    .approve--close {
-        margin-top: 15px;
-    }
-
-    .atom--error {
-        margin-top: 10px;
-        color: $red;
-    }
-
-    .atom--success {
-        color: green;
-    }
 }
 
 .popup.atom button {
@@ -242,13 +202,6 @@ $noWeb3Padding: 30px;
 
 
 
-.approve--list {
-    list-style: none;
-    width: 200px;
-    margin: 15px auto;
-    padding: 0;
-}
-
 p.popup--error {
     margin: 15px auto;
     border: 1px solid $red;
@@ -257,36 +210,63 @@ p.popup--error {
     font-weight: 500;
 }
 
-.approve--list li {
+.popup--blur {
+    filter: blur(2px);
+}
+
+
+
+// Multi Step
+
+.multi-step {
+    padding: 0;
+
+    >* {
+        padding: 30px;
+    }
+}
+
+.multi-step--list {
+    list-style: none;
+    width: 200px;
+    margin: 15px auto;
+    padding: 0;
+}
+
+.multi-step--list li {
     position: relative;
 }
 
-.approve--list li+li {
+.multi-step--list li+li {
     margin-top: 5px;
 }
 
-.approve--list span.active {
+.multi-step--list span.active {
     font-weight: 500;
 }
 
-.approve--tick {
-    font-size: 16px;
-    color: $green;
-    margin-left: 5px;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
+.multi-step h2 {
+    font-weight: bold;
+    font-size: 24px;
+
+    color: #3F3F41;
 }
 
-.approve--cross {
-    font-size: 16px;
-    color: $red;
-    margin-left: 5px;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
+
+.multi-step--buttons {
+    background: #F5F5F5;
+
+    // TODO: Why isn't there already a border radius?
+    border-bottom-left-radius: 2px;
+    border-bottom-right-radius: 2px;
+
+    button {
+        border-radius: 2px;
+        font-size: 18px;
+        font-weight: bold;
+    }
 }
 
-.popup--blur {
-    filter: blur(2px);
+.popup .multi-step--buttons+p {
+    margin-top: 15px;
 }

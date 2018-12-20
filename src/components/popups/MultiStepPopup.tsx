@@ -27,6 +27,7 @@ interface MultiStepPopupState {
     currentStep: number;
     running: boolean;
     complete: boolean;
+    rejected: boolean;
 
     error: Error | null;
     bond: BigNumber | null;
@@ -43,6 +44,7 @@ export class MultiStepPopupClass extends React.Component<MultiStepPopupProps, Mu
         this.state = {
             running: false,
             complete: false,
+            rejected: false,
             currentStep: 0,
             error: null,
             bond: null,
@@ -56,26 +58,35 @@ export class MultiStepPopupClass extends React.Component<MultiStepPopupProps, Mu
     }
 
     public render(): JSX.Element {
-        const { error, currentStep, running, complete } = this.state;
+        const { error, currentStep, running, complete, rejected } = this.state;
 
-        return <div className="popup approve">
-            <h2>{complete ? "Transactions submitted" : this.props.title}</h2>
+        const notStarted = !running && !complete && !error;
 
-            {this.props.steps.length > 1 ? <ul className="approve--list">
-                {
-                    this.props.steps.map((step, index: number) => {
-                        const checked = (currentStep > index) || (currentStep === index && !!error);
-                        return <li key={index}>
-                            <input className={`checkbox ${currentStep === index && error ? "checkbox--error" : ""}`} type="checkbox" value="None" id="slideThree" name="check" checked={checked} />
-                            <span className={index === currentStep ? "active" : ""}>Step {index + 1}: {step.name}</span>
-                        </li>;
-                    })
-                }
-            </ul> : null}
+        const transactionS = this.props.steps.length === 1 ? "Transaction" : "Transaction";
 
-            {this.renderError(error)}
+        return <div className="popup multi-step">
 
-            <div className="popup--buttons" >
+            <div className="multi-step--top">
+
+                <h2 className={rejected ? "red" : ""}>{rejected ? `${transactionS} rejected` : complete ? `${transactionS} submitted` : this.props.title}</h2>
+
+                {!notStarted && this.props.steps.length > 1 ? <ul className="multi-step--list">
+                    {
+                        this.props.steps.map((step, index: number) => {
+                            const checked = (currentStep > index) || (currentStep === index && !!error);
+                            return <li key={index}>
+                                <input className={`checkbox ${currentStep === index && error ? "checkbox--error" : ""}`} type="checkbox" value="None" id="slideThree" name="check" checked={checked} />
+                                <span className={index === currentStep ? "active" : ""}>Step {index + 1}: {step.name}</span>
+                            </li>;
+                        })
+                    }
+                </ul> : null}
+
+                {!rejected && error ? <p className="popup--error red">Unable to complete transaction: {error.message}</p> : null}
+
+            </div>
+
+            <div className="multi-step--buttons" >
                 {running ?
                     <button className="styled-button styled-button--light" disabled={true}><Loading /></button> :
                     complete ?
@@ -118,20 +129,8 @@ export class MultiStepPopupClass extends React.Component<MultiStepPopupProps, Mu
         this.props.actions.clearPopup();
     }
 
-    private renderError = (error: Error | null) => {
-        if (!error) {
-            return <></>;
-        }
-
-        if (error.message === ErrorCanceledByUser) {
-            return <p>Transaction canceled</p>;
-        }
-
-        return <p className="popup--error red">Unable to complete transaction: {error.message}</p>;
-    }
-
     private run = async () => {
-        this.setState({ error: null, running: true });
+        this.setState({ error: null, running: true, rejected: false });
 
         let { currentStep } = this.state;
         const { steps } = this.props;
@@ -139,8 +138,8 @@ export class MultiStepPopupClass extends React.Component<MultiStepPopupProps, Mu
             try {
                 await steps[currentStep].call();
             } catch (error) {
-                console.error(error);
-                this.setState({ error, running: false });
+                const rejected = error.message === ErrorCanceledByUser;
+                this.setState({ error, running: false, rejected });
                 return;
             }
             currentStep += 1;

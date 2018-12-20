@@ -109,7 +109,9 @@ class AppClass extends React.Component<AppProps, AppState> {
         let { darknodeID } = params as { darknodeID: string };
         darknodeID = darknodeID && sdk.getWeb3().utils.toChecksumAddress(darknodeID.toLowerCase());
 
-        return <div className="app">
+        // We set the key to be the address so that any sub-component state is reset after changing accounts (e.g. if in
+        // the middle of a transaction, etc.)
+        return <div className="app" key={address || undefined}>
             <ScrollToTop />
             <PopupController>
                 {address ? <Sidebar selectedDarknode={darknodeID} /> : null}
