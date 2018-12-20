@@ -68,6 +68,12 @@ $full-width: 360px;
     border-left: 4px solid $blue-bright;
 }
 
+.sidebar li.sidebar--faded {
+    >* {
+        opacity: 0.4;
+    }
+}
+
 .sidebar--icon {
     width: $collapsed-width - 4px * 2;
     margin-right: 4px;

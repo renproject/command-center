@@ -67,7 +67,7 @@ class GasBlockClass extends React.Component<GasBlockProps, GasBlockState> {
                                 <span className="gas-block--advanced--unit">ETH</span>
                             </div>
                             <div className="block--advanced--bottom">
-                                <Topup darknodeID={darknodeDetails.ID} darknodeDetails={darknodeDetails} />
+                                <Topup darknodeID={darknodeDetails.ID} />
                             </div>
                         </div>
                     }

@@ -19,16 +19,27 @@ export function statisticsReducer(state: StatisticsData = new StatisticsData(), 
 
         case getType(operatorActions.storeDarknodeList):
             let newList = state.darknodeList.get(action.payload.address) || List();
+            let newNames = state.darknodeNames;
 
             // Add to list if it's not already in there (this is an inefficient
             // process but it's only run on a small number of strings every two minutes)
             action.payload.darknodeList.map((darknodeID) => {
                 if (!newList.contains(darknodeID)) {
                     newList = newList.push(darknodeID);
+
+                    // if (!newNames.has(darknodeID)) {
+                    //     newNames = newNames.set(darknodeID, `Darknode ${newList.indexOf(darknodeID) + 1}`);
+                    // }
                 }
             });
 
-            return state.set("darknodeList", state.darknodeList.set(action.payload.address, newList));
+            newList.map((darknodeID) => {
+                newNames = newNames.set(darknodeID, `Darknode ${newList.indexOf(darknodeID) + 1}`);
+            });
+
+            return state
+                .set("darknodeList", state.darknodeList.set(action.payload.address, newList))
+                .set("darknodeNames", newNames);
 
         case getType(operatorActions.storeQuoteCurrency):
             return state.set("quoteCurrency", action.payload.quoteCurrency);

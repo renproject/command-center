@@ -55,7 +55,7 @@ class StatusPageClass extends React.Component<StatusPageProps, StatusPageState> 
                     <Blocky address={darknodeID} fgColor="#006FE8" bgColor="transparent" />
                     <div className="statuspage--banner--details">
                         <div className="statuspage--banner--top">
-                            <h3>{name ? name : darknodeDetails && darknodeDetails.index !== undefined ? `Darknode ${darknodeDetails.index + 1}` : <span className="monospace">{darknodeID.substring(0, 8)}...{darknodeID.slice(-5)}</span>}</h3>
+                            <h3>{name ? name : <span className="monospace">{darknodeID.substring(0, 8)}...{darknodeID.slice(-5)}</span>}</h3>
                             {operator ? <button>Edit name</button> : null}
                             <button>View details</button>
                         </div>

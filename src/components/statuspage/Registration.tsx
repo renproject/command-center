@@ -21,7 +21,7 @@ interface RegistrationState {
 
 export const statusText = {
     [RegistrationStatus.Unknown]: "Loading...",
-    [RegistrationStatus.Unregistered]: "Unregistered",
+    [RegistrationStatus.Unregistered]: "Deregistered",
     [RegistrationStatus.RegistrationPending]: "Registration pending",
     [RegistrationStatus.Registered]: "Registered",
     [RegistrationStatus.DeregistrationPending]: "Deregistration pending",
@@ -116,13 +116,10 @@ class RegistrationClass extends React.Component<RegistrationProps, RegistrationS
 
     private onDone = async () => {
         const { darknodeID } = this.props;
-        const { sdk, tokenPrices, darknodeDetails } = this.props.store;
+        const { sdk, tokenPrices } = this.props.store;
 
         try {
-            const details = darknodeDetails.get(darknodeID);
-            if (details) {
-                await this.props.actions.updateDarknodeStatistics(sdk, darknodeID, tokenPrices, details);
-            }
+            await this.props.actions.updateDarknodeStatistics(sdk, darknodeID, tokenPrices);
             this.setState({ active: false });
         } catch (error) {
             // Ignore error
@@ -132,7 +129,7 @@ class RegistrationClass extends React.Component<RegistrationProps, RegistrationS
 
     private handleRegister = async (): Promise<void> => {
         const { darknodeID, publicKey } = this.props;
-        const { sdk, address, minimumBond, tokenPrices, darknodeDetails } = this.props.store;
+        const { sdk, address, minimumBond, tokenPrices } = this.props.store;
 
         if (!publicKey || !address || !minimumBond || !tokenPrices) {
             return; // FIXME
@@ -140,7 +137,7 @@ class RegistrationClass extends React.Component<RegistrationProps, RegistrationS
 
         this.setState({ active: true });
         this.props.actions.showRegisterPopup(
-            sdk, address, darknodeID, publicKey, minimumBond, tokenPrices, darknodeDetails, this.onCancel, this.onDone
+            sdk, address, darknodeID, publicKey, minimumBond, tokenPrices, this.onCancel, this.onDone
         );
     }
 
@@ -177,7 +174,6 @@ const mapStateToProps = (state: ApplicationData) => ({
         sdk: state.trader.sdk,
         minimumBond: state.statistics.minimumBond,
         tokenPrices: state.statistics.tokenPrices,
-        darknodeDetails: state.statistics.darknodeDetails,
     },
 });
 

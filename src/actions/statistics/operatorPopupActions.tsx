@@ -12,7 +12,7 @@ import { MultiStepPopup } from "@Components/popups/MultiStepPopup";
 import { DarknodeDetails, TokenPrices } from "@Reducers/types";
 import { updateDarknodeStatistics } from "./operatorActions";
 
-export const showRegisterPopup = (sdk: RenExSDK, address: string, darknodeID: string, publicKey: string, minimumBond: BigNumber, tokenPrices: TokenPrices, darknodeDetails: Map<string, DarknodeDetails>, onCancel: () => void, onDone: () => void) => async (dispatch: Dispatch) => {
+export const showRegisterPopup = (sdk: RenExSDK, address: string, darknodeID: string, publicKey: string, minimumBond: BigNumber, tokenPrices: TokenPrices, onCancel: () => void, onDone: () => void) => async (dispatch: Dispatch) => {
 
     const step1 = async () => {
         await approveNode(sdk, address, minimumBond)(dispatch);
@@ -23,8 +23,7 @@ export const showRegisterPopup = (sdk: RenExSDK, address: string, darknodeID: st
 
         if (tokenPrices) {
             try {
-                const details = darknodeDetails.get(darknodeID);
-                await updateDarknodeStatistics(sdk, darknodeID, tokenPrices, details)(dispatch);
+                await updateDarknodeStatistics(sdk, darknodeID, tokenPrices)(dispatch);
             } catch (error) {
                 console.error(error);
             }

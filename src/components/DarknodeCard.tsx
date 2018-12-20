@@ -5,6 +5,7 @@ import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { bindActionCreators, Dispatch } from "redux";
 
+import { RegistrationStatus } from "@Actions/statistics/operatorActions";
 import { Blocky } from "@Components/Blocky";
 import { faStar } from "@fortawesome/free-regular-svg-icons";
 import { faFire } from "@fortawesome/free-solid-svg-icons";
@@ -50,13 +51,13 @@ class DarknodeCardClass extends React.Component<DarknodeCardProps, DarknodeCardS
 
         return (
             <Link className="no-underline" to={`/darknode/${darknodeID}`}>
-                <div className="darknode-card">
+                <div className={`darknode-card ${darknodeDetails && darknodeDetails.registrationStatus === RegistrationStatus.Unregistered ? "darknode-card--faded" : ""}`}>
                     <div className="darknode-card--top" />
                     <div className="darknode-card--middle">
 
                         <Blocky address={darknodeID} fgColor="#006FE8" bgColor="transparent" />
 
-                        <h3 className="darknode-card--name">{name ? name : darknodeDetails && darknodeDetails.index !== undefined ? `Darknode ${darknodeDetails.index + 1}` : <span className="monospace">{darknodeID.substring(0, 8)}...{darknodeID.slice(-5)}</span>}</h3>
+                        <h3 className="darknode-card--name">{name ? name : <span className="monospace">{darknodeID.substring(0, 8)}...{darknodeID.slice(-5)}</span>}</h3>
                         <span className="darknode-card--status">{darknodeDetails ? statusText[darknodeDetails.registrationStatus] : ""}</span>
                     </div>
                     {darknodeDetails ?
