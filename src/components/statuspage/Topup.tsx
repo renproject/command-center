@@ -1,14 +1,15 @@
 import * as React from "react";
 
-import { ApplicationData } from "@Reducers/types";
+import { updateDarknodeStatistics } from "@Actions/statistics/operatorActions";
+import { showFundPopup } from "@Actions/statistics/operatorPopupActions";
+import { ApplicationData, DarknodeDetails } from "@Reducers/types";
 import { BigNumber } from "bignumber.js";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { fundNode } from "@Actions/trader/darknode";
-
 interface TopupProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
-    darknodeAddress: string;
+    darknodeID: string;
+    darknodeDetails: DarknodeDetails;
 }
 
 interface TopupState {
@@ -19,7 +20,7 @@ interface TopupState {
     traderBalance: BigNumber;
 }
 
-const CONFIRMATION_MESSAGE = "Transaction confirmed, your balances will be updated shortly.";
+const CONFIRMATION_MESSAGE = "Transaction confirmed.";
 
 class TopupClass extends React.Component<TopupProps, TopupState> {
     constructor(props: TopupProps) {
@@ -44,13 +45,12 @@ class TopupClass extends React.Component<TopupProps, TopupState> {
                 <label>
                     <div className="topup--title">Enter the amount of Ether you would like to deposit</div>
                     <span className="topup--input">
-                        <input type="number" value={value} min={0} onChange={this.handleChange} onBlur={this.handleBlur} />
-                        {!pending ?
+                        <input disabled={pending} type="number" value={value} min={0} onChange={this.handleChange} onBlur={this.handleBlur} />
+                        {pending ?
+                            <button disabled>Depositing...</button> :
                             <button className="hover green" onClick={this.sendFunds} disabled={disabled}>
                                 <span>Deposit</span>
                             </button>
-                            :
-                            <button disabled>Depositing...</button>
                         }
                     </span>
                 </label>
@@ -101,7 +101,7 @@ class TopupClass extends React.Component<TopupProps, TopupState> {
     }
 
     private sendFunds = async (): Promise<void> => {
-        const { darknodeAddress, store: { address, sdk } } = this.props;
+        const { darknodeID, darknodeDetails, store: { address, sdk, tokenPrices } } = this.props;
         const { value } = this.state;
 
         this.setState({ resultMessage: "", pending: true });
@@ -111,13 +111,26 @@ class TopupClass extends React.Component<TopupProps, TopupState> {
             return;
         }
 
-        try {
-            await this.props.actions.fundNode(sdk, address, darknodeAddress, value);
-            this.setState({ value: "0", resultMessage: CONFIRMATION_MESSAGE, pending: false });
-        } catch (error) {
-            console.error(error);
-            this.setState({ resultMessage: `Transaction error: ${error.message || error.toString()}`, pending: false });
-        }
+
+        const onCancel = () => {
+            try {
+                this.setState({ pending: false });
+            } catch (error) {
+                // Ignore error
+            }
+        };
+
+        const onDone = async () => {
+            try {
+                await this.props.actions.updateDarknodeStatistics(sdk, darknodeID, tokenPrices, darknodeDetails);
+
+                this.setState({ value: "0", resultMessage: CONFIRMATION_MESSAGE, pending: false });
+            } catch (error) {
+                // Ignore error
+            }
+        };
+
+        await this.props.actions.showFundPopup(sdk, address, darknodeID, value, onCancel, onDone);
     }
 }
 
@@ -125,12 +138,14 @@ const mapStateToProps = (state: ApplicationData) => ({
     store: {
         address: state.trader.address,
         sdk: state.trader.sdk,
+        tokenPrices: state.statistics.tokenPrices,
     },
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     actions: bindActionCreators({
-        fundNode,
+        showFundPopup,
+        updateDarknodeStatistics,
     }, dispatch),
 });
 

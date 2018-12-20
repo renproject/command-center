@@ -127,6 +127,12 @@
         }
     }
 
+    .status--button--focus {
+        background: $blue-bright;
+        color: white;
+        padding: 0 40px;
+    }
+
     .status--button:not(:disabled):active {
         font-weight: 600;
     }

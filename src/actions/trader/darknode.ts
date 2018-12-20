@@ -5,6 +5,7 @@ import { Dispatch } from "redux";
 
 import { contracts } from "@Library/contracts/contracts";
 import { Token } from "@Library/tokens";
+import { on } from "cluster";
 
 export const deregisterDarknode = (sdk: RenExSDK, address: string, darknodeID: string) => async (dispatch: Dispatch) => {
     await sdk._contracts.darknodeRegistry.deregister(darknodeID, { from: address, gas: 200000 });
@@ -50,8 +51,7 @@ export const approveNode = (sdk: RenExSDK, address: string, bond: BigNumber) => 
     });
 };
 
-export const registerNode = (sdk: RenExSDK, address: string, darknodeID: string, publicKey: string, bond: BigNumber) => async (dispatch: Dispatch) => {
-
+export const registerNode = (sdk: RenExSDK, address: string, darknodeID: string, publicKey: string, bond: BigNumber, onCancel: () => void, onDone: () => void) => async (dispatch: Dispatch) => {
 
     if (!publicKey) {
         throw new Error("Public key required");
@@ -69,35 +69,56 @@ export const registerNode = (sdk: RenExSDK, address: string, darknodeID: string,
         gas = undefined;
     }
 
-    await sdk._contracts.darknodeRegistry.register(darknodeID, publicKey, bond.toFixed(),
-        { from: address, gas, }
-    );
+    let resolved = false;
+    return new Promise((resolve, reject) => {
+        sdk._contracts.darknodeRegistry.register(darknodeID, publicKey, bond.toFixed(),
+            { from: address, gas, }
+        )
+            .on("transactionHash", (res) => { resolve(res); resolved = true; })
+            .on("confirmation", onDone)
+            .on("error", (error) => { if (resolved) { onCancel(); } reject(error); });
+    });
 };
 
-export const deregisterNode = (sdk: RenExSDK, address: string, darknodeID: string) => async (dispatch: Dispatch) => {
+export const deregisterNode = (sdk: RenExSDK, address: string, darknodeID: string, onCancel: () => void, onDone: () => void) => async (dispatch: Dispatch) => {
     // The node has been registered and can be deregistered.
 
-    await sdk._contracts.darknodeRegistry.deregister(darknodeID, { from: address });
+    let resolved = false;
+    return new Promise((resolve, reject) => {
+        sdk._contracts.darknodeRegistry.deregister(darknodeID, { from: address })
+            .on("transactionHash", (res) => { resolve(res); resolved = true; })
+            .on("confirmation", onDone)
+            .on("error", (error) => { if (resolved) { onCancel(); } reject(error); });
+    });
 };
 
-export const refundNode = (sdk: RenExSDK, address: string, darknodeID: string) => async (dispatch: Dispatch) => {
+export const refundNode = (sdk: RenExSDK, address: string, darknodeID: string, onCancel: () => void, onDone: () => void) => async (dispatch: Dispatch) => {
     // The node is awaiting refund.
 
-    await sdk._contracts.darknodeRegistry.refund(darknodeID, { from: address });
+    let resolved = false;
+    return new Promise((resolve, reject) => {
+        sdk._contracts.darknodeRegistry.refund(darknodeID, { from: address })
+            .on("transactionHash", (res) => { resolve(res); resolved = true; })
+            .on("confirmation", onDone)
+            .on("error", (error) => { if (resolved) { onCancel(); } reject(error); });
+    });
+
 };
 
-export const fundNode = (sdk: RenExSDK, address: string, darknodeID: string, ethAmountStr: string) => (dispatch: Dispatch) => {
+export const fundNode = (sdk: RenExSDK, address: string, darknodeID: string, ethAmountStr: string, onCancel: () => void, onDone: () => void) => (dispatch: Dispatch) => {
     // Convert eth to wei
     const ethAmount = new BigNumber(ethAmountStr);
     const weiAmount = ethAmount.times(new BigNumber(10).exponentiatedBy(18)).decimalPlaces(0);
 
+    let resolved = false;
     return new Promise((resolve, reject) => {
         sdk.getWeb3().eth.sendTransaction({
             to: darknodeID,
             value: weiAmount.toFixed(),
             from: address,
         })
-            .on("receipt", resolve)
-            .on("error", reject);
+            .on("transactionHash", (res) => { resolve(res); resolved = true; })
+            .on("confirmation", onDone)
+            .on("error", (error) => { if (resolved) { onCancel(); } reject(error); });
     });
 };

@@ -15,12 +15,6 @@ import { CurrencyIcon } from "./CurrencyIcon";
 import { statusText } from "./statuspage/Registration";
 import { TokenBalance } from "./TokenBalance";
 
-const toTitleCase = (title: string) => title.replace(
-    /\w\S*/g, (txt) => {
-        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-    }
-);
-
 interface DarknodeCardProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     darknodeID: string;
     darknodeDetails: DarknodeDetails | null;
@@ -62,7 +56,7 @@ class DarknodeCardClass extends React.Component<DarknodeCardProps, DarknodeCardS
 
                         <Blocky address={darknodeID} fgColor="#006FE8" bgColor="transparent" />
 
-                        <h3 className="darknode-card--name">{name ? name : darknodeDetails && darknodeDetails.index !== undefined ? `Darknode ${darknodeDetails.index}` : <span className="monospace">{darknodeID.substring(0, 8)}...{darknodeID.slice(-5)}</span>}</h3>
+                        <h3 className="darknode-card--name">{name ? name : darknodeDetails && darknodeDetails.index !== undefined ? `Darknode ${darknodeDetails.index + 1}` : <span className="monospace">{darknodeID.substring(0, 8)}...{darknodeID.slice(-5)}</span>}</h3>
                         <span className="darknode-card--status">{darknodeDetails ? statusText[darknodeDetails.registrationStatus] : ""}</span>
                     </div>
                     {darknodeDetails ?

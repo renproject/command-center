@@ -49,7 +49,7 @@ class SidebarClass extends React.Component<SidebarProps> {
                     {darknodeList && darknodeList.map((darknodeID) => {
                         const details = darknodeDetails.get(darknodeID);
                         const storedName = darknodeNames.get(darknodeID);
-                        const name = storedName ? storedName : details && details.index !== undefined ? `Darknode ${details.index}` : <span className="monospace">{darknodeID.substring(0, 8)}...{darknodeID.slice(-5)}</span>;
+                        const name = storedName ? storedName : details && details.index !== undefined ? `Darknode ${details.index + 1}` : <span className="monospace">{darknodeID.substring(0, 8)}...{darknodeID.slice(-5)}</span>;
 
 
                         // tslint:disable-next-line:jsx-no-lambda FIXME
