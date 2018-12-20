@@ -171,11 +171,11 @@ class AppClass extends React.Component<AppProps, AppState> {
     private callUpdateOperatorStatistics = async (props?: AppProps) => {
         props = props || this.props;
 
-        const { sdk, address, tokenPrices, darknodeDetails } = props.store;
+        const { sdk, address, tokenPrices, darknodeList } = props.store;
         let timeout = 1;
         if (address && tokenPrices) {
             try {
-                await props.actions.updateOperatorStatistics(sdk, address, tokenPrices, darknodeDetails);
+                await props.actions.updateOperatorStatistics(sdk, address, tokenPrices, darknodeList);
                 timeout = 120;
             } catch (err) {
                 console.error(err);
@@ -191,7 +191,7 @@ class AppClass extends React.Component<AppProps, AppState> {
         props = props || this.props;
 
         const { match: { params } } = props;
-        const { sdk, tokenPrices, darknodeDetails } = props.store;
+        const { sdk, tokenPrices } = props.store;
 
         let { darknodeID } = params as { darknodeID: string };
         darknodeID = darknodeID && sdk.getWeb3().utils.toChecksumAddress(darknodeID.toLowerCase());
@@ -199,8 +199,7 @@ class AppClass extends React.Component<AppProps, AppState> {
         let timeout = 1; // if the action isn't called, try again in 1 second
         if (tokenPrices && darknodeID) {
             try {
-                const previousDetails = darknodeDetails.get(darknodeID);
-                await props.actions.updateDarknodeStatistics(sdk, darknodeID, tokenPrices, previousDetails);
+                await props.actions.updateDarknodeStatistics(sdk, darknodeID, tokenPrices);
                 timeout = 30;
             } catch (err) {
                 console.error(err);
@@ -230,7 +229,6 @@ const mapStateToProps = (state: ApplicationData) => ({
         readOnlyProvider: state.trader.readOnlyProvider,
         tokenPrices: state.statistics.tokenPrices,
         darknodeList: state.trader.address ? state.statistics.darknodeList.get(state.trader.address, null) : null,
-        darknodeDetails: state.statistics.darknodeDetails,
     },
 });
 

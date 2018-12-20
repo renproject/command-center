@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import { Dispatch } from "redux";
 import { bindActionCreators } from "redux";
 
+import { RegistrationStatus } from "@Actions/statistics/operatorActions";
 import { faStar } from "@fortawesome/free-regular-svg-icons";
 import { Token } from "@Library/tokens";
 import { ApplicationData, Currency } from "@Reducers/types";
@@ -49,12 +50,12 @@ class SidebarClass extends React.Component<SidebarProps> {
                     {darknodeList && darknodeList.map((darknodeID) => {
                         const details = darknodeDetails.get(darknodeID);
                         const storedName = darknodeNames.get(darknodeID);
-                        const name = storedName ? storedName : details && details.index !== undefined ? `Darknode ${details.index + 1}` : <span className="monospace">{darknodeID.substring(0, 8)}...{darknodeID.slice(-5)}</span>;
+                        const name = storedName ? storedName : <span className="monospace">{darknodeID.substring(0, 8)}...{darknodeID.slice(-5)}</span>;
 
 
                         // tslint:disable-next-line:jsx-no-lambda FIXME
                         return <Link className="no-underline" key={darknodeID} to={`/darknode/${darknodeID}`}>
-                            <li className={darknodeID === selectedDarknode ? "sidebar--active" : ""}>
+                            <li className={`${darknodeID === selectedDarknode ? "sidebar--active" : ""} ${details && details.registrationStatus === RegistrationStatus.Unregistered ? "sidebar--faded" : ""}`}>
                                 <div className="sidebar--icon">
                                     <Blocky address={darknodeID} fgColor="#006FE8" bgColor="transparent" />
                                 </div>

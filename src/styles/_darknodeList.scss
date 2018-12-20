@@ -146,14 +146,18 @@ $darknode-card-margin: 10px;
 .darknode-card--empty {
     cursor: initial;
 
-    mix-blend-mode: normal;
-    opacity: 0.4;
+
 
     .blocky {
         margin-left: auto;
         margin-right: auto;
         background-color: #031830;
     }
+}
+
+.darknode-card--faded {
+    mix-blend-mode: normal;
+    opacity: 0.6;
 }
 
 .darknode-list--loading {

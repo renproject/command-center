@@ -9,7 +9,6 @@ import { bindActionCreators, Dispatch } from "redux";
 
 interface TopupProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     darknodeID: string;
-    darknodeDetails: DarknodeDetails;
 }
 
 interface TopupState {
@@ -101,7 +100,7 @@ class TopupClass extends React.Component<TopupProps, TopupState> {
     }
 
     private sendFunds = async (): Promise<void> => {
-        const { darknodeID, darknodeDetails, store: { address, sdk, tokenPrices } } = this.props;
+        const { darknodeID, store: { address, sdk, tokenPrices } } = this.props;
         const { value } = this.state;
 
         this.setState({ resultMessage: "", pending: true });
@@ -122,7 +121,7 @@ class TopupClass extends React.Component<TopupProps, TopupState> {
 
         const onDone = async () => {
             try {
-                await this.props.actions.updateDarknodeStatistics(sdk, darknodeID, tokenPrices, darknodeDetails);
+                await this.props.actions.updateDarknodeStatistics(sdk, darknodeID, tokenPrices);
 
                 this.setState({ value: "0", resultMessage: CONFIRMATION_MESSAGE, pending: false });
             } catch (error) {

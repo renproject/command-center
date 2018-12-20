@@ -109,7 +109,6 @@ export class StatisticsData extends Record({
 
 export class DarknodeDetails extends Record({
     ID: "",
-    index: undefined as number | undefined,
     multiAddress: "",
     publicKey: "",
     ethBalance: new BigNumber(0),

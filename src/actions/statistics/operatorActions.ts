@@ -1,7 +1,7 @@
 import RenExSDK from "@renex/renex";
 import BigNumber from "bignumber.js";
 
-import { Map, OrderedMap, OrderedSet } from "immutable";
+import { List, OrderedMap, OrderedSet } from "immutable";
 import { Dispatch } from "redux";
 import { createStandardAction } from "typesafe-actions";
 
@@ -22,17 +22,23 @@ export const setDarknodeDetails = createStandardAction("UPDATE_DARKNODE_DETAILS"
 
 export const setDarknodeName = createStandardAction("UPDATE_DARKNODE_NAME")<{ darknodeID: string, name: string }>();
 
-export const updateOperatorStatistics = (sdk: RenExSDK, address: string, tokenPrices: TokenPrices, previousDarknodeDetails: Map<string, DarknodeDetails>) => async (dispatch: Dispatch) => {
+export const updateOperatorStatistics = (sdk: RenExSDK, address: string, tokenPrices: TokenPrices, previousDarknodeList: List<string> | null) => async (dispatch: Dispatch) => {
 
-    const darknodeList = await getOperatorDarknodes(sdk, address);
-    dispatch(storeDarknodeList({ darknodeList, address }));
+    let darknodeList = previousDarknodeList || List<string>();
 
-    console.log(darknodeList.toJSON());
+    const currentDarknodes = await getOperatorDarknodes(sdk, address);
+    dispatch(storeDarknodeList({ darknodeList: currentDarknodes, address }));
 
+    // The lists are merged in the reducer as well, but we combine them again
+    // before passing into `updateDarknodeStatistics`
+    currentDarknodes.map((darknodeID) => {
+        if (!darknodeList.contains(darknodeID)) {
+            darknodeList = darknodeList.push(darknodeID);
+        }
+    });
 
-    await Promise.all(darknodeList.toList().map((darknodeID, index) => {
-        const previousDetails = previousDarknodeDetails.get(darknodeID);
-        return updateDarknodeStatistics(sdk, darknodeID, tokenPrices, previousDetails, index)(dispatch);
+    await Promise.all(darknodeList.toList().map((darknodeID) => {
+        return updateDarknodeStatistics(sdk, darknodeID, tokenPrices)(dispatch);
     }).toArray());
 };
 
@@ -143,7 +149,7 @@ const getDarknodeStatus = async (sdk: RenExSDK, darknodeID: string): Promise<Reg
     });
 };
 
-export const updateDarknodeStatistics = (sdk: RenExSDK, darknodeID: string, tokenPrices: TokenPrices | null, previousDetails: DarknodeDetails | undefined, index?: number) => async (dispatch: Dispatch) => {
+export const updateDarknodeStatistics = (sdk: RenExSDK, darknodeID: string, tokenPrices: TokenPrices | null) => async (dispatch: Dispatch) => {
     darknodeID = sdk.getWeb3().utils.toChecksumAddress(darknodeID.toLowerCase());
 
     // Get eth Balance
@@ -165,7 +171,6 @@ export const updateDarknodeStatistics = (sdk: RenExSDK, darknodeID: string, toke
 
     const darknodeDetails = new DarknodeDetails({
         ID: darknodeID,
-        index: previousDetails && previousDetails.index !== undefined ? previousDetails.index : index,
         multiAddress: "" as string,
         publicKey: "" as string,
         ethBalance,
