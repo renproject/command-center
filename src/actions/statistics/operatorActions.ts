@@ -1,7 +1,7 @@
 import RenExSDK from "@renex/renex";
 import BigNumber from "bignumber.js";
 
-import { List, Map, OrderedMap } from "immutable";
+import { Map, OrderedMap, OrderedSet } from "immutable";
 import { Dispatch } from "redux";
 import { createStandardAction } from "typesafe-actions";
 
@@ -12,7 +12,7 @@ import { contracts } from "@Library/contracts/contracts";
 import { Token, Tokens } from "@Library/tokens";
 
 export const storeDarknodeList = createStandardAction("STORE_DARKNODE_LIST")<{
-    darknodeList: List<string>;
+    darknodeList: OrderedSet<string>;
     address: string;
 }>();
 
@@ -27,8 +27,10 @@ export const updateOperatorStatistics = (sdk: RenExSDK, address: string, tokenPr
     const darknodeList = await getOperatorDarknodes(sdk, address);
     dispatch(storeDarknodeList({ darknodeList, address }));
 
+    console.log(darknodeList.toJSON());
 
-    await Promise.all(darknodeList.map((darknodeID, index) => {
+
+    await Promise.all(darknodeList.toList().map((darknodeID, index) => {
         const previousDetails = previousDarknodeDetails.get(darknodeID);
         return updateDarknodeStatistics(sdk, darknodeID, tokenPrices, previousDetails, index)(dispatch);
     }).toArray());
@@ -94,11 +96,12 @@ const getDarknodeOperator = async (sdk: RenExSDK, darknodeID: string): Promise<s
 
 export enum RegistrationStatus {
     Unknown = "",
-    Unregistered = "Unregistered",
-    RegistrationPending = "Registration Pending",
-    Registered = "Registered",
-    DeregistrationPending = "Deregistration Pending",
-    AwaitingRefund = "Awaiting Refund",
+    Unregistered = "unregistered",
+    RegistrationPending = "registration pending",
+    Registered = "registered",
+    DeregistrationPending = "deregistration pending",
+    Deregistered = "awaiting refund period",
+    Refundable = "refundable",
 }
 
 const getDarknodeStatus = async (sdk: RenExSDK, darknodeID: string): Promise<RegistrationStatus> => {
@@ -130,7 +133,9 @@ const getDarknodeStatus = async (sdk: RenExSDK, darknodeID: string): Promise<Reg
             } else if (res.isPendingDeregistration) {
                 registrationStatus = RegistrationStatus.DeregistrationPending;
             } else if (res.isRefundable) {
-                registrationStatus = RegistrationStatus.AwaitingRefund;
+                registrationStatus = RegistrationStatus.Refundable;
+            } else {
+                registrationStatus = RegistrationStatus.Deregistered;
             }
             resolve(registrationStatus);
         })
@@ -138,7 +143,7 @@ const getDarknodeStatus = async (sdk: RenExSDK, darknodeID: string): Promise<Reg
     });
 };
 
-export const updateDarknodeStatistics = (sdk: RenExSDK, darknodeID: string, tokenPrices: TokenPrices, previousDetails: DarknodeDetails | undefined, index?: number) => async (dispatch: Dispatch) => {
+export const updateDarknodeStatistics = (sdk: RenExSDK, darknodeID: string, tokenPrices: TokenPrices | null, previousDetails: DarknodeDetails | undefined, index?: number) => async (dispatch: Dispatch) => {
     darknodeID = sdk.getWeb3().utils.toChecksumAddress(darknodeID.toLowerCase());
 
     // Get eth Balance
@@ -147,7 +152,10 @@ export const updateDarknodeStatistics = (sdk: RenExSDK, darknodeID: string, toke
 
     // Get earned fees
     const feesEarned = await getBalances(sdk, darknodeID);
-    const feesEarnedTotalEth = await sumUpFees(sdk, feesEarned, tokenPrices);
+    let feesEarnedTotalEth = new BigNumber(0);
+    if (tokenPrices) {
+        feesEarnedTotalEth = await sumUpFees(sdk, feesEarned, tokenPrices);
+    }
 
     // Get darknode operator
     const operator = await getDarknodeOperator(sdk, darknodeID);

@@ -38,6 +38,11 @@ class NotificationsClass extends React.Component<NotificationsProps, Notificatio
                 title: "Deregistration in progress.",
                 detail: "Your darknode will be deregistered within 24 hours.",
             };
+        } else if (operator && darknodeDetails && darknodeDetails.registrationStatus === RegistrationStatus.Deregistered) {
+            notification = {
+                title: "Darknode deregistered.",
+                detail: "You will be able to withdraw your REN within 24 hours.",
+            };
         }
 
         return (

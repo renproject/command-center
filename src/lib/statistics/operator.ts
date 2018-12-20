@@ -1,6 +1,6 @@
 import RenExSDK from "@renex/renex";
 
-import { List } from "immutable";
+import { List, OrderedSet } from "immutable";
 
 const NULL = "0x0000000000000000000000000000000000000000";
 
@@ -18,7 +18,7 @@ async function getAllDarknodes(sdk: RenExSDK): Promise<string[]> {
     return allDarknodes;
 }
 
-export const getOperatorDarknodes = async (sdk: RenExSDK, address: string): Promise<List<string>> => {
+export const getOperatorDarknodes = async (sdk: RenExSDK, address: string): Promise<OrderedSet<string>> => {
     // TODO: Should addresses be made lower case or checksum addresses first?
 
     // Currently, the LogDarknodeRegistered logs don't include the registrar, so
@@ -63,30 +63,34 @@ export const getOperatorDarknodes = async (sdk: RenExSDK, address: string): Prom
         darknodes.push(darknodeID);
     }
 
-    // Get Deregistration events
-    const recentDeregistrationEvents = await sdk.getWeb3().eth.getPastLogs({
-        address: sdk._contracts.darknodeRegistry.address,
-        // tslint:disable-next-line:no-any
-        fromBlock: "0x889E55" as any, // TODO: Change this based on network or get from address deployment
-        toBlock: "latest",
-        // tslint:disable-next-line:no-any
-        topics: [sdk.getWeb3().utils.sha3("LogDarknodeDeregistered(address)"), null] as any,
-    });
-    for (const event of recentDeregistrationEvents) {
-        const darknodeID = sdk.getWeb3().utils.toChecksumAddress("0x" + event.data.substr(26, 40));
-        darknodes.push(darknodeID);
-    }
+
+    // Note: Deregistration events are not included because we are unable to retrieve the operator
+
+    // // Get Deregistration events
+    // const recentDeregistrationEvents = await sdk.getWeb3().eth.getPastLogs({
+    //     address: sdk._contracts.darknodeRegistry.address,
+    //     // tslint:disable-next-line:no-any
+    //     fromBlock: "0x889E55" as any, // TODO: Change this based on network or get from address deployment
+    //     toBlock: "latest",
+    //     // tslint:disable-next-line:no-any
+    //     topics: [sdk.getWeb3().utils.sha3("LogDarknodeDeregistered(address)"), null] as any,
+    // });
+
+    // for (const event of recentDeregistrationEvents) {
+    //     const darknodeID = sdk.getWeb3().utils.toChecksumAddress("0x" + event.data.substr(26, 40));
+    //     darknodes.push(darknodeID);
+    // }
 
 
     const operatorPromises = darknodes.map((darknodeID: string) =>
         sdk._contracts.darknodeRegistry.getDarknodeOwner(darknodeID)
     );
 
-    let operatorDarknodes = List<string>();
+    let operatorDarknodes = OrderedSet<string>();
 
     for (let i = 0; i < darknodes.length; i++) {
-        if (await operatorPromises[i] === address) {
-            operatorDarknodes = operatorDarknodes.push(darknodes[i]);
+        if (await operatorPromises[i] === address && !operatorDarknodes.contains(address)) {
+            operatorDarknodes = operatorDarknodes.add(darknodes[i]);
         }
     }
 

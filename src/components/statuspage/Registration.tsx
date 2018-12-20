@@ -4,11 +4,8 @@ import { ApplicationData } from "@Reducers/types";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { setPopup } from "@Actions/popup/popupActions";
-import { RegistrationStatus } from "@Actions/statistics/operatorActions";
-import { deregisterNode, refundNode } from "@Actions/trader/darknode";
-import { Loading } from "@Components/Loading";
-import { RegisterPopup } from "@Components/popups/RegisterPopup";
+import { RegistrationStatus, updateDarknodeStatistics } from "@Actions/statistics/operatorActions";
+import { showDeregisterPopup, showRefundPopup, showRegisterPopup } from "@Actions/statistics/operatorPopupActions";
 
 interface RegistrationProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     operator: boolean;
@@ -19,7 +16,7 @@ interface RegistrationProps extends ReturnType<typeof mapStateToProps>, ReturnTy
 }
 
 interface RegistrationState {
-    disabled: boolean;
+    active: boolean;
 }
 
 export const statusText = {
@@ -28,34 +25,45 @@ export const statusText = {
     [RegistrationStatus.RegistrationPending]: "Registration pending",
     [RegistrationStatus.Registered]: "Registered",
     [RegistrationStatus.DeregistrationPending]: "Deregistration pending",
-    [RegistrationStatus.AwaitingRefund]: "Awaiting refund",
+    [RegistrationStatus.Deregistered]: "Awaiting Refund Period",
+    [RegistrationStatus.Refundable]: "Refundable",
 };
 
 class RegistrationClass extends React.Component<RegistrationProps, RegistrationState> {
     constructor(props: RegistrationProps) {
         super(props);
         this.state = {
-            disabled: false,
+            active: false,
         };
+    }
+
+    public componentWillReceiveProps = (nextProps: RegistrationProps) => {
+        if (this.props.registrationStatus !== nextProps.registrationStatus) {
+            this.setState({ active: false });
+        }
     }
 
     public render(): JSX.Element {
         const { operator, registrationStatus, store: { address } } = this.props;
-        let { disabled } = this.state;
+        const { active } = this.state;
 
-        disabled = disabled || !address;
+        const disabled = active || !address;
+
+        const noStatus =
+            (registrationStatus === RegistrationStatus.Unregistered) ||
+            (operator && registrationStatus === RegistrationStatus.Refundable);
 
         return (
             <div className="status">
-                {registrationStatus !== RegistrationStatus.Unregistered ?
+                {!noStatus ?
                     <span className="status--title">{statusText[this.props.registrationStatus]}</span> : null}
                 {operator ? <>
                     {registrationStatus === RegistrationStatus.Unregistered ?
-                        <button disabled={disabled} className="status--button green hover" onClick={this.handleRegister}>Register your darknode{disabled ? <Loading alt={true} /> : null}</button> : null}
+                        <button disabled={disabled} className="status--button" onClick={this.handleRegister}>{active ? "Registering..." : "Register your darknode"}</button> : null}
                     {registrationStatus === RegistrationStatus.Registered ?
-                        <button disabled={disabled} className="status--button red hover" onClick={this.handleDeregister}>Deregister{disabled ? <Loading alt={true} /> : null}</button> : null}
-                    {registrationStatus === RegistrationStatus.AwaitingRefund
-                        ? <button disabled={disabled} className="status--button green hover" onClick={this.handleRefund}>Refund{disabled ? <Loading alt={true} /> : null}</button> : null}
+                        <button disabled={disabled} className="status--button" onClick={this.handleDeregister}>{active ? "Deregistering..." : "Deregister"}</button> : null}
+                    {registrationStatus === RegistrationStatus.Refundable
+                        ? <button disabled={disabled} className="status--button status--button--focus" onClick={this.handleRefund}>{active ? "Refunding..." : "Refund"}</button> : null}
                 </> : null}
             </div>
         );
@@ -91,28 +99,48 @@ class RegistrationClass extends React.Component<RegistrationProps, RegistrationS
     //     }
 
     //     // Show "Refund" button
-    //     else if (props.registrationStatus === RegistrationStatus.AwaitingRefund) {
+    //     else if (props.registrationStatus === RegistrationStatus.Refundable) {
     //         buttonText = BUTTON_REFUND;
     //         disabled = false;
     //     }
     //     this.setState({ buttonText, disabled });
     // }
 
+    private onCancel = async () => {
+        try {
+            this.setState({ active: false });
+        } catch (error) {
+            // Ignore error
+        }
+    }
+
+    private onDone = async () => {
+        const { darknodeID } = this.props;
+        const { sdk, tokenPrices, darknodeDetails } = this.props.store;
+
+        try {
+            const details = darknodeDetails.get(darknodeID);
+            if (details) {
+                await this.props.actions.updateDarknodeStatistics(sdk, darknodeID, tokenPrices, details);
+            }
+            this.setState({ active: false });
+        } catch (error) {
+            // Ignore error
+        }
+    }
+
 
     private handleRegister = async (): Promise<void> => {
         const { darknodeID, publicKey } = this.props;
+        const { sdk, address, minimumBond, tokenPrices, darknodeDetails } = this.props.store;
 
-        if (!publicKey) {
+        if (!publicKey || !address || !minimumBond || !tokenPrices) {
             return; // FIXME
         }
 
-        this.setState({ disabled: true });
-        const onCancel = () => {
-            this.setState({ disabled: false });
-        };
-
-        this.props.actions.setPopup(
-            { popup: <RegisterPopup darknodeID={darknodeID} publicKey={publicKey} onCancel={onCancel} />, onCancel, dismissible: false, overlay: true }
+        this.setState({ active: true });
+        this.props.actions.showRegisterPopup(
+            sdk, address, darknodeID, publicKey, minimumBond, tokenPrices, darknodeDetails, this.onCancel, this.onDone
         );
     }
 
@@ -125,8 +153,8 @@ class RegistrationClass extends React.Component<RegistrationProps, RegistrationS
             return;
         }
 
-        // this.setState({ disabled: true, });
-        await this.props.actions.deregisterNode(sdk, address, darknodeID);
+        this.setState({ active: true });
+        await this.props.actions.showDeregisterPopup(sdk, address, darknodeID, this.onCancel, this.onDone);
     }
 
     private handleRefund = async (): Promise<void> => {
@@ -137,8 +165,8 @@ class RegistrationClass extends React.Component<RegistrationProps, RegistrationS
             return;
         }
 
-        // this.setState({ disabled: true, });
-        await this.props.actions.refundNode(sdk, address, darknodeID);
+        this.setState({ active: true });
+        await this.props.actions.showRefundPopup(sdk, address, darknodeID, this.onCancel, this.onDone);
     }
 }
 
@@ -148,14 +176,17 @@ const mapStateToProps = (state: ApplicationData) => ({
         address: state.trader.address,
         sdk: state.trader.sdk,
         minimumBond: state.statistics.minimumBond,
+        tokenPrices: state.statistics.tokenPrices,
+        darknodeDetails: state.statistics.darknodeDetails,
     },
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     actions: bindActionCreators({
-        setPopup,
-        refundNode,
-        deregisterNode,
+        showRegisterPopup,
+        showDeregisterPopup,
+        showRefundPopup,
+        updateDarknodeStatistics,
     }, dispatch),
 });
 

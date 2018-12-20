@@ -133,20 +133,21 @@ $darknode-card-margin: 10px;
 
     align-items: center;
 
-    mix-blend-mode: normal;
-    opacity: 0.4;
-
     height: calc(100vh - calc(50% - calc(355px / 2)));
 
     margin: 0;
-}
 
-.background--darknode-list {
-    .darknode-card {
-        cursor: initial;
+    .darknode-card--empty {
         // Work around to prevent other rows from showing
         margin-bottom: 50vh;
     }
+}
+
+.darknode-card--empty {
+    cursor: initial;
+
+    mix-blend-mode: normal;
+    opacity: 0.4;
 
     .blocky {
         margin-left: auto;

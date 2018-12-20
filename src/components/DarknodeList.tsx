@@ -7,6 +7,8 @@ import { bindActionCreators } from "redux";
 
 import { ApplicationData, DarknodeDetails } from "@Reducers/types";
 import { DarknodeCard } from "./DarknodeCard";
+import { EmptyDarknodeCard } from "./EmptyDarknodeCard";
+import { EmptyDarknodeList } from "./EmptyDarknodeList";
 import { Loading } from "./Loading";
 
 interface DarknodeListProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
@@ -32,8 +34,11 @@ class DarknodeListClass extends React.Component<DarknodeListProps> {
 
                         return <DarknodeCard key={darknodeID} name={name} darknodeID={darknodeID} darknodeDetails={details} />;
                     }).toArray()}
-                    {darknodeList.size === 0 ? <>
-                    </> : null}
+                    {darknodeList.size === 0 ? <EmptyDarknodeList /> : <>
+                        {darknodeList.size < 4 ? <EmptyDarknodeCard /> : null}
+                        {darknodeList.size < 3 ? <EmptyDarknodeCard /> : null}
+                        {darknodeList.size < 2 ? <EmptyDarknodeCard /> : null}
+                    </>}
                 </>}
             </div>
         );
