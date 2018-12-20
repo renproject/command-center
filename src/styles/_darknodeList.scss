@@ -146,7 +146,8 @@ $darknode-card-margin: 10px;
 .darknode-card--empty {
     cursor: initial;
 
-
+    mix-blend-mode: normal;
+    opacity: 0.4;
 
     .blocky {
         margin-left: auto;

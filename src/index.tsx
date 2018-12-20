@@ -8,11 +8,12 @@ import Web3 from "web3";
 
 import { NetworkData } from "@renex/renex";
 import { Provider } from "react-redux";
-import { HashRouter, Route } from "react-router-dom";
+import { Route, Router } from "react-router-dom";
 import { PersistGate } from "redux-persist/integration/react";
 import { HttpProvider } from "web3/providers";
 
 import { App } from "@Components/App";
+import { history } from "@Library/history";
 import { configureStore } from "@Store/configureStore";
 
 import "@Root/index.css";
@@ -43,12 +44,12 @@ Sentry.init({
 ReactDOM.render(
     <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
-            <HashRouter>
+            <Router history={history}>
                 <>
                     <Route path="/" exact component={App} />
                     <Route path="/darknode/:darknodeID" exact component={App} />
                 </>
-            </HashRouter>
+            </Router>
         </PersistGate>
     </Provider>,
     document.getElementById("root") as HTMLElement

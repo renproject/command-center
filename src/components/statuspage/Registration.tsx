@@ -4,7 +4,7 @@ import { ApplicationData } from "@Reducers/types";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { RegistrationStatus, updateDarknodeStatistics } from "@Actions/statistics/operatorActions";
+import { RegistrationStatus, updateDarknodeStatistics, updateOperatorStatistics } from "@Actions/statistics/operatorActions";
 import { showDeregisterPopup, showRefundPopup, showRegisterPopup } from "@Actions/statistics/operatorPopupActions";
 
 interface RegistrationProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
@@ -126,6 +126,19 @@ class RegistrationClass extends React.Component<RegistrationProps, RegistrationS
         }
     }
 
+    private onDoneRegister = async () => {
+        const { sdk, address, tokenPrices, darknodeList } = this.props.store;
+
+        try {
+            if (address) {
+                await this.props.actions.updateOperatorStatistics(sdk, address, tokenPrices, darknodeList);
+            }
+            this.setState({ active: false });
+        } catch (error) {
+            // Ignore error
+        }
+    }
+
 
     private handleRegister = async (): Promise<void> => {
         const { darknodeID, publicKey } = this.props;
@@ -137,7 +150,7 @@ class RegistrationClass extends React.Component<RegistrationProps, RegistrationS
 
         this.setState({ active: true });
         this.props.actions.showRegisterPopup(
-            sdk, address, darknodeID, publicKey, minimumBond, tokenPrices, this.onCancel, this.onDone
+            sdk, address, darknodeID, publicKey, minimumBond, tokenPrices, this.onCancel, this.onDoneRegister
         );
     }
 
@@ -174,6 +187,7 @@ const mapStateToProps = (state: ApplicationData) => ({
         sdk: state.trader.sdk,
         minimumBond: state.statistics.minimumBond,
         tokenPrices: state.statistics.tokenPrices,
+        darknodeList: state.trader.address ? state.statistics.darknodeList.get(state.trader.address, null) : null,
     },
 });
 
@@ -183,6 +197,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
         showDeregisterPopup,
         showRefundPopup,
         updateDarknodeStatistics,
+        updateOperatorStatistics,
     }, dispatch),
 });
 

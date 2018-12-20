@@ -9,7 +9,7 @@ import { clearPopup } from "@Actions/popup/popupActions";
 import { INFURA_URL } from "@Library/network";
 import { store } from "index";
 
-export const ErrorCanceledByUser = "Transaction canceled";
+export const ErrorCanceledByUser = "Returned error: Error: MetaMask Tx Signature: User denied transaction signature.";
 
 export interface WalletDetail {
     name: string;

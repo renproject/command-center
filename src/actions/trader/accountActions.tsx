@@ -9,7 +9,6 @@ import { createStandardAction } from "typesafe-actions";
 import { history } from "@Library/history";
 
 import { clearPopup, setPopup } from "@Actions/popup/popupActions";
-import { updateOperatorStatistics } from "@Actions/statistics/operatorActions";
 import { LoggedOut } from "@Components/popups/LoggedOut";
 import { NoWeb3Popup } from "@Components/popups/NoWeb3Popup";
 import { getInjectedWeb3Provider } from "@Library/wallets/web3browser";
@@ -126,8 +125,7 @@ export const login = (sdk: RenExSDK, options: { redirect: boolean, showPopup: bo
 
     if (options.redirect) {
         // Navigate to the Exchange page
-        // history.push("#/home");
-        location.replace("#/home");
+        history.push("/home");
     }
 };
 
@@ -141,10 +139,11 @@ export const logout = (sdk: RenExSDK, readOnlyProvider: Provider, options: { rel
     sdk.setAddress("");
 
     if (options.reload) {
-        // history.push("/#/loading");
-        // Reload to clear all stores and cancel timeouts
-        // (e.g. deposit/withdrawal confirmations)
-        location.replace("./#/");
+        // const currentLocation = location.pathname;
+        // // history.push("/loading");
+        // // Reload to clear all stores and cancel timeouts
+        // // (e.g. deposit/withdrawal confirmations)
+        // location.replace(currentLocation);
     }
 };
 
@@ -159,21 +158,20 @@ export const lookForLogout = (sdk: RenExSDK, address: string, readOnlyProvider: 
     }
 
     const accounts = (await sdk.getWeb3().eth.getAccounts()).map((web3Address) => web3Address.toLowerCase());
-    if (address !== sdkAddress || !accounts.includes(sdkAddress.toLowerCase())) {
+    if (address.toLowerCase() !== sdkAddress.toLowerCase() || !accounts.includes(sdkAddress.toLowerCase())) {
         // console.error(`User has logged out of their web3 provider (${sdkAddress} not in [${accounts.join(", ")}])`);
 
         const onClick = async () => {
+            await logout(sdk, readOnlyProvider, { reload: true })(dispatch).catch(console.error);
             await login(sdk, { redirect: false, showPopup: true, immediatePopup: false })(dispatch);
         };
         const onCancel = () => {
             dispatch(clearPopup());
         };
 
-        await logout(sdk, readOnlyProvider, { reload: false })(dispatch).catch(console.error);
-
         dispatch(
             setPopup(
-                { popup: <LoggedOut onConnect={onClick} onCancel={onCancel} newAddress={accounts.length > 0 ? accounts[0] : null} />, onCancel }
+                { popup: <LoggedOut onConnect={onClick} onCancel={onCancel} newAddress={accounts.length > 0 ? accounts[0] : null} />, onCancel, dismissible: false, overlay: true }
             )
         );
     }

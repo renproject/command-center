@@ -22,7 +22,7 @@ export const setDarknodeDetails = createStandardAction("UPDATE_DARKNODE_DETAILS"
 
 export const setDarknodeName = createStandardAction("UPDATE_DARKNODE_NAME")<{ darknodeID: string, name: string }>();
 
-export const updateOperatorStatistics = (sdk: RenExSDK, address: string, tokenPrices: TokenPrices, previousDarknodeList: List<string> | null) => async (dispatch: Dispatch) => {
+export const updateOperatorStatistics = (sdk: RenExSDK, address: string, tokenPrices: TokenPrices | null, previousDarknodeList: List<string> | null) => async (dispatch: Dispatch) => {
 
     let darknodeList = previousDarknodeList || List<string>();
 
