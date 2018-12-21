@@ -55,7 +55,7 @@
 }
 
 .block--basic--top {
-    margin: 40px;
+    margin: 40px 10px;
 }
 
 .block--basic--show {
@@ -92,6 +92,13 @@
 
 .gas-block {
     color: $red;
+}
+
+.gas-block--basic--sign {
+    font-size: 36px;
+    margin-right: 5px;
+    margin-left: 0;
+    color: transparentize($red, 1 - 0.6);
 }
 
 .gas-block--basic--value {
@@ -132,7 +139,8 @@
 }
 
 .fees-block--basic--sign {
-    @extend .fees-block--basic--unit;
+    font-size: 36px;
+    color: transparentize($green, 1 - 0.6);
     margin-right: 5px;
     margin-left: 0;
 }
@@ -148,7 +156,8 @@
 }
 
 .fees-block--advanced--sign {
-    @extend .fees-block--basic--unit;
+    font-size: 36px;
+    color: transparentize($green, 1 - 0.6);
     margin-right: 3px;
     margin-left: 0;
 }

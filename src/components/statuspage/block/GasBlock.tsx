@@ -8,7 +8,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { ApplicationData, DarknodeDetails } from "@Reducers/types";
+import { CurrencyIcon } from "@Components/CurrencyIcon";
+import { ApplicationData, Currency, DarknodeDetails } from "@Reducers/types";
 import { Topup } from "../Topup";
 import { Block, BlockBody, BlockTitle } from "./Block";
 
@@ -54,6 +55,7 @@ class GasBlockClass extends React.Component<GasBlockProps, GasBlockState> {
                     {!showAdvanced ?
                         <div className="block--basic">
                             <div className="block--basic--top">
+                                <span className="gas-block--basic--sign"><CurrencyIcon currency={Currency.ETH} /></span>
                                 <span className="gas-block--basic--value">{gasValue}</span>
                                 <span className="gas-block--basic--unit">ETH</span>
                             </div>

@@ -1,5 +1,7 @@
 import * as React from "react";
 
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { LabelType } from "@Reducers/types";
 
 interface InfoLabelProps {
@@ -30,7 +32,9 @@ export class InfoLabel extends React.Component<InfoLabelProps, InfoLabelState> {
         const iconType = type || LabelType.Info;
         return (
             <div className="label">
-                <div className={`label--icon ${iconType}--icon`} onMouseEnter={this.onMouseEnter} />
+                <div className={`label--icon ${iconType}--icon`} onMouseEnter={this.onMouseEnter}>
+                    <FontAwesomeIcon icon={faInfoCircle} />
+                </div>
                 <div style={this.state} className="label--message">{children ? children : ""}</div>
             </div>
         );
