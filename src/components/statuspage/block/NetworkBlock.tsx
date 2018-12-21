@@ -45,7 +45,6 @@ class CopyBlock extends React.Component<CopyBlockProps, CopyBlockState> {
 }
 
 interface NetworkBlockProps {
-    network: string;
     darknodeDetails: DarknodeDetails | null;
 }
 
@@ -68,7 +67,7 @@ export const NetworkBlock = (props: NetworkBlockProps) => {
             {darknodeDetails ? <BlockBody>
                 <div className="network-block--info">
                     <div className="darknode-info">
-                        <span className="darknode-info--title">Network:</span> <span>{props.network}</span>
+                        <span className="darknode-info--title">Network:</span> <span>-</span>
                     </div>
                     <div className="darknode-info">
                         <span className="darknode-info--title">Connected Peers:</span> <span>{darknodeDetails.peers}</span>

@@ -60,7 +60,7 @@ class SidebarClass extends React.Component<SidebarProps> {
                                     <Blocky address={darknodeID} fgColor="#006FE8" bgColor="transparent" />
                                 </div>
                                 <div className="sidebar--text">
-                                    <div>{name}</div>
+                                    <div className="sidebar--name">{name}</div>
                                     <div className="sidebar--text--details">
                                         <div className="sidebar--text--rewards">
                                             {details ? <>

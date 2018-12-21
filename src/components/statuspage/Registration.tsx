@@ -10,7 +10,6 @@ import { showDeregisterPopup, showRefundPopup, showRegisterPopup } from "@Action
 interface RegistrationProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     operator: boolean;
     registrationStatus: RegistrationStatus;
-    network: string;
     darknodeID: string;
     publicKey?: string;
 }

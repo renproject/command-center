@@ -60,6 +60,11 @@ $darknode-card-margin: 10px;
 .darknode-card--name {
     font-weight: normal;
     font-size: 19px;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 20px;
 }
 
 .darknode-card--status {
