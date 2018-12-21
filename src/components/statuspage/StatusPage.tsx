@@ -4,9 +4,8 @@ import { Map } from "immutable";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
+import { RegistrationStatus, setDarknodeName } from "@Actions/statistics/operatorActions";
 import { Blocky } from "@Components/Blocky";
-
-import { RegistrationStatus } from "@Actions/statistics/operatorActions";
 import { DarknodeAction } from "@Components/pages/Darknode";
 import { ApplicationData, DarknodeDetails } from "@Reducers/types";
 import { FeesBlock } from "./block/FeesBlock";
@@ -26,46 +25,56 @@ interface StatusPageProps extends ReturnType<typeof mapStateToProps>, ReturnType
 }
 
 interface StatusPageState {
-    network: string;
-    success: boolean;
-    refreshing: boolean;
-    correctNetwork: boolean;
-    darknodeActionCalled: Map<string, boolean>;
+    renaming: boolean;
+    newName: string | undefined;
 }
 
 class StatusPageClass extends React.Component<StatusPageProps, StatusPageState> {
+    private focusInput: HTMLInputElement | null = null;
 
     public constructor(props: StatusPageProps, context: object) {
         super(props, context);
         this.state = {
-            network: "",
-            success: false,
-            refreshing: false,
-            correctNetwork: true,
-            darknodeActionCalled: Map(),
+            renaming: false,
+            newName: props.name,
         };
+    }
+
+    public componentWillReceiveProps = (nextProps: StatusPageProps) => {
+        if (this.state.newName === undefined && nextProps.name !== undefined) {
+            this.setState({ newName: nextProps.name });
+        }
     }
 
     public render(): JSX.Element {
         const { darknodeDetails, darknodeID, name, operator, action, publicKey } = this.props;
+        const { renaming, newName } = this.state;
 
         return (
-            <div className={`statuspage ${action !== DarknodeAction.View ? `statuspage--focused` : ``}`}>
+            <div className={`statuspage ${action !== DarknodeAction.View ? `statuspage--focused` : ``} ${renaming ? `statuspage--renaming` : ``}`}>
                 <div className="statuspage--banner">
                     <Blocky address={darknodeID} fgColor="#006FE8" bgColor="transparent" />
                     <div className="statuspage--banner--details">
                         <div className="statuspage--banner--top">
-                            <h3>{name ? name : <span className="monospace">{darknodeID.substring(0, 8)}...{darknodeID.slice(-5)}</span>}</h3>
-                            {operator ? <button>Edit name</button> : null}
-                            <button>View details</button>
+                            {renaming ?
+                                <form className="statuspage--rename" onSubmit={this.handleSubmitName}>
+                                    <input ref={c => this.focusInput = c} role="textbox" type="text" name="newName" onChange={this.handleInput} value={newName} />
+                                    <button type="submit" className="statuspage--rename--save" disabled={!newName}>Save</button>
+                                    <button disabled={!newName} onClick={this.handleCancelRename}>Cancel</button>
+                                </form> :
+                                <>
+                                    <h3>{name ? name : <span className="monospace">{darknodeID.substring(0, 8)}...{darknodeID.slice(-5)}</span>}</h3>
+                                    {operator ? <button onClick={this.handleRename}>Edit name</button> : null}
+                                    <button>View details</button>
+                                </>}
                         </div>
 
                         {action === DarknodeAction.Register ?
-                            <Registration operator={true} registrationStatus={darknodeDetails ? darknodeDetails.registrationStatus : RegistrationStatus.Unknown} publicKey={publicKey} network={this.state.network} darknodeID={darknodeID} /> :
+                            <Registration operator={true} registrationStatus={darknodeDetails ? darknodeDetails.registrationStatus : RegistrationStatus.Unknown} publicKey={publicKey} darknodeID={darknodeID} /> :
                             null
                         }
                         {action !== DarknodeAction.Register && darknodeDetails ?
-                            <Registration operator={operator} registrationStatus={darknodeDetails.registrationStatus} network={this.state.network} darknodeID={darknodeID} /> :
+                            <Registration operator={operator} registrationStatus={darknodeDetails.registrationStatus} darknodeID={darknodeID} /> :
                             null
                         }
                     </div>
@@ -74,10 +83,43 @@ class StatusPageClass extends React.Component<StatusPageProps, StatusPageState> 
                 <div className="statuspage--bottom">
                     <FeesBlock operator={operator} darknodeDetails={darknodeDetails} />
                     <GasBlock operator={operator} darknodeDetails={darknodeDetails} />
-                    <NetworkBlock darknodeDetails={darknodeDetails} network={this.state.network} />
+                    <NetworkBlock darknodeDetails={darknodeDetails} />
                 </div>
             </div>
         );
+    }
+
+    private handleInput = (event: React.FormEvent<HTMLInputElement>): void => {
+        const element = (event.target as HTMLInputElement);
+        this.setState((current) => ({ ...current, [element.name]: element.value }));
+    }
+
+    private handleRename = () => {
+        // Use setState callback to set focus to input (otherwise, input will
+        // not have been rendered yet)
+        this.setState({ renaming: true }, () => {
+            if (this.focusInput) {
+                this.focusInput.focus();
+            }
+        });
+    }
+
+    private handleCancelRename = () => {
+        this.setState({ renaming: false });
+    }
+
+    private handleSubmitName = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        const { darknodeID } = this.props;
+        const { newName } = this.state;
+
+        if (!newName) {
+            return;
+        }
+
+        this.setState({ renaming: false });
+        this.props.actions.setDarknodeName({ darknodeID, name: newName });
     }
 }
 
@@ -89,6 +131,7 @@ const mapStateToProps = (state: ApplicationData) => ({
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     actions: bindActionCreators({
+        setDarknodeName,
     }, dispatch),
 });
 

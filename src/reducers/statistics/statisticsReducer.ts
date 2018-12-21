@@ -34,7 +34,9 @@ export function statisticsReducer(state: StatisticsData = new StatisticsData(), 
             });
 
             newList.map((darknodeID) => {
-                newNames = newNames.set(darknodeID, `Darknode ${newList.indexOf(darknodeID) + 1}`);
+                if (!newNames.has(darknodeID)) {
+                    newNames = newNames.set(darknodeID, `Darknode ${newList.indexOf(darknodeID) + 1}`);
+                }
             });
 
             return state

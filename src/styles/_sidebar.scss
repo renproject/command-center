@@ -149,6 +149,12 @@ $full-width: 360px;
 
     color: #FFFFFF;
 
+    .sidebar--name {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
     .sidebar--text--details {
         font-size: 12px;
         display: flex;

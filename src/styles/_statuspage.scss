@@ -4,6 +4,10 @@
     .statuspage--banner {
         display: flex;
         color: white;
+
+        *+* {
+            margin-left: 30px;
+        }
     }
 
     .statuspage--banner .blocky {
@@ -20,6 +24,7 @@
         height: 85px;
         justify-content: space-between;
         margin-left: 40px;
+        min-width: 0;
 
         >div {
             display: flex;
@@ -28,6 +33,7 @@
     }
 
     .statuspage--banner--top {
+        height: 47.5px;
 
         :not(:first-child) {
             margin-left: 20px;
@@ -37,6 +43,11 @@
             font-size: 34px;
             margin: 0;
             font-weight: 500;
+
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-width: 0px;
         }
 
         button {
@@ -46,6 +57,28 @@
             height: 25px;
             border-radius: 2px;
             font-size: 12px;
+            font-weight: bold;
+        }
+    }
+
+    .statuspage--rename {
+        display: flex;
+        align-items: center;
+
+        input {
+            font-weight: 500;
+            font-size: 34px;
+            max-width: 300px;
+
+            color: white;
+            background: none;
+            border: none;
+            border-bottom: 1px solid white;
+        }
+
+        .statuspage--rename--save {
+            background: white;
+            color: $blue-darker;
         }
     }
 
@@ -65,6 +98,33 @@
     }
 
     &.statuspage--focused {
+        .status *+* {
+            margin-left: 10px;
+        }
+
+        .status--button {
+            background: $blue-bright;
+            color: white;
+            padding: 0 40px;
+        }
+
+        .status--button:disabled {
+            background: transparentize($blue-bright, 1 - 0.4);
+        }
+
+        .status--button .loading {
+            margin-left: 10px;
+            display: inline-block;
+            margin-bottom: -3px;
+        }
+
+        .statuspage--bottom {
+            mix-blend-mode: normal;
+            opacity: 0.3;
+        }
+    }
+
+    &.statuspage--renaming {
         .statuspage--bottom {
             mix-blend-mode: normal;
             opacity: 0.3;
@@ -103,28 +163,6 @@
         text-transform: uppercase;
         font-size: 12px;
         border-radius: 15px;
-    }
-
-    &.statuspage--focused {
-        .status *+* {
-            margin-left: 10px;
-        }
-
-        .status--button {
-            background: $blue-bright;
-            color: white;
-            padding: 0 40px;
-        }
-
-        .status--button:disabled {
-            background: transparentize($blue-bright, 1 - 0.4);
-        }
-
-        .status--button .loading {
-            margin-left: 10px;
-            display: inline-block;
-            margin-bottom: -3px;
-        }
     }
 
     .status--button--focus {

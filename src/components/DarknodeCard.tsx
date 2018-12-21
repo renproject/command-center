@@ -23,12 +23,6 @@ interface DarknodeCardProps extends ReturnType<typeof mapStateToProps>, ReturnTy
 }
 
 interface DarknodeCardState {
-    network: string;
-    success: boolean;
-    minBond: number;
-    refreshing: boolean;
-    correctNetwork: boolean;
-    darknodeActionCalled: Map<string, boolean>;
 }
 
 class DarknodeCardClass extends React.Component<DarknodeCardProps, DarknodeCardState> {
@@ -36,12 +30,6 @@ class DarknodeCardClass extends React.Component<DarknodeCardProps, DarknodeCardS
     public constructor(props: DarknodeCardProps, context: object) {
         super(props, context);
         this.state = {
-            network: "",
-            success: false,
-            minBond: 0,
-            refreshing: false,
-            correctNetwork: true,
-            darknodeActionCalled: Map(),
         };
     }
 
