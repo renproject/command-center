@@ -6,30 +6,22 @@
 }
 
 .label--icon {
-    background-image: url($path + 'info.svg');
-    background-repeat: no-repeat;
     height: 15px;
     width: 15px;
     cursor: pointer;
 }
 
-.label--icon:hover + .label--message {
+.label--icon:hover+.label--message {
     display: block;
 }
 
-.info--icon {
-    background-image: url($path + 'info.svg');
-}
-
-.warning--icon {
-    background-image: url($path + 'warning.svg');
-}
 
 .label--message {
     display: none;
     font-weight: normal;
     line-height: 1.4;
     background-color: white;
+    color: $blue-darker;
     border: 1px solid $light-grey;
     border-radius: 4px;
     box-shadow: 0 10px 25px 0 $shadow;

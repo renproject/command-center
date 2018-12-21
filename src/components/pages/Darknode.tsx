@@ -71,7 +71,7 @@ class DarknodeClass extends React.Component<DarknodeProps, DarknodeState> {
                 <Header />
                 <div className="container">
                     {darknodeID ?
-                        <StatusPage action={darknodeAction} publicKey={publicKey} name={name} darknodeID={darknodeID} operator={!readOnly} darknodeDetails={details} /> :
+                        <StatusPage key={darknodeID} action={darknodeAction} publicKey={publicKey} name={name} darknodeID={darknodeID} operator={!readOnly} darknodeDetails={details} /> :
                         <div>Darknode not found</div>
                     }
                 </div>

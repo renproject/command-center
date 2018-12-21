@@ -1,11 +1,11 @@
 import * as React from "react";
 
-import { Map } from "immutable";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
 import { RegistrationStatus, setDarknodeName } from "@Actions/statistics/operatorActions";
 import { Blocky } from "@Components/Blocky";
+import { InfoLabel } from "@Components/InfoLabel";
 import { DarknodeAction } from "@Components/pages/Darknode";
 import { ApplicationData, DarknodeDetails } from "@Reducers/types";
 import { FeesBlock } from "./block/FeesBlock";
@@ -64,7 +64,7 @@ class StatusPageClass extends React.Component<StatusPageProps, StatusPageState> 
                                 </form> :
                                 <>
                                     <h3>{name ? name : <span className="monospace">{darknodeID.substring(0, 8)}...{darknodeID.slice(-5)}</span>}</h3>
-                                    {operator ? <button onClick={this.handleRename}>Edit name</button> : null}
+                                    <button onClick={this.handleRename}>Edit name <InfoLabel>Darknode names are stored in your browser.</InfoLabel></button>
                                     <button>View details</button>
                                 </>}
                         </div>

@@ -5,7 +5,7 @@
         display: flex;
         color: white;
 
-        *+* {
+        >*+* {
             margin-left: 30px;
         }
     }
@@ -35,7 +35,7 @@
     .statuspage--banner--top {
         height: 47.5px;
 
-        :not(:first-child) {
+        >:not(:first-child) {
             margin-left: 20px;
         }
 
@@ -64,6 +64,10 @@
     .statuspage--rename {
         display: flex;
         align-items: center;
+
+        >:not(:first-child) {
+            margin-left: 20px;
+        }
 
         input {
             font-weight: 500;
@@ -125,7 +129,11 @@
     }
 
     &.statuspage--renaming {
-        .statuspage--bottom {
+
+        .statuspage--bottom,
+        .blocky,
+        .status,
+        .statuspage--banner-right {
             mix-blend-mode: normal;
             opacity: 0.3;
         }

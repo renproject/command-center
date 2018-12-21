@@ -1,5 +1,7 @@
 import * as React from "react";
 
+import BigNumber from "bignumber.js";
+
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
@@ -7,6 +9,8 @@ import { RegistrationStatus } from "@Actions/statistics/operatorActions";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ApplicationData, DarknodeDetails } from "@Reducers/types";
+
+const lowValue = new BigNumber(Math.pow(10, 18)).multipliedBy(0.1);
 
 interface NotificationsProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     operator: boolean;
@@ -42,6 +46,11 @@ class NotificationsClass extends React.Component<NotificationsProps, Notificatio
             notification = {
                 title: "Darknode deregistered.",
                 detail: "You will be able to withdraw your REN within 24 hours.",
+            };
+        } else if (operator && darknodeDetails && darknodeDetails.registrationStatus === RegistrationStatus.Registered && darknodeDetails.ethBalance.lt(lowValue)) {
+            notification = {
+                title: "Low gas balance.",
+                detail: "If your darknode runs out of ETH, it won't earn fees.",
             };
         }
 
