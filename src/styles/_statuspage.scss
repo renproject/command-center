@@ -84,6 +84,10 @@
             background: white;
             color: $blue-darker;
         }
+
+        .statuspage--rename--save:disabled {
+            color: $light-grey;
+        }
     }
 
     .statuspage--bottom {
@@ -279,6 +283,23 @@
             margin-top: 10px;
         }
     }
+
+    .status--operator {
+        background-color: rgba(0, 111, 232, 0.28);
+        line-height: 30px;
+        border-radius: 15px;
+        padding: 0 20px;
+        font-weight: 500;
+        text-align: center;
+        font-size: 12px;
+        margin-left: 10px;
+
+        // Hide overflow with ellipsis:
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        min-width: 0px;
+    }
 }
 
 
@@ -341,4 +362,12 @@
     top: -10px; // padding
     border-top-left-radius: 2px;
     border-bottom-left-radius: 2px;
+}
+
+.darknode-id {
+    max-width: 300px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0px;
 }

@@ -10,6 +10,8 @@ import { ErrorCanceledByUser } from "@Library/wallets/wallet";
 import { ApplicationData } from "@Reducers/types";
 import { connect } from "react-redux";
 
+import Warn from "../../styles/images/warn.svg";
+
 interface MultiStepPopupProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     steps: Array<{
         call: () => Promise<void>;
@@ -18,6 +20,7 @@ interface MultiStepPopupProps extends ReturnType<typeof mapStateToProps>, Return
 
     title: string;
     confirm: boolean;
+    warning?: string;
 
     onCancel?: (() => void) | (() => Promise<void>);
     // onDone?: (() => void) | (() => Promise<void>);
@@ -59,8 +62,10 @@ export class MultiStepPopupClass extends React.Component<MultiStepPopupProps, Mu
 
     public render(): JSX.Element {
         const { error, currentStep, running, complete, rejected } = this.state;
+        const { warning } = this.props;
 
         const notStarted = !running && !complete && !error;
+        const showWarning = warning && notStarted;
 
         const transactionS = this.props.steps.length === 1 ? "Transaction" : "Transaction";
 
@@ -68,7 +73,9 @@ export class MultiStepPopupClass extends React.Component<MultiStepPopupProps, Mu
 
             <div className="multi-step--top">
 
-                <h2 className={rejected ? "red" : ""}>{rejected ? `${transactionS} rejected` : complete ? `${transactionS} submitted` : this.props.title}</h2>
+                {showWarning ? <img src={Warn} /> : null}
+
+                <h2 className={rejected ? "red" : ""}>{rejected ? `${transactionS} rejected` : complete ? `${transactionS} submitted` : showWarning ? warning : this.props.title}</h2>
 
                 {!notStarted && this.props.steps.length > 1 ? <ul className="multi-step--list">
                     {
@@ -100,7 +107,7 @@ export class MultiStepPopupClass extends React.Component<MultiStepPopupProps, Mu
                             </> :
                             <>
                                 <button className="styled-button styled-button--light" onClick={this.onCancel}>Cancel</button>
-                                <button className="styled-button" onClick={this.run}>Confirm</button>
+                                <button className={`styled-button ${warning ? "styled-button--red" : ""}`} onClick={this.run}>Confirm</button>
                             </>
                 }
             </div>

@@ -13,7 +13,7 @@ import { ApplicationData } from "@Reducers/types";
 
 
 interface FeesProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
-    operator: boolean;
+    isOperator: boolean;
     token: Token;
     amount: string | BigNumber;
     darknodeID: string;
@@ -33,7 +33,7 @@ class FeesItemClass extends React.Component<FeesProps, FeesState> {
 
     public render(): JSX.Element {
         return (
-            <button className="withdraw-fees" disabled={this.state.disabled || !this.props.operator} onClick={this.handleWithdraw}>
+            <button className="withdraw-fees" disabled={this.state.disabled || !this.props.isOperator} onClick={this.handleWithdraw}>
                 <FontAwesomeIcon icon={faChevronRight} pull="left" />
             </button>
         );

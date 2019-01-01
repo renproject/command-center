@@ -8,10 +8,11 @@ import { RegistrationStatus, updateDarknodeStatistics, updateOperatorStatistics 
 import { showDeregisterPopup, showRefundPopup, showRegisterPopup } from "@Actions/statistics/operatorPopupActions";
 
 interface RegistrationProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
-    operator: boolean;
+    isOperator: boolean;
     registrationStatus: RegistrationStatus;
     darknodeID: string;
     publicKey?: string;
+    operator?: string;
 }
 
 interface RegistrationState {
@@ -43,27 +44,27 @@ class RegistrationClass extends React.Component<RegistrationProps, RegistrationS
     }
 
     public render(): JSX.Element {
-        const { operator, registrationStatus, store: { address } } = this.props;
+        const { isOperator, registrationStatus, store: { address } } = this.props;
         const { active } = this.state;
 
         const disabled = active || !address;
 
         const noStatus =
             (registrationStatus === RegistrationStatus.Unregistered) ||
-            (operator && registrationStatus === RegistrationStatus.Refundable);
+            (isOperator && registrationStatus === RegistrationStatus.Refundable);
 
         return (
             <div className="status">
                 {!noStatus ?
                     <span className="status--title">{statusText[this.props.registrationStatus]}</span> : null}
-                {operator ? <>
+                {isOperator ? <>
                     {registrationStatus === RegistrationStatus.Unregistered ?
                         <button disabled={disabled} className="status--button" onClick={this.handleRegister}>{active ? "Registering..." : "Register your darknode"}</button> : null}
                     {registrationStatus === RegistrationStatus.Registered ?
                         <button disabled={disabled} className="status--button" onClick={this.handleDeregister}>{active ? "Deregistering..." : "Deregister"}</button> : null}
                     {registrationStatus === RegistrationStatus.Refundable
                         ? <button disabled={disabled} className="status--button status--button--focus" onClick={this.handleRefund}>{active ? "Refunding..." : "Refund"}</button> : null}
-                </> : null}
+                </> : (this.props.operator ? <span className="status--operator">Operator: {this.props.operator}</span> : null)}
             </div>
         );
     }

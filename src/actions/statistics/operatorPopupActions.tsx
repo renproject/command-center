@@ -35,10 +35,11 @@ export const showRegisterPopup = (sdk: RenExSDK, address: string, darknodeID: st
         { call: () => step2(), name: "Register darknode" },
     ];
 
+    const warning = "Estimated Darknode profit is currently negative. Are you show you want to continue?";
     const title = "Register darknode";
 
     dispatch(setPopup(
-        { popup: <MultiStepPopup steps={steps} onCancel={onCancel} title={title} confirm={true} />, onCancel, dismissible: false, overlay: true }
+        { popup: <MultiStepPopup steps={steps} onCancel={onCancel} title={title} confirm={true} warning={warning} />, onCancel, dismissible: false, overlay: true }
     ));
 };
 
@@ -52,10 +53,11 @@ export const showDeregisterPopup = (sdk: RenExSDK, address: string, darknodeID: 
         { call: () => step1(), name: "Deregister darknode" },
     ];
 
+    const warning = "Estimated Darknode profit is currently negative. Are you show you want to continue?";
     const title = "Deregister darknode";
 
     dispatch(setPopup(
-        { popup: <MultiStepPopup steps={steps} onCancel={onCancel} title={title} confirm={true} />, onCancel, dismissible: false, overlay: true }
+        { popup: <MultiStepPopup steps={steps} onCancel={onCancel} title={title} confirm={true} warning={warning} />, onCancel, dismissible: false, overlay: true }
     ));
 };
 

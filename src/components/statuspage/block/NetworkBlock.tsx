@@ -2,6 +2,7 @@ import * as React from "react";
 
 import { faServer } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { EncodedData, Encodings } from "@Library/general/encodedData";
 import { DarknodeDetails } from "@Reducers/types";
 import { Block, BlockBody, BlockTitle } from "./Block";
 
@@ -50,6 +51,9 @@ interface NetworkBlockProps {
 
 export const NetworkBlock = (props: NetworkBlockProps) => {
     const { darknodeDetails } = props;
+
+    const darknodeIDBase58 = darknodeDetails ? new EncodedData(darknodeDetails.ID, Encodings.HEX).toBase58() : "";
+
     return (
 
         <Block className="network-block">
@@ -72,9 +76,8 @@ export const NetworkBlock = (props: NetworkBlockProps) => {
                     <div className="darknode-info">
                         <span className="darknode-info--title">Connected Peers:</span> <span>{darknodeDetails.peers}</span>
                     </div>
-                    <CopyBlock value={darknodeDetails.multiAddress}>Multi-address</CopyBlock>
+                    <CopyBlock value={darknodeIDBase58}>ID</CopyBlock>
                     <CopyBlock value={darknodeDetails.ID}>Ethereum Address</CopyBlock>
-                    <CopyBlock value={darknodeDetails.publicKey}>Public Key</CopyBlock>
                 </div>
             </BlockBody> : null}
         </Block>
