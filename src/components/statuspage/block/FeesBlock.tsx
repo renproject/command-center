@@ -19,7 +19,7 @@ import { Block, BlockBody, BlockTitle } from "./Block";
 
 
 interface FeesBlockProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
-    operator: boolean;
+    isOperator: boolean;
     darknodeDetails: DarknodeDetails | null;
 }
 
@@ -37,7 +37,7 @@ class FeesBlockClass extends React.Component<FeesBlockProps, FeesBlockState> {
     }
 
     public render(): JSX.Element {
-        const { darknodeDetails, store, operator } = this.props;
+        const { darknodeDetails, store, isOperator } = this.props;
         const { quoteCurrency } = store;
         const { showAdvanced } = this.state;
 
@@ -82,7 +82,7 @@ class FeesBlockClass extends React.Component<FeesBlockProps, FeesBlockState> {
                                                     <td><TokenIcon className="fees-block--table--icon" token={token} /> <span>{token}</span></td>
                                                     <td className="fees-block--table--value"><TokenBalance token={token} amount={balance} /></td>
                                                     <td className="fees-block--table--usd"><CurrencyIcon currency={quoteCurrency} /><TokenBalance token={token} amount={balance} convertTo={quoteCurrency} /> <span className="fees-block--table--usd-symbol">{quoteCurrency.toUpperCase()}</span></td>
-                                                    <td><FeesItem operator={operator} key={token} token={token} amount={balance} darknodeID={darknodeDetails.ID} /></td>
+                                                    <td><FeesItem isOperator={isOperator} key={token} token={token} amount={balance} darknodeID={darknodeDetails.ID} /></td>
                                                 </tr>;
                                             }).valueSeq().toArray()
                                         }

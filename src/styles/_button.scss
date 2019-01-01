@@ -12,6 +12,11 @@
         background-color: inherit;
         color: $mid-grey;
     }
+
+    &.styled-button--red {
+        background-color: $light-red;
+        color: white;
+    }
 }
 
 .styled-button:before {
@@ -33,6 +38,10 @@
     &.styled-button--light {
         background-color: inherit;
     }
+
+    &.styled-button--red {
+        background-color: $light-red;
+    }
 }
 
 .styled-button:focus:before,
@@ -53,6 +62,10 @@
 
         &.styled-button--light {
             background-color: inherit;
+        }
+
+        &.styled-button--red {
+            background-color: $light-red;
         }
     }
 

@@ -14,7 +14,6 @@ import { Topup } from "../Topup";
 import { Block, BlockBody, BlockTitle } from "./Block";
 
 interface GasBlockProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
-    operator: boolean;
     darknodeDetails: DarknodeDetails | null;
 }
 
@@ -32,7 +31,7 @@ class GasBlockClass extends React.Component<GasBlockProps, GasBlockState> {
     }
 
     public render(): JSX.Element {
-        const { darknodeDetails, operator } = this.props;
+        const { darknodeDetails } = this.props;
         const { showAdvanced } = this.state;
 
         const gasValue = darknodeDetails ? (darknodeDetails.ethBalance.div(new BigNumber(Math.pow(10, 18)))).toFixed(3) : "";

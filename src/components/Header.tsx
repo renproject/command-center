@@ -12,6 +12,8 @@ import { Blocky } from "@Components/Blocky";
 import { ApplicationData, Currency } from "@Reducers/types";
 import { CurrencyIcon } from "./CurrencyIcon";
 
+import English from "../styles/images/rp-flag-uk.svg";
+
 interface HeaderProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps>,
     RouteComponentProps {
     hideOptions?: boolean;
@@ -66,7 +68,7 @@ class HeaderClass extends React.Component<HeaderProps, HeaderState> {
                                     English <FontAwesomeIcon icon={faAngleDown} />
                                     {languageDropdown ?
                                         <ul className="header--dropdown header--dropdown--options">
-                                            <li role="button" className="header--dropdown--selected"><FontAwesomeIcon icon={faFlag} />English</li>
+                                            <li role="button" className="header--dropdown--selected"><img src={English} /> English</li>
                                         </ul> : null
                                     }
                                 </li>

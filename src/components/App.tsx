@@ -65,6 +65,10 @@ class AppClass extends React.Component<AppProps, AppState> {
         let { darknodeID } = params as { darknodeID: string };
         darknodeID = darknodeID && sdk.getWeb3().utils.toChecksumAddress(darknodeID.toLowerCase());
 
+        // Sometimes, logging in seems to freeze, to we start loops that don't
+        // rely on being logged in before attempting to log in
+        this.setupLoops();
+
         try {
             await this.props.actions.login(sdk, { redirect: false, showPopup: !darknodeID, immediatePopup: false });
         } catch (err) {
@@ -72,7 +76,7 @@ class AppClass extends React.Component<AppProps, AppState> {
             Sentry.captureException(err);
         }
 
-        this.setupLoops();
+        this.setupLoopsWithAccount();
     }
 
     public componentWillReceiveProps = (nextProps: AppProps) => {
@@ -212,14 +216,17 @@ class AppClass extends React.Component<AppProps, AppState> {
         this.callUpdateSelectedDarknodeStatisticsTimeout = setTimeout(this.callUpdateSelectedDarknodeStatistics, timeout * 1000);
     }
 
-
     // tslint:disable-next-line:member-ordering
     public setupLoops() {
         this.callUpdatePrices().catch(console.error);
-        this.callLookForLogout().catch(console.error);
         this.callUpdateNetworkStatistics().catch(console.error);
-        this.callUpdateOperatorStatistics().catch(console.error);
         this.callUpdateSelectedDarknodeStatistics().catch(console.error);
+    }
+
+    // tslint:disable-next-line:member-ordering
+    public setupLoopsWithAccount() {
+        this.callLookForLogout().catch(console.error);
+        this.callUpdateOperatorStatistics().catch(console.error);
     }
 
 }

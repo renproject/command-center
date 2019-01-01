@@ -13,6 +13,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Token } from "@Library/tokens";
 import { ApplicationData, Currency, DarknodeDetails } from "@Reducers/types";
 import { CurrencyIcon } from "./CurrencyIcon";
+import { DarknodeID } from "./DarknodeID";
 import { statusText } from "./statuspage/Registration";
 import { TokenBalance } from "./TokenBalance";
 
@@ -45,7 +46,7 @@ class DarknodeCardClass extends React.Component<DarknodeCardProps, DarknodeCardS
 
                         <Blocky address={darknodeID} fgColor="#006FE8" bgColor="transparent" />
 
-                        <h3 className="darknode-card--name">{name ? name : <span className="monospace">{darknodeID.substring(0, 8)}...{darknodeID.slice(-5)}</span>}</h3>
+                        <h3 className="darknode-card--name">{name ? name : <DarknodeID darknodeID={darknodeID} />}</h3>
                         <span className="darknode-card--status">{darknodeDetails ? statusText[darknodeDetails.registrationStatus] : ""}</span>
                     </div>
                     {darknodeDetails ?

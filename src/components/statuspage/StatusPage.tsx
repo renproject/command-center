@@ -5,6 +5,7 @@ import { bindActionCreators, Dispatch } from "redux";
 
 import { RegistrationStatus, setDarknodeName } from "@Actions/statistics/operatorActions";
 import { Blocky } from "@Components/Blocky";
+import { DarknodeID } from "@Components/DarknodeID";
 import { InfoLabel } from "@Components/InfoLabel";
 import { DarknodeAction } from "@Components/pages/Darknode";
 import { ApplicationData, DarknodeDetails } from "@Reducers/types";
@@ -16,7 +17,7 @@ import { Registration } from "./Registration";
 
 interface StatusPageProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     action: DarknodeAction;
-    operator: boolean;
+    isOperator: boolean;
 
     darknodeID: string;
     darknodeDetails: DarknodeDetails | null;
@@ -47,7 +48,7 @@ class StatusPageClass extends React.Component<StatusPageProps, StatusPageState> 
     }
 
     public render(): JSX.Element {
-        const { darknodeDetails, darknodeID, name, operator, action, publicKey } = this.props;
+        const { darknodeDetails, darknodeID, name, isOperator, action, publicKey } = this.props;
         const { renaming, newName } = this.state;
 
         return (
@@ -60,29 +61,29 @@ class StatusPageClass extends React.Component<StatusPageProps, StatusPageState> 
                                 <form className="statuspage--rename" onSubmit={this.handleSubmitName}>
                                     <input ref={c => this.focusInput = c} role="textbox" type="text" name="newName" onChange={this.handleInput} value={newName} />
                                     <button type="submit" className="statuspage--rename--save" disabled={!newName}>Save</button>
-                                    <button disabled={!newName} onClick={this.handleCancelRename}>Cancel</button>
+                                    <button onClick={this.handleCancelRename}>Cancel</button>
                                 </form> :
                                 <>
-                                    <h3>{name ? name : <span className="monospace">{darknodeID.substring(0, 8)}...{darknodeID.slice(-5)}</span>}</h3>
-                                    <button onClick={this.handleRename}>Edit name <InfoLabel>Darknode names are stored in your browser.</InfoLabel></button>
+                                    <h3>{name ? name : <DarknodeID darknodeID={darknodeID} />}</h3>
+                                    <button onClick={this.handleRename}>{name ? "Edit name" : "Set name"} <InfoLabel>Darknode names are stored in your browser.</InfoLabel></button>
                                     <button>View details</button>
                                 </>}
                         </div>
 
                         {action === DarknodeAction.Register ?
-                            <Registration operator={true} registrationStatus={darknodeDetails ? darknodeDetails.registrationStatus : RegistrationStatus.Unknown} publicKey={publicKey} darknodeID={darknodeID} /> :
+                            <Registration isOperator={true} registrationStatus={darknodeDetails ? darknodeDetails.registrationStatus : RegistrationStatus.Unknown} publicKey={publicKey} darknodeID={darknodeID} /> :
                             null
                         }
                         {action !== DarknodeAction.Register && darknodeDetails ?
-                            <Registration operator={operator} registrationStatus={darknodeDetails.registrationStatus} darknodeID={darknodeID} /> :
+                            <Registration isOperator={isOperator} operator={darknodeDetails.operator} registrationStatus={darknodeDetails.registrationStatus} darknodeID={darknodeID} /> :
                             null
                         }
                     </div>
-                    <Notifications operator={operator} darknodeDetails={darknodeDetails} />
+                    <Notifications isOperator={isOperator} darknodeDetails={darknodeDetails} />
                 </div>
                 <div className="statuspage--bottom">
-                    <FeesBlock operator={operator} darknodeDetails={darknodeDetails} />
-                    <GasBlock operator={operator} darknodeDetails={darknodeDetails} />
+                    <FeesBlock isOperator={isOperator} darknodeDetails={darknodeDetails} />
+                    <GasBlock darknodeDetails={darknodeDetails} />
                     <NetworkBlock darknodeDetails={darknodeDetails} />
                 </div>
             </div>

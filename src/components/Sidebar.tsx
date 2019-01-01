@@ -13,6 +13,7 @@ import { Token } from "@Library/tokens";
 import { ApplicationData, Currency } from "@Reducers/types";
 import { Blocky } from "./Blocky";
 import { CurrencyIcon } from "./CurrencyIcon";
+import { DarknodeID } from "./DarknodeID";
 import { TokenBalance } from "./TokenBalance";
 
 interface SidebarProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
@@ -50,8 +51,7 @@ class SidebarClass extends React.Component<SidebarProps> {
                     {darknodeList && darknodeList.map((darknodeID) => {
                         const details = darknodeDetails.get(darknodeID);
                         const storedName = darknodeNames.get(darknodeID);
-                        const name = storedName ? storedName : <span className="monospace">{darknodeID.substring(0, 8)}...{darknodeID.slice(-5)}</span>;
-
+                        const name = storedName ? storedName : <DarknodeID darknodeID={darknodeID} />;
 
                         // tslint:disable-next-line:jsx-no-lambda FIXME
                         return <Link className="no-underline" key={darknodeID} to={`/darknode/${darknodeID}`}>
