@@ -132,6 +132,13 @@
         }
     }
 
+    &.statuspage--no-darknode {
+        .statuspage--bottom {
+            mix-blend-mode: normal;
+            opacity: 0.3;
+        }
+    }
+
     &.statuspage--renaming {
 
         .statuspage--bottom,

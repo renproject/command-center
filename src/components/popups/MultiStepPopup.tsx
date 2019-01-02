@@ -20,7 +20,8 @@ interface MultiStepPopupProps extends ReturnType<typeof mapStateToProps>, Return
 
     title: string;
     confirm: boolean;
-    warning?: string;
+    warning?: string | JSX.Element;
+    ignoreWarning?: string;
 
     onCancel?: (() => void) | (() => Promise<void>);
     // onDone?: (() => void) | (() => Promise<void>);
@@ -31,6 +32,7 @@ interface MultiStepPopupState {
     running: boolean;
     complete: boolean;
     rejected: boolean;
+    warningIgnored: boolean;
 
     error: Error | null;
     bond: BigNumber | null;
@@ -51,6 +53,7 @@ export class MultiStepPopupClass extends React.Component<MultiStepPopupProps, Mu
             currentStep: 0,
             error: null,
             bond: null,
+            warningIgnored: false,
         };
     }
 
@@ -61,22 +64,32 @@ export class MultiStepPopupClass extends React.Component<MultiStepPopupProps, Mu
     }
 
     public render(): JSX.Element {
-        const { error, currentStep, running, complete, rejected } = this.state;
-        const { warning } = this.props;
+        const { error, currentStep, running, complete, rejected, warningIgnored } = this.state;
+        const { warning, ignoreWarning } = this.props;
 
         const notStarted = !running && !complete && !error;
-        const showWarning = warning && notStarted;
 
         const transactionS = this.props.steps.length === 1 ? "Transaction" : "Transaction";
 
+
+        // Show a warning to the user
+        if (warning && notStarted && !warningIgnored) {
+            return <div className="popup multi-step">
+                <div className="multi-step--top">
+                    <img src={Warn} />
+                    <h2 className={ignoreWarning ? "multi-step--with-ignore" : ""}>{warning}</h2>
+                    {ignoreWarning ? <span onClick={this.onIgnoreWarning} className="multi-step--ignore">{ignoreWarning}</span> : null}
+                </div>
+                <div className="multi-step--buttons" >
+                    <button className="styled-button styled-button--light" onClick={this.onCancel}>Cancel</button>
+                    {!ignoreWarning ? <button className={`styled-button ${warning ? "styled-button--red" : ""}`} onClick={this.run}>Confirm</button> : null}
+                </div>
+            </div>;
+        }
+
         return <div className="popup multi-step">
-
             <div className="multi-step--top">
-
-                {showWarning ? <img src={Warn} /> : null}
-
-                <h2 className={rejected ? "red" : ""}>{rejected ? `${transactionS} rejected` : complete ? `${transactionS} submitted` : showWarning ? warning : this.props.title}</h2>
-
+                <h2 className={rejected ? "red" : ""}>{rejected ? `${transactionS} rejected` : complete ? `${transactionS} submitted` : this.props.title}</h2>
                 {!notStarted && this.props.steps.length > 1 ? <ul className="multi-step--list">
                     {
                         this.props.steps.map((step, index: number) => {
@@ -95,16 +108,20 @@ export class MultiStepPopupClass extends React.Component<MultiStepPopupProps, Mu
 
             <div className="multi-step--buttons" >
                 {running ?
+                    // Show spinning icon while running through steps
                     <button className="styled-button styled-button--light" disabled={true}><Loading /></button> :
                     complete ?
+                        // Get user to click Close instead of automatically closing popup
                         <>
                             <button className="styled-button" onClick={this.onDone}>Close</button>
                         </> :
                         error ?
+                            // Let user cancel or retry after error
                             <>
                                 <button className="styled-button styled-button--light" onClick={this.onCancel}>Cancel</button>
                                 <button className="styled-button styled-button--light" onClick={this.run}>Retry</button>
                             </> :
+                            // Ask user to confirm
                             <>
                                 <button className="styled-button styled-button--light" onClick={this.onCancel}>Cancel</button>
                                 <button className={`styled-button ${warning ? "styled-button--red" : ""}`} onClick={this.run}>Confirm</button>
@@ -112,6 +129,10 @@ export class MultiStepPopupClass extends React.Component<MultiStepPopupProps, Mu
                 }
             </div>
         </div>;
+    }
+
+    private onIgnoreWarning = () => {
+        this.setState({ warningIgnored: true });
     }
 
     private onCancel = () => {
@@ -155,6 +176,8 @@ export class MultiStepPopupClass extends React.Component<MultiStepPopupProps, Mu
 
         this.setState({ running: false, complete: true });
     }
+
+
 }
 
 const mapStateToProps = (state: ApplicationData) => ({

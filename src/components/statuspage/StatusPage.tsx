@@ -51,8 +51,13 @@ class StatusPageClass extends React.Component<StatusPageProps, StatusPageState> 
         const { darknodeDetails, darknodeID, name, isOperator, action, publicKey } = this.props;
         const { renaming, newName } = this.state;
 
+        let noDarknode;
+        if (darknodeDetails && action !== DarknodeAction.Register && darknodeDetails.registrationStatus === RegistrationStatus.Unregistered && darknodeDetails.operator === "0x0000000000000000000000000000000000000000") {
+            noDarknode = true;
+        }
+
         return (
-            <div className={`statuspage ${action !== DarknodeAction.View ? `statuspage--focused` : ``} ${renaming ? `statuspage--renaming` : ``}`}>
+            <div className={`statuspage ${action !== DarknodeAction.View ? `statuspage--focused` : ``} ${renaming ? `statuspage--renaming` : ``} ${noDarknode ? `statuspage--no-darknode` : ``}`}>
                 <div className="statuspage--banner">
                     <Blocky address={darknodeID} fgColor="#006FE8" bgColor="transparent" />
                     <div className="statuspage--banner--details">
@@ -66,16 +71,16 @@ class StatusPageClass extends React.Component<StatusPageProps, StatusPageState> 
                                 <>
                                     <h3>{name ? name : <DarknodeID darknodeID={darknodeID} />}</h3>
                                     <button onClick={this.handleRename}>{name ? "Edit name" : "Set name"} <InfoLabel>Darknode names are stored in your browser.</InfoLabel></button>
-                                    <button>View details</button>
+                                    {darknodeDetails ? <button>View details</button> : null}
                                 </>}
                         </div>
 
                         {action === DarknodeAction.Register ?
-                            <Registration isOperator={true} registrationStatus={darknodeDetails ? darknodeDetails.registrationStatus : RegistrationStatus.Unknown} publicKey={publicKey} darknodeID={darknodeID} /> :
+                            <Registration isOperator={true} registrationStatus={darknodeDetails ? darknodeDetails.registrationStatus : RegistrationStatus.Unknown} darknodeDetails={darknodeDetails} publicKey={publicKey} darknodeID={darknodeID} /> :
                             null
                         }
                         {action !== DarknodeAction.Register && darknodeDetails ?
-                            <Registration isOperator={isOperator} operator={darknodeDetails.operator} registrationStatus={darknodeDetails.registrationStatus} darknodeID={darknodeID} /> :
+                            <Registration isOperator={isOperator} registrationStatus={darknodeDetails.registrationStatus} darknodeDetails={darknodeDetails} darknodeID={darknodeID} /> :
                             null
                         }
                     </div>
