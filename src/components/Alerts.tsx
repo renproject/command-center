@@ -4,8 +4,8 @@ import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import { bindActionCreators } from "redux";
 
-import { clearAlert } from "@Actions/alert/alertActions";
-import { ApplicationData } from "@Reducers/types";
+import { clearAlert } from "../actions/alert/alertActions";
+import { ApplicationData } from "../reducers/types";
 
 interface AlertsProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
 }

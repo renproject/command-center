@@ -1,8 +1,8 @@
 import { ActionType, getType } from "typesafe-actions";
 
-import * as alertActions from "@Actions/alert/alertActions";
+import * as alertActions from "../../actions/alert/alertActions";
 
-import { Alert, AlertData } from "@Reducers/types";
+import { Alert, AlertData } from "../../reducers/types";
 
 type AlertAction = ActionType<typeof alertActions>;
 

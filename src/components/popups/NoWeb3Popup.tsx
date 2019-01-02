@@ -3,8 +3,8 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { ApplicationData } from "@Reducers/types";
-import { Language } from "@Root/languages/language";
+import { ApplicationData } from "../../reducers/types";
+import { Language } from "../../languages/language";
 
 const metamaskIcon = require("../../styles/images/metamask.svg");
 

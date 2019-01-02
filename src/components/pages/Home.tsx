@@ -3,12 +3,12 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { Header } from "@Components/Header";
+import { Header } from "../../components/Header";
 
-import { setAlert } from "@Actions/alert/alertActions";
-import { login } from "@Actions/trader/accountActions";
-import { DarknodeList } from "@Components/DarknodeList";
-import { ApplicationData } from "@Reducers/types";
+import { setAlert } from "../../actions/alert/alertActions";
+import { login } from "../../actions/trader/accountActions";
+import { DarknodeList } from "../../components/DarknodeList";
+import { ApplicationData } from "../../reducers/types";
 
 interface HomeProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
 }

@@ -1,16 +1,16 @@
 import * as React from "react";
 
 import { faCircle, faFire, faThLarge } from "@fortawesome/free-solid-svg-icons";
+import { faStar } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { Dispatch } from "redux";
 import { bindActionCreators } from "redux";
 
-import { RegistrationStatus } from "@Actions/statistics/operatorActions";
-import { faStar } from "@fortawesome/free-regular-svg-icons";
-import { Token } from "@Library/tokens";
-import { ApplicationData, Currency } from "@Reducers/types";
+import { RegistrationStatus } from "../actions/statistics/operatorActions";
+import { Token } from "../lib/tokens";
+import { ApplicationData, Currency } from "../reducers/types";
 import { Blocky } from "./Blocky";
 import { CurrencyIcon } from "./CurrencyIcon";
 import { DarknodeID } from "./DarknodeID";

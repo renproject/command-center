@@ -7,9 +7,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { withdrawReward } from "@Actions/trader/darknode";
-import { Token } from "@Library/tokens";
-import { ApplicationData } from "@Reducers/types";
+import { withdrawReward } from "../../actions/trader/darknode";
+import { Token } from "../../lib/tokens";
+import { ApplicationData } from "../../reducers/types";
 
 
 interface FeesProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {

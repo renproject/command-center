@@ -2,7 +2,8 @@ import * as React from "react";
 
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { LabelType } from "@Reducers/types";
+
+import { LabelType } from "../reducers/types";
 
 interface InfoLabelProps {
     type?: LabelType;

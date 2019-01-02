@@ -7,10 +7,10 @@ import BigNumber from "bignumber.js";
 
 import { List, Map, OrderedMap } from "immutable";
 
-import { RegistrationStatus } from "@Actions/statistics/operatorActions";
-import { Record } from "@Library/general/record";
-import { Token } from "@Library/tokens";
-import { getReadOnlyProvider } from "@Library/wallets/wallet";
+import { RegistrationStatus } from "../actions/statistics/operatorActions";
+import { Record } from "../lib/general/record";
+import { Token } from "../lib/tokens";
+import { getReadOnlyProvider } from "../lib/wallets/wallet";
 
 export interface Serializable<T> {
     serialize(): string;

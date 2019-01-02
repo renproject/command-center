@@ -1,8 +1,8 @@
 import { ActionType, getType } from "typesafe-actions";
 
-import * as popupActions from "@Actions/popup/popupActions";
+import * as popupActions from "../../actions/popup/popupActions";
 
-import { PopupData } from "@Reducers/types";
+import { PopupData } from "../../reducers/types";
 
 type PopupAction = ActionType<typeof popupActions>;
 

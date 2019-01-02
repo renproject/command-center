@@ -1,8 +1,8 @@
 import * as React from "react";
 
-import { updateDarknodeStatistics } from "@Actions/statistics/operatorActions";
-import { showFundPopup } from "@Actions/statistics/operatorPopupActions";
-import { ApplicationData, DarknodeDetails } from "@Reducers/types";
+import { updateDarknodeStatistics } from "../../actions/statistics/operatorActions";
+import { showFundPopup } from "../../actions/statistics/operatorPopupActions";
+import { ApplicationData, DarknodeDetails } from "../../reducers/types";
 import { BigNumber } from "bignumber.js";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";

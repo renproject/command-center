@@ -4,8 +4,8 @@ import BigNumber from "bignumber.js";
 import { Dispatch } from "redux";
 import { createStandardAction } from "typesafe-actions";
 
-import { getPrices } from "@Library/tokens";
-import { TokenPrices } from "@Reducers/types";
+import { getPrices } from "../../lib/tokens";
+import { TokenPrices } from "../../reducers/types";
 
 export const storeTokenPrices = createStandardAction("STORE_TOKEN_PRICES")<{ tokenPrices: TokenPrices; }>();
 

@@ -12,11 +12,11 @@ import { Route, Router } from "react-router-dom";
 import { PersistGate } from "redux-persist/integration/react";
 import { HttpProvider } from "web3/providers";
 
-import { App } from "@Components/App";
-import { history } from "@Library/history";
-import { configureStore } from "@Store/configureStore";
+import { App } from "./components/App";
+import { history } from "./lib/history";
+import { configureStore } from "./store/configureStore";
 
-import "@Root/index.css";
+import "./index.scss";
 
 export const { store, persistor } = configureStore();
 

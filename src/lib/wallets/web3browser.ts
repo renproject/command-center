@@ -2,10 +2,10 @@ import Web3 from "web3";
 
 import { Provider } from "web3/providers";
 
-import { networkData } from "@Library/network";
-import { WalletDetail } from "@Library/wallets/wallet";
-import { getAccounts, getNetwork } from "@Library/web3";
-import { Language } from "@Root/languages/language";
+import { networkData } from "../../lib/network";
+import { WalletDetail } from "../../lib/wallets/wallet";
+import { getAccounts, getNetwork } from "../../lib/web3";
+import { Language } from "../../languages/language";
 
 export const ErrorNoWeb3 = Language.wallet.mustInstallMetaMask;
 export const ErrorNoAccounts = Language.wallet.noAccounts;

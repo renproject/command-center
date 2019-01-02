@@ -1,6 +1,6 @@
 import { createStandardAction } from "typesafe-actions";
 
-import { Alert } from "@Reducers/types";
+import { Alert } from "../../reducers/types";
 
 /**
  * Adds a new alert to the alert stack

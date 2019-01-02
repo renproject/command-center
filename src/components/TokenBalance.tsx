@@ -4,8 +4,8 @@ import { BigNumber } from "bignumber.js";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { Token } from "@Library/tokens";
-import { ApplicationData, Currency } from "@Reducers/types";
+import { Token } from "../lib/tokens";
+import { ApplicationData, Currency } from "../reducers/types";
 
 interface TokenBalanceProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     token: Token;

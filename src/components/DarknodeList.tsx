@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import { bindActionCreators } from "redux";
 
-import { ApplicationData, DarknodeDetails } from "@Reducers/types";
+import { ApplicationData, DarknodeDetails } from "../reducers/types";
 import { DarknodeCard } from "./DarknodeCard";
 import { EmptyDarknodeCard } from "./EmptyDarknodeCard";
 import { EmptyDarknodeList } from "./EmptyDarknodeList";

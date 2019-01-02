@@ -3,9 +3,9 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { Blocky } from "@Components/Blocky";
-import { Loading } from "@Components/Loading";
-import { ApplicationData } from "@Reducers/types";
+import { Blocky } from "../../components/Blocky";
+import { Loading } from "../../components/Loading";
+import { ApplicationData } from "../../reducers/types";
 
 interface SelectWeb3AccountProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     message: string;

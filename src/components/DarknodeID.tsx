@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { EncodedData, Encodings } from "@Library/general/encodedData";
+import { EncodedData, Encodings } from "../lib/general/encodedData";
 
 interface DarknodeIDProps {
     darknodeID: string;

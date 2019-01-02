@@ -8,8 +8,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { CurrencyIcon } from "@Components/CurrencyIcon";
-import { ApplicationData, Currency, DarknodeDetails } from "@Reducers/types";
+import { CurrencyIcon } from "../../../components/CurrencyIcon";
+import { ApplicationData, Currency, DarknodeDetails } from "../../../reducers/types";
 import { Topup } from "../Topup";
 import { Block, BlockBody, BlockTitle } from "./Block";
 

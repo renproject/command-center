@@ -1,13 +1,11 @@
-import Web3 from "web3";
 import ProviderEngine from "web3-provider-engine";
 import FetchSubprovider from "web3-provider-engine/subproviders/fetch";
 
-import { List } from "immutable";
 import { Provider } from "web3/providers";
 
-import { clearPopup } from "@Actions/popup/popupActions";
-import { INFURA_URL } from "@Library/network";
-import { store } from "index";
+import { clearPopup } from "../../actions/popup/popupActions";
+import { INFURA_URL } from "../../lib/network";
+import { store } from "../../index";
 
 export const ErrorCanceledByUser = "Returned error: Error: MetaMask Tx Signature: User denied transaction signature.";
 

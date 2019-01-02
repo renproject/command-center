@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { Loading } from "@Components/Loading";
+import { Loading } from "../../components/Loading";
 
 interface LoggingOutProps {
 }

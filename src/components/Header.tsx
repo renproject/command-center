@@ -6,10 +6,10 @@ import { connect } from "react-redux";
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { storeQuoteCurrency } from "@Actions/statistics/operatorActions";
-import { login } from "@Actions/trader/accountActions";
-import { Blocky } from "@Components/Blocky";
-import { ApplicationData, Currency } from "@Reducers/types";
+import { storeQuoteCurrency } from "../actions/statistics/operatorActions";
+import { login } from "../actions/trader/accountActions";
+import { Blocky } from "../components/Blocky";
+import { ApplicationData, Currency } from "../reducers/types";
 import { CurrencyIcon } from "./CurrencyIcon";
 
 import English from "../styles/images/rp-flag-uk.svg";
