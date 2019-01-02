@@ -34,8 +34,8 @@ function blockies() {
     }
 
     function createColor() {
-        // saturation goes from 0 to 360
-        const h = rand() * 360;
+        // saturation is the whole color spectrum
+        const h = Math.floor(rand() * 360);
         // saturation goes from 40 to 100, it avoids greyish colors
         const s = ((rand() * 60) + 40) + "%";
         // lightness can be anything from 0 to 100, but probabilities are a bell curve around 50%
@@ -75,14 +75,18 @@ function blockies() {
     function buildOpts(opts: any) {
         const newOpts: any = {};
 
-        newOpts.size = opts.size || 8;
-        newOpts.scale = opts.scale || 4;
         newOpts.seed = opts.seed || Math.floor((Math.random() * Math.pow(10, 16))).toString(16);
-        newOpts.color = opts.color || createColor();
-        newOpts.bgColor = opts.bgColor || createColor();
-        newOpts.spotColor = opts.spotColor || createColor();
 
         seedRand(newOpts.seed);
+
+        newOpts.size = opts.size || 8;
+        newOpts.scale = opts.scale || 4;
+        const color = createColor();
+        newOpts.color = opts.color || color;
+        const bgColor = createColor();
+        newOpts.bgColor = opts.bgColor || bgColor;
+        const spotColor = createColor();
+        newOpts.spotColor = opts.spotColor || spotColor;
 
         return newOpts;
     }
@@ -154,7 +158,7 @@ export class Blocky extends React.Component<Props, State> {
     public getOpts = (address: string) => {
         const { fgColor, bgColor, spotColor } = this.props;
         return {
-            seed: address.toUpperCase(),
+            seed: address.toLowerCase(),
             size: 8,
             scale: 10,
             color: fgColor,

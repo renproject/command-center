@@ -3,13 +3,15 @@ import * as React from "react";
 import RenExSDK from "@renex/renex";
 import BigNumber from "bignumber.js";
 
-import { Map } from "immutable";
 import { Dispatch } from "redux";
 
 import { setPopup } from "@Actions/popup/popupActions";
 import { approveNode, deregisterNode, fundNode, refundNode, registerNode } from "@Actions/trader/darknode";
+import { CurrencyIcon } from "@Components/CurrencyIcon";
 import { MultiStepPopup } from "@Components/popups/MultiStepPopup";
-import { DarknodeDetails, TokenPrices } from "@Reducers/types";
+import { TokenBalance } from "@Components/TokenBalance";
+import { Token } from "@Library/tokens";
+import { Currency, TokenPrices } from "@Reducers/types";
 import { updateDarknodeStatistics } from "./operatorActions";
 
 export const showRegisterPopup = (sdk: RenExSDK, address: string, darknodeID: string, publicKey: string, minimumBond: BigNumber, tokenPrices: TokenPrices, onCancel: () => void, onDone: () => void) => async (dispatch: Dispatch) => {
@@ -43,7 +45,7 @@ export const showRegisterPopup = (sdk: RenExSDK, address: string, darknodeID: st
     ));
 };
 
-export const showDeregisterPopup = (sdk: RenExSDK, address: string, darknodeID: string, onCancel: () => void, onDone: () => void) => async (dispatch: Dispatch) => {
+export const showDeregisterPopup = (sdk: RenExSDK, address: string, darknodeID: string, remainingFees: BigNumber | null, quoteCurrency: Currency, onCancel: () => void, onDone: () => void) => async (dispatch: Dispatch) => {
 
     const step1 = async () => {
         await deregisterNode(sdk, address, darknodeID, onCancel, onDone)(dispatch);
@@ -53,11 +55,21 @@ export const showDeregisterPopup = (sdk: RenExSDK, address: string, darknodeID: 
         { call: () => step1(), name: "Deregister darknode" },
     ];
 
-    const warning = "Estimated Darknode profit is currently negative. Are you show you want to continue?";
+    let warning;
+    if (remainingFees && remainingFees.gt(0.00001)) {
+
+        // <span className="fees-block--basic--sign"><CurrencyIcon currency={quoteCurrency} /></span>
+        // <span className="fees-block--basic--value"><TokenBalance token={Token.ETH} convertTo={quoteCurrency} amount={darknodeDetails.feesEarnedTotalEth} /></span>
+        // <span className="fees-block--basic--unit">{quoteCurrency.toUpperCase()}</span>
+
+        warning = <>You have earned <span style={{ fontWeight: 900 }}><CurrencyIcon currency={quoteCurrency} /><TokenBalance token={Token.ETH} convertTo={quoteCurrency} amount={remainingFees} />{quoteCurrency.toUpperCase()}</span> in fees. Please withdraw them before continuing.</>;
+    }
+
+    const ignoreWarning = "Continue away (fees will be lost)";
     const title = "Deregister darknode";
 
     dispatch(setPopup(
-        { popup: <MultiStepPopup steps={steps} onCancel={onCancel} title={title} confirm={true} warning={warning} />, onCancel, dismissible: false, overlay: true }
+        { popup: <MultiStepPopup steps={steps} onCancel={onCancel} title={title} confirm={true} ignoreWarning={ignoreWarning} warning={warning} />, onCancel, dismissible: false, overlay: true }
     ));
 };
 

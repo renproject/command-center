@@ -284,3 +284,11 @@ p.popup--error {
 .popup .multi-step--buttons+p {
     margin-top: 15px;
 }
+
+.popup .multi-step--ignore {
+    cursor: pointer;
+}
+
+.popup .multi-step--with-ignore {
+    margin-bottom: 20px;
+}

@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { ApplicationData } from "@Reducers/types";
+import { ApplicationData, DarknodeDetails } from "@Reducers/types";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
@@ -11,8 +11,8 @@ interface RegistrationProps extends ReturnType<typeof mapStateToProps>, ReturnTy
     isOperator: boolean;
     registrationStatus: RegistrationStatus;
     darknodeID: string;
+    darknodeDetails: DarknodeDetails | null;
     publicKey?: string;
-    operator?: string;
 }
 
 interface RegistrationState {
@@ -53,6 +53,9 @@ class RegistrationClass extends React.Component<RegistrationProps, RegistrationS
             (registrationStatus === RegistrationStatus.Unregistered) ||
             (isOperator && registrationStatus === RegistrationStatus.Refundable);
 
+        const noOperator = (registrationStatus === RegistrationStatus.Unregistered) && this.props.darknodeDetails &&
+            this.props.darknodeDetails.operator === "0x0000000000000000000000000000000000000000";
+
         return (
             <div className="status">
                 {!noStatus ?
@@ -64,7 +67,10 @@ class RegistrationClass extends React.Component<RegistrationProps, RegistrationS
                         <button disabled={disabled} className="status--button" onClick={this.handleDeregister}>{active ? "Deregistering..." : "Deregister"}</button> : null}
                     {registrationStatus === RegistrationStatus.Refundable
                         ? <button disabled={disabled} className="status--button status--button--focus" onClick={this.handleRefund}>{active ? "Refunding..." : "Refund"}</button> : null}
-                </> : (this.props.operator ? <span className="status--operator">Operator: {this.props.operator}</span> : null)}
+                </> : noOperator ?
+                        <span className="status--operator">DARKNODE NOT REGISTERED</span> :
+                        (this.props.darknodeDetails ? <span className="status--operator">Operator: {this.props.darknodeDetails.operator}</span> : null)
+                }
             </div>
         );
     }
@@ -156,15 +162,15 @@ class RegistrationClass extends React.Component<RegistrationProps, RegistrationS
 
 
     private handleDeregister = async (): Promise<void> => {
-        const { darknodeID } = this.props;
-        const { sdk, address } = this.props.store;
+        const { darknodeID, darknodeDetails } = this.props;
+        const { sdk, address, quoteCurrency } = this.props.store;
 
         if (!address) {
             return;
         }
 
         this.setState({ active: true });
-        await this.props.actions.showDeregisterPopup(sdk, address, darknodeID, this.onCancel, this.onDone);
+        await this.props.actions.showDeregisterPopup(sdk, address, darknodeID, darknodeDetails && darknodeDetails.feesEarnedTotalEth, quoteCurrency, this.onCancel, this.onDone);
     }
 
     private handleRefund = async (): Promise<void> => {
@@ -188,6 +194,7 @@ const mapStateToProps = (state: ApplicationData) => ({
         minimumBond: state.statistics.minimumBond,
         tokenPrices: state.statistics.tokenPrices,
         darknodeList: state.trader.address ? state.statistics.darknodeList.get(state.trader.address, null) : null,
+        quoteCurrency: state.statistics.quoteCurrency,
     },
 });
 
