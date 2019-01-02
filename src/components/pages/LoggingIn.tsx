@@ -3,10 +3,10 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { Header } from "@Components/Header";
+import { Header } from "../../components/Header";
 
-import { EmptyDarknodeList } from "@Components/EmptyDarknodeList";
-import { ApplicationData } from "@Reducers/types";
+import { EmptyDarknodeList } from "../../components/EmptyDarknodeList";
+import { ApplicationData } from "../../reducers/types";
 
 interface LoggingInProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
 }

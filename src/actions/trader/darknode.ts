@@ -3,8 +3,8 @@ import BigNumber from "bignumber.js";
 
 import { Dispatch } from "redux";
 
-import { contracts } from "@Library/contracts/contracts";
-import { Token } from "@Library/tokens";
+import { contracts } from "../../lib/contracts/contracts";
+import { Token } from "../../lib/tokens";
 import { on } from "cluster";
 
 export const deregisterDarknode = (sdk: RenExSDK, address: string, darknodeID: string) => async (dispatch: Dispatch) => {

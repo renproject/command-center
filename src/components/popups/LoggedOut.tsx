@@ -3,8 +3,8 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { Blocky } from "@Components/Blocky";
-import { ApplicationData } from "@Reducers/types";
+import { Blocky } from "../../components/Blocky";
+import { ApplicationData } from "../../reducers/types";
 
 const metamaskIcon = require("../../styles/images/metamask.svg");
 

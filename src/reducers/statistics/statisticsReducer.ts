@@ -1,9 +1,9 @@
 import { ActionType, getType } from "typesafe-actions";
 
-import * as networkActions from "@Actions/statistics/networkActions";
-import * as operatorActions from "@Actions/statistics/operatorActions";
+import * as networkActions from "../../actions/statistics/networkActions";
+import * as operatorActions from "../../actions/statistics/operatorActions";
 
-import { StatisticsData } from "@Reducers/types";
+import { StatisticsData } from "../../reducers/types";
 import { List } from "immutable";
 
 type NetworkAction = ActionType<typeof networkActions>;

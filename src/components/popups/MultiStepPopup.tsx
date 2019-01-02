@@ -4,10 +4,10 @@ import BigNumber from "bignumber.js";
 
 import { bindActionCreators, Dispatch } from "redux";
 
-import { clearPopup } from "@Actions/popup/popupActions";
-import { Loading } from "@Components/Loading";
-import { ErrorCanceledByUser } from "@Library/wallets/wallet";
-import { ApplicationData } from "@Reducers/types";
+import { clearPopup } from "../../actions/popup/popupActions";
+import { Loading } from "../../components/Loading";
+import { ErrorCanceledByUser } from "../../lib/wallets/wallet";
+import { ApplicationData } from "../../reducers/types";
 import { connect } from "react-redux";
 
 import Warn from "../../styles/images/warn.svg";

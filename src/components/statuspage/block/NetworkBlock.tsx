@@ -2,8 +2,8 @@ import * as React from "react";
 
 import { faServer } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { EncodedData, Encodings } from "@Library/general/encodedData";
-import { DarknodeDetails } from "@Reducers/types";
+import { EncodedData, Encodings } from "../../../lib/general/encodedData";
+import { DarknodeDetails } from "../../../reducers/types";
 import { Block, BlockBody, BlockTitle } from "./Block";
 
 interface CopyBlockProps {

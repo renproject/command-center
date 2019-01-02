@@ -5,13 +5,13 @@ import BigNumber from "bignumber.js";
 
 import { Dispatch } from "redux";
 
-import { setPopup } from "@Actions/popup/popupActions";
-import { approveNode, deregisterNode, fundNode, refundNode, registerNode } from "@Actions/trader/darknode";
-import { CurrencyIcon } from "@Components/CurrencyIcon";
-import { MultiStepPopup } from "@Components/popups/MultiStepPopup";
-import { TokenBalance } from "@Components/TokenBalance";
-import { Token } from "@Library/tokens";
-import { Currency, TokenPrices } from "@Reducers/types";
+import { setPopup } from "../../actions/popup/popupActions";
+import { approveNode, deregisterNode, fundNode, refundNode, registerNode } from "../../actions/trader/darknode";
+import { CurrencyIcon } from "../../components/CurrencyIcon";
+import { MultiStepPopup } from "../../components/popups/MultiStepPopup";
+import { TokenBalance } from "../../components/TokenBalance";
+import { Token } from "../../lib/tokens";
+import { Currency, TokenPrices } from "../../reducers/types";
 import { updateDarknodeStatistics } from "./operatorActions";
 
 export const showRegisterPopup = (sdk: RenExSDK, address: string, darknodeID: string, publicKey: string, minimumBond: BigNumber, tokenPrices: TokenPrices, onCancel: () => void, onDone: () => void) => async (dispatch: Dispatch) => {

@@ -1,4 +1,4 @@
-import { networkData } from "@Library/network";
+import { networkData } from "../lib/network";
 import { Language } from "./language";
 
 export const ENGLISH: Language = {

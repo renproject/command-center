@@ -5,11 +5,11 @@ import { List, OrderedMap, OrderedSet } from "immutable";
 import { Dispatch } from "redux";
 import { createStandardAction } from "typesafe-actions";
 
-import { getOperatorDarknodes } from "@Library/statistics/operator";
-import { Currency, DarknodeDetails, TokenPrices } from "@Reducers/types";
+import { getOperatorDarknodes } from "../../lib/statistics/operator";
+import { Currency, DarknodeDetails, TokenPrices } from "../../reducers/types";
 
-import { contracts } from "@Library/contracts/contracts";
-import { Token, Tokens } from "@Library/tokens";
+import { contracts } from "../../lib/contracts/contracts";
+import { Token, Tokens } from "../../lib/tokens";
 
 export const storeDarknodeList = createStandardAction("STORE_DARKNODE_LIST")<{
     darknodeList: OrderedSet<string>;

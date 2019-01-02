@@ -1,17 +1,16 @@
 import * as React from "react";
 
-import { Map } from "immutable";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { bindActionCreators, Dispatch } from "redux";
-
-import { RegistrationStatus } from "@Actions/statistics/operatorActions";
-import { Blocky } from "@Components/Blocky";
 import { faStar } from "@fortawesome/free-regular-svg-icons";
 import { faFire } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Token } from "@Library/tokens";
-import { ApplicationData, Currency, DarknodeDetails } from "@Reducers/types";
+
+import { RegistrationStatus } from "../actions/statistics/operatorActions";
+import { Token } from "../lib/tokens";
+import { ApplicationData, Currency, DarknodeDetails } from "../reducers/types";
+import { Blocky } from "./Blocky";
 import { CurrencyIcon } from "./CurrencyIcon";
 import { DarknodeID } from "./DarknodeID";
 import { statusText } from "./statuspage/Registration";

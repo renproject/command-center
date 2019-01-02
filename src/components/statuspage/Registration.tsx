@@ -1,11 +1,11 @@
 import * as React from "react";
 
-import { ApplicationData, DarknodeDetails } from "@Reducers/types";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { RegistrationStatus, updateDarknodeStatistics, updateOperatorStatistics } from "@Actions/statistics/operatorActions";
-import { showDeregisterPopup, showRefundPopup, showRegisterPopup } from "@Actions/statistics/operatorPopupActions";
+import { ApplicationData, DarknodeDetails } from "../../reducers/types";
+import { RegistrationStatus, updateDarknodeStatistics, updateOperatorStatistics } from "../../actions/statistics/operatorActions";
+import { showDeregisterPopup, showRefundPopup, showRegisterPopup } from "../../actions/statistics/operatorPopupActions";
 
 interface RegistrationProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     isOperator: boolean;

@@ -6,15 +6,15 @@ import { Route, RouteComponentProps, withRouter } from "react-router-dom";
 import { Dispatch } from "redux";
 import { bindActionCreators } from "redux";
 
-import { Alerts } from "@Components/Alerts";
-import { Home } from "@Components/pages/Home";
-import { LoggingOut } from "@Components/pages/LoggingOut";
-import { PopupController } from "@Components/popups/PopupController";
+import { Alerts } from "./Alerts";
+import { Home } from "./pages/Home";
+import { LoggingOut } from "./pages/LoggingOut";
+import { PopupController } from "./popups/PopupController";
 
-import { updateNetworkStatistics, updateTokenPrices } from "@Actions/statistics/networkActions";
-import { updateDarknodeStatistics, updateOperatorStatistics } from "@Actions/statistics/operatorActions";
-import { login, lookForLogout } from "@Actions/trader/accountActions";
-import { ApplicationData } from "@Reducers/types";
+import { updateNetworkStatistics, updateTokenPrices } from "../actions/statistics/networkActions";
+import { updateDarknodeStatistics, updateOperatorStatistics } from "../actions/statistics/operatorActions";
+import { login, lookForLogout } from "../actions/trader/accountActions";
+import { ApplicationData } from "../reducers/types";
 import { Darknode } from "./pages/Darknode";
 import { LoggingIn } from "./pages/LoggingIn";
 import { Sidebar } from "./Sidebar";
@@ -138,7 +138,7 @@ class AppClass extends React.Component<AppProps, AppState> {
             console.error(err);
         }
         if (this.callUpdatePricesTimeout) { clearTimeout(this.callUpdatePricesTimeout); }
-        this.callUpdatePricesTimeout = setTimeout(this.callUpdatePrices, 60 * 1000);
+        this.callUpdatePricesTimeout = setTimeout(this.callUpdatePrices, 60 * 1000) as unknown as NodeJS.Timer;
     }
 
     // See if the user has logged out every 5 seconds
@@ -154,7 +154,7 @@ class AppClass extends React.Component<AppProps, AppState> {
             }
         }
         if (this.callLookForLogoutTimeout) { clearTimeout(this.callLookForLogoutTimeout); }
-        this.callLookForLogoutTimeout = setTimeout(this.callLookForLogout, 5 * 1000);
+        this.callLookForLogoutTimeout = setTimeout(this.callLookForLogout, 5 * 1000) as unknown as NodeJS.Timer;
     }
 
     // Update network statistics every 3600 seconds
@@ -170,7 +170,7 @@ class AppClass extends React.Component<AppProps, AppState> {
             timeout = 1; // Retry in a second if an error occurred
         }
         if (this.callUpdateNetworkStatisticsTimeout) { clearTimeout(this.callUpdateNetworkStatisticsTimeout); }
-        this.callUpdateNetworkStatisticsTimeout = setTimeout(this.callUpdateNetworkStatistics, timeout * 1000);
+        this.callUpdateNetworkStatisticsTimeout = setTimeout(this.callUpdateNetworkStatistics, timeout * 1000) as unknown as NodeJS.Timer;
     }
 
     // Update operator statistics every 120 seconds
@@ -189,7 +189,7 @@ class AppClass extends React.Component<AppProps, AppState> {
             }
         }
         if (this.callUpdateOperatorStatisticsTimeout) { clearTimeout(this.callUpdateOperatorStatisticsTimeout); }
-        this.callUpdateOperatorStatisticsTimeout = setTimeout(this.callUpdateOperatorStatistics, timeout * 1000);
+        this.callUpdateOperatorStatisticsTimeout = setTimeout(this.callUpdateOperatorStatistics, timeout * 1000) as unknown as NodeJS.Timer;
     }
 
     // Update selected darknode statistics every 30 seconds
@@ -213,7 +213,7 @@ class AppClass extends React.Component<AppProps, AppState> {
             }
         }
         if (this.callUpdateSelectedDarknodeStatisticsTimeout) { clearTimeout(this.callUpdateSelectedDarknodeStatisticsTimeout); }
-        this.callUpdateSelectedDarknodeStatisticsTimeout = setTimeout(this.callUpdateSelectedDarknodeStatistics, timeout * 1000);
+        this.callUpdateSelectedDarknodeStatisticsTimeout = setTimeout(this.callUpdateSelectedDarknodeStatistics, timeout * 1000) as unknown as NodeJS.Timer;
     }
 
     // tslint:disable-next-line:member-ordering

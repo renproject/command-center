@@ -1,11 +1,11 @@
 import { combineReducers } from "redux";
 
-import { alertReducer } from "@Reducers/alert/alertReducer";
-import { popupReducer } from "@Reducers/popup/popupReducer";
-import { statisticsReducer } from "@Reducers/statistics/statisticsReducer";
-import { traderReducer } from "@Reducers/trader/traderReducer";
+import { alertReducer } from "../reducers/alert/alertReducer";
+import { popupReducer } from "../reducers/popup/popupReducer";
+import { statisticsReducer } from "../reducers/statistics/statisticsReducer";
+import { traderReducer } from "../reducers/trader/traderReducer";
 
-import { ApplicationData } from "@Reducers/types";
+import { ApplicationData } from "../reducers/types";
 
 export const rootReducer = combineReducers<ApplicationData>({
     alert: alertReducer,

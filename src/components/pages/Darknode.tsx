@@ -5,13 +5,13 @@ import { connect } from "react-redux";
 import { RouteComponentProps, withRouter } from "react-router";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { Header } from "@Components/Header";
-import { StatusPage } from "@Components/statuspage/StatusPage";
+import { Header } from "../../components/Header";
+import { StatusPage } from "../../components/statuspage/StatusPage";
 
-import { setAlert } from "@Actions/alert/alertActions";
-import { RegistrationStatus } from "@Actions/statistics/operatorActions";
-import { login } from "@Actions/trader/accountActions";
-import { ApplicationData } from "@Reducers/types";
+import { setAlert } from "../../actions/alert/alertActions";
+import { RegistrationStatus } from "../../actions/statistics/operatorActions";
+import { login } from "../../actions/trader/accountActions";
+import { ApplicationData } from "../../reducers/types";
 
 export enum DarknodeAction {
     View = "view",

@@ -1,4 +1,4 @@
-import { Currency, TokenPrices } from "@Reducers/types";
+import { Currency, TokenPrices } from "../reducers/types";
 import { Map } from "immutable";
 
 export enum Token {

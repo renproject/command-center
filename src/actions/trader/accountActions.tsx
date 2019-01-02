@@ -6,14 +6,14 @@ import Web3 from "web3";
 import { Dispatch } from "redux";
 import { createStandardAction } from "typesafe-actions";
 
-import { history } from "@Library/history";
+import { history } from "../../lib/history";
 
-import { clearPopup, setPopup } from "@Actions/popup/popupActions";
-import { LoggedOut } from "@Components/popups/LoggedOut";
-import { NoWeb3Popup } from "@Components/popups/NoWeb3Popup";
-import { getInjectedWeb3Provider } from "@Library/wallets/web3browser";
-import { getAccounts } from "@Library/web3";
-import { Language } from "@Root/languages/language";
+import { clearPopup, setPopup } from "../../actions/popup/popupActions";
+import { LoggedOut } from "../../components/popups/LoggedOut";
+import { NoWeb3Popup } from "../../components/popups/NoWeb3Popup";
+import { getInjectedWeb3Provider } from "../../lib/wallets/web3browser";
+import { getAccounts } from "../../lib/web3";
+import { Language } from "../../languages/language";
 import { Provider } from "web3/providers";
 
 export const storeAddress = createStandardAction("STORE_ADDRESS")<string | null>();

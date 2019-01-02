@@ -4,11 +4,11 @@ import BigNumber from "bignumber.js";
 
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
-
-import { RegistrationStatus } from "@Actions/statistics/operatorActions";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { ApplicationData, DarknodeDetails } from "@Reducers/types";
+
+import { RegistrationStatus } from "../../actions/statistics/operatorActions";
+import { ApplicationData, DarknodeDetails } from "../../reducers/types";
 
 const lowValue = new BigNumber(Math.pow(10, 18)).multipliedBy(0.1);
 

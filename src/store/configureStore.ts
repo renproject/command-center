@@ -3,8 +3,8 @@ import thunk from "redux-thunk";
 import { Action, applyMiddleware, createStore, Middleware, Reducer } from "redux";
 import { PersistConfig, persistReducer, persistStore } from "redux-persist";
 
-import { rootReducer } from "@Reducers/rootReducer";
-import { persistConfig } from "@Store/persistConfig";
+import { rootReducer } from "../reducers/rootReducer";
+import { persistConfig } from "../store/persistConfig";
 
 const middlewares: Middleware[] = [
     thunk,
