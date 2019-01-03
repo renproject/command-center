@@ -40,7 +40,15 @@ class LoggedOutClass extends React.Component<LoggedOutProps, LoggedOutState> {
                 {newAddress !== null ?
                     <>
                         <h2>Your Web3 account has changed.</h2>
-                        <div className="popup--description">Connect to continue as <Blocky address={newAddress} /> <span className="monospace">{newAddress.substring(0, 8)}...{newAddress.slice(-5)}</span>.</div>
+                        <div className="popup--description">
+                            Connect to continue as
+                            {" "}
+                            <Blocky address={newAddress} />
+                            {" "}
+                            <span className="monospace">
+                                {newAddress.substring(0, 8)}...{newAddress.slice(-5)}
+                            </span>.
+                        </div>
                     </> :
                     <>
                         <h2>Your Web3 account has been logged out.</h2>
@@ -54,7 +62,6 @@ class LoggedOutClass extends React.Component<LoggedOutProps, LoggedOutState> {
     }
 }
 
-
 const mapStateToProps = (state: ApplicationData) => ({
     store: {
     },
@@ -64,6 +71,5 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     actions: bindActionCreators({
     }, dispatch),
 });
-
 
 export const LoggedOut = connect(mapStateToProps, mapDispatchToProps)(LoggedOutClass);

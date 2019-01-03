@@ -54,7 +54,6 @@ class TokenBalanceClass extends React.Component<TokenBalanceProps, TokenBalanceS
         const { decimals } = this.state;
         const { tokenPrices, sdk } = store;
 
-
         const amount = new BigNumber(this.props.amount)
             .div(new BigNumber(Math.pow(10, decimals)));
 
@@ -103,4 +102,3 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
 });
 
 export const TokenBalance = connect(mapStateToProps, mapDispatchToProps)(TokenBalanceClass);
-

@@ -18,11 +18,18 @@ export const storeDarknodeList = createStandardAction("STORE_DARKNODE_LIST")<{
 
 export const storeQuoteCurrency = createStandardAction("SORE_QUOTE_CURRENCY")<{ quoteCurrency: Currency; }>();
 
-export const setDarknodeDetails = createStandardAction("UPDATE_DARKNODE_DETAILS")<{ darknodeDetails: DarknodeDetails; }>();
+export const setDarknodeDetails = createStandardAction("UPDATE_DARKNODE_DETAILS")<{
+    darknodeDetails: DarknodeDetails;
+}>();
 
 export const setDarknodeName = createStandardAction("UPDATE_DARKNODE_NAME")<{ darknodeID: string, name: string }>();
 
-export const updateOperatorStatistics = (sdk: RenExSDK, address: string, tokenPrices: TokenPrices | null, previousDarknodeList: List<string> | null) => async (dispatch: Dispatch) => {
+export const updateOperatorStatistics = (
+    sdk: RenExSDK,
+    address: string,
+    tokenPrices: TokenPrices | null,
+    previousDarknodeList: List<string> | null,
+) => async (dispatch: Dispatch) => {
 
     let darknodeList = previousDarknodeList || List<string>();
 
@@ -44,7 +51,10 @@ export const updateOperatorStatistics = (sdk: RenExSDK, address: string, tokenPr
 
 const getBalances = async (sdk: RenExSDK, darknodeID: string): Promise<OrderedMap<Token, BigNumber>> => {
 
-    const contract = new (sdk.getWeb3().eth.Contract)(contracts.DarknodeRewardVault.ABI, contracts.DarknodeRewardVault.address);
+    const contract = new (sdk.getWeb3().eth.Contract)(
+        contracts.DarknodeRewardVault.ABI,
+        contracts.DarknodeRewardVault.address,
+    );
 
     let feesEarned = OrderedMap<Token, BigNumber>();
 
@@ -73,8 +83,11 @@ const getBalances = async (sdk: RenExSDK, darknodeID: string): Promise<OrderedMa
     return feesEarned;
 };
 
-
-const sumUpFees = async (sdk: RenExSDK, feesEarned: OrderedMap<Token, BigNumber>, tokenPrices: TokenPrices): Promise<BigNumber> => {
+const sumUpFees = async (
+    sdk: RenExSDK,
+    feesEarned: OrderedMap<Token, BigNumber>,
+    tokenPrices: TokenPrices,
+): Promise<BigNumber> => {
 
     let totalEth = new BigNumber(0);
 
@@ -85,8 +98,9 @@ const sumUpFees = async (sdk: RenExSDK, feesEarned: OrderedMap<Token, BigNumber>
         }
 
         const price = tokenPrices.get(token, undefined);
+        const decimals = tokenDetails ? new BigNumber(tokenDetails.decimals.toString()).toNumber() : 0;
         const inEth = feesEarned.get(token, new BigNumber(0))
-            .div(new BigNumber(Math.pow(10, tokenDetails ? new BigNumber(tokenDetails.decimals.toString()).toNumber() : 0)))
+            .div(Math.pow(10, decimals))
             .multipliedBy(price ? price.get(Currency.ETH, 0) : 0);
         totalEth = totalEth.plus(inEth);
     }
@@ -94,7 +108,6 @@ const sumUpFees = async (sdk: RenExSDK, feesEarned: OrderedMap<Token, BigNumber>
     // Convert to wei
     return totalEth.multipliedBy(new BigNumber(10).pow(18));
 };
-
 
 const getDarknodeOperator = async (sdk: RenExSDK, darknodeID: string): Promise<string> => {
     return sdk._contracts.darknodeRegistry.getDarknodeOwner(darknodeID, {});
@@ -149,7 +162,11 @@ const getDarknodeStatus = async (sdk: RenExSDK, darknodeID: string): Promise<Reg
     });
 };
 
-export const updateDarknodeStatistics = (sdk: RenExSDK, darknodeID: string, tokenPrices: TokenPrices | null) => async (dispatch: Dispatch) => {
+export const updateDarknodeStatistics = (
+    sdk: RenExSDK,
+    darknodeID: string,
+    tokenPrices: TokenPrices | null,
+) => async (dispatch: Dispatch) => {
     darknodeID = sdk.getWeb3().utils.toChecksumAddress(darknodeID.toLowerCase());
 
     // Get eth Balance

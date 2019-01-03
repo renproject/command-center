@@ -23,7 +23,6 @@ const icons = {
     [Token.ZRX]: "zrx.svg",
 };
 
-
 class TokenIconClass extends React.Component<TokenIconProps, TokenIconState> {
     constructor(props: TokenIconProps) {
         super(props);
@@ -48,4 +47,3 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
 });
 
 export const TokenIcon = connect(mapStateToProps, mapDispatchToProps)(TokenIconClass);
-

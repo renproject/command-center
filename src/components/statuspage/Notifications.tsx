@@ -2,10 +2,10 @@ import * as React from "react";
 
 import BigNumber from "bignumber.js";
 
-import { connect } from "react-redux";
-import { bindActionCreators, Dispatch } from "redux";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { connect } from "react-redux";
+import { bindActionCreators, Dispatch } from "redux";
 
 import { RegistrationStatus } from "../../actions/statistics/operatorActions";
 import { ApplicationData, DarknodeDetails } from "../../reducers/types";
@@ -32,22 +32,39 @@ class NotificationsClass extends React.Component<NotificationsProps, Notificatio
         const { isOperator, darknodeDetails } = this.props;
 
         let notification;
-        if (isOperator && darknodeDetails && darknodeDetails.registrationStatus === RegistrationStatus.RegistrationPending) {
+        if (
+            isOperator &&
+            darknodeDetails &&
+            darknodeDetails.registrationStatus === RegistrationStatus.RegistrationPending
+        ) {
             notification = {
                 title: "Registration in progress!",
                 detail: "Your darknode will be registered within 24 hours.",
             };
-        } else if (isOperator && darknodeDetails && darknodeDetails.registrationStatus === RegistrationStatus.DeregistrationPending) {
+        } else if (
+            isOperator &&
+            darknodeDetails &&
+            darknodeDetails.registrationStatus === RegistrationStatus.DeregistrationPending
+        ) {
             notification = {
                 title: "Deregistration in progress.",
                 detail: "Your darknode will be deregistered within 24 hours.",
             };
-        } else if (isOperator && darknodeDetails && darknodeDetails.registrationStatus === RegistrationStatus.Deregistered) {
+        } else if (
+            isOperator &&
+            darknodeDetails &&
+            darknodeDetails.registrationStatus === RegistrationStatus.Deregistered
+        ) {
             notification = {
                 title: "Darknode deregistered.",
                 detail: "You will be able to withdraw your REN within 24 hours.",
             };
-        } else if (isOperator && darknodeDetails && darknodeDetails.registrationStatus === RegistrationStatus.Registered && darknodeDetails.ethBalance.lt(lowValue)) {
+        } else if (
+            isOperator &&
+            darknodeDetails &&
+            darknodeDetails.registrationStatus === RegistrationStatus.Registered &&
+            darknodeDetails.ethBalance.lt(lowValue)
+        ) {
             notification = {
                 title: "Low gas balance.",
                 detail: "If your darknode runs out of ETH, it won't earn fees.",
@@ -79,4 +96,3 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
 });
 
 export const Notifications = connect(mapStateToProps, mapDispatchToProps)(NotificationsClass);
-

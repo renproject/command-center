@@ -1,7 +1,7 @@
 import * as React from "react";
 
-import { faCircle, faFire, faThLarge } from "@fortawesome/free-solid-svg-icons";
 import { faStar } from "@fortawesome/free-regular-svg-icons";
+import { faCircle, faFire, faThLarge } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
@@ -37,15 +37,23 @@ class SidebarClass extends React.Component<SidebarProps> {
             <nav className="sidebar">
                 <ul>
                     <div className="sidebar--nav">
-                        <Link className="no-underline" to="/"><li>
-                            <div className="sidebar--nav--icon sidebar--icon"><FontAwesomeIcon icon={faCircle} className="darknode-card--bottom--icon" /></div>
-                            <div className="sidebar--text">Home</div>
-                        </li></Link>
+                        <Link className="no-underline" to="/">
+                            <li>
+                                <div className="sidebar--nav--icon sidebar--icon">
+                                    <FontAwesomeIcon icon={faCircle} className="darknode-card--bottom--icon" />
+                                </div>
+                                <div className="sidebar--text">Home</div>
+                            </li>
+                        </Link>
 
-                        <Link className="no-underline" to="/"><li>
-                            <div className="sidebar--nav--icon sidebar--icon"><FontAwesomeIcon icon={faThLarge} className="darknode-card--bottom--icon" /></div>
-                            <div className="sidebar--text">All Darknodes</div>
-                        </li></Link>
+                        <Link className="no-underline" to="/">
+                            <li>
+                                <div className="sidebar--nav--icon sidebar--icon">
+                                    <FontAwesomeIcon icon={faThLarge} className="darknode-card--bottom--icon" />
+                                </div>
+                                <div className="sidebar--text">All Darknodes</div>
+                            </li>
+                        </Link>
                     </div>
 
                     {darknodeList && darknodeList.map((darknodeID) => {
@@ -53,9 +61,12 @@ class SidebarClass extends React.Component<SidebarProps> {
                         const storedName = darknodeNames.get(darknodeID);
                         const name = storedName ? storedName : <DarknodeID darknodeID={darknodeID} />;
 
+                        const active = darknodeID === selectedDarknode;
+                        const faded = details && details.registrationStatus === RegistrationStatus.Unregistered;
+
                         // tslint:disable-next-line:jsx-no-lambda FIXME
                         return <Link className="no-underline" key={darknodeID} to={`/darknode/${darknodeID}`}>
-                            <li className={`${darknodeID === selectedDarknode ? "sidebar--active" : ""} ${details && details.registrationStatus === RegistrationStatus.Unregistered ? "sidebar--faded" : ""}`}>
+                            <li className={`${active ? "sidebar--active" : ""} ${faded ? "sidebar--faded" : ""}`}>
                                 <div className="sidebar--icon">
                                     <Blocky address={darknodeID} fgColor="#006FE8" bgColor="transparent" />
                                 </div>
@@ -65,13 +76,31 @@ class SidebarClass extends React.Component<SidebarProps> {
                                         <div className="sidebar--text--rewards">
                                             {details ? <>
                                                 <FontAwesomeIcon icon={faStar} className="sidebar--text--icon" />
-                                                <span className="currency-value"><CurrencyIcon currency={quoteCurrency} /><TokenBalance token={Token.ETH} convertTo={quoteCurrency} amount={details.feesEarnedTotalEth} /></span> <span className="currency-symbol">{quoteCurrency.toUpperCase()}</span>
+                                                <span className="currency-value">
+                                                    <CurrencyIcon currency={quoteCurrency} />
+                                                    <TokenBalance
+                                                        token={Token.ETH}
+                                                        convertTo={quoteCurrency}
+                                                        amount={details.feesEarnedTotalEth}
+                                                    />
+                                                </span>
+                                                {" "}
+                                                <span className="currency-symbol">
+                                                    {quoteCurrency.toUpperCase()}
+                                                </span>
                                             </> : null}
                                         </div>
                                         <div className="sidebar--text--gas">
                                             {details ? <>
                                                 <FontAwesomeIcon icon={faFire} className="sidebar--text--icon" />
-                                                <span className="currency-value"><CurrencyIcon currency={Currency.ETH} /><TokenBalance token={Token.ETH} amount={details.ethBalance} digits={3} /></span> <span className="currency-symbol">ETH</span>
+                                                <span className="currency-value">
+                                                    <CurrencyIcon currency={Currency.ETH} />
+                                                    <TokenBalance
+                                                        token={Token.ETH}
+                                                        amount={details.ethBalance}
+                                                        digits={3}
+                                                    />
+                                                </span>{" "}<span className="currency-symbol">ETH</span>
                                             </> : null
                                             }
                                         </div>
@@ -85,7 +114,6 @@ class SidebarClass extends React.Component<SidebarProps> {
         );
     }
 }
-
 
 const mapStateToProps = (state: ApplicationData) => ({
     store: {

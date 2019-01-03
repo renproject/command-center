@@ -52,35 +52,70 @@ class StatusPageClass extends React.Component<StatusPageProps, StatusPageState> 
         const { renaming, newName } = this.state;
 
         let noDarknode;
-        if (darknodeDetails && action !== DarknodeAction.Register && darknodeDetails.registrationStatus === RegistrationStatus.Unregistered && darknodeDetails.operator === "0x0000000000000000000000000000000000000000") {
+        if (
+            darknodeDetails &&
+            action !== DarknodeAction.Register &&
+            darknodeDetails.registrationStatus === RegistrationStatus.Unregistered &&
+            darknodeDetails.operator === "0x0000000000000000000000000000000000000000"
+        ) {
             noDarknode = true;
         }
 
+        const focusedClass = action !== DarknodeAction.View ? "statuspage--focused" : "";
+        const renamingCLass = renaming ? "statuspage--renaming" : "";
+        const noDarknodeClass = noDarknode ? "statuspage--no-darknode" : "";
+
         return (
-            <div className={`statuspage ${action !== DarknodeAction.View ? `statuspage--focused` : ``} ${renaming ? `statuspage--renaming` : ``} ${noDarknode ? `statuspage--no-darknode` : ``}`}>
+            <div className={`statuspage ${focusedClass} ${renamingCLass} ${noDarknodeClass}`}>
                 <div className="statuspage--banner">
                     <Blocky address={darknodeID} fgColor="#006FE8" bgColor="transparent" />
                     <div className="statuspage--banner--details">
                         <div className="statuspage--banner--top">
                             {renaming ?
                                 <form className="statuspage--rename" onSubmit={this.handleSubmitName}>
-                                    <input ref={c => this.focusInput = c} role="textbox" type="text" name="newName" onChange={this.handleInput} value={newName} />
-                                    <button type="submit" className="statuspage--rename--save" disabled={!newName}>Save</button>
+                                    <input
+                                        ref={(c) => this.focusInput = c}
+                                        role="textbox"
+                                        type="text"
+                                        name="newName"
+                                        onChange={this.handleInput}
+                                        value={newName}
+                                    />
+                                    <button type="submit" className="statuspage--rename--save" disabled={!newName}>
+                                        Save
+                                    </button>
                                     <button onClick={this.handleCancelRename}>Cancel</button>
                                 </form> :
                                 <>
                                     <h3>{name ? name : <DarknodeID darknodeID={darknodeID} />}</h3>
-                                    <button onClick={this.handleRename}>{name ? "Edit name" : "Set name"} <InfoLabel>Darknode names are stored in your browser.</InfoLabel></button>
+                                    <button onClick={this.handleRename}>
+                                        {name ? "Edit name" : "Set name"}
+                                        {" "}
+                                        <InfoLabel>Darknode names are stored in your browser.</InfoLabel>
+                                    </button>
                                     {darknodeDetails ? <button>View details</button> : null}
                                 </>}
                         </div>
 
                         {action === DarknodeAction.Register ?
-                            <Registration isOperator={true} registrationStatus={darknodeDetails ? darknodeDetails.registrationStatus : RegistrationStatus.Unknown} darknodeDetails={darknodeDetails} publicKey={publicKey} darknodeID={darknodeID} /> :
+                            <Registration
+                                isOperator={true}
+                                registrationStatus={darknodeDetails ?
+                                    darknodeDetails.registrationStatus :
+                                    RegistrationStatus.Unknown}
+                                darknodeDetails={darknodeDetails}
+                                publicKey={publicKey}
+                                darknodeID={darknodeID}
+                            /> :
                             null
                         }
                         {action !== DarknodeAction.Register && darknodeDetails ?
-                            <Registration isOperator={isOperator} registrationStatus={darknodeDetails.registrationStatus} darknodeDetails={darknodeDetails} darknodeID={darknodeID} /> :
+                            <Registration
+                                isOperator={isOperator}
+                                registrationStatus={darknodeDetails.registrationStatus}
+                                darknodeDetails={darknodeDetails}
+                                darknodeID={darknodeID}
+                            /> :
                             null
                         }
                     </div>
@@ -142,4 +177,3 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
 });
 
 export const StatusPage = connect(mapStateToProps, mapDispatchToProps)(StatusPageClass);
-

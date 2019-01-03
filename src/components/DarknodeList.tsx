@@ -32,7 +32,12 @@ class DarknodeListClass extends React.Component<DarknodeListProps> {
                         const details = darknodeDetails.get(darknodeID) || null;
                         const name = darknodeNames.get(darknodeID);
 
-                        return <DarknodeCard key={darknodeID} name={name} darknodeID={darknodeID} darknodeDetails={details} />;
+                        return <DarknodeCard
+                            key={darknodeID}
+                            name={name}
+                            darknodeID={darknodeID}
+                            darknodeDetails={details}
+                        />;
                     }).toArray()}
                     {darknodeList.size === 0 ? <EmptyDarknodeList /> : <>
                         {darknodeList.size < 4 ? <EmptyDarknodeCard /> : null}
@@ -44,7 +49,6 @@ class DarknodeListClass extends React.Component<DarknodeListProps> {
         );
     }
 }
-
 
 const mapStateToProps = (state: ApplicationData) => ({
     store: {

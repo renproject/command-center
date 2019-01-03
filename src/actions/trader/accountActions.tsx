@@ -5,22 +5,24 @@ import Web3 from "web3";
 
 import { Dispatch } from "redux";
 import { createStandardAction } from "typesafe-actions";
-
-import { history } from "../../lib/history";
+import { Provider } from "web3/providers";
 
 import { clearPopup, setPopup } from "../../actions/popup/popupActions";
 import { LoggedOut } from "../../components/popups/LoggedOut";
 import { NoWeb3Popup } from "../../components/popups/NoWeb3Popup";
+import { Language } from "../../languages/language";
+import { history } from "../../lib/history";
 import { getInjectedWeb3Provider } from "../../lib/wallets/web3browser";
 import { getAccounts } from "../../lib/web3";
-import { Language } from "../../languages/language";
-import { Provider } from "web3/providers";
 
 export const storeAddress = createStandardAction("STORE_ADDRESS")<string | null>();
 
 export const storeWeb3BrowserName = createStandardAction("STORE_WEB3_BROWSER_NAME")<string>();
 
-export const login = (sdk: RenExSDK, options: { redirect: boolean, showPopup: boolean, immediatePopup: boolean }) => async (dispatch: Dispatch) => {
+export const login = (
+    sdk: RenExSDK,
+    options: { redirect: boolean, showPopup: boolean, immediatePopup: boolean },
+) => async (dispatch: Dispatch) => {
     let cancelled = false;
 
     const onClick = () => (login(sdk, { redirect: false, showPopup: true, immediatePopup: true })(dispatch));
@@ -46,7 +48,10 @@ export const login = (sdk: RenExSDK, options: { redirect: boolean, showPopup: bo
 
     if (options.showPopup && options.immediatePopup) {
         dispatch(setPopup(
-            { popup: <NoWeb3Popup onConnect={onClick} onCancel={onCancel} disabled={true} message={promptMessage} />, onCancel }
+            {
+                popup: <NoWeb3Popup onConnect={onClick} onCancel={onCancel} disabled={true} message={promptMessage} />,
+                onCancel,
+            },
         ));
     }
 
@@ -55,11 +60,10 @@ export const login = (sdk: RenExSDK, options: { redirect: boolean, showPopup: bo
     const timeout = setTimeout(() => {
         if (options.showPopup && !cancelled) {
             dispatch(setPopup(
-                { popup: <NoWeb3Popup onConnect={onClick} onCancel={onCancel} message={promptMessage} />, onCancel }
+                { popup: <NoWeb3Popup onConnect={onClick} onCancel={onCancel} message={promptMessage} />, onCancel },
             ));
         }
     }, 5 * 1000);
-
 
     let provider;
     try {
@@ -68,7 +72,7 @@ export const login = (sdk: RenExSDK, options: { redirect: boolean, showPopup: bo
         clearTimeout(timeout);
         if (options.showPopup && !cancelled) {
             dispatch(setPopup(
-                { popup: <NoWeb3Popup onConnect={onClick} onCancel={onCancel} message={error.message} />, onCancel }
+                { popup: <NoWeb3Popup onConnect={onClick} onCancel={onCancel} message={error.message} />, onCancel },
             ));
         }
         return;
@@ -93,7 +97,6 @@ export const login = (sdk: RenExSDK, options: { redirect: boolean, showPopup: bo
 
     // Store address in the store (and in local storage)
     dispatch(storeAddress(address));
-
 
     /*
     // Check for mobile
@@ -129,7 +132,11 @@ export const login = (sdk: RenExSDK, options: { redirect: boolean, showPopup: bo
     }
 };
 
-export const logout = (sdk: RenExSDK, readOnlyProvider: Provider, options: { reload: boolean }) => async (dispatch: Dispatch) => {
+export const logout = (
+    sdk: RenExSDK,
+    readOnlyProvider: Provider,
+    options: { reload: boolean },
+) => async (dispatch: Dispatch) => {
 
     // Clear session account in store (and in local storage)
     dispatch(storeAddress(null));
@@ -149,8 +156,12 @@ export const logout = (sdk: RenExSDK, readOnlyProvider: Provider, options: { rel
 
 // lookForLogout detects if 1) the user has changed or logged out of their Web3
 // wallet, or if the SDK's selected address has been changed (this should not
-// usually happen) 
-export const lookForLogout = (sdk: RenExSDK, address: string, readOnlyProvider: Provider) => async (dispatch: Dispatch) => {
+// usually happen)
+export const lookForLogout = (
+    sdk: RenExSDK,
+    address: string,
+    readOnlyProvider: Provider,
+) => async (dispatch: Dispatch) => {
     const sdkAddress = sdk.getAddress();
 
     if (!address && !sdkAddress) {
@@ -171,8 +182,17 @@ export const lookForLogout = (sdk: RenExSDK, address: string, readOnlyProvider: 
 
         dispatch(
             setPopup(
-                { popup: <LoggedOut onConnect={onClick} onCancel={onCancel} newAddress={accounts.length > 0 ? accounts[0] : null} />, onCancel, dismissible: false, overlay: true }
-            )
+                {
+                    popup: <LoggedOut
+                        onConnect={onClick}
+                        onCancel={onCancel}
+                        newAddress={accounts.length > 0 ? accounts[0] : null}
+                    />,
+                    onCancel,
+                    dismissible: false,
+                    overlay: true,
+                },
+            ),
         );
     }
 };

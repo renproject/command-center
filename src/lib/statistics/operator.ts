@@ -11,7 +11,7 @@ async function getAllDarknodes(sdk: RenExSDK): Promise<string[]> {
     let lastDarknode = NULL;
     do {
         const darknodes = await sdk._contracts.darknodeRegistry.getDarknodes(lastDarknode, batchSize.toString());
-        allDarknodes.push(...darknodes.filter(addr => addr !== NULL && addr !== lastDarknode));
+        allDarknodes.push(...darknodes.filter((address) => address !== NULL && address !== lastDarknode));
         [lastDarknode] = darknodes.slice(-1);
     } while (lastDarknode !== NULL);
 
@@ -33,7 +33,8 @@ export const getOperatorDarknodes = async (sdk: RenExSDK, address: string): Prom
         address: "0x75Fa8349fc9C7C640A4e9F1A1496fBB95D2Dc3d5",
         blockHash: "0xfab9c0e4d7ccca3e56d6961fbe17917923898828b3f929093e6b976b8727db39",
         blockNumber: 9740948,
-        data: "0x000000000000000000000000945458e071eca54bb534d8ac7c8cd1a3eb318d9200000000000000000000000000000000000000000000152d02c7e14af6800000",
+        data: "0x000000000000000000000000945458e071eca54bb534d8ac7c8cd1a3eb318d9200000000000000000000000000000000000000\
+        000000152d02c7e14af6800000",
         id: "log_98d2346b",
         logIndex: 2,
         removed: false,
@@ -51,18 +52,19 @@ export const getOperatorDarknodes = async (sdk: RenExSDK, address: string): Prom
         // tslint:disable-next-line:no-any
         fromBlock: "0x889E55" as any, // TODO: Change this based on network or get from address deployment
         toBlock: "latest",
-        // topics: [sdk.getWeb3().utils.sha3("LogDarknodeRegistered(address,uint256)"), "0x000000000000000000000000" + address.slice(2), null, null] as any,
+        // topics: [sdk.getWeb3().utils.sha3("LogDarknodeRegistered(address,uint256)"), "0x000000000000000000000000" +
+        // address.slice(2), null, null] as any,
         // tslint:disable-next-line:no-any
         topics: [sdk.getWeb3().utils.sha3("LogDarknodeRegistered(address,uint256)"), null, null] as any,
     });
     for (const event of recentRegistrationEvents) {
         // The log data returns back like this:
-        // 0x000000000000000000000000945458e071eca54bb534d8ac7c8cd1a3eb318d9200000000000000000000000000000000000000000000152d02c7e14af6800000
+        // 0x000000000000000000000000945458e071eca54bb534d8ac7c8cd1a3eb318d92000000000000000000000000000000000000000000\
+        // 00152d02c7e14af6800000
         // and we want to extract this: 0x945458e071eca54bb534d8ac7c8cd1a3eb318d92 (20 bytes, 40 characters long)
         const darknodeID = sdk.getWeb3().utils.toChecksumAddress("0x" + event.data.substr(26, 40));
         darknodes.push(darknodeID);
     }
-
 
     // Note: Deregistration events are not included because we are unable to retrieve the operator
 
@@ -80,7 +82,6 @@ export const getOperatorDarknodes = async (sdk: RenExSDK, address: string): Prom
     //     const darknodeID = sdk.getWeb3().utils.toChecksumAddress("0x" + event.data.substr(26, 40));
     //     darknodes.push(darknodeID);
     // }
-
 
     const operatorPromises = darknodes.map((darknodeID: string) =>
         sdk._contracts.darknodeRegistry.getDarknodeOwner(darknodeID)

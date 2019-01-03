@@ -27,4 +27,3 @@ export class CurrencyIcon extends React.Component<CurrencyIconProps, CurrencyIco
 
     }
 }
-

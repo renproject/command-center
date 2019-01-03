@@ -13,7 +13,6 @@ interface AlertsProps extends ReturnType<typeof mapStateToProps>, ReturnType<typ
 interface AlertsState {
 }
 
-
 /**
  * Alerts is a visual component for displaying general alert messages.
  * Alerts can represent an Error, a Warning or a Success event.

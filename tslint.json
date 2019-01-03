@@ -1,8 +1,7 @@
 {
     "extends": [
         "tslint:recommended",
-        "tslint-react",
-        "tslint-config-prettier"
+        "tslint-react"
     ],
     "linterOptions": {
         "exclude": [
@@ -33,9 +32,17 @@
         "no-floating-promises": true,
         "typedef": [true],
         "space-before-function-paren": false,
-        "trailing-comma": true,
+        "trailing-comma": [
+            true,
+            {
+                "multiline": true,
+                "esSpecCompliant": true
+            }
+        ],
         "strict-type-predicates": false,
         "no-any": true,
-        "indent": [true, "spaces", 4]
+        "indent": [true, "spaces", 4],
+        "jsx-wrap-multiline": false,
+        "jsx-no-multiline-js": false
     }
 }

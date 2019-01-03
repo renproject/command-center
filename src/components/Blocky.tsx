@@ -29,7 +29,6 @@ function blockies() {
 
         randSeed[3] = (randSeed[3] ^ (randSeed[3] >> 19) ^ t ^ (t >> 8));
 
-
         return (randSeed[3] >>> 0) / ((1 << 31) >>> 0);
     }
 
