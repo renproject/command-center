@@ -9,12 +9,12 @@ import { Dispatch } from "redux";
 import { bindActionCreators } from "redux";
 
 import { RegistrationStatus } from "../actions/statistics/operatorActions";
-import { EncodedData, Encodings } from "../lib/general/encodedData";
 import { Token } from "../lib/tokens";
 import { ApplicationData, Currency } from "../reducers/types";
 import { Blocky } from "./Blocky";
 import { CurrencyIcon } from "./CurrencyIcon";
 import { DarknodeID } from "./DarknodeID";
+import { darknodeIDHexToBase58 } from "./pages/Darknode";
 import { TokenBalance } from "./TokenBalance";
 
 interface SidebarProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
@@ -65,7 +65,7 @@ class SidebarClass extends React.Component<SidebarProps> {
                         const active = darknodeID === selectedDarknode;
                         const faded = details && details.registrationStatus === RegistrationStatus.Unregistered;
 
-                        const darknodeIDBase58 = new EncodedData(darknodeID, Encodings.HEX).toBase58();
+                        const darknodeIDBase58 = darknodeIDHexToBase58(darknodeID);
 
                         // tslint:disable-next-line:jsx-no-lambda FIXME
                         return <Link className="no-underline" key={darknodeID} to={`/darknode/${darknodeIDBase58}`}>

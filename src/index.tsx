@@ -6,9 +6,8 @@ import * as ReactDOM from "react-dom";
 
 import Web3 from "web3";
 
-import { NetworkData } from "@renex/renex";
 import { Provider } from "react-redux";
-import { Route, Router } from "react-router-dom";
+import { Route, Router, Switch } from "react-router-dom";
 import { PersistGate } from "redux-persist/integration/react";
 import { HttpProvider } from "web3/providers";
 
@@ -47,7 +46,11 @@ ReactDOM.render(
     <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
             <Router history={history}>
-                <App />
+                <Switch>
+                    {/* We add the routes here as well as in App so that App has access to the URL parameters */}
+                    <Route path="/darknode/:darknodeID" exact component={App} />
+                    <Route component={App} />
+                </Switch>
             </Router>
         </PersistGate>
     </Provider>,
