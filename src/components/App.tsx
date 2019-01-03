@@ -1,4 +1,5 @@
 import * as Sentry from "@sentry/browser";
+import * as qs from "query-string";
 import * as React from "react";
 
 import { connect } from "react-redux";
@@ -8,7 +9,6 @@ import { bindActionCreators } from "redux";
 
 import { Alerts } from "./Alerts";
 import { Home } from "./pages/Home";
-import { LoggingOut } from "./pages/LoggingOut";
 import { PopupController } from "./popups/PopupController";
 
 import { updateNetworkStatistics, updateTokenPrices } from "../actions/statistics/networkActions";
@@ -19,6 +19,7 @@ import { Darknode, getDarknodeParam } from "./pages/Darknode";
 import { LoggingIn } from "./pages/LoggingIn";
 import { NotFound } from "./pages/NotFound";
 import { Sidebar } from "./Sidebar";
+import { Header } from "./Header";
 
 interface AppProps extends
     ReturnType<typeof mapStateToProps>,
@@ -69,12 +70,22 @@ class AppClass extends React.Component<AppProps, AppState> {
 
         const darknodeID = getDarknodeParam(params);
 
+        const queryParams = qs.parse(this.props.location.search);
+        const action = typeof queryParams.action === "string" ? queryParams.action : undefined;
+
         // Sometimes, logging in seems to freeze, to we start loops that don't
         // rely on being logged in before attempting to log in
         this.setupLoops();
 
         try {
-            await this.props.actions.login(sdk, { redirect: false, showPopup: !darknodeID, immediatePopup: false });
+            await this.props.actions.login(
+                sdk,
+                {
+                    redirect: false,
+                    showPopup: darknodeID === undefined || action !== undefined,
+                    immediatePopup: false,
+                }
+            );
         } catch (err) {
             console.error(err);
             Sentry.captureException(err);
@@ -122,6 +133,7 @@ class AppClass extends React.Component<AppProps, AppState> {
         // the middle of a transaction, etc.)
         return <div className="app" key={address || undefined}>
             <ScrollToTop />
+            <Header />
             <PopupController>
                 {address ? <Sidebar selectedDarknode={darknodeID} /> : null}
                 <Switch>

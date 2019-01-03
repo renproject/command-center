@@ -1,6 +1,7 @@
 .header {
     padding: 10px 0;
     margin-bottom: 20px;
+    z-index: 6;
 }
 
 .header .container {
@@ -117,6 +118,8 @@
 .header--dropdown {
     background: #FAFAFA;
     border: 1px solid #E1E1E1;
+
+    z-index: 11;
 
     text-align: center;
     border-radius: 2px;

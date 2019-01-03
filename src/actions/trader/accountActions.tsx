@@ -51,6 +51,7 @@ export const login = (
             {
                 popup: <NoWeb3Popup onConnect={onClick} onCancel={onCancel} disabled={true} message={promptMessage} />,
                 onCancel,
+                overlay: true,
             },
         ));
     }
@@ -60,7 +61,11 @@ export const login = (
     const timeout = setTimeout(() => {
         if (options.showPopup && !cancelled) {
             dispatch(setPopup(
-                { popup: <NoWeb3Popup onConnect={onClick} onCancel={onCancel} message={promptMessage} />, onCancel },
+                {
+                    popup: <NoWeb3Popup onConnect={onClick} onCancel={onCancel} message={promptMessage} />,
+                    onCancel,
+                    overlay: true,
+                },
             ));
         }
     }, 5 * 1000);
@@ -72,7 +77,11 @@ export const login = (
         clearTimeout(timeout);
         if (options.showPopup && !cancelled) {
             dispatch(setPopup(
-                { popup: <NoWeb3Popup onConnect={onClick} onCancel={onCancel} message={error.message} />, onCancel },
+                {
+                    popup: <NoWeb3Popup onConnect={onClick} onCancel={onCancel} message={error.message} />,
+                    onCancel,
+                    overlay: true,
+                },
             ));
         }
         return;

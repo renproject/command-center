@@ -30,7 +30,7 @@ class LoggingInClass extends React.Component<LoggingInProps, LoggingInState> {
 
         return (
             <div className="logging-in">
-                <Header hideOptions={true} />
+                {/* <Header hideOptions={true} /> */}
                 <EmptyDarknodeList />
             </div>
         );
