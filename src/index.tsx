@@ -13,6 +13,7 @@ import { PersistGate } from "redux-persist/integration/react";
 import { HttpProvider } from "web3/providers";
 
 import { App } from "./components/App";
+import { ETH_NETWORK, ETH_NETWORK_LABEL, NETWORK, SENTRY_DSN } from "./environmentVariables";
 import { history } from "./lib/history";
 import { configureStore } from "./store/configureStore";
 
@@ -28,18 +29,19 @@ declare global {
     interface Window {
         web3: Web3 | undefined;
         ethereum: EthereumProvider | undefined;
-        API: string;
-        NETWORK: NetworkData;
-        INFURA_KEY: string;
-        SENTRY_DSN: string;
     }
 }
 
 // Initialize Sentry error logging
 Sentry.init({
-    dsn: window.SENTRY_DSN,
-    environment: (process.env.NODE_ENV === "development") ? "local" : window.NETWORK.network,
+    dsn: SENTRY_DSN,
+    environment: (process.env.NODE_ENV === "development") ? "local" : NETWORK,
 });
+
+// Update document title to show network
+if (ETH_NETWORK !== "main") {
+    document.title = "DCC (" + ETH_NETWORK_LABEL + ")";
+}
 
 ReactDOM.render(
     <Provider store={store}>
