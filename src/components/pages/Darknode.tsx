@@ -1,6 +1,8 @@
 import * as qs from "query-string";
 import * as React from "react";
 
+import Web3 from "web3";
+
 import { connect } from "react-redux";
 import { RouteComponentProps, withRouter } from "react-router";
 import { bindActionCreators, Dispatch } from "redux";
@@ -8,10 +10,10 @@ import { bindActionCreators, Dispatch } from "redux";
 import { Header } from "../../components/Header";
 import { StatusPage } from "../../components/statuspage/StatusPage";
 
-import { setAlert } from "../../actions/alert/alertActions";
 import { RegistrationStatus } from "../../actions/statistics/operatorActions";
-import { login } from "../../actions/trader/accountActions";
+import { EncodedData, Encodings } from "../../lib/general/encodedData";
 import { ApplicationData } from "../../reducers/types";
+import { NotFound } from "./NotFound";
 
 export enum DarknodeAction {
     View = "view",
@@ -45,10 +47,9 @@ class DarknodeClass extends React.Component<DarknodeProps, DarknodeState> {
 
     public render(): JSX.Element {
         const { match: { params }, store } = this.props;
-        const { sdk, darknodeDetails, darknodeNames, address } = store;
-        // tslint:disable-next-line:no-any
-        let { darknodeID } = params as { darknodeID: string | undefined, action: string | undefined };
-        darknodeID = darknodeID && sdk.getWeb3().utils.toChecksumAddress(darknodeID.toLowerCase());
+        const { darknodeDetails, darknodeNames, address } = store;
+
+        const darknodeID: string | undefined = getDarknodeParam(params);
 
         const details = darknodeID ? darknodeDetails.get(darknodeID, null) : null;
         const name = darknodeID ? darknodeNames.get(darknodeID) : undefined;
@@ -74,22 +75,23 @@ class DarknodeClass extends React.Component<DarknodeProps, DarknodeState> {
             darknodeAction = action;
         }
 
+        if (!darknodeID) {
+            return <NotFound />;
+        }
+
         return (
             <div>
                 <Header />
                 <div className="container">
-                    {darknodeID ?
-                        <StatusPage
-                            key={darknodeID}
-                            action={darknodeAction}
-                            publicKey={publicKey}
-                            name={name}
-                            darknodeID={darknodeID}
-                            isOperator={!readOnly}
-                            darknodeDetails={details}
-                        /> :
-                        <div>Darknode not found</div>
-                    }
+                    <StatusPage
+                        key={darknodeID}
+                        action={darknodeAction}
+                        publicKey={publicKey}
+                        name={name}
+                        darknodeID={darknodeID}
+                        isOperator={!readOnly}
+                        darknodeDetails={details}
+                    />
                 </div>
             </div >
         );
@@ -101,16 +103,32 @@ const mapStateToProps = (state: ApplicationData) => ({
         address: state.trader.address,
         darknodeDetails: state.statistics.darknodeDetails,
         darknodeNames: state.statistics.darknodeNames,
-        darknodeList: state.trader.address ? state.statistics.darknodeList.get(state.trader.address, null) : null,
-        sdk: state.trader.sdk,
     },
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     actions: bindActionCreators({
-        login,
-        setAlert,
     }, dispatch),
 });
 
 export const Darknode = connect(mapStateToProps, mapDispatchToProps)(withRouter(DarknodeClass));
+
+export const getDarknodeParam = (params: unknown): string | undefined => {
+    const { darknodeID: darknodeID58 } = params as { darknodeID: string | undefined };
+    let darknodeID;
+    if (darknodeID58) {
+        try {
+            // Convert from base-58 to hex
+            darknodeID = new EncodedData(darknodeID58, Encodings.BASE58)
+                .toHex()
+                .toLowerCase();
+
+            // Convert to checksum address
+            darknodeID = (new Web3()).utils.toChecksumAddress(darknodeID);
+        } catch (err) {
+            // If the darknode ID is malfomatted, ignore it
+            darknodeID = undefined;
+        }
+    }
+    return darknodeID;
+};
