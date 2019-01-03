@@ -1,5 +1,6 @@
-import { Currency, TokenPrices } from "../reducers/types";
 import { Map } from "immutable";
+
+import { Currency, TokenPrices } from "../reducers/types";
 
 export enum Token {
     ETH = "ETH",
@@ -12,7 +13,6 @@ export enum Token {
 
 // For iterating over Tokens
 export const Tokens: Token[] = [Token.ETH, Token.DGX, Token.TUSD, Token.REN, Token.OMG, Token.ZRX];
-
 
 export let coinGeckoIDs = Map<Token, string>()
     .set(Token.ETH, "ethereum")
@@ -34,6 +34,7 @@ export async function getPrices(): Promise<TokenPrices> {
             continue;
         }
 
+        // tslint:disable-next-line:max-line-length
         const url = `https://api.coingecko.com/api/v3/coins/${coinGeckoID}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`;
         const response = await fetch(url);
         const data = await response.json();

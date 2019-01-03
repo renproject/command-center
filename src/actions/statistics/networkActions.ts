@@ -20,4 +20,3 @@ export const updateTokenPrices = () => async (dispatch: Dispatch) => {
     const tokenPrices = await getPrices();
     dispatch(storeTokenPrices({ tokenPrices }));
 };
-

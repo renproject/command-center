@@ -26,10 +26,11 @@ export class Console extends React.Component<ConsoleProps, ConsoleState> {
 
     public render(): JSX.Element {
         const { level } = this.state;
+        const enhanced = level > (NUMERATOR + DENOMINATOR ** 2);
         return (
-            <div className={`monospace console ${level > (NUMERATOR + DENOMINATOR ** 2) ? "enhanced" : ""}`} onClick={this.onClickHandler}>
+            <div className={`monospace console ${enhanced ? "enhanced" : ""}`} onClick={this.onClickHandler}>
                 {this.props.logs}
-                <div ref={ref => { this.bottomElement = ref; }} />
+                <div ref={(ref) => { this.bottomElement = ref; }} />
             </div>);
     }
 

@@ -1,6 +1,5 @@
 import * as React from "react";
 
-import RenExSDK from "@renex/renex";
 import BigNumber from "bignumber.js";
 
 import { faStar } from "@fortawesome/free-regular-svg-icons";
@@ -16,7 +15,6 @@ import { TokenBalance } from "../../TokenBalance";
 import { FeesItem } from "../FeesItem";
 import { TokenIcon } from "../TokenIcon";
 import { Block, BlockBody, BlockTitle } from "./Block";
-
 
 interface FeesBlockProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     isOperator: boolean;
@@ -58,8 +56,16 @@ class FeesBlockClass extends React.Component<FeesBlockProps, FeesBlockState> {
                     {!showAdvanced ?
                         <div className="block--basic">
                             <div className="block--basic--top">
-                                <span className="fees-block--basic--sign"><CurrencyIcon currency={quoteCurrency} /></span>
-                                <span className="fees-block--basic--value"><TokenBalance token={Token.ETH} convertTo={quoteCurrency} amount={darknodeDetails.feesEarnedTotalEth} /></span>
+                                <span className="fees-block--basic--sign">
+                                    <CurrencyIcon currency={quoteCurrency} />
+                                </span>
+                                <span className="fees-block--basic--value">
+                                    <TokenBalance
+                                        token={Token.ETH}
+                                        convertTo={quoteCurrency}
+                                        amount={darknodeDetails.feesEarnedTotalEth}
+                                    />
+                                </span>
                                 <span className="fees-block--basic--unit">{quoteCurrency.toUpperCase()}</span>
                             </div>
                             <div className="block--basic--show" onClick={this.toggleAdvanced}>
@@ -68,8 +74,16 @@ class FeesBlockClass extends React.Component<FeesBlockProps, FeesBlockState> {
                         </div> :
                         <div className="block--advanced">
                             <div className="block--advanced--top">
-                                <span className="fees-block--advanced--sign"><CurrencyIcon currency={quoteCurrency} /></span>
-                                <span className="fees-block--advanced--value"><TokenBalance token={Token.ETH} convertTo={quoteCurrency} amount={darknodeDetails.feesEarnedTotalEth} /></span>
+                                <span className="fees-block--advanced--sign">
+                                    <CurrencyIcon currency={quoteCurrency} />
+                                </span>
+                                <span className="fees-block--advanced--value">
+                                    <TokenBalance
+                                        token={Token.ETH}
+                                        convertTo={quoteCurrency}
+                                        amount={darknodeDetails.feesEarnedTotalEth}
+                                    />
+                                </span>
                                 <span className="fees-block--advanced--unit">{quoteCurrency.toUpperCase()}</span>
                             </div>
 
@@ -79,10 +93,35 @@ class FeesBlockClass extends React.Component<FeesBlockProps, FeesBlockState> {
                                         {
                                             darknodeDetails.feesEarned.map((balance: BigNumber, token: Token) => {
                                                 return <tr key={token}>
-                                                    <td><TokenIcon className="fees-block--table--icon" token={token} /> <span>{token}</span></td>
-                                                    <td className="fees-block--table--value"><TokenBalance token={token} amount={balance} /></td>
-                                                    <td className="fees-block--table--usd"><CurrencyIcon currency={quoteCurrency} /><TokenBalance token={token} amount={balance} convertTo={quoteCurrency} /> <span className="fees-block--table--usd-symbol">{quoteCurrency.toUpperCase()}</span></td>
-                                                    <td><FeesItem isOperator={isOperator} key={token} token={token} amount={balance} darknodeID={darknodeDetails.ID} /></td>
+                                                    <td>
+                                                        <TokenIcon className="fees-block--table--icon" token={token} />
+                                                        {" "}
+                                                        <span>{token}</span>
+                                                    </td>
+                                                    <td className="fees-block--table--value">
+                                                        <TokenBalance token={token} amount={balance} />
+                                                    </td>
+                                                    <td className="fees-block--table--usd">
+                                                        <CurrencyIcon currency={quoteCurrency} />
+                                                        <TokenBalance
+                                                            token={token}
+                                                            amount={balance}
+                                                            convertTo={quoteCurrency}
+                                                        />
+                                                        {" "}
+                                                        <span className="fees-block--table--usd-symbol">
+                                                            {quoteCurrency.toUpperCase()}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <FeesItem
+                                                            isOperator={isOperator}
+                                                            key={token}
+                                                            token={token}
+                                                            amount={balance}
+                                                            darknodeID={darknodeDetails.ID}
+                                                        />
+                                                    </td>
                                                 </tr>;
                                             }).valueSeq().toArray()
                                         }
@@ -115,4 +154,3 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
 });
 
 export const FeesBlock = connect(mapStateToProps, mapDispatchToProps)(FeesBlockClass);
-

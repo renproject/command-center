@@ -19,7 +19,10 @@ export enum DarknodeAction {
     Deregister = "deregister",
 }
 
-interface DarknodeProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps>, RouteComponentProps {
+interface DarknodeProps extends
+    ReturnType<typeof mapStateToProps>,
+    ReturnType<typeof mapDispatchToProps>,
+    RouteComponentProps {
 }
 
 interface DarknodeState {
@@ -28,7 +31,7 @@ interface DarknodeState {
 /**
  * Darknode shows the details of a darknode. The user does not have to be logged
  * in.
- * 
+ *
  * URL parameters:
  *     1) action: either "register" or "deregister"
  *     2) public_key: only used if action is "register"
@@ -57,12 +60,17 @@ class DarknodeClass extends React.Component<DarknodeProps, DarknodeState> {
         const publicKey = typeof queryParams.public_key === "string" ? queryParams.public_key : undefined;
 
         let darknodeAction = DarknodeAction.View;
-        // If the URL action is Register, and the darknode has no details or is unregistered
-        if (action === DarknodeAction.Register && (!details || details.registrationStatus === RegistrationStatus.Unregistered)) {
+        if (
+            (action === DarknodeAction.Register) &&
+            (!details || details.registrationStatus === RegistrationStatus.Unregistered)
+        ) {
+            // If the URL action is Register, and the darknode has no details or is unregistered
             darknodeAction = action;
-        }
-        // If the URL action is Deegister, and the darknode is registered  
-        else if (action === DarknodeAction.Deregister && details && details.registrationStatus === RegistrationStatus.Registered) {
+        } else if ((action === DarknodeAction.Deregister) &&
+            details &&
+            details.registrationStatus === RegistrationStatus.Registered
+        ) {
+            // If the URL action is Deregister, and the darknode is registered
             darknodeAction = action;
         }
 
@@ -71,7 +79,15 @@ class DarknodeClass extends React.Component<DarknodeProps, DarknodeState> {
                 <Header />
                 <div className="container">
                     {darknodeID ?
-                        <StatusPage key={darknodeID} action={darknodeAction} publicKey={publicKey} name={name} darknodeID={darknodeID} isOperator={!readOnly} darknodeDetails={details} /> :
+                        <StatusPage
+                            key={darknodeID}
+                            action={darknodeAction}
+                            publicKey={publicKey}
+                            name={name}
+                            darknodeID={darknodeID}
+                            isOperator={!readOnly}
+                            darknodeDetails={details}
+                        /> :
                         <div>Darknode not found</div>
                     }
                 </div>

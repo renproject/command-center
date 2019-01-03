@@ -3,9 +3,13 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { ApplicationData, DarknodeDetails } from "../../reducers/types";
-import { RegistrationStatus, updateDarknodeStatistics, updateOperatorStatistics } from "../../actions/statistics/operatorActions";
+import {
+    RegistrationStatus,
+    updateDarknodeStatistics,
+    updateOperatorStatistics
+} from "../../actions/statistics/operatorActions";
 import { showDeregisterPopup, showRefundPopup, showRegisterPopup } from "../../actions/statistics/operatorPopupActions";
+import { ApplicationData, DarknodeDetails } from "../../reducers/types";
 
 interface RegistrationProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     isOperator: boolean;
@@ -62,55 +66,39 @@ class RegistrationClass extends React.Component<RegistrationProps, RegistrationS
                     <span className="status--title">{statusText[this.props.registrationStatus]}</span> : null}
                 {isOperator ? <>
                     {registrationStatus === RegistrationStatus.Unregistered ?
-                        <button disabled={disabled} className="status--button" onClick={this.handleRegister}>{active ? "Registering..." : "Register your darknode"}</button> : null}
+                        <button disabled={disabled} className="status--button" onClick={this.handleRegister}>
+                            {active ? "Registering..." : "Register your darknode"}
+                        </button> :
+                        null
+                    }
                     {registrationStatus === RegistrationStatus.Registered ?
-                        <button disabled={disabled} className="status--button" onClick={this.handleDeregister}>{active ? "Deregistering..." : "Deregister"}</button> : null}
+                        <button disabled={disabled} className="status--button" onClick={this.handleDeregister}>
+                            {active ? "Deregistering..." : "Deregister"}
+                        </button> :
+                        null
+                    }
                     {registrationStatus === RegistrationStatus.Refundable
-                        ? <button disabled={disabled} className="status--button status--button--focus" onClick={this.handleRefund}>{active ? "Refunding..." : "Refund"}</button> : null}
+                        ? <button
+                            disabled={disabled}
+                            className="status--button status--button--focus"
+                            onClick={this.handleRefund}
+                        >
+                            {active ? "Refunding..." : "Refund"}
+                        </button> :
+                        null
+                    }
                 </> : noOperator ?
                         <span className="status--operator">DARKNODE NOT REGISTERED</span> :
-                        (this.props.darknodeDetails ? <span className="status--operator">Operator: {this.props.darknodeDetails.operator}</span> : null)
+                        (this.props.darknodeDetails ?
+                            <span className="status--operator">
+                                Operator: {this.props.darknodeDetails.operator}
+                            </span> :
+                            null
+                        )
                 }
             </div>
         );
     }
-
-    // private updateStatus = async (props: RegistrationProps): Promise<void> => {
-    //     let { buttonText, disabled } = this.state;
-    //     const { sdk, minimumBond } = this.props.store;
-
-    //     // Reset state
-    //     this.setState({  });
-
-    //     // Show "Approve" or "Register" buttons
-    //     if (props.registrationStatus === RegistrationStatus.Unregistered) {
-    //         // tslint:disable-next-line:no-non-null-assertion
-    //         const renAddr = (await sdk._cachedTokenDetails.get(Token.REN))!.addr;
-    //         const ercContract = new (sdk.getWeb3().eth.Contract)(contracts.ERC20.ABI, renAddr);
-    //         const allowed = new BigNumber(await ercContract.methods.allowance(sdk.getAddress(), sdk._contracts.darknodeRegistry.address).call());
-    //         if (!minimumBond || allowed.lt(minimumBond)) {
-    //             buttonText = BUTTON_APPROVE;
-    //             disabled = false;
-    //         } else if (allowed.gt(minimumBond) && (!this.state.registerEnabled)) {
-    //             buttonText = BUTTON_REGISTER;
-    //             disabled = false;
-    //             this.setState({ registerEnabled: true });
-    //         }
-    //     }
-
-    //     // Show "Deregister" button
-    //     else if (props.registrationStatus === RegistrationStatus.Registered) {
-    //         buttonText = BUTTON_DEREGISTER;
-    //         disabled = false;
-    //     }
-
-    //     // Show "Refund" button
-    //     else if (props.registrationStatus === RegistrationStatus.Refundable) {
-    //         buttonText = BUTTON_REFUND;
-    //         disabled = false;
-    //     }
-    //     this.setState({ buttonText, disabled });
-    // }
 
     private onCancel = async () => {
         try {
@@ -145,7 +133,6 @@ class RegistrationClass extends React.Component<RegistrationProps, RegistrationS
         }
     }
 
-
     private handleRegister = async (): Promise<void> => {
         const { darknodeID, publicKey } = this.props;
         const { sdk, address, minimumBond, tokenPrices } = this.props.store;
@@ -160,7 +147,6 @@ class RegistrationClass extends React.Component<RegistrationProps, RegistrationS
         );
     }
 
-
     private handleDeregister = async (): Promise<void> => {
         const { darknodeID, darknodeDetails } = this.props;
         const { sdk, address, quoteCurrency } = this.props.store;
@@ -170,7 +156,14 @@ class RegistrationClass extends React.Component<RegistrationProps, RegistrationS
         }
 
         this.setState({ active: true });
-        await this.props.actions.showDeregisterPopup(sdk, address, darknodeID, darknodeDetails && darknodeDetails.feesEarnedTotalEth, quoteCurrency, this.onCancel, this.onDone);
+        await this.props.actions.showDeregisterPopup(
+            sdk,
+            address,
+            darknodeID,
+            darknodeDetails && darknodeDetails.feesEarnedTotalEth,
+            quoteCurrency,
+            this.onCancel,
+            this.onDone);
     }
 
     private handleRefund = async (): Promise<void> => {
@@ -185,7 +178,6 @@ class RegistrationClass extends React.Component<RegistrationProps, RegistrationS
         await this.props.actions.showRefundPopup(sdk, address, darknodeID, this.onCancel, this.onDone);
     }
 }
-
 
 const mapStateToProps = (state: ApplicationData) => ({
     store: {
@@ -209,4 +201,3 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
 });
 
 export const Registration = connect(mapStateToProps, mapDispatchToProps)(RegistrationClass);
-

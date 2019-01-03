@@ -4,8 +4,8 @@ import FetchSubprovider from "web3-provider-engine/subproviders/fetch";
 import { Provider } from "web3/providers";
 
 import { clearPopup } from "../../actions/popup/popupActions";
-import { INFURA_URL } from "../../lib/network";
 import { store } from "../../index";
+import { INFURA_URL } from "../../lib/network";
 
 export const ErrorCanceledByUser = "Returned error: Error: MetaMask Tx Signature: User denied transaction signature.";
 
@@ -24,7 +24,9 @@ export const getReadOnlyProvider = (): Provider => {
     return engine;
 };
 
-export function PopupPromise<T>(fn: (resolve: (value?: T | PromiseLike<T>) => void, reject: (reason?: Error) => void) => void): Promise<T> {
+export function PopupPromise<T>(
+    fn: (resolve: (value?: T | PromiseLike<T>) => void, reject: (reason?: Error) => void) => void,
+): Promise<T> {
     return new Promise((resolve, reject) => {
 
         const innerReject: (reason?: Error) => void = (reason) => {
@@ -38,4 +40,3 @@ export function PopupPromise<T>(fn: (resolve: (value?: T | PromiseLike<T>) => vo
         fn(innerResolve, innerReject);
     });
 }
-

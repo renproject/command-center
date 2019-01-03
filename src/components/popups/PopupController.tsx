@@ -1,9 +1,9 @@
 import * as React from "react";
 
 import { connect } from "react-redux";
+import { bindActionCreators, Dispatch } from "redux";
 
 import { ApplicationData } from "../../reducers/types";
-import { bindActionCreators, Dispatch } from "redux";
 
 interface PopupControllerProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
 }

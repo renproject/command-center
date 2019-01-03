@@ -1,11 +1,12 @@
 import * as React from "react";
 
-import { updateDarknodeStatistics } from "../../actions/statistics/operatorActions";
-import { showFundPopup } from "../../actions/statistics/operatorPopupActions";
-import { ApplicationData, DarknodeDetails } from "../../reducers/types";
 import { BigNumber } from "bignumber.js";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
+
+import { updateDarknodeStatistics } from "../../actions/statistics/operatorActions";
+import { showFundPopup } from "../../actions/statistics/operatorPopupActions";
+import { ApplicationData, DarknodeDetails } from "../../reducers/types";
 
 interface TopupProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     darknodeID: string;
@@ -44,7 +45,14 @@ class TopupClass extends React.Component<TopupProps, TopupState> {
                 <label>
                     <div className="topup--title">Enter the amount of Ether you would like to deposit</div>
                     <span className="topup--input">
-                        <input disabled={pending} type="number" value={value} min={0} onChange={this.handleChange} onBlur={this.handleBlur} />
+                        <input
+                            disabled={pending}
+                            type="number"
+                            value={value}
+                            min={0}
+                            onChange={this.handleChange}
+                            onBlur={this.handleBlur}
+                        />
                         {pending ?
                             <button disabled>Depositing...</button> :
                             <button className="hover green" onClick={this.sendFunds} disabled={disabled}>
@@ -54,7 +62,12 @@ class TopupClass extends React.Component<TopupProps, TopupState> {
                     </span>
                 </label>
                 {resultMessage &&
-                    <p className={`${resultMessage === CONFIRMATION_MESSAGE ? "topup--input--success success" : "topup--input--warning warning"}`}>{resultMessage}</p>
+                    <p
+                        className={`${resultMessage === CONFIRMATION_MESSAGE ? "topup--input--success success" :
+                            "topup--input--warning warning"}`}
+                    >
+                        {resultMessage}
+                    </p>
                 }
             </div>
         );
@@ -69,7 +82,10 @@ class TopupClass extends React.Component<TopupProps, TopupState> {
         if (isNaN(parseFloat(value)) || parseFloat(value) <= 0) {
             this.setState({ disabled: true });
         } else if (traderBalance.isLessThan(value)) {
-            this.setState({ resultMessage: `Insufficient balance. Maximum deposit: ${traderBalance.toFixed()}`, disabled: true });
+            this.setState({
+                resultMessage: `Insufficient balance. Maximum deposit: ${traderBalance.toFixed()}`,
+                disabled: true,
+            });
         } else if (resultMessage || disabled) {
             this.setState({ resultMessage: "", disabled: false });
         }
@@ -110,7 +126,6 @@ class TopupClass extends React.Component<TopupProps, TopupState> {
             return;
         }
 
-
         const onCancel = () => {
             try {
                 this.setState({ pending: false });
@@ -149,4 +164,3 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
 });
 
 export const Topup = connect(mapStateToProps, mapDispatchToProps)(TopupClass);
-

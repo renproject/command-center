@@ -71,10 +71,22 @@ export const NetworkBlock = (props: NetworkBlockProps) => {
             {darknodeDetails ? <BlockBody>
                 <div className="network-block--info">
                     <div className="darknode-info">
-                        <span className="darknode-info--title">Network:</span> <span>-</span>
+                        <span className="darknode-info--title">
+                            Network:
+                        </span>
+                        {" "}
+                        <span>
+                            -
+                        </span>
                     </div>
                     <div className="darknode-info">
-                        <span className="darknode-info--title">Connected Peers:</span> <span>{darknodeDetails.peers}</span>
+                        <span className="darknode-info--title">
+                            Connected Peers:
+                        </span>
+                        {" "}
+                        <span>
+                            {darknodeDetails.peers}
+                        </span>
                     </div>
                     <CopyBlock value={darknodeIDBase58}>ID</CopyBlock>
                     <CopyBlock value={darknodeDetails.ID}>Ethereum Address</CopyBlock>

@@ -11,7 +11,6 @@ import { withdrawReward } from "../../actions/trader/darknode";
 import { Token } from "../../lib/tokens";
 import { ApplicationData } from "../../reducers/types";
 
-
 interface FeesProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     isOperator: boolean;
     token: Token;
@@ -33,7 +32,11 @@ class FeesItemClass extends React.Component<FeesProps, FeesState> {
 
     public render(): JSX.Element {
         return (
-            <button className="withdraw-fees" disabled={this.state.disabled || !this.props.isOperator} onClick={this.handleWithdraw}>
+            <button
+                className="withdraw-fees"
+                disabled={this.state.disabled || !this.props.isOperator}
+                onClick={this.handleWithdraw}
+            >
                 <FontAwesomeIcon icon={faChevronRight} pull="left" />
             </button>
         );
@@ -48,7 +51,6 @@ class FeesItemClass extends React.Component<FeesProps, FeesState> {
     }
 }
 
-
 const mapStateToProps = (state: ApplicationData) => ({
     store: {
         sdk: state.trader.sdk,
@@ -62,4 +64,3 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
 });
 
 export const FeesItem = connect(mapStateToProps, mapDispatchToProps)(FeesItemClass);
-

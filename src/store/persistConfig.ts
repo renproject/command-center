@@ -1,10 +1,11 @@
 import storage from "redux-persist/lib/storage";
 
+import { createTransform, PersistConfig } from "redux-persist";
+
 import {
     ApplicationData,
     StatisticsData
 } from "../reducers/types";
-import { createTransform, PersistConfig } from "redux-persist";
 
 // Local Storage:
 

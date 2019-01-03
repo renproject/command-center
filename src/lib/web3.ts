@@ -11,6 +11,6 @@ export function getNetwork(web3: Web3): Promise<string> {
 
 export function includesAddress(web3: Web3, address: string): Promise<boolean> {
     return getAccounts(web3).then((accounts: string[]) => {
-        return accounts.map(acc => acc.toLowerCase()).includes(address.toLowerCase());
+        return accounts.map((account) => account.toLowerCase()).includes(address.toLowerCase());
     });
 }

@@ -1,15 +1,18 @@
+import { List } from "immutable";
 import { ActionType, getType } from "typesafe-actions";
 
 import * as networkActions from "../../actions/statistics/networkActions";
 import * as operatorActions from "../../actions/statistics/operatorActions";
 
 import { StatisticsData } from "../../reducers/types";
-import { List } from "immutable";
 
 type NetworkAction = ActionType<typeof networkActions>;
 type OperatorActions = ActionType<typeof operatorActions>;
 
-export function statisticsReducer(state: StatisticsData = new StatisticsData(), action: NetworkAction | OperatorActions) {
+export function statisticsReducer(
+    state: StatisticsData = new StatisticsData(),
+    action: NetworkAction | OperatorActions
+) {
     switch (action.type) {
         case getType(networkActions.storeMinimumBond):
             return state.set("minimumBond", action.payload.minimumBond);

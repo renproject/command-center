@@ -106,7 +106,6 @@ export class StatisticsData extends Record({
     }
 }
 
-
 export class DarknodeDetails extends Record({
     ID: "",
     multiAddress: "",

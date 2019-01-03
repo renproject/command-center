@@ -18,4 +18,3 @@ export class DarknodeID extends React.Component<DarknodeIDProps, DarknodeIDState
         return <div className="monospace darknode-id">{darknodeIDBase58}</div>;
     }
 }
-

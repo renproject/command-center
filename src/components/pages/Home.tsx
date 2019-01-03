@@ -36,7 +36,11 @@ class HomeClass extends React.Component<HomeProps, HomeState> {
             <div className="home">
                 <Header />
                 <div className="container">
-                    <DarknodeList darknodeDetails={darknodeDetails} darknodeNames={darknodeNames} darknodeList={darknodeList} />
+                    <DarknodeList
+                        darknodeDetails={darknodeDetails}
+                        darknodeNames={darknodeNames}
+                        darknodeList={darknodeList}
+                    />
                 </div>
             </div>
         );

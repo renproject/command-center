@@ -19,7 +19,10 @@ import { Darknode } from "./pages/Darknode";
 import { LoggingIn } from "./pages/LoggingIn";
 import { Sidebar } from "./Sidebar";
 
-interface AppProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps>, RouteComponentProps {
+interface AppProps extends
+    ReturnType<typeof mapStateToProps>,
+    ReturnType<typeof mapDispatchToProps>,
+    RouteComponentProps {
 }
 
 interface AppState {
@@ -51,7 +54,7 @@ class AppClass extends React.Component<AppProps, AppState> {
     private callLookForLogoutTimeout: NodeJS.Timer | undefined;
     private callUpdateNetworkStatisticsTimeout: NodeJS.Timer | undefined;
     private callUpdateOperatorStatisticsTimeout: NodeJS.Timer | undefined;
-    private callUpdateSelectedDarknodeStatisticsTimeout: NodeJS.Timer | undefined;
+    private callUpdateSelectedDarknodeTimeout: NodeJS.Timer | undefined;
 
     public constructor(props: AppProps, context: object) {
         super(props, context);
@@ -84,13 +87,12 @@ class AppClass extends React.Component<AppProps, AppState> {
             this.callUpdateOperatorStatistics(nextProps).catch(console.error);
         }
 
-
         const { match: { params: nextParams } } = nextProps;
         const { match: { params } } = this.props;
         const { darknodeID: nextDarknodeID } = nextParams as { darknodeID: string };
         const { darknodeID } = params as { darknodeID: string };
         if (darknodeID !== nextDarknodeID) {
-            this.callUpdateSelectedDarknodeStatistics(nextProps).catch(console.error);
+            this.callUpdateSelectedDarknode(nextProps).catch(console.error);
         }
 
     }
@@ -101,10 +103,11 @@ class AppClass extends React.Component<AppProps, AppState> {
         if (this.callLookForLogoutTimeout) { clearTimeout(this.callLookForLogoutTimeout); }
         if (this.callUpdateNetworkStatisticsTimeout) { clearTimeout(this.callUpdateNetworkStatisticsTimeout); }
         if (this.callUpdateOperatorStatisticsTimeout) { clearTimeout(this.callUpdateOperatorStatisticsTimeout); }
-        if (this.callUpdateSelectedDarknodeStatisticsTimeout) { clearTimeout(this.callUpdateSelectedDarknodeStatisticsTimeout); }
+        if (this.callUpdateSelectedDarknodeTimeout) { clearTimeout(this.callUpdateSelectedDarknodeTimeout); }
     }
 
-    public withAccount = <T extends React.ComponentClass>(component: T): React.ComponentClass | React.StatelessComponent =>
+    public withAccount = <T extends React.ComponentClass>(component: T):
+        React.ComponentClass | React.StatelessComponent =>
         this.props.store.address ? component : LoggingIn
 
     public render(): JSX.Element {
@@ -126,7 +129,6 @@ class AppClass extends React.Component<AppProps, AppState> {
             </PopupController>
         </div>;
     }
-
 
     // Update token prices every 60 seconds
     private callUpdatePrices = async (props?: AppProps) => {
@@ -170,7 +172,10 @@ class AppClass extends React.Component<AppProps, AppState> {
             timeout = 1; // Retry in a second if an error occurred
         }
         if (this.callUpdateNetworkStatisticsTimeout) { clearTimeout(this.callUpdateNetworkStatisticsTimeout); }
-        this.callUpdateNetworkStatisticsTimeout = setTimeout(this.callUpdateNetworkStatistics, timeout * 1000) as unknown as NodeJS.Timer;
+        this.callUpdateNetworkStatisticsTimeout = setTimeout(
+            this.callUpdateNetworkStatistics,
+            timeout * 1000,
+        ) as unknown as NodeJS.Timer;
     }
 
     // Update operator statistics every 120 seconds
@@ -189,11 +194,14 @@ class AppClass extends React.Component<AppProps, AppState> {
             }
         }
         if (this.callUpdateOperatorStatisticsTimeout) { clearTimeout(this.callUpdateOperatorStatisticsTimeout); }
-        this.callUpdateOperatorStatisticsTimeout = setTimeout(this.callUpdateOperatorStatistics, timeout * 1000) as unknown as NodeJS.Timer;
+        this.callUpdateOperatorStatisticsTimeout = setTimeout(
+            this.callUpdateOperatorStatistics,
+            timeout * 1000,
+        ) as unknown as NodeJS.Timer;
     }
 
     // Update selected darknode statistics every 30 seconds
-    private callUpdateSelectedDarknodeStatistics = async (props?: AppProps) => {
+    private callUpdateSelectedDarknode = async (props?: AppProps) => {
         props = props || this.props;
 
         const { match: { params } } = props;
@@ -212,15 +220,18 @@ class AppClass extends React.Component<AppProps, AppState> {
                 timeout = 15; // try again in half the time
             }
         }
-        if (this.callUpdateSelectedDarknodeStatisticsTimeout) { clearTimeout(this.callUpdateSelectedDarknodeStatisticsTimeout); }
-        this.callUpdateSelectedDarknodeStatisticsTimeout = setTimeout(this.callUpdateSelectedDarknodeStatistics, timeout * 1000) as unknown as NodeJS.Timer;
+        if (this.callUpdateSelectedDarknodeTimeout) { clearTimeout(this.callUpdateSelectedDarknodeTimeout); }
+        this.callUpdateSelectedDarknodeTimeout = setTimeout(
+            this.callUpdateSelectedDarknode,
+            timeout * 1000,
+        ) as unknown as NodeJS.Timer;
     }
 
     // tslint:disable-next-line:member-ordering
     public setupLoops() {
         this.callUpdatePrices().catch(console.error);
         this.callUpdateNetworkStatistics().catch(console.error);
-        this.callUpdateSelectedDarknodeStatistics().catch(console.error);
+        this.callUpdateSelectedDarknode().catch(console.error);
     }
 
     // tslint:disable-next-line:member-ordering

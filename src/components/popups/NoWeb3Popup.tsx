@@ -3,8 +3,8 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { ApplicationData } from "../../reducers/types";
 import { Language } from "../../languages/language";
+import { ApplicationData } from "../../reducers/types";
 
 const metamaskIcon = require("../../styles/images/metamask.svg");
 
@@ -37,7 +37,6 @@ class NoWeb3PopupClass extends React.Component<NoWeb3PopupProps, NoWeb3PopupStat
         );
     }
 }
-
 
 const mapStateToProps = (state: ApplicationData) => ({
     store: {

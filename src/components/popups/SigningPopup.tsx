@@ -34,7 +34,9 @@ export class SigningPopup extends React.Component<SigningPopupProps, SigningPopu
         const { data } = this.props;
         return <div className="popup sign">
             <h2>Approve signature</h2>
-            <p className="sign--data">{data.map((item, key) => <span key={key} className="monospace sign--datum">{item}</span>)}</p>
+            <p className="sign--data">
+                {data.map((item, key) => <span key={key} className="monospace sign--datum">{item}</span>)}
+            </p>
             {signing ?
                 <>
                     <Loading />

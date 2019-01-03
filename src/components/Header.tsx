@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { faAngleDown, faFlag } from "@fortawesome/free-solid-svg-icons";
+import { faAngleDown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { connect } from "react-redux";
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
@@ -25,7 +25,6 @@ interface HeaderState {
     currencyDropdown: boolean;
     copied: boolean;
 }
-
 
 /**
  * Header is a visual component providing page branding and navigation.
@@ -68,11 +67,14 @@ class HeaderClass extends React.Component<HeaderProps, HeaderState> {
                                     English <FontAwesomeIcon icon={faAngleDown} />
                                     {languageDropdown ?
                                         <ul className="header--dropdown header--dropdown--options">
-                                            <li role="button" className="header--dropdown--selected"><img src={English} /> English</li>
+                                            <li role="button" className="header--dropdown--selected">
+                                                <img src={English} />
+                                                {" "}
+                                                English
+                                            </li>
                                         </ul> : null
                                     }
                                 </li>
-
 
                                 <li
                                     data-id="currencyDropdown"
@@ -83,10 +85,54 @@ class HeaderClass extends React.Component<HeaderProps, HeaderState> {
                                     {quoteCurrency.toUpperCase()} <FontAwesomeIcon icon={faAngleDown} />
                                     {currencyDropdown ?
                                         <ul className="header--dropdown header--dropdown--currency">
-                                            <li role="button" data-id={Currency.USD} className={quoteCurrency === Currency.USD ? "header--dropdown--selected" : ""} onClick={this.setCurrency}><CurrencyIcon currency={Currency.USD} /> USD Dollar (USD)</li>
-                                            <li role="button" data-id={Currency.AUD} className={quoteCurrency === Currency.AUD ? "header--dropdown--selected" : ""} onClick={this.setCurrency}><CurrencyIcon currency={Currency.AUD} /> Australian Dollar (AUD)</li>
-                                            <li role="button" data-id={Currency.BTC} className={quoteCurrency === Currency.BTC ? "header--dropdown--selected" : ""} onClick={this.setCurrency}><CurrencyIcon currency={Currency.BTC} /> Bitcoin (BTC)</li>
-                                            <li role="button" data-id={Currency.ETH} className={quoteCurrency === Currency.ETH ? "header--dropdown--selected" : ""} onClick={this.setCurrency}><CurrencyIcon currency={Currency.ETH} /> Ethereum (ETH)</li>
+                                            <li
+                                                role="button"
+                                                data-id={Currency.USD}
+                                                className={quoteCurrency === Currency.USD ?
+                                                    "header--dropdown--selected" :
+                                                    ""}
+                                                onClick={this.setCurrency}
+                                            >
+                                                <CurrencyIcon currency={Currency.USD} />
+                                                {" "}
+                                                USD Dollar (USD)
+                                            </li>
+                                            <li
+                                                role="button"
+                                                data-id={Currency.AUD}
+                                                className={quoteCurrency === Currency.AUD ?
+                                                    "header--dropdown--selected" :
+                                                    ""}
+                                                onClick={this.setCurrency}
+                                            >
+                                                <CurrencyIcon currency={Currency.AUD} />
+                                                {" "}
+                                                Australian Dollar (AUD)
+                                            </li>
+                                            <li
+                                                role="button"
+                                                data-id={Currency.BTC}
+                                                className={quoteCurrency === Currency.BTC ?
+                                                    "header--dropdown--selected" :
+                                                    ""}
+                                                onClick={this.setCurrency}
+                                            >
+                                                <CurrencyIcon currency={Currency.BTC} />
+                                                {" "}
+                                                Bitcoin (BTC)
+                                            </li>
+                                            <li
+                                                role="button"
+                                                data-id={Currency.ETH}
+                                                className={quoteCurrency === Currency.ETH ?
+                                                    "header--dropdown--selected" :
+                                                    ""}
+                                                onClick={this.setCurrency}
+                                            >
+                                                <CurrencyIcon currency={Currency.ETH} />
+                                                {" "}
+                                                Ethereum (ETH)
+                                            </li>
                                         </ul> : null
                                     }
                                 </li>
@@ -103,9 +149,17 @@ class HeaderClass extends React.Component<HeaderProps, HeaderState> {
                             <div className="header--account">
                                 {address && <Blocky address={address} />}
                                 <div className="header--account--right">
-                                    <div className={`header--account--type ${address ? "header--account--connected" : ""}`}>{web3BrowserName}</div>
+                                    <div
+                                        className={`header--account--type ${address ?
+                                            "header--account--connected" :
+                                            ""}`}
+                                    >
+                                        {web3BrowserName}
+                                    </div>
                                     {address ?
-                                        <div className="header--account--address">{address.substring(0, 8)}...{address.slice(-5)}</div> :
+                                        <div className="header--account--address">
+                                            {address.substring(0, 8)}...{address.slice(-5)}
+                                        </div> :
                                         <div className="header--account--address">Not connected</div>
                                     }
                                 </div>
@@ -122,7 +176,11 @@ class HeaderClass extends React.Component<HeaderProps, HeaderState> {
                                                 }
                                             </span>
                                         </li> :
-                                        <li role="button" onClick={this.handleLogin} className="header--dropdown--highlight">
+                                        <li
+                                            role="button"
+                                            onClick={this.handleLogin}
+                                            className="header--dropdown--highlight"
+                                        >
                                             Connect {web3BrowserName}
                                         </li>
                                     }

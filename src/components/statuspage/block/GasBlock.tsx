@@ -34,7 +34,9 @@ class GasBlockClass extends React.Component<GasBlockProps, GasBlockState> {
         const { darknodeDetails } = this.props;
         const { showAdvanced } = this.state;
 
-        const gasValue = darknodeDetails ? (darknodeDetails.ethBalance.div(new BigNumber(Math.pow(10, 18)))).toFixed(3) : "";
+        const gasValue = darknodeDetails ?
+            (darknodeDetails.ethBalance.div(new BigNumber(Math.pow(10, 18)))).toFixed(3) :
+            "";
 
         return (
 
@@ -94,4 +96,3 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
 });
 
 export const GasBlock = connect(mapStateToProps, mapDispatchToProps)(GasBlockClass);
-

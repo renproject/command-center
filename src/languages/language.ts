@@ -13,5 +13,4 @@ export interface Language {
     };
 }
 
-
 export const Language = ENGLISH;
