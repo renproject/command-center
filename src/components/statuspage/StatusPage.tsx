@@ -87,7 +87,9 @@ class StatusPageClass extends React.Component<StatusPageProps, StatusPageState> 
                                     <button onClick={this.handleCancelRename}>Cancel</button>
                                 </form> :
                                 <>
-                                    <h3>{name ? name : <DarknodeID darknodeID={darknodeID} />}</h3>
+                                    <h3 onClick={this.handleRename}>
+                                        {name ? name : <DarknodeID darknodeID={darknodeID} />}
+                                    </h3>
                                     <button onClick={this.handleRename}>
                                         {name ? "Edit name" : "Set name"}
                                         {" "}

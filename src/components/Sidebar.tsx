@@ -9,6 +9,7 @@ import { Dispatch } from "redux";
 import { bindActionCreators } from "redux";
 
 import { RegistrationStatus } from "../actions/statistics/operatorActions";
+import { EncodedData, Encodings } from "../lib/general/encodedData";
 import { Token } from "../lib/tokens";
 import { ApplicationData, Currency } from "../reducers/types";
 import { Blocky } from "./Blocky";
@@ -17,7 +18,7 @@ import { DarknodeID } from "./DarknodeID";
 import { TokenBalance } from "./TokenBalance";
 
 interface SidebarProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
-    selectedDarknode: string | null;
+    selectedDarknode: string | undefined;
 }
 
 /**
@@ -64,8 +65,10 @@ class SidebarClass extends React.Component<SidebarProps> {
                         const active = darknodeID === selectedDarknode;
                         const faded = details && details.registrationStatus === RegistrationStatus.Unregistered;
 
+                        const darknodeIDBase58 = new EncodedData(darknodeID, Encodings.HEX).toBase58();
+
                         // tslint:disable-next-line:jsx-no-lambda FIXME
-                        return <Link className="no-underline" key={darknodeID} to={`/darknode/${darknodeID}`}>
+                        return <Link className="no-underline" key={darknodeID} to={`/darknode/${darknodeIDBase58}`}>
                             <li className={`${active ? "sidebar--active" : ""} ${faded ? "sidebar--faded" : ""}`}>
                                 <div className="sidebar--icon">
                                     <Blocky address={darknodeID} fgColor="#006FE8" bgColor="transparent" />

@@ -2,7 +2,7 @@ import * as Sentry from "@sentry/browser";
 import * as React from "react";
 
 import { connect } from "react-redux";
-import { Route, RouteComponentProps, withRouter } from "react-router-dom";
+import { Route, RouteComponentProps, Switch, withRouter } from "react-router-dom";
 import { Dispatch } from "redux";
 import { bindActionCreators } from "redux";
 
@@ -15,8 +15,9 @@ import { updateNetworkStatistics, updateTokenPrices } from "../actions/statistic
 import { updateDarknodeStatistics, updateOperatorStatistics } from "../actions/statistics/operatorActions";
 import { login, lookForLogout } from "../actions/trader/accountActions";
 import { ApplicationData } from "../reducers/types";
-import { Darknode } from "./pages/Darknode";
+import { Darknode, getDarknodeParam } from "./pages/Darknode";
 import { LoggingIn } from "./pages/LoggingIn";
+import { NotFound } from "./pages/NotFound";
 import { Sidebar } from "./Sidebar";
 
 interface AppProps extends
@@ -65,8 +66,8 @@ class AppClass extends React.Component<AppProps, AppState> {
     public componentDidMount = async () => {
         const { match: { params } } = this.props;
         const { sdk } = this.props.store;
-        let { darknodeID } = params as { darknodeID: string };
-        darknodeID = darknodeID && sdk.getWeb3().utils.toChecksumAddress(darknodeID.toLowerCase());
+
+        const darknodeID = getDarknodeParam(params);
 
         // Sometimes, logging in seems to freeze, to we start loops that don't
         // rely on being logged in before attempting to log in
@@ -89,8 +90,10 @@ class AppClass extends React.Component<AppProps, AppState> {
 
         const { match: { params: nextParams } } = nextProps;
         const { match: { params } } = this.props;
-        const { darknodeID: nextDarknodeID } = nextParams as { darknodeID: string };
-        const { darknodeID } = params as { darknodeID: string };
+
+        const nextDarknodeID = getDarknodeParam(nextParams);
+        const darknodeID = getDarknodeParam(params);
+
         if (darknodeID !== nextDarknodeID) {
             this.callUpdateSelectedDarknode(nextProps).catch(console.error);
         }
@@ -113,8 +116,7 @@ class AppClass extends React.Component<AppProps, AppState> {
     public render(): JSX.Element {
         const { match: { params } } = this.props;
         const { address, sdk } = this.props.store;
-        let { darknodeID } = params as { darknodeID: string };
-        darknodeID = darknodeID && sdk.getWeb3().utils.toChecksumAddress(darknodeID.toLowerCase());
+        const darknodeID = getDarknodeParam(params);
 
         // We set the key to be the address so that any sub-component state is reset after changing accounts (e.g. if in
         // the middle of a transaction, etc.)
@@ -122,9 +124,11 @@ class AppClass extends React.Component<AppProps, AppState> {
             <ScrollToTop />
             <PopupController>
                 {address ? <Sidebar selectedDarknode={darknodeID} /> : null}
-                <Route path="/" exact component={this.withAccount(Home)} />
-                <Route path="/darknode/:darknodeID" exact component={Darknode} />
-                <Route path="/loading" component={LoggingOut} />
+                <Switch>
+                    <Route path="/" exact component={this.withAccount(Home)} />
+                    <Route path="/darknode/:darknodeID" exact component={Darknode} />
+                    <Route component={NotFound} />
+                </Switch>
                 <Alerts />
             </PopupController>
         </div>;
@@ -207,8 +211,7 @@ class AppClass extends React.Component<AppProps, AppState> {
         const { match: { params } } = props;
         const { sdk, tokenPrices } = props.store;
 
-        let { darknodeID } = params as { darknodeID: string };
-        darknodeID = darknodeID && sdk.getWeb3().utils.toChecksumAddress(darknodeID.toLowerCase());
+        const darknodeID = getDarknodeParam(params);
 
         let timeout = 1; // if the action isn't called, try again in 1 second
         if (tokenPrices && darknodeID) {

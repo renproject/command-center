@@ -47,10 +47,7 @@ ReactDOM.render(
     <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
             <Router history={history}>
-                <>
-                    <Route path="/" exact component={App} />
-                    <Route path="/darknode/:darknodeID" exact component={App} />
-                </>
+                <App />
             </Router>
         </PersistGate>
     </Provider>,

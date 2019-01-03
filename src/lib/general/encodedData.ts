@@ -4,10 +4,12 @@ import { Record } from "./record";
 
 export enum Encodings {
     AUTO = "auto",
+    UNKNOWN = "unknown",
+
     HEX = "hex",
     BASE64 = "base64",
+    BASE58 = "base58",
     BUFFER = "buffer",
-    UNKNOWN = "unknown"
 }
 
 const DefaultEncodedData = {
@@ -95,31 +97,27 @@ export class EncodedData extends Record(DefaultEncodedData) {
         switch (this.encoding) {
             case Encodings.HEX:
                 return prefix + this.value;
-            case Encodings.BASE64:
-                return prefix + Buffer.from(this.value as string, "base64").toString("hex");
-            case Encodings.BUFFER:
-                return prefix + (this.value as Buffer).toString("hex");
             default:
-                throw new Error("Unable to convert to hexadecimal representation");
+                return prefix + this.toBuffer().toString("hex");
         }
     }
 
     public toBase64(this: EncodedData): string {
         switch (this.encoding) {
-            case Encodings.HEX:
-                return Buffer.from(this.value as string, "hex").toString("base64");
             case Encodings.BASE64:
                 return this.value as string;
-            case Encodings.BUFFER:
-                return (this.value as Buffer).toString("base64");
             default:
-                throw new Error("Unable to convert to base64 representation");
+                return this.toBuffer().toString("base64");
         }
     }
 
     public toBase58(this: EncodedData): string {
-        const buff = this.toBuffer();
-        return bs58.encode(buff);
+        switch (this.encoding) {
+            case Encodings.BASE58:
+                return this.value as string;
+            default:
+                return bs58.encode(this.toBuffer());
+        }
     }
 
     public toBuffer(this: EncodedData): Buffer {
@@ -128,10 +126,12 @@ export class EncodedData extends Record(DefaultEncodedData) {
                 return Buffer.from(this.value as string, "hex");
             case Encodings.BASE64:
                 return Buffer.from(this.value as string, "base64");
+            case Encodings.BASE58:
+                return Buffer.from(bs58.decode(this.value as string));
             case Encodings.BUFFER:
                 return this.value as Buffer;
             default:
-                throw new Error("Unable to convert to buffer");
+                throw new Error("Unable to convert data");
         }
     }
 
