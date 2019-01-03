@@ -4,8 +4,8 @@ import FetchSubprovider from "web3-provider-engine/subproviders/fetch";
 import { Provider } from "web3/providers";
 
 import { clearPopup } from "../../actions/popup/popupActions";
+import { INFURA_URL } from "../../environmentVariables";
 import { store } from "../../index";
-import { INFURA_URL } from "../../lib/network";
 
 export const ErrorCanceledByUser = "Returned error: Error: MetaMask Tx Signature: User denied transaction signature.";
 

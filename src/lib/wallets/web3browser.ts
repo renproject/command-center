@@ -2,8 +2,8 @@ import Web3 from "web3";
 
 import { Provider } from "web3/providers";
 
+import { ETH_NETWORK } from "../../environmentVariables";
 import { Language } from "../../languages/language";
-import { networkData } from "../../lib/network";
 import { WalletDetail } from "../../lib/wallets/wallet";
 import { getAccounts, getNetwork } from "../../lib/web3";
 
@@ -42,7 +42,7 @@ export const getInjectedWeb3Provider = async (): Promise<Provider> => {
     const web3 = new Web3(provider);
 
     // Check that the provider is using the correct network
-    if ((await getNetwork(web3)) !== networkData.ethNetwork) {
+    if ((await getNetwork(web3)) !== ETH_NETWORK) {
         throw new Error(ErrorWrongNetwork);
     }
 
