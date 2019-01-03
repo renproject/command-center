@@ -1,6 +1,5 @@
 {
   "name": "darknode-command-center",
-  "homepage": "https://republicprotocol.github.io/darknode-command-center",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
