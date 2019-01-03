@@ -50,6 +50,7 @@ class DarknodeClass extends React.Component<DarknodeProps, DarknodeState> {
         const { darknodeDetails, darknodeNames, address } = store;
 
         const darknodeID: string | undefined = getDarknodeParam(params);
+        console.log(darknodeID);
 
         const details = darknodeID ? darknodeDetails.get(darknodeID, null) : null;
         const name = darknodeID ? darknodeNames.get(darknodeID) : undefined;
@@ -119,16 +120,20 @@ export const getDarknodeParam = (params: unknown): string | undefined => {
     if (darknodeID58) {
         try {
             // Convert from base-58 to hex
-            darknodeID = new EncodedData(darknodeID58, Encodings.BASE58)
-                .toHex()
-                .toLowerCase();
-
-            // Convert to checksum address
-            darknodeID = (new Web3()).utils.toChecksumAddress(darknodeID);
+            darknodeID = darknodeIDbase58ToHex(darknodeID58);
         } catch (err) {
-            // If the darknode ID is malfomatted, ignore it
+            // If the darknode ID is malformatted, ignore it
+            console.error(err);
             darknodeID = undefined;
         }
     }
     return darknodeID;
 };
+
+export const darknodeIDbase58ToHex = (darknodeID: string): string =>
+    (new Web3()).utils.toChecksumAddress(
+        ("0x" + new EncodedData(darknodeID, Encodings.BASE58).toHex("").slice(4)).toLowerCase()
+    );
+
+export const darknodeIDHexToBase58 = (darknodeID: string): string =>
+    new EncodedData("0x1B14" + darknodeID.slice(2), Encodings.HEX).toBase58();

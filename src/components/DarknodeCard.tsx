@@ -8,12 +8,12 @@ import { Link } from "react-router-dom";
 import { bindActionCreators, Dispatch } from "redux";
 
 import { RegistrationStatus } from "../actions/statistics/operatorActions";
-import { EncodedData, Encodings } from "../lib/general/encodedData";
 import { Token } from "../lib/tokens";
 import { ApplicationData, Currency, DarknodeDetails } from "../reducers/types";
 import { Blocky } from "./Blocky";
 import { CurrencyIcon } from "./CurrencyIcon";
 import { DarknodeID } from "./DarknodeID";
+import { darknodeIDHexToBase58 } from "./pages/Darknode";
 import { statusText } from "./statuspage/Registration";
 import { TokenBalance } from "./TokenBalance";
 
@@ -40,7 +40,7 @@ class DarknodeCardClass extends React.Component<DarknodeCardProps, DarknodeCardS
 
         const faded = darknodeDetails && darknodeDetails.registrationStatus === RegistrationStatus.Unregistered;
 
-        const darknodeIDBase58 = new EncodedData(darknodeID, Encodings.HEX).toBase58();
+        const darknodeIDBase58 = darknodeIDHexToBase58(darknodeID);
 
         return (
             <Link className="no-underline" to={`/darknode/${darknodeIDBase58}`}>

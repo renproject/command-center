@@ -2,8 +2,8 @@ import * as React from "react";
 
 import { faServer } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { EncodedData, Encodings } from "../../../lib/general/encodedData";
 import { DarknodeDetails } from "../../../reducers/types";
+import { darknodeIDHexToBase58 } from "../../pages/Darknode";
 import { Block, BlockBody, BlockTitle } from "./Block";
 
 interface CopyBlockProps {
@@ -52,7 +52,7 @@ interface NetworkBlockProps {
 export const NetworkBlock = (props: NetworkBlockProps) => {
     const { darknodeDetails } = props;
 
-    const darknodeIDBase58 = darknodeDetails ? new EncodedData(darknodeDetails.ID, Encodings.HEX).toBase58() : "";
+    const darknodeIDBase58 = darknodeDetails ? darknodeIDHexToBase58(darknodeDetails.ID) : "";
 
     return (
 
