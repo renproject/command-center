@@ -34,7 +34,7 @@ class HomeClass extends React.Component<HomeProps, HomeState> {
 
         return (
             <div className="home">
-                <Header />
+                {/* <Header /> */}
                 <div className="container">
                     <DarknodeList
                         darknodeDetails={darknodeDetails}

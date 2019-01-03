@@ -18,7 +18,7 @@ class NotFoundClass extends React.Component<NotFoundProps, NotFoundState> {
     public render(): JSX.Element {
         return (
             <div>
-                <Header />
+                {/* <Header /> */}
                 <div className="container">
                     <div className="not-found">404</div>
                 </div>

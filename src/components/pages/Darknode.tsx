@@ -50,7 +50,6 @@ class DarknodeClass extends React.Component<DarknodeProps, DarknodeState> {
         const { darknodeDetails, darknodeNames, address } = store;
 
         const darknodeID: string | undefined = getDarknodeParam(params);
-        console.log(darknodeID);
 
         const details = darknodeID ? darknodeDetails.get(darknodeID, null) : null;
         const name = darknodeID ? darknodeNames.get(darknodeID) : undefined;
@@ -82,7 +81,7 @@ class DarknodeClass extends React.Component<DarknodeProps, DarknodeState> {
 
         return (
             <div>
-                <Header />
+                {/* <Header /> */}
                 <div className="container">
                     <StatusPage
                         key={darknodeID}
