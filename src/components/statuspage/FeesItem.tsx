@@ -31,11 +31,12 @@ class FeesItemClass extends React.Component<FeesProps, FeesState> {
     }
 
     public render(): JSX.Element {
+        const disabled = this.state.disabled || !this.props.isOperator;
         return (
             <button
                 className="withdraw-fees"
-                disabled={this.state.disabled || !this.props.isOperator}
-                onClick={this.handleWithdraw}
+                disabled={disabled}
+                onClick={disabled ? this.handleWithdraw : undefined}
             >
                 <FontAwesomeIcon icon={faChevronRight} pull="left" />
             </button>
