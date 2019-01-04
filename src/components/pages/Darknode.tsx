@@ -7,10 +7,9 @@ import { connect } from "react-redux";
 import { RouteComponentProps, withRouter } from "react-router";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { Header } from "../../components/Header";
 import { StatusPage } from "../../components/statuspage/StatusPage";
 
-import { RegistrationStatus } from "../../actions/statistics/operatorActions";
+import { RegistrationStatus, setDarknodeName } from "../../actions/statistics/operatorActions";
 import { EncodedData, Encodings } from "../../lib/general/encodedData";
 import { ApplicationData } from "../../reducers/types";
 import { NotFound } from "./NotFound";
@@ -28,6 +27,10 @@ interface DarknodeProps extends
 }
 
 interface DarknodeState {
+    darknodeID: string | undefined;
+    action: string | undefined;
+    publicKey: string | undefined;
+    providedName: string | undefined;
 }
 
 /**
@@ -42,23 +45,31 @@ class DarknodeClass extends React.Component<DarknodeProps, DarknodeState> {
     public constructor(props: DarknodeProps, context: object) {
         super(props, context);
         this.state = {
+            darknodeID: undefined,
+            action: undefined,
+            publicKey: undefined,
+            providedName: undefined,
         };
+    }
+
+    public componentDidMount = () => {
+        this.handleNewProps(this.props, true);
+    }
+
+    public componentWillReceiveProps = (nextProps: DarknodeProps) => {
+        this.handleNewProps(nextProps, false);
     }
 
     public render(): JSX.Element {
         const { match: { params }, store } = this.props;
         const { darknodeDetails, darknodeNames, address } = store;
 
-        const darknodeID: string | undefined = getDarknodeParam(params);
+        const { darknodeID, action, publicKey, providedName } = this.state;
 
         const details = darknodeID ? darknodeDetails.get(darknodeID, null) : null;
         const name = darknodeID ? darknodeNames.get(darknodeID) : undefined;
 
         const readOnly = !details || !address || details.operator !== address;
-
-        const queryParams = qs.parse(this.props.location.search);
-        const action = typeof queryParams.action === "string" ? queryParams.action : undefined;
-        const publicKey = typeof queryParams.public_key === "string" ? queryParams.public_key : undefined;
 
         let darknodeAction = DarknodeAction.View;
         if (
@@ -96,6 +107,28 @@ class DarknodeClass extends React.Component<DarknodeProps, DarknodeState> {
             </div >
         );
     }
+
+    private handleNewProps = (nextProps: DarknodeProps, firstTime: boolean) => {
+        const { location: { search } } = this.props;
+        const { match: { params: nextParams }, location: { search: nextSearch } } = nextProps;
+
+        const darknodeID: string | undefined = getDarknodeParam(nextParams);
+        this.setState({ darknodeID });
+
+        if (firstTime || search !== nextSearch) {
+            const queryParams = qs.parse(nextSearch);
+            const action = typeof queryParams.action === "string" ? queryParams.action : undefined;
+            const publicKey = typeof queryParams.public_key === "string" ? queryParams.public_key : undefined;
+            const name = typeof queryParams.name === "string" ? queryParams.name : undefined;
+
+            if (darknodeID && action === DarknodeAction.Register && name !== undefined) {
+                this.props.actions.setDarknodeName({ darknodeID, name });
+            }
+
+            this.setState({ action, publicKey, providedName: name });
+        }
+    }
+
 }
 
 const mapStateToProps = (state: ApplicationData) => ({
@@ -108,6 +141,7 @@ const mapStateToProps = (state: ApplicationData) => ({
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     actions: bindActionCreators({
+        setDarknodeName,
     }, dispatch),
 });
 
