@@ -11,6 +11,11 @@ import { Currency, DarknodeDetails, TokenPrices } from "../../reducers/types";
 import { contracts } from "../../lib/contracts/contracts";
 import { Token, Tokens } from "../../lib/tokens";
 
+export const addRegisteringDarknode = createStandardAction("ADD_REGISTERING_DARKNODE")<{
+    darknodeID: string;
+    publicKey: string;
+}>();
+
 export const storeDarknodeList = createStandardAction("STORE_DARKNODE_LIST")<{
     darknodeList: OrderedSet<string>;
     address: string;

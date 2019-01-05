@@ -115,7 +115,7 @@ class FeesBlockClass extends React.Component<FeesBlockProps, FeesBlockState> {
                                                     </td>
                                                     <td>
                                                         <FeesItem
-                                                            isOperator={isOperator}
+                                                            disabled={isOperator}
                                                             key={token}
                                                             token={token}
                                                             amount={balance}

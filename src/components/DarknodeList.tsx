@@ -15,6 +15,7 @@ interface DarknodeListProps extends ReturnType<typeof mapStateToProps>, ReturnTy
     darknodeList: List<string> | null;
     darknodeDetails: Map<string, DarknodeDetails>;
     darknodeNames: Map<string, string>;
+    darknodeRegisteringList: Map<string, string>;
 }
 
 class DarknodeListClass extends React.Component<DarknodeListProps> {
@@ -23,7 +24,7 @@ class DarknodeListClass extends React.Component<DarknodeListProps> {
     }
 
     public render(): JSX.Element {
-        const { darknodeList, darknodeDetails, darknodeNames } = this.props;
+        const { darknodeList, darknodeDetails, darknodeNames, darknodeRegisteringList } = this.props;
 
         return (
             <div className="darknode-list">
@@ -37,6 +38,7 @@ class DarknodeListClass extends React.Component<DarknodeListProps> {
                             name={name}
                             darknodeID={darknodeID}
                             darknodeDetails={details}
+                            publicKey={darknodeRegisteringList.get(darknodeID)}
                         />;
                     }).toArray()}
                     {darknodeList.size === 0 ? <EmptyDarknodeList /> : <>

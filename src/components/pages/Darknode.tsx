@@ -9,7 +9,7 @@ import { bindActionCreators, Dispatch } from "redux";
 
 import { StatusPage } from "../../components/statuspage/StatusPage";
 
-import { RegistrationStatus, setDarknodeName } from "../../actions/statistics/operatorActions";
+import { addRegisteringDarknode, RegistrationStatus, setDarknodeName } from "../../actions/statistics/operatorActions";
 import { EncodedData, Encodings } from "../../lib/general/encodedData";
 import { ApplicationData } from "../../reducers/types";
 import { NotFound } from "./NotFound";
@@ -125,6 +125,10 @@ class DarknodeClass extends React.Component<DarknodeProps, DarknodeState> {
                 this.props.actions.setDarknodeName({ darknodeID, name });
             }
 
+            if (darknodeID && action === DarknodeAction.Register && firstTime && publicKey) {
+                this.props.actions.addRegisteringDarknode({ darknodeID, publicKey });
+            }
+
             this.setState({ action, publicKey, providedName: name });
         }
     }
@@ -142,6 +146,7 @@ const mapStateToProps = (state: ApplicationData) => ({
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     actions: bindActionCreators({
         setDarknodeName,
+        addRegisteringDarknode,
     }, dispatch),
 });
 
