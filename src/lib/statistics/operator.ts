@@ -1,6 +1,7 @@
 import RenExSDK from "@renex/renex";
 
 import { List, OrderedSet } from "immutable";
+import { contracts } from "../contracts/contracts";
 
 const NULL = "0x0000000000000000000000000000000000000000";
 
@@ -10,8 +11,12 @@ async function getAllDarknodes(sdk: RenExSDK): Promise<string[]> {
     const allDarknodes = [];
     let lastDarknode = NULL;
     do {
-        const darknodes = await sdk._contracts.darknodeRegistry.getDarknodes(lastDarknode, batchSize.toString());
-        allDarknodes.push(...darknodes.filter((address) => address !== NULL && address !== lastDarknode));
+        const darknodeRegistry = new ((sdk.getWeb3()).eth.Contract)(
+            contracts.DarknodeRegistry.ABI,
+            contracts.DarknodeRegistry.address
+        );
+        const darknodes = await darknodeRegistry.methods.getDarknodes(lastDarknode, batchSize.toString()).call();
+        allDarknodes.push(...darknodes.filter((address: string) => address !== NULL && address !== lastDarknode));
         [lastDarknode] = darknodes.slice(-1);
     } while (lastDarknode !== NULL);
 
@@ -48,7 +53,7 @@ export const getOperatorDarknodes = async (sdk: RenExSDK, address: string): Prom
 
     // Get Registration events
     const recentRegistrationEvents = await sdk.getWeb3().eth.getPastLogs({
-        address: sdk._contracts.darknodeRegistry.address,
+        address: contracts.DarknodeRegistry.address,
         // tslint:disable-next-line:no-any
         fromBlock: "0x889E55" as any, // TODO: Change this based on network or get from address deployment
         toBlock: "latest",
@@ -70,7 +75,7 @@ export const getOperatorDarknodes = async (sdk: RenExSDK, address: string): Prom
 
     // // Get Deregistration events
     // const recentDeregistrationEvents = await sdk.getWeb3().eth.getPastLogs({
-    //     address: sdk._contracts.darknodeRegistry.address,
+    //     address: contracts.DarknodeRegistry.address,
     //     // tslint:disable-next-line:no-any
     //     fromBlock: "0x889E55" as any, // TODO: Change this based on network or get from address deployment
     //     toBlock: "latest",
@@ -83,8 +88,12 @@ export const getOperatorDarknodes = async (sdk: RenExSDK, address: string): Prom
     //     darknodes.push(darknodeID);
     // }
 
+    const darknodeRegistry = new ((sdk.getWeb3()).eth.Contract)(
+        contracts.DarknodeRegistry.ABI,
+        contracts.DarknodeRegistry.address
+    );
     const operatorPromises = darknodes.map((darknodeID: string) =>
-        sdk._contracts.darknodeRegistry.getDarknodeOwner(darknodeID)
+        darknodeRegistry.methods.getDarknodeOwner(darknodeID).call()
     );
 
     let operatorDarknodes = OrderedSet<string>();

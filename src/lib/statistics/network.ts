@@ -1,9 +1,14 @@
 import RenExSDK from "@renex/renex";
 
 import { BigNumber } from "bignumber.js";
+import { contracts } from "../contracts/contracts";
 
 export const getDarknodeCount = async (sdk: RenExSDK): Promise<BigNumber> => {
-    const darknodeCount = await sdk._contracts.darknodeRegistry.numDarknodes();
+    const darknodeRegistry = new ((sdk.getWeb3()).eth.Contract)(
+        contracts.DarknodeRegistry.ABI,
+        contracts.DarknodeRegistry.address
+    );
+    const darknodeCount = await darknodeRegistry.methods.numDarknodes().call();
     return new BigNumber(darknodeCount.toString());
 };
 

@@ -1,3 +1,5 @@
+import { NETWORK } from "../../environmentVariables";
+
 // TODO: Generate production key
 export const INFURA_KEY = "8ZCgtqu4tkIIRHh9hFZj";
 
@@ -13,32 +15,40 @@ export const FALCON = "falcon";
 export const TESTNET = "testnet";
 export const MAINNET = "mainnet";
 
-const getContractsForNetwork = (network: string) => {
+const getContractsForNetwork = (network: string | undefined) => {
     const ERC20: Contract = {
         ABI: require("./ABIs/ERC20.json"),
         address: ""
     };
 
     let path;
-    let vault;
+    let darknodeRegistry;
+    let darknodeRewardVault;
     switch (network) {
         case MAINNET:
             path = "mainnet";
-            vault = "0x880407C9Cd119BeF48b1821CdfC434e3ca3cd588";
+            darknodeRegistry = "0x34bd421C7948Bc16f826Fd99f9B785929b121633";
+            darknodeRewardVault = "0x880407C9Cd119BeF48b1821CdfC434e3ca3cd588";
             break;
         case TESTNET:
         default:
             path = "testnet";
-            vault = "0xc08Dfa565EdB7216c3b23bBf0848B43fE9a49F0E";
+            darknodeRegistry = "0x75Fa8349fc9C7C640A4e9F1A1496fBB95D2Dc3d5";
+            darknodeRewardVault = "0xc08Dfa565EdB7216c3b23bBf0848B43fE9a49F0E";
             break;
     }
 
-    const DarknodeRewardVault: Contract = {
-        ABI: require(`./ABIs/${path}/DarknodeRewardVault.json`),
-        address: vault,
+    const DarknodeRegistry: Contract = {
+        ABI: require(`./ABIs/${path}/DarknodeRegistry.json`),
+        address: darknodeRegistry,
     };
 
-    return { ERC20, DarknodeRewardVault };
+    const DarknodeRewardVault: Contract = {
+        ABI: require(`./ABIs/${path}/DarknodeRewardVault.json`),
+        address: darknodeRewardVault,
+    };
+
+    return { ERC20, DarknodeRegistry, DarknodeRewardVault };
 };
 
-export const contracts = getContractsForNetwork("testnet");
+export const contracts = getContractsForNetwork(NETWORK);

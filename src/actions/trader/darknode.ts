@@ -11,7 +11,11 @@ export const deregisterDarknode = (
     address: string,
     darknodeID: string,
 ) => async (dispatch: Dispatch) => {
-    await sdk._contracts.darknodeRegistry.deregister(darknodeID, { from: address, gas: 200000 });
+    const darknodeRegistry = new ((sdk.getWeb3()).eth.Contract)(
+        contracts.DarknodeRegistry.ABI,
+        contracts.DarknodeRegistry.address
+    );
+    await darknodeRegistry.methods.deregister(darknodeID).send({ from: address, gas: 200000 });
 };
 
 export const withdrawReward = (sdk: RenExSDK, darknodeID: string, token: Token) => async (dispatch: Dispatch) => {
@@ -37,7 +41,7 @@ export const approveNode = (sdk: RenExSDK, address: string, bond: BigNumber) => 
     const ercContract = new (sdk.getWeb3().eth.Contract)(contracts.ERC20.ABI, renAddr);
     const ercBalance = new BigNumber(await ercContract.methods.balanceOf(address).call());
     const ercAllowance = new BigNumber(
-        await ercContract.methods.allowance(address, sdk._contracts.darknodeRegistry.address).call(),
+        await ercContract.methods.allowance(address, contracts.DarknodeRegistry.address).call(),
     );
 
     if (ercAllowance.gte(bond)) {
@@ -50,7 +54,7 @@ export const approveNode = (sdk: RenExSDK, address: string, bond: BigNumber) => 
     }
 
     return new Promise((resolve, reject) => {
-        ercContract.methods.approve(sdk._contracts.darknodeRegistry.address, bond.toFixed()).send({ from: address })
+        ercContract.methods.approve(contracts.DarknodeRegistry.address, bond.toFixed()).send({ from: address })
             .on("transactionHash", resolve)
             .catch(reject);
     });
@@ -75,8 +79,9 @@ export const registerNode = (
     // tslint:disable-next-line:no-non-null-assertion
     const renAddr = (await sdk._cachedTokenDetails.get(Token.REN))!.addr;
     const ercContract = new (sdk.getWeb3().eth.Contract)(contracts.ERC20.ABI, renAddr);
+
     const ercAllowance = new BigNumber(
-        await ercContract.methods.allowance(address, sdk._contracts.darknodeRegistry.address).call()
+        await ercContract.methods.allowance(address, contracts.DarknodeRegistry.address).call()
     );
 
     let gas: number | undefined = hardCodedGas;
@@ -85,10 +90,12 @@ export const registerNode = (
     }
 
     let resolved = false;
+    const darknodeRegistry = new ((sdk.getWeb3()).eth.Contract)(
+        contracts.DarknodeRegistry.ABI,
+        contracts.DarknodeRegistry.address
+    );
     return new Promise((resolve, reject) => {
-        sdk._contracts.darknodeRegistry.register(darknodeID, publicKey, bond.toFixed(),
-            { from: address, gas, }
-        )
+        darknodeRegistry.methods.register(darknodeID, publicKey, bond.toFixed()).send({ from: address, gas })
             .on("transactionHash", (res) => { resolve(res); resolved = true; })
             .on("confirmation", onDone)
             .on("error", (error) => { if (resolved) { onCancel(); } reject(error); });
@@ -105,8 +112,12 @@ export const deregisterNode = (
     // The node has been registered and can be deregistered.
 
     let resolved = false;
+    const darknodeRegistry = new ((sdk.getWeb3()).eth.Contract)(
+        contracts.DarknodeRegistry.ABI,
+        contracts.DarknodeRegistry.address
+    );
     return new Promise((resolve, reject) => {
-        sdk._contracts.darknodeRegistry.deregister(darknodeID, { from: address })
+        darknodeRegistry.methods.deregister(darknodeID).send({ from: address })
             .on("transactionHash", (res) => { resolve(res); resolved = true; })
             .on("confirmation", onDone)
             .on("error", (error) => { if (resolved) { onCancel(); } reject(error); });
@@ -123,8 +134,12 @@ export const refundNode = (
     // The node is awaiting refund.
 
     let resolved = false;
+    const darknodeRegistry = new ((sdk.getWeb3()).eth.Contract)(
+        contracts.DarknodeRegistry.ABI,
+        contracts.DarknodeRegistry.address
+    );
     return new Promise((resolve, reject) => {
-        sdk._contracts.darknodeRegistry.refund(darknodeID, { from: address })
+        darknodeRegistry.methods.refund(darknodeID).send({ from: address })
             .on("transactionHash", (res) => { resolve(res); resolved = true; })
             .on("confirmation", onDone)
             .on("error", (error) => { if (resolved) { onCancel(); } reject(error); });
