@@ -1,3 +1,5 @@
+import { NETWORK } from "../../environmentVariables";
+
 // TODO: Generate production key
 export const INFURA_KEY = "8ZCgtqu4tkIIRHh9hFZj";
 
@@ -13,7 +15,7 @@ export const FALCON = "falcon";
 export const TESTNET = "testnet";
 export const MAINNET = "mainnet";
 
-const getContractsForNetwork = (network: string) => {
+const getContractsForNetwork = (network: string | undefined) => {
     const ERC20: Contract = {
         ABI: require("./ABIs/ERC20.json"),
         address: ""
@@ -41,4 +43,4 @@ const getContractsForNetwork = (network: string) => {
     return { ERC20, DarknodeRewardVault };
 };
 
-export const contracts = getContractsForNetwork("testnet");
+export const contracts = getContractsForNetwork(NETWORK);
