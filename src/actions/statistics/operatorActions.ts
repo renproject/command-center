@@ -114,7 +114,7 @@ const getDarknodeOperator = async (sdk: RenExSDK, darknodeID: string): Promise<s
         contracts.DarknodeRegistry.ABI,
         contracts.DarknodeRegistry.address
     );
-    return darknodeRegistry.methods.getDarknodeOwner(darknodeID, {}).call();
+    return darknodeRegistry.methods.getDarknodeOwner(darknodeID).call();
 };
 
 export enum RegistrationStatus {
@@ -134,12 +134,12 @@ const getDarknodeStatus = async (sdk: RenExSDK, darknodeID: string): Promise<Reg
     );
     return new Promise<RegistrationStatus>((resolve) => {
         Promise.all([
-            darknodeRegistry.methods.isPendingRegistration(darknodeID, {}).call(),
-            darknodeRegistry.methods.isPendingDeregistration(darknodeID, {}).call(),
-            darknodeRegistry.methods.isDeregisterable(darknodeID, {}).call(),
-            darknodeRegistry.methods.isRefunded(darknodeID, {}).call(),
-            darknodeRegistry.methods.isRefundable(darknodeID, {}).call(),
-            darknodeRegistry.methods.isRegistered(darknodeID, {}).call(),
+            darknodeRegistry.methods.isPendingRegistration(darknodeID).call(),
+            darknodeRegistry.methods.isPendingDeregistration(darknodeID).call(),
+            darknodeRegistry.methods.isDeregisterable(darknodeID).call(),
+            darknodeRegistry.methods.isRefunded(darknodeID).call(),
+            darknodeRegistry.methods.isRefundable(darknodeID).call(),
+            darknodeRegistry.methods.isRegistered(darknodeID).call(),
         ]).then((response) => {
             const res = {
                 isPendingRegistration: response[0],
