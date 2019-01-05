@@ -12,7 +12,7 @@ import { Token } from "../../lib/tokens";
 import { ApplicationData } from "../../reducers/types";
 
 interface FeesProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
-    isOperator: boolean;
+    disabled: boolean;
     token: Token;
     amount: string | BigNumber;
     darknodeID: string;
@@ -26,12 +26,12 @@ class FeesItemClass extends React.Component<FeesProps, FeesState> {
     constructor(props: FeesProps) {
         super(props);
         this.state = {
-            disabled: (new BigNumber(this.props.amount)).lt(0)
+            disabled: (new BigNumber(this.props.amount)).lte(0)
         };
     }
 
     public render(): JSX.Element {
-        const disabled = this.state.disabled || !this.props.isOperator;
+        const disabled = this.state.disabled || !this.props.disabled;
         return (
             <button
                 className="withdraw-fees"

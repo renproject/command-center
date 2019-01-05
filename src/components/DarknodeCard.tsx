@@ -21,6 +21,7 @@ interface DarknodeCardProps extends ReturnType<typeof mapStateToProps>, ReturnTy
     darknodeID: string;
     darknodeDetails: DarknodeDetails | null;
     name: string | undefined;
+    publicKey: string | undefined;
 }
 
 interface DarknodeCardState {
@@ -35,15 +36,25 @@ class DarknodeCardClass extends React.Component<DarknodeCardProps, DarknodeCardS
     }
 
     public render(): JSX.Element {
-        const { darknodeID, darknodeDetails, name, store } = this.props;
+        const { darknodeID, darknodeDetails, name, store, publicKey } = this.props;
         const { quoteCurrency } = store;
 
-        const faded = darknodeDetails && darknodeDetails.registrationStatus === RegistrationStatus.Unregistered;
+        const continuable = publicKey &&
+            darknodeDetails &&
+            darknodeDetails.registrationStatus === RegistrationStatus.Unregistered;
+
+        const faded = darknodeDetails &&
+            darknodeDetails.registrationStatus === RegistrationStatus.Unregistered &&
+            !continuable;
 
         const darknodeIDBase58 = darknodeIDHexToBase58(darknodeID);
 
+        const url = continuable ?
+            `/darknode/${darknodeIDBase58}?action=register&public_key=${publicKey}` :
+            `/darknode/${darknodeIDBase58}`;
+
         return (
-            <Link className="no-underline" to={`/darknode/${darknodeIDBase58}`}>
+            <Link className="no-underline" to={url}>
                 <div className={`darknode-card ${faded ? "darknode-card--faded" : ""}`}>
                     <div className="darknode-card--top" />
                     <div className="darknode-card--middle">
@@ -52,7 +63,10 @@ class DarknodeCardClass extends React.Component<DarknodeCardProps, DarknodeCardS
 
                         <h3 className="darknode-card--name">{name ? name : <DarknodeID darknodeID={darknodeID} />}</h3>
                         <span className="darknode-card--status">
-                            {darknodeDetails ? statusText[darknodeDetails.registrationStatus] : ""}
+                            {continuable ? "Continue registering" : darknodeDetails ?
+                                statusText[darknodeDetails.registrationStatus] :
+                                ""
+                            }
                         </span>
                     </div>
                     {darknodeDetails ?

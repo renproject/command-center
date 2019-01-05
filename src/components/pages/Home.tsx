@@ -1,9 +1,8 @@
 import * as React from "react";
 
+import { List } from "immutable";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
-
-import { Header } from "../../components/Header";
 
 import { setAlert } from "../../actions/alert/alertActions";
 import { login } from "../../actions/trader/accountActions";
@@ -15,6 +14,7 @@ interface HomeProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeo
 
 interface HomeState {
     checkingVerification: boolean;
+    darknodeList: List<string> | null;
 }
 
 /**
@@ -26,20 +26,31 @@ class HomeClass extends React.Component<HomeProps, HomeState> {
         super(props, context);
         this.state = {
             checkingVerification: false,
+            darknodeList: null,
         };
     }
 
     public render(): JSX.Element {
-        const { darknodeDetails, darknodeNames, darknodeList } = this.props.store;
+        const { darknodeList, darknodeNames, darknodeDetails, darknodeRegisteringList } = this.props.store;
 
         return (
             <div className="home">
-                {/* <Header /> */}
                 <div className="container">
+                    {darknodeRegisteringList.size > 0 ? <>
+                        <h2>Continue registering</h2>
+                        <DarknodeList
+                            darknodeDetails={darknodeDetails}
+                            darknodeNames={darknodeNames}
+                            darknodeList={darknodeRegisteringList.keySeq().toList()}
+                            darknodeRegisteringList={darknodeRegisteringList}
+                        />
+                        <h2>Current darknodes</h2>
+                    </> : null}
                     <DarknodeList
                         darknodeDetails={darknodeDetails}
                         darknodeNames={darknodeNames}
                         darknodeList={darknodeList}
+                        darknodeRegisteringList={darknodeRegisteringList}
                     />
                 </div>
             </div>
@@ -53,6 +64,7 @@ const mapStateToProps = (state: ApplicationData) => ({
         darknodeDetails: state.statistics.darknodeDetails,
         darknodeNames: state.statistics.darknodeNames,
         darknodeList: state.trader.address ? state.statistics.darknodeList.get(state.trader.address, null) : null,
+        darknodeRegisteringList: state.statistics.darknodeRegisteringList,
         sdk: state.trader.sdk,
     },
 });

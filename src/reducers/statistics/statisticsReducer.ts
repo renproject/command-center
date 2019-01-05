@@ -20,6 +20,12 @@ export function statisticsReducer(
         case getType(networkActions.storeTokenPrices):
             return state.set("tokenPrices", action.payload.tokenPrices);
 
+        case getType(operatorActions.addRegisteringDarknode):
+            return state.set("darknodeRegisteringList", state.darknodeRegisteringList.set(
+                action.payload.darknodeID,
+                action.payload.publicKey
+            ));
+
         case getType(operatorActions.storeDarknodeList):
             let newList = state.darknodeList.get(action.payload.address) || List();
             let newNames = state.darknodeNames;
@@ -42,9 +48,13 @@ export function statisticsReducer(
                 }
             });
 
+            const darknodeRegisteringList = state.darknodeRegisteringList
+                .filter((_, darknodeID) => !newList.contains(darknodeID));
+
             return state
                 .set("darknodeList", state.darknodeList.set(action.payload.address, newList))
-                .set("darknodeNames", newNames);
+                .set("darknodeNames", newNames)
+                .set("darknodeRegisteringList", darknodeRegisteringList);
 
         case getType(operatorActions.storeQuoteCurrency):
             return state.set("quoteCurrency", action.payload.quoteCurrency);

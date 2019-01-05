@@ -83,6 +83,7 @@ export class StatisticsData extends Record({
 
     darknodeDetails: Map<string, DarknodeDetails>(),
     darknodeNames: Map<string, string>(),
+    darknodeRegisteringList: Map<string, string>(),
     darknodeList: Map<string, List<string>>(),
 }) implements Serializable<StatisticsData> {
     public serialize(): string {

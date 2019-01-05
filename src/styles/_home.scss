@@ -2,4 +2,13 @@
     .darknode-list {
         margin-bottom: 50px;
     }
+
+    .container>h2 {
+        padding: 30px;
+        background: #031830;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        box-shadow: 2px 2px 14px rgba(0, 0, 0, 0.1);
+    }
 }
