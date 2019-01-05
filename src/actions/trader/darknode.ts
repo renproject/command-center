@@ -15,7 +15,7 @@ export const deregisterDarknode = (
         contracts.DarknodeRegistry.ABI,
         contracts.DarknodeRegistry.address
     );
-    await darknodeRegistry.methods.deregister(darknodeID, { from: address, gas: 200000 }).send();
+    await darknodeRegistry.methods.deregister(darknodeID).send({ from: address, gas: 200000 });
 };
 
 export const withdrawReward = (sdk: RenExSDK, darknodeID: string, token: Token) => async (dispatch: Dispatch) => {
@@ -95,9 +95,7 @@ export const registerNode = (
         contracts.DarknodeRegistry.address
     );
     return new Promise((resolve, reject) => {
-        darknodeRegistry.methods.register(darknodeID, publicKey, bond.toFixed(),
-            { from: address, gas, }
-        ).send()
+        darknodeRegistry.methods.register(darknodeID, publicKey, bond.toFixed()).send({ from: address, gas })
             .on("transactionHash", (res) => { resolve(res); resolved = true; })
             .on("confirmation", onDone)
             .on("error", (error) => { if (resolved) { onCancel(); } reject(error); });
@@ -119,7 +117,7 @@ export const deregisterNode = (
         contracts.DarknodeRegistry.address
     );
     return new Promise((resolve, reject) => {
-        darknodeRegistry.methods.deregister(darknodeID, { from: address }).send()
+        darknodeRegistry.methods.deregister(darknodeID).send({ from: address })
             .on("transactionHash", (res) => { resolve(res); resolved = true; })
             .on("confirmation", onDone)
             .on("error", (error) => { if (resolved) { onCancel(); } reject(error); });
@@ -141,7 +139,7 @@ export const refundNode = (
         contracts.DarknodeRegistry.address
     );
     return new Promise((resolve, reject) => {
-        darknodeRegistry.methods.refund(darknodeID, { from: address }).send()
+        darknodeRegistry.methods.refund(darknodeID).send({ from: address })
             .on("transactionHash", (res) => { resolve(res); resolved = true; })
             .on("confirmation", onDone)
             .on("error", (error) => { if (resolved) { onCancel(); } reject(error); });
