@@ -8,6 +8,7 @@ import BigNumber from "bignumber.js";
 import { List, Map, OrderedMap } from "immutable";
 
 import { RegistrationStatus } from "../actions/statistics/operatorActions";
+import { NETWORK } from "../environmentVariables";
 import { Record } from "../lib/general/record";
 import { Token } from "../lib/tokens";
 import { getReadOnlyProvider } from "../lib/wallets/wallet";
@@ -31,7 +32,7 @@ export class TraderData extends Record({
     address: null as string | null,
     web3BrowserName: "MetaMask",
     readOnlyProvider,
-    sdk: new RenExSDK(readOnlyProvider, { network: "testnet" }),
+    sdk: new RenExSDK(readOnlyProvider, { network: NETWORK }),
 }) { }
 
 export type Settlements = OrderedMap<OrderSettlement, boolean>;
