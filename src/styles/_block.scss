@@ -231,10 +231,91 @@
     }
 }
 
+.network-block {
+
+    .darknode-info {
+        font-size: 14px;
+
+        tr {
+            background: none;
+            border: none;
+        }
+
+        td+td {
+            max-width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-width: 0px;
+        }
+
+        tr td:first-child {
+            font-weight: 900;
+        }
+    }
+
+    .darknode-info--title {
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+}
+
 .network-block--info {
     padding: 0 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .gas-block .block--body {
     padding: 0 40px;
+}
+
+
+/* Gas Graph */
+
+.gas-graph {
+    color: $red;
+}
+
+.gas-graph .block--body {
+    display: flex;
+    flex-direction: column;
+    padding: 0 40px;
+
+    canvas {
+        width: 100% !important;
+        height: 150px !important;
+    }
+
+    .graph-placeholder {
+        width: 100% !important;
+        height: 150px !important;
+    }
+}
+
+.gas-graph--times {
+    display: flex;
+    margin-top: 5px;
+
+    button {
+        background: none;
+        border-top: none;
+        border-left: none;
+        border-right: none;
+        color: rgba(255, 255, 255, 0.4);
+        font-weight: bold;
+        font-size: 12px;
+        min-width: initial;
+
+        text-align: center;
+        flex-grow: 1;
+        border-bottom: 5px solid rgba(240, 240, 240, 0.05);
+    }
+
+    .selected {
+        border-bottom: 5px solid $red;
+        cursor: default;
+    }
 }

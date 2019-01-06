@@ -75,6 +75,7 @@ export type TokenPrices = Map<Token, Map<Currency, number>>;
 
 export class StatisticsData extends Record({
     minimumBond: null as BigNumber | null,
+    secondsPerBlock: null as number | null,
 
     tokenPrices: null as TokenPrices | null,
     quoteCurrency: Currency.USD,
@@ -83,6 +84,9 @@ export class StatisticsData extends Record({
     orderCount: null as BigNumber | null,
 
     darknodeDetails: Map<string, DarknodeDetails>(),
+
+    balanceHistories: Map<string, OrderedMap<number, BigNumber>>(),
+
     darknodeNames: Map<string, string>(),
     darknodeRegisteringList: Map<string, string>(),
     darknodeList: Map<string, List<string>>(),

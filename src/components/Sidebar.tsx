@@ -38,14 +38,14 @@ class SidebarClass extends React.Component<SidebarProps> {
             <nav className="sidebar">
                 <ul>
                     <div className="sidebar--nav">
-                        <Link className="no-underline" to="/">
+                        {/* <Link className="no-underline" to="/">
                             <li>
                                 <div className="sidebar--nav--icon sidebar--icon">
                                     <FontAwesomeIcon icon={faCircle} className="darknode-card--bottom--icon" />
                                 </div>
                                 <div className="sidebar--text">Home</div>
                             </li>
-                        </Link>
+                        </Link> */}
 
                         <Link className="no-underline" to="/">
                             <li>

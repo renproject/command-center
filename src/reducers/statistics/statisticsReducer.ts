@@ -59,9 +59,21 @@ export function statisticsReducer(
         case getType(operatorActions.storeQuoteCurrency):
             return state.set("quoteCurrency", action.payload.quoteCurrency);
 
+        case getType(operatorActions.updateDarknodeHistory):
+            return state.set("balanceHistories", state.balanceHistories.set(
+                action.payload.darknodeID,
+                action.payload.balanceHistory,
+            ));
+
+        case getType(operatorActions.storeSecondsPerBlock):
+            return state.set("secondsPerBlock", action.payload.secondsPerBlock);
+
         case getType(operatorActions.setDarknodeDetails):
             const details = action.payload.darknodeDetails;
-            return state.set("darknodeDetails", state.darknodeDetails.set(details.ID, details));
+            return state.set("darknodeDetails", state.darknodeDetails.set(
+                details.ID,
+                action.payload.darknodeDetails,
+            ));
 
         case getType(operatorActions.setDarknodeName):
             return state.set("darknodeNames", state.darknodeNames.set(action.payload.darknodeID, action.payload.name));
