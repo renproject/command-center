@@ -5,9 +5,9 @@ export const INFURA_KEY = "8ZCgtqu4tkIIRHh9hFZj";
 
 // Contracts
 export interface Contract {
-    // tslint:disable-next-line:no-any
-    ABI: any[];
+    ABI: Array<unknown>;
     address: string;
+    deployedInBlock?: string; // hex string
 }
 
 export const NIGHTLY = "nightly";
@@ -24,16 +24,25 @@ const getContractsForNetwork = (network: string | undefined) => {
     let path;
     let darknodeRegistry;
     let darknodeRewardVault;
+    let dnrDeployedInBlock;
     switch (network) {
         case MAINNET:
             path = "mainnet";
+
+            // Change these together
             darknodeRegistry = "0x34bd421C7948Bc16f826Fd99f9B785929b121633";
+            dnrDeployedInBlock = "0x6AED46"; // in hex
+
             darknodeRewardVault = "0x880407C9Cd119BeF48b1821CdfC434e3ca3cd588";
             break;
         case TESTNET:
         default:
             path = "testnet";
+
+            // Change these together
             darknodeRegistry = "0x75Fa8349fc9C7C640A4e9F1A1496fBB95D2Dc3d5";
+            dnrDeployedInBlock = "0x889E55"; // in hex
+
             darknodeRewardVault = "0xc08Dfa565EdB7216c3b23bBf0848B43fE9a49F0E";
             break;
     }
@@ -41,6 +50,7 @@ const getContractsForNetwork = (network: string | undefined) => {
     const DarknodeRegistry: Contract = {
         ABI: require(`./ABIs/${path}/DarknodeRegistry.json`),
         address: darknodeRegistry,
+        deployedInBlock: dnrDeployedInBlock,
     };
 
     const DarknodeRewardVault: Contract = {
