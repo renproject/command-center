@@ -83,6 +83,7 @@ $full-width: 360px;
 
 
 .sidebar {
+    @extend .no-scrollbar;
     position: fixed;
     background-color: $blue-darker;
     border-right: 2px solid transparentize(#58585B, 1 - 0.2);

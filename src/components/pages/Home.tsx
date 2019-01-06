@@ -44,14 +44,14 @@ class HomeClass extends React.Component<HomeProps, HomeState> {
                             darknodeList={darknodeRegisteringList.keySeq().toList()}
                             darknodeRegisteringList={darknodeRegisteringList}
                         />
-                        <h2>Current darknodes</h2>
+                        {(darknodeList && darknodeList.size > 0) ? <h2>Current darknodes</h2> : null}
                     </> : null}
-                    <DarknodeList
+                    {darknodeRegisteringList.size === 0 || (darknodeList && darknodeList.size > 0) ? <DarknodeList
                         darknodeDetails={darknodeDetails}
                         darknodeNames={darknodeNames}
                         darknodeList={darknodeList}
                         darknodeRegisteringList={darknodeRegisteringList}
-                    />
+                    /> : null}
                 </div>
             </div>
         );
