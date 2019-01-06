@@ -242,6 +242,7 @@
         }
 
         td+td {
+            @extend .monospace;
             max-width: 200px;
             white-space: nowrap;
             overflow: hidden;
@@ -263,9 +264,10 @@
 
 .network-block--info {
     padding: 0 40px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    // display: flex;
+    // justify-content: center;
+    // align-items: center;
+    width: 438px; // Measured in inspector
 }
 
 .gas-block .block--body {
