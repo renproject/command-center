@@ -11,6 +11,7 @@ import { DarknodeAction } from "../../components/pages/Darknode";
 import { ApplicationData, DarknodeDetails } from "../../reducers/types";
 import { FeesBlock } from "./block/FeesBlock";
 import { GasBlock } from "./block/GasBlock";
+import { GasGraph } from "./block/GasGraph";
 import { NetworkBlock } from "./block/NetworkBlock";
 import { Notifications } from "./Notifications";
 import { Registration } from "./Registration";
@@ -95,7 +96,7 @@ class StatusPageClass extends React.Component<StatusPageProps, StatusPageState> 
                                         {" "}
                                         <InfoLabel>Darknode names are stored in your browser.</InfoLabel>
                                     </button>
-                                    {darknodeDetails ? <button>View details</button> : null}
+                                    {/* {darknodeDetails ? <button>View details</button> : null} */}
                                 </>}
                         </div>
 
@@ -126,7 +127,10 @@ class StatusPageClass extends React.Component<StatusPageProps, StatusPageState> 
                 <div className="statuspage--bottom">
                     <FeesBlock isOperator={isOperator} darknodeDetails={darknodeDetails} />
                     <GasBlock darknodeDetails={darknodeDetails} />
-                    <NetworkBlock darknodeDetails={darknodeDetails} />
+                    <div className="block statuspage--graphs">
+                        <GasGraph darknodeDetails={darknodeDetails} />
+                        <NetworkBlock darknodeDetails={darknodeDetails} />
+                    </div>
                 </div>
             </div>
         );

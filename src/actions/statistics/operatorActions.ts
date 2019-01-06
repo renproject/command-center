@@ -23,11 +23,33 @@ export const storeDarknodeList = createStandardAction("STORE_DARKNODE_LIST")<{
 
 export const storeQuoteCurrency = createStandardAction("SORE_QUOTE_CURRENCY")<{ quoteCurrency: Currency; }>();
 
+export const storeSecondsPerBlock = createStandardAction("SORE_BLOCKS_PER_SECOND")<{ secondsPerBlock: number }>();
+
 export const setDarknodeDetails = createStandardAction("UPDATE_DARKNODE_DETAILS")<{
     darknodeDetails: DarknodeDetails;
 }>();
 
+export const updateDarknodeHistory = createStandardAction("UPDATE_DARKNODE_HISTORY")<{
+    darknodeID: string;
+    balanceHistory: OrderedMap<number, BigNumber>;
+}>();
+
 export const setDarknodeName = createStandardAction("UPDATE_DARKNODE_NAME")<{ darknodeID: string, name: string }>();
+
+export const calculateSecondsPerBlock = (
+    sdk: RenExSDK,
+) => async (dispatch: Dispatch) => {
+    const sampleSize = 1000;
+
+    const web3 = sdk.getWeb3();
+    const currentBlockNumber = await web3.eth.getBlockNumber();
+    const currentBlock = await web3.eth.getBlock(currentBlockNumber);
+    const previousBlock = await web3.eth.getBlock(currentBlockNumber - sampleSize);
+    const secondsPerBlock = Math.floor((currentBlock.timestamp - previousBlock.timestamp) / sampleSize);
+
+    console.log(`secondsPerBlock: ${secondsPerBlock}`);
+    dispatch(storeSecondsPerBlock({ secondsPerBlock }));
+};
 
 export const updateOperatorStatistics = (
     sdk: RenExSDK,
@@ -122,6 +144,14 @@ const getDarknodeOperator = async (sdk: RenExSDK, darknodeID: string): Promise<s
     return darknodeRegistry.methods.getDarknodeOwner(darknodeID).call();
 };
 
+const getDarknodePublicKey = async (sdk: RenExSDK, darknodeID: string): Promise<string> => {
+    const darknodeRegistry = new ((sdk.getWeb3()).eth.Contract)(
+        contracts.DarknodeRegistry.ABI,
+        contracts.DarknodeRegistry.address
+    );
+    return darknodeRegistry.methods.getDarknodePublicKey(darknodeID).call();
+};
+
 export enum RegistrationStatus {
     Unknown = "",
     Unregistered = "unregistered",
@@ -174,10 +204,64 @@ const getDarknodeStatus = async (sdk: RenExSDK, darknodeID: string): Promise<Reg
     });
 };
 
+export const HistoryIterations = 5;
+
+export enum HistoryPeriods {
+    Day = 60 * 60 * 24,
+    Week = Day * 7,
+    Month = Week * 4,
+    HalfYear = Week * 26,
+    Year = Week * 52,
+}
+
+export const fetchDarknodeBalanceHistory = (
+    sdk: RenExSDK,
+    darknodeID: string,
+    previousHistory: OrderedMap<number, BigNumber> | null,
+    historyPeriod: HistoryPeriods,
+    secondsPerBlock: number,
+) => async (dispatch: Dispatch) => {
+    let balanceHistory = previousHistory || OrderedMap<number, BigNumber>();
+
+    // If the page is kept open, the history data will keep growing, so we limit
+    // it to 200 entries.
+    if (balanceHistory.size > 200) {
+        balanceHistory = OrderedMap<number, BigNumber>();
+    }
+
+    const currentBlock = await sdk.getWeb3().eth.getBlockNumber();
+
+    const jump = Math.floor((historyPeriod / secondsPerBlock) / HistoryIterations);
+
+    for (let i = 0; i < HistoryIterations; i++) {
+        // Move back by `jump` blocks
+        let block = currentBlock - i * jump;
+
+        // ...
+        block = block - block % jump;
+
+        if (!balanceHistory.has(block)) {
+            const balance = new BigNumber((await sdk.getWeb3().eth.getBalance(darknodeID, block)).toString());
+            balanceHistory = balanceHistory.set(block, balance);
+        }
+    }
+
+    // Also add most recent block
+    if (!balanceHistory.has(currentBlock)) {
+        const balance = new BigNumber((await sdk.getWeb3().eth.getBalance(darknodeID, currentBlock)).toString());
+        balanceHistory = balanceHistory.set(currentBlock, balance);
+    }
+
+    balanceHistory = balanceHistory.sortBy((_, value) => value);
+
+    dispatch(updateDarknodeHistory({ darknodeID, balanceHistory }));
+};
+
 export const updateDarknodeStatistics = (
     sdk: RenExSDK,
     darknodeID: string,
     tokenPrices: TokenPrices | null,
+    options?: { calculateHistory?: boolean, previousDetails?: DarknodeDetails },
 ) => async (dispatch: Dispatch) => {
     darknodeID = sdk.getWeb3().utils.toChecksumAddress(darknodeID.toLowerCase());
 
@@ -192,8 +276,9 @@ export const updateDarknodeStatistics = (
         feesEarnedTotalEth = await sumUpFees(sdk, feesEarned, tokenPrices);
     }
 
-    // Get darknode operator
+    // Get darknode operator and public key
     const operator = await getDarknodeOperator(sdk, darknodeID);
+    const publicKey = await getDarknodePublicKey(sdk, darknodeID);
 
     // Get registration status
     const registrationStatus = await getDarknodeStatus(sdk, darknodeID);
@@ -201,7 +286,7 @@ export const updateDarknodeStatistics = (
     const darknodeDetails = new DarknodeDetails({
         ID: darknodeID,
         multiAddress: "" as string,
-        publicKey: "" as string,
+        publicKey,
         ethBalance,
         feesEarned,
         feesEarnedTotalEth,

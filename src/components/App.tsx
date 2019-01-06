@@ -15,11 +15,11 @@ import { updateNetworkStatistics, updateTokenPrices } from "../actions/statistic
 import { updateDarknodeStatistics, updateOperatorStatistics } from "../actions/statistics/operatorActions";
 import { login, lookForLogout } from "../actions/trader/accountActions";
 import { ApplicationData } from "../reducers/types";
+import { Header } from "./Header";
 import { Darknode, getDarknodeParam } from "./pages/Darknode";
 import { LoggingIn } from "./pages/LoggingIn";
 import { NotFound } from "./pages/NotFound";
 import { Sidebar } from "./Sidebar";
-import { Header } from "./Header";
 
 interface AppProps extends
     ReturnType<typeof mapStateToProps>,
@@ -221,14 +221,20 @@ class AppClass extends React.Component<AppProps, AppState> {
         props = props || this.props;
 
         const { match: { params } } = props;
-        const { sdk, tokenPrices } = props.store;
+        const { sdk, tokenPrices, darknodeDetails } = props.store;
 
         const darknodeID = getDarknodeParam(params);
 
         let timeout = 1; // if the action isn't called, try again in 1 second
         if (tokenPrices && darknodeID) {
             try {
-                await props.actions.updateDarknodeStatistics(sdk, darknodeID, tokenPrices);
+                const previousDetails = darknodeDetails.get(darknodeID);
+                await props.actions.updateDarknodeStatistics(
+                    sdk,
+                    darknodeID,
+                    tokenPrices,
+                    { calculateHistory: true, previousDetails },
+                );
                 timeout = 30;
             } catch (err) {
                 console.error(err);
@@ -264,6 +270,7 @@ const mapStateToProps = (state: ApplicationData) => ({
         readOnlyProvider: state.trader.readOnlyProvider,
         tokenPrices: state.statistics.tokenPrices,
         darknodeList: state.trader.address ? state.statistics.darknodeList.get(state.trader.address, null) : null,
+        darknodeDetails: state.statistics.darknodeDetails,
     },
 });
 

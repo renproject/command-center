@@ -91,14 +91,18 @@
     }
 
     .statuspage--bottom {
-        display: flex;
+
+        @media screen and (min-width: $min-xl) {
+            display: flex;
+        }
+
         color: white;
         margin-top: 24px;
 
         >div+div {
             margin-left: 22px;
 
-            @media(max-width: $max-md) {
+            @media(max-width: $max-lg) {
                 margin-top: 22px;
                 margin-left: 0;
             }
@@ -206,11 +210,6 @@
         font-size: 12px;
     }
 
-    .darknode-info--title {
-        font-weight: bold;
-        margin-bottom: 5px;
-    }
-
     .topup button {
         margin-left: 15px;
     }
@@ -273,6 +272,9 @@
     }
 
     .statuspage--graphs {
+        flex-grow: 1;
+        flex-basis: 0;
+
         display: flex;
         flex-flow: column;
         justify-content: space-between;
@@ -285,12 +287,11 @@
             background-color: $blue-dark;
             border-radius: 2px;
             flex-basis: 0;
-
-            padding: 20px;
         }
 
-        :not(:first-child) {
-            margin-top: 10px;
+
+        >:not(:first-child) {
+            margin-top: 20px;
         }
     }
 
