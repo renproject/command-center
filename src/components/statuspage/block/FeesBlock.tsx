@@ -40,7 +40,11 @@ class FeesBlockClass extends React.Component<FeesBlockProps, FeesBlockState> {
         const { showAdvanced } = this.state;
 
         return (
-            <Block className="fees-block">
+            <Block
+                className={`fees-block ${showAdvanced ? "" : "basic"}`}
+                onClick={showAdvanced ? undefined : this.toggleAdvanced}
+            >
+
                 {showAdvanced ? <div className="block--basic--hide" onClick={this.toggleAdvanced}>
                     <FontAwesomeIcon icon={faTimes} pull="left" />
                 </div> : null}

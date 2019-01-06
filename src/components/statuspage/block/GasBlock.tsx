@@ -40,7 +40,10 @@ class GasBlockClass extends React.Component<GasBlockProps, GasBlockState> {
 
         return (
 
-            <Block className="gas-block">
+            <Block
+                className={`gas-block ${showAdvanced ? "" : "basic"}`}
+                onClick={showAdvanced ? undefined : this.toggleAdvanced}
+            >
                 {showAdvanced ? <div className="block--basic--hide" onClick={this.toggleAdvanced}>
                     <FontAwesomeIcon icon={faTimes} pull="left" />
                 </div> : null}
@@ -60,7 +63,7 @@ class GasBlockClass extends React.Component<GasBlockProps, GasBlockState> {
                                 <span className="gas-block--basic--value">{gasValue}</span>
                                 <span className="gas-block--basic--unit">ETH</span>
                             </div>
-                            <div className="block--basic--show" onClick={this.toggleAdvanced}>
+                            <div className="block--basic--show">
                                 <FontAwesomeIcon icon={faChevronRight} pull="left" />
                             </div>
                         </div> :

@@ -9,6 +9,10 @@
 
     display: flex;
     flex-direction: column;
+
+    &.basic {
+        cursor: pointer;
+    }
 }
 
 .block .svg-inline--fa {
