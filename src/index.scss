@@ -133,6 +133,7 @@ select:focus {
 }
 
 button {
+    color: $dark-grey;
     background-color: white;
     border: 1px solid $light-grey;
     height: 35px;
@@ -314,4 +315,14 @@ label {
 .checkbox--error:checked:after {
     content: "✘";
     color: $red;
+}
+
+.no-scrollbar {
+    overflow: -moz-scrollbars-none;
+
+    &::-webkit-scrollbar {
+        /* remove scrollbar space */
+        width: 0px;
+        height: 0px;
+    }
 }
