@@ -55,12 +55,12 @@ export const getOperatorDarknodes = async (sdk: RenExSDK, address: string): Prom
     const recentRegistrationEvents = await sdk.getWeb3().eth.getPastLogs({
         address: contracts.DarknodeRegistry.address,
         // tslint:disable-next-line:no-any
-        fromBlock: "0x889E55" as any, // TODO: Change this based on network or get from address deployment
+        fromBlock: contracts.DarknodeRegistry.deployedInBlock || "0x600000" as any,
         toBlock: "latest",
         // topics: [sdk.getWeb3().utils.sha3("LogDarknodeRegistered(address,uint256)"), "0x000000000000000000000000" +
         // address.slice(2), null, null] as any,
         // tslint:disable-next-line:no-any
-        topics: [sdk.getWeb3().utils.sha3("LogDarknodeRegistered(address,uint256)"), null, null] as any,
+        topics: [sdk.getWeb3().utils.sha3("LogDarknodeRegistered(address,uint256)")] as any,
     });
     for (const event of recentRegistrationEvents) {
         // The log data returns back like this:

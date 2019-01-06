@@ -47,7 +47,6 @@ export const calculateSecondsPerBlock = (
     const previousBlock = await web3.eth.getBlock(currentBlockNumber - sampleSize);
     const secondsPerBlock = Math.floor((currentBlock.timestamp - previousBlock.timestamp) / sampleSize);
 
-    console.log(`secondsPerBlock: ${secondsPerBlock}`);
     dispatch(storeSecondsPerBlock({ secondsPerBlock }));
 };
 
