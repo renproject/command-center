@@ -1,0 +1,48 @@
+.Select .Select-control {
+    border-color: $light-grey !important;
+}
+
+.Select.Select--currency {
+    width: 100%;
+    @media(min-width: $min-sm) {
+        width: 300px;
+    }
+}
+
+.Select.Select--currency .Select-control .Select-value {
+    padding: 0 10px !important;
+}
+
+.Select.Select--currency img {
+    background-color: white;
+    width: 20px;
+    margin-right: 10px;
+    border-radius: 100%;
+}
+
+.Select.Select--currency .Select-value-label,
+.Select.Select--currency .Select-menu-outer .Select-option {
+    display: flex;
+    align-items: center;
+}
+
+.Select.Select--currency .Select-menu-outer .Select-option {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.Select.Select--basic .Select-control {
+    height: 35px;
+}
+
+.Select.Select--basic>.Select-control .Select-input {
+    height: 33px; // Subtracted 2px for border
+}
+
+.Select.Select--basic>.Select-control .Select-value {
+    line-height: 33px;
+}
+
+.Select.is-disabled .Select-arrow-zone {
+    display: none;
+}

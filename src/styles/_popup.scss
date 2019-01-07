@@ -1,0 +1,295 @@
+.overlay {
+    display: block;
+    background-color: rgba(0, 0, 0, 0);
+    position: fixed;
+    top: 120px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 5;
+}
+
+// .popup::before {
+//     content: "";
+//     height: 10px;
+//     top: -10px;
+
+//     width: 100%;
+//     content: "";
+//     background-color: $blue-bright;
+
+//     position: absolute;
+//     left: 0;
+//     border-top-left-radius: 4px;
+//     border-top-right-radius: 4px;
+// }
+
+.popup {
+    color: $dark-grey;
+    background-color: white;
+    border-radius: 2px;
+
+    box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2);
+
+    text-align: center;
+    padding: 30px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+}
+
+.popup h2,
+.popup p {
+    margin: 0;
+}
+
+.popup h2+* {
+    margin-top: 10px;
+}
+
+.popup.open,
+.popup.kyc {
+    min-width: 300px;
+}
+
+.popup.accounts h2 {
+    text-align: center;
+}
+
+.popup.accounts .account--button {
+    padding: 20px;
+    width: 500px;
+    height: 40px;
+    box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.06);
+    margin-bottom: 10px;
+}
+
+.popup.accounts .blocky {
+    height: 40px;
+}
+
+.popup.accounts .account--left {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    margin: 0;
+    margin-top: -20px;
+    margin-left: -20px;
+    float: left;
+}
+
+.popup.accounts .account--right {
+    margin-top: -9px;
+    padding-left: 20px;
+    font-size: 15px;
+    float: left;
+}
+
+.popup.atom button {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.popup .sign--data {
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.popup .sign--datum {
+    background-color: $off-white;
+    border: 1px solid $light-grey;
+    padding: 10px;
+    color: #333;
+}
+
+.popup .sign--datum+.sign--datum {
+    border-left: none;
+}
+
+.popup .sign--button {
+    margin-top: 15px;
+}
+
+// Open Order
+.popup.open .open--tokens {
+    display: flex;
+    justify-content: center;
+}
+
+.popup.open .open--tokens div {
+    position: relative;
+}
+
+.popup.open .open--tokens p {
+    position: absolute;
+    left: 50%;
+    bottom: -15px;
+    transform: translateX(-50%);
+    white-space: nowrap;
+}
+
+.popup.open .open--arrow {
+    display: flex;
+    align-items: center;
+    height: 50px;
+    margin: 0 15px;
+}
+
+.popup.open img {
+    background-color: white;
+    border-radius: 100%;
+    width: 50px;
+    margin-bottom: 5px;
+}
+
+.popup.open .open--details {
+    margin: 25px 0 15px;
+}
+
+.popup.open .open--details span {
+    font-weight: 500;
+}
+
+.popup.open .open--confirm {
+    @extend .styled-button;
+}
+
+$noWeb3Width: 450px;
+$noWeb3Padding: 30px;
+
+.no-web3 {
+    width: $noWeb3Width;
+    padding: $noWeb3Padding;
+}
+
+.no-web3 h2 {
+    font-size: 24px;
+    font-weight: 500;
+    margin: 20px 0;
+}
+
+.no-web3 button {
+    margin-top: 20px;
+    min-width: ($noWeb3Width - $noWeb3Padding * 2) / 2;
+    font-size: 18px;
+    height: 40px;
+}
+
+.no-web3--logo {
+    width: 170px;
+    height: 170px;
+    margin: 0;
+}
+
+.popup--description {
+    font-size: 16px;
+    margin: 20px 0;
+}
+
+.popup--logged-out {
+
+    .blocky {
+        width: 20px;
+        margin-bottom: -5px;
+    }
+
+    .blocky--outer {
+        display: inline-block;
+        margin-left: 10px;
+    }
+}
+
+
+
+p.popup--error {
+    margin: 15px auto;
+    border: 1px solid $red;
+    padding: 10px;
+    width: 300px;
+    font-weight: 500;
+}
+
+.popup--blur {
+    filter: blur(2px);
+}
+
+
+
+// Multi Step
+
+.multi-step {
+    padding: 0;
+    width: 450px;
+
+    >* {
+        padding: 30px;
+    }
+}
+
+.multi-step--list {
+    list-style: none;
+    width: 200px;
+    margin: 0 auto;
+    padding: 0;
+}
+
+.multi-step--list li {
+    position: relative;
+}
+
+.multi-step--list li+li {
+    margin-top: 5px;
+}
+
+.multi-step--list span.active {
+    font-weight: 500;
+}
+
+.multi-step h2 {
+    font-weight: 500;
+    font-size: 24px;
+
+    color: $dark-grey;
+}
+
+.multi-step--top {
+    padding: 30px 20px;
+
+    >img {
+        margin-bottom: 30px;
+        margin-top: 20px;
+    }
+}
+
+
+.multi-step--buttons {
+    background: #F5F5F5;
+    padding: 30px 0;
+
+    // TODO: Why isn't there already a border radius?
+    border-bottom-left-radius: 2px;
+    border-bottom-right-radius: 2px;
+
+    button {
+        border-radius: 2px;
+        font-size: 18px;
+        font-weight: 500;
+
+        height: 42px;
+        width: 200px;
+    }
+}
+
+.popup .multi-step--buttons+p {
+    margin-top: 15px;
+}
+
+.popup .multi-step--ignore {
+    cursor: pointer;
+}
+
+.popup .multi-step--with-ignore {
+    margin-bottom: 20px;
+}

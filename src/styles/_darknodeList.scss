@@ -1,0 +1,210 @@
+.darknode-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+
+    // Make up for 10px margin of each card
+    margin-left: -10px;
+    margin-right: -10px;
+}
+
+$card-height: 335px;
+$card-top-height: 60px;
+$card-bottom-height: 64px;
+$card-middle-height: $card-height - $card-top-height - $card-bottom-height;
+
+$darknode-card-margin: 10px;
+
+.darknode-card {
+    margin: $darknode-card-margin;
+
+    height: $card-height;
+    width: $card-height;
+    background-color: $blue-dark;
+
+    box-shadow: 2px 2px 14px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+
+    text-align: center;
+
+    color: #FFFFFF;
+
+
+    cursor: pointer;
+}
+
+.darknode-card--top {
+    height: $card-top-height;
+    width: 100%;
+    background-color: rgb(3, 24, 48);
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.darknode-card--middle {
+    height: $card-middle-height;
+}
+
+.darknode-card .blocky {
+    $border: 10px;
+    $width: 64px;
+    border-radius: 50%;
+    width: $width + 2*$border;
+    height: $width + 2*$border;
+    border: $border solid $blue-dark;
+
+    background-color: $blue-dark;
+
+    margin-top: -$width / 2;
+}
+
+.darknode-card--name {
+    font-weight: normal;
+    font-size: 19px;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 20px;
+}
+
+.darknode-card--status {
+    font-size: 15px;
+
+    color: #FFFFFF;
+    mix-blend-mode: normal;
+    opacity: 0.4;
+}
+
+.darknode-card--bottom {
+    height: $card-bottom-height;
+    display: flex;
+
+
+    >div {
+        border-top: 2px solid #001B3A;
+        flex-grow: 1;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    >div+div {
+        border-left: 2px solid #001B3A;
+    }
+
+    .darknode-card--rewards {
+        font-size: 15px;
+        color: $green;
+    }
+
+    .darknode-card--gas {
+        font-size: 15px;
+        color: $red;
+    }
+
+    .currency-symbol {
+        font-weight: normal;
+        mix-blend-mode: normal;
+        opacity: 0.4;
+        margin-left: 5px;
+    }
+
+    .currency-value {
+        font-weight: bold;
+    }
+
+    .darknode-card--bottom--icon {
+        font-size: 2em;
+
+        mix-blend-mode: normal;
+        opacity: 0.4;
+
+        margin-right: 20px;
+    }
+}
+
+
+// The outer div allows us to set "overflow: hidden;" so that only the first row
+// is shown
+.background--darknode-list--outer {
+    overflow: hidden;
+
+    position: absolute;
+    width: 100%;
+    // Position half way down screen
+    top: calc(50vh - calc(335px / 2)); // PS: calc can't contain SCSS variables
+    z-index: -1;
+
+    align-items: center;
+
+    height: 335px;
+    overflow: hidden;
+
+    margin: 0;
+
+    .darknode-card--empty {
+        // Work around to prevent other rows from showing
+        margin-bottom: 50vh;
+    }
+}
+
+.darknode-card--empty {
+    cursor: initial;
+
+    mix-blend-mode: normal;
+    opacity: 0.4;
+
+    .blocky {
+        margin-left: auto;
+        margin-right: auto;
+        background-color: #031830;
+    }
+
+    &.fourth {
+        @media(max-width: 1574px) {
+            display: none;
+        }
+    }
+
+    &.third {
+        @media(max-width: 1219px) {
+            display: none;
+        }
+    }
+
+    &.fourth {
+        @media(max-width: 864px) {
+            display: none;
+        }
+    }
+}
+
+.darknode-list--empty {
+    height: 335px;
+    overflow: hidden;
+}
+
+.darknode-list--loading {
+    height: 100vh;
+    width: 100vw;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+
+.card--hide {
+    cursor: pointer;
+    color: white;
+    font-size: 14px;
+    position: relative;
+    float: right;
+}
