@@ -27,7 +27,7 @@ class DarknodeListClass extends React.Component<DarknodeListProps> {
         const { darknodeList, darknodeDetails, darknodeNames, darknodeRegisteringList } = this.props;
 
         return (
-            <div className="darknode-list">
+            <div className={`darknode-list ${darknodeList && darknodeList.size < 4 ? "darknode-list--empty" : ""}`}>
                 {darknodeList === null ? <div className="darknode-list--loading"><Loading alt={true} /></div> : <>
                     {darknodeList && darknodeList.map((darknodeID) => {
                         const details = darknodeDetails.get(darknodeID) || null;
@@ -42,9 +42,9 @@ class DarknodeListClass extends React.Component<DarknodeListProps> {
                         />;
                     }).toArray()}
                     {darknodeList.size === 0 ? <EmptyDarknodeList /> : <>
-                        {darknodeList.size < 4 ? <EmptyDarknodeCard /> : null}
-                        {darknodeList.size < 3 ? <EmptyDarknodeCard /> : null}
-                        {darknodeList.size < 2 ? <EmptyDarknodeCard /> : null}
+                        {darknodeList.size < 2 ? <EmptyDarknodeCard className="second" /> : null}
+                        {darknodeList.size < 3 ? <EmptyDarknodeCard className="third" /> : null}
+                        {darknodeList.size < 4 ? <EmptyDarknodeCard className="fourth" /> : null}
                     </>}
                 </>}
             </div>

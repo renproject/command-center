@@ -1,12 +1,13 @@
 import * as React from "react";
 
 import { faStar } from "@fortawesome/free-regular-svg-icons";
-import { faFire } from "@fortawesome/free-solid-svg-icons";
+import { faFire, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { bindActionCreators, Dispatch } from "redux";
 
+import { removeRegisteringDarknode } from "../actions/statistics/operatorActions";
 import { RegistrationStatus } from "../actions/statistics/operatorActions";
 import { Token } from "../lib/tokens";
 import { ApplicationData, Currency, DarknodeDetails } from "../reducers/types";
@@ -39,9 +40,12 @@ class DarknodeCardClass extends React.Component<DarknodeCardProps, DarknodeCardS
         const { darknodeID, darknodeDetails, name, store, publicKey } = this.props;
         const { quoteCurrency } = store;
 
-        const continuable = publicKey &&
-            darknodeDetails &&
-            darknodeDetails.registrationStatus === RegistrationStatus.Unregistered;
+        // If we have the public key and the status is unregisterd (or the status is not available yet), then link to
+        // the registration page
+        const continuable = publicKey && (
+            !darknodeDetails ||
+            darknodeDetails.registrationStatus === RegistrationStatus.Unregistered
+        );
 
         const faded = darknodeDetails &&
             darknodeDetails.registrationStatus === RegistrationStatus.Unregistered &&
@@ -56,7 +60,11 @@ class DarknodeCardClass extends React.Component<DarknodeCardProps, DarknodeCardS
         return (
             <Link className="no-underline" to={url}>
                 <div className={`darknode-card ${faded ? "darknode-card--faded" : ""}`}>
-                    <div className="darknode-card--top" />
+                    <div className="darknode-card--top">
+                        {continuable ? <div className="card--hide" onClick={this.removeRegisteringDarknode}>
+                            <FontAwesomeIcon icon={faTimes} pull="left" />
+                        </div> : null}
+                    </div>
                     <div className="darknode-card--middle">
 
                         <Blocky address={darknodeID} fgColor="#006FE8" bgColor="transparent" />
@@ -100,6 +108,13 @@ class DarknodeCardClass extends React.Component<DarknodeCardProps, DarknodeCardS
             </Link>
         );
     }
+
+    private removeRegisteringDarknode = async (e: React.MouseEvent<HTMLDivElement>): Promise<void> => {
+        e.stopPropagation();
+        e.preventDefault();
+        const { darknodeID } = this.props;
+        this.props.actions.removeRegisteringDarknode({ darknodeID });
+    }
 }
 
 const mapStateToProps = (state: ApplicationData) => ({
@@ -110,6 +125,7 @@ const mapStateToProps = (state: ApplicationData) => ({
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     actions: bindActionCreators({
+        removeRegisteringDarknode,
     }, dispatch),
 });
 
