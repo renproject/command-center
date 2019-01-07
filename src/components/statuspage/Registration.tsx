@@ -91,7 +91,7 @@ class RegistrationClass extends React.Component<RegistrationProps, RegistrationS
                         <span className="status--operator">DARKNODE NOT REGISTERED</span> :
                         (this.props.darknodeDetails ?
                             <span className="status--operator">
-                                Operator: {this.props.darknodeDetails.operator}
+                                Operator: <span className="monospace">{this.props.darknodeDetails.operator}</span>
                             </span> :
                             null
                         )

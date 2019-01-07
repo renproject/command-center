@@ -60,7 +60,7 @@ export const showRegisterPopup = (
                 onCancel={onCancel}
                 title={title}
                 confirm={true}
-                warning={warning}
+            // warning={warning}
             />,
             onCancel,
             dismissible: false,
