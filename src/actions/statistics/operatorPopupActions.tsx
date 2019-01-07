@@ -51,7 +51,8 @@ export const showRegisterPopup = (
             { call: () => step2(), name: "Register darknode" },
         ];
 
-        const warning = "Estimated Darknode profits are currently negative. Are you sure you want to continue?";
+        const warning = "Due to a large number of registrations, estimated Darknode profits are currently negative. \
+Are you sure you want to continue?";
         const title = "Register darknode";
 
         dispatch(setPopup({
