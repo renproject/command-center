@@ -36,7 +36,7 @@ class FeesItemClass extends React.Component<FeesProps, FeesState> {
             <button
                 className="withdraw-fees"
                 disabled={disabled}
-                onClick={disabled ? this.handleWithdraw : undefined}
+                onClick={disabled ? undefined : this.handleWithdraw}
             >
                 <FontAwesomeIcon icon={faChevronRight} pull="left" />
             </button>
