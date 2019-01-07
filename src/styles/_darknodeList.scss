@@ -133,12 +133,13 @@ $darknode-card-margin: 10px;
     position: absolute;
     width: 100%;
     // Position half way down screen
-    top: calc(50% - calc(355px / 2));
+    top: calc(50% - calc(335px / 2)); // PS: calc can't contain SCSS variables
     z-index: -1;
 
     align-items: center;
 
-    height: calc(100vh - calc(50% - calc(355px / 2)));
+    height: calc(100vh - calc(50% - calc(335px / 2))); // PS: calc can't contain SCSS variables
+    min-height: $card-height;
 
     margin: 0;
 

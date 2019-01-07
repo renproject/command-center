@@ -77,7 +77,7 @@ export const getOperatorDarknodes = async (sdk: RenExSDK, address: string): Prom
     // const recentDeregistrationEvents = await sdk.getWeb3().eth.getPastLogs({
     //     address: contracts.DarknodeRegistry.address,
     //     // tslint:disable-next-line:no-any
-    //     fromBlock: "0x889E55" as any, // TODO: Change this based on network or get from address deployment
+    //     fromBlock: "0x889E55" as any, // FIXME: Change this based on network or get from address deployment
     //     toBlock: "latest",
     //     // tslint:disable-next-line:no-any
     //     topics: [sdk.getWeb3().utils.sha3("LogDarknodeDeregistered(address)"), null] as any,
