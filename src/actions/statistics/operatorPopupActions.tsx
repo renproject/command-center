@@ -51,7 +51,8 @@ export const showRegisterPopup = (
             { call: () => step2(), name: "Register darknode" },
         ];
 
-        const warning = "Estimated Darknode profits are currently negative. Are you sure you want to continue?";
+        const warning = "Darknode profitability may become negative if a large number of darknodes are registered. \
+Are you sure you want to continue?";
         const title = "Register darknode";
 
         dispatch(setPopup({
@@ -60,7 +61,7 @@ export const showRegisterPopup = (
                 onCancel={onCancel}
                 title={title}
                 confirm={true}
-            // warning={warning}
+                warning={warning}
             />,
             onCancel,
             dismissible: false,
