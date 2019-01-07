@@ -1,0 +1,384 @@
+.statuspage {
+    padding: 0 20px;
+
+    .statuspage--banner {
+        display: flex;
+        color: white;
+
+        >*+* {
+            margin-left: 30px;
+        }
+    }
+
+    .statuspage--banner .blocky {
+        $border: 10px;
+        $width: 80px;
+        border-radius: 50%;
+        width: $width + 2*$border;
+        border: $border solid $blue-dark;
+    }
+
+    .statuspage--banner--details {
+        display: flex;
+        flex-direction: column;
+        height: 85px;
+        justify-content: space-between;
+        margin-left: 40px;
+        min-width: 0;
+
+        >div {
+            display: flex;
+            align-items: center;
+        }
+    }
+
+    .statuspage--banner--top {
+        height: 47.5px;
+
+        >:not(:first-child) {
+            margin-left: 20px;
+        }
+
+        h3 {
+            font-size: 34px;
+            margin: 0;
+            font-weight: 500;
+
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-width: 0px;
+        }
+
+        button {
+            border: 1px solid transparentize(white, 1 - 0.4);
+            background: none;
+            color: white;
+            height: 25px;
+            border-radius: 2px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+    }
+
+    .statuspage--rename {
+        display: flex;
+        align-items: center;
+
+        >:not(:first-child) {
+            margin-left: 20px;
+        }
+
+        input {
+            font-weight: 500;
+            font-size: 34px;
+            max-width: 300px;
+
+            color: white;
+            background: none;
+            border: none;
+            border-bottom: 1px solid white;
+        }
+
+        .statuspage--rename--save {
+            background: white;
+            color: $blue-darker;
+        }
+
+        .statuspage--rename--save:disabled {
+            color: $light-grey;
+        }
+    }
+
+    .statuspage--bottom {
+
+        @media screen and (min-width: $min-xl) {
+            display: flex;
+        }
+
+        color: white;
+        margin-top: 24px;
+
+        >div+div {
+            margin-left: 22px;
+
+            @media(max-width: $max-lg) {
+                margin-top: 22px;
+                margin-left: 0;
+            }
+        }
+    }
+
+    &.statuspage--focused {
+        .status *+* {
+            margin-left: 10px;
+        }
+
+        .status--button {
+            background: $blue-bright;
+            color: white;
+            padding: 0 40px;
+        }
+
+        .status--button:disabled {
+            background: transparentize($blue-bright, 1 - 0.4);
+        }
+
+        .status--button .loading {
+            margin-left: 10px;
+            display: inline-block;
+            margin-bottom: -3px;
+        }
+
+        .statuspage--bottom {
+            mix-blend-mode: normal;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+    }
+
+    &.statuspage--no-darknode {
+        .statuspage--bottom {
+            mix-blend-mode: normal;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+    }
+
+    &.statuspage--renaming {
+
+        .statuspage--bottom,
+        .blocky,
+        .status,
+        .statuspage--banner-right {
+            mix-blend-mode: normal;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+    }
+
+    @media(max-width: $max-md) {
+        flex-direction: column;
+    }
+
+    .fees+.fees {
+        margin-top: 10px;
+    }
+
+    .fees button {
+        position: relative;
+        left: -1px;
+    }
+
+    .status--title {
+        background-color: transparentize($blue-bright, 1 - 0.28);
+        text-transform: uppercase;
+        line-height: 30px;
+        border-radius: 15px;
+        padding: 0 20px;
+        font-weight: 500;
+        text-align: center;
+        font-size: 12px;
+    }
+
+    .status--button {
+        background: none;
+        color: transparentize(white, 1 - 0.4);
+        border: none;
+        height: 30px;
+        text-transform: uppercase;
+        font-size: 12px;
+        border-radius: 15px;
+    }
+
+    .status--button--focus {
+        background: $blue-bright;
+        color: white;
+        padding: 0 40px;
+    }
+
+    .status--button:not(:disabled):active {
+        font-weight: 600;
+    }
+
+    .status--error {
+        color: rgba(255, 130, 130, 1.0);
+        line-height: 30px;
+        border-radius: 15px;
+        font-weight: 500;
+        text-align: center;
+        font-size: 12px;
+    }
+
+    .topup button {
+        margin-left: 15px;
+    }
+
+    .topup--title {
+        margin-bottom: 10px;
+        font-weight: bold;
+        font-size: 14px;
+
+        color: #FFFFFF;
+    }
+
+    .topup--input--success {
+        margin-top: 10px;
+        font-weight: bold;
+        font-size: 14px;
+
+        color: $green;
+    }
+
+    .topup--input--warning {
+        margin-top: 10px;
+        font-weight: bold;
+        font-size: 14px;
+
+        color: $red;
+    }
+
+    .topup--input {
+        display: inline-flex;
+        align-items: center;
+        vertical-align: top;
+
+        background: #F5F5F5;
+        border-radius: 2px;
+        height: 42px;
+    }
+
+    .topup--input:not(.disabled):hover {
+        box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
+    }
+
+    .topup--input>input[type=number] {
+        width: 100%;
+        border: none;
+        height: 42px;
+        background: none;
+        font-weight: 500;
+    }
+
+    .topup--input>span {
+        display: inline-block;
+        width: 35px;
+        text-align: center;
+    }
+
+    .topup--input>button {
+        background: none;
+        border: none;
+    }
+
+    .statuspage--graphs {
+        flex-grow: 1;
+        flex-basis: 0;
+
+        display: flex;
+        flex-flow: column;
+        justify-content: space-between;
+
+        background: none !important;
+        padding: 0 !important;
+
+        >div {
+            flex-grow: 1;
+            background-color: $blue-dark;
+            border-radius: 2px;
+            flex-basis: 0;
+        }
+
+
+        >:not(:first-child) {
+            margin-top: 20px;
+        }
+    }
+
+    .status--operator {
+        background-color: rgba(0, 111, 232, 0.28);
+        line-height: 30px;
+        border-radius: 15px;
+        padding: 0 20px;
+        font-weight: 500;
+        text-align: center;
+        font-size: 12px;
+        margin-left: 10px;
+
+        // Hide overflow with ellipsis:
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        min-width: 0px;
+    }
+}
+
+
+.statuspage--banner-right {
+    flex-grow: 1;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.statuspage--notification {
+    width: 450px;
+    height: 70px;
+
+    background: transparentize($blue-bright, 1 - 0.28);
+    border-top-right-radius: 2px;
+    border-bottom-right-radius: 2px;
+
+    display: flex;
+    padding: 10px 20px;
+
+    .svg-inline--fa {
+        margin-top: 5px;
+        font-size: 20px;
+    }
+
+    h2 {
+        font-weight: bold;
+        line-height: 23px;
+        font-size: 14px;
+
+        color: #FFFFFF;
+
+        margin-left: 0;
+        margin-bottom: 5px;
+    }
+
+    span {
+        font-weight: normal;
+        line-height: 23px;
+        font-size: 14px;
+
+        color: #FFFFFF;
+        margin-left: 0;
+    }
+
+    .statuspage--notification--details {
+        display: flex;
+        flex-direction: column;
+        margin-left: 20px;
+    }
+}
+
+.statuspage--notification::before {
+    content: "";
+    width: 5px;
+    left: -25px; // padding and width
+    height: 70px;
+    background-color: $blue-bright;
+    position: relative;
+    top: -10px; // padding
+    border-top-left-radius: 2px;
+    border-bottom-left-radius: 2px;
+}
+
+.darknode-id {
+    max-width: 300px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0px;
+}

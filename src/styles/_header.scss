@@ -1,0 +1,248 @@
+.header {
+    padding: 10px 0;
+    margin-bottom: 20px;
+    z-index: 6;
+}
+
+.header .container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    @media(min-width: $min-sm) {
+        flex-direction: row;
+        height: 80px;
+    }
+}
+
+.header .container>a {
+    align-self: center;
+    text-decoration: none;
+}
+
+.header--logo {
+    background-image: url('styles/images/logo.svg');
+    background-repeat: no-repeat;
+    height: 48px;
+    width: 48px;
+}
+
+.header--counter-weight {
+    @media(min-width: $min-sm) {
+        width: 500px;
+    }
+}
+
+.header--menu {
+    display: flex;
+    list-style: none;
+    margin: 20px 0 0;
+    padding: 0;
+
+    @media(min-width: $min-sm) {
+        justify-content: flex-end;
+        width: 500px;
+        margin: 0;
+    }
+}
+
+.header--menu li:hover {
+    @media(min-width: $min-sm) {}
+}
+
+.header--menu>li a {
+    color: white;
+}
+
+.header--menu>li {
+    display: flex;
+    position: relative;
+    text-align: center;
+    color: white;
+
+    display: flex;
+    align-items: center;
+    margin: 0 20px;
+
+    font-size: 16px;
+    font-weight: 500;
+
+    @media(min-width: $min-sm) {
+        padding: 0 22px;
+        margin: 0;
+    }
+}
+
+.header--menu li {
+    @media(min-width: $min-sm) {}
+}
+
+.header--menu li:last-child {
+    @media(min-width: $min-sm) {}
+}
+
+.header--menu a {
+    text-decoration: none;
+}
+
+.header--menu .header--group {
+    display: flex;
+    justify-content: center;
+
+    @media(min-width: $min-sm) {
+        display: flex;
+    }
+
+    >.svg-inline--fa {
+        margin-left: 10px;
+    }
+
+    position: relative;
+}
+
+.header--menu .header--logout {
+    @media(min-width: $min-sm) {
+        display: none;
+    }
+}
+
+.header .blocky {
+    height: 50px;
+    border-radius: 25px;
+
+    vertical-align: middle;
+
+    margin-right: 15px;
+}
+
+.header--dropdown {
+    background: #FAFAFA;
+    border: 1px solid #E1E1E1;
+
+    z-index: 11;
+
+    text-align: center;
+    border-radius: 2px;
+    list-style: none;
+    padding: 0;
+    position: absolute;
+    top: 100%;
+    cursor: auto;
+}
+
+.header--dropdown--login {
+    // Add 20px to each side
+    width: calc(100% + 40px);
+    right: -20px;
+}
+
+.header--dropdown:after,
+.header--dropdown:before {
+    bottom: 100%;
+    left: 50%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+}
+
+$arrow-size: 7px;
+
+.header--dropdown:after {
+    border-color: rgba(255, 255, 255, 0);
+    border-bottom-color: #ffffff;
+    border-width: $arrow-size;
+    margin-left: -$arrow-size;
+}
+
+.header--dropdown:before {
+    border-color: rgba(0, 0, 0, 0);
+    border-bottom-color: #E1E1E1;
+    border-width: $arrow-size + 2px;
+    margin-left: -($arrow-size + 2px);
+}
+
+
+
+.header--dropdown li {
+    padding: 9px 20px;
+    cursor: pointer;
+
+    font-weight: 500;
+    line-height: normal;
+    font-size: 12px;
+    color: #58585B;
+}
+
+.header--dropdown li+li {
+    border-top: 1px solid #f0f0f0;
+}
+
+.header--dropdown .header--dropdown--highlight {
+    color: $blue-bright;
+}
+
+.header--account {
+    display: flex;
+    flex-direction: row;
+}
+
+.header--account--right {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    justify-content: center;
+    font-size: 12px;
+    line-height: 20px;
+}
+
+.header--account--address {
+    color: $light-grey;
+}
+
+.header--account--type::before {
+    content: '';
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    margin-right: 10px;
+    -moz-border-radius: 3.5px;
+    -webkit-border-radius: 3.5px;
+    border-radius: 3.5px;
+    background-color: #F45532;
+}
+
+.header--account--connected::before {
+    background-color: #3CBC98;
+}
+
+.header--dropdown--options {
+    text-align: left;
+    margin-top: -10px;
+
+    // Add 10px to each side
+    width: calc(100% + 20px);
+    right: -10px;
+
+    .svg-inline--fa {
+        margin-right: 5px;
+    }
+
+    img {
+        margin-bottom: -1px;
+    }
+}
+
+.header--dropdown--currency {
+    @extend .header--dropdown--options;
+
+    // Add 60px to each side
+    width: calc(100% + 120px);
+    right: -60px;
+}
+
+li.header--dropdown--selected {
+    font-weight: 900;
+}

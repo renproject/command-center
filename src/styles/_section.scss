@@ -1,0 +1,72 @@
+.section {
+    position: relative;
+}
+
+.section+.section {
+    @media(max-width: $max-sm) {
+        border-top: 0.1rem solid $border;
+    }
+}
+
+.section .container {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+
+    @media(min-width: $min-md) {
+        padding-top: 10rem;
+        padding-bottom: 10rem;
+    }
+}
+
+.section--content {
+    @include col-xs-12();
+    @include col-md-8();
+}
+
+.section--content+* {
+    margin-top: 4rem;
+
+    @media(min-width: $min-md) {
+        margin-top: 0;
+    }
+}
+
+.section--image {
+    display: none;
+
+    @media(min-width: $min-md) {
+        display: initial;
+    }
+}
+
+.section--image img {
+    width: 100%;
+    height: auto;
+}
+
+.section--list {
+    @include col-xs-12();
+    @include col-md-4();
+}
+
+.section--stats {
+    @include col-xs-12();
+    @include col-md-4();
+}
+
+.section--stats p+h1 {
+    margin-top: 6rem;
+}
+
+.section--footnotes {
+    position: absolute;
+    bottom: 2rem;
+    color: #A2A2A7;
+    font-size: 1.2rem;
+    line-height: 1.8rem;
+}
+
+.section--logos {
+    @include col-xs-12();
+    @include col-md-4();
+}
