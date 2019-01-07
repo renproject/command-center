@@ -1,8 +1,5 @@
 import { NETWORK } from "../../environmentVariables";
 
-// TODO: Generate production key
-export const INFURA_KEY = "8ZCgtqu4tkIIRHh9hFZj";
-
 // Contracts
 export interface Contract {
     ABI: Array<unknown>;
