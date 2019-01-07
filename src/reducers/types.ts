@@ -92,7 +92,12 @@ export class StatisticsData extends Record({
     darknodeList: Map<string, List<string>>(),
 }) implements Serializable<StatisticsData> {
     public serialize(): string {
-        return JSON.stringify(this.toJS());
+        const js = this.toJS();
+        return JSON.stringify({
+            darknodeList: js.darknodeList,
+            darknodeNames: js.darknodeNames,
+            darknodeRegisteringList: js.darknodeRegisteringList,
+        });
     }
 
     public deserialize(str: string): StatisticsData {
@@ -103,6 +108,7 @@ export class StatisticsData extends Record({
             return new StatisticsData({
                 darknodeList: data.darknodeList,
                 darknodeNames: data.darknodeNames,
+                darknodeRegisteringList: data.darknodeRegisteringList,
             });
         } catch (err) {
             console.error(err);
