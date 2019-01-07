@@ -26,6 +26,11 @@ export function statisticsReducer(
                 action.payload.publicKey
             ));
 
+        case getType(operatorActions.removeRegisteringDarknode):
+            return state.set("darknodeRegisteringList", state.darknodeRegisteringList.remove(
+                action.payload.darknodeID
+            ));
+
         case getType(operatorActions.storeDarknodeList):
             let newList = state.darknodeList.get(action.payload.address) || List();
             let newNames = state.darknodeNames;

@@ -16,6 +16,10 @@ export const addRegisteringDarknode = createStandardAction("ADD_REGISTERING_DARK
     publicKey: string;
 }>();
 
+export const removeRegisteringDarknode = createStandardAction("REMOVE_REGISTERING_DARKNODE")<{
+    darknodeID: string;
+}>();
+
 export const storeDarknodeList = createStandardAction("STORE_DARKNODE_LIST")<{
     darknodeList: OrderedSet<string>;
     address: string;

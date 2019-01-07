@@ -37,7 +37,10 @@ $darknode-card-margin: 10px;
     height: $card-top-height;
     width: 100%;
     background-color: rgb(3, 24, 48);
-    display: block;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 0 20px;
 }
 
 .darknode-card--middle {
@@ -133,13 +136,13 @@ $darknode-card-margin: 10px;
     position: absolute;
     width: 100%;
     // Position half way down screen
-    top: calc(50% - calc(335px / 2)); // PS: calc can't contain SCSS variables
+    top: calc(50vh - calc(335px / 2)); // PS: calc can't contain SCSS variables
     z-index: -1;
 
     align-items: center;
 
-    height: calc(100vh - calc(50% - calc(335px / 2))); // PS: calc can't contain SCSS variables
-    min-height: $card-height;
+    height: 335px;
+    overflow: hidden;
 
     margin: 0;
 
@@ -160,11 +163,29 @@ $darknode-card-margin: 10px;
         margin-right: auto;
         background-color: #031830;
     }
+
+    &.fourth {
+        @media(max-width: 1574px) {
+            display: none;
+        }
+    }
+
+    &.third {
+        @media(max-width: 1219px) {
+            display: none;
+        }
+    }
+
+    &.fourth {
+        @media(max-width: 864px) {
+            display: none;
+        }
+    }
 }
 
-.darknode-card--faded {
-    mix-blend-mode: normal;
-    opacity: 0.6;
+.darknode-list--empty {
+    height: 335px;
+    overflow: hidden;
 }
 
 .darknode-list--loading {
@@ -176,4 +197,14 @@ $darknode-card-margin: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+
+
+.card--hide {
+    cursor: pointer;
+    color: white;
+    font-size: 14px;
+    position: relative;
+    float: right;
 }

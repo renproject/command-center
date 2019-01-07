@@ -30,7 +30,7 @@ const getContractsForNetwork = (network: string | undefined) => {
             darknodeRegistry = "0x34bd421C7948Bc16f826Fd99f9B785929b121633";
             dnrDeployedInBlock = "0x6AED46"; // in hex
 
-            darknodeRewardVault = "0x880407C9Cd119BeF48b1821CdfC434e3ca3cd588";
+            darknodeRewardVault = "0xa96450d3386ece22db20b0ac96ef5684b6d95d53";
             break;
         case TESTNET:
         default:

@@ -198,11 +198,15 @@ class AppClass extends React.Component<AppProps, AppState> {
     private callUpdateOperatorStatistics = async (props?: AppProps) => {
         props = props || this.props;
 
-        const { sdk, address, tokenPrices, darknodeList } = props.store;
+        const { sdk, address, tokenPrices, darknodeList, darknodeRegisteringList } = props.store;
         let timeout = 1;
         if (address && tokenPrices) {
             try {
-                await props.actions.updateOperatorStatistics(sdk, address, tokenPrices, darknodeList);
+                let list = darknodeRegisteringList.keySeq().toList();
+                if (darknodeList) {
+                    list = list.concat(darknodeList);
+                }
+                await props.actions.updateOperatorStatistics(sdk, address, tokenPrices, list);
                 timeout = 120;
             } catch (err) {
                 console.error(err);
@@ -271,6 +275,7 @@ const mapStateToProps = (state: ApplicationData) => ({
         tokenPrices: state.statistics.tokenPrices,
         darknodeList: state.trader.address ? state.statistics.darknodeList.get(state.trader.address, null) : null,
         darknodeDetails: state.statistics.darknodeDetails,
+        darknodeRegisteringList: state.statistics.darknodeRegisteringList,
     },
 });
 
