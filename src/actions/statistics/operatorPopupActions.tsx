@@ -10,7 +10,7 @@ import { approveNode, deregisterNode, fundNode, refundNode, registerNode } from 
 import { CurrencyIcon } from "../../components/CurrencyIcon";
 import { MultiStepPopup } from "../../components/popups/MultiStepPopup";
 import { TokenBalance } from "../../components/TokenBalance";
-import { Token } from "../../lib/tokens";
+import { Token } from "../../lib/ethereum/tokens";
 import { Currency, TokenPrices } from "../../reducers/types";
 import { updateDarknodeStatistics } from "./operatorActions";
 

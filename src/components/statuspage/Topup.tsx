@@ -8,11 +8,11 @@ import { updateDarknodeStatistics } from "../../actions/statistics/operatorActio
 import { showFundPopup } from "../../actions/statistics/operatorPopupActions";
 import { ApplicationData, DarknodeDetails } from "../../reducers/types";
 
-interface TopupProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
+interface Props extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     darknodeID: string;
 }
 
-interface TopupState {
+interface State {
     value: string;
     resultMessage: string;
     pending: boolean;
@@ -22,8 +22,8 @@ interface TopupState {
 
 const CONFIRMATION_MESSAGE = "Transaction confirmed.";
 
-class TopupClass extends React.Component<TopupProps, TopupState> {
-    constructor(props: TopupProps) {
+class TopupClass extends React.Component<Props, State> {
+    constructor(props: Props) {
         super(props);
         this.state = {
             value: "0.1",
@@ -38,7 +38,7 @@ class TopupClass extends React.Component<TopupProps, TopupState> {
         this.updateTraderBalance().catch(console.error);
     }
 
-    public render(): JSX.Element {
+    public render = (): JSX.Element => {
         const { value, resultMessage, pending, disabled } = this.state;
         return (
             <div className="topup">

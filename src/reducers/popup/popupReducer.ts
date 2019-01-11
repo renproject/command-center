@@ -6,7 +6,7 @@ import { PopupData } from "../../reducers/types";
 
 type PopupAction = ActionType<typeof popupActions>;
 
-export function popupReducer(state: PopupData = new PopupData(), action: PopupAction) {
+export const popupReducer = (state: PopupData = new PopupData(), action: PopupAction): PopupData => {
     switch (action.type) {
         case getType(popupActions.setPopup):
             if (document.documentElement) {
@@ -28,4 +28,4 @@ export function popupReducer(state: PopupData = new PopupData(), action: PopupAc
         default:
             return state;
     }
-}
+};

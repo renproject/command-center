@@ -9,7 +9,7 @@ import { Dispatch } from "redux";
 import { bindActionCreators } from "redux";
 
 import { RegistrationStatus } from "../actions/statistics/operatorActions";
-import { Token } from "../lib/tokens";
+import { Token } from "../lib/ethereum/tokens";
 import { ApplicationData, Currency } from "../reducers/types";
 import { Blocky } from "./Blocky";
 import { CurrencyIcon } from "./CurrencyIcon";
@@ -17,7 +17,7 @@ import { DarknodeID } from "./DarknodeID";
 import { darknodeIDHexToBase58 } from "./pages/Darknode";
 import { TokenBalance } from "./TokenBalance";
 
-interface SidebarProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
+interface Props extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     selectedDarknode: string | undefined;
 }
 
@@ -25,12 +25,12 @@ interface SidebarProps extends ReturnType<typeof mapStateToProps>, ReturnType<ty
  * Sidebar displays stats about an operator's darknodes collectively,
  * as well as a breakdown of each darknode
  */
-class SidebarClass extends React.Component<SidebarProps> {
-    public constructor(props: SidebarProps, context: object) {
+class SidebarClass extends React.Component<Props> {
+    public constructor(props: Props, context: object) {
         super(props, context);
     }
 
-    public render(): JSX.Element {
+    public render = (): JSX.Element => {
         const { selectedDarknode, store } = this.props;
         const { darknodeList, darknodeDetails, darknodeNames, quoteCurrency } = store;
 
@@ -57,7 +57,7 @@ class SidebarClass extends React.Component<SidebarProps> {
                         </Link>
                     </div>
 
-                    {darknodeList && darknodeList.map((darknodeID) => {
+                    {darknodeList && darknodeList.map((darknodeID: string) => {
                         const details = darknodeDetails.get(darknodeID);
                         const storedName = darknodeNames.get(darknodeID);
                         const name = storedName ? storedName : <DarknodeID darknodeID={darknodeID} />;

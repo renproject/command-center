@@ -9,9 +9,9 @@ import { List, Map, OrderedMap } from "immutable";
 
 import { RegistrationStatus } from "../actions/statistics/operatorActions";
 import { NETWORK } from "../environmentVariables";
-import { Record } from "../lib/general/record";
-import { Token } from "../lib/tokens";
-import { getReadOnlyProvider } from "../lib/wallets/wallet";
+import { Token } from "../lib/ethereum/tokens";
+import { getReadOnlyProvider } from "../lib/ethereum/wallet";
+import { Record } from "../lib/record";
 
 export interface Serializable<T> {
     serialize(): string;
@@ -20,7 +20,6 @@ export interface Serializable<T> {
 
 export interface ApplicationData {
     trader: TraderData;
-    alert: AlertData;
     popup: PopupData;
     statistics: StatisticsData;
 }
@@ -47,15 +46,6 @@ export enum LabelType {
     Info = "info",
     Warning = "warning"
 }
-
-export class Alert extends Record({
-    alertType: AlertType.Warning,
-    message: "", // TODO: Allow for links
-}) { }
-
-export class AlertData extends Record({
-    alert: { message: "" } as Alert,
-}) { }
 
 export class PopupData extends Record({
     dismissible: true,

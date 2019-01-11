@@ -29,6 +29,8 @@
         "noEmit": true,
         "alwaysStrict": true,
         "strictFunctionTypes": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
     },
     "exclude": [
         "node_modules",

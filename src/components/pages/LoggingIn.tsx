@@ -8,25 +8,25 @@ import { Header } from "../../components/Header";
 import { EmptyDarknodeList } from "../../components/EmptyDarknodeList";
 import { ApplicationData } from "../../reducers/types";
 
-interface LoggingInProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
+interface Props extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
 }
 
-interface LoggingInState {
+interface State {
 }
 
 /**
  * LoggingIn is a page whose principal components are wallet selection to allow users
  * to log-in, and the hidden orderbook
  */
-class LoggingInClass extends React.Component<LoggingInProps, LoggingInState> {
-    public constructor(props: LoggingInProps, context: object) {
+class LoggingInClass extends React.Component<Props, State> {
+    public constructor(props: Props, context: object) {
         super(props, context);
         this.state = {
             checkingVerification: false,
         };
     }
 
-    public render(): JSX.Element {
+    public render = (): JSX.Element => {
 
         return (
             <div className="logging-in">

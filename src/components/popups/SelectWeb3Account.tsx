@@ -7,14 +7,14 @@ import { Blocky } from "../../components/Blocky";
 import { Loading } from "../../components/Loading";
 import { ApplicationData } from "../../reducers/types";
 
-interface SelectWeb3AccountProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
+interface Props extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     message: string;
     getAccounts(): Promise<string[]>;
     resolve(address: string): void;
     reject(address: string, reason: string): void;
 }
 
-interface SelectWeb3AccountState {
+interface State {
     accounts: string[] | null;
     error: string | null;
 }
@@ -26,8 +26,8 @@ export const KyberVerification = 1;
  * SelectWeb3Account is a popup component for prompting a user to select an
  * Ethereum account
  */
-class SelectWeb3AccountClass extends React.Component<SelectWeb3AccountProps, SelectWeb3AccountState> {
-    constructor(props: SelectWeb3AccountProps) {
+class SelectWeb3AccountClass extends React.Component<Props, State> {
+    constructor(props: Props) {
         super(props);
         this.state = {
             accounts: null,
@@ -35,11 +35,11 @@ class SelectWeb3AccountClass extends React.Component<SelectWeb3AccountProps, Sel
         };
     }
 
-    public async componentDidMount() {
+    public componentDidMount = async (): Promise<void> => {
         await this.getAccounts();
     }
 
-    public render(): JSX.Element {
+    public render = (): JSX.Element => {
         const { accounts, error } = this.state;
 
         if (error) {
@@ -57,7 +57,7 @@ class SelectWeb3AccountClass extends React.Component<SelectWeb3AccountProps, Sel
                 {accounts !== null ?
                     <>
                         <h2>Select an account:</h2>
-                        {accounts.map((account, i) =>
+                        {accounts.map((account: string, i: number) =>
                             <button key={i} data-item={i} className="account--button" onClick={this.onSelectAccount}>
                                 <div className="account--left">
                                     <Blocky address={account} />
@@ -95,7 +95,7 @@ class SelectWeb3AccountClass extends React.Component<SelectWeb3AccountProps, Sel
         const { accounts } = this.state;
         const selectedAccountIndex = parseInt(event.currentTarget.getAttribute("data-item") || "0", 10);
 
-        if (selectedAccountIndex === null || accounts === null || accounts.length < selectedAccountIndex) {
+        if (isNaN(selectedAccountIndex) || accounts === null || accounts.length < selectedAccountIndex) {
             console.error("No account selected");
             return;
         }
@@ -104,7 +104,7 @@ class SelectWeb3AccountClass extends React.Component<SelectWeb3AccountProps, Sel
     }
 }
 
-const mapStateToProps = (state: ApplicationData) => ({
+const mapStateToProps = (_state: ApplicationData) => ({
     store: {
     },
 });

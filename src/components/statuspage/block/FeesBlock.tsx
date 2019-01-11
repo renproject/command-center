@@ -9,32 +9,32 @@ import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
 import { CurrencyIcon } from "../../../components/CurrencyIcon";
-import { Token } from "../../../lib/tokens";
+import { Token } from "../../../lib/ethereum/tokens";
 import { ApplicationData, DarknodeDetails } from "../../../reducers/types";
 import { TokenBalance } from "../../TokenBalance";
 import { FeesItem } from "../FeesItem";
 import { TokenIcon } from "../TokenIcon";
 import { Block, BlockBody, BlockTitle } from "./Block";
 
-interface FeesBlockProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
+interface Props extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     isOperator: boolean;
     darknodeDetails: DarknodeDetails | null;
 }
 
-interface FeesBlockState {
+interface State {
     showAdvanced: boolean;
 }
 
-class FeesBlockClass extends React.Component<FeesBlockProps, FeesBlockState> {
+class FeesBlockClass extends React.Component<Props, State> {
 
-    public constructor(props: FeesBlockProps, context: object) {
+    public constructor(props: Props, context: object) {
         super(props, context);
         this.state = {
             showAdvanced: false,
         };
     }
 
-    public render(): JSX.Element {
+    public render = (): JSX.Element => {
         const { darknodeDetails, store, isOperator } = this.props;
         const { quoteCurrency } = store;
         const { showAdvanced } = this.state;
@@ -140,7 +140,7 @@ class FeesBlockClass extends React.Component<FeesBlockProps, FeesBlockState> {
         );
     }
 
-    private toggleAdvanced = () => {
+    private toggleAdvanced = (): void => {
         this.setState({ showAdvanced: !this.state.showAdvanced });
     }
 

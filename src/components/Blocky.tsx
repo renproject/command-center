@@ -173,22 +173,22 @@ export class Blocky extends React.Component<Props, State> {
             if (this.canvas) {
                 this.blocky.render(this.getOpts(address), this.canvas);
             } else {
-                alert("No canvas!");
+                console.error("No canvas provided to Block component.");
             }
         } else {
             this.setState({ loading: true });
         }
     }
 
-    public componentWillReceiveProps(props: Props) {
-        this.renderIcon(props.address);
+    public componentWillReceiveProps = (nextProps: Props): void => {
+        this.renderIcon(nextProps.address);
     }
 
-    public componentDidMount() {
+    public componentDidMount = (): void => {
         this.renderIcon(this.props.address);
     }
 
-    public render() {
+    public render = (): JSX.Element => {
         const { address } = this.props;
         const { loading } = this.state;
         return (

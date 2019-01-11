@@ -10,7 +10,7 @@ import { bindActionCreators, Dispatch } from "redux";
 import { StatusPage } from "../../components/statuspage/StatusPage";
 
 import { addRegisteringDarknode, RegistrationStatus, setDarknodeName } from "../../actions/statistics/operatorActions";
-import { EncodedData, Encodings } from "../../lib/general/encodedData";
+import { EncodedData, Encodings } from "../../lib/encodedData";
 import { ApplicationData } from "../../reducers/types";
 import { NotFound } from "./NotFound";
 
@@ -20,13 +20,13 @@ export enum DarknodeAction {
     Deregister = "deregister",
 }
 
-interface DarknodeProps extends
+interface Props extends
     ReturnType<typeof mapStateToProps>,
     ReturnType<typeof mapDispatchToProps>,
     RouteComponentProps {
 }
 
-interface DarknodeState {
+interface State {
     darknodeID: string | undefined;
     action: string | undefined;
     publicKey: string | undefined;
@@ -41,8 +41,8 @@ interface DarknodeState {
  *     1) action: either "register" or "deregister"
  *     2) public_key: only used if action is "register"
  */
-class DarknodeClass extends React.Component<DarknodeProps, DarknodeState> {
-    public constructor(props: DarknodeProps, context: object) {
+class DarknodeClass extends React.Component<Props, State> {
+    public constructor(props: Props, context: object) {
         super(props, context);
         this.state = {
             darknodeID: undefined,
@@ -52,15 +52,15 @@ class DarknodeClass extends React.Component<DarknodeProps, DarknodeState> {
         };
     }
 
-    public componentDidMount = () => {
+    public componentDidMount = (): void => {
         this.handleNewProps(this.props, true);
     }
 
-    public componentWillReceiveProps = (nextProps: DarknodeProps) => {
+    public componentWillReceiveProps = (nextProps: Props): void => {
         this.handleNewProps(nextProps, false);
     }
 
-    public render(): JSX.Element {
+    public render = (): JSX.Element => {
         const { match: { params }, store } = this.props;
         const { darknodeDetails, darknodeNames, address } = store;
 
@@ -108,7 +108,7 @@ class DarknodeClass extends React.Component<DarknodeProps, DarknodeState> {
         );
     }
 
-    private handleNewProps = (nextProps: DarknodeProps, firstTime: boolean) => {
+    private handleNewProps = (nextProps: Props, firstTime: boolean): void => {
         const { location: { search } } = this.props;
         const { match: { params: nextParams }, location: { search: nextSearch } } = nextProps;
 

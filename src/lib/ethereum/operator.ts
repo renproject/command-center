@@ -1,7 +1,7 @@
 import RenExSDK from "@renex/renex";
 
 import { List, OrderedSet } from "immutable";
-import { contracts } from "../contracts/contracts";
+import { contracts } from "./contracts/contracts";
 
 const NULL = "0x0000000000000000000000000000000000000000";
 

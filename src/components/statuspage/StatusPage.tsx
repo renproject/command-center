@@ -16,7 +16,7 @@ import { NetworkBlock } from "./block/NetworkBlock";
 import { Notifications } from "./Notifications";
 import { Registration } from "./Registration";
 
-interface StatusPageProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
+interface Props extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     action: DarknodeAction;
     isOperator: boolean;
 
@@ -26,15 +26,15 @@ interface StatusPageProps extends ReturnType<typeof mapStateToProps>, ReturnType
     publicKey: string | undefined;
 }
 
-interface StatusPageState {
+interface State {
     renaming: boolean;
     newName: string | undefined;
 }
 
-class StatusPageClass extends React.Component<StatusPageProps, StatusPageState> {
+class StatusPageClass extends React.Component<Props, State> {
     private focusInput: HTMLInputElement | null = null;
 
-    public constructor(props: StatusPageProps, context: object) {
+    public constructor(props: Props, context: object) {
         super(props, context);
         this.state = {
             renaming: false,
@@ -42,13 +42,13 @@ class StatusPageClass extends React.Component<StatusPageProps, StatusPageState> 
         };
     }
 
-    public componentWillReceiveProps = (nextProps: StatusPageProps) => {
+    public componentWillReceiveProps = (nextProps: Props) => {
         if (this.state.newName === undefined && nextProps.name !== undefined) {
             this.setState({ newName: nextProps.name });
         }
     }
 
-    public render(): JSX.Element {
+    public render = (): JSX.Element => {
         const { darknodeDetails, darknodeID, name, isOperator, action, publicKey } = this.props;
         const { renaming, newName } = this.state;
 
@@ -75,7 +75,7 @@ class StatusPageClass extends React.Component<StatusPageProps, StatusPageState> 
                             {renaming ?
                                 <form className="statuspage--rename" onSubmit={this.handleSubmitName}>
                                     <input
-                                        ref={(c) => this.focusInput = c}
+                                        ref={(c: HTMLInputElement | null) => this.focusInput = c}
                                         role="textbox"
                                         type="text"
                                         name="newName"
@@ -138,10 +138,10 @@ class StatusPageClass extends React.Component<StatusPageProps, StatusPageState> 
 
     private handleInput = (event: React.FormEvent<HTMLInputElement>): void => {
         const element = (event.target as HTMLInputElement);
-        this.setState((current) => ({ ...current, [element.name]: element.value }));
+        this.setState((current: State) => ({ ...current, [element.name]: element.value }));
     }
 
-    private handleRename = () => {
+    private handleRename = (): void => {
         // Use setState callback to set focus to input (otherwise, input will
         // not have been rendered yet)
         this.setState({ renaming: true }, () => {

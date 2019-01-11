@@ -30,7 +30,7 @@
         "eofline": true,
         "no-non-null-assertion": true,
         "no-floating-promises": true,
-        "typedef": [true],
+        "typedef": [true, "call-signature", "parameter", "arrow-parameter", "property-declaration", "member-variable-declaration"],
         "space-before-function-paren": false,
         "trailing-comma": [
             true,
@@ -39,10 +39,18 @@
                 "esSpecCompliant": true
             }
         ],
-        "strict-type-predicates": false,
+        "strict-type-predicates": true,
         "no-any": true,
         "indent": [true, "spaces", 4],
         "jsx-wrap-multiline": false,
-        "jsx-no-multiline-js": false
+        "jsx-no-multiline-js": false,
+        "variable-name": [
+            true,
+            "ban-keywords",
+            "check-format",
+            "allow-leading-underscore",
+            "allow-trailing-underscore",
+            "allow-pascal-case"
+        ]
     }
 }

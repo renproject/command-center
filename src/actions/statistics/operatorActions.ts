@@ -5,11 +5,11 @@ import { List, OrderedMap, OrderedSet } from "immutable";
 import { Dispatch } from "redux";
 import { createStandardAction } from "typesafe-actions";
 
-import { getOperatorDarknodes } from "../../lib/statistics/operator";
+import { getOperatorDarknodes } from "../../lib/ethereum/operator";
 import { Currency, DarknodeDetails, TokenPrices } from "../../reducers/types";
 
-import { contracts } from "../../lib/contracts/contracts";
-import { Token, Tokens } from "../../lib/tokens";
+import { contracts } from "../../lib/ethereum/contracts/contracts";
+import { Token, Tokens } from "../../lib/ethereum/tokens";
 
 export const addRegisteringDarknode = createStandardAction("ADD_REGISTERING_DARKNODE")<{
     darknodeID: string;
@@ -68,13 +68,13 @@ export const updateOperatorStatistics = (
 
     // The lists are merged in the reducer as well, but we combine them again
     // before passing into `updateDarknodeStatistics`
-    currentDarknodes.map((darknodeID) => {
+    currentDarknodes.map((darknodeID: string) => {
         if (!darknodeList.contains(darknodeID)) {
             darknodeList = darknodeList.push(darknodeID);
         }
     });
 
-    await Promise.all(darknodeList.toList().map((darknodeID) => {
+    await Promise.all(darknodeList.toList().map((darknodeID: string) => {
         return updateDarknodeStatistics(sdk, darknodeID, tokenPrices)(dispatch);
     }).toArray());
 };
@@ -170,41 +170,40 @@ const getDarknodeStatus = async (sdk: RenExSDK, darknodeID: string): Promise<Reg
         contracts.DarknodeRegistry.ABI,
         contracts.DarknodeRegistry.address
     );
-    return new Promise<RegistrationStatus>((resolve) => {
-        Promise.all([
+
+    try {
+        const [
+            isPendingRegistration,
+            isPendingDeregistration,
+            isDeregisterable,
+            isRefunded,
+            isRefundable,
+        ] = await Promise.all([
             darknodeRegistry.methods.isPendingRegistration(darknodeID).call(),
             darknodeRegistry.methods.isPendingDeregistration(darknodeID).call(),
             darknodeRegistry.methods.isDeregisterable(darknodeID).call(),
             darknodeRegistry.methods.isRefunded(darknodeID).call(),
             darknodeRegistry.methods.isRefundable(darknodeID).call(),
-            darknodeRegistry.methods.isRegistered(darknodeID).call(),
-        ]).then((response) => {
-            const res = {
-                isPendingRegistration: response[0],
-                isPendingDeregistration: response[1],
-                isDeregisterable: response[2],
-                isRefunded: response[3],
-                isRefundable: response[4],
-                isRegistered: response[5],
-            };
-            let registrationStatus = RegistrationStatus.Unknown;
-            if (res.isRefunded) {
-                registrationStatus = RegistrationStatus.Unregistered;
-            } else if (res.isPendingRegistration) {
-                registrationStatus = RegistrationStatus.RegistrationPending;
-            } else if (res.isDeregisterable) {
-                registrationStatus = RegistrationStatus.Registered;
-            } else if (res.isPendingDeregistration) {
-                registrationStatus = RegistrationStatus.DeregistrationPending;
-            } else if (res.isRefundable) {
-                registrationStatus = RegistrationStatus.Refundable;
-            } else {
-                registrationStatus = RegistrationStatus.Deregistered;
-            }
-            resolve(registrationStatus);
-        })
-            .catch((error) => resolve(RegistrationStatus.Unknown));
-    });
+        ]);
+
+        if (isRefunded) {
+            return RegistrationStatus.Unregistered;
+        } else if (isPendingRegistration) {
+            return RegistrationStatus.RegistrationPending;
+        } else if (isDeregisterable) {
+            return RegistrationStatus.Registered;
+        } else if (isPendingDeregistration) {
+            return RegistrationStatus.DeregistrationPending;
+        } else if (isRefundable) {
+            return RegistrationStatus.Refundable;
+        } else {
+            return RegistrationStatus.Deregistered;
+        }
+    } catch (error) {
+        console.error(error);
+        return RegistrationStatus.Unknown;
+    }
+
 };
 
 export const HistoryIterations = 5;
@@ -255,7 +254,7 @@ export const fetchDarknodeBalanceHistory = (
         balanceHistory = balanceHistory.set(currentBlock, balance);
     }
 
-    balanceHistory = balanceHistory.sortBy((_, value) => value);
+    balanceHistory = balanceHistory.sortBy((_: BigNumber, value: number) => value);
 
     dispatch(updateDarknodeHistory({ darknodeID, balanceHistory }));
 };
@@ -264,7 +263,6 @@ export const updateDarknodeStatistics = (
     sdk: RenExSDK,
     darknodeID: string,
     tokenPrices: TokenPrices | null,
-    options?: { calculateHistory?: boolean, previousDetails?: DarknodeDetails },
 ) => async (dispatch: Dispatch) => {
     darknodeID = sdk.getWeb3().utils.toChecksumAddress(darknodeID.toLowerCase());
 
