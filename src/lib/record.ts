@@ -13,7 +13,7 @@ import * as Immutable from "immutable";
  *
  * @return A class that can be used to instantiate immutable objects.
  */
-export function Record<T>(data: Pick<T, keyof T>) {
+export function Record<T>(data: Pick<T, keyof T>): RecordInterface<T> {
     // The returned class inherits from the Immutable.Record class, using the
     // data argument to specify the default property values.
     return class extends Immutable.Record(data as any) {

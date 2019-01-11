@@ -10,13 +10,11 @@ import { DarknodeDetails } from "../../../reducers/types";
 import { darknodeIDHexToBase58 } from "../../pages/Darknode";
 import { Block, BlockBody, BlockTitle } from "./Block";
 
-interface NetworkBlockProps {
+interface Props {
     darknodeDetails: DarknodeDetails | null;
 }
 
-const shift = new BigNumber(10).exponentiatedBy(18);
-
-export const NetworkBlock = (props: NetworkBlockProps) => {
+export const NetworkBlock = (props: Props): JSX.Element => {
     const { darknodeDetails } = props;
 
     const darknodeIDBase58 = darknodeDetails ? darknodeIDHexToBase58(darknodeDetails.ID) : "";

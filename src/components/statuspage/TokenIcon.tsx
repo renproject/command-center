@@ -3,15 +3,15 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { Token } from "../../lib/tokens";
+import { Token } from "../../lib/ethereum/tokens";
 import { ApplicationData } from "../../reducers/types";
 
-interface TokenIconProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
+interface Props extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     token: Token;
     className?: string;
 }
 
-interface TokenIconState {
+interface State {
 }
 
 const icons = {
@@ -23,12 +23,12 @@ const icons = {
     [Token.ZRX]: "zrx.svg",
 };
 
-class TokenIconClass extends React.Component<TokenIconProps, TokenIconState> {
-    constructor(props: TokenIconProps) {
+class TokenIconClass extends React.Component<Props, State> {
+    constructor(props: Props) {
         super(props);
     }
 
-    public render(): JSX.Element {
+    public render = (): JSX.Element => {
         const { token, className } = this.props;
         const image = require(`../../tokens/${icons[token]}`);
 

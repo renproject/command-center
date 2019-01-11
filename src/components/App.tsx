@@ -7,7 +7,6 @@ import { Route, RouteComponentProps, Switch, withRouter } from "react-router-dom
 import { Dispatch } from "redux";
 import { bindActionCreators } from "redux";
 
-import { Alerts } from "./Alerts";
 import { Home } from "./pages/Home";
 import { PopupController } from "./popups/PopupController";
 
@@ -21,13 +20,13 @@ import { LoggingIn } from "./pages/LoggingIn";
 import { NotFound } from "./pages/NotFound";
 import { Sidebar } from "./Sidebar";
 
-interface AppProps extends
+interface Props extends
     ReturnType<typeof mapStateToProps>,
     ReturnType<typeof mapDispatchToProps>,
     RouteComponentProps {
 }
 
-interface AppState {
+interface State {
 }
 
 // Scroll restoration based on https://reacttraining.com/react-router/web/guides/scroll-restoration
@@ -51,20 +50,20 @@ const ScrollToTop = withRouter(
  * App is the main visual component responsible for displaying different routes
  * and running background app loops
  */
-class AppClass extends React.Component<AppProps, AppState> {
+class AppClass extends React.Component<Props, State> {
     private callUpdatePricesTimeout: NodeJS.Timer | undefined;
     private callLookForLogoutTimeout: NodeJS.Timer | undefined;
     private callUpdateNetworkStatisticsTimeout: NodeJS.Timer | undefined;
     private callUpdateOperatorStatisticsTimeout: NodeJS.Timer | undefined;
     private callUpdateSelectedDarknodeTimeout: NodeJS.Timer | undefined;
 
-    public constructor(props: AppProps, context: object) {
+    public constructor(props: Props, context: object) {
         super(props, context);
         this.state = {
         };
     }
 
-    public componentDidMount = async () => {
+    public componentDidMount = async (): Promise<void> => {
         const { match: { params } } = this.props;
         const { sdk } = this.props.store;
 
@@ -94,7 +93,7 @@ class AppClass extends React.Component<AppProps, AppState> {
         this.setupLoopsWithAccount();
     }
 
-    public componentWillReceiveProps = (nextProps: AppProps) => {
+    public componentWillReceiveProps = (nextProps: Props): void => {
         if (this.props.store.address !== nextProps.store.address) {
             this.callUpdateOperatorStatistics(nextProps).catch(console.error);
         }
@@ -111,7 +110,7 @@ class AppClass extends React.Component<AppProps, AppState> {
 
     }
 
-    public componentWillUnmount() {
+    public componentWillUnmount(): void {
         // Clear timeouts
         if (this.callUpdatePricesTimeout) { clearTimeout(this.callUpdatePricesTimeout); }
         if (this.callLookForLogoutTimeout) { clearTimeout(this.callLookForLogoutTimeout); }
@@ -124,9 +123,9 @@ class AppClass extends React.Component<AppProps, AppState> {
         React.ComponentClass | React.StatelessComponent =>
         this.props.store.address ? component : LoggingIn
 
-    public render(): JSX.Element {
+    public render = (): JSX.Element => {
         const { match: { params } } = this.props;
-        const { address, sdk } = this.props.store;
+        const { address } = this.props.store;
         const darknodeID = getDarknodeParam(params);
 
         // We set the key to be the address so that any sub-component state is reset after changing accounts (e.g. if in
@@ -141,13 +140,12 @@ class AppClass extends React.Component<AppProps, AppState> {
                     <Route path="/darknode/:darknodeID" exact component={Darknode} />
                     <Route component={NotFound} />
                 </Switch>
-                <Alerts />
             </PopupController>
         </div>;
     }
 
     // Update token prices every 60 seconds
-    private callUpdatePrices = async (props?: AppProps) => {
+    private callUpdatePrices = async (props?: Props): Promise<void> => {
         props = props || this.props;
 
         try {
@@ -160,7 +158,7 @@ class AppClass extends React.Component<AppProps, AppState> {
     }
 
     // See if the user has logged out every 5 seconds
-    private callLookForLogout = async (props?: AppProps) => {
+    private callLookForLogout = async (props?: Props): Promise<void> => {
         props = props || this.props;
 
         const { sdk, address, readOnlyProvider } = props.store;
@@ -176,7 +174,7 @@ class AppClass extends React.Component<AppProps, AppState> {
     }
 
     // Update network statistics every 3600 seconds
-    private callUpdateNetworkStatistics = async (props?: AppProps) => {
+    private callUpdateNetworkStatistics = async (props?: Props): Promise<void> => {
         props = props || this.props;
 
         const { sdk } = props.store;
@@ -195,7 +193,7 @@ class AppClass extends React.Component<AppProps, AppState> {
     }
 
     // Update operator statistics every 120 seconds
-    private callUpdateOperatorStatistics = async (props?: AppProps) => {
+    private callUpdateOperatorStatistics = async (props?: Props): Promise<void> => {
         props = props || this.props;
 
         const { sdk, address, tokenPrices, darknodeList, darknodeRegisteringList } = props.store;
@@ -221,23 +219,21 @@ class AppClass extends React.Component<AppProps, AppState> {
     }
 
     // Update selected darknode statistics every 30 seconds
-    private callUpdateSelectedDarknode = async (props?: AppProps) => {
+    private callUpdateSelectedDarknode = async (props?: Props): Promise<void> => {
         props = props || this.props;
 
         const { match: { params } } = props;
-        const { sdk, tokenPrices, darknodeDetails } = props.store;
+        const { sdk, tokenPrices } = props.store;
 
         const darknodeID = getDarknodeParam(params);
 
         let timeout = 1; // if the action isn't called, try again in 1 second
         if (tokenPrices && darknodeID) {
             try {
-                const previousDetails = darknodeDetails.get(darknodeID);
                 await props.actions.updateDarknodeStatistics(
                     sdk,
                     darknodeID,
                     tokenPrices,
-                    { calculateHistory: true, previousDetails },
                 );
                 timeout = 30;
             } catch (err) {
@@ -253,14 +249,14 @@ class AppClass extends React.Component<AppProps, AppState> {
     }
 
     // tslint:disable-next-line:member-ordering
-    public setupLoops() {
+    public setupLoops(): void {
         this.callUpdatePrices().catch(console.error);
         this.callUpdateNetworkStatistics().catch(console.error);
         this.callUpdateSelectedDarknode().catch(console.error);
     }
 
     // tslint:disable-next-line:member-ordering
-    public setupLoopsWithAccount() {
+    public setupLoopsWithAccount(): void {
         this.callLookForLogout().catch(console.error);
         this.callUpdateOperatorStatistics().catch(console.error);
     }
@@ -274,7 +270,6 @@ const mapStateToProps = (state: ApplicationData) => ({
         readOnlyProvider: state.trader.readOnlyProvider,
         tokenPrices: state.statistics.tokenPrices,
         darknodeList: state.trader.address ? state.statistics.darknodeList.get(state.trader.address, null) : null,
-        darknodeDetails: state.statistics.darknodeDetails,
         darknodeRegisteringList: state.statistics.darknodeRegisteringList,
     },
 });

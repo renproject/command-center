@@ -93,7 +93,7 @@ export class EncodedData extends Record(DefaultEncodedData) {
         super(param);
     }
 
-    public toHex(this: EncodedData, prefix = "0x"): string {
+    public toHex(this: EncodedData, prefix: string = "0x"): string {
         switch (this.encoding) {
             case Encodings.HEX:
                 return prefix + this.value;

@@ -7,12 +7,12 @@ import { bindActionCreators, Dispatch } from "redux";
 
 import { clearPopup } from "../../actions/popup/popupActions";
 import { Loading } from "../../components/Loading";
-import { ErrorCanceledByUser } from "../../lib/wallets/wallet";
+import { ErrorCanceledByUser } from "../../lib/ethereum/wallet";
 import { ApplicationData } from "../../reducers/types";
 
 import Warn from "../../styles/images/warn.svg";
 
-interface MultiStepPopupProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
+interface Props extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     steps: Array<{
         call: () => Promise<void>;
         name: string;
@@ -27,7 +27,7 @@ interface MultiStepPopupProps extends ReturnType<typeof mapStateToProps>, Return
     // onDone?: (() => void) | (() => Promise<void>);
 }
 
-interface MultiStepPopupState {
+interface State {
     currentStep: number;
     running: boolean;
     complete: boolean;
@@ -42,9 +42,9 @@ interface MultiStepPopupState {
  * MultiStepPopup is a popup component that prompts the user to approve a
  * series of Ethereum transactions
  */
-export class MultiStepPopupClass extends React.Component<MultiStepPopupProps, MultiStepPopupState> {
+export class MultiStepPopupClass extends React.Component<Props, State> {
 
-    constructor(props: MultiStepPopupProps) {
+    constructor(props: Props) {
         super(props);
         this.state = {
             running: false,
@@ -63,7 +63,7 @@ export class MultiStepPopupClass extends React.Component<MultiStepPopupProps, Mu
         }
     }
 
-    public render(): JSX.Element {
+    public render = (): JSX.Element => {
         const { error, currentStep, running, complete, rejected, warningIgnored } = this.state;
         const { warning, ignoreWarning } = this.props;
 
@@ -101,7 +101,10 @@ export class MultiStepPopupClass extends React.Component<MultiStepPopupProps, Mu
                 </h2>
                 {!notStarted && this.props.steps.length > 1 ? <ul className="multi-step--list">
                     {
-                        this.props.steps.map((step, index: number) => {
+                        this.props.steps.map((
+                            step: { call: () => Promise<void>; name: string; },
+                            index: number
+                        ) => {
                             const checked = (currentStep > index) || (currentStep === index && !!error);
                             return <li key={index}>
                                 <input
@@ -165,11 +168,11 @@ export class MultiStepPopupClass extends React.Component<MultiStepPopupProps, Mu
         </div>;
     }
 
-    private onIgnoreWarning = () => {
+    private onIgnoreWarning = (): void => {
         this.setState({ warningIgnored: true });
     }
 
-    private onCancel = () => {
+    private onCancel = (): void => {
         const { onCancel } = this.props;
         if (onCancel) {
             const promiseOrVoid = onCancel();

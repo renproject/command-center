@@ -5,15 +5,15 @@ import { bindActionCreators, Dispatch } from "redux";
 
 import { ApplicationData } from "../../reducers/types";
 
-interface PopupControllerProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
+interface Props extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
 }
 
 /**
  * PopupController is a visual component for displaying an arbitrary component in the
  * foreground with the rest of the page in the background
  */
-class PopupControllerClass extends React.Component<PopupControllerProps> {
-    constructor(props: PopupControllerProps) {
+class PopupControllerClass extends React.Component<Props> {
+    constructor(props: Props) {
         super(props);
     }
 

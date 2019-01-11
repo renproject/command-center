@@ -11,7 +11,7 @@ import {
 import { showDeregisterPopup, showRefundPopup, showRegisterPopup } from "../../actions/statistics/operatorPopupActions";
 import { ApplicationData, DarknodeDetails } from "../../reducers/types";
 
-interface RegistrationProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
+interface Props extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     isOperator: boolean;
     registrationStatus: RegistrationStatus;
     darknodeID: string;
@@ -19,7 +19,7 @@ interface RegistrationProps extends ReturnType<typeof mapStateToProps>, ReturnTy
     publicKey?: string;
 }
 
-interface RegistrationState {
+interface State {
     active: boolean;
 }
 
@@ -33,21 +33,21 @@ export const statusText = {
     [RegistrationStatus.Refundable]: "Refundable",
 };
 
-class RegistrationClass extends React.Component<RegistrationProps, RegistrationState> {
-    constructor(props: RegistrationProps) {
+class RegistrationClass extends React.Component<Props, State> {
+    constructor(props: Props) {
         super(props);
         this.state = {
             active: false,
         };
     }
 
-    public componentWillReceiveProps = (nextProps: RegistrationProps) => {
+    public componentWillReceiveProps = (nextProps: Props) => {
         if (this.props.registrationStatus !== nextProps.registrationStatus) {
             this.setState({ active: false });
         }
     }
 
-    public render(): JSX.Element {
+    public render = (): JSX.Element => {
         const { isOperator, registrationStatus, store: { address } } = this.props;
         const { active } = this.state;
 

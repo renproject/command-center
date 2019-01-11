@@ -1,31 +1,27 @@
 import * as React from "react";
 
-import { connect } from "react-redux";
-import { bindActionCreators, Dispatch } from "redux";
-
 import { Language } from "../../languages/language";
-import { ApplicationData } from "../../reducers/types";
 
 const metamaskIcon = require("../../styles/images/metamask.svg");
 
-interface NoWeb3PopupProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
+interface Props {
     message?: string;
     disabled?: boolean;
     onConnect: () => void;
     onCancel: () => void;
 }
 
-interface NoWeb3PopupState {
+interface State {
 }
 
-class NoWeb3PopupClass extends React.Component<NoWeb3PopupProps, NoWeb3PopupState> {
-    constructor(props: NoWeb3PopupProps) {
+export class NoWeb3Popup extends React.Component<Props, State> {
+    constructor(props: Props) {
         super(props);
         this.state = {
         };
     }
 
-    public render(): JSX.Element {
+    public render = (): JSX.Element => {
         const { message, disabled } = this.props;
         return (
             <div className="popup no-web3">
@@ -37,15 +33,3 @@ class NoWeb3PopupClass extends React.Component<NoWeb3PopupProps, NoWeb3PopupStat
         );
     }
 }
-
-const mapStateToProps = (state: ApplicationData) => ({
-    store: {
-    },
-});
-
-const mapDispatchToProps = (dispatch: Dispatch) => ({
-    actions: bindActionCreators({
-    }, dispatch),
-});
-
-export const NoWeb3Popup = connect(mapStateToProps, mapDispatchToProps)(NoWeb3PopupClass);

@@ -40,9 +40,9 @@ const options = {
     tooltips: {
         callbacks: {
             // tslint:disable-next-line:no-any
-            title: (item: any) => `Block ${item[0].xLabel}`,
+            title: (item: any): string => `Block ${item[0].xLabel}`,
             // tslint:disable-next-line:no-any
-            label: (item: any) => `${item.yLabel} ETH`,
+            label: (item: any): string => `${item.yLabel} ETH`,
         },
     },
     legend: {
@@ -61,7 +61,7 @@ const options = {
     }
 };
 
-const periods = [
+const periods: Array<[HistoryPeriods, string]> = [
     [HistoryPeriods.Day, "1D"],
     [HistoryPeriods.Week, "1W"],
     [HistoryPeriods.Month, "1M"],
@@ -82,7 +82,7 @@ class GasGraphClass extends React.Component<Props, State> {
         };
     }
 
-    public componentDidMount = () => {
+    public componentDidMount = (): void => {
         const { store: { secondsPerBlock, sdk } } = this.props;
         if (secondsPerBlock === null) {
             this.props.actions.calculateSecondsPerBlock(sdk);
@@ -91,18 +91,21 @@ class GasGraphClass extends React.Component<Props, State> {
         this.componentWillReceiveProps(this.props);
     }
 
-    public componentWillReceiveProps = (nextProps: Props) => {
+    public componentWillReceiveProps = (nextProps: Props): void => {
         if (!this.updateHistoryTimeout && nextProps.darknodeDetails) {
             this.updateHistory(nextProps).catch(console.error);
         }
     }
 
-    public componentWillUnmount = () => {
+    public componentWillUnmount = (): void => {
         if (this.updateHistoryTimeout) { clearTimeout(this.updateHistoryTimeout); }
         if (this.localTimeout) { clearTimeout(this.localTimeout); }
     }
 
-    public updateHistory = async (props: Props | undefined, historyPeriod?: HistoryPeriods | undefined) => {
+    public updateHistory = async (
+        props: Props | undefined,
+        historyPeriod?: HistoryPeriods | undefined
+    ): Promise<void> => {
 
         try {
             if (this.localTimeout) { clearTimeout(this.localTimeout); }
@@ -145,7 +148,7 @@ class GasGraphClass extends React.Component<Props, State> {
         this.updateHistoryTimeout = setTimeout(this.updateHistory, retry) as unknown as NodeJS.Timer;
     }
 
-    public render = () => {
+    public render = (): JSX.Element => {
         const { historyPeriod, nextHistoryPeriod, loadingHistory } = this.state;
 
         const { darknodeDetails, store: { secondsPerBlock } } = this.props;
@@ -169,7 +172,7 @@ class GasGraphClass extends React.Component<Props, State> {
                 let first = currentBlock - (HistoryIterations - 1) * jump;
                 first = first - first % jump;
 
-                balanceHistory.map((y, x) => {
+                balanceHistory.map((y: BigNumber, x: number) => {
                     if (x >= first) {
                         xyPoints.push({ x, y: y ? y.div(shift).toNumber() : 0 });
                     }
@@ -228,7 +231,7 @@ class GasGraphClass extends React.Component<Props, State> {
                 <BlockBody>
                     {chartData ? <Scatter data={chartData} options={options} /> : <div className="graph-placeholder" />}
                     <div className="gas-graph--times">
-                        {periods.map(([period, periodString]) => {
+                        {periods.map(([period, periodString]: [HistoryPeriods, string]) => {
                             return <button
                                 key={period}
                                 className={nextHistoryPeriod === period ? "selected" : ""}
@@ -252,9 +255,9 @@ class GasGraphClass extends React.Component<Props, State> {
             if (this.updateHistoryTimeout) { clearTimeout(this.updateHistoryTimeout); }
             const historyPeriod = parseInt(element.value, 10);
 
-            this.setState((current) => ({ ...current, nextHistoryPeriod: historyPeriod }));
+            this.setState((current: State) => ({ ...current, nextHistoryPeriod: historyPeriod }));
             await this.updateHistory(undefined, historyPeriod);
-            this.setState((current) => ({ ...current, historyPeriod }));
+            this.setState((current: State) => ({ ...current, historyPeriod }));
         } catch (error) {
             console.error(error);
         }

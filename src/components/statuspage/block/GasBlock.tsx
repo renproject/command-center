@@ -1,36 +1,33 @@
 import * as React from "react";
 
-import RenExSDK from "@renex/renex";
 import BigNumber from "bignumber.js";
 
 import { faChevronRight, faFire, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { connect } from "react-redux";
-import { bindActionCreators, Dispatch } from "redux";
 
 import { CurrencyIcon } from "../../../components/CurrencyIcon";
-import { ApplicationData, Currency, DarknodeDetails } from "../../../reducers/types";
+import { Currency, DarknodeDetails } from "../../../reducers/types";
 import { Topup } from "../Topup";
 import { Block, BlockBody, BlockTitle } from "./Block";
 
-interface GasBlockProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
+interface Props {
     darknodeDetails: DarknodeDetails | null;
 }
 
-interface GasBlockState {
+interface State {
     showAdvanced: boolean;
 }
 
-class GasBlockClass extends React.Component<GasBlockProps, GasBlockState> {
+export class GasBlock extends React.Component<Props, State> {
 
-    public constructor(props: GasBlockProps, context: object) {
+    public constructor(props: Props, context: object) {
         super(props, context);
         this.state = {
             showAdvanced: false,
         };
     }
 
-    public render(): JSX.Element {
+    public render = (): JSX.Element => {
         const { darknodeDetails } = this.props;
         const { showAdvanced } = this.state;
 
@@ -82,20 +79,8 @@ class GasBlockClass extends React.Component<GasBlockProps, GasBlockState> {
         );
     }
 
-    private toggleAdvanced = () => {
+    private toggleAdvanced = (): void => {
         this.setState({ showAdvanced: !this.state.showAdvanced });
     }
 
 }
-
-const mapStateToProps = (state: ApplicationData) => ({
-    store: {
-    },
-});
-
-const mapDispatchToProps = (dispatch: Dispatch) => ({
-    actions: bindActionCreators({
-    }, dispatch),
-});
-
-export const GasBlock = connect(mapStateToProps, mapDispatchToProps)(GasBlockClass);

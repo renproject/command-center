@@ -10,10 +10,9 @@ import { Provider } from "web3/providers";
 import { clearPopup, setPopup } from "../../actions/popup/popupActions";
 import { LoggedOut } from "../../components/popups/LoggedOut";
 import { NoWeb3Popup } from "../../components/popups/NoWeb3Popup";
+import { history } from "../../history";
 import { Language } from "../../languages/language";
-import { history } from "../../lib/history";
-import { getInjectedWeb3Provider } from "../../lib/wallets/web3browser";
-import { getAccounts } from "../../lib/web3";
+import { getInjectedWeb3Provider } from "../../lib/ethereum/wallet";
 
 export const storeAddress = createStandardAction("STORE_ADDRESS")<string | null>();
 
@@ -89,7 +88,7 @@ export const login = (
 
     clearTimeout(timeout);
 
-    const accounts = await getAccounts(new Web3(provider));
+    const accounts = await (new Web3(provider)).eth.getAccounts();
 
     if (accounts.length === 0) {
         return;
@@ -177,7 +176,7 @@ export const lookForLogout = (
         return;
     }
 
-    const accounts = (await sdk.getWeb3().eth.getAccounts()).map((web3Address) => web3Address.toLowerCase());
+    const accounts = (await sdk.getWeb3().eth.getAccounts()).map((web3Address: string) => web3Address.toLowerCase());
     if (address.toLowerCase() !== sdkAddress.toLowerCase() || !accounts.includes(sdkAddress.toLowerCase())) {
         // console.error(`User has logged out of their web3 provider (${sdkAddress} not in [${accounts.join(", ")}])`);
 

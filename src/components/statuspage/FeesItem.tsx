@@ -9,24 +9,24 @@ import { bindActionCreators, Dispatch } from "redux";
 
 import { updateDarknodeStatistics } from "../../actions/statistics/operatorActions";
 import { withdrawReward } from "../../actions/trader/darknode";
-import { Token } from "../../lib/tokens";
+import { Token } from "../../lib/ethereum/tokens";
 import { ApplicationData } from "../../reducers/types";
 import { Loading } from "../Loading";
 
-interface FeesProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
+interface Props extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     disabled: boolean;
     token: Token;
     amount: string | BigNumber;
     darknodeID: string;
 }
 
-interface FeesState {
+interface State {
     disabled: boolean;
     loading: boolean;
 }
 
-class FeesItemClass extends React.Component<FeesProps, FeesState> {
-    constructor(props: FeesProps) {
+class FeesItemClass extends React.Component<Props, State> {
+    constructor(props: Props) {
         super(props);
         this.state = {
             disabled: (new BigNumber(this.props.amount)).lte(0),
@@ -34,7 +34,7 @@ class FeesItemClass extends React.Component<FeesProps, FeesState> {
         };
     }
 
-    public render(): JSX.Element {
+    public render = (): JSX.Element => {
         const { loading } = this.state;
         const disabled = this.state.disabled || !this.props.disabled;
         return (

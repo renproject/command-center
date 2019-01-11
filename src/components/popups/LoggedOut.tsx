@@ -8,31 +8,31 @@ import { ApplicationData } from "../../reducers/types";
 
 const metamaskIcon = require("../../styles/images/metamask.svg");
 
-interface LoggedOutProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
+interface Props extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
     onConnect: () => void;
     onCancel: () => void;
     newAddress: string | null;
 }
 
-interface LoggedOutState {
+interface State {
 }
 
 /**
  * LoggedOut is a popup component for prompting a user to select an
  * Ethereum account
  */
-class LoggedOutClass extends React.Component<LoggedOutProps, LoggedOutState> {
-    constructor(props: LoggedOutProps) {
+class LoggedOutClass extends React.Component<Props, State> {
+    constructor(props: Props) {
         super(props);
         this.state = {
         };
     }
 
-    public async componentDidMount() {
+    public componentDidMount = async (): Promise<void> => {
         //
     }
 
-    public render(): JSX.Element {
+    public render = (): JSX.Element => {
         const { newAddress } = this.props;
         return (
             <div className="popup no-web3 popup--logged-out">

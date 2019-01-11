@@ -3,14 +3,14 @@ import BigNumber from "bignumber.js";
 
 import { Dispatch } from "redux";
 
-import { contracts } from "../../lib/contracts/contracts";
-import { Token } from "../../lib/tokens";
+import { contracts } from "../../lib/ethereum/contracts/contracts";
+import { Token } from "../../lib/ethereum/tokens";
 
 export const deregisterDarknode = (
     sdk: RenExSDK,
     address: string,
     darknodeID: string,
-) => async (dispatch: Dispatch) => {
+) => async (_dispatch: Dispatch) => {
     const darknodeRegistry = new ((sdk.getWeb3()).eth.Contract)(
         contracts.DarknodeRegistry.ABI,
         contracts.DarknodeRegistry.address
@@ -18,7 +18,7 @@ export const deregisterDarknode = (
     await darknodeRegistry.methods.deregister(darknodeID).send({ from: address, gas: 200000 });
 };
 
-export const withdrawReward = (sdk: RenExSDK, darknodeID: string, token: Token) => async (dispatch: Dispatch) => {
+export const withdrawReward = (sdk: RenExSDK, darknodeID: string, token: Token) => async (_dispatch: Dispatch) => {
 
     const contract = new ((sdk.getWeb3()).eth.Contract)(
         contracts.DarknodeRewardVault.ABI,
@@ -34,7 +34,7 @@ export const withdrawReward = (sdk: RenExSDK, darknodeID: string, token: Token) 
     await contract.methods.withdraw(darknodeID, tokenDetails.addr).send({ from: ethAddress[0] });
 };
 
-export const approveNode = (sdk: RenExSDK, address: string, bond: BigNumber) => async (dispatch: Dispatch) => {
+export const approveNode = (sdk: RenExSDK, address: string, bond: BigNumber) => async (_dispatch: Dispatch) => {
 
     // tslint:disable-next-line:no-non-null-assertion
     const renAddr = (await sdk._cachedTokenDetails.get(Token.REN))!.addr;
@@ -53,7 +53,10 @@ export const approveNode = (sdk: RenExSDK, address: string, bond: BigNumber) => 
         throw new Error("You have insufficient REN to register a darknode.");
     }
 
-    return new Promise((resolve, reject) => {
+    return new Promise((
+        resolve: (value: string) => void,
+        reject: (reason: Error | string) => void,
+    ) => {
         ercContract.methods.approve(contracts.DarknodeRegistry.address, bond.toFixed()).send({ from: address })
             .on("transactionHash", resolve)
             .catch(reject);
@@ -68,7 +71,7 @@ export const registerNode = (
     bond: BigNumber,
     onCancel: () => void,
     onDone: () => void
-) => async (dispatch: Dispatch) => {
+) => async (_dispatch: Dispatch) => {
 
     if (!publicKey) {
         throw new Error("Public key required");
@@ -94,12 +97,15 @@ export const registerNode = (
         contracts.DarknodeRegistry.ABI,
         contracts.DarknodeRegistry.address
     );
-    return new Promise((resolve, reject) => {
+    return new Promise(((
+        resolve: (value: string) => void,
+        reject: (reason: Error | string) => void,
+    ) => {
         darknodeRegistry.methods.register(darknodeID, publicKey, bond.toFixed()).send({ from: address, gas })
-            .on("transactionHash", (res) => { resolve(res); resolved = true; })
+            .on("transactionHash", (res: string) => { resolve(res); resolved = true; })
             .on("confirmation", onDone)
-            .on("error", (error) => { if (resolved) { onCancel(); } reject(error); });
-    });
+            .on("error", (error: Error) => { if (resolved) { onCancel(); } reject(error); });
+    }));
 };
 
 export const deregisterNode = (
@@ -108,7 +114,7 @@ export const deregisterNode = (
     darknodeID: string,
     onCancel: () => void,
     onDone: () => void
-) => async (dispatch: Dispatch) => {
+) => async (_dispatch: Dispatch) => {
     // The node has been registered and can be deregistered.
 
     let resolved = false;
@@ -116,11 +122,14 @@ export const deregisterNode = (
         contracts.DarknodeRegistry.ABI,
         contracts.DarknodeRegistry.address
     );
-    return new Promise((resolve, reject) => {
+    return new Promise((
+        resolve: (value: string) => void,
+        reject: (reason: Error | string) => void,
+    ) => {
         darknodeRegistry.methods.deregister(darknodeID).send({ from: address })
-            .on("transactionHash", (res) => { resolve(res); resolved = true; })
+            .on("transactionHash", (res: string) => { resolve(res); resolved = true; })
             .on("confirmation", onDone)
-            .on("error", (error) => { if (resolved) { onCancel(); } reject(error); });
+            .on("error", (error: Error) => { if (resolved) { onCancel(); } reject(error); });
     });
 };
 
@@ -130,7 +139,7 @@ export const refundNode = (
     darknodeID: string,
     onCancel: () => void,
     onDone: () => void
-) => async (dispatch: Dispatch) => {
+) => async (_dispatch: Dispatch) => {
     // The node is awaiting refund.
 
     let resolved = false;
@@ -138,11 +147,14 @@ export const refundNode = (
         contracts.DarknodeRegistry.ABI,
         contracts.DarknodeRegistry.address
     );
-    return new Promise((resolve, reject) => {
+    return new Promise((
+        resolve: (value: string) => void,
+        reject: (reason: Error | string) => void,
+    ) => {
         darknodeRegistry.methods.refund(darknodeID).send({ from: address })
-            .on("transactionHash", (res) => { resolve(res); resolved = true; })
+            .on("transactionHash", (res: string) => { resolve(res); resolved = true; })
             .on("confirmation", onDone)
-            .on("error", (error) => { if (resolved) { onCancel(); } reject(error); });
+            .on("error", (error: Error) => { if (resolved) { onCancel(); } reject(error); });
     });
 
 };
@@ -154,20 +166,23 @@ export const fundNode = (
     ethAmountStr: string,
     onCancel: () => void,
     onDone: () => void
-) => (dispatch: Dispatch) => {
+) => (_dispatch: Dispatch) => {
     // Convert eth to wei
     const ethAmount = new BigNumber(ethAmountStr);
     const weiAmount = ethAmount.times(new BigNumber(10).exponentiatedBy(18)).decimalPlaces(0);
 
     let resolved = false;
-    return new Promise((resolve, reject) => {
+    return new Promise((
+        resolve: (value: string) => void,
+        reject: (reason: Error | string) => void,
+    ) => {
         sdk.getWeb3().eth.sendTransaction({
             to: darknodeID,
             value: weiAmount.toFixed(),
             from: address,
         })
-            .on("transactionHash", (res) => { resolve(res); resolved = true; })
+            .on("transactionHash", (res: string) => { resolve(res); resolved = true; })
             .on("confirmation", onDone)
-            .on("error", (error) => { if (resolved) { onCancel(); } reject(error); });
+            .on("error", (error: Error) => { if (resolved) { onCancel(); } reject(error); });
     });
 };
