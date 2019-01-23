@@ -48,13 +48,10 @@ class LoggedOutClass extends React.Component<Props, State> {
                     </>
                 }
                 <button className="styled-button styled-button--light" onClick={this.props.onCancel}>Not now</button>
-                {_catch_(<button className="" onClick={this.test}>Test</button>)}
                 <button className="styled-button" onClick={this.props.onConnect}>Connect</button>
             </div>
         );
     }
-
-    private readonly test = () => { throw new Error("Testing sentry"); };
 }
 
 const mapStateToProps = (_state: ApplicationData) => ({

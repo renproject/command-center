@@ -104,7 +104,7 @@ export const login = (
         .toChecksumAddress(accounts[0].toLowerCase());
 
     Sentry.configureScope((scope) => {
-        scope.setUser({ id: address });
+        // scope.setUser({ id: address });
         scope.setExtra("loggedIn", true);
     });
 
