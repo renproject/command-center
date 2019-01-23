@@ -24,33 +24,36 @@ class LoggedOutClass extends React.Component<Props, State> {
     }
 
     public render = (): JSX.Element => {
-        throw new Error("Testing sentry!");
-        // const { newAddress } = this.props;
-        // return (
-        //     <div className="popup no-web3 popup--logged-out">
-        //         <img alt="" role="presentation" className="no-web3--logo" src={metamaskIcon} />
-        //         {newAddress !== null ?
-        //             <>
-        //                 <h2>Your Web3 account has changed.</h2>
-        //                 <div className="popup--description">
-        //                     Connect to continue as
-        //                     {" "}
-        //                     <Blocky address={newAddress} />
-        //                     {" "}
-        //                     <span className="monospace">
-        //                         {newAddress.substring(0, 8)}...{newAddress.slice(-5)}
-        //                     </span>.
-        //                 </div>
-        //             </> :
-        //             <>
-        //                 <h2>Your Web3 account has been logged out.</h2>
-        //                 <div className="popup--description">Select an account to access your darknodes.</div>
-        //             </>
-        //         }
-        //         <button className="styled-button styled-button--light" onClick={this.props.onCancel}>Not now</button>
-        //         <button className="styled-button" onClick={this.props.onConnect}>Connect</button>
-        //     </div>
-        // );
+        // tslint:disable-next-line: no-any
+        if (true as any) {
+            throw new Error("Testing sentry!");
+        }
+        const { newAddress } = this.props;
+        return (
+            <div className="popup no-web3 popup--logged-out">
+                <img alt="" role="presentation" className="no-web3--logo" src={metamaskIcon} />
+                {newAddress !== null ?
+                    <>
+                        <h2>Your Web3 account has changed.</h2>
+                        <div className="popup--description">
+                            Connect to continue as
+                            {" "}
+                            <Blocky address={newAddress} />
+                            {" "}
+                            <span className="monospace">
+                                {newAddress.substring(0, 8)}...{newAddress.slice(-5)}
+                            </span>.
+                        </div>
+                    </> :
+                    <>
+                        <h2>Your Web3 account has been logged out.</h2>
+                        <div className="popup--description">Select an account to access your darknodes.</div>
+                    </>
+                }
+                <button className="styled-button styled-button--light" onClick={this.props.onCancel}>Not now</button>
+                <button className="styled-button" onClick={this.props.onConnect}>Connect</button>
+            </div>
+        );
     }
 }
 
