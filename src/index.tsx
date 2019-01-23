@@ -38,6 +38,10 @@ Sentry.init({
     environment: (process.env.NODE_ENV === "development") ? "local" : NETWORK,
 });
 
+Sentry.configureScope((scope) => {
+    scope.setExtra("loggedIn", false);
+});
+
 // Update document title to show network
 if (ETH_NETWORK !== "main") {
     document.title = `DCC (${ETH_NETWORK_LABEL})`;
