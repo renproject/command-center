@@ -3,13 +3,12 @@ import * as React from "react";
 import { faStar } from "@fortawesome/free-regular-svg-icons";
 import { faFire, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { connect } from "react-redux";
+import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { Link } from "react-router-dom";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { removeRegisteringDarknode } from "../actions/statistics/operatorActions";
-import { RegistrationStatus } from "../actions/statistics/operatorActions";
-import { Token } from "../lib/tokens";
+import { RegistrationStatus, removeRegisteringDarknode } from "../actions/statistics/operatorActions";
+import { Token } from "../lib/ethereum/tokens";
 import { ApplicationData, Currency, DarknodeDetails } from "../reducers/types";
 import { Blocky } from "./Blocky";
 import { CurrencyIcon } from "./CurrencyIcon";
@@ -18,29 +17,19 @@ import { darknodeIDHexToBase58 } from "./pages/Darknode";
 import { statusText } from "./statuspage/Registration";
 import { TokenBalance } from "./TokenBalance";
 
-interface DarknodeCardProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
-    darknodeID: string;
-    darknodeDetails: DarknodeDetails | null;
-    name: string | undefined;
-    publicKey: string | undefined;
-}
+class DarknodeCardClass extends React.Component<Props, State> {
 
-interface DarknodeCardState {
-}
-
-class DarknodeCardClass extends React.Component<DarknodeCardProps, DarknodeCardState> {
-
-    public constructor(props: DarknodeCardProps, context: object) {
+    public constructor(props: Props, context: object) {
         super(props, context);
         this.state = {
         };
     }
 
-    public render(): JSX.Element {
+    public render = (): JSX.Element => {
         const { darknodeID, darknodeDetails, name, store, publicKey } = this.props;
         const { quoteCurrency } = store;
 
-        // If we have the public key and the status is unregisterd (or the status is not available yet), then link to
+        // If we have the public key and the status is unregistered (or the status is not available yet), then link to
         // the registration page
         const continuable = publicKey && (
             !darknodeDetails ||
@@ -61,7 +50,7 @@ class DarknodeCardClass extends React.Component<DarknodeCardProps, DarknodeCardS
             <Link className="no-underline" to={url}>
                 <div className={`darknode-card ${faded ? "darknode-card--faded" : ""}`}>
                     <div className="darknode-card--top">
-                        {continuable ? <div className="card--hide" onClick={this.removeRegisteringDarknode}>
+                        {continuable ? <div role="button" className="card--hide" onClick={this.removeRegisteringDarknode}>
                             <FontAwesomeIcon icon={faTimes} pull="left" />
                         </div> : null}
                     </div>
@@ -109,11 +98,12 @@ class DarknodeCardClass extends React.Component<DarknodeCardProps, DarknodeCardS
         );
     }
 
-    private removeRegisteringDarknode = async (e: React.MouseEvent<HTMLDivElement>): Promise<void> => {
+    private readonly removeRegisteringDarknode = async (e: React.MouseEvent<HTMLDivElement>): Promise<void> => {
         e.stopPropagation();
         e.preventDefault();
         const { darknodeID } = this.props;
-        this.props.actions.removeRegisteringDarknode({ darknodeID });
+        // tslint:disable-next-line: await-promise
+        await this.props.actions.removeRegisteringDarknode({ darknodeID });
     }
 }
 
@@ -128,5 +118,15 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
         removeRegisteringDarknode,
     }, dispatch),
 });
+
+interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps> {
+    darknodeID: string;
+    darknodeDetails: DarknodeDetails | null;
+    name: string | undefined;
+    publicKey: string | undefined;
+}
+
+interface State {
+}
 
 export const DarknodeCard = connect(mapStateToProps, mapDispatchToProps)(DarknodeCardClass);

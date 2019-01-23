@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { faAngleDown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { connect } from "react-redux";
+import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
 import { bindActionCreators, Dispatch } from "redux";
 
@@ -14,23 +14,11 @@ import { CurrencyIcon } from "./CurrencyIcon";
 
 import English from "../styles/images/rp-flag-uk.svg";
 
-interface HeaderProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps>,
-    RouteComponentProps {
-    hideOptions?: boolean;
-}
-
-interface HeaderState {
-    accountDropdown: boolean;
-    languageDropdown: boolean;
-    currencyDropdown: boolean;
-    copied: boolean;
-}
-
 /**
  * Header is a visual component providing page branding and navigation.
  */
-class HeaderClass extends React.Component<HeaderProps, HeaderState> {
-    public constructor(props: HeaderProps, context: object) {
+class HeaderClass extends React.Component<Props, State> {
+    public constructor(props: Props, context: object) {
         super(props, context);
         this.state = {
             copied: false,
@@ -40,13 +28,10 @@ class HeaderClass extends React.Component<HeaderProps, HeaderState> {
         };
     }
 
-    public render(): JSX.Element {
+    public render = (): JSX.Element => {
         const { hideOptions, store } = this.props;
         const { address, web3BrowserName, quoteCurrency } = store;
         const { accountDropdown, languageDropdown, currencyDropdown, copied } = this.state;
-        const route = this.props.location.pathname;
-
-        const loggedIn = (address != null);
 
         return (
             <div className="header">
@@ -68,7 +53,7 @@ class HeaderClass extends React.Component<HeaderProps, HeaderState> {
                                     {languageDropdown ?
                                         <ul className="header--dropdown header--dropdown--options">
                                             <li role="button" className="header--dropdown--selected">
-                                                <img src={English} />
+                                                <img alt="" role="presentation" src={English} />
                                                 {" "}
                                                 English
                                             </li>
@@ -193,35 +178,36 @@ class HeaderClass extends React.Component<HeaderProps, HeaderState> {
         );
     }
 
-    private handleLogin = async (): Promise<void> => {
+    private readonly handleLogin = async (): Promise<void> => {
         const { address, sdk } = this.props.store;
         if (!address) {
+            // tslint:disable-next-line: await-promise
             await this.props.actions.login(sdk, { redirect: false, showPopup: true, immediatePopup: true });
         }
     }
 
-    private showDropdown = (e: React.MouseEvent<HTMLLIElement>): void => {
+    private readonly showDropdown = (e: React.MouseEvent<HTMLLIElement>): void => {
         const id = e.currentTarget.dataset ? e.currentTarget.dataset.id : undefined;
         if (id) {
-            this.setState((state) => ({ ...state, [id]: true, copied: false }));
+            this.setState((state: State) => ({ ...state, [id]: true, copied: false }));
         }
     }
 
-    private hideDropdown = (e: React.MouseEvent<HTMLLIElement>): void => {
+    private readonly hideDropdown = (e: React.MouseEvent<HTMLLIElement>): void => {
         const id = e.currentTarget.dataset ? e.currentTarget.dataset.id : undefined;
         if (id) {
-            this.setState((state) => ({ ...state, [id]: false, copied: false }));
+            this.setState((state: State) => ({ ...state, [id]: false, copied: false }));
         }
     }
 
-    private setCurrency = (e: React.MouseEvent<HTMLLIElement>): void => {
+    private readonly setCurrency = (e: React.MouseEvent<HTMLLIElement>): void => {
         const id = e.currentTarget.dataset ? e.currentTarget.dataset.id : undefined;
         if (id) {
             this.props.actions.storeQuoteCurrency({ quoteCurrency: id as Currency });
         }
     }
 
-    private copyToClipboard = (e: React.MouseEvent<HTMLElement>): void => {
+    private readonly copyToClipboard = (e: React.MouseEvent<HTMLElement>): void => {
         const el = e.currentTarget.childNodes[0] as Element;
         const address = el.getAttribute("data-addr");
         if (address) {
@@ -251,5 +237,17 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
         storeQuoteCurrency,
     }, dispatch),
 });
+
+interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps>,
+    RouteComponentProps {
+    hideOptions?: boolean;
+}
+
+interface State {
+    accountDropdown: boolean;
+    languageDropdown: boolean;
+    currencyDropdown: boolean;
+    copied: boolean;
+}
 
 export const Header = connect(mapStateToProps, mapDispatchToProps)(withRouter(HeaderClass));

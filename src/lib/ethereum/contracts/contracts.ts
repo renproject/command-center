@@ -1,19 +1,18 @@
-import { NETWORK } from "../../environmentVariables";
+import { NETWORK } from "../../../environmentVariables";
 
 // Contracts
-export interface Contract {
+interface Contract {
     ABI: Array<unknown>;
     address: string;
     deployedInBlock?: string; // hex string
 }
 
-export const NIGHTLY = "nightly";
-export const FALCON = "falcon";
-export const TESTNET = "testnet";
-export const MAINNET = "mainnet";
+const TESTNET = "testnet";
+const MAINNET = "mainnet";
 
 const getContractsForNetwork = (network: string | undefined) => {
     const ERC20: Contract = {
+        // tslint:disable-next-line: no-require-imports
         ABI: require("./ABIs/ERC20.json"),
         address: ""
     };
@@ -41,16 +40,17 @@ const getContractsForNetwork = (network: string | undefined) => {
             dnrDeployedInBlock = "0x889E55"; // in hex
 
             darknodeRewardVault = "0xc08Dfa565EdB7216c3b23bBf0848B43fE9a49F0E";
-            break;
     }
 
     const DarknodeRegistry: Contract = {
+        // tslint:disable-next-line: non-literal-require
         ABI: require(`./ABIs/${path}/DarknodeRegistry.json`),
         address: darknodeRegistry,
         deployedInBlock: dnrDeployedInBlock,
     };
 
     const DarknodeRewardVault: Contract = {
+        // tslint:disable-next-line: non-literal-require
         ABI: require(`./ABIs/${path}/DarknodeRewardVault.json`),
         address: darknodeRewardVault,
     };

@@ -1,29 +1,18 @@
 import * as React from "react";
 
 import { BigNumber } from "bignumber.js";
-import { connect } from "react-redux";
+import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
 import { updateDarknodeStatistics } from "../../actions/statistics/operatorActions";
 import { showFundPopup } from "../../actions/statistics/operatorPopupActions";
-import { ApplicationData, DarknodeDetails } from "../../reducers/types";
-
-interface TopupProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
-    darknodeID: string;
-}
-
-interface TopupState {
-    value: string;
-    resultMessage: string;
-    pending: boolean;
-    disabled: boolean;
-    traderBalance: BigNumber;
-}
+import { _captureBackgroundException_ } from "../../lib/errors";
+import { ApplicationData } from "../../reducers/types";
 
 const CONFIRMATION_MESSAGE = "Transaction confirmed.";
 
-class TopupClass extends React.Component<TopupProps, TopupState> {
-    constructor(props: TopupProps) {
+class TopUpClass extends React.Component<Props, State> {
+    constructor(props: Props) {
         super(props);
         this.state = {
             value: "0.1",
@@ -35,10 +24,14 @@ class TopupClass extends React.Component<TopupProps, TopupState> {
     }
 
     public componentDidMount = async () => {
-        this.updateTraderBalance().catch(console.error);
+        this.updateTraderBalance().catch((error) => {
+            _captureBackgroundException_(error, {
+                description: "Error in updateTraderBalance in TopUp",
+            });
+        });
     }
 
-    public render(): JSX.Element {
+    public render = (): JSX.Element => {
         const { value, resultMessage, pending, disabled } = this.state;
         return (
             <div className="topup">
@@ -73,8 +66,8 @@ class TopupClass extends React.Component<TopupProps, TopupState> {
         );
     }
 
-    private handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-        const value = e.target.value;
+    private readonly handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+        const value = event.target.value;
         this.setState({ value });
 
         const { traderBalance, resultMessage, disabled } = this.state;
@@ -91,7 +84,7 @@ class TopupClass extends React.Component<TopupProps, TopupState> {
         }
     }
 
-    private updateTraderBalance = async (): Promise<BigNumber> => {
+    private readonly updateTraderBalance = async (): Promise<BigNumber> => {
         const { store: { address, sdk } } = this.props;
         if (!address) {
             throw new Error("Invalid address when updating trader balance");
@@ -102,7 +95,7 @@ class TopupClass extends React.Component<TopupProps, TopupState> {
         return traderBalance;
     }
 
-    private handleBlur = async (e: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
+    private readonly handleBlur = async (_event: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
         const { value } = this.state;
         let traderBalance;
         try {
@@ -110,12 +103,14 @@ class TopupClass extends React.Component<TopupProps, TopupState> {
             if (traderBalance.isLessThan(value)) {
                 this.setState({ value: traderBalance.toFixed(), disabled: true });
             }
-        } catch (err) {
-            console.error(err);
+        } catch (error) {
+            _captureBackgroundException_(error, {
+                description: "Error in handleBlur in TopUp",
+            });
         }
     }
 
-    private sendFunds = async (): Promise<void> => {
+    private readonly sendFunds = async (): Promise<void> => {
         const { darknodeID, store: { address, sdk, tokenPrices } } = this.props;
         const { value } = this.state;
 
@@ -136,6 +131,7 @@ class TopupClass extends React.Component<TopupProps, TopupState> {
 
         const onDone = async () => {
             try {
+                // tslint:disable-next-line: await-promise
                 await this.props.actions.updateDarknodeStatistics(sdk, darknodeID, tokenPrices);
 
                 this.setState({ value: "0", resultMessage: CONFIRMATION_MESSAGE, pending: false });
@@ -144,6 +140,7 @@ class TopupClass extends React.Component<TopupProps, TopupState> {
             }
         };
 
+        // tslint:disable-next-line: await-promise
         await this.props.actions.showFundPopup(sdk, address, darknodeID, value, onCancel, onDone);
     }
 }
@@ -163,4 +160,16 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     }, dispatch),
 });
 
-export const Topup = connect(mapStateToProps, mapDispatchToProps)(TopupClass);
+interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps> {
+    darknodeID: string;
+}
+
+interface State {
+    value: string;
+    resultMessage: string;
+    pending: boolean;
+    disabled: boolean;
+    traderBalance: BigNumber;
+}
+
+export const TopUp = connect(mapStateToProps, mapDispatchToProps)(TopUpClass);

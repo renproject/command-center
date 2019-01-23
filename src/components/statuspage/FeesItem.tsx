@@ -4,29 +4,17 @@ import BigNumber from "bignumber.js";
 
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { connect } from "react-redux";
+import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
 import { updateDarknodeStatistics } from "../../actions/statistics/operatorActions";
 import { withdrawReward } from "../../actions/trader/darknode";
-import { Token } from "../../lib/tokens";
+import { Token } from "../../lib/ethereum/tokens";
 import { ApplicationData } from "../../reducers/types";
 import { Loading } from "../Loading";
 
-interface FeesProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
-    disabled: boolean;
-    token: Token;
-    amount: string | BigNumber;
-    darknodeID: string;
-}
-
-interface FeesState {
-    disabled: boolean;
-    loading: boolean;
-}
-
-class FeesItemClass extends React.Component<FeesProps, FeesState> {
-    constructor(props: FeesProps) {
+class FeesItemClass extends React.Component<Props, State> {
+    constructor(props: Props) {
         super(props);
         this.state = {
             disabled: (new BigNumber(this.props.amount)).lte(0),
@@ -34,7 +22,7 @@ class FeesItemClass extends React.Component<FeesProps, FeesState> {
         };
     }
 
-    public render(): JSX.Element {
+    public render = (): JSX.Element => {
         const { loading } = this.state;
         const disabled = this.state.disabled || !this.props.disabled;
         return (
@@ -43,17 +31,19 @@ class FeesItemClass extends React.Component<FeesProps, FeesState> {
                 disabled={disabled}
                 onClick={disabled ? undefined : this.handleWithdraw}
             >
-                {loading ? <Loading /> : <FontAwesomeIcon icon={faChevronRight} pull="left" />}
+                {loading ? <Loading alt={true} /> : <FontAwesomeIcon icon={faChevronRight} pull="left" />}
             </button>
         );
     }
 
-    private handleWithdraw = async (): Promise<void> => {
+    private readonly handleWithdraw = async (): Promise<void> => {
         const { store, darknodeID, token } = this.props;
         const { sdk, tokenPrices } = store;
         this.setState({ disabled: true, loading: true });
 
+        // tslint:disable-next-line: await-promise
         await this.props.actions.withdrawReward(sdk, darknodeID, token);
+        // tslint:disable-next-line: await-promise
         await this.props.actions.updateDarknodeStatistics(sdk, darknodeID, tokenPrices);
 
         this.setState({ loading: false });
@@ -73,5 +63,17 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
         updateDarknodeStatistics,
     }, dispatch),
 });
+
+interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps> {
+    disabled: boolean;
+    token: Token;
+    amount: string | BigNumber;
+    darknodeID: string;
+}
+
+interface State {
+    disabled: boolean;
+    loading: boolean;
+}
 
 export const FeesItem = connect(mapStateToProps, mapDispatchToProps)(FeesItemClass);

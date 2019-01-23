@@ -12,13 +12,14 @@ import { PersistGate } from "redux-persist/integration/react";
 import { HttpProvider } from "web3/providers";
 
 import { App } from "./components/App";
+import { _catch_ } from "./components/ErrorBoundary";
 import { ETH_NETWORK, ETH_NETWORK_LABEL, NETWORK, SENTRY_DSN } from "./environmentVariables";
-import { history } from "./lib/history";
+import { history } from "./history";
 import { configureStore } from "./store/configureStore";
 
 import "./index.scss";
 
-export const { store, persistor } = configureStore();
+const { store, persistor } = configureStore();
 
 interface EthereumProvider extends HttpProvider {
     enable(): Promise<void>;
@@ -37,13 +38,20 @@ Sentry.init({
     environment: (process.env.NODE_ENV === "development") ? "local" : NETWORK,
 });
 
+Sentry.configureScope((scope) => {
+    scope.setExtra("loggedIn", false);
+
+    // We set this to false when logging to Sentry explicitly.
+    scope.setExtra("uncaught", true);
+});
+
 // Update document title to show network
 if (ETH_NETWORK !== "main") {
-    document.title = "DCC (" + ETH_NETWORK_LABEL + ")";
+    document.title = `DCC (${ETH_NETWORK_LABEL})`;
 }
 
 ReactDOM.render(
-    <Provider store={store}>
+    _catch_(<Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
             <Router history={history}>
                 <Switch>
@@ -53,6 +61,6 @@ ReactDOM.render(
                 </Switch>
             </Router>
         </PersistGate>
-    </Provider>,
+    </Provider>),
     document.getElementById("root") as HTMLElement
 );

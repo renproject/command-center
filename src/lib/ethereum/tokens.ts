@@ -1,6 +1,6 @@
 import { Map } from "immutable";
 
-import { Currency, TokenPrices } from "../reducers/types";
+import { Currency, TokenPrices } from "../../reducers/types";
 
 export enum Token {
     ETH = "ETH",
@@ -14,7 +14,7 @@ export enum Token {
 // For iterating over Tokens
 export const Tokens: Token[] = [Token.ETH, Token.DGX, Token.TUSD, Token.REN, Token.OMG, Token.ZRX];
 
-export let coinGeckoIDs = Map<Token, string>()
+const coinGeckoIDs = Map<Token, string>()
     .set(Token.ETH, "ethereum")
     .set(Token.DGX, "digix-gold")
     .set(Token.REN, "republic-protocol")

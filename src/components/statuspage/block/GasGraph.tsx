@@ -6,7 +6,7 @@ import { faFire } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { OrderedMap } from "immutable";
 import { Scatter } from "react-chartjs-2";
-import { connect } from "react-redux";
+import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
 import {
@@ -15,19 +15,10 @@ import {
     HistoryIterations,
     HistoryPeriods,
 } from "../../../actions/statistics/operatorActions";
+import { _captureBackgroundException_ } from "../../../lib/errors";
 import { ApplicationData, DarknodeDetails } from "../../../reducers/types";
 import { Loading } from "../../Loading";
 import { Block, BlockBody, BlockTitle } from "./Block";
-
-interface Props extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
-    darknodeDetails: DarknodeDetails | null;
-}
-
-interface State {
-    historyPeriod: HistoryPeriods;
-    nextHistoryPeriod: HistoryPeriods;
-    loadingHistory: boolean;
-}
 
 const shift = new BigNumber(10).exponentiatedBy(18);
 
@@ -40,9 +31,9 @@ const options = {
     tooltips: {
         callbacks: {
             // tslint:disable-next-line:no-any
-            title: (item: any) => `Block ${item[0].xLabel}`,
+            title: (item: any): string => `Block ${item[0].xLabel}`,
             // tslint:disable-next-line:no-any
-            label: (item: any) => `${item.yLabel} ETH`,
+            label: (item: any): string => `${item.yLabel} ETH`,
         },
     },
     legend: {
@@ -61,7 +52,7 @@ const options = {
     }
 };
 
-const periods = [
+const periods: Array<[HistoryPeriods, string]> = [
     [HistoryPeriods.Day, "1D"],
     [HistoryPeriods.Week, "1W"],
     [HistoryPeriods.Month, "1M"],
@@ -82,31 +73,43 @@ class GasGraphClass extends React.Component<Props, State> {
         };
     }
 
-    public componentDidMount = () => {
+    public componentDidMount = (): void => {
         const { store: { secondsPerBlock, sdk } } = this.props;
         if (secondsPerBlock === null) {
-            this.props.actions.calculateSecondsPerBlock(sdk);
+            this.props.actions.calculateSecondsPerBlock(sdk)
+                .catch((error) => {
+                    _captureBackgroundException_(error, {
+                        description: "Error in componentDidMount in GasGraph",
+                    });
+                });
         }
 
         this.componentWillReceiveProps(this.props);
     }
 
-    public componentWillReceiveProps = (nextProps: Props) => {
+    public componentWillReceiveProps = (nextProps: Props): void => {
         if (!this.updateHistoryTimeout && nextProps.darknodeDetails) {
-            this.updateHistory(nextProps).catch(console.error);
+            this.updateHistory(nextProps).catch((error => {
+                _captureBackgroundException_(error, {
+                    description: "Error in componentWillReceiveProps in GasGraph",
+                });
+            }));
         }
     }
 
-    public componentWillUnmount = () => {
+    public componentWillUnmount = (): void => {
         if (this.updateHistoryTimeout) { clearTimeout(this.updateHistoryTimeout); }
         if (this.localTimeout) { clearTimeout(this.localTimeout); }
     }
 
-    public updateHistory = async (props: Props | undefined, historyPeriod?: HistoryPeriods | undefined) => {
+    public updateHistory = async (
+        props: Props | undefined,
+        historyPeriod?: HistoryPeriods | undefined
+    ): Promise<void> => {
 
         try {
             if (this.localTimeout) { clearTimeout(this.localTimeout); }
-            this.localTimeout = setTimeout(() => this.setState({ loadingHistory: true }), 100);
+            this.localTimeout = setTimeout(() => { this.setState({ loadingHistory: true }); }, 100);
         } catch (error) {
             // Component was probably unmounted and clearTimeout had bad timing
             return;
@@ -122,6 +125,7 @@ class GasGraphClass extends React.Component<Props, State> {
 
             const balanceHistory = balanceHistories.get(darknodeDetails.ID) || OrderedMap<number, BigNumber>();
             try {
+                // tslint:disable-next-line: await-promise
                 await this.props.actions.fetchDarknodeBalanceHistory(
                     sdk,
                     darknodeDetails.ID,
@@ -130,7 +134,9 @@ class GasGraphClass extends React.Component<Props, State> {
                     secondsPerBlock
                 );
             } catch (error) {
-                console.error(error);
+                _captureBackgroundException_(error, {
+                    description: "Error in updateHistory in GasGraph",
+                });
             }
         }
 
@@ -145,7 +151,7 @@ class GasGraphClass extends React.Component<Props, State> {
         this.updateHistoryTimeout = setTimeout(this.updateHistory, retry) as unknown as NodeJS.Timer;
     }
 
-    public render = () => {
+    public render = (): JSX.Element => {
         const { historyPeriod, nextHistoryPeriod, loadingHistory } = this.state;
 
         const { darknodeDetails, store: { secondsPerBlock } } = this.props;
@@ -158,7 +164,7 @@ class GasGraphClass extends React.Component<Props, State> {
 
         let chartData;
         if (balanceHistory && secondsPerBlock) {
-            const xyPoints: Array<{ x: number, y: number }> = [];
+            const xyPoints: Array<{ x: number; y: number }> = [];
 
             const jump = Math.floor((historyPeriod / secondsPerBlock) / HistoryIterations);
 
@@ -169,7 +175,7 @@ class GasGraphClass extends React.Component<Props, State> {
                 let first = currentBlock - (HistoryIterations - 1) * jump;
                 first = first - first % jump;
 
-                balanceHistory.map((y, x) => {
+                balanceHistory.map((y: BigNumber, x: number) => {
                     if (x >= first) {
                         xyPoints.push({ x, y: y ? y.div(shift).toNumber() : 0 });
                     }
@@ -193,7 +199,7 @@ class GasGraphClass extends React.Component<Props, State> {
                             borderColor: "#F45532",
                             borderCapStyle: "butt",
                             borderDash: [],
-                            borderDashOffset: 0.0,
+                            borderDashOffset: 0,
                             borderJoinStyle: "miter",
                             pointBorderColor: "#F45532",
                             pointBackgroundColor: "#F45532",
@@ -228,7 +234,7 @@ class GasGraphClass extends React.Component<Props, State> {
                 <BlockBody>
                     {chartData ? <Scatter data={chartData} options={options} /> : <div className="graph-placeholder" />}
                     <div className="gas-graph--times">
-                        {periods.map(([period, periodString]) => {
+                        {periods.map(([period, periodString]: [HistoryPeriods, string]) => {
                             return <button
                                 key={period}
                                 className={nextHistoryPeriod === period ? "selected" : ""}
@@ -246,17 +252,19 @@ class GasGraphClass extends React.Component<Props, State> {
         );
     }
 
-    private handleSelectTime = async (event: React.FormEvent<HTMLButtonElement>): Promise<void> => {
+    private readonly handleSelectTime = async (event: React.FormEvent<HTMLButtonElement>): Promise<void> => {
         const element = (event.target as HTMLButtonElement);
         try {
             if (this.updateHistoryTimeout) { clearTimeout(this.updateHistoryTimeout); }
             const historyPeriod = parseInt(element.value, 10);
 
-            this.setState((current) => ({ ...current, nextHistoryPeriod: historyPeriod }));
+            this.setState((current: State) => ({ ...current, nextHistoryPeriod: historyPeriod }));
             await this.updateHistory(undefined, historyPeriod);
-            this.setState((current) => ({ ...current, historyPeriod }));
+            this.setState((current: State) => ({ ...current, historyPeriod }));
         } catch (error) {
-            console.error(error);
+            _captureBackgroundException_(error, {
+                description: "Error in handleSelectTime in GasGraph",
+            });
         }
     }
 }
@@ -275,5 +283,15 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
         calculateSecondsPerBlock,
     }, dispatch),
 });
+
+interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps> {
+    darknodeDetails: DarknodeDetails | null;
+}
+
+interface State {
+    historyPeriod: HistoryPeriods;
+    nextHistoryPeriod: HistoryPeriods;
+    loadingHistory: boolean;
+}
 
 export const GasGraph = connect(mapStateToProps, mapDispatchToProps)(GasGraphClass);

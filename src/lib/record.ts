@@ -1,4 +1,4 @@
-// tslint:disable:no-any
+// tslint:disable: no-any no-unnecessary-override no-reserved-keywords function-name
 
 import * as Immutable from "immutable";
 
@@ -13,7 +13,7 @@ import * as Immutable from "immutable";
  *
  * @return A class that can be used to instantiate immutable objects.
  */
-export function Record<T>(data: Pick<T, keyof T>) {
+export function Record<T>(data: Pick<T, keyof T>): RecordInterface<T> {
     // The returned class inherits from the Immutable.Record class, using the
     // data argument to specify the default property values.
     return class extends Immutable.Record(data as any) {
@@ -41,7 +41,7 @@ export function Record<T>(data: Pick<T, keyof T>) {
          *         original instance, except for the property value that was set.
          */
         public set<K extends (string & keyof T) & never /* FIXME */, V extends T[K]>(key: K, value: V): this {
-            return super.set(key, value) as this;
+            return super.set(key, value);
         }
         /**
          * A type safe merge.
@@ -56,7 +56,7 @@ export function Record<T>(data: Pick<T, keyof T>) {
         public merge<K extends keyof T, V extends T[K]>(inner: Partial<T> | {
             [key in K]: V;
         }): this {
-            return super.merge(inner as any) as this;
+            return super.merge(inner as any);
         }
         public toJS(): any {
             return super.toJS();
@@ -65,9 +65,7 @@ export function Record<T>(data: Pick<T, keyof T>) {
 }
 
 // An interface to which the return class will be cast.
-export interface RecordInterface<T> {
-    new(inner?: Partial<T>): Props<T> & Methods<T>;
-}
+type RecordInterface<T> = new (inner?: Partial<T>) => Props<T> & Methods<T>;
 
 // An interface of the properties that the class will have.
 type Props<T> = {
