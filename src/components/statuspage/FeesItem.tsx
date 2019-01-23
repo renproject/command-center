@@ -31,7 +31,7 @@ class FeesItemClass extends React.Component<Props, State> {
                 disabled={disabled}
                 onClick={disabled ? undefined : this.handleWithdraw}
             >
-                {loading ? <Loading /> : <FontAwesomeIcon icon={faChevronRight} pull="left" />}
+                {loading ? <Loading alt={true} /> : <FontAwesomeIcon icon={faChevronRight} pull="left" />}
             </button>
         );
     }
