@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/browser";
 import * as React from "react";
 
 import RenExSDK from "@renex/renex";
@@ -102,11 +103,17 @@ export const login = (
     const address = sdk.getWeb3().utils
         .toChecksumAddress(accounts[0].toLowerCase());
 
-    sdk.updateProvider(provider);
-    sdk.setAddress(address);
+    Sentry.configureScope((scope) => {
+        scope.setUser({ id: address });
+        scope.setExtra("loggedIn", true);
+    });
 
     // Store address in the store (and in local storage)
     dispatch(storeAddress(address));
+
+    // Configure SDK
+    sdk.updateProvider(provider);
+    sdk.setAddress(address);
 
     /*
     // Check for mobile
@@ -154,6 +161,10 @@ export const logout = (
     // Use read-only provider and clear address
     sdk.updateProvider(readOnlyProvider);
     sdk.setAddress("");
+
+    Sentry.configureScope((scope) => {
+        scope.setExtra("loggedIn", false);
+    });
 
     if (options.reload) {
         // const currentLocation = location.pathname;
