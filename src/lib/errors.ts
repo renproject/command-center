@@ -39,6 +39,8 @@ const _captureException_ = <X extends Details>(error: any, details: X) => {
             scope.setExtra("serverResponse", error.response.data);
         }
 
+        scope.setExtra("uncaught", false);
+
         console.error(error);
         Sentry.captureException(error);
     });
