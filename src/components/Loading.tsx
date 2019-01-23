@@ -1,10 +1,5 @@
 import * as React from "react";
 
-interface Props {
-    alt?: boolean;
-    className?: string;
-}
-
 /**
  * Loading is a visual component that renders a spinning animation
  */
@@ -14,3 +9,9 @@ export const Loading = (props: Props): JSX.Element => {
         <div className={`loading lds-dual-ring ${alt ? "alt" : ""} ${className ? className : ""}`} />
     );
 };
+
+// tslint:disable: react-unused-props-and-state
+interface Props {
+    alt?: boolean;
+    className?: string;
+}

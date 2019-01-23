@@ -1,19 +1,18 @@
 // tslint:disable:no-object-literal-type-assertion
 
-import * as Sentry from "@sentry/browser";
-
-import RenExSDK, { OrderSettlement } from "@renex/renex";
+import RenExSDK from "@renex/renex";
 import BigNumber from "bignumber.js";
 
 import { List, Map, OrderedMap } from "immutable";
 
 import { RegistrationStatus } from "../actions/statistics/operatorActions";
 import { NETWORK } from "../environmentVariables";
+import { _captureBackgroundException_ } from "../lib/errors";
 import { Token } from "../lib/ethereum/tokens";
 import { getReadOnlyProvider } from "../lib/ethereum/wallet";
 import { Record } from "../lib/record";
 
-export interface Serializable<T> {
+interface Serializable<T> {
     serialize(): string;
     deserialize(str: string): T;
 }
@@ -34,15 +33,7 @@ export class TraderData extends Record({
     sdk: new RenExSDK(readOnlyProvider, { network: NETWORK }),
 }) { }
 
-export type Settlements = OrderedMap<OrderSettlement, boolean>;
-
-export enum AlertType {
-    Error = "error",
-    Warning = "warning",
-    Success = "success"
-}
-
-export enum LabelType {
+export enum LabelLevel {
     Info = "info",
     Warning = "warning"
 }
@@ -100,9 +91,10 @@ export class StatisticsData extends Record({
                 darknodeNames: data.darknodeNames,
                 darknodeRegisteringList: data.darknodeRegisteringList,
             });
-        } catch (err) {
-            console.error(err);
-            Sentry.captureException(`cannot deserialize local storage: ${err}`);
+        } catch (error) {
+            _captureBackgroundException_(error, {
+                description: "Cannot deserialize local storage",
+            });
             return this;
         }
     }

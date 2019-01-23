@@ -2,16 +2,6 @@ import * as React from "react";
 
 import { Loading } from "../../components/Loading";
 
-interface Props {
-    data: string[];
-    sign(): Promise<void>;
-}
-
-interface State {
-    error: string | null;
-    signing: boolean;
-}
-
 /**
  * SigningPopup is a popup component for prompting for a user's ethereum
  * signature
@@ -26,7 +16,8 @@ export class SigningPopup extends React.Component<Props, State> {
     }
 
     public componentDidMount = async (): Promise<void> => {
-        this.callSign().catch(null);
+        this.callSign()
+            .catch(null);
     }
 
     public render = (): JSX.Element => {
@@ -53,7 +44,7 @@ export class SigningPopup extends React.Component<Props, State> {
         </div>;
     }
 
-    private callSign = async () => {
+    private readonly callSign = async () => {
         const { sign } = this.props;
 
         this.setState({ signing: true, error: null });
@@ -65,4 +56,14 @@ export class SigningPopup extends React.Component<Props, State> {
         }
         this.setState({ signing: false });
     }
+}
+
+interface Props {
+    data: string[];
+    sign(): Promise<void>;
+}
+
+interface State {
+    error: string | null;
+    signing: boolean;
 }

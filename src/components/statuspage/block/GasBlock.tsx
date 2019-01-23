@@ -7,16 +7,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { CurrencyIcon } from "../../../components/CurrencyIcon";
 import { Currency, DarknodeDetails } from "../../../reducers/types";
-import { Topup } from "../Topup";
+import { TopUp } from "../TopUp";
 import { Block, BlockBody, BlockTitle } from "./Block";
-
-interface Props {
-    darknodeDetails: DarknodeDetails | null;
-}
-
-interface State {
-    showAdvanced: boolean;
-}
 
 export class GasBlock extends React.Component<Props, State> {
 
@@ -41,7 +33,7 @@ export class GasBlock extends React.Component<Props, State> {
                 className={`gas-block ${showAdvanced ? "" : "basic"}`}
                 onClick={showAdvanced ? undefined : this.toggleAdvanced}
             >
-                {showAdvanced ? <div className="block--basic--hide" onClick={this.toggleAdvanced}>
+                {showAdvanced ? <div role="button" className="block--basic--hide" onClick={this.toggleAdvanced}>
                     <FontAwesomeIcon icon={faTimes} pull="left" />
                 </div> : null}
 
@@ -70,7 +62,7 @@ export class GasBlock extends React.Component<Props, State> {
                                 <span className="gas-block--advanced--unit">ETH</span>
                             </div>
                             <div className="block--advanced--bottom">
-                                <Topup darknodeID={darknodeDetails.ID} />
+                                <TopUp darknodeID={darknodeDetails.ID} />
                             </div>
                         </div>
                     }
@@ -79,8 +71,16 @@ export class GasBlock extends React.Component<Props, State> {
         );
     }
 
-    private toggleAdvanced = (): void => {
+    private readonly toggleAdvanced = (): void => {
         this.setState({ showAdvanced: !this.state.showAdvanced });
     }
 
+}
+
+interface Props {
+    darknodeDetails: DarknodeDetails | null;
+}
+
+interface State {
+    showAdvanced: boolean;
 }

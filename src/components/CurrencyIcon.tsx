@@ -5,13 +5,6 @@ import { faDollarSign } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Currency } from "../reducers/types";
 
-interface Props {
-    currency: Currency;
-}
-
-interface State {
-}
-
 export class CurrencyIcon extends React.Component<Props, State> {
     public render = (): JSX.Element => {
         const { currency } = this.props;
@@ -26,4 +19,11 @@ export class CurrencyIcon extends React.Component<Props, State> {
         }
 
     }
+}
+
+interface Props {
+    currency: Currency;
+}
+
+interface State {
 }

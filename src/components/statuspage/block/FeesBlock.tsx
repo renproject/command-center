@@ -5,7 +5,7 @@ import BigNumber from "bignumber.js";
 import { faStar } from "@fortawesome/free-regular-svg-icons";
 import { faChevronRight, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { connect } from "react-redux";
+import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
 import { CurrencyIcon } from "../../../components/CurrencyIcon";
@@ -15,15 +15,6 @@ import { TokenBalance } from "../../TokenBalance";
 import { FeesItem } from "../FeesItem";
 import { TokenIcon } from "../TokenIcon";
 import { Block, BlockBody, BlockTitle } from "./Block";
-
-interface Props extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
-    isOperator: boolean;
-    darknodeDetails: DarknodeDetails | null;
-}
-
-interface State {
-    showAdvanced: boolean;
-}
 
 class FeesBlockClass extends React.Component<Props, State> {
 
@@ -45,7 +36,7 @@ class FeesBlockClass extends React.Component<Props, State> {
                 onClick={showAdvanced ? undefined : this.toggleAdvanced}
             >
 
-                {showAdvanced ? <div className="block--basic--hide" onClick={this.toggleAdvanced}>
+                {showAdvanced ? <div role="button" className="block--basic--hide" onClick={this.toggleAdvanced}>
                     <FontAwesomeIcon icon={faTimes} pull="left" />
                 </div> : null}
 
@@ -72,7 +63,7 @@ class FeesBlockClass extends React.Component<Props, State> {
                                 </span>
                                 <span className="fees-block--basic--unit">{quoteCurrency.toUpperCase()}</span>
                             </div>
-                            <div className="block--basic--show" onClick={this.toggleAdvanced}>
+                            <div role="button" className="block--basic--show" onClick={this.toggleAdvanced}>
                                 <FontAwesomeIcon icon={faChevronRight} pull="left" />
                             </div>
                         </div> :
@@ -140,7 +131,7 @@ class FeesBlockClass extends React.Component<Props, State> {
         );
     }
 
-    private toggleAdvanced = (): void => {
+    private readonly toggleAdvanced = (): void => {
         this.setState({ showAdvanced: !this.state.showAdvanced });
     }
 
@@ -156,5 +147,14 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     actions: bindActionCreators({
     }, dispatch),
 });
+
+interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps> {
+    isOperator: boolean;
+    darknodeDetails: DarknodeDetails | null;
+}
+
+interface State {
+    showAdvanced: boolean;
+}
 
 export const FeesBlock = connect(mapStateToProps, mapDispatchToProps)(FeesBlockClass);

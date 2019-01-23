@@ -1,21 +1,12 @@
 import * as React from "react";
 
-import { connect } from "react-redux";
+import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
 import { Blocky } from "../../components/Blocky";
 import { ApplicationData } from "../../reducers/types";
 
-const metamaskIcon = require("../../styles/images/metamask.svg");
-
-interface Props extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
-    onConnect: () => void;
-    onCancel: () => void;
-    newAddress: string | null;
-}
-
-interface State {
-}
+import metamaskIcon from "../../styles/images/metamask.svg";
 
 /**
  * LoggedOut is a popup component for prompting a user to select an
@@ -36,7 +27,7 @@ class LoggedOutClass extends React.Component<Props, State> {
         const { newAddress } = this.props;
         return (
             <div className="popup no-web3 popup--logged-out">
-                <img className="no-web3--logo" src={metamaskIcon} />
+                <img alt="" role="presentation" className="no-web3--logo" src={metamaskIcon} />
                 {newAddress !== null ?
                     <>
                         <h2>Your Web3 account has changed.</h2>
@@ -56,13 +47,16 @@ class LoggedOutClass extends React.Component<Props, State> {
                     </>
                 }
                 <button className="styled-button styled-button--light" onClick={this.props.onCancel}>Not now</button>
+                <button className="" onClick={this.test}>Test</button>
                 <button className="styled-button" onClick={this.props.onConnect}>Connect</button>
             </div>
         );
     }
+
+    private readonly test = () => { throw new Error("Testing sentry"); };
 }
 
-const mapStateToProps = (state: ApplicationData) => ({
+const mapStateToProps = (_state: ApplicationData) => ({
     store: {
     },
 });
@@ -71,5 +65,14 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     actions: bindActionCreators({
     }, dispatch),
 });
+
+interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps> {
+    newAddress: string | null;
+    onCancel(): void;
+    onConnect(): void;
+}
+
+interface State {
+}
 
 export const LoggedOut = connect(mapStateToProps, mapDispatchToProps)(LoggedOutClass);

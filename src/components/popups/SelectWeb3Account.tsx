@@ -1,26 +1,12 @@
 import * as React from "react";
 
-import { connect } from "react-redux";
+import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
 import { Blocky } from "../../components/Blocky";
 import { Loading } from "../../components/Loading";
+import { _captureBackgroundException_ } from "../../lib/errors";
 import { ApplicationData } from "../../reducers/types";
-
-interface Props extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
-    message: string;
-    getAccounts(): Promise<string[]>;
-    resolve(address: string): void;
-    reject(address: string, reason: string): void;
-}
-
-interface State {
-    accounts: string[] | null;
-    error: string | null;
-}
-
-export const WyreVerification = 0;
-export const KyberVerification = 1;
 
 /**
  * SelectWeb3Account is a popup component for prompting a user to select an
@@ -75,7 +61,7 @@ class SelectWeb3AccountClass extends React.Component<Props, State> {
         );
     }
 
-    private getAccounts = async () => {
+    private readonly getAccounts = async () => {
         this.setState({ error: null });
         let accounts;
         try {
@@ -85,22 +71,25 @@ class SelectWeb3AccountClass extends React.Component<Props, State> {
             return;
         }
         if (accounts.length === 1) {
-            await this.props.resolve(accounts[0]);
+            this.props.resolve(accounts[0]);
             return;
         }
         this.setState({ accounts });
     }
 
-    private onSelectAccount = async (event: React.MouseEvent<HTMLButtonElement>): Promise<void> => {
+    private readonly onSelectAccount = async (event: React.MouseEvent<HTMLButtonElement>): Promise<void> => {
         const { accounts } = this.state;
         const selectedAccountIndex = parseInt(event.currentTarget.getAttribute("data-item") || "0", 10);
 
         if (isNaN(selectedAccountIndex) || accounts === null || accounts.length < selectedAccountIndex) {
-            console.error("No account selected");
+            const description = "No account selected in onSelectAccount";
+            _captureBackgroundException_(new Error(description), {
+                description,
+            });
             return;
         }
         const address = accounts[selectedAccountIndex];
-        await this.props.resolve(address);
+        this.props.resolve(address);
     }
 }
 
@@ -113,5 +102,17 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     actions: bindActionCreators({
     }, dispatch),
 });
+
+interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps> {
+    // message: string;
+    getAccounts(): Promise<string[]>;
+    resolve(address: string): void;
+    // reject(address: string, reason: string): void;
+}
+
+interface State {
+    accounts: string[] | null;
+    error: string | null;
+}
 
 export const SelectWeb3Account = connect(mapStateToProps, mapDispatchToProps)(SelectWeb3AccountClass);

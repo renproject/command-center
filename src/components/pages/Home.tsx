@@ -1,20 +1,13 @@
 import * as React from "react";
 
 import { List } from "immutable";
-import { connect } from "react-redux";
+import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
 import { login } from "../../actions/trader/accountActions";
 import { DarknodeList } from "../../components/DarknodeList";
 import { ApplicationData } from "../../reducers/types";
-
-interface Props extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
-}
-
-interface State {
-    checkingVerification: boolean;
-    darknodeList: List<string> | null;
-}
+import { _catch_ } from "../ErrorBoundary";
 
 /**
  * Home is a page whose principal components are wallet selection to allow users
@@ -37,20 +30,20 @@ class HomeClass extends React.Component<Props, State> {
                 <div className="container">
                     {darknodeRegisteringList.size > 0 ? <>
                         <h2>Continue registering</h2>
-                        <DarknodeList
+                        {_catch_(<DarknodeList
                             darknodeDetails={darknodeDetails}
                             darknodeNames={darknodeNames}
                             darknodeList={darknodeRegisteringList.keySeq().toList()}
                             darknodeRegisteringList={darknodeRegisteringList}
-                        />
+                        />)}
                         {(darknodeList && darknodeList.size > 0) ? <h2>Current darknodes</h2> : null}
                     </> : null}
-                    {darknodeRegisteringList.size === 0 || (darknodeList && darknodeList.size > 0) ? <DarknodeList
+                    {darknodeRegisteringList.size === 0 || (darknodeList && darknodeList.size > 0) ? _catch_(<DarknodeList
                         darknodeDetails={darknodeDetails}
                         darknodeNames={darknodeNames}
                         darknodeList={darknodeList}
                         darknodeRegisteringList={darknodeRegisteringList}
-                    /> : null}
+                    />) : null}
                 </div>
             </div>
         );
@@ -73,5 +66,13 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
         login,
     }, dispatch),
 });
+
+interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps> {
+}
+
+interface State {
+    checkingVerification: boolean;
+    darknodeList: List<string> | null;
+}
 
 export const Home = connect(mapStateToProps, mapDispatchToProps)(HomeClass);

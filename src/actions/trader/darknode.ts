@@ -6,18 +6,6 @@ import { Dispatch } from "redux";
 import { contracts } from "../../lib/ethereum/contracts/contracts";
 import { Token } from "../../lib/ethereum/tokens";
 
-export const deregisterDarknode = (
-    sdk: RenExSDK,
-    address: string,
-    darknodeID: string,
-) => async (_dispatch: Dispatch) => {
-    const darknodeRegistry = new ((sdk.getWeb3()).eth.Contract)(
-        contracts.DarknodeRegistry.ABI,
-        contracts.DarknodeRegistry.address
-    );
-    await darknodeRegistry.methods.deregister(darknodeID).send({ from: address, gas: 200000 });
-};
-
 export const withdrawReward = (sdk: RenExSDK, darknodeID: string, token: Token) => async (_dispatch: Dispatch) => {
 
     const contract = new ((sdk.getWeb3()).eth.Contract)(
@@ -166,7 +154,7 @@ export const fundNode = (
     ethAmountStr: string,
     onCancel: () => void,
     onDone: () => void
-) => (_dispatch: Dispatch) => {
+) => async (_dispatch: Dispatch): Promise<string> => {
     // Convert eth to wei
     const ethAmount = new BigNumber(ethAmountStr);
     const weiAmount = ethAmount.times(new BigNumber(10).exponentiatedBy(18)).decimalPlaces(0);

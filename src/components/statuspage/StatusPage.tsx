@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { connect } from "react-redux";
+import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
 import { RegistrationStatus, setDarknodeName } from "../../actions/statistics/operatorActions";
@@ -15,21 +15,6 @@ import { GasGraph } from "./block/GasGraph";
 import { NetworkBlock } from "./block/NetworkBlock";
 import { Notifications } from "./Notifications";
 import { Registration } from "./Registration";
-
-interface Props extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
-    action: DarknodeAction;
-    isOperator: boolean;
-
-    darknodeID: string;
-    darknodeDetails: DarknodeDetails | null;
-    name: string | undefined;
-    publicKey: string | undefined;
-}
-
-interface State {
-    renaming: boolean;
-    newName: string | undefined;
-}
 
 class StatusPageClass extends React.Component<Props, State> {
     private focusInput: HTMLInputElement | null = null;
@@ -75,7 +60,7 @@ class StatusPageClass extends React.Component<Props, State> {
                             {renaming ?
                                 <form className="statuspage--rename" onSubmit={this.handleSubmitName}>
                                     <input
-                                        ref={(c: HTMLInputElement | null) => this.focusInput = c}
+                                        ref={this.focusInputRef}
                                         role="textbox"
                                         type="text"
                                         name="newName"
@@ -136,12 +121,14 @@ class StatusPageClass extends React.Component<Props, State> {
         );
     }
 
-    private handleInput = (event: React.FormEvent<HTMLInputElement>): void => {
+    private readonly focusInputRef = (c: HTMLInputElement | null) => this.focusInput = c;
+
+    private readonly handleInput = (event: React.FormEvent<HTMLInputElement>): void => {
         const element = (event.target as HTMLInputElement);
         this.setState((current: State) => ({ ...current, [element.name]: element.value }));
     }
 
-    private handleRename = (): void => {
+    private readonly handleRename = (): void => {
         // Use setState callback to set focus to input (otherwise, input will
         // not have been rendered yet)
         this.setState({ renaming: true }, () => {
@@ -151,11 +138,11 @@ class StatusPageClass extends React.Component<Props, State> {
         });
     }
 
-    private handleCancelRename = () => {
+    private readonly handleCancelRename = () => {
         this.setState({ renaming: false });
     }
 
-    private handleSubmitName = (e: React.FormEvent<HTMLFormElement>) => {
+    private readonly handleSubmitName = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         const { darknodeID } = this.props;
@@ -181,5 +168,20 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
         setDarknodeName,
     }, dispatch),
 });
+
+interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps> {
+    action: DarknodeAction;
+    isOperator: boolean;
+
+    darknodeID: string;
+    darknodeDetails: DarknodeDetails | null;
+    name: string | undefined;
+    publicKey: string | undefined;
+}
+
+interface State {
+    renaming: boolean;
+    newName: string | undefined;
+}
 
 export const StatusPage = connect(mapStateToProps, mapDispatchToProps)(StatusPageClass);

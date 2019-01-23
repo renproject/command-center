@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { connect } from "react-redux";
+import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
 import {
@@ -9,19 +9,8 @@ import {
     updateOperatorStatistics
 } from "../../actions/statistics/operatorActions";
 import { showDeregisterPopup, showRefundPopup, showRegisterPopup } from "../../actions/statistics/operatorPopupActions";
+import { _captureInteractionException_ } from "../../lib/errors";
 import { ApplicationData, DarknodeDetails } from "../../reducers/types";
-
-interface Props extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
-    isOperator: boolean;
-    registrationStatus: RegistrationStatus;
-    darknodeID: string;
-    darknodeDetails: DarknodeDetails | null;
-    publicKey?: string;
-}
-
-interface State {
-    active: boolean;
-}
 
 export const statusText = {
     [RegistrationStatus.Unknown]: "Loading...",
@@ -100,7 +89,7 @@ class RegistrationClass extends React.Component<Props, State> {
         );
     }
 
-    private onCancel = async () => {
+    private readonly onCancel = () => {
         try {
             this.setState({ active: false });
         } catch (error) {
@@ -108,7 +97,7 @@ class RegistrationClass extends React.Component<Props, State> {
         }
     }
 
-    private onDone = async () => {
+    private readonly onDone = async () => {
         const { darknodeID } = this.props;
         const { sdk, tokenPrices } = this.props.store;
 
@@ -120,7 +109,7 @@ class RegistrationClass extends React.Component<Props, State> {
         }
     }
 
-    private onDoneRegister = async () => {
+    private readonly onDoneRegister = async () => {
         const { sdk, address, tokenPrices, darknodeList } = this.props.store;
 
         try {
@@ -133,7 +122,7 @@ class RegistrationClass extends React.Component<Props, State> {
         }
     }
 
-    private handleRegister = async (): Promise<void> => {
+    private readonly handleRegister = async (): Promise<void> => {
         const { darknodeID, publicKey } = this.props;
         const { sdk, address, minimumBond, tokenPrices } = this.props.store;
 
@@ -142,12 +131,20 @@ class RegistrationClass extends React.Component<Props, State> {
         }
 
         this.setState({ active: true });
-        this.props.actions.showRegisterPopup(
-            sdk, address, darknodeID, publicKey, minimumBond, tokenPrices, this.onCancel, this.onDoneRegister
-        );
+        try {
+            await this.props.actions.showRegisterPopup(
+                sdk, address, darknodeID, publicKey, minimumBond, tokenPrices, this.onCancel, this.onDoneRegister
+            );
+        } catch (error) {
+            _captureInteractionException_(error, {
+                description: "Error thrown from showRegisterPopup",
+                shownToUser: "No",
+            });
+            this.onCancel();
+        }
     }
 
-    private handleDeregister = async (): Promise<void> => {
+    private readonly handleDeregister = async (): Promise<void> => {
         const { darknodeID, darknodeDetails } = this.props;
         const { sdk, address, quoteCurrency } = this.props.store;
 
@@ -166,7 +163,7 @@ class RegistrationClass extends React.Component<Props, State> {
             this.onDone);
     }
 
-    private handleRefund = async (): Promise<void> => {
+    private readonly handleRefund = async (): Promise<void> => {
         const { darknodeID } = this.props;
         const { sdk, address } = this.props.store;
 
@@ -199,5 +196,17 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
         updateOperatorStatistics,
     }, dispatch),
 });
+
+interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps> {
+    isOperator: boolean;
+    registrationStatus: RegistrationStatus;
+    darknodeID: string;
+    darknodeDetails: DarknodeDetails | null;
+    publicKey?: string;
+}
+
+interface State {
+    active: boolean;
+}
 
 export const Registration = connect(mapStateToProps, mapDispatchToProps)(RegistrationClass);

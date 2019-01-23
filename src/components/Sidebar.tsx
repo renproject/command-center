@@ -1,12 +1,11 @@
 import * as React from "react";
 
 import { faStar } from "@fortawesome/free-regular-svg-icons";
-import { faCircle, faFire, faThLarge } from "@fortawesome/free-solid-svg-icons";
+import { faFire, faThLarge } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { connect } from "react-redux";
+import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { Link } from "react-router-dom";
-import { Dispatch } from "redux";
-import { bindActionCreators } from "redux";
+import { bindActionCreators, Dispatch } from "redux";
 
 import { RegistrationStatus } from "../actions/statistics/operatorActions";
 import { Token } from "../lib/ethereum/tokens";
@@ -16,10 +15,6 @@ import { CurrencyIcon } from "./CurrencyIcon";
 import { DarknodeID } from "./DarknodeID";
 import { darknodeIDHexToBase58 } from "./pages/Darknode";
 import { TokenBalance } from "./TokenBalance";
-
-interface Props extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
-    selectedDarknode: string | undefined;
-}
 
 /**
  * Sidebar displays stats about an operator's darknodes collectively,
@@ -131,5 +126,9 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     actions: bindActionCreators({
     }, dispatch),
 });
+
+interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps> {
+    selectedDarknode: string | undefined;
+}
 
 export const Sidebar = connect(mapStateToProps, mapDispatchToProps)(SidebarClass);

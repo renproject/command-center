@@ -4,10 +4,7 @@ import FetchSubprovider from "web3-provider-engine/subproviders/fetch";
 
 import { Provider } from "web3/providers";
 
-import { clearPopup } from "../../actions/popup/popupActions";
-import { INFURA_URL } from "../../environmentVariables";
-import { ETH_NETWORK } from "../../environmentVariables";
-import { store } from "../../index";
+import { ETH_NETWORK, INFURA_URL } from "../../environmentVariables";
 import { Language } from "../../languages/language";
 
 export const ErrorCanceledByUser = "Returned error: Error: MetaMask Tx Signature: User denied transaction signature.";
@@ -18,26 +15,6 @@ export const getReadOnlyProvider = (): Provider => {
     engine.start();
     return engine;
 };
-
-export function PopupPromise<T>(
-    fn: (resolve: (value?: T | PromiseLike<T>) => void, reject: (reason?: Error) => void) => void,
-): Promise<T> {
-    return new Promise((
-        resolve: (value?: T | PromiseLike<T> | undefined) => void,
-        reject: (reason?: unknown) => void,
-    ) => {
-
-        const innerReject: (reason?: Error) => void = (reason: Error | undefined) => {
-            store.dispatch(clearPopup());
-            reject(reason);
-        };
-        const innerResolve: (value?: T | PromiseLike<T>) => void = (reason: T | PromiseLike<T> | undefined) => {
-            store.dispatch(clearPopup());
-            resolve(reason);
-        };
-        fn(innerResolve, innerReject);
-    });
-}
 
 const ErrorNoWeb3 = Language.wallet.mustInstallMetaMask;
 const ErrorNoAccounts = Language.wallet.noAccounts;
