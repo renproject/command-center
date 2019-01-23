@@ -5,6 +5,7 @@ import { bindActionCreators, Dispatch } from "redux";
 
 import { Blocky } from "../../components/Blocky";
 import { ApplicationData } from "../../reducers/types";
+import { _catch_ } from "../ErrorBoundary";
 
 import metamaskIcon from "../../styles/images/metamask.svg";
 
@@ -24,10 +25,6 @@ class LoggedOutClass extends React.Component<Props, State> {
     }
 
     public render = (): JSX.Element => {
-        // tslint:disable-next-line: no-any
-        if (true as any) {
-            throw new Error("Testing sentry!");
-        }
         const { newAddress } = this.props;
         return (
             <div className="popup no-web3 popup--logged-out">
@@ -51,10 +48,13 @@ class LoggedOutClass extends React.Component<Props, State> {
                     </>
                 }
                 <button className="styled-button styled-button--light" onClick={this.props.onCancel}>Not now</button>
+                {_catch_(<button className="" onClick={this.test}>Test</button>)}
                 <button className="styled-button" onClick={this.props.onConnect}>Connect</button>
             </div>
         );
     }
+
+    private readonly test = () => { throw new Error("Testing sentry"); };
 }
 
 const mapStateToProps = (_state: ApplicationData) => ({
