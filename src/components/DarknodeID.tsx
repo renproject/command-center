@@ -2,10 +2,6 @@ import * as React from "react";
 
 import { darknodeIDHexToBase58 } from "./pages/Darknode";
 
-interface Props {
-    darknodeID: string;
-}
-
 export const DarknodeID = (props: Props): JSX.Element => {
     const { darknodeID } = props;
 
@@ -13,3 +9,8 @@ export const DarknodeID = (props: Props): JSX.Element => {
 
     return <div className="monospace darknode-id">{darknodeIDBase58}</div>;
 };
+
+// tslint:disable: react-unused-props-and-state
+interface Props {
+    darknodeID: string;
+}

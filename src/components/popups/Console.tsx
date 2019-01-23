@@ -7,14 +7,6 @@ const NUMERATOR = 164; // pixels
 const DENOMINATOR = 94; // pixels
 const OFFSET = 8994; // pixels
 
-interface Props {
-    logs: List<JSX.Element>;
-}
-
-interface State {
-    level: number;
-}
-
 export class Console extends React.Component<Props, State> {
     private bottomElement: HTMLElement | null = null;
     constructor(props: Props) {
@@ -28,11 +20,13 @@ export class Console extends React.Component<Props, State> {
         const { level } = this.state;
         const enhanced = level > (NUMERATOR + DENOMINATOR ** 2);
         return (
-            <div className={`monospace console ${enhanced ? "enhanced" : ""}`} onClick={this.onClickHandler}>
+            <div role="log" className={`monospace console ${enhanced ? "enhanced" : ""}`} onClick={this.onClickHandler}>
                 {this.props.logs}
-                <div ref={(ref: HTMLDivElement | null) => { this.bottomElement = ref; }} />
+                <div ref={this.updateBottomElement} />
             </div>);
     }
+
+    public updateBottomElement = (ref: HTMLDivElement | null) => { this.bottomElement = ref; };
 
     public componentDidMount = (): void => {
         this.scrollToBottom();
@@ -42,7 +36,7 @@ export class Console extends React.Component<Props, State> {
         this.scrollToBottom();
     }
 
-    private scrollToBottom = (): void => {
+    private readonly scrollToBottom = (): void => {
         // Render any new logs before scrolling to bottom
         this.forceUpdate(() => {
             if (this.bottomElement) {
@@ -51,10 +45,18 @@ export class Console extends React.Component<Props, State> {
         });
     }
 
-    private onClickHandler = (event: React.MouseEvent<HTMLElement>): void => {
+    private readonly onClickHandler = (_event: React.MouseEvent<HTMLElement>): void => {
         const { level } = this.state;
         this.setState({
             level: level + 1,
         });
     }
+}
+
+interface Props {
+    logs: List<JSX.Element>;
+}
+
+interface State {
+    level: number;
 }

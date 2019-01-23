@@ -10,6 +10,7 @@ import { approveNode, deregisterNode, fundNode, refundNode, registerNode } from 
 import { CurrencyIcon } from "../../components/CurrencyIcon";
 import { MultiStepPopup } from "../../components/popups/MultiStepPopup";
 import { TokenBalance } from "../../components/TokenBalance";
+import { _captureBackgroundException_ } from "../../lib/errors";
 import { Token } from "../../lib/ethereum/tokens";
 import { Currency, TokenPrices } from "../../reducers/types";
 import { updateDarknodeStatistics } from "./operatorActions";
@@ -41,14 +42,16 @@ export const showRegisterPopup = (
                 try {
                     await updateDarknodeStatistics(sdk, darknodeID, tokenPrices)(dispatch);
                 } catch (error) {
-                    console.error(error);
+                    _captureBackgroundException_(error, {
+                        description: "Error thrown in updateDarknodeStatistics in showRegisterPopup",
+                    });
                 }
             }
         };
 
         const steps = [
-            { call: () => step1(), name: "Approve 100'000 REN" },
-            { call: () => step2(), name: "Register darknode" },
+            { call: step1, name: "Approve 100'000 REN" },
+            { call: step2, name: "Register darknode" },
         ];
 
         const warning = "Due to a large number of registrations, estimated Darknode profits are currently negative. \
@@ -84,7 +87,7 @@ export const showDeregisterPopup = (
     };
 
     const steps = [
-        { call: () => step1(), name: "Deregister darknode" },
+        { call: step1, name: "Deregister darknode" },
     ];
 
     let warning;
@@ -136,7 +139,7 @@ export const showRefundPopup = (
     };
 
     const steps = [
-        { call: () => step1(), name: "Refund REN" },
+        { call: step1, name: "Refund REN" },
     ];
 
     const title = "Refund REN";
@@ -170,7 +173,7 @@ export const showFundPopup = (
     };
 
     const steps = [
-        { call: () => step1(), name: "Fund darknode" },
+        { call: step1, name: "Fund darknode" },
     ];
 
     const title = "Fund darknode";

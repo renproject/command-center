@@ -1,7 +1,5 @@
 import * as React from "react";
 
-import BigNumber from "bignumber.js";
-
 import { faServer } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -9,10 +7,6 @@ import { ETH_NETWORK_LABEL } from "../../../environmentVariables";
 import { DarknodeDetails } from "../../../reducers/types";
 import { darknodeIDHexToBase58 } from "../../pages/Darknode";
 import { Block, BlockBody, BlockTitle } from "./Block";
-
-interface Props {
-    darknodeDetails: DarknodeDetails | null;
-}
 
 export const NetworkBlock = (props: Props): JSX.Element => {
     const { darknodeDetails } = props;
@@ -49,3 +43,8 @@ export const NetworkBlock = (props: Props): JSX.Element => {
         </Block>
     );
 };
+
+// tslint:disable: react-unused-props-and-state
+interface Props {
+    darknodeDetails: DarknodeDetails | null;
+}

@@ -1,6 +1,6 @@
 import RenExSDK from "@renex/renex";
 
-import { List, OrderedSet } from "immutable";
+import { OrderedSet } from "immutable";
 import { contracts } from "./contracts/contracts";
 
 const NULL = "0x0000000000000000000000000000000000000000";
@@ -67,7 +67,7 @@ export const getOperatorDarknodes = async (sdk: RenExSDK, address: string): Prom
         // 0x000000000000000000000000945458e071eca54bb534d8ac7c8cd1a3eb318d92000000000000000000000000000000000000000000\
         // 00152d02c7e14af6800000
         // and we want to extract this: 0x945458e071eca54bb534d8ac7c8cd1a3eb318d92 (20 bytes, 40 characters long)
-        const darknodeID = sdk.getWeb3().utils.toChecksumAddress("0x" + event.data.substr(26, 40));
+        const darknodeID = sdk.getWeb3().utils.toChecksumAddress(`0x${event.data.substr(26, 40)}`);
         darknodes.push(darknodeID);
     }
 
@@ -92,7 +92,7 @@ export const getOperatorDarknodes = async (sdk: RenExSDK, address: string): Prom
         contracts.DarknodeRegistry.ABI,
         contracts.DarknodeRegistry.address
     );
-    const operatorPromises = darknodes.map((darknodeID: string) =>
+    const operatorPromises = darknodes.map(async (darknodeID: string) =>
         darknodeRegistry.methods.getDarknodeOwner(darknodeID).call()
     );
 

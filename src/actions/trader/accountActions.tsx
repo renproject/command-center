@@ -12,6 +12,7 @@ import { LoggedOut } from "../../components/popups/LoggedOut";
 import { NoWeb3Popup } from "../../components/popups/NoWeb3Popup";
 import { history } from "../../history";
 import { Language } from "../../languages/language";
+import { _captureBackgroundException_ } from "../../lib/errors";
 import { getInjectedWeb3Provider } from "../../lib/ethereum/wallet";
 
 export const storeAddress = createStandardAction("STORE_ADDRESS")<string | null>();
@@ -20,11 +21,11 @@ export const storeWeb3BrowserName = createStandardAction("STORE_WEB3_BROWSER_NAM
 
 export const login = (
     sdk: RenExSDK,
-    options: { redirect: boolean, showPopup: boolean, immediatePopup: boolean },
+    options: { redirect: boolean; showPopup: boolean; immediatePopup: boolean },
 ) => async (dispatch: Dispatch) => {
     let cancelled = false;
 
-    const onClick = () => (login(sdk, { redirect: false, showPopup: true, immediatePopup: true })(dispatch));
+    const onClick = async () => (login(sdk, { redirect: false, showPopup: true, immediatePopup: true })(dispatch));
     const onCancel = () => {
         dispatch(clearPopup());
         cancelled = true;
@@ -98,7 +99,8 @@ export const login = (
 
     // For now we use first account
     // TODO: Add support for selecting other accounts other than first
-    const address = sdk.getWeb3().utils.toChecksumAddress(accounts[0].toLowerCase());
+    const address = sdk.getWeb3().utils
+        .toChecksumAddress(accounts[0].toLowerCase());
 
     sdk.updateProvider(provider);
     sdk.setAddress(address);
@@ -176,12 +178,18 @@ export const lookForLogout = (
         return;
     }
 
-    const accounts = (await sdk.getWeb3().eth.getAccounts()).map((web3Address: string) => web3Address.toLowerCase());
+    const accounts = (await sdk.getWeb3().eth.getAccounts())
+        .map((web3Address: string) => web3Address.toLowerCase());
+
     if (address.toLowerCase() !== sdkAddress.toLowerCase() || !accounts.includes(sdkAddress.toLowerCase())) {
         // console.error(`User has logged out of their web3 provider (${sdkAddress} not in [${accounts.join(", ")}])`);
 
         const onClick = async () => {
-            await logout(sdk, readOnlyProvider, { reload: true })(dispatch).catch(console.error);
+            await logout(sdk, readOnlyProvider, { reload: true })(dispatch).catch((error) => {
+                _captureBackgroundException_(error, {
+                    description: "Error in logout in accountActions",
+                });
+            });
             await login(sdk, { redirect: false, showPopup: true, immediatePopup: false })(dispatch);
         };
         const onCancel = () => {

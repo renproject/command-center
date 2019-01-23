@@ -6,14 +6,8 @@ import { DarknodeDetails } from "../reducers/types";
 import { DarknodeCard } from "./DarknodeCard";
 import { EmptyDarknodeCard } from "./EmptyDarknodeCard";
 import { EmptyDarknodeList } from "./EmptyDarknodeList";
+import { _catch_ } from "./ErrorBoundary";
 import { Loading } from "./Loading";
-
-interface Props {
-    darknodeList: List<string> | null;
-    darknodeDetails: Map<string, DarknodeDetails>;
-    darknodeNames: Map<string, string>;
-    darknodeRegisteringList: Map<string, string>;
-}
 
 export class DarknodeList extends React.Component<Props> {
     public constructor(props: Props, context: object) {
@@ -30,13 +24,13 @@ export class DarknodeList extends React.Component<Props> {
                         const details = darknodeDetails.get(darknodeID) || null;
                         const name = darknodeNames.get(darknodeID);
 
-                        return <DarknodeCard
+                        return _catch_(<DarknodeCard
                             key={darknodeID}
                             name={name}
                             darknodeID={darknodeID}
                             darknodeDetails={details}
                             publicKey={darknodeRegisteringList.get(darknodeID)}
-                        />;
+                        />);
                     }).toArray()}
                     {darknodeList.size === 0 ? <EmptyDarknodeList /> : <>
                         {darknodeList.size < 2 ? <EmptyDarknodeCard className="second" /> : null}
@@ -47,4 +41,11 @@ export class DarknodeList extends React.Component<Props> {
             </div>
         );
     }
+}
+
+interface Props {
+    darknodeList: List<string> | null;
+    darknodeDetails: Map<string, DarknodeDetails>;
+    darknodeNames: Map<string, string>;
+    darknodeRegisteringList: Map<string, string>;
 }
