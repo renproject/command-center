@@ -1,4 +1,6 @@
 
+console.log(process.env);
+
 const infuraURL = process.env.REACT_APP_INFURA_URL || "";
 const infix = infuraURL[infuraURL.length - 1] === "/" ? "" : "/";
 
