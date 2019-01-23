@@ -5,36 +5,27 @@ import BigNumber from "bignumber.js";
 import { faStar } from "@fortawesome/free-regular-svg-icons";
 import { faChevronRight, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { connect } from "react-redux";
+import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
 import { CurrencyIcon } from "../../../components/CurrencyIcon";
-import { Token } from "../../../lib/tokens";
+import { Token } from "../../../lib/ethereum/tokens";
 import { ApplicationData, DarknodeDetails } from "../../../reducers/types";
 import { TokenBalance } from "../../TokenBalance";
 import { FeesItem } from "../FeesItem";
 import { TokenIcon } from "../TokenIcon";
 import { Block, BlockBody, BlockTitle } from "./Block";
 
-interface FeesBlockProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
-    isOperator: boolean;
-    darknodeDetails: DarknodeDetails | null;
-}
+class FeesBlockClass extends React.Component<Props, State> {
 
-interface FeesBlockState {
-    showAdvanced: boolean;
-}
-
-class FeesBlockClass extends React.Component<FeesBlockProps, FeesBlockState> {
-
-    public constructor(props: FeesBlockProps, context: object) {
+    public constructor(props: Props, context: object) {
         super(props, context);
         this.state = {
             showAdvanced: false,
         };
     }
 
-    public render(): JSX.Element {
+    public render = (): JSX.Element => {
         const { darknodeDetails, store, isOperator } = this.props;
         const { quoteCurrency } = store;
         const { showAdvanced } = this.state;
@@ -45,7 +36,7 @@ class FeesBlockClass extends React.Component<FeesBlockProps, FeesBlockState> {
                 onClick={showAdvanced ? undefined : this.toggleAdvanced}
             >
 
-                {showAdvanced ? <div className="block--basic--hide" onClick={this.toggleAdvanced}>
+                {showAdvanced ? <div role="button" className="block--basic--hide" onClick={this.toggleAdvanced}>
                     <FontAwesomeIcon icon={faTimes} pull="left" />
                 </div> : null}
 
@@ -72,7 +63,7 @@ class FeesBlockClass extends React.Component<FeesBlockProps, FeesBlockState> {
                                 </span>
                                 <span className="fees-block--basic--unit">{quoteCurrency.toUpperCase()}</span>
                             </div>
-                            <div className="block--basic--show" onClick={this.toggleAdvanced}>
+                            <div role="button" className="block--basic--show" onClick={this.toggleAdvanced}>
                                 <FontAwesomeIcon icon={faChevronRight} pull="left" />
                             </div>
                         </div> :
@@ -140,7 +131,7 @@ class FeesBlockClass extends React.Component<FeesBlockProps, FeesBlockState> {
         );
     }
 
-    private toggleAdvanced = () => {
+    private readonly toggleAdvanced = (): void => {
         this.setState({ showAdvanced: !this.state.showAdvanced });
     }
 
@@ -156,5 +147,14 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     actions: bindActionCreators({
     }, dispatch),
 });
+
+interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps> {
+    isOperator: boolean;
+    darknodeDetails: DarknodeDetails | null;
+}
+
+interface State {
+    showAdvanced: boolean;
+}
 
 export const FeesBlock = connect(mapStateToProps, mapDispatchToProps)(FeesBlockClass);

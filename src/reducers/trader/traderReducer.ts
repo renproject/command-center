@@ -6,7 +6,7 @@ import { TraderData } from "../../reducers/types";
 
 type AccountAction = ActionType<typeof accountActions>;
 
-export function traderReducer(state: TraderData = new TraderData(), action: AccountAction) {
+export function traderReducer(state: TraderData = new TraderData(), action: AccountAction): TraderData {
     switch (action.type) {
         case getType(accountActions.storeAddress):
             return state.set("address", action.payload);

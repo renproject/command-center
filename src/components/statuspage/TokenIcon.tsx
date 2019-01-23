@@ -1,18 +1,10 @@
 import * as React from "react";
 
-import { connect } from "react-redux";
+import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
-import { Token } from "../../lib/tokens";
+import { Token } from "../../lib/ethereum/tokens";
 import { ApplicationData } from "../../reducers/types";
-
-interface TokenIconProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
-    token: Token;
-    className?: string;
-}
-
-interface TokenIconState {
-}
 
 const icons = {
     [Token.ETH]: "eth.svg",
@@ -23,20 +15,21 @@ const icons = {
     [Token.ZRX]: "zrx.svg",
 };
 
-class TokenIconClass extends React.Component<TokenIconProps, TokenIconState> {
-    constructor(props: TokenIconProps) {
+class TokenIconClass extends React.Component<Props, State> {
+    constructor(props: Props) {
         super(props);
     }
 
-    public render(): JSX.Element {
+    public render = (): JSX.Element => {
         const { token, className } = this.props;
+        // tslint:disable-next-line: non-literal-require
         const image = require(`../../tokens/${icons[token]}`);
 
-        return <img className={className} src={image} />;
+        return <img alt="" role="presentation" className={className} src={image} />;
     }
 }
 
-const mapStateToProps = (state: ApplicationData) => ({
+const mapStateToProps = (_state: ApplicationData) => ({
     store: {
     },
 });
@@ -45,5 +38,13 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     actions: bindActionCreators({
     }, dispatch),
 });
+
+interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps> {
+    token: Token;
+    className?: string;
+}
+
+interface State {
+}
 
 export const TokenIcon = connect(mapStateToProps, mapDispatchToProps)(TokenIconClass);

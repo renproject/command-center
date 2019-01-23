@@ -9,10 +9,10 @@ import { StatisticsData } from "../../reducers/types";
 type NetworkAction = ActionType<typeof networkActions>;
 type OperatorActions = ActionType<typeof operatorActions>;
 
-export function statisticsReducer(
+export const statisticsReducer = (
     state: StatisticsData = new StatisticsData(),
     action: NetworkAction | OperatorActions
-) {
+): StatisticsData => {
     switch (action.type) {
         case getType(networkActions.storeMinimumBond):
             return state.set("minimumBond", action.payload.minimumBond);
@@ -37,7 +37,7 @@ export function statisticsReducer(
 
             // Add to list if it's not already in there (this is an inefficient
             // process but it's only run on a small number of strings every two minutes)
-            action.payload.darknodeList.map((darknodeID) => {
+            action.payload.darknodeList.map((darknodeID: string) => {
                 if (!newList.contains(darknodeID)) {
                     newList = newList.push(darknodeID);
 
@@ -47,14 +47,14 @@ export function statisticsReducer(
                 }
             });
 
-            newList.map((darknodeID) => {
+            newList.map((darknodeID: string) => {
                 if (!newNames.has(darknodeID)) {
                     newNames = newNames.set(darknodeID, `Darknode ${newList.indexOf(darknodeID) + 1}`);
                 }
             });
 
             const darknodeRegisteringList = state.darknodeRegisteringList
-                .filter((_, darknodeID) => !newList.contains(darknodeID));
+                .filter((_: string, darknodeID: string) => !newList.contains(darknodeID));
 
             return state
                 .set("darknodeList", state.darknodeList.set(action.payload.address, newList))
@@ -86,4 +86,4 @@ export function statisticsReducer(
         default:
             return state;
     }
-}
+};

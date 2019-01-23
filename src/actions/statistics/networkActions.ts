@@ -4,13 +4,13 @@ import BigNumber from "bignumber.js";
 import { Dispatch } from "redux";
 import { createStandardAction } from "typesafe-actions";
 
-import { contracts } from "../../lib/contracts/contracts";
-import { getPrices } from "../../lib/tokens";
+import { contracts } from "../../lib/ethereum/contracts/contracts";
+import { getPrices } from "../../lib/ethereum/tokens";
 import { TokenPrices } from "../../reducers/types";
 
-export const storeTokenPrices = createStandardAction("STORE_TOKEN_PRICES")<{ tokenPrices: TokenPrices; }>();
+export const storeTokenPrices = createStandardAction("STORE_TOKEN_PRICES")<{ tokenPrices: TokenPrices }>();
 
-export const storeMinimumBond = createStandardAction("STORE_MINIMUM_BOND")<{ minimumBond: BigNumber; }>();
+export const storeMinimumBond = createStandardAction("STORE_MINIMUM_BOND")<{ minimumBond: BigNumber }>();
 
 export const updateNetworkStatistics = (sdk: RenExSDK) => async (dispatch: Dispatch) => {
     const darknodeRegistry = new ((sdk.getWeb3()).eth.Contract)(

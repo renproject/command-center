@@ -3,15 +3,16 @@ import * as React from "react";
 
 import Web3 from "web3";
 
-import { connect } from "react-redux";
+import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { RouteComponentProps, withRouter } from "react-router";
 import { bindActionCreators, Dispatch } from "redux";
 
 import { StatusPage } from "../../components/statuspage/StatusPage";
 
 import { addRegisteringDarknode, RegistrationStatus, setDarknodeName } from "../../actions/statistics/operatorActions";
-import { EncodedData, Encodings } from "../../lib/general/encodedData";
+import { EncodedData, Encodings } from "../../lib/encodedData";
 import { ApplicationData } from "../../reducers/types";
+import { _catch_ } from "../ErrorBoundary";
 import { NotFound } from "./NotFound";
 
 export enum DarknodeAction {
@@ -20,18 +21,29 @@ export enum DarknodeAction {
     Deregister = "deregister",
 }
 
-interface DarknodeProps extends
-    ReturnType<typeof mapStateToProps>,
-    ReturnType<typeof mapDispatchToProps>,
-    RouteComponentProps {
-}
+const darknodeIDbase58ToHex = (darknodeID: string): string =>
+    (new Web3()).utils.toChecksumAddress(
+        (`0x${new EncodedData(darknodeID, Encodings.BASE58).toHex("").slice(4)}`).toLowerCase()
+    );
 
-interface DarknodeState {
-    darknodeID: string | undefined;
-    action: string | undefined;
-    publicKey: string | undefined;
-    providedName: string | undefined;
-}
+export const darknodeIDHexToBase58 = (darknodeID: string): string =>
+    new EncodedData(`0x1B14${darknodeID.slice(2)}`, Encodings.HEX).toBase58();
+
+export const getDarknodeParam = (params: unknown): string | undefined => {
+    const { darknodeID: darknodeID58 } = params as { darknodeID: string | undefined };
+    let darknodeID;
+    if (darknodeID58) {
+        try {
+            // Convert from base-58 to hex
+            darknodeID = darknodeIDbase58ToHex(darknodeID58);
+        } catch (err) {
+            // If the darknode ID is malformatted, ignore it
+            console.error(err);
+            darknodeID = undefined;
+        }
+    }
+    return darknodeID;
+};
 
 /**
  * Darknode shows the details of a darknode. The user does not have to be logged
@@ -41,8 +53,8 @@ interface DarknodeState {
  *     1) action: either "register" or "deregister"
  *     2) public_key: only used if action is "register"
  */
-class DarknodeClass extends React.Component<DarknodeProps, DarknodeState> {
-    public constructor(props: DarknodeProps, context: object) {
+class DarknodeClass extends React.Component<Props, State> {
+    public constructor(props: Props, context: object) {
         super(props, context);
         this.state = {
             darknodeID: undefined,
@@ -52,19 +64,19 @@ class DarknodeClass extends React.Component<DarknodeProps, DarknodeState> {
         };
     }
 
-    public componentDidMount = () => {
+    public componentDidMount = (): void => {
         this.handleNewProps(this.props, true);
     }
 
-    public componentWillReceiveProps = (nextProps: DarknodeProps) => {
+    public componentWillReceiveProps = (nextProps: Props): void => {
         this.handleNewProps(nextProps, false);
     }
 
-    public render(): JSX.Element {
-        const { match: { params }, store } = this.props;
+    public render = (): JSX.Element => {
+        const { store } = this.props;
         const { darknodeDetails, darknodeNames, address } = store;
 
-        const { darknodeID, action, publicKey, providedName } = this.state;
+        const { darknodeID, action, publicKey } = this.state;
 
         const details = darknodeID ? darknodeDetails.get(darknodeID, null) : null;
         const name = darknodeID ? darknodeNames.get(darknodeID) : undefined;
@@ -94,7 +106,7 @@ class DarknodeClass extends React.Component<DarknodeProps, DarknodeState> {
             <div>
                 {/* <Header /> */}
                 <div className="container">
-                    <StatusPage
+                    {_catch_(<StatusPage
                         key={darknodeID}
                         action={darknodeAction}
                         publicKey={publicKey}
@@ -102,13 +114,13 @@ class DarknodeClass extends React.Component<DarknodeProps, DarknodeState> {
                         darknodeID={darknodeID}
                         isOperator={!readOnly}
                         darknodeDetails={details}
-                    />
+                    />)}
                 </div>
             </div >
         );
     }
 
-    private handleNewProps = (nextProps: DarknodeProps, firstTime: boolean) => {
+    private readonly handleNewProps = (nextProps: Props, firstTime: boolean): void => {
         const { location: { search } } = this.props;
         const { match: { params: nextParams }, location: { search: nextSearch } } = nextProps;
 
@@ -150,28 +162,17 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     }, dispatch),
 });
 
+interface Props extends
+    ReturnType<typeof mapStateToProps>,
+    ConnectedReturnType<typeof mapDispatchToProps>,
+    RouteComponentProps {
+}
+
+interface State {
+    darknodeID: string | undefined;
+    action: string | undefined;
+    publicKey: string | undefined;
+    providedName: string | undefined;
+}
+
 export const Darknode = connect(mapStateToProps, mapDispatchToProps)(withRouter(DarknodeClass));
-
-export const getDarknodeParam = (params: unknown): string | undefined => {
-    const { darknodeID: darknodeID58 } = params as { darknodeID: string | undefined };
-    let darknodeID;
-    if (darknodeID58) {
-        try {
-            // Convert from base-58 to hex
-            darknodeID = darknodeIDbase58ToHex(darknodeID58);
-        } catch (err) {
-            // If the darknode ID is malformatted, ignore it
-            console.error(err);
-            darknodeID = undefined;
-        }
-    }
-    return darknodeID;
-};
-
-export const darknodeIDbase58ToHex = (darknodeID: string): string =>
-    (new Web3()).utils.toChecksumAddress(
-        ("0x" + new EncodedData(darknodeID, Encodings.BASE58).toHex("").slice(4)).toLowerCase()
-    );
-
-export const darknodeIDHexToBase58 = (darknodeID: string): string =>
-    new EncodedData("0x1B14" + darknodeID.slice(2), Encodings.HEX).toBase58();

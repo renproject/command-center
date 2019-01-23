@@ -1,4 +1,4 @@
-import bs58 from "bs58";
+import base58 from "bs58";
 
 import { Record } from "./record";
 
@@ -26,7 +26,7 @@ const parse = (param: string | Buffer | typeof DefaultEncodedData, encoding?: En
             };
         } else if (param instanceof Buffer && encoding === Encodings.BUFFER) {
             param = {
-                value: param as Buffer,
+                value: param,
                 encoding,
             };
         }
@@ -73,7 +73,7 @@ const parse = (param: string | Buffer | typeof DefaultEncodedData, encoding?: En
         }
 
         if (param.value.length % 2 === 1) {
-            param.value = "0" + param.value;
+            param.value = `0${param.value}`;
         }
 
         if (!param.value.match("^[A-Fa-f0-9]+$")) {
@@ -93,12 +93,14 @@ export class EncodedData extends Record(DefaultEncodedData) {
         super(param);
     }
 
-    public toHex(this: EncodedData, prefix = "0x"): string {
+    public toHex(this: EncodedData, prefix: string = "0x"): string {
         switch (this.encoding) {
             case Encodings.HEX:
-                return prefix + this.value;
+                return prefix + this.value.toString();
             default:
-                return prefix + this.toBuffer().toString("hex");
+                return prefix + this
+                    .toBuffer()
+                    .toString("hex");
         }
     }
 
@@ -107,7 +109,9 @@ export class EncodedData extends Record(DefaultEncodedData) {
             case Encodings.BASE64:
                 return this.value as string;
             default:
-                return this.toBuffer().toString("base64");
+                return this
+                    .toBuffer()
+                    .toString("base64");
         }
     }
 
@@ -116,7 +120,7 @@ export class EncodedData extends Record(DefaultEncodedData) {
             case Encodings.BASE58:
                 return this.value as string;
             default:
-                return bs58.encode(this.toBuffer());
+                return base58.encode(this.toBuffer());
         }
     }
 
@@ -127,7 +131,7 @@ export class EncodedData extends Record(DefaultEncodedData) {
             case Encodings.BASE64:
                 return Buffer.from(this.value as string, "base64");
             case Encodings.BASE58:
-                return Buffer.from(bs58.decode(this.value as string));
+                return Buffer.from(base58.decode(this.value as string));
             case Encodings.BUFFER:
                 return this.value as Buffer;
             default:

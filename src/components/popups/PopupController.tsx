@@ -1,31 +1,29 @@
 import * as React from "react";
 
-import { connect } from "react-redux";
+import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
 import { ApplicationData } from "../../reducers/types";
-
-interface PopupControllerProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
-}
+import { _catch_ } from "../ErrorBoundary";
 
 /**
  * PopupController is a visual component for displaying an arbitrary component in the
  * foreground with the rest of the page in the background
  */
-class PopupControllerClass extends React.Component<PopupControllerProps> {
-    constructor(props: PopupControllerProps) {
+class PopupControllerClass extends React.Component<Props> {
+    constructor(props: Props) {
         super(props);
     }
 
     public render(): JSX.Element | null {
-        const { popup, overlay } = this.props.store.popup;
+        const { popup, overlay, onCancel } = this.props.store.popup;
 
         return (<>
             <div className={popup && overlay ? "popup--blur" : ""}>
                 {this.props.children}
             </div>
             {popup ? <div className="popup--outer">
-                {popup}
+                {_catch_(popup, { popup: true, onCancel })}
                 {overlay ?
                     <div role="none" className="overlay" onClick={this.onClickHandler} /> : null}
             </div> : null}
@@ -51,5 +49,8 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     actions: bindActionCreators({
     }, dispatch),
 });
+
+interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps> {
+}
 
 export const PopupController = connect(mapStateToProps, mapDispatchToProps)(PopupControllerClass);

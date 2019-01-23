@@ -4,31 +4,29 @@ import BigNumber from "bignumber.js";
 
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { connect } from "react-redux";
-import { bindActionCreators, Dispatch } from "redux";
 
 import { RegistrationStatus } from "../../actions/statistics/operatorActions";
-import { ApplicationData, DarknodeDetails } from "../../reducers/types";
+import { DarknodeDetails } from "../../reducers/types";
 
 const lowValue = new BigNumber(Math.pow(10, 18)).multipliedBy(0.1);
 
-interface NotificationsProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
+interface Props {
     isOperator: boolean;
     darknodeDetails: DarknodeDetails | null;
 }
 
-interface NotificationsState {
+interface State {
 }
 
-class NotificationsClass extends React.Component<NotificationsProps, NotificationsState> {
+export class Notifications extends React.Component<Props, State> {
 
-    public constructor(props: NotificationsProps, context: object) {
+    public constructor(props: Props, context: object) {
         super(props, context);
         this.state = {
         };
     }
 
-    public render(): JSX.Element {
+    public render = (): JSX.Element => {
         const { isOperator, darknodeDetails } = this.props;
 
         let notification;
@@ -84,15 +82,3 @@ class NotificationsClass extends React.Component<NotificationsProps, Notificatio
         );
     }
 }
-
-const mapStateToProps = (state: ApplicationData) => ({
-    store: {
-    },
-});
-
-const mapDispatchToProps = (dispatch: Dispatch) => ({
-    actions: bindActionCreators({
-    }, dispatch),
-});
-
-export const Notifications = connect(mapStateToProps, mapDispatchToProps)(NotificationsClass);

@@ -1,42 +1,34 @@
 import * as React from "react";
 
-import { connect } from "react-redux";
+import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
 import { Blocky } from "../../components/Blocky";
 import { ApplicationData } from "../../reducers/types";
+import { _catch_ } from "../ErrorBoundary";
 
-const metamaskIcon = require("../../styles/images/metamask.svg");
-
-interface LoggedOutProps extends ReturnType<typeof mapStateToProps>, ReturnType<typeof mapDispatchToProps> {
-    onConnect: () => void;
-    onCancel: () => void;
-    newAddress: string | null;
-}
-
-interface LoggedOutState {
-}
+import metamaskIcon from "../../styles/images/metamask.svg";
 
 /**
  * LoggedOut is a popup component for prompting a user to select an
  * Ethereum account
  */
-class LoggedOutClass extends React.Component<LoggedOutProps, LoggedOutState> {
-    constructor(props: LoggedOutProps) {
+class LoggedOutClass extends React.Component<Props, State> {
+    constructor(props: Props) {
         super(props);
         this.state = {
         };
     }
 
-    public async componentDidMount() {
+    public componentDidMount = async (): Promise<void> => {
         //
     }
 
-    public render(): JSX.Element {
+    public render = (): JSX.Element => {
         const { newAddress } = this.props;
         return (
             <div className="popup no-web3 popup--logged-out">
-                <img className="no-web3--logo" src={metamaskIcon} />
+                <img alt="" role="presentation" className="no-web3--logo" src={metamaskIcon} />
                 {newAddress !== null ?
                     <>
                         <h2>Your Web3 account has changed.</h2>
@@ -62,7 +54,7 @@ class LoggedOutClass extends React.Component<LoggedOutProps, LoggedOutState> {
     }
 }
 
-const mapStateToProps = (state: ApplicationData) => ({
+const mapStateToProps = (_state: ApplicationData) => ({
     store: {
     },
 });
@@ -71,5 +63,14 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     actions: bindActionCreators({
     }, dispatch),
 });
+
+interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps> {
+    newAddress: string | null;
+    onCancel(): void;
+    onConnect(): void;
+}
+
+interface State {
+}
 
 export const LoggedOut = connect(mapStateToProps, mapDispatchToProps)(LoggedOutClass);

@@ -1,7 +1,5 @@
 import * as React from "react";
 
-import BigNumber from "bignumber.js";
-
 import { faServer } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -10,13 +8,7 @@ import { DarknodeDetails } from "../../../reducers/types";
 import { darknodeIDHexToBase58 } from "../../pages/Darknode";
 import { Block, BlockBody, BlockTitle } from "./Block";
 
-interface NetworkBlockProps {
-    darknodeDetails: DarknodeDetails | null;
-}
-
-const shift = new BigNumber(10).exponentiatedBy(18);
-
-export const NetworkBlock = (props: NetworkBlockProps) => {
+export const NetworkBlock = (props: Props): JSX.Element => {
     const { darknodeDetails } = props;
 
     const darknodeIDBase58 = darknodeDetails ? darknodeIDHexToBase58(darknodeDetails.ID) : "";
@@ -51,3 +43,8 @@ export const NetworkBlock = (props: NetworkBlockProps) => {
         </Block>
     );
 };
+
+// tslint:disable: react-unused-props-and-state
+interface Props {
+    darknodeDetails: DarknodeDetails | null;
+}
