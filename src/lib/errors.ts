@@ -105,3 +105,9 @@ export const _captureInteractionException_ = <X extends Details & Described & Sh
 export const _captureComponentException_ = (error: any, errorInfo: React.ErrorInfo) => {
     _captureException_(error, { ...errorInfo, description: "Error caught in Error Boundary. See Component stack trace.", category: "component_exception" });
 };
+
+// _noCapture_ is to mark errors that should not be reported to Sentry.
+export const _noCapture_ = (error: Error): Error => {
+    (error as any)._noCapture_ = true;
+    return error;
+};

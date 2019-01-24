@@ -6,8 +6,9 @@ import { Provider } from "web3/providers";
 
 import { ETH_NETWORK, INFURA_URL } from "../../environmentVariables";
 import { Language } from "../../languages/language";
+import { _noCapture_ } from "../errors";
 
-export const ErrorCanceledByUser = "Returned error: Error: MetaMask Tx Signature: User denied transaction signature.";
+export const ErrorCanceledByUser = "User denied transaction signature.";
 
 export const getReadOnlyProvider = (): Provider => {
     const engine = new ProviderEngine();
@@ -29,12 +30,12 @@ export const getInjectedWeb3Provider = async (): Promise<Provider> => {
             await window.ethereum.enable();
             provider = window.ethereum;
         } catch (error) {
-            throw new Error(ErrorAccountAccessRejected);
+            throw _noCapture_(new Error(ErrorAccountAccessRejected));
         }
     } else if (window.web3) {
         provider = window.web3.currentProvider;
     } else {
-        throw new Error(ErrorNoWeb3);
+        throw _noCapture_(new Error(ErrorNoWeb3));
     }
 
     const web3 = new Web3(provider);
@@ -42,7 +43,7 @@ export const getInjectedWeb3Provider = async (): Promise<Provider> => {
     // Check that the provider is using the correct network
     // tslint:disable-next-line:no-any
     if ((await (web3.eth.net as any).getNetworkType()) !== ETH_NETWORK) {
-        throw new Error(ErrorWrongNetwork);
+        throw _noCapture_(new Error(ErrorWrongNetwork));
     }
 
     if ((await web3.eth.getAccounts()).length === 0) {
