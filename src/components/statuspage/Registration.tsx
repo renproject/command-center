@@ -41,7 +41,8 @@ class RegistrationClass extends React.Component<Props, State> {
         const { address, minimumBond, tokenPrices } = this.props.store;
         const { active } = this.state;
 
-        const disabled = active || !publicKey || !address || !minimumBond || !tokenPrices;
+        const disabled = active || !address;
+        const registrationDisabled = disabled || !publicKey || !minimumBond || !tokenPrices;
 
         const noStatus =
             (registrationStatus === RegistrationStatus.Unregistered) ||
@@ -56,7 +57,7 @@ class RegistrationClass extends React.Component<Props, State> {
                     <span className="status--title">{statusText[this.props.registrationStatus]}</span> : null}
                 {isOperator ? <>
                     {registrationStatus === RegistrationStatus.Unregistered ?
-                        <button disabled={disabled} className="status--button" onClick={this.handleRegister}>
+                        <button disabled={registrationDisabled} className="status--button" onClick={this.handleRegister}>
                             {active ? "Registering..." : `Register your darknode${disabled && !publicKey ? " (public key required)" : ""}`}
                         </button> :
                         null
