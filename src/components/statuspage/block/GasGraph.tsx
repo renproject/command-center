@@ -61,6 +61,7 @@ const periods: Array<[HistoryPeriods, string]> = [
 ];
 
 class GasGraphClass extends React.Component<Props, State> {
+    private updateHistoryStarted: boolean = false;
     private updateHistoryTimeout: NodeJS.Timer | undefined;
     private localTimeout: NodeJS.Timer | undefined;
 
@@ -88,7 +89,13 @@ class GasGraphClass extends React.Component<Props, State> {
     }
 
     public componentWillReceiveProps = (nextProps: Props): void => {
-        if (!this.updateHistoryTimeout && nextProps.darknodeDetails) {
+        // Check if the darknode's balances have changed
+        const changedBalance =
+            nextProps.darknodeDetails && nextProps.darknodeDetails.ethBalance &&
+            this.props.darknodeDetails && this.props.darknodeDetails.ethBalance &&
+            !nextProps.darknodeDetails.ethBalance.isEqualTo(this.props.darknodeDetails.ethBalance);
+
+        if (changedBalance || (this.updateHistoryStarted === false && nextProps.darknodeDetails)) {
             this.updateHistory(nextProps).catch((error => {
                 _captureBackgroundException_(error, {
                     description: "Error in componentWillReceiveProps in GasGraph",
@@ -106,6 +113,7 @@ class GasGraphClass extends React.Component<Props, State> {
         props: Props | undefined,
         historyPeriod?: HistoryPeriods | undefined
     ): Promise<void> => {
+        this.updateHistoryStarted = true;
 
         try {
             if (this.localTimeout) { clearTimeout(this.localTimeout); }
@@ -121,7 +129,7 @@ class GasGraphClass extends React.Component<Props, State> {
         let retry = 1; // Retry in a second, unless the call succeeds.
 
         if (sdk && darknodeDetails && secondsPerBlock !== null) {
-            retry = 30;
+            retry = 60 * 5; // 5 minutes
 
             const balanceHistory = balanceHistories.get(darknodeDetails.ID) || OrderedMap<number, BigNumber>();
             try {
@@ -148,6 +156,8 @@ class GasGraphClass extends React.Component<Props, State> {
             return;
         }
 
+        // tslint:disable-next-line: no-any
+        clearTimeout(this.updateHistoryTimeout as any);
         this.updateHistoryTimeout = setTimeout(this.updateHistory, retry * 1000) as unknown as NodeJS.Timer;
     }
 

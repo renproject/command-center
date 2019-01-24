@@ -88,7 +88,7 @@ export const registerNode = (
     ) => {
         darknodeRegistry.methods.register(darknodeID, publicKey, bond.toFixed()).send({ from: address, gas })
             .on("transactionHash", (res: string) => { resolve(res); resolved = true; })
-            .on("confirmation", onDone)
+            .once("confirmation", onDone)
             .on("error", (error: Error) => { if (resolved) { onCancel(); } reject(error); });
     }));
 };
@@ -113,7 +113,7 @@ export const deregisterNode = (
     ) => {
         darknodeRegistry.methods.deregister(darknodeID).send({ from: address })
             .on("transactionHash", (res: string) => { resolve(res); resolved = true; })
-            .on("confirmation", onDone)
+            .once("confirmation", onDone)
             .on("error", (error: Error) => { if (resolved) { onCancel(); } reject(error); });
     });
 };
@@ -138,7 +138,7 @@ export const refundNode = (
     ) => {
         darknodeRegistry.methods.refund(darknodeID).send({ from: address })
             .on("transactionHash", (res: string) => { resolve(res); resolved = true; })
-            .on("confirmation", onDone)
+            .once("confirmation", onDone)
             .on("error", (error: Error) => { if (resolved) { onCancel(); } reject(error); });
     });
 
@@ -167,7 +167,7 @@ export const fundNode = (
             from: address,
         })
             .on("transactionHash", (res: string) => { resolve(res); resolved = true; })
-            .on("confirmation", onDone)
+            .once("confirmation", onDone)
             .on("error", (error: Error) => { if (resolved) { onCancel(); } reject(error); });
     });
 };

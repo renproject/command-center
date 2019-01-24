@@ -139,10 +139,13 @@ class TopUpClass extends React.Component<Props, State> {
 
         const onDone = async () => {
             try {
-                // tslint:disable-next-line: await-promise
                 await this.props.actions.updateDarknodeStatistics(sdk, darknodeID, tokenPrices);
+                this.setState({ resultMessage: CONFIRMATION_MESSAGE, pending: false });
 
-                this.setState({ value: "0", resultMessage: CONFIRMATION_MESSAGE, pending: false });
+                // If the user hasn't changed the value, set it to 0.
+                if (this.state.value === value) {
+                    this.setState({ value: "0" });
+                }
             } catch (error) {
                 // Ignore error
             }
