@@ -2,6 +2,8 @@
 
 import * as Sentry from "@sentry/browser";
 
+import { NETWORK } from "../environmentVariables";
+
 interface Details {
     description?: string;
     category?: string;
@@ -39,9 +41,20 @@ const _captureException_ = <X extends Details>(error: any, details: X) => {
             scope.setExtra("serverResponse", error.response.data);
         }
 
-        scope.setExtra("uncaught", false);
+        scope.setExtra("caught", true);
 
         console.error(error);
+
+        const environment = (process.env.NODE_ENV === "development") ? "local" : NETWORK;
+        if (environment !== "mainnet") {
+            if (typeof error === "string") {
+                // tslint:disable-next-line: no-parameter-reassignment
+                error = `[${environment}] ${error}`;
+            } else {
+                error.message = `[${environment}] ${error.message || error}`;
+            }
+        }
+
         Sentry.captureException(error);
     });
 };

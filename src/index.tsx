@@ -42,7 +42,7 @@ Sentry.configureScope((scope) => {
     scope.setExtra("loggedIn", false);
 
     // We set this to false when logging to Sentry explicitly.
-    scope.setExtra("uncaught", true);
+    scope.setExtra("caught", false);
 });
 
 // Update document title to show network
