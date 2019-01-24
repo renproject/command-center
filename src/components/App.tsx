@@ -51,13 +51,13 @@ class AppClass extends React.Component<Props, State> {
 
     public render = (): JSX.Element => {
         const { match: { params } } = this.props;
-        const { address } = this.props.store;
+        const { address, sdk } = this.props.store;
         const darknodeID = getDarknodeParam(params);
 
         // We set the key to be the address so that any sub-component state is reset after changing accounts (e.g. if in
         // the middle of a transaction, etc.)
         return <div className="app" key={address || undefined}>
-            {_catch_(<BackgroundTasks />)}
+            {sdk ? _catch_(<BackgroundTasks />) : <></>}
             <ScrollToTop />
             {_catch_(<Header />)}
             <PopupController>
@@ -75,6 +75,7 @@ class AppClass extends React.Component<Props, State> {
 const mapStateToProps = (state: ApplicationData) => ({
     store: {
         address: state.trader.address,
+        sdk: state.trader.sdk,
     },
 });
 

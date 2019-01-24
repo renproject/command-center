@@ -103,6 +103,10 @@ class RegistrationClass extends React.Component<Props, State> {
         const { darknodeID } = this.props;
         const { sdk, tokenPrices } = this.props.store;
 
+        if (!sdk) {
+            return; // FIXME
+        }
+
         try {
             await this.props.actions.updateDarknodeStatistics(sdk, darknodeID, tokenPrices);
             this.setState({ active: false });
@@ -114,10 +118,12 @@ class RegistrationClass extends React.Component<Props, State> {
     private readonly onDoneRegister = async () => {
         const { sdk, address, tokenPrices, darknodeList } = this.props.store;
 
+        if (!sdk || !address) {
+            return; // FIXME
+        }
+
         try {
-            if (address) {
-                await this.props.actions.updateOperatorStatistics(sdk, address, tokenPrices, darknodeList);
-            }
+            await this.props.actions.updateOperatorStatistics(sdk, address, tokenPrices, darknodeList);
             this.setState({ active: false });
         } catch (error) {
             // Ignore error
@@ -128,7 +134,7 @@ class RegistrationClass extends React.Component<Props, State> {
         const { darknodeID, publicKey } = this.props;
         const { sdk, address, minimumBond, tokenPrices } = this.props.store;
 
-        if (!publicKey || !address || !minimumBond || !tokenPrices) {
+        if (!sdk || !publicKey || !address || !minimumBond || !tokenPrices) {
             return; // FIXME
         }
 
@@ -150,7 +156,7 @@ class RegistrationClass extends React.Component<Props, State> {
         const { darknodeID, darknodeDetails } = this.props;
         const { sdk, address, quoteCurrency } = this.props.store;
 
-        if (!address) {
+        if (!sdk || !address) {
             return;
         }
 
@@ -169,7 +175,7 @@ class RegistrationClass extends React.Component<Props, State> {
         const { darknodeID } = this.props;
         const { sdk, address } = this.props.store;
 
-        if (!address) {
+        if (!sdk || !address) {
             return;
         }
 
