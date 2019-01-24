@@ -75,7 +75,7 @@ class GasGraphClass extends React.Component<Props, State> {
 
     public componentDidMount = (): void => {
         const { store: { secondsPerBlock, sdk } } = this.props;
-        if (secondsPerBlock === null) {
+        if (sdk && secondsPerBlock === null) {
             this.props.actions.calculateSecondsPerBlock(sdk)
                 .catch((error) => {
                     _captureBackgroundException_(error, {
@@ -118,10 +118,10 @@ class GasGraphClass extends React.Component<Props, State> {
         historyPeriod = historyPeriod || this.state.nextHistoryPeriod;
         const { store: { balanceHistories, sdk, secondsPerBlock }, darknodeDetails } = props || this.props;
 
-        let retry = 1 * 1000;
+        let retry = 1; // Retry in a second, unless the call succeeds.
 
-        if (darknodeDetails && secondsPerBlock !== null) {
-            retry = 30 * 1000;
+        if (sdk && darknodeDetails && secondsPerBlock !== null) {
+            retry = 30;
 
             const balanceHistory = balanceHistories.get(darknodeDetails.ID) || OrderedMap<number, BigNumber>();
             try {
@@ -148,7 +148,7 @@ class GasGraphClass extends React.Component<Props, State> {
             return;
         }
 
-        this.updateHistoryTimeout = setTimeout(this.updateHistory, retry) as unknown as NodeJS.Timer;
+        this.updateHistoryTimeout = setTimeout(this.updateHistory, retry * 1000) as unknown as NodeJS.Timer;
     }
 
     public render = (): JSX.Element => {

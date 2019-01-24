@@ -30,7 +30,7 @@ export class TraderData extends Record({
     address: null as string | null,
     web3BrowserName: "MetaMask",
     readOnlyProvider,
-    sdk: new RenExSDK(readOnlyProvider, { network: NETWORK }),
+    sdk: new RenExSDK(readOnlyProvider, { network: NETWORK }) as RenExSDK | undefined,
 }) { }
 
 export enum LabelLevel {

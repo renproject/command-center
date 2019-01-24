@@ -32,7 +32,6 @@ class BackgroundTasksClass extends React.Component<Props, State> {
 
     public componentDidMount = async (): Promise<void> => {
         const { match: { params } } = this.props;
-        const { sdk } = this.props.store;
 
         const darknodeID = getDarknodeParam(params);
 
@@ -44,15 +43,17 @@ class BackgroundTasksClass extends React.Component<Props, State> {
         this.setupLoops();
 
         try {
-            // tslint:disable-next-line: await-promise
-            await this.props.actions.login(
-                sdk,
-                {
-                    redirect: false,
-                    showPopup: darknodeID === undefined || action !== undefined,
-                    immediatePopup: false,
-                }
-            );
+            const { sdk } = this.props.store;
+            if (sdk) {
+                await this.props.actions.login(
+                    sdk,
+                    {
+                        redirect: false,
+                        showPopup: darknodeID === undefined || action !== undefined,
+                        immediatePopup: false,
+                    }
+                );
+            }
         } catch (error) {
             _captureBackgroundException_(error, {
                 description: "Error logging in on load",
@@ -123,7 +124,7 @@ class BackgroundTasksClass extends React.Component<Props, State> {
         props = props || this.props;
 
         const { sdk, address, readOnlyProvider } = props.store;
-        if (address) {
+        if (sdk && address) {
             try {
                 // tslint:disable-next-line: await-promise
                 await props.actions.lookForLogout(sdk, address, readOnlyProvider);
@@ -142,15 +143,17 @@ class BackgroundTasksClass extends React.Component<Props, State> {
         props = props || this.props;
 
         const { sdk } = props.store;
-        let timeout = 3600;
-        try {
-            // tslint:disable-next-line: await-promise
-            await props.actions.updateNetworkStatistics(sdk);
-        } catch (error) {
-            _captureBackgroundException_(error, {
-                description: "Error thrown in callUpdateNetworkStatistics background task",
-            });
-            timeout = 1; // Retry in a second if an error occurred
+        let timeout = 1; // Retry in a second, unless the call succeeds
+        if (sdk) {
+            try {
+                // tslint:disable-next-line: await-promise
+                await props.actions.updateNetworkStatistics(sdk);
+                timeout = 3600;
+            } catch (error) {
+                _captureBackgroundException_(error, {
+                    description: "Error thrown in callUpdateNetworkStatistics background task",
+                });
+            }
         }
         if (this.callUpdateNetworkStatisticsTimeout) { clearTimeout(this.callUpdateNetworkStatisticsTimeout); }
         this.callUpdateNetworkStatisticsTimeout = setTimeout(
@@ -164,8 +167,8 @@ class BackgroundTasksClass extends React.Component<Props, State> {
         props = props || this.props;
 
         const { sdk, address, tokenPrices, darknodeList, darknodeRegisteringList } = props.store;
-        let timeout = 1;
-        if (address && tokenPrices) {
+        let timeout = 1; // Retry in a second, unless the call succeeds
+        if (sdk && address && tokenPrices) {
             try {
                 let list = darknodeRegisteringList.keySeq().toList();
                 if (darknodeList) {
@@ -198,7 +201,7 @@ class BackgroundTasksClass extends React.Component<Props, State> {
         const darknodeID = getDarknodeParam(params);
 
         let timeout = 1; // if the action isn't called, try again in 1 second
-        if (tokenPrices && darknodeID) {
+        if (sdk && tokenPrices && darknodeID) {
             try {
                 // tslint:disable-next-line: await-promise
                 await props.actions.updateDarknodeStatistics(

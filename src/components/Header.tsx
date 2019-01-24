@@ -180,7 +180,7 @@ class HeaderClass extends React.Component<Props, State> {
 
     private readonly handleLogin = async (): Promise<void> => {
         const { address, sdk } = this.props.store;
-        if (!address) {
+        if (sdk && !address) {
             // tslint:disable-next-line: await-promise
             await this.props.actions.login(sdk, { redirect: false, showPopup: true, immediatePopup: true });
         }
