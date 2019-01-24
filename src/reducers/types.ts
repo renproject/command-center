@@ -47,10 +47,29 @@ export class PopupData extends Record({
 
 export enum Currency {
     AUD = "aud",
+    CNY = "cny",
+    GBP = "gbp",
+    EUR = "eur",
+    JPY = "jpy",
+    KRW = "krw",
     USD = "usd",
+
     ETH = "eth",
     BTC = "btc",
 }
+
+export const currencies = [
+    { currency: Currency.AUD, description: "Australian Dollar (AUD)", },
+    { currency: Currency.GBP, description: "British Pound (GBP)", },
+    { currency: Currency.CNY, description: "Chinese Yuan (CNY)", },
+    { currency: Currency.EUR, description: "Euro (EUR)", },
+    { currency: Currency.JPY, description: "Japanese Yen (JPY)", },
+    { currency: Currency.KRW, description: "Korean Won (KRW)", },
+    { currency: Currency.USD, description: "US Dollar (USD)", },
+
+    { currency: Currency.ETH, description: "Ethereum (ETH)", },
+    { currency: Currency.BTC, description: "Bitcoin (BTC)", },
+];
 
 export type TokenPrices = Map<Token, Map<Currency, number>>;
 

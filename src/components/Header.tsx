@@ -9,7 +9,7 @@ import { bindActionCreators, Dispatch } from "redux";
 import { storeQuoteCurrency } from "../actions/statistics/operatorActions";
 import { login } from "../actions/trader/accountActions";
 import { Blocky } from "../components/Blocky";
-import { ApplicationData, Currency } from "../reducers/types";
+import { ApplicationData, currencies, Currency } from "../reducers/types";
 import { CurrencyIcon } from "./CurrencyIcon";
 
 import English from "../styles/images/rp-flag-uk.svg";
@@ -70,54 +70,19 @@ class HeaderClass extends React.Component<Props, State> {
                                     {quoteCurrency.toUpperCase()} <FontAwesomeIcon icon={faAngleDown} />
                                     {currencyDropdown ?
                                         <ul className="header--dropdown header--dropdown--currency">
-                                            <li
+                                            {currencies.map(({ currency, description }) => <li
+                                                key={currency}
                                                 role="button"
-                                                data-id={Currency.USD}
-                                                className={quoteCurrency === Currency.USD ?
+                                                data-id={currency}
+                                                className={quoteCurrency === currency ?
                                                     "header--dropdown--selected" :
                                                     ""}
                                                 onClick={this.setCurrency}
                                             >
-                                                <CurrencyIcon currency={Currency.USD} />
+                                                <CurrencyIcon currency={currency} />
                                                 {" "}
-                                                USD Dollar (USD)
-                                            </li>
-                                            <li
-                                                role="button"
-                                                data-id={Currency.AUD}
-                                                className={quoteCurrency === Currency.AUD ?
-                                                    "header--dropdown--selected" :
-                                                    ""}
-                                                onClick={this.setCurrency}
-                                            >
-                                                <CurrencyIcon currency={Currency.AUD} />
-                                                {" "}
-                                                Australian Dollar (AUD)
-                                            </li>
-                                            <li
-                                                role="button"
-                                                data-id={Currency.BTC}
-                                                className={quoteCurrency === Currency.BTC ?
-                                                    "header--dropdown--selected" :
-                                                    ""}
-                                                onClick={this.setCurrency}
-                                            >
-                                                <CurrencyIcon currency={Currency.BTC} />
-                                                {" "}
-                                                Bitcoin (BTC)
-                                            </li>
-                                            <li
-                                                role="button"
-                                                data-id={Currency.ETH}
-                                                className={quoteCurrency === Currency.ETH ?
-                                                    "header--dropdown--selected" :
-                                                    ""}
-                                                onClick={this.setCurrency}
-                                            >
-                                                <CurrencyIcon currency={Currency.ETH} />
-                                                {" "}
-                                                Ethereum (ETH)
-                                            </li>
+                                                {description}
+                                            </li>)}
                                         </ul> : null
                                     }
                                 </li>
