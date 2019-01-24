@@ -3,6 +3,7 @@ import BigNumber from "bignumber.js";
 
 import { Dispatch } from "redux";
 
+import { _noCapture_ } from "../../lib/errors";
 import { contracts } from "../../lib/ethereum/contracts/contracts";
 import { Token } from "../../lib/ethereum/tokens";
 
@@ -38,7 +39,7 @@ export const approveNode = (sdk: RenExSDK, address: string, bond: BigNumber) => 
     }
 
     if (ercBalance.lt(bond)) {
-        throw new Error("You have insufficient REN to register a darknode.");
+        throw _noCapture_(new Error("You have insufficient REN to register a darknode."));
     }
 
     return new Promise((
@@ -60,10 +61,6 @@ export const registerNode = (
     onCancel: () => void,
     onDone: () => void
 ) => async (_dispatch: Dispatch) => {
-
-    if (!publicKey) {
-        throw new Error("Public key required");
-    }
 
     const hardCodedGas = 500000;
 

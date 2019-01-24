@@ -193,7 +193,7 @@ class MultiStepPopupClass extends React.Component<Props, State> {
             try {
                 await steps[currentStep].call();
             } catch (error) {
-                const rejected = error.message === ErrorCanceledByUser;
+                const rejected = (error.message || "").match(ErrorCanceledByUser);
                 this.setState({ error, running: false, rejected });
                 return;
             }
