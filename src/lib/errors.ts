@@ -45,8 +45,9 @@ const _captureException_ = <X extends Details>(error: any, details: X) => {
 
         console.error(error);
 
-        const environment = (process.env.NODE_ENV === "development") ? "local" : NETWORK;
+        let environment = (process.env.NODE_ENV === "development") ? "local" : NETWORK;
         if (environment !== "mainnet") {
+            environment = (environment || "").toUpperCase();
             if (typeof error === "string") {
                 // tslint:disable-next-line: no-parameter-reassignment
                 error = `[${environment}] ${error}`;
