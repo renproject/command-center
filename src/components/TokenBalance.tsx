@@ -19,10 +19,12 @@ class TokenBalanceClass extends React.Component<Props, State> {
         const { token, store } = this.props;
         const { sdk } = store;
 
-        const tokenDetails = await sdk._cachedTokenDetails.get(token);
+        if (sdk) {
+            const tokenDetails = await sdk._cachedTokenDetails.get(token);
 
-        const decimals = tokenDetails ? new BigNumber(tokenDetails.decimals.toString()).toNumber() : 0;
-        this.setState({ decimals });
+            const decimals = tokenDetails ? new BigNumber(tokenDetails.decimals.toString()).toNumber() : 0;
+            this.setState({ decimals });
+        }
     }
 
     public componentWillReceiveProps = async (nextProps: Props): Promise<void> => {
@@ -30,7 +32,7 @@ class TokenBalanceClass extends React.Component<Props, State> {
         const { sdk } = store;
         const { token } = this.props;
 
-        if (nextToken !== token) {
+        if (sdk && nextToken !== token) {
             const tokenDetails = await sdk._cachedTokenDetails.get(nextToken);
 
             const decimals = tokenDetails ? new BigNumber(tokenDetails.decimals.toString()).toNumber() : 0;

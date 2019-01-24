@@ -86,7 +86,7 @@ class TopUpClass extends React.Component<Props, State> {
 
     private readonly updateTraderBalance = async (): Promise<BigNumber> => {
         const { store: { address, sdk } } = this.props;
-        if (!address) {
+        if (!sdk || !address) {
             throw new Error("Invalid address when updating trader balance");
         }
         const traderBalance = new BigNumber((await sdk.getWeb3().eth.getBalance(address)).toString())
@@ -118,6 +118,11 @@ class TopUpClass extends React.Component<Props, State> {
 
         if (!address) {
             this.setState({ resultMessage: `Invalid account.`, pending: false });
+            return;
+        }
+
+        if (!sdk) {
+            this.setState({ resultMessage: `An error occurred, please refresh the page and try again.`, pending: false });
             return;
         }
 
