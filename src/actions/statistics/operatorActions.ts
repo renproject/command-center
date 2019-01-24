@@ -298,8 +298,12 @@ export const fetchDarknodeBalanceHistory = (
 
     // Also add most recent block
     if (!balanceHistory.has(currentBlock)) {
-        const balance = new BigNumber((await sdk.getWeb3().eth.getBalance(darknodeID, currentBlock)).toString());
-        balanceHistory = balanceHistory.set(currentBlock, balance);
+        const currentBalance = await sdk.getWeb3().eth.getBalance(darknodeID, currentBlock);
+
+        if (currentBalance) {
+            const balance = new BigNumber(currentBalance.toString());
+            balanceHistory = balanceHistory.set(currentBlock, balance);
+        }
     }
 
     balanceHistory = balanceHistory.sortBy((_: BigNumber, value: number) => value);
