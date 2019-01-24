@@ -183,11 +183,6 @@ $darknode-card-margin: 10px;
     }
 }
 
-.darknode-list--empty {
-    height: 335px;
-    overflow: hidden;
-}
-
 .darknode-list--loading {
     height: 100vh;
     width: 100vw;
@@ -198,8 +193,6 @@ $darknode-card-margin: 10px;
     justify-content: center;
     align-items: center;
 }
-
-
 
 .card--hide {
     cursor: pointer;

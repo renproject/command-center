@@ -69,7 +69,7 @@ interface State {
 
 export const _catch_ = (
     children: React.ReactNode,
-    options?: { popup: boolean; onCancel(): void }
-) => <ErrorBoundary popup={options && options.popup} onCancel={options && options.onCancel}>
+    options?: { key?: string; popup?: boolean; onCancel?(): void }
+) => <ErrorBoundary key={options && options.key} popup={options && options.popup} onCancel={options && options.onCancel}>
         {children}
     </ErrorBoundary>;

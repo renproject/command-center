@@ -1,3 +1,5 @@
+import Axios from "axios";
+
 import { Map } from "immutable";
 
 import { Currency, TokenPrices } from "../../reducers/types";
@@ -35,10 +37,8 @@ export async function getPrices(): Promise<TokenPrices> {
         }
 
         // tslint:disable-next-line:max-line-length
-        const url = `https://api.coingecko.com/api/v3/coins/${coinGeckoID}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`;
-        const response = await fetch(url);
-        const data = await response.json();
-        const price = Map<Currency, number>(data.market_data.current_price);
+        const response = await Axios.get(`https://api.coingecko.com/api/v3/coins/${coinGeckoID}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`);
+        const price = Map<Currency, number>(response.data.market_data.current_price);
 
         prices = prices.set(token, price);
     }
