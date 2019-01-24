@@ -8,6 +8,7 @@ import { createStandardAction } from "typesafe-actions";
 import { getOperatorDarknodes } from "../../lib/ethereum/operator";
 import { Currency, DarknodeDetails, TokenPrices } from "../../reducers/types";
 
+import { Block } from "web3/eth/types";
 import { _captureBackgroundException_ } from "../../lib/errors";
 import { contracts } from "../../lib/ethereum/contracts/contracts";
 import { Token, Tokens } from "../../lib/ethereum/tokens";
@@ -47,12 +48,21 @@ export const calculateSecondsPerBlock = (
     const sampleSize = 1000;
 
     const web3 = sdk.getWeb3();
-    const currentBlockNumber = await web3.eth.getBlockNumber();
-    const currentBlock = await web3.eth.getBlock(currentBlockNumber);
+    const fetchedBlockNumber = await web3.eth.getBlockNumber();
+    let currentBlockNumber = fetchedBlockNumber;
+    let currentBlock: Block | null = null;
+    // If current block isn't know yet, try previous block, up to 10 times
+    while (currentBlock === null && currentBlockNumber > fetchedBlockNumber - 10) {
+        currentBlock = await web3.eth.getBlock(currentBlockNumber);
+        currentBlockNumber -= 1;
+    }
     const previousBlock = await web3.eth.getBlock(currentBlockNumber - sampleSize);
-    const secondsPerBlock = Math.floor((currentBlock.timestamp - previousBlock.timestamp) / sampleSize);
 
-    dispatch(storeSecondsPerBlock({ secondsPerBlock }));
+    if (currentBlock !== null && previousBlock !== null) {
+        const secondsPerBlock = Math.floor((currentBlock.timestamp - previousBlock.timestamp) / sampleSize);
+
+        dispatch(storeSecondsPerBlock({ secondsPerBlock }));
+    }
 };
 
 const getBalances = async (sdk: RenExSDK, darknodeID: string): Promise<OrderedMap<Token, BigNumber>> => {
@@ -291,8 +301,12 @@ export const fetchDarknodeBalanceHistory = (
         block = block - block % jump;
 
         if (!balanceHistory.has(block)) {
-            const balance = new BigNumber((await sdk.getWeb3().eth.getBalance(darknodeID, block)).toString());
-            balanceHistory = balanceHistory.set(block, balance);
+            const blockBalance = await sdk.getWeb3().eth.getBalance(darknodeID, block);
+
+            if (blockBalance !== null) {
+                const balance = new BigNumber(blockBalance.toString());
+                balanceHistory = balanceHistory.set(block, balance);
+            }
         }
     }
 
@@ -300,7 +314,7 @@ export const fetchDarknodeBalanceHistory = (
     if (!balanceHistory.has(currentBlock)) {
         const currentBalance = await sdk.getWeb3().eth.getBalance(darknodeID, currentBlock);
 
-        if (currentBalance) {
+        if (currentBalance !== null) {
             const balance = new BigNumber(currentBalance.toString());
             balanceHistory = balanceHistory.set(currentBlock, balance);
         }
