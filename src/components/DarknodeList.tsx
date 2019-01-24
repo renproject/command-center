@@ -18,7 +18,7 @@ export class DarknodeList extends React.Component<Props> {
         const { darknodeList, darknodeDetails, darknodeNames, darknodeRegisteringList } = this.props;
 
         return (
-            <div className={`darknode-list ${darknodeList && darknodeList.size < 4 ? "darknode-list--empty" : ""}`}>
+            <div className={`darknode-list`}>
                 {darknodeList === null ? <div className="darknode-list--loading"><Loading alt={true} /></div> : <>
                     {darknodeList && darknodeList.map((darknodeID: string) => {
                         const details = darknodeDetails.get(darknodeID) || null;
@@ -30,7 +30,7 @@ export class DarknodeList extends React.Component<Props> {
                             darknodeID={darknodeID}
                             darknodeDetails={details}
                             publicKey={darknodeRegisteringList.get(darknodeID)}
-                        />);
+                        />, { key: darknodeID });
                     }).toArray()}
                     {darknodeList.size === 0 ? <EmptyDarknodeList /> : <>
                         {darknodeList.size < 2 ? <EmptyDarknodeCard className="second" /> : null}

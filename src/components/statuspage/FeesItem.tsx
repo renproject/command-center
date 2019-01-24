@@ -41,10 +41,12 @@ class FeesItemClass extends React.Component<Props, State> {
         const { sdk, tokenPrices } = store;
         this.setState({ disabled: true, loading: true });
 
-        // tslint:disable-next-line: await-promise
-        await this.props.actions.withdrawReward(sdk, darknodeID, token);
-        // tslint:disable-next-line: await-promise
-        await this.props.actions.updateDarknodeStatistics(sdk, darknodeID, tokenPrices);
+        if (sdk) {
+            // tslint:disable-next-line: await-promise
+            await this.props.actions.withdrawReward(sdk, darknodeID, token);
+            // tslint:disable-next-line: await-promise
+            await this.props.actions.updateDarknodeStatistics(sdk, darknodeID, tokenPrices);
+        }
 
         this.setState({ loading: false });
     }
