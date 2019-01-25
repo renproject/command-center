@@ -59,15 +59,17 @@ class AppClass extends React.Component<Props, State> {
         return <div className="app" key={address || undefined}>
             {sdk ? _catch_(<BackgroundTasks />) : <></>}
             <ScrollToTop />
-            {_catch_(<Header />)}
             <PopupController>
                 {address ? _catch_(<Sidebar selectedDarknode={darknodeID} />) : null}
-                <Switch>
-                    <Route path="/" exact component={this.withAccount(Home)} />
-                    <Route path="/darknode/:darknodeID" exact component={Darknode} />
-                    <Route component={NotFound} />
-                </Switch>
+                <div className="app--body">
+                    <Switch>
+                        <Route path="/" exact component={this.withAccount(Home)} />
+                        <Route path="/darknode/:darknodeID" exact component={Darknode} />
+                        <Route component={NotFound} />
+                    </Switch>
+                </div>
             </PopupController>
+            {_catch_(<Header />)}
         </div>;
     }
 }

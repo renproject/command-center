@@ -46,6 +46,8 @@ class HeaderClass extends React.Component<Props, State> {
                                 <li
                                     data-id="languageDropdown"
                                     className="header--group"
+                                    role="menuitem"
+                                    onClick={this.toggleDropdown}
                                     onMouseEnter={this.showDropdown}
                                     onMouseLeave={this.hideDropdown}
                                 >
@@ -64,6 +66,8 @@ class HeaderClass extends React.Component<Props, State> {
                                 <li
                                     data-id="currencyDropdown"
                                     className="header--group"
+                                    role="menuitem"
+                                    onClick={this.toggleDropdown}
                                     onMouseEnter={this.showDropdown}
                                     onMouseLeave={this.hideDropdown}
                                 >
@@ -93,6 +97,8 @@ class HeaderClass extends React.Component<Props, State> {
                         <li
                             data-id="accountDropdown"
                             className="header--group"
+                            role="menuitem"
+                            onClick={this.toggleDropdown}
                             onMouseEnter={this.showDropdown}
                             onMouseLeave={this.hideDropdown}
                         >
@@ -148,6 +154,13 @@ class HeaderClass extends React.Component<Props, State> {
         if (sdk && !address) {
             // tslint:disable-next-line: await-promise
             await this.props.actions.login(sdk, { redirect: false, showPopup: true, immediatePopup: true });
+        }
+    }
+
+    private readonly toggleDropdown = (e: React.MouseEvent<HTMLLIElement>): void => {
+        const id = e.currentTarget.dataset ? e.currentTarget.dataset.id : undefined;
+        if (id) {
+            this.setState((state: State) => ({ ...state, [id]: !state[id], copied: false }));
         }
     }
 

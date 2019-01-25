@@ -1,5 +1,5 @@
 .statuspage {
-    padding: 0 20px;
+    padding: 0 20px 20px 20px;
 
     .statuspage--banner {
         display: flex;
@@ -253,6 +253,8 @@
     }
 
     .topup--input {
+        width: 100%;
+
         display: inline-flex;
         align-items: center;
         vertical-align: top;

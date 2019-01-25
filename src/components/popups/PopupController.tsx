@@ -19,7 +19,7 @@ class PopupControllerClass extends React.Component<Props> {
         const { popup, overlay, onCancel } = this.props.store.popup;
 
         return (<>
-            <div className={popup && overlay ? "popup--blur" : ""}>
+            <div className={`popup--container ${popup && overlay ? "popup--blur" : ""}`}>
                 {this.props.children}
             </div>
             {popup ? <div className="popup--outer">
