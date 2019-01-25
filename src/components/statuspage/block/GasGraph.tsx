@@ -64,6 +64,11 @@ class GasGraphClass extends React.Component<Props, State> {
     private updateHistoryStarted: boolean = false;
     private updateHistoryTimeout: NodeJS.Timer | undefined;
     private localTimeout: NodeJS.Timer | undefined;
+    /**
+     * _isMounted is used to prevent setting state after the component has been
+     * unmounted.
+     */
+    private _isMounted: boolean = false;
 
     constructor(props: Props) {
         super(props);
@@ -75,6 +80,7 @@ class GasGraphClass extends React.Component<Props, State> {
     }
 
     public componentDidMount = (): void => {
+        this._isMounted = true;
         const { store: { secondsPerBlock, sdk } } = this.props;
         if (sdk && secondsPerBlock === null) {
             this.props.actions.calculateSecondsPerBlock(sdk)
@@ -105,6 +111,7 @@ class GasGraphClass extends React.Component<Props, State> {
     }
 
     public componentWillUnmount = (): void => {
+        this._isMounted = false;
         if (this.updateHistoryTimeout) { clearTimeout(this.updateHistoryTimeout); }
         if (this.localTimeout) { clearTimeout(this.localTimeout); }
     }
@@ -115,13 +122,12 @@ class GasGraphClass extends React.Component<Props, State> {
     ): Promise<void> => {
         this.updateHistoryStarted = true;
 
-        try {
-            if (this.localTimeout) { clearTimeout(this.localTimeout); }
-            this.localTimeout = setTimeout(() => { this.setState({ loadingHistory: true }); }, 100);
-        } catch (error) {
-            // Component was probably unmounted and clearTimeout had bad timing
-            return;
-        }
+        if (this.localTimeout) { clearTimeout(this.localTimeout); }
+        this.localTimeout = setTimeout(() => {
+            if (this._isMounted) {
+                this.setState({ loadingHistory: true });
+            }
+        }, 100);
 
         historyPeriod = historyPeriod || this.state.nextHistoryPeriod;
         const { store: { balanceHistories, sdk, secondsPerBlock }, darknodeDetails } = props || this.props;
@@ -148,12 +154,9 @@ class GasGraphClass extends React.Component<Props, State> {
             }
         }
 
-        try {
-            if (this.localTimeout) { clearTimeout(this.localTimeout); }
+        if (this.localTimeout) { clearTimeout(this.localTimeout); }
+        if (this._isMounted) {
             this.setState({ loadingHistory: false });
-        } catch (error) {
-            // Component was probably unmounted and clearTimeout had bad timing
-            return;
         }
 
         // tslint:disable-next-line: no-any
@@ -270,7 +273,11 @@ class GasGraphClass extends React.Component<Props, State> {
 
             this.setState((current: State) => ({ ...current, nextHistoryPeriod: historyPeriod }));
             await this.updateHistory(undefined, historyPeriod);
-            this.setState((current: State) => ({ ...current, historyPeriod }));
+
+            // Component may have unmounted while updating
+            if (this._isMounted) {
+                this.setState((current: State) => ({ ...current, historyPeriod }));
+            }
         } catch (error) {
             _captureBackgroundException_(error, {
                 description: "Error in handleSelectTime in GasGraph",
