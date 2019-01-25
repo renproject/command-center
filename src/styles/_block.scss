@@ -237,6 +237,10 @@
 
 .network-block {
 
+    .network-block--info {
+        overflow: scroll;
+    }
+
     .darknode-info {
         font-size: 14px;
 

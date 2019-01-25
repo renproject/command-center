@@ -76,7 +76,7 @@ class StatusPageClass extends React.Component<Props, State> {
                                     <h3 onClick={name ? this.handleRename : undefined}>
                                         {name ? name : <DarknodeID darknodeID={darknodeID} />}
                                     </h3>
-                                    <button onClick={this.handleRename}>
+                                    <button className="statuspage--banner--edit" onClick={this.handleRename}>
                                         {name ? "Edit name" : "Set name"}
                                         {" "}
                                         <InfoLabel>Darknode names are stored in your browser.</InfoLabel>
