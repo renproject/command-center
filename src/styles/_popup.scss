@@ -212,7 +212,14 @@ p.popup--error {
 }
 
 .popup--blur {
+    pointer-events: none;
     filter: blur(2px);
+}
+
+.popup--container {
+    position: absolute;
+    top: 0;
+    width: 100%;
 }
 
 
