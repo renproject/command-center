@@ -59,7 +59,6 @@ class AppClass extends React.Component<Props, State> {
         return <div className="app" key={address || undefined}>
             {sdk ? _catch_(<BackgroundTasks />) : <></>}
             <ScrollToTop />
-            {_catch_(<Header />)}
             <PopupController>
                 {address ? _catch_(<Sidebar selectedDarknode={darknodeID} />) : null}
                 <div className="app--body">
@@ -70,6 +69,7 @@ class AppClass extends React.Component<Props, State> {
                     </Switch>
                 </div>
             </PopupController>
+            {_catch_(<Header />)}
         </div>;
     }
 }
