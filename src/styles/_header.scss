@@ -240,6 +240,11 @@ $arrow-size: 7px;
 
     // Add 60px to each side
     width: calc(100% + 120px);
+
+    @media(max-width: $min-md) {
+        width: 100%;
+    }
+
     right: -60px;
 }
 

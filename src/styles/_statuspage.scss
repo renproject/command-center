@@ -7,6 +7,10 @@
 
         >*+* {
             margin-left: 30px;
+
+            @media(max-width: $min-md) {
+                margin-left: 10px;
+            }
         }
     }
 
@@ -24,6 +28,12 @@
         height: 85px;
         justify-content: space-between;
         margin-left: 40px;
+
+        @media(max-width: $min-md) {
+            margin-left: 10px;
+        }
+
+
         min-width: 0;
 
         >div {
@@ -58,6 +68,10 @@
             border-radius: 2px;
             font-size: 12px;
             font-weight: bold;
+
+            @media(max-width: $min-md) {
+                display: none;
+            }
         }
     }
 
@@ -318,9 +332,14 @@
     flex-grow: 1;
     display: flex;
     justify-content: flex-end;
+
+    @media(max-width: $min-md) {
+        display: none;
+    }
 }
 
 .statuspage--notification {
+
     width: 450px;
     height: 70px;
 

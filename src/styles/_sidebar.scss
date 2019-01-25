@@ -4,6 +4,7 @@
 
 $collapsed-width: 80px;
 $full-width: 360px;
+$mobile-full-width: 100vw;
 
 
 .sidebar .blocky {
@@ -62,6 +63,9 @@ $full-width: 360px;
     width: $full-width;
     overflow-x: visible;
 
+    @media(max-width: $min-md) {
+        width: $mobile-full-width;
+    }
 }
 
 .sidebar li.sidebar--active {
@@ -100,6 +104,11 @@ $full-width: 360px;
 
     height: 100vh;
     width: $collapsed-width;
+
+    @media(max-width: $min-md) {
+        width: 0px;
+    }
+
     overflow-x: hidden;
     overflow-y: scroll;
     -webkit-transition: width .1s linear;
@@ -121,6 +130,11 @@ $full-width: 360px;
 .sidebar li {
     position: relative;
     width: $full-width - 2px;
+
+    @media(max-width: $min-md) {
+        // $mobile-full-width
+        width: calc(100vw - 2px);
+    }
 }
 
 .sidebar li a {
@@ -142,6 +156,12 @@ $full-width: 360px;
 
 .sidebar .sidebar--text {
     width: $full-width - $collapsed-width;
+
+    @media(max-width: $min-md) {
+        // $mobile-full-width
+        width: calc(100vw - $collapsed-width);
+    }
+
     font-weight: normal;
     font-size: 15px;
     display: flex;

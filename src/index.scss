@@ -35,6 +35,8 @@ $select-option-selected-bg: $off-white;
 }
 
 html {
+    min-width: 100vw;
+
     &.noscroll {
         height: 100%;
         width: 100%;
@@ -211,6 +213,10 @@ table th {
     max-width: 1400px + $spacing * 2;
     margin: 0 auto;
     padding: 0 $spacing;
+
+    @media(max-width: $min-sm) {
+        padding: 0;
+    }
 }
 
 .section {
