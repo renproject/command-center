@@ -50,12 +50,12 @@
     "tslint-react": "^3.6.0"
   },
   "scripts": {
-    "lint:unused-exports": "ts-unused-exports ./tsconfig.json src/*.ts src/*.tsx src/**/*.ts src/**/*.tsx",
+    "lint:unused-exports": "ts-unused-exports ./tsconfig.json",
     "lint:outdated-imports": "ncu",
     "lint:ts": "tslint --project ./ -t stylish --quiet",
-    "lint:extra": "npm run --silent lint:outdated-imports",
+    "lint:extra": "npm run --silent lint:unused-exports; npm run --silent lint:outdated-imports",
     "lint:all": "npm run --silent lint:ts && npm run --silent lint:extra",
-    "lint": "npm run --silent lint:ts && npm run --silent lint:unused-exports",
+    "lint": "npm run --silent lint:ts",
     "test": "react-scripts test",
     "start": "./.env; react-scripts start",
     "build": "react-scripts build",
