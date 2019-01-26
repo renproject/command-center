@@ -8,6 +8,7 @@ import { List, Map, OrderedMap } from "immutable";
 import { RegistrationStatus } from "../actions/statistics/operatorActions";
 import { NETWORK } from "../environmentVariables";
 import { _captureBackgroundException_ } from "../lib/errors";
+import { Web3Browser } from "../lib/ethereum/browsers";
 import { Token } from "../lib/ethereum/tokens";
 import { getReadOnlyProvider } from "../lib/ethereum/wallet";
 import { Record } from "../lib/record";
@@ -29,7 +30,7 @@ const readOnlyProvider = getReadOnlyProvider();
 export class TraderData extends Record({
     // Login data
     address: null as string | null,
-    web3BrowserName: "MetaMask",
+    web3BrowserName: Web3Browser.MetaMask,
     readOnlyProvider,
     sdk: new RenExSDK(readOnlyProvider, { network: NETWORK }) as RenExSDK | undefined,
 }) { }
