@@ -70,7 +70,7 @@ export class Notifications extends React.Component<Props, State> {
         }
 
         return (
-            <div className="statuspage--banner-right">
+            <div className="statuspage--notifications">
                 {notification ? <div className="statuspage--notification">
                     <FontAwesomeIcon icon={faInfoCircle} />
                     <div className="statuspage--notification--details">
