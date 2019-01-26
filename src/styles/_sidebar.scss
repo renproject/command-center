@@ -27,23 +27,19 @@ $mobile-full-width: 100vw;
     height: 50px;
 }
 
+.sidebar--nav {
+    margin-bottom: 50px;
+}
+
 .sidebar--nav--icon {
     color: #FFFFFF;
     mix-blend-mode: normal;
     opacity: 0.4;
     font-size: 30px;
     text-align: center;
-}
 
-.sidebar--nav {
-    margin-bottom: 50px;
-}
-
-.sidebar--nav--icon {
     font-size: 2em;
-}
 
-.sidebar--nav--icon {
     position: relative;
     display: table-cell;
     width: 60px;
@@ -99,6 +95,11 @@ $mobile-full-width: 100vw;
 
     @media(max-width: $max-sm) {
         width: 0px;
+    }
+
+    @media(max-width: $max-sm) {
+        // This sets the faTimes symbol to be aligned with the faLines symbol
+        padding-top: 17px;
     }
 
     overflow-x: hidden;

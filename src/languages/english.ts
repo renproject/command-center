@@ -4,7 +4,6 @@ import { Language } from "./language";
 export const ENGLISH: Language = {
     wallet: {
         metamask: `MetaMask`,
-        metamaskDescription: `Sign in using the MetaMask extension or a Web3 browser`,
 
         noAccounts: `No accounts found. Ensure your wallet is unlocked.`,
         mustInstallMetaMask: `You must install MetaMask to access your darknodes.`,
