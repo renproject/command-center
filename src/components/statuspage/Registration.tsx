@@ -58,7 +58,7 @@ class RegistrationClass extends React.Component<Props, State> {
                 {isOperator ? <>
                     {registrationStatus === RegistrationStatus.Unregistered ?
                         <button disabled={registrationDisabled} className="status--button" onClick={this.handleRegister}>
-                            {active ? "Registering..." : `Register your darknode${disabled && !publicKey ? " (public key required)" : ""}`}
+                            {active ? "Registering..." : `Register darknode${disabled && !publicKey ? " (public key required)" : ""}`}
                         </button> :
                         null
                     }
@@ -79,7 +79,7 @@ class RegistrationClass extends React.Component<Props, State> {
                         null
                     }
                 </> : noOperator ?
-                        <span className="status--operator">DARKNODE NOT REGISTERED</span> :
+                        <span className="status--operator">NOT REGISTERED</span> :
                         (this.props.darknodeDetails ?
                             <span className="status--operator">
                                 Operator: <span className="monospace">{this.props.darknodeDetails.operator}</span>

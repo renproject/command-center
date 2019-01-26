@@ -83,7 +83,11 @@ const _captureException_ = <X extends Details>(error: any, details: X) => {
                 // tslint:disable-next-line: no-parameter-reassignment
                 error = `[${environment}] ${error}`;
             } else {
-                error.message = `[${environment}] ${error.message || error}`;
+                try {
+                    error.message = `[${environment}] ${error.message || error}`;
+                } catch {
+                    // Ignore: Unable to overwrite message (may be read-only)
+                }
             }
         }
 

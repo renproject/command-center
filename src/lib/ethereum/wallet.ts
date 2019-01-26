@@ -22,7 +22,7 @@ const ErrorNoAccounts = Language.wallet.noAccounts;
 const ErrorAccountAccessRejected = Language.wallet.mustConnect;
 const ErrorWrongNetwork = Language.wallet.mustChangeNetwork;
 
-export const getInjectedWeb3Provider = async (): Promise<Provider> => {
+export const getInjectedWeb3Provider = async (onAnyProvider: (provider: Provider) => void): Promise<Provider> => {
     let provider;
 
     if (window.ethereum) {
@@ -37,6 +37,8 @@ export const getInjectedWeb3Provider = async (): Promise<Provider> => {
     } else {
         throw _noCapture_(new Error(ErrorNoWeb3));
     }
+
+    onAnyProvider(provider);
 
     const web3 = new Web3(provider);
 

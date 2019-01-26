@@ -1,10 +1,9 @@
 // .sidebar ul {
 //     padding: 0;
 // }
-
 $collapsed-width: 80px;
 $full-width: 360px;
-
+$mobile-full-width: 100vw;
 
 .sidebar .blocky {
     width: 42px;
@@ -14,7 +13,6 @@ $full-width: 360px;
 .sidebar li {
     height: 100px;
     border-left: 4px solid rgba(0, 0, 0, 0);
-
     display: flex;
     align-items: center;
     justify-content: left;
@@ -29,26 +27,19 @@ $full-width: 360px;
     height: 50px;
 }
 
+.sidebar--nav {
+    margin-bottom: 50px;
+}
+
 .sidebar--nav--icon {
     color: #FFFFFF;
     mix-blend-mode: normal;
     opacity: 0.4;
     font-size: 30px;
     text-align: center;
-}
 
-.sidebar--nav {
-    margin-bottom: 50px;
-}
-
-
-
-
-.sidebar--nav--icon {
     font-size: 2em;
-}
 
-.sidebar--nav--icon {
     position: relative;
     display: table-cell;
     width: 60px;
@@ -57,11 +48,17 @@ $full-width: 360px;
     font-size: 20px;
 }
 
+.sidebar.sidebar--mobile--active {
+    @media(max-width: $max-sm) {
+        width: $mobile-full-width;
+    }
+}
 
 .sidebar:hover {
-    width: $full-width;
-    overflow-x: visible;
-
+    @media(min-width: $min-md) {
+        width: $full-width;
+        overflow-x: visible;
+    }
 }
 
 .sidebar li.sidebar--active {
@@ -81,25 +78,30 @@ $full-width: 360px;
     justify-content: center;
 }
 
-
 .sidebar {
     @extend .no-scrollbar;
     position: fixed;
     background-color: $blue-darker;
     border-right: 2px solid transparentize(#58585B, 1 - 0.2);
     padding: 30px 0;
-
     top: 0;
     bottom: 0;
     left: 0;
-
     font-weight: normal;
     font-size: 14px;
-
     color: #FFFFFF;
-
     height: 100vh;
     width: $collapsed-width;
+
+    @media(max-width: $max-sm) {
+        width: 0px;
+    }
+
+    @media(max-width: $max-sm) {
+        // This sets the faTimes symbol to be aligned with the faLines symbol
+        padding-top: 17px;
+    }
+
     overflow-x: hidden;
     overflow-y: scroll;
     -webkit-transition: width .1s linear;
@@ -109,8 +111,7 @@ $full-width: 360px;
 }
 
 .sidebar::-webkit-scrollbar {
-    width: 0px;
-    // remove scrollbar
+    width: 0px; // remove scrollbar
     background: transparent;
 }
 
@@ -121,6 +122,11 @@ $full-width: 360px;
 .sidebar li {
     position: relative;
     width: $full-width - 2px;
+
+    @media(max-width: $max-sm) {
+        // $mobile-full-width
+        width: calc(100vw - 2px);
+    }
 }
 
 .sidebar li a {
@@ -128,26 +134,30 @@ $full-width: 360px;
     display: table;
     border-collapse: collapse;
     border-spacing: 0;
-
     font-weight: normal;
     font-size: 14px;
-
     color: #FFFFFF;
 
     -webkit-transform: translateZ(0) scale(1, 1);
+    transform: translateZ(0) scale(1, 1);
+
     -webkit-transition: all .1s linear;
     transition: all .1s linear;
-
 }
 
 .sidebar .sidebar--text {
     width: $full-width - $collapsed-width;
+
+    @media(max-width: $max-sm) {
+        // $mobile-full-width - $collapsed-width
+        width: calc(100vw - 80px);
+    }
+
     font-weight: normal;
     font-size: 15px;
     display: flex;
     flex-flow: column;
     justify-content: center;
-
     color: #FFFFFF;
 
     .sidebar--name {
@@ -179,10 +189,8 @@ $full-width: 360px;
 
     .currency-symbol {
         font-weight: normal;
-
         mix-blend-mode: normal;
         opacity: 0.4;
-
         margin-left: 5px;
     }
 
@@ -193,7 +201,6 @@ $full-width: 360px;
     .sidebar--text--icon {
         mix-blend-mode: normal;
         opacity: 0.4;
-
         margin-right: 10px;
     }
 }

@@ -14,11 +14,27 @@ import { NoWeb3Popup } from "../../components/popups/NoWeb3Popup";
 import { history } from "../../history";
 import { Language } from "../../languages/language";
 import { _captureBackgroundException_ } from "../../lib/errors";
+import { getWeb3BrowserName, Web3Browser } from "../../lib/ethereum/browsers";
 import { getInjectedWeb3Provider } from "../../lib/ethereum/wallet";
 
 export const storeAddress = createStandardAction("STORE_ADDRESS")<string | null>();
 
-export const storeWeb3BrowserName = createStandardAction("STORE_WEB3_BROWSER_NAME")<string>();
+export const storeWeb3BrowserName = createStandardAction("STORE_WEB3_BROWSER_NAME")<Web3Browser>();
+
+export const updateWeb3BrowserName = (
+    provider: Provider,
+) => (dispatch: Dispatch) => {
+    /*
+    // Check for mobile
+    const { userAgent: ua } = navigator
+    const isIOS = ua.includes('iPhone') // “iPhone OS”
+    const isAndroid = ua.includes('Android')
+    */
+
+    const web3BrowserName = getWeb3BrowserName(provider);
+
+    dispatch(storeWeb3BrowserName(web3BrowserName));
+};
 
 export const login = (
     sdk: RenExSDK,
@@ -73,7 +89,14 @@ export const login = (
 
     let provider;
     try {
-        provider = await getInjectedWeb3Provider();
+
+        // Even if the provider is on the wrong network, etc., we can still
+        // detect the browser name (MetaMask, Status, etc.)
+        const onAnyProvider = (anyProvider: Provider) => {
+            updateWeb3BrowserName(anyProvider)(dispatch);
+        };
+
+        provider = await getInjectedWeb3Provider(onAnyProvider);
     } catch (error) {
         clearTimeout(timeout);
         if (options.showPopup && !cancelled) {
@@ -122,24 +145,7 @@ export const login = (
     const isAndroid = ua.includes('Android')
     */
 
-    // Check for web3 enabled browsers
-    let web3BrowserName = "Web3 Browser";
-    // tslint:disable:no-any
-    if ((provider as any).isToshi) {
-        // Toshi has become Coinbase wallet
-        web3BrowserName = "Coinbase Wallet";
-    } else if ((provider as any).isCipher) {
-        web3BrowserName = "Cipher";
-    } else if ((provider as any).isStatus) {
-        web3BrowserName = "Status";
-    } else if ((provider as any).isTrust) {
-        web3BrowserName = "Trust";
-    } else if ((provider as any).isMetaMask) {
-        web3BrowserName = "MetaMask";
-    } else if ((window as any).mist) {
-        web3BrowserName = "Mist"; // Not tested
-    }
-    // tslint:enable:no-any
+    const web3BrowserName = getWeb3BrowserName(provider);
 
     dispatch(storeWeb3BrowserName(web3BrowserName));
 
