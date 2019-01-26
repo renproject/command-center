@@ -145,8 +145,8 @@ $mobile-full-width: 100vw;
     width: $full-width - $collapsed-width;
 
     @media(max-width: $max-sm) {
-        // $mobile-full-width
-        width: calc(100vw - $collapsed-width);
+        // $mobile-full-width - $collapsed-width
+        width: calc(100vw - 80px);
     }
 
     font-weight: normal;
