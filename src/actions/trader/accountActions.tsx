@@ -20,6 +20,38 @@ export const storeAddress = createStandardAction("STORE_ADDRESS")<string | null>
 
 export const storeWeb3BrowserName = createStandardAction("STORE_WEB3_BROWSER_NAME")<string>();
 
+export const updateWeb3BrowserName = (
+    provider: Provider,
+) => (dispatch: Dispatch) => {
+    /*
+    // Check for mobile
+    const { userAgent: ua } = navigator
+    const isIOS = ua.includes('iPhone') // “iPhone OS”
+    const isAndroid = ua.includes('Android')
+    */
+
+    // Check for web3 enabled browsers
+    let web3BrowserName = "Web3 Browser";
+    // tslint:disable:no-any
+    if ((provider as any).isToshi) {
+        // Toshi has become Coinbase wallet
+        web3BrowserName = "Coinbase Wallet";
+    } else if ((provider as any).isCipher) {
+        web3BrowserName = "Cipher";
+    } else if ((provider as any).isStatus) {
+        web3BrowserName = "Status";
+    } else if ((provider as any).isTrust) {
+        web3BrowserName = "Trust";
+    } else if ((provider as any).isMetaMask) {
+        web3BrowserName = "MetaMask";
+    } else if ((window as any).mist) {
+        web3BrowserName = "Mist"; // Not tested
+    }
+    // tslint:enable:no-any
+
+    dispatch(storeWeb3BrowserName(web3BrowserName));
+};
+
 export const login = (
     sdk: RenExSDK,
     options: { redirect: boolean; showPopup: boolean; immediatePopup: boolean },
@@ -73,7 +105,14 @@ export const login = (
 
     let provider;
     try {
-        provider = await getInjectedWeb3Provider();
+
+        // Even if the provider is on the wrong network, etc., we can still
+        // detect the browser name (MetaMask, Status, etc.)
+        const onAnyProvider = (anyProvider: Provider) => {
+            updateWeb3BrowserName(anyProvider)(dispatch);
+        };
+
+        provider = await getInjectedWeb3Provider(onAnyProvider);
     } catch (error) {
         clearTimeout(timeout);
         if (options.showPopup && !cancelled) {
