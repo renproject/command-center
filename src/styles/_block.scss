@@ -238,6 +238,9 @@
 .network-block {
 
     .network-block--info {
+        @extend .no-scrollbar;
+
+        width: 100%;
         overflow: scroll;
     }
 
