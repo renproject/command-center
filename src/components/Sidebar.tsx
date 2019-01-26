@@ -30,7 +30,6 @@ class SidebarClass extends React.Component<Props> {
         const { selectedDarknode, store } = this.props;
         const { darknodeList, darknodeDetails, darknodeNames, quoteCurrency, mobileMenuActive } = store;
 
-        console.log(`mobileMenuActive: ${mobileMenuActive}`);
         return (
             <nav className={`sidebar ${mobileMenuActive ? "sidebar--mobile--active" : ""}`}>
                 <ul>

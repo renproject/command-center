@@ -164,7 +164,7 @@
         .statuspage--bottom,
         .blocky,
         .status,
-        .statuspage--banner-right {
+        .statuspage--notifications {
             mix-blend-mode: normal;
             opacity: 0.3;
             pointer-events: none;
@@ -329,20 +329,29 @@
     }
 }
 
-
-.statuspage--banner-right {
+.statuspage--banner--right {
     flex-grow: 1;
-    display: flex;
-    justify-content: flex-end;
 
-    @media(max-width: $max-sm) {
-        display: none;
+    >div>div {
+        width: 450px;
+    }
+
+    @media(max-width: $max-lg) {
+        width: 100%;
+        margin-top: 20px;
+
+        >div>div {
+            width: 100%;
+        }
     }
 }
 
-.statuspage--notification {
+.statuspage--notifications {
+    display: flex;
+    justify-content: flex-end;
+}
 
-    width: 450px;
+.statuspage--notification {
     height: 70px;
 
     background: transparentize($blue-bright, 1 - 0.28);

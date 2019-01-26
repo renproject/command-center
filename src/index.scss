@@ -345,3 +345,15 @@ label {
         display: none !important;
     }
 }
+
+.large-only {
+    @media(max-width: $max-lg) {
+        display: none !important;
+    }
+}
+
+.no-large {
+    @media(min-width: $min-xl) {
+        display: none !important;
+    }
+}

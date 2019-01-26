@@ -51,6 +51,8 @@ class StatusPageClass extends React.Component<Props, State> {
         const renamingCLass = renaming ? "statuspage--renaming" : "";
         const noDarknodeClass = noDarknode ? "statuspage--no-darknode" : "";
 
+        const notifications = <Notifications isOperator={isOperator} darknodeDetails={darknodeDetails} />;
+
         return (
             <div className={`statuspage ${focusedClass} ${renamingCLass} ${noDarknodeClass}`}>
                 <div className="statuspage--banner">
@@ -107,7 +109,12 @@ class StatusPageClass extends React.Component<Props, State> {
                             null
                         }
                     </div>
-                    <Notifications isOperator={isOperator} darknodeDetails={darknodeDetails} />
+                    <div className="statuspage--banner--right large-only">
+                        {notifications}
+                    </div>
+                </div>
+                <div className="statuspage--banner--right no-large">
+                    {notifications}
                 </div>
                 <div className="statuspage--bottom">
                     <FeesBlock isOperator={isOperator} darknodeDetails={darknodeDetails} />
