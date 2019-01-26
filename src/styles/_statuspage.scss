@@ -7,6 +7,10 @@
 
         >*+* {
             margin-left: 30px;
+
+            @media(max-width: $max-sm) {
+                margin-left: 10px;
+            }
         }
     }
 
@@ -24,6 +28,12 @@
         height: 85px;
         justify-content: space-between;
         margin-left: 40px;
+
+        @media(max-width: $max-sm) {
+            margin-left: 10px;
+        }
+
+
         min-width: 0;
 
         >div {
@@ -58,6 +68,10 @@
             border-radius: 2px;
             font-size: 12px;
             font-weight: bold;
+
+            @media(max-width: $max-sm) {
+                display: none;
+            }
         }
     }
 
@@ -150,7 +164,7 @@
         .statuspage--bottom,
         .blocky,
         .status,
-        .statuspage--banner-right {
+        .statuspage--notifications {
             mix-blend-mode: normal;
             opacity: 0.3;
             pointer-events: none;
@@ -189,6 +203,11 @@
         text-transform: uppercase;
         font-size: 12px;
         border-radius: 15px;
+
+        overflow: hidden;
+        text-overflow: ellipsis;
+        min-width: 0px;
+        white-space: nowrap;
     }
 
     .status--button--focus {
@@ -312,20 +331,36 @@
         overflow: hidden;
         text-overflow: ellipsis;
         min-width: 0px;
+
+        @media(max-width: $max-sm) {
+            display: none;
+        }
     }
 }
 
-
-.statuspage--banner-right {
+.statuspage--banner--right {
     flex-grow: 1;
+
+    >div>div {
+        width: 450px;
+    }
+
+    @media(max-width: $max-lg) {
+        width: 100%;
+        margin-top: 20px;
+
+        >div>div {
+            width: 100%;
+        }
+    }
+}
+
+.statuspage--notifications {
     display: flex;
     justify-content: flex-end;
 }
 
 .statuspage--notification {
-    width: 450px;
-    height: 70px;
-
     background: transparentize($blue-bright, 1 - 0.28);
     border-top-right-radius: 2px;
     border-bottom-right-radius: 2px;
@@ -368,8 +403,8 @@
 .statuspage--notification::before {
     content: "";
     width: 5px;
-    left: -25px; // padding and width
-    height: 70px;
+    left: -20px; // padding and width
+    height: calc(100% + 20px);
     background-color: $blue-bright;
     position: relative;
     top: -10px; // padding

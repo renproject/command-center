@@ -211,6 +211,10 @@ table th {
     max-width: 1400px + $spacing * 2;
     margin: 0 auto;
     padding: 0 $spacing;
+
+    @media(max-width: $max-sm) {
+        padding: 0;
+    }
 }
 
 .section {
@@ -328,4 +332,28 @@ label {
 
 .app--body {
     margin-top: 120px;
+}
+
+.mobile-only {
+    @media(min-width: $min-md) {
+        display: none !important;
+    }
+}
+
+.no-mobile {
+    @media(max-width: $max-sm) {
+        display: none !important;
+    }
+}
+
+.large-only {
+    @media(max-width: $max-lg) {
+        display: none !important;
+    }
+}
+
+.no-large {
+    @media(min-width: $min-xl) {
+        display: none !important;
+    }
 }

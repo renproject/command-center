@@ -4,8 +4,10 @@
     justify-content: center;
 
     // Make up for 10px margin of each card
-    margin-left: -10px;
-    margin-right: -10px;
+    @media(min-width: $min-md) {
+        margin-left: -10px;
+        margin-right: -10px;
+    }
 }
 
 $card-height: 335px;

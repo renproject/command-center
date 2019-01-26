@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { faAngleDown } from "@fortawesome/free-solid-svg-icons";
+import { faAngleDown, faBars } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
@@ -8,6 +8,7 @@ import { bindActionCreators, Dispatch } from "redux";
 
 import { storeQuoteCurrency } from "../actions/statistics/operatorActions";
 import { login } from "../actions/trader/accountActions";
+import { showMobileMenu } from "../actions/ui/uiActions";
 import { Blocky } from "../components/Blocky";
 import { ApplicationData, currencies, Currency } from "../reducers/types";
 import { CurrencyIcon } from "./CurrencyIcon";
@@ -36,7 +37,13 @@ class HeaderClass extends React.Component<Props, State> {
         return (
             <div className="header">
                 <div className="container">
-                    <div className="header--counter-weight" />
+                    <div className="header--counter-weight">
+                        <div role="button" className="header--mobile-menu--button">
+                            <button onClick={this.props.actions.showMobileMenu}>
+                                <FontAwesomeIcon icon={faBars} />
+                            </button>
+                        </div>
+                    </div>
                     <Link className="no-underline" to="/">
                         <div className="header--logo" />
                     </Link>
@@ -45,7 +52,7 @@ class HeaderClass extends React.Component<Props, State> {
                             <>
                                 <li
                                     data-id="languageDropdown"
-                                    className="header--group"
+                                    className="header--group header--group--language"
                                     role="menuitem"
                                     onClick={this.toggleDropdown}
                                     onMouseEnter={this.showDropdown}
@@ -65,7 +72,7 @@ class HeaderClass extends React.Component<Props, State> {
 
                                 <li
                                     data-id="currencyDropdown"
-                                    className="header--group"
+                                    className="header--group header--group--currency"
                                     role="menuitem"
                                     onClick={this.toggleDropdown}
                                     onMouseEnter={this.showDropdown}
@@ -104,12 +111,12 @@ class HeaderClass extends React.Component<Props, State> {
                         >
                             <div className="header--account">
                                 {address && <Blocky address={address} />}
-                                <div className="header--account--right">
-                                    <div
-                                        className={`header--account--type ${address ?
-                                            "header--account--connected" :
-                                            ""}`}
-                                    >
+                                <div
+                                    className={`header--account--right ${address ?
+                                        "header--account--connected" :
+                                        "header--account--disconnected"}`}
+                                >
+                                    <div className="header--account--type">
                                         {web3BrowserName}
                                     </div>
                                     {address ?
@@ -213,6 +220,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     actions: bindActionCreators({
         login,
         storeQuoteCurrency,
+        showMobileMenu,
     }, dispatch),
 });
 

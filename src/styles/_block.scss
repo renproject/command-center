@@ -59,6 +59,7 @@
 }
 
 .block--basic--top {
+    white-space: nowrap;
     margin: 40px 10px;
 }
 
@@ -236,6 +237,13 @@
 }
 
 .network-block {
+
+    .network-block--info {
+        @extend .no-scrollbar;
+
+        width: 100%;
+        overflow: scroll;
+    }
 
     .darknode-info {
         font-size: 14px;
