@@ -35,8 +35,6 @@ $select-option-selected-bg: $off-white;
 }
 
 html {
-    min-width: 100vw;
-
     &.noscroll {
         height: 100%;
         width: 100%;
@@ -214,7 +212,7 @@ table th {
     margin: 0 auto;
     padding: 0 $spacing;
 
-    @media(max-width: $min-sm) {
+    @media(max-width: $max-sm) {
         padding: 0;
     }
 }
@@ -334,4 +332,16 @@ label {
 
 .app--body {
     margin-top: 120px;
+}
+
+.mobile-only {
+    @media(min-width: $min-md) {
+        display: none !important;
+    }
+}
+
+.no-mobile {
+    @media(max-width: $max-sm) {
+        display: none !important;
+    }
 }

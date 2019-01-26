@@ -21,6 +21,7 @@ export interface ApplicationData {
     trader: TraderData;
     popup: PopupData;
     statistics: StatisticsData;
+    ui: UIData;
 }
 
 const readOnlyProvider = getReadOnlyProvider();
@@ -43,6 +44,10 @@ export class PopupData extends Record({
     onCancel: (() => null) as () => void,
     popup: null as JSX.Element | null,
     overlay: false,
+}) { }
+
+export class UIData extends Record({
+    mobileMenuActive: false,
 }) { }
 
 export enum Currency {

@@ -1,13 +1,14 @@
 import * as React from "react";
 
 import { faStar } from "@fortawesome/free-regular-svg-icons";
-import { faFire, faThLarge } from "@fortawesome/free-solid-svg-icons";
+import { faFire, faThLarge, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { Link } from "react-router-dom";
 import { bindActionCreators, Dispatch } from "redux";
 
 import { RegistrationStatus } from "../actions/statistics/operatorActions";
+import { hideMobileMenu } from "../actions/ui/uiActions";
 import { Token } from "../lib/ethereum/tokens";
 import { ApplicationData, Currency } from "../reducers/types";
 import { Blocky } from "./Blocky";
@@ -27,10 +28,11 @@ class SidebarClass extends React.Component<Props> {
 
     public render = (): JSX.Element => {
         const { selectedDarknode, store } = this.props;
-        const { darknodeList, darknodeDetails, darknodeNames, quoteCurrency } = store;
+        const { darknodeList, darknodeDetails, darknodeNames, quoteCurrency, mobileMenuActive } = store;
 
+        console.log(`mobileMenuActive: ${mobileMenuActive}`);
         return (
-            <nav className="sidebar">
+            <nav className={`sidebar ${mobileMenuActive ? "sidebar--mobile--active" : ""}`}>
                 <ul>
                     <div className="sidebar--nav">
                         {/* <Link className="no-underline" to="/">
@@ -42,7 +44,14 @@ class SidebarClass extends React.Component<Props> {
                             </li>
                         </Link> */}
 
-                        <Link className="no-underline" to="/">
+                        <li className="mobile-only" role="menuitem" onClick={this.hideMobileMenu}>
+                            <div className="sidebar--nav--icon sidebar--icon">
+                                <FontAwesomeIcon icon={faTimes} className="darknode-card--bottom--icon" />
+                            </div>
+                            <div className="sidebar--text">Close</div>
+                        </li>
+
+                        <Link className="no-underline" to="/" onClick={this.hideMobileMenu}>
                             <li>
                                 <div className="sidebar--nav--icon sidebar--icon">
                                     <FontAwesomeIcon icon={faThLarge} className="darknode-card--bottom--icon" />
@@ -63,7 +72,7 @@ class SidebarClass extends React.Component<Props> {
                         const darknodeIDBase58 = darknodeIDHexToBase58(darknodeID);
 
                         // tslint:disable-next-line:jsx-no-lambda FIXME
-                        return <Link className="no-underline" key={darknodeID} to={`/darknode/${darknodeIDBase58}`}>
+                        return <Link className="no-underline" key={darknodeID} to={`/darknode/${darknodeIDBase58}`} onClick={this.hideMobileMenu}>
                             <li className={`${active ? "sidebar--active" : ""} ${faded ? "sidebar--faded" : ""}`}>
                                 <div className="sidebar--icon">
                                     <Blocky address={darknodeID} fgColor="#006FE8" bgColor="transparent" />
@@ -111,6 +120,10 @@ class SidebarClass extends React.Component<Props> {
             </nav>
         );
     }
+
+    private readonly hideMobileMenu = (): void => {
+        this.props.actions.hideMobileMenu();
+    }
 }
 
 const mapStateToProps = (state: ApplicationData) => ({
@@ -119,11 +132,13 @@ const mapStateToProps = (state: ApplicationData) => ({
         darknodeDetails: state.statistics.darknodeDetails,
         darknodeNames: state.statistics.darknodeNames,
         quoteCurrency: state.statistics.quoteCurrency,
+        mobileMenuActive: state.ui.mobileMenuActive,
     },
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     actions: bindActionCreators({
+        hideMobileMenu,
     }, dispatch),
 });
 
