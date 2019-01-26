@@ -136,7 +136,10 @@ $mobile-full-width: 100vw;
     font-weight: normal;
     font-size: 14px;
     color: #FFFFFF;
+
     -webkit-transform: translateZ(0) scale(1, 1);
+    transform: translateZ(0) scale(1, 1);
+
     -webkit-transition: all .1s linear;
     transition: all .1s linear;
 }

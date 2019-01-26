@@ -4,10 +4,9 @@ import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
 import { Blocky } from "../../components/Blocky";
+import { getWeb3BrowserIcon } from "../../lib/ethereum/browsers";
 import { ApplicationData } from "../../reducers/types";
 import { _catch_ } from "../ErrorBoundary";
-
-import metamaskIcon from "../../styles/images/metamask.svg";
 
 /**
  * LoggedOut is a popup component for prompting a user to select an
@@ -26,9 +25,10 @@ class LoggedOutClass extends React.Component<Props, State> {
 
     public render = (): JSX.Element => {
         const { newAddress } = this.props;
+        const { web3BrowserName } = this.props.store;
         return (
             <div className="popup no-web3 popup--logged-out">
-                <img alt="" role="presentation" className="no-web3--logo" src={metamaskIcon} />
+                <img alt="" role="presentation" className="no-web3--logo" src={getWeb3BrowserIcon(web3BrowserName)} />
                 {newAddress !== null ?
                     <>
                         <h2>Your Web3 account has changed.</h2>
@@ -54,8 +54,9 @@ class LoggedOutClass extends React.Component<Props, State> {
     }
 }
 
-const mapStateToProps = (_state: ApplicationData) => ({
+const mapStateToProps = (state: ApplicationData) => ({
     store: {
+        web3BrowserName: state.trader.web3BrowserName,
     },
 });
 
