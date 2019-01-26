@@ -280,6 +280,10 @@ li.header--dropdown--selected {
         min-width: 0;
 
         // Based on measurements for right side of menu
-        margin-left: 22px + 15px;
+        margin-left: 22px+15px;
+
+        @media(max-width: $max-xs) {
+            margin-left: 22px;
+        }
     }
 }

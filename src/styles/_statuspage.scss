@@ -203,6 +203,11 @@
         text-transform: uppercase;
         font-size: 12px;
         border-radius: 15px;
+
+        overflow: hidden;
+        text-overflow: ellipsis;
+        min-width: 0px;
+        white-space: nowrap;
     }
 
     .status--button--focus {
@@ -352,8 +357,6 @@
 }
 
 .statuspage--notification {
-    height: 70px;
-
     background: transparentize($blue-bright, 1 - 0.28);
     border-top-right-radius: 2px;
     border-bottom-right-radius: 2px;
@@ -396,8 +399,8 @@
 .statuspage--notification::before {
     content: "";
     width: 5px;
-    left: -25px; // padding and width
-    height: 70px;
+    left: -20px; // padding and width
+    height: calc(100% + 20px);
     background-color: $blue-bright;
     position: relative;
     top: -10px; // padding
