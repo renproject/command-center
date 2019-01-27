@@ -51,25 +51,30 @@ class AppClass extends React.Component<Props, State> {
 
     public render = (): JSX.Element => {
         const { match: { params } } = this.props;
-        const { address, sdk } = this.props.store;
+        const { address } = this.props.store;
         const darknodeID = getDarknodeParam(params);
 
-        // We set the key to be the address so that any sub-component state is reset after changing accounts (e.g. if in
-        // the middle of a transaction, etc.)
-        return <div className="app" key={address || undefined}>
-            {sdk ? _catch_(<BackgroundTasks />) : <></>}
+        return <div className="app">
+            <BackgroundTasks />
             <ScrollToTop />
-            <PopupController>
-                {address ? _catch_(<Sidebar selectedDarknode={darknodeID} />) : null}
-                <div className="app--body">
-                    <Switch>
-                        <Route path="/" exact component={this.withAccount(Home)} />
-                        <Route path="/darknode/:darknodeID" exact component={Darknode} />
-                        <Route component={NotFound} />
-                    </Switch>
-                </div>
-            </PopupController>
-            {_catch_(<Header />)}
+            {/*
+              * We set the key to be the address so that any sub-component state is reset after changing accounts
+              * (e.g. if in
+              * the middle of a transaction, etc.)
+              */}
+            <div key={address || undefined}>
+                <PopupController>
+                    {address ? _catch_(<Sidebar selectedDarknode={darknodeID} />) : null}
+                    <div className="app--body">
+                        <Switch>
+                            <Route path="/" exact component={this.withAccount(Home)} />
+                            <Route path="/darknode/:darknodeID" exact component={Darknode} />
+                            <Route component={NotFound} />
+                        </Switch>
+                    </div>
+                </PopupController>
+                {_catch_(<Header />)}
+            </div>
         </div>;
     }
 }

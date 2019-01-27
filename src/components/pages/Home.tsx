@@ -4,7 +4,6 @@ import { List } from "immutable";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
-import { login } from "../../actions/trader/accountActions";
 import { DarknodeList } from "../../components/DarknodeList";
 import { ApplicationData } from "../../reducers/types";
 import { _catch_ } from "../ErrorBoundary";
@@ -63,7 +62,6 @@ const mapStateToProps = (state: ApplicationData) => ({
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     actions: bindActionCreators({
-        login,
     }, dispatch),
 });
 

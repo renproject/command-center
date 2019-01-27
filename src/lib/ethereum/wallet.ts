@@ -2,7 +2,7 @@ import Web3 from "web3";
 import ProviderEngine from "web3-provider-engine";
 import FetchSubprovider from "web3-provider-engine/subproviders/fetch";
 
-import { Provider } from "web3/providers";
+import { HttpProvider, Provider } from "web3/providers";
 
 import { ETH_NETWORK, INFURA_URL } from "../../environmentVariables";
 import { Language } from "../../languages/language";
@@ -10,8 +10,25 @@ import { _noCapture_ } from "../errors";
 
 export const ErrorCanceledByUser = "User denied transaction signature.";
 
-export const getReadOnlyProvider = (): Provider => {
-    const engine = new ProviderEngine();
+export interface ProviderEngine extends HttpProvider {
+    /**
+     * Starts the engine's block tracking
+     */
+    start(): void;
+
+    /**
+     * Stops the engine's block tracking
+     */
+    stop(): void;
+
+    /**
+     * Adds a provider to the engine
+     */
+    addProvider(provider: Provider): void;
+}
+
+export const getReadOnlyProvider = (): ProviderEngine => {
+    const engine: ProviderEngine = new ProviderEngine();
     engine.addProvider(new FetchSubprovider({ rpcUrl: INFURA_URL }));
     engine.start();
     return engine;

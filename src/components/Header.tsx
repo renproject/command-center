@@ -150,10 +150,10 @@ class HeaderClass extends React.Component<Props, State> {
     }
 
     private readonly handleLogin = async (): Promise<void> => {
-        const { address, sdk } = this.props.store;
+        const { address, sdk, readOnlyProvider } = this.props.store;
         if (sdk && !address) {
             // tslint:disable-next-line: await-promise
-            await this.props.actions.login(sdk, { redirect: false, showPopup: true, immediatePopup: true });
+            await this.props.actions.login(sdk, readOnlyProvider, { redirect: false, showPopup: true, immediatePopup: true });
         }
     }
 
@@ -205,6 +205,7 @@ const mapStateToProps = (state: ApplicationData) => ({
         address: state.trader.address,
         web3BrowserName: state.trader.web3BrowserName,
         quoteCurrency: state.statistics.quoteCurrency,
+        readOnlyProvider: state.trader.readOnlyProvider,
         sdk: state.trader.sdk,
     },
 });
