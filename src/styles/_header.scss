@@ -199,6 +199,11 @@ li.header--dropdown--selected,
 
 .header--dropdown .header--dropdown--highlight {
     color: $blue-bright;
+
+    &:hover,
+    &:active {
+        color: $blue-bright;
+    }
 }
 
 .header--account {
