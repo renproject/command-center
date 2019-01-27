@@ -190,6 +190,13 @@ $arrow-size: 7px;
     border-top: 1px solid #f0f0f0;
 }
 
+li.header--dropdown--selected,
+.header--dropdown li:hover,
+.header--dropdown li:active {
+    font-weight: 900;
+    color: #001B3A;
+}
+
 .header--dropdown .header--dropdown--highlight {
     color: $blue-bright;
 }
@@ -262,9 +269,7 @@ $arrow-size: 7px;
     right: -60px;
 }
 
-li.header--dropdown--selected {
-    font-weight: 900;
-}
+
 
 .header--mobile-menu--button {
     @extend .mobile-only;
