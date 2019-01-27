@@ -100,6 +100,7 @@ class MultiStepPopupClass extends React.Component<Props, State> {
                                     id="slideThree"
                                     name="check"
                                     checked={checked}
+                                    readOnly={true}
                                 />
                                 <span className={index === currentStep ? "active" : ""}>
                                     Step {index + 1}: {step.name}

@@ -11,6 +11,7 @@ import {
 import { showDeregisterPopup, showRefundPopup, showRegisterPopup } from "../../actions/statistics/operatorPopupActions";
 import { _captureInteractionException_ } from "../../lib/errors";
 import { ApplicationData, DarknodeDetails } from "../../reducers/types";
+import { Loading } from "../Loading";
 
 export const statusText = {
     [RegistrationStatus.Unknown]: "Loading...",
@@ -23,11 +24,21 @@ export const statusText = {
 };
 
 class RegistrationClass extends React.Component<Props, State> {
+    private _isMounted = false;
+
     constructor(props: Props) {
         super(props);
         this.state = {
             active: false,
         };
+    }
+
+    public componentDidMount = () => {
+        this._isMounted = true;
+    }
+
+    public componentWillUnmount = () => {
+        this._isMounted = false;
     }
 
     public componentWillReceiveProps = (nextProps: Props) => {
@@ -58,13 +69,13 @@ class RegistrationClass extends React.Component<Props, State> {
                 {isOperator ? <>
                     {registrationStatus === RegistrationStatus.Unregistered ?
                         <button disabled={registrationDisabled} className="status--button" onClick={this.handleRegister}>
-                            {active ? "Registering..." : `Register darknode${disabled && !publicKey ? " (public key required)" : ""}`}
+                            {active ? "Registering..." : `Register darknode${registrationDisabled && !publicKey ? " (public key required)" : ""}`}
                         </button> :
                         null
                     }
                     {registrationStatus === RegistrationStatus.Registered ?
                         <button disabled={disabled} className="status--button" onClick={this.handleDeregister}>
-                            {active ? "Deregistering..." : "Deregister"}
+                            {active ? <>Deregistering <Loading /></> : "Deregister"}
                         </button> :
                         null
                     }
@@ -92,10 +103,8 @@ class RegistrationClass extends React.Component<Props, State> {
     }
 
     private readonly onCancel = () => {
-        try {
+        if (this._isMounted) {
             this.setState({ active: false });
-        } catch (error) {
-            // Ignore error
         }
     }
 
@@ -109,10 +118,14 @@ class RegistrationClass extends React.Component<Props, State> {
 
         try {
             await this.props.actions.updateDarknodeStatistics(sdk, darknodeID, tokenPrices);
-            this.setState({ active: false });
         } catch (error) {
             // Ignore error
         }
+
+        if (this._isMounted) {
+            this.setState({ active: false });
+        }
+
     }
 
     private readonly onDoneRegister = async () => {
@@ -124,9 +137,12 @@ class RegistrationClass extends React.Component<Props, State> {
 
         try {
             await this.props.actions.updateOperatorStatistics(sdk, address, tokenPrices, darknodeList);
-            this.setState({ active: false });
         } catch (error) {
             // Ignore error
+        }
+
+        if (this._isMounted) {
+            this.setState({ active: false });
         }
     }
 

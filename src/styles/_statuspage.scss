@@ -241,6 +241,10 @@
         color: #FFFFFF;
     }
 
+    .topup--withdraw {
+        color: white;
+    }
+
     .topup--input--success {
         margin-top: 10px;
         font-weight: bold;
@@ -373,6 +377,14 @@
         font-size: 20px;
     }
 
+    &.notification--warning .svg-inline--fa {
+        color: lighten($orange, 10%);
+    }
+
+    &.notification--error .svg-inline--fa {
+        color: $red;
+    }
+
     h2 {
         font-weight: bold;
         line-height: 23px;
@@ -398,18 +410,26 @@
         flex-direction: column;
         margin-left: 20px;
     }
-}
 
-.statuspage--notification::before {
-    content: "";
-    width: 5px;
-    left: -20px; // padding and width
-    height: calc(100% + 20px);
-    background-color: $blue-bright;
-    position: relative;
-    top: -10px; // padding
-    border-top-left-radius: 2px;
-    border-bottom-left-radius: 2px;
+    &::before {
+        content: "";
+        width: 5px;
+        left: -20px; // padding and width
+        height: calc(100% + 20px);
+        background-color: $blue-bright;
+        position: relative;
+        top: -10px; // padding
+        border-top-left-radius: 2px;
+        border-bottom-left-radius: 2px;
+    }
+
+    &.notification--warning::before {
+        background-color: lighten($orange, 10%);
+    }
+
+    &.notification--error::before {
+        background-color: $red;
+    }
 }
 
 .darknode-id {
