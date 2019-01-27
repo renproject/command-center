@@ -204,10 +204,18 @@
         font-size: 12px;
         border-radius: 15px;
 
+        padding: 0 20px;
+
         overflow: hidden;
         text-overflow: ellipsis;
         min-width: 0px;
         white-space: nowrap;
+    }
+
+    .status--button--spinner {
+        display: inline-block;
+        margin-bottom: -3px;
+        margin-left: 5px;
     }
 
     .status--button--focus {
