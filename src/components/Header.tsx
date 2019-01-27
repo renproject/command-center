@@ -30,77 +30,70 @@ class HeaderClass extends React.Component<Props, State> {
     }
 
     public render = (): JSX.Element => {
-        const { hideOptions, store } = this.props;
-        const { address, web3BrowserName, quoteCurrency } = store;
+        const { address, web3BrowserName, quoteCurrency } = this.props.store;
         const { accountDropdown, languageDropdown, currencyDropdown, copied } = this.state;
 
         return (
             <div className="header">
                 <div className="container">
                     <div className="header--counter-weight">
-                        <div role="button" className="header--mobile-menu--button">
+                        {address ? <div role="button" className="header--mobile-menu--button">
                             <button onClick={this.props.actions.showMobileMenu}>
                                 <FontAwesomeIcon icon={faBars} />
                             </button>
-                        </div>
+                        </div> : <></>}
                     </div>
                     <Link className="no-underline" to="/">
                         <div className="header--logo" />
                     </Link>
                     <ul className="header--menu">
-                        {!hideOptions ?
-                            <>
-                                <li
-                                    data-id="languageDropdown"
-                                    className="header--group header--group--language"
-                                    role="menuitem"
-                                    onClick={this.toggleDropdown}
-                                    onMouseEnter={this.showDropdown}
-                                    onMouseLeave={this.hideDropdown}
-                                >
-                                    English <FontAwesomeIcon icon={faAngleDown} />
-                                    {languageDropdown ?
-                                        <ul className="header--dropdown header--dropdown--options">
-                                            <li role="button" className="header--dropdown--selected">
-                                                <img alt="" role="presentation" src={English} />
-                                                {" "}
-                                                English
+                        <li
+                            data-id="languageDropdown"
+                            className="header--group header--group--language"
+                            role="menuitem"
+                            onClick={this.toggleDropdown}
+                            onMouseEnter={this.showDropdown}
+                            onMouseLeave={this.hideDropdown}
+                        >
+                            English <FontAwesomeIcon icon={faAngleDown} />
+                            {languageDropdown ?
+                                <ul className="header--dropdown header--dropdown--options">
+                                    <li role="button" className="header--dropdown--selected">
+                                        <img alt="" role="presentation" src={English} />
+                                        {" "}
+                                        English
                                             </li>
-                                        </ul> : null
-                                    }
-                                </li>
+                                </ul> : null
+                            }
+                        </li>
 
-                                <li
-                                    data-id="currencyDropdown"
-                                    className="header--group header--group--currency"
-                                    role="menuitem"
-                                    onClick={this.toggleDropdown}
-                                    onMouseEnter={this.showDropdown}
-                                    onMouseLeave={this.hideDropdown}
-                                >
-                                    {quoteCurrency.toUpperCase()} <FontAwesomeIcon icon={faAngleDown} />
-                                    {currencyDropdown ?
-                                        <ul className="header--dropdown header--dropdown--currency">
-                                            {currencies.map(({ currency, description }) => <li
-                                                key={currency}
-                                                role="button"
-                                                data-id={currency}
-                                                className={quoteCurrency === currency ?
-                                                    "header--dropdown--selected" :
-                                                    ""}
-                                                onClick={this.setCurrency}
-                                            >
-                                                <CurrencyIcon currency={currency} />
-                                                {" "}
-                                                {description}
-                                            </li>)}
-                                        </ul> : null
-                                    }
-                                </li>
-                            </>
-
-                            : null}
-
+                        <li
+                            data-id="currencyDropdown"
+                            className="header--group header--group--currency"
+                            role="menuitem"
+                            onClick={this.toggleDropdown}
+                            onMouseEnter={this.showDropdown}
+                            onMouseLeave={this.hideDropdown}
+                        >
+                            {quoteCurrency.toUpperCase()} <FontAwesomeIcon icon={faAngleDown} />
+                            {currencyDropdown ?
+                                <ul className="header--dropdown header--dropdown--currency">
+                                    {currencies.map(({ currency, description }) => <li
+                                        key={currency}
+                                        role="button"
+                                        data-id={currency}
+                                        className={quoteCurrency === currency ?
+                                            "header--dropdown--selected" :
+                                            ""}
+                                        onClick={this.setCurrency}
+                                    >
+                                        <CurrencyIcon currency={currency} />
+                                        {" "}
+                                        {description}
+                                    </li>)}
+                                </ul> : null
+                            }
+                        </li>
                         <li
                             data-id="accountDropdown"
                             className="header--group"
@@ -226,7 +219,6 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
 
 interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps>,
     RouteComponentProps {
-    hideOptions?: boolean;
 }
 
 interface State {
