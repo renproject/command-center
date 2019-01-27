@@ -11,7 +11,6 @@ import { login, lookForLogout } from "../actions/trader/accountActions";
 import { _captureBackgroundException_ } from "../lib/errors";
 import { ApplicationData } from "../reducers/types";
 import { getDarknodeParam } from "./pages/Darknode";
-import { LoggingIn } from "./pages/LoggingIn";
 
 /**
  * BackgroundTasks is the main visual component responsible for displaying different routes
@@ -43,10 +42,11 @@ class BackgroundTasksClass extends React.Component<Props, State> {
         this.setupLoops();
 
         try {
-            const { sdk } = this.props.store;
+            const { sdk, readOnlyProvider } = this.props.store;
             if (sdk) {
                 await this.props.actions.login(
                     sdk,
+                    readOnlyProvider,
                     {
                         redirect: false,
                         showPopup: darknodeID === undefined || action !== undefined,
@@ -96,10 +96,6 @@ class BackgroundTasksClass extends React.Component<Props, State> {
         if (this.callUpdateOperatorStatisticsTimeout) { clearTimeout(this.callUpdateOperatorStatisticsTimeout); }
         if (this.callUpdateSelectedDarknodeTimeout) { clearTimeout(this.callUpdateSelectedDarknodeTimeout); }
     }
-
-    public withAccount = <T extends React.ComponentClass>(component: T):
-        React.ComponentClass | React.StatelessComponent =>
-        this.props.store.address ? component : LoggingIn
 
     public render = (): JSX.Element => <></>;
 

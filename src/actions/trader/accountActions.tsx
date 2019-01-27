@@ -15,7 +15,7 @@ import { history } from "../../history";
 import { Language } from "../../languages/language";
 import { _captureBackgroundException_ } from "../../lib/errors";
 import { getWeb3BrowserName, Web3Browser } from "../../lib/ethereum/browsers";
-import { getInjectedWeb3Provider } from "../../lib/ethereum/wallet";
+import { getInjectedWeb3Provider, ProviderEngine } from "../../lib/ethereum/wallet";
 
 export const storeAddress = createStandardAction("STORE_ADDRESS")<string | null>();
 
@@ -38,11 +38,12 @@ export const updateWeb3BrowserName = (
 
 export const login = (
     sdk: RenExSDK,
+    readOnlyProvider: ProviderEngine,
     options: { redirect: boolean; showPopup: boolean; immediatePopup: boolean },
 ) => async (dispatch: Dispatch) => {
     let cancelled = false;
 
-    const onClick = async () => (login(sdk, { redirect: false, showPopup: true, immediatePopup: true })(dispatch));
+    const onClick = async () => (login(sdk, readOnlyProvider, { redirect: false, showPopup: true, immediatePopup: true })(dispatch));
     const onCancel = () => {
         dispatch(clearPopup());
         cancelled = true;
@@ -138,6 +139,8 @@ export const login = (
     sdk.updateProvider(provider);
     sdk.setAddress(address);
 
+    readOnlyProvider.stop();
+
     /*
     // Check for mobile
     const { userAgent: ua } = navigator
@@ -157,7 +160,7 @@ export const login = (
 
 export const logout = (
     sdk: RenExSDK,
-    readOnlyProvider: Provider,
+    readOnlyProvider: ProviderEngine,
     options: { reload: boolean },
 ) => async (dispatch: Dispatch) => {
 
@@ -165,6 +168,7 @@ export const logout = (
     dispatch(storeAddress(null));
 
     // Use read-only provider and clear address
+    readOnlyProvider.start();
     sdk.updateProvider(readOnlyProvider);
     sdk.setAddress("");
 
@@ -187,7 +191,7 @@ export const logout = (
 export const lookForLogout = (
     sdk: RenExSDK,
     address: string,
-    readOnlyProvider: Provider,
+    readOnlyProvider: ProviderEngine,
 ) => async (dispatch: Dispatch) => {
     const sdkAddress = sdk.getAddress();
 
@@ -207,9 +211,14 @@ export const lookForLogout = (
                     description: "Error in logout in accountActions",
                 });
             });
-            await login(sdk, { redirect: false, showPopup: true, immediatePopup: false })(dispatch);
+            await login(sdk, readOnlyProvider, { redirect: false, showPopup: true, immediatePopup: false })(dispatch);
         };
-        const onCancel = () => {
+        const onCancel = async () => {
+            await logout(sdk, readOnlyProvider, { reload: true })(dispatch).catch((error) => {
+                _captureBackgroundException_(error, {
+                    description: "Error in logout in accountActions",
+                });
+            });
             dispatch(clearPopup());
         };
 
