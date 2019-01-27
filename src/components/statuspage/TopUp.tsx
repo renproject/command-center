@@ -12,6 +12,8 @@ import { ApplicationData } from "../../reducers/types";
 const CONFIRMATION_MESSAGE = "Transaction confirmed.";
 
 class TopUpClass extends React.Component<Props, State> {
+    private _isMounded = false;
+
     constructor(props: Props) {
         super(props);
         this.state = {
@@ -24,11 +26,16 @@ class TopUpClass extends React.Component<Props, State> {
     }
 
     public componentDidMount = async () => {
+        this._isMounded = true;
         this.updateTraderBalance().catch((error) => {
             _captureBackgroundException_(error, {
                 description: "Error in updateTraderBalance in TopUp",
             });
         });
+    }
+
+    public componentWillUnmount = () => {
+        this._isMounded = false;
     }
 
     public render = (): JSX.Element => {
@@ -37,6 +44,7 @@ class TopUpClass extends React.Component<Props, State> {
             <div className="topup">
                 <label>
                     <div className="topup--title">Enter the amount of Ether you would like to deposit</div>
+                    <p className="topup--withdraw">Funds can be withdrawn through the Darknode CLI.</p>
                     <span className="topup--input">
                         <input
                             disabled={pending}
@@ -130,24 +138,25 @@ class TopUpClass extends React.Component<Props, State> {
         }
 
         const onCancel = () => {
-            try {
+            if (this._isMounded) {
                 this.setState({ pending: false });
-            } catch (error) {
-                // Ignore error
             }
         };
 
         const onDone = async () => {
             try {
                 await this.props.actions.updateDarknodeStatistics(sdk, darknodeID, tokenPrices);
+            } catch (error) {
+                // Ignore error
+            }
+
+            if (this._isMounded) {
                 this.setState({ resultMessage: CONFIRMATION_MESSAGE, pending: false });
 
                 // If the user hasn't changed the value, set it to 0.
                 if (this.state.value === value) {
                     this.setState({ value: "0" });
                 }
-            } catch (error) {
-                // Ignore error
             }
         };
 
