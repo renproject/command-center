@@ -57,6 +57,7 @@ class BackgroundTasksClass extends React.Component<Props, State> {
         } catch (error) {
             _captureBackgroundException_(error, {
                 description: "Error logging in on load",
+                ignoreNetwork: true,
             });
         }
 
@@ -68,6 +69,7 @@ class BackgroundTasksClass extends React.Component<Props, State> {
             this.callUpdateOperatorStatistics(nextProps).catch(error => {
                 _captureBackgroundException_(error, {
                     description: "Error in callUpdateOperatorStatistics in BackgroundTasks",
+                    ignoreNetwork: true,
                 });
             });
         }
@@ -82,6 +84,7 @@ class BackgroundTasksClass extends React.Component<Props, State> {
             this.callUpdateSelectedDarknode(nextProps).catch(error => {
                 _captureBackgroundException_(error, {
                     description: "Error in callUpdateSelectedDarknode in BackgroundTasks",
+                    ignoreNetwork: true,
                 });
             });
         }
@@ -109,6 +112,7 @@ class BackgroundTasksClass extends React.Component<Props, State> {
         } catch (error) {
             _captureBackgroundException_(error, {
                 description: "Error thrown in callUpdatePrices background task",
+                ignoreNetwork: true,
             });
         }
         if (this.callUpdatePricesTimeout) { clearTimeout(this.callUpdatePricesTimeout); }
@@ -127,6 +131,7 @@ class BackgroundTasksClass extends React.Component<Props, State> {
             } catch (error) {
                 _captureBackgroundException_(error, {
                     description: "Error thrown in callLookForLogout background task",
+                    ignoreNetwork: true,
                 });
             }
         }
@@ -148,6 +153,7 @@ class BackgroundTasksClass extends React.Component<Props, State> {
             } catch (error) {
                 _captureBackgroundException_(error, {
                     description: "Error thrown in callUpdateNetworkStatistics background task",
+                    ignoreNetwork: true,
                 });
             }
         }
@@ -176,6 +182,7 @@ class BackgroundTasksClass extends React.Component<Props, State> {
             } catch (error) {
                 _captureBackgroundException_(error, {
                     description: "Error thrown in callUpdateOperatorStatistics background task",
+                    ignoreNetwork: true,
                 });
                 timeout = 120 / 2;
             }
@@ -209,6 +216,7 @@ class BackgroundTasksClass extends React.Component<Props, State> {
             } catch (error) {
                 _captureBackgroundException_(error, {
                     description: "Error thrown in callUpdateSelectedDarknode background task",
+                    ignoreNetwork: true,
                 });
                 timeout = 15; // try again in half the time
             }
@@ -225,16 +233,19 @@ class BackgroundTasksClass extends React.Component<Props, State> {
         this.callUpdatePrices().catch(error => {
             _captureBackgroundException_(error, {
                 description: "Error in callUpdatePrices in BackgroundTasks",
+                ignoreNetwork: true,
             });
         });
         this.callUpdateNetworkStatistics().catch(error => {
             _captureBackgroundException_(error, {
                 description: "Error in callUpdateNetworkStatistics in BackgroundTasks",
+                ignoreNetwork: true,
             });
         });
         this.callUpdateSelectedDarknode().catch(error => {
             _captureBackgroundException_(error, {
                 description: "Error in callUpdateSelectedDarknode in BackgroundTasks",
+                ignoreNetwork: true,
             });
         });
     }
@@ -244,11 +255,13 @@ class BackgroundTasksClass extends React.Component<Props, State> {
         this.callLookForLogout().catch(error => {
             _captureBackgroundException_(error, {
                 description: "Error in callLookForLogout in BackgroundTasks",
+                ignoreNetwork: true,
             });
         });
         this.callUpdateOperatorStatistics().catch(error => {
             _captureBackgroundException_(error, {
                 description: "Error in callUpdateOperatorStatistics in BackgroundTasks",
+                ignoreNetwork: true,
             });
         });
     }
