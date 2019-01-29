@@ -7,7 +7,7 @@ import { Link, RouteComponentProps, withRouter } from "react-router-dom";
 import { bindActionCreators, Dispatch } from "redux";
 
 import { storeQuoteCurrency } from "../actions/statistics/operatorActions";
-import { login } from "../actions/trader/accountActions";
+import { login, logout } from "../actions/trader/accountActions";
 import { showMobileMenu } from "../actions/ui/uiActions";
 import { Blocky } from "../components/Blocky";
 import { ApplicationData, currencies, Currency } from "../reducers/types";
@@ -122,7 +122,7 @@ class HeaderClass extends React.Component<Props, State> {
                             </div>
                             {accountDropdown ?
                                 <ul className={`header--dropdown ${!address ? "header--dropdown--login" : ""}`}>
-                                    {address ?
+                                    {address ? <>
                                         <li role="button" onClick={this.copyToClipboard}>
                                             <span data-addr={address}>
                                                 {copied ?
@@ -131,7 +131,14 @@ class HeaderClass extends React.Component<Props, State> {
                                                     <span>Copy to clipboard</span>
                                                 }
                                             </span>
-                                        </li> :
+                                        </li>
+                                        <li
+                                            role="button"
+                                            onClick={this.handleLogout}
+                                        >
+                                            Log out
+                                        </li>
+                                    </> :
                                         <li
                                             role="button"
                                             onClick={this.handleLogin}
@@ -152,8 +159,14 @@ class HeaderClass extends React.Component<Props, State> {
     private readonly handleLogin = async (): Promise<void> => {
         const { address, sdk, readOnlyProvider } = this.props.store;
         if (sdk && !address) {
-            // tslint:disable-next-line: await-promise
             await this.props.actions.login(sdk, readOnlyProvider, { redirect: false, showPopup: true, immediatePopup: true });
+        }
+    }
+
+    private readonly handleLogout = async (): Promise<void> => {
+        const { sdk, readOnlyProvider } = this.props.store;
+        if (sdk) {
+            await this.props.actions.logout(sdk, readOnlyProvider, { reload: false });
         }
     }
 
@@ -213,6 +226,7 @@ const mapStateToProps = (state: ApplicationData) => ({
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     actions: bindActionCreators({
         login,
+        logout,
         storeQuoteCurrency,
         showMobileMenu,
     }, dispatch),
