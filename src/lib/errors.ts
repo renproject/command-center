@@ -25,6 +25,7 @@ const isNetworkError = (error: Error | any): boolean => {
     const message: string = ((error || {}).message || error).toString();
 
     if (
+        message.match(/Network Error/i) ||
         message.match(/Failed to fetch/i) ||
         message.match(/Network request failed/i) ||
         message.match(/Wrong response id/i) ||
@@ -116,6 +117,7 @@ const _captureException_ = <X extends Details>(error: any, details: X) => {
         }
 
         Sentry.captureException(error);
+
     });
 };
 
