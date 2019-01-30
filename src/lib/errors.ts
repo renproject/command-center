@@ -33,10 +33,10 @@ const isNetworkError = (error: Error | any): boolean => {
         message.match(/Invalid JSON RPC response/i) ||
         message.match(/timeout of 0ms exceeded/i)
     ) {
-        return false;
+        return true;
     }
 
-    return true;
+    return false;
 };
 
 const rawError = (errorObject: Error) => {
@@ -110,9 +110,12 @@ const _captureException_ = <X extends Details>(error: any, details: X) => {
             }
         }
 
-        if (!details.ignoreNetwork || !isNetworkError(error)) {
-            Sentry.captureException(error);
+        // Check if we should ignore the error
+        if (details.ignoreNetwork && isNetworkError(error)) {
+            return;
         }
+
+        Sentry.captureException(error);
     });
 };
 
