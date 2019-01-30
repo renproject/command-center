@@ -12,6 +12,8 @@ export const COMMIT_DESCRIPTION = process.env.REACT_APP_REACT_APP_COMMIT_DESCRIP
 export const APP_NAME = process.env.REACT_APP_REACT_APP_APP_NAME;
 export const RELEASE_VERSION = process.env.REACT_APP_REACT_APP_RELEASE_VERSION;
 
+console.log(process.env.REACT_APP_HEROKU_SLUG_COMMIT);
+console.log(process.env.REACT_APP_SOURCE_VERSION);
 console.log(COMMIT);
 console.log(COMMIT_DESCRIPTION);
 console.log(APP_NAME);
