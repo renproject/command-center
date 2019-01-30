@@ -13,7 +13,7 @@ import { HttpProvider } from "web3/providers";
 
 import { App } from "./components/App";
 import { _catch_ } from "./components/ErrorBoundary";
-import { APP_NAME, COMMIT, COMMIT_DESCRIPTION, ETH_NETWORK, ETH_NETWORK_LABEL, NETWORK, RELEASE_VERSION, SENTRY_DSN } from "./environmentVariables";
+import { ETH_NETWORK, ETH_NETWORK_LABEL, NETWORK, SENTRY_DSN, SOURCE_VERSION } from "./environmentVariables";
 import { history } from "./history";
 import { configureStore } from "./store/configureStore";
 
@@ -36,7 +36,7 @@ declare global {
 Sentry.init({
     dsn: SENTRY_DSN,
     environment: (process.env.NODE_ENV === "development") ? "local" : NETWORK,
-    release: `${APP_NAME} ${RELEASE_VERSION}`,
+    release: SOURCE_VERSION,
 });
 
 Sentry.configureScope((scope) => {
@@ -45,7 +45,7 @@ Sentry.configureScope((scope) => {
     // We set this to false when logging to Sentry explicitly.
     scope.setExtra("caught", false);
 
-    scope.setExtra("version", `${COMMIT} (${COMMIT_DESCRIPTION})`);
+    scope.setExtra("release", SOURCE_VERSION);
 });
 
 // Update document title to show network
