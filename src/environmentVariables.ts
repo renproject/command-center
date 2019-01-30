@@ -7,5 +7,8 @@ export const SENTRY_DSN = process.env.REACT_APP_SENTRY_DSN;
 export const NETWORK = process.env.REACT_APP_NETWORK;
 export const ETH_NETWORK = process.env.REACT_APP_ETH_NETWORK;
 export const ETH_NETWORK_LABEL = process.env.REACT_APP_ETH_NETWORK_LABEL;
+export const SOURCE_VERSION = process.env.REACT_APP_SOURCE_VERSION;
+
+console.log(SOURCE_VERSION);
 
 export const environment = ((process.env.NODE_ENV === "development") ? "local" : NETWORK) || "unknown";
