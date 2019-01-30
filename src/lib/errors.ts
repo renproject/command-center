@@ -2,12 +2,13 @@
 
 import * as Sentry from "@sentry/browser";
 
-import { NETWORK } from "../environmentVariables";
+import { environment } from "../environmentVariables";
 
 interface Details {
     description?: string;
     category?: string;
     level?: Sentry.Severity;
+    ignoreNetwork?: boolean;
 }
 
 interface Described {
@@ -17,6 +18,26 @@ interface Described {
 interface ShownToUser {
     shownToUser: string;
 }
+
+// Determines whether or not this is a common network error (too many of these
+// are being logged to Sentry)
+const isNetworkError = (error: Error | any): boolean => {
+    const message: string = ((error || {}).message || error).toString();
+
+    if (
+        message.match(/Failed to fetch/i) ||
+        message.match(/Network request failed/i) ||
+        message.match(/Wrong response id/i) ||
+        message.match(/Request failed or timed out/i) ||
+        message.match(/Returned values aren't valid, did it run Out of Gas\?/i) ||
+        message.match(/Invalid JSON RPC response/i) ||
+        message.match(/timeout of 0ms exceeded/i)
+    ) {
+        return false;
+    }
+
+    return true;
+};
 
 const rawError = (errorObject: Error) => {
     // https://stackoverflow.com/questions/11616630/json-stringify-avoid-typeerror-converting-circular-structure-to-json/11616993#11616993
@@ -49,6 +70,10 @@ const rawError = (errorObject: Error) => {
 };
 
 const _captureException_ = <X extends Details>(error: any, details: X) => {
+    if (error._noCapture_) {
+        return;
+    }
+
     Sentry.withScope(scope => {
         // Category
         if (details.category) {
@@ -66,32 +91,28 @@ const _captureException_ = <X extends Details>(error: any, details: X) => {
                 scope.setExtra(key, details[key]);
             });
 
-        // If there's a server response, log it
-        if (error && error.response && error.response.data) {
-            scope.setExtra("serverResponse", error.response.data);
-        }
-
         scope.setExtra("caught", true);
         scope.setExtra("zRawError", rawError(error));
 
+        // tslint:disable-next-line: no-console
         console.error(error);
 
-        let environment = (process.env.NODE_ENV === "development") ? "local" : NETWORK;
         if (environment !== "mainnet") {
-            environment = (environment || "").toUpperCase();
             if (typeof error === "string") {
                 // tslint:disable-next-line: no-parameter-reassignment
-                error = `[${environment}] ${error}`;
+                error = `[${environment.toUpperCase()}] ${error}`;
             } else {
                 try {
-                    error.message = `[${environment}] ${error.message || error}`;
+                    error.message = `[${environment.toUpperCase()}] ${error.message || error}`;
                 } catch {
                     // Ignore: Unable to overwrite message (may be read-only)
                 }
             }
         }
 
-        Sentry.captureException(error);
+        if (!details.ignoreNetwork || !isNetworkError(error)) {
+            Sentry.captureException(error);
+        }
     });
 };
 
