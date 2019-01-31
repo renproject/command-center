@@ -46,6 +46,8 @@ Sentry.configureScope((scope) => {
     scope.setExtra("caught", false);
 
     scope.setExtra("release", SOURCE_VERSION);
+
+    scope.setExtra("pageLoadedAt", new Date().toUTCString());
 });
 
 // Update document title to show network
