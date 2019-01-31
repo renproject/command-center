@@ -123,7 +123,7 @@ const _captureException_ = <X extends Details>(error: any, details: X) => {
 
 // Background exceptions are thrown in background loops and actions
 export const _captureBackgroundException_ = <X extends Details & Described>(error: any, details?: X) => {
-    _captureException_(error, { ...details, category: "background_exception" });
+    _captureException_(error, { ignoreNetwork: true, ...details, category: "background_exception" });
 };
 
 // Interaction exceptions are thrown as a direct result of a user interaction
