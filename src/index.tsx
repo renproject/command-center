@@ -15,6 +15,7 @@ import { App } from "./components/App";
 import { _catch_ } from "./components/ErrorBoundary";
 import { ETH_NETWORK, ETH_NETWORK_LABEL, NETWORK, SENTRY_DSN, SOURCE_VERSION } from "./environmentVariables";
 import { history } from "./history";
+import { pageLoadedAt } from "./lib/errors";
 import { configureStore } from "./store/configureStore";
 
 import "./index.scss";
@@ -47,7 +48,7 @@ Sentry.configureScope((scope) => {
 
     scope.setExtra("release", SOURCE_VERSION);
 
-    scope.setExtra("pageLoadedAt", new Date().toUTCString());
+    scope.setExtra("pageLoadedAt", pageLoadedAt());
 });
 
 // Update document title to show network
