@@ -3,6 +3,7 @@
 import * as Sentry from "@sentry/browser";
 
 import { environment } from "../environmentVariables";
+import { naturalTime } from "./conversion";
 
 interface Details {
     description?: string;
@@ -18,6 +19,20 @@ interface Described {
 interface ShownToUser {
     shownToUser: string;
 }
+
+let pageLoaded: Date;
+export const pageLoadedAt = (): string => {
+    if (!pageLoaded) {
+        pageLoaded = new Date();
+        return pageLoaded.toUTCString();
+    } else {
+        return naturalTime(Math.floor(pageLoaded.getTime() / 1000), {
+            message: "Just now",
+            suffix: "ago",
+            countDown: false,
+        });
+    }
+};
 
 // Determines whether or not this is a common network error (too many of these
 // are being logged to Sentry)
@@ -76,6 +91,9 @@ const _captureException_ = <X extends Details>(error: any, details: X) => {
     }
 
     Sentry.withScope(scope => {
+        // How long ago the page was loaded at
+        scope.setExtra("pageLoadedAt", pageLoadedAt());
+
         // Category
         if (details.category) {
             scope.setTag("category", details.category);
@@ -91,6 +109,11 @@ const _captureException_ = <X extends Details>(error: any, details: X) => {
             .forEach(key => {
                 scope.setExtra(key, details[key]);
             });
+
+        if (error && error.response) {
+            scope.setExtra("responseData", error.response.data);
+            scope.setExtra("responseStatus", error.response.status);
+        }
 
         scope.setExtra("caught", true);
         scope.setExtra("zRawError", rawError(error));
