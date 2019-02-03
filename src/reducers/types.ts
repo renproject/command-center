@@ -6,7 +6,7 @@ import BigNumber from "bignumber.js";
 import { List, Map, OrderedMap } from "immutable";
 
 import { RegistrationStatus } from "../actions/statistics/operatorActions";
-import { NETWORK } from "../environmentVariables";
+import { NETWORK } from "../lib/environmentVariables";
 import { _captureBackgroundException_ } from "../lib/errors";
 import { Web3Browser } from "../lib/ethereum/browsers";
 import { Token } from "../lib/ethereum/tokens";

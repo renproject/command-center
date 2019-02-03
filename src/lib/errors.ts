@@ -2,8 +2,8 @@
 
 import * as Sentry from "@sentry/browser";
 
-import { environment } from "../environmentVariables";
 import { naturalTime } from "./conversion";
+import { environment } from "./environmentVariables";
 
 interface Details {
     description?: string;

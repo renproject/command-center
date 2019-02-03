@@ -4,8 +4,8 @@ import FetchSubprovider from "web3-provider-engine/subproviders/fetch";
 
 import { HttpProvider, Provider } from "web3/providers";
 
-import { ETH_NETWORK, INFURA_URL } from "../../environmentVariables";
 import { Language } from "../../languages/language";
+import { ETH_NETWORK, INFURA_URL } from "../environmentVariables";
 import { _noCapture_ } from "../errors";
 
 export const ErrorCanceledByUser = "User denied transaction signature.";
