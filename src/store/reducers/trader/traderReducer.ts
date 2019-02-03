@@ -2,7 +2,7 @@ import { ActionType, getType } from "typesafe-actions";
 
 import * as accountActions from "../../actions/trader/accountActions";
 
-import { TraderData } from "../../reducers/types";
+import { TraderData } from "../../types";
 
 type AccountAction = ActionType<typeof accountActions>;
 

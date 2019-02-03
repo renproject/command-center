@@ -8,14 +8,14 @@ import { Dispatch } from "redux";
 import { createStandardAction } from "typesafe-actions";
 import { Provider } from "web3/providers";
 
-import { clearPopup, setPopup } from "../../actions/popup/popupActions";
-import { LoggedOut } from "../../components/popups/LoggedOut";
-import { NoWeb3Popup } from "../../components/popups/NoWeb3Popup";
-import { Language } from "../../languages/language";
-import { _captureBackgroundException_ } from "../../lib/errors";
-import { getWeb3BrowserName, Web3Browser } from "../../lib/ethereum/browsers";
-import { getInjectedWeb3Provider, ProviderEngine } from "../../lib/ethereum/wallet";
-import { history } from "../../lib/history";
+import { LoggedOut } from "../../../components/popups/LoggedOut";
+import { NoWeb3Popup } from "../../../components/popups/NoWeb3Popup";
+import { Language } from "../../../languages/language";
+import { _captureBackgroundException_ } from "../../../lib/errors";
+import { getWeb3BrowserName, Web3Browser } from "../../../lib/ethereum/browsers";
+import { getInjectedWeb3Provider, ProviderEngine } from "../../../lib/ethereum/wallet";
+import { history } from "../../../lib/history";
+import { clearPopup, setPopup } from "../popup/popupActions";
 
 export const storeAddress = createStandardAction("STORE_ADDRESS")<string | null>();
 

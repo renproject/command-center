@@ -4,9 +4,9 @@ import BigNumber from "bignumber.js";
 import { Dispatch } from "redux";
 import { createStandardAction } from "typesafe-actions";
 
-import { contracts } from "../../lib/ethereum/contracts/contracts";
-import { getPrices } from "../../lib/ethereum/tokens";
-import { TokenPrices } from "../../reducers/types";
+import { contracts } from "../../../lib/ethereum/contracts/contracts";
+import { getPrices } from "../../../lib/ethereum/tokens";
+import { TokenPrices } from "../../types";
 
 export const storeTokenPrices = createStandardAction("STORE_TOKEN_PRICES")<{ tokenPrices: TokenPrices }>();
 

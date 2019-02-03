@@ -4,8 +4,8 @@ import { List } from "immutable";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
-import { DarknodeList } from "../../components/DarknodeList";
-import { ApplicationData } from "../../reducers/types";
+import { ApplicationData } from "../../store/types";
+import { DarknodeList } from "../DarknodeList";
 import { _catch_ } from "../ErrorBoundary";
 
 /**

@@ -5,8 +5,8 @@ import BigNumber from "bignumber.js";
 import { faExclamationTriangle, faInfoCircle, faTimesCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { RegistrationStatus } from "../../actions/statistics/operatorActions";
-import { DarknodeDetails } from "../../reducers/types";
+import { RegistrationStatus } from "../../store/actions/statistics/operatorActions";
+import { DarknodeDetails } from "../../store/types";
 
 const lowValue = new BigNumber(Math.pow(10, 18)).multipliedBy(0.1);
 

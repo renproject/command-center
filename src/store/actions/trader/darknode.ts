@@ -3,9 +3,9 @@ import BigNumber from "bignumber.js";
 
 import { Dispatch } from "redux";
 
-import { _noCapture_ } from "../../lib/errors";
-import { contracts } from "../../lib/ethereum/contracts/contracts";
-import { Token } from "../../lib/ethereum/tokens";
+import { _noCapture_ } from "../../../lib/errors";
+import { contracts } from "../../../lib/ethereum/contracts/contracts";
+import { Token } from "../../../lib/ethereum/tokens";
 
 export const withdrawReward = (sdk: RenExSDK, trader: string, darknodeID: string, token: Token) => async (_dispatch: Dispatch) => {
 

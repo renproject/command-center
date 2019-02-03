@@ -7,11 +7,11 @@ import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { RouteComponentProps, withRouter } from "react-router";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { StatusPage } from "../../components/statuspage/StatusPage";
+import { StatusPage } from "../statuspage/StatusPage";
 
-import { addRegisteringDarknode, RegistrationStatus, setDarknodeName } from "../../actions/statistics/operatorActions";
 import { EncodedData, Encodings } from "../../lib/encodedData";
-import { ApplicationData } from "../../reducers/types";
+import { addRegisteringDarknode, RegistrationStatus, setDarknodeName } from "../../store/actions/statistics/operatorActions";
+import { ApplicationData } from "../../store/types";
 import { _catch_ } from "../ErrorBoundary";
 import { NotFound } from "./NotFound";
 

@@ -4,7 +4,7 @@ import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
 import { Token } from "../../lib/ethereum/tokens";
-import { ApplicationData } from "../../reducers/types";
+import { ApplicationData } from "../../store/types";
 
 const icons = {
     [Token.ETH]: "eth.svg",
@@ -23,7 +23,7 @@ class TokenIconClass extends React.Component<Props, State> {
     public render = (): JSX.Element => {
         const { token, className } = this.props;
         // tslint:disable-next-line: non-literal-require
-        const image = require(`../../tokens/${icons[token]}`);
+        const image = require(`../../styles/images/tokens/${icons[token]}`);
 
         return <img alt="" role="presentation" className={className} src={image} />;
     }

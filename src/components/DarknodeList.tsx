@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { List, Map } from "immutable";
 
-import { DarknodeDetails } from "../reducers/types";
+import { DarknodeDetails } from "../store/types";
 import { DarknodeCard } from "./DarknodeCard";
 import { EmptyDarknodeCard } from "./EmptyDarknodeCard";
 import { EmptyDarknodeList } from "./EmptyDarknodeList";

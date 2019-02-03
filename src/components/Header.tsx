@@ -6,11 +6,11 @@ import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { storeQuoteCurrency } from "../actions/statistics/operatorActions";
-import { login, logout } from "../actions/trader/accountActions";
-import { showMobileMenu } from "../actions/ui/uiActions";
-import { Blocky } from "../components/Blocky";
-import { ApplicationData, currencies, Currency } from "../reducers/types";
+import { storeQuoteCurrency } from "../store/actions/statistics/operatorActions";
+import { login, logout } from "../store/actions/trader/accountActions";
+import { showMobileMenu } from "../store/actions/ui/uiActions";
+import { ApplicationData, currencies, Currency } from "../store/types";
+import { Blocky } from "./Blocky";
 import { CurrencyIcon } from "./CurrencyIcon";
 
 import English from "../styles/images/rp-flag-uk.svg";

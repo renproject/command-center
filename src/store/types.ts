@@ -5,13 +5,13 @@ import BigNumber from "bignumber.js";
 
 import { List, Map, OrderedMap } from "immutable";
 
-import { RegistrationStatus } from "../actions/statistics/operatorActions";
 import { NETWORK } from "../lib/environmentVariables";
 import { _captureBackgroundException_ } from "../lib/errors";
 import { Web3Browser } from "../lib/ethereum/browsers";
 import { Token } from "../lib/ethereum/tokens";
 import { getReadOnlyProvider } from "../lib/ethereum/wallet";
 import { Record } from "../lib/record";
+import { RegistrationStatus } from "./actions/statistics/operatorActions";
 
 interface Serializable<T> {
     serialize(): string;

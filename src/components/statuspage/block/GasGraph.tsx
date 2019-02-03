@@ -9,14 +9,14 @@ import { Scatter } from "react-chartjs-2";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
+import { _captureBackgroundException_ } from "../../../lib/errors";
 import {
     calculateSecondsPerBlock,
     fetchDarknodeBalanceHistory,
     HistoryIterations,
     HistoryPeriods,
-} from "../../../actions/statistics/operatorActions";
-import { _captureBackgroundException_ } from "../../../lib/errors";
-import { ApplicationData, DarknodeDetails } from "../../../reducers/types";
+} from "../../../store/actions/statistics/operatorActions";
+import { ApplicationData, DarknodeDetails } from "../../../store/types";
 import { Loading } from "../../Loading";
 import { Block, BlockBody, BlockTitle } from "./Block";
 

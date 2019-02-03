@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { LabelLevel } from "../reducers/types";
+import { LabelLevel } from "../store/types";
 
 /**
  * InfoLabel is a visual component for displaying an information message for
