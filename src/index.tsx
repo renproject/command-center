@@ -71,6 +71,8 @@ if (ETH_NETWORK !== "main") {
     document.title = `DCC (${ETH_NETWORK_LABEL})`;
 }
 
+console.log(`Darknode Command Center version hash: ${SOURCE_VERSION}`);
+
 ReactDOM.render(
     _catch_(<Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
