@@ -1,4 +1,4 @@
-import { ETH_NETWORK_LABEL } from "../environmentVariables";
+import { ETH_NETWORK_LABEL } from "../lib/environmentVariables";
 import { Language } from "./language";
 
 export const ENGLISH: Language = {

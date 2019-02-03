@@ -1,4 +1,4 @@
-import { NETWORK } from "../../../environmentVariables";
+import { NETWORK } from "../../environmentVariables";
 
 // Contracts
 interface Contract {
