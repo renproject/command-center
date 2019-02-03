@@ -7,15 +7,15 @@ import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { Link } from "react-router-dom";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { Token } from "../lib/ethereum/tokens";
-import { RegistrationStatus, removeRegisteringDarknode } from "../store/actions/statistics/operatorActions";
-import { ApplicationData, Currency, DarknodeDetails } from "../store/types";
-import { Blocky } from "./Blocky";
-import { CurrencyIcon } from "./CurrencyIcon";
-import { DarknodeID } from "./DarknodeID";
-import { darknodeIDHexToBase58 } from "./pages/Darknode";
-import { statusText } from "./statuspage/Registration";
-import { TokenBalance } from "./TokenBalance";
+import { Token } from "../../lib/ethereum/tokens";
+import { RegistrationStatus, removeRegisteringDarknode } from "../../store/actions/statistics/operatorActions";
+import { ApplicationData, Currency, DarknodeDetails } from "../../store/types";
+import { Blocky } from "../Blocky";
+import { CurrencyIcon } from "../CurrencyIcon";
+import { DarknodeID } from "../DarknodeID";
+import { darknodeIDHexToBase58 } from "../pages/Darknode";
+import { statusText } from "../statuspage/Registration";
+import { TokenBalance } from "../TokenBalance";
 
 class DarknodeCardClass extends React.Component<Props, State> {
 
