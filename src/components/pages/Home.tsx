@@ -5,7 +5,7 @@ import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
 import { ApplicationData } from "../../store/types";
-import { DarknodeList } from "../DarknodeList";
+import { DarknodeList } from "../darknodeList/DarknodeList";
 import { _catch_ } from "../ErrorBoundary";
 
 /**

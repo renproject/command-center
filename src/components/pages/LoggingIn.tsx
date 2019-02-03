@@ -4,7 +4,7 @@ import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
 import { ApplicationData } from "../../store/types";
-import { EmptyDarknodeList } from "../EmptyDarknodeList";
+import { EmptyDarknodeList } from "../darknodeList/EmptyDarknodeList";
 
 /**
  * LoggingIn is a page whose principal components are wallet selection to allow users

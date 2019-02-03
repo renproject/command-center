@@ -10,8 +10,8 @@ For instructions on running a darknode, see [Darknode Rollout: Limited Participa
 
 All-darknodes page
 
-![preview](./preview.png)
+![preview 1](./preview-1.png)
 
 Darknode page
 
-![preview](./preview-2.png)
+![preview 2](./preview-2.png)
