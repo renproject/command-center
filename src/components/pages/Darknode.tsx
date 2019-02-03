@@ -36,9 +36,9 @@ export const getDarknodeParam = (params: unknown): string | undefined => {
         try {
             // Convert from base-58 to hex
             darknodeID = darknodeIDbase58ToHex(darknodeID58);
-        } catch (err) {
+        } catch (error) {
             // If the darknode ID is malformatted, ignore it
-            console.error(err);
+            console.error(error);
             darknodeID = undefined;
         }
     }

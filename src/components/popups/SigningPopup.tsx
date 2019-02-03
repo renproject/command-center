@@ -51,8 +51,8 @@ export class SigningPopup extends React.Component<Props, State> {
 
         try {
             await sign();
-        } catch (err) {
-            this.setState({ error: err.message || err });
+        } catch (error) {
+            this.setState({ error: error.message || error });
         }
         this.setState({ signing: false });
     }
