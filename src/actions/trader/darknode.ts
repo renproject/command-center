@@ -7,7 +7,7 @@ import { _noCapture_ } from "../../lib/errors";
 import { contracts } from "../../lib/ethereum/contracts/contracts";
 import { Token } from "../../lib/ethereum/tokens";
 
-export const withdrawReward = (sdk: RenExSDK, darknodeID: string, token: Token) => async (_dispatch: Dispatch) => {
+export const withdrawReward = (sdk: RenExSDK, trader: string, darknodeID: string, token: Token) => async (_dispatch: Dispatch) => {
 
     const contract = new ((sdk.getWeb3()).eth.Contract)(
         contracts.DarknodeRewardVault.ABI,
@@ -19,18 +19,17 @@ export const withdrawReward = (sdk: RenExSDK, darknodeID: string, token: Token) 
         throw new Error("Unknown token");
     }
 
-    const ethAddress = await sdk.getWeb3().eth.getAccounts();
-    await contract.methods.withdraw(darknodeID, tokenDetails.addr).send({ from: ethAddress[0] });
+    await contract.methods.withdraw(darknodeID, tokenDetails.addr).send({ from: trader });
 };
 
-export const approveNode = (sdk: RenExSDK, address: string, bond: BigNumber) => async (_dispatch: Dispatch) => {
+export const approveNode = (sdk: RenExSDK, trader: string, bond: BigNumber) => async (_dispatch: Dispatch) => {
 
     // tslint:disable-next-line:no-non-null-assertion
     const renAddr = (await sdk._cachedTokenDetails.get(Token.REN))!.addr;
     const ercContract = new (sdk.getWeb3().eth.Contract)(contracts.ERC20.ABI, renAddr);
-    const ercBalance = new BigNumber(await ercContract.methods.balanceOf(address).call());
+    const ercBalance = new BigNumber(await ercContract.methods.balanceOf(trader).call());
     const ercAllowance = new BigNumber(
-        await ercContract.methods.allowance(address, contracts.DarknodeRegistry.address).call(),
+        await ercContract.methods.allowance(trader, contracts.DarknodeRegistry.address).call(),
     );
 
     if (ercAllowance.gte(bond)) {
@@ -46,7 +45,7 @@ export const approveNode = (sdk: RenExSDK, address: string, bond: BigNumber) => 
         resolve: (value: string) => void,
         reject: (reason: Error | string) => void,
     ) => {
-        ercContract.methods.approve(contracts.DarknodeRegistry.address, bond.toFixed()).send({ from: address })
+        ercContract.methods.approve(contracts.DarknodeRegistry.address, bond.toFixed()).send({ from: trader })
             .on("transactionHash", resolve)
             .catch(reject);
     });
@@ -54,7 +53,7 @@ export const approveNode = (sdk: RenExSDK, address: string, bond: BigNumber) => 
 
 export const registerNode = (
     sdk: RenExSDK,
-    address: string,
+    trader: string,
     darknodeID: string,
     publicKey: string,
     bond: BigNumber,
@@ -69,7 +68,7 @@ export const registerNode = (
     const ercContract = new (sdk.getWeb3().eth.Contract)(contracts.ERC20.ABI, renAddr);
 
     const ercAllowance = new BigNumber(
-        await ercContract.methods.allowance(address, contracts.DarknodeRegistry.address).call()
+        await ercContract.methods.allowance(trader, contracts.DarknodeRegistry.address).call()
     );
 
     let gas: number | undefined = hardCodedGas;
@@ -86,7 +85,7 @@ export const registerNode = (
         resolve: (value: string) => void,
         reject: (reason: Error | string) => void,
     ) => {
-        darknodeRegistry.methods.register(darknodeID, publicKey, bond.toFixed()).send({ from: address, gas })
+        darknodeRegistry.methods.register(darknodeID, publicKey, bond.toFixed()).send({ from: trader, gas })
             .on("transactionHash", (res: string) => { resolve(res); resolved = true; })
             .once("confirmation", onDone)
             .on("error", (error: Error) => { if (resolved) { onCancel(); } reject(error); });
@@ -95,7 +94,7 @@ export const registerNode = (
 
 export const deregisterNode = (
     sdk: RenExSDK,
-    address: string,
+    trader: string,
     darknodeID: string,
     onCancel: () => void,
     onDone: () => void
@@ -111,7 +110,7 @@ export const deregisterNode = (
         resolve: (value: string) => void,
         reject: (reason: Error | string) => void,
     ) => {
-        darknodeRegistry.methods.deregister(darknodeID).send({ from: address })
+        darknodeRegistry.methods.deregister(darknodeID).send({ from: trader })
             .on("transactionHash", (res: string) => { resolve(res); resolved = true; })
             .once("confirmation", onDone)
             .on("error", (error: Error) => { if (resolved) { onCancel(); } reject(error); });
@@ -120,7 +119,7 @@ export const deregisterNode = (
 
 export const refundNode = (
     sdk: RenExSDK,
-    address: string,
+    trader: string,
     darknodeID: string,
     onCancel: () => void,
     onDone: () => void
@@ -136,7 +135,7 @@ export const refundNode = (
         resolve: (value: string) => void,
         reject: (reason: Error | string) => void,
     ) => {
-        darknodeRegistry.methods.refund(darknodeID).send({ from: address })
+        darknodeRegistry.methods.refund(darknodeID).send({ from: trader })
             .on("transactionHash", (res: string) => { resolve(res); resolved = true; })
             .once("confirmation", onDone)
             .on("error", (error: Error) => { if (resolved) { onCancel(); } reject(error); });

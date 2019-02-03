@@ -7,7 +7,7 @@ import { bindActionCreators, Dispatch } from "redux";
 
 import { clearPopup } from "../../actions/popup/popupActions";
 import { Loading } from "../../components/Loading";
-import { _captureBackgroundException_ } from "../../lib/errors";
+import { _captureBackgroundException_, _captureInteractionException_ } from "../../lib/errors";
 import { ErrorCanceledByUser } from "../../lib/ethereum/wallet";
 import { ApplicationData } from "../../reducers/types";
 
@@ -195,6 +195,12 @@ class MultiStepPopupClass extends React.Component<Props, State> {
                 await steps[currentStep].call();
             } catch (error) {
                 const rejected = (error.message || "").match(ErrorCanceledByUser);
+                if (!rejected) {
+                    _captureInteractionException_(error, {
+                        description: "Error throw in MultiStepPopup",
+                        shownToUser: "As message box in MultiStepPopup",
+                    });
+                }
                 this.setState({ error, running: false, rejected });
                 return;
             }

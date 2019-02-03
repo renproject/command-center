@@ -203,7 +203,11 @@ export const updateDarknodeStatistics = (
 
     // Get eth Balance
     const ethBalanceBN = await sdk.getWeb3().eth.getBalance(darknodeID);
-    const ethBalance = new BigNumber(ethBalanceBN.toString());
+
+    let ethBalance = new BigNumber(0);
+    if (ethBalanceBN) {
+        ethBalance = new BigNumber(ethBalanceBN.toString());
+    }
 
     // Get earned fees
     const feesEarned = await getBalances(sdk, darknodeID);
