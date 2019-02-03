@@ -4,10 +4,10 @@ import { BigNumber } from "bignumber.js";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
-import { updateDarknodeStatistics } from "../../actions/statistics/operatorActions";
-import { showFundPopup } from "../../actions/statistics/operatorPopupActions";
 import { _captureBackgroundException_ } from "../../lib/errors";
-import { ApplicationData } from "../../reducers/types";
+import { updateDarknodeStatistics } from "../../store/actions/statistics/operatorActions";
+import { showFundPopup } from "../../store/actions/statistics/operatorPopupActions";
+import { ApplicationData } from "../../store/types";
 
 const CONFIRMATION_MESSAGE = "Transaction confirmed.";
 

@@ -3,9 +3,9 @@ import * as React from "react";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
-import { Blocky } from "../../components/Blocky";
 import { getWeb3BrowserIcon } from "../../lib/ethereum/browsers";
-import { ApplicationData } from "../../reducers/types";
+import { ApplicationData } from "../../store/types";
+import { Blocky } from "../Blocky";
 import { _catch_ } from "../ErrorBoundary";
 
 /**

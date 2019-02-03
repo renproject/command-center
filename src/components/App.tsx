@@ -8,7 +8,7 @@ import { Home } from "./pages/Home";
 import { PopupController } from "./popups/PopupController";
 
 import { _captureBackgroundException_ } from "../lib/errors";
-import { ApplicationData } from "../reducers/types";
+import { ApplicationData } from "../store/types";
 import { BackgroundTasks } from "./BackgroundTasks";
 import { _catch_ } from "./ErrorBoundary";
 import { Header } from "./Header";

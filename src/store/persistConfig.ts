@@ -6,7 +6,7 @@ import { _captureBackgroundException_ } from "../lib/errors";
 import {
     ApplicationData,
     StatisticsData
-} from "../reducers/types";
+} from "./types";
 
 // Local Storage:
 

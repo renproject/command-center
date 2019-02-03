@@ -5,7 +5,7 @@ import { bindActionCreators, Dispatch } from "redux";
 
 import { Language } from "../../languages/language";
 import { getWeb3BrowserIcon } from "../../lib/ethereum/browsers";
-import { ApplicationData } from "../../reducers/types";
+import { ApplicationData } from "../../store/types";
 
 export class NoWeb3PopupClass extends React.Component<Props, State> {
     constructor(props: Props) {

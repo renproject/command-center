@@ -7,9 +7,9 @@ import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { Link } from "react-router-dom";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { RegistrationStatus, removeRegisteringDarknode } from "../actions/statistics/operatorActions";
 import { Token } from "../lib/ethereum/tokens";
-import { ApplicationData, Currency, DarknodeDetails } from "../reducers/types";
+import { RegistrationStatus, removeRegisteringDarknode } from "../store/actions/statistics/operatorActions";
+import { ApplicationData, Currency, DarknodeDetails } from "../store/types";
 import { Blocky } from "./Blocky";
 import { CurrencyIcon } from "./CurrencyIcon";
 import { DarknodeID } from "./DarknodeID";

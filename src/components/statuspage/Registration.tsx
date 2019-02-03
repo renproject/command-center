@@ -3,14 +3,14 @@ import * as React from "react";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
+import { _captureInteractionException_ } from "../../lib/errors";
 import {
     RegistrationStatus,
     updateDarknodeStatistics,
     updateOperatorStatistics
-} from "../../actions/statistics/operatorActions";
-import { showDeregisterPopup, showRefundPopup, showRegisterPopup } from "../../actions/statistics/operatorPopupActions";
-import { _captureInteractionException_ } from "../../lib/errors";
-import { ApplicationData, DarknodeDetails } from "../../reducers/types";
+} from "../../store/actions/statistics/operatorActions";
+import { showDeregisterPopup, showRefundPopup, showRegisterPopup } from "../../store/actions/statistics/operatorPopupActions";
+import { ApplicationData, DarknodeDetails } from "../../store/types";
 import { Loading } from "../Loading";
 
 export const statusText = {

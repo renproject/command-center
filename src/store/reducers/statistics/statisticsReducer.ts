@@ -4,7 +4,7 @@ import { ActionType, getType } from "typesafe-actions";
 import * as networkActions from "../../actions/statistics/networkActions";
 import * as operatorActions from "../../actions/statistics/operatorActions";
 
-import { StatisticsData } from "../../reducers/types";
+import { StatisticsData } from "../../types";
 
 type NetworkAction = ActionType<typeof networkActions>;
 type OperatorActions = ActionType<typeof operatorActions>;
