@@ -5,13 +5,13 @@ import { List, OrderedMap, OrderedSet } from "immutable";
 import { Dispatch } from "redux";
 import { createStandardAction } from "typesafe-actions";
 
-import { getOperatorDarknodes } from "../../lib/ethereum/operator";
-import { Currency, DarknodeDetails, TokenPrices } from "../../reducers/types";
+import { getOperatorDarknodes } from "../../../lib/ethereum/operator";
+import { Currency, DarknodeDetails, TokenPrices } from "../../types";
 
 import { Block } from "web3/eth/types";
-import { _captureBackgroundException_ } from "../../lib/errors";
-import { contracts } from "../../lib/ethereum/contracts/contracts";
-import { Token, Tokens } from "../../lib/ethereum/tokens";
+import { _captureBackgroundException_ } from "../../../lib/errors";
+import { contracts } from "../../../lib/ethereum/contracts/contracts";
+import { Token, Tokens } from "../../../lib/ethereum/tokens";
 
 export const addRegisteringDarknode = createStandardAction("ADD_REGISTERING_DARKNODE")<{
     darknodeID: string;
@@ -20,6 +20,11 @@ export const addRegisteringDarknode = createStandardAction("ADD_REGISTERING_DARK
 
 export const removeRegisteringDarknode = createStandardAction("REMOVE_REGISTERING_DARKNODE")<{
     darknodeID: string;
+}>();
+
+export const removeDarknode = createStandardAction("REMOVE_DARKNODE")<{
+    darknodeID: string;
+    operator: string;
 }>();
 
 export const storeDarknodeList = createStandardAction("STORE_DARKNODE_LIST")<{

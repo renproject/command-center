@@ -4,7 +4,7 @@ import { faServer } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { ETH_NETWORK_LABEL } from "../../../lib/environmentVariables";
-import { DarknodeDetails } from "../../../reducers/types";
+import { DarknodeDetails } from "../../../store/types";
 import { darknodeIDHexToBase58 } from "../../pages/Darknode";
 import { Block, BlockBody, BlockTitle } from "./Block";
 

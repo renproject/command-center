@@ -11,11 +11,11 @@ import { history } from "./lib/history";
 import { onLoad } from "./lib/onLoad";
 import { configureStore } from "./store/configureStore";
 
-import "./index.scss";
+import "./styles/index.scss";
 
 const { store, persistor } = configureStore();
 
-onLoad("DCC");
+onLoad("Darknode Command Center");
 
 ReactDOM.render(
     _catch_(<Provider store={store}>

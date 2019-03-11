@@ -3,7 +3,7 @@ import * as React from "react";
 import { faBitcoin, faEthereum } from "@fortawesome/free-brands-svg-icons";
 import { faDollarSign, faEuroSign, faPoundSign, faWonSign, faYenSign } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Currency } from "../reducers/types";
+import { Currency } from "../store/types";
 
 export class CurrencyIcon extends React.Component<Props, State> {
     public render = (): JSX.Element => {

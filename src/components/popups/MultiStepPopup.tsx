@@ -5,11 +5,11 @@ import BigNumber from "bignumber.js";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
-import { clearPopup } from "../../actions/popup/popupActions";
-import { Loading } from "../../components/Loading";
 import { _captureBackgroundException_, _captureInteractionException_ } from "../../lib/errors";
 import { ErrorCanceledByUser } from "../../lib/ethereum/wallet";
-import { ApplicationData } from "../../reducers/types";
+import { clearPopup } from "../../store/actions/popup/popupActions";
+import { ApplicationData } from "../../store/types";
+import { Loading } from "../Loading";
 
 import Warn from "../../styles/images/warn.svg";
 

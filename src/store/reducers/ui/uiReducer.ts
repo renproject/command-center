@@ -2,7 +2,7 @@ import { ActionType, getType } from "typesafe-actions";
 
 import * as uiActions from "../../actions/ui/uiActions";
 
-import { UIData } from "../types";
+import { UIData } from "../../types";
 
 type UIAction = ActionType<typeof uiActions>;
 

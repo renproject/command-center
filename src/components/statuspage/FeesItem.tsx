@@ -7,10 +7,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
-import { updateDarknodeStatistics } from "../../actions/statistics/operatorActions";
-import { withdrawReward } from "../../actions/trader/darknode";
 import { Token } from "../../lib/ethereum/tokens";
-import { ApplicationData } from "../../reducers/types";
+import { updateDarknodeStatistics } from "../../store/actions/statistics/operatorActions";
+import { withdrawReward } from "../../store/actions/trader/darknode";
+import { ApplicationData } from "../../store/types";
 import { Loading } from "../Loading";
 
 class FeesItemClass extends React.Component<Props, State> {

@@ -2,12 +2,12 @@ import * as React from "react";
 
 import { List, Map } from "immutable";
 
-import { DarknodeDetails } from "../reducers/types";
+import { DarknodeDetails } from "../../store/types";
+import { _catch_ } from "../ErrorBoundary";
+import { Loading } from "../Loading";
 import { DarknodeCard } from "./DarknodeCard";
 import { EmptyDarknodeCard } from "./EmptyDarknodeCard";
 import { EmptyDarknodeList } from "./EmptyDarknodeList";
-import { _catch_ } from "./ErrorBoundary";
-import { Loading } from "./Loading";
 
 export class DarknodeList extends React.Component<Props> {
     public constructor(props: Props, context: object) {

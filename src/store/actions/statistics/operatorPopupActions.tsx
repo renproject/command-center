@@ -5,14 +5,14 @@ import BigNumber from "bignumber.js";
 
 import { Dispatch } from "redux";
 
-import { setPopup } from "../../actions/popup/popupActions";
-import { approveNode, deregisterNode, fundNode, refundNode, registerNode } from "../../actions/trader/darknode";
-import { CurrencyIcon } from "../../components/CurrencyIcon";
-import { MultiStepPopup } from "../../components/popups/MultiStepPopup";
-import { TokenBalance } from "../../components/TokenBalance";
-import { _captureBackgroundException_ } from "../../lib/errors";
-import { Token } from "../../lib/ethereum/tokens";
-import { Currency, TokenPrices } from "../../reducers/types";
+import { CurrencyIcon } from "../../../components/CurrencyIcon";
+import { MultiStepPopup } from "../../../components/popups/MultiStepPopup";
+import { TokenBalance } from "../../../components/TokenBalance";
+import { _captureBackgroundException_ } from "../../../lib/errors";
+import { Token } from "../../../lib/ethereum/tokens";
+import { Currency, TokenPrices } from "../..//types";
+import { setPopup } from "../popup/popupActions";
+import { approveNode, deregisterNode, fundNode, refundNode, registerNode } from "../trader/darknode";
 import { updateDarknodeStatistics } from "./operatorActions";
 
 export const showRegisterPopup = (

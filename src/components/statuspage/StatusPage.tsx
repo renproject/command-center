@@ -3,12 +3,12 @@ import * as React from "react";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
-import { RegistrationStatus, setDarknodeName } from "../../actions/statistics/operatorActions";
-import { Blocky } from "../../components/Blocky";
-import { DarknodeID } from "../../components/DarknodeID";
-import { InfoLabel } from "../../components/InfoLabel";
-import { DarknodeAction } from "../../components/pages/Darknode";
-import { ApplicationData, DarknodeDetails } from "../../reducers/types";
+import { RegistrationStatus, setDarknodeName } from "../../store/actions/statistics/operatorActions";
+import { ApplicationData, DarknodeDetails } from "../../store/types";
+import { Blocky } from "../Blocky";
+import { DarknodeID } from "../DarknodeID";
+import { InfoLabel } from "../InfoLabel";
+import { DarknodeAction } from "../pages/Darknode";
 import { FeesBlock } from "./block/FeesBlock";
 import { GasBlock } from "./block/GasBlock";
 import { GasGraph } from "./block/GasGraph";
