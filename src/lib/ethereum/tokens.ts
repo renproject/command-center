@@ -2,7 +2,7 @@ import Axios from "axios";
 
 import { Map } from "immutable";
 
-import { Currency, TokenPrices } from "../../reducers/types";
+import { Currency, TokenPrices } from "../../store/types";
 
 export enum Token {
     ETH = "ETH",

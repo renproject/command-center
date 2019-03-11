@@ -1,0 +1,26 @@
+@import 'scss/variables';
+@import 'scss/fonts';
+@import 'scss/animations';
+@import 'scss/grid';
+
+// Page and component styles
+@import 'scss/block';
+@import 'scss/button';
+@import 'scss/console';
+@import 'scss/darknodeList';
+@import 'scss/header';
+@import 'scss/heading';
+@import 'scss/home';
+@import 'scss/info';
+@import 'scss/loading';
+@import 'scss/loggingOut';
+@import 'scss/notFound';
+@import 'scss/operatorStatistics';
+@import 'scss/popup';
+@import 'scss/section';
+@import 'scss/sidebar';
+@import 'scss/statuspage';
+@import 'scss/view';
+
+// Styles for html, body, anchors etc. should go in _general
+@import 'scss/_general';

@@ -3,7 +3,7 @@ import * as React from "react";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
-import { ApplicationData } from "../../reducers/types";
+import { ApplicationData } from "../../store/types";
 import { _catch_ } from "../ErrorBoundary";
 
 /**

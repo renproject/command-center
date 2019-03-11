@@ -7,11 +7,11 @@ import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { RouteComponentProps, withRouter } from "react-router";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { StatusPage } from "../../components/statuspage/StatusPage";
+import { StatusPage } from "../statuspage/StatusPage";
 
-import { addRegisteringDarknode, RegistrationStatus, setDarknodeName } from "../../actions/statistics/operatorActions";
 import { EncodedData, Encodings } from "../../lib/encodedData";
-import { ApplicationData } from "../../reducers/types";
+import { addRegisteringDarknode, RegistrationStatus, setDarknodeName } from "../../store/actions/statistics/operatorActions";
+import { ApplicationData } from "../../store/types";
 import { _catch_ } from "../ErrorBoundary";
 import { NotFound } from "./NotFound";
 
@@ -21,7 +21,7 @@ export enum DarknodeAction {
     Deregister = "deregister",
 }
 
-const darknodeIDbase58ToHex = (darknodeID: string): string =>
+const darknodeIDBase58ToHex = (darknodeID: string): string =>
     (new Web3()).utils.toChecksumAddress(
         (`0x${new EncodedData(darknodeID, Encodings.BASE58).toHex("").slice(4)}`).toLowerCase()
     );
@@ -35,7 +35,7 @@ export const getDarknodeParam = (params: unknown): string | undefined => {
     if (darknodeID58) {
         try {
             // Convert from base-58 to hex
-            darknodeID = darknodeIDbase58ToHex(darknodeID58);
+            darknodeID = darknodeIDBase58ToHex(darknodeID58);
         } catch (error) {
             // If the darknode ID is malformatted, ignore it
             console.error(error);

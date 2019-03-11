@@ -5,7 +5,7 @@ import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
 import { Token } from "../lib/ethereum/tokens";
-import { ApplicationData, Currency } from "../reducers/types";
+import { ApplicationData, Currency } from "../store/types";
 
 class TokenBalanceClass extends React.Component<Props, State> {
     constructor(props: Props) {

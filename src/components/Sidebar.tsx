@@ -7,10 +7,10 @@ import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { Link } from "react-router-dom";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { RegistrationStatus } from "../actions/statistics/operatorActions";
-import { hideMobileMenu } from "../actions/ui/uiActions";
 import { Token } from "../lib/ethereum/tokens";
-import { ApplicationData, Currency } from "../reducers/types";
+import { RegistrationStatus } from "../store/actions/statistics/operatorActions";
+import { hideMobileMenu } from "../store/actions/ui/uiActions";
+import { ApplicationData, Currency } from "../store/types";
 import { Blocky } from "./Blocky";
 import { CurrencyIcon } from "./CurrencyIcon";
 import { DarknodeID } from "./DarknodeID";

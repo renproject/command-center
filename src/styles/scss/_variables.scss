@@ -1,12 +1,3 @@
-$min-sm: 544px !default;
-$min-md: 768px !default;
-$min-lg: 992px !default;
-$min-xl: 1200px !default;
-$max-xs: ($min-sm - 1px) !default;
-$max-sm: ($min-md - 1px) !default;
-$max-md: ($min-lg - 1px) !default;
-$max-lg: ($min-xl - 1px) !default;
-
 $off-white: #f8fafb;
 $dark-grey: #3f3f41;
 $light-grey: #cccccc; // #ccd1d7
@@ -31,4 +22,4 @@ $border: rgba(88, 88, 91, 0.1);
 
 $cubic-bezier: cubic-bezier(0.8, 0, 0.2, 1);
 
-$path: 'styles/images/';
+$path: 'images/';

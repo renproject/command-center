@@ -7,27 +7,29 @@ import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { Link } from "react-router-dom";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { RegistrationStatus, removeRegisteringDarknode } from "../actions/statistics/operatorActions";
-import { Token } from "../lib/ethereum/tokens";
-import { ApplicationData, Currency, DarknodeDetails } from "../reducers/types";
-import { Blocky } from "./Blocky";
-import { CurrencyIcon } from "./CurrencyIcon";
-import { DarknodeID } from "./DarknodeID";
-import { darknodeIDHexToBase58 } from "./pages/Darknode";
-import { statusText } from "./statuspage/Registration";
-import { TokenBalance } from "./TokenBalance";
+import { Token } from "../../lib/ethereum/tokens";
+import { RegistrationStatus, removeDarknode, removeRegisteringDarknode } from "../../store/actions/statistics/operatorActions";
+import { ApplicationData, Currency, DarknodeDetails } from "../../store/types";
+import { Blocky } from "../Blocky";
+import { CurrencyIcon } from "../CurrencyIcon";
+import { DarknodeID } from "../DarknodeID";
+import { darknodeIDHexToBase58 } from "../pages/Darknode";
+import { statusText } from "../statuspage/Registration";
+import { TokenBalance } from "../TokenBalance";
 
 class DarknodeCardClass extends React.Component<Props, State> {
 
     public constructor(props: Props, context: object) {
         super(props, context);
         this.state = {
+            confirmedRemove: false,
         };
     }
 
     public render = (): JSX.Element => {
         const { darknodeID, darknodeDetails, name, store, publicKey } = this.props;
         const { quoteCurrency } = store;
+        const { confirmedRemove } = this.state;
 
         // If we have the public key and the status is unregistered (or the status is not available yet), then link to
         // the registration page
@@ -40,6 +42,8 @@ class DarknodeCardClass extends React.Component<Props, State> {
             darknodeDetails.registrationStatus === RegistrationStatus.Unregistered &&
             !continuable;
 
+        const hidable = (darknodeDetails && darknodeDetails.registrationStatus === RegistrationStatus.Unregistered) || continuable;
+
         const darknodeIDBase58 = darknodeIDHexToBase58(darknodeID);
 
         const url = continuable ?
@@ -50,8 +54,8 @@ class DarknodeCardClass extends React.Component<Props, State> {
             <Link className="no-underline" to={url}>
                 <div className={`darknode-card ${faded ? "darknode-card--faded" : ""}`}>
                     <div className="darknode-card--top">
-                        {continuable ? <div role="button" className="card--hide" onClick={this.removeRegisteringDarknode}>
-                            <FontAwesomeIcon icon={faTimes} pull="left" />
+                        {hidable ? <div role="button" className="card--hide" onClick={this.removeDarknode}>
+                            {confirmedRemove ? "Are you sure?" : <FontAwesomeIcon icon={faTimes} pull="left" />}
                         </div> : null}
                     </div>
                     <div className="darknode-card--middle">
@@ -98,17 +102,39 @@ class DarknodeCardClass extends React.Component<Props, State> {
         );
     }
 
-    private readonly removeRegisteringDarknode = async (e: React.MouseEvent<HTMLDivElement>): Promise<void> => {
+    private readonly removeDarknode = (e: React.MouseEvent<HTMLDivElement>): void => {
         e.stopPropagation();
         e.preventDefault();
-        const { darknodeID } = this.props;
+
+        const { confirmedRemove } = this.state;
+
+        if (!confirmedRemove) {
+            this.setState({ confirmedRemove: true });
+            return;
+        }
+
+        const { darknodeID, darknodeDetails, publicKey, store: { address } } = this.props;
+
+        // If we have the public key and the status is unregistered (or the status is not available yet), then link to
+        // the registration page
+        const continuable = publicKey && (
+            !darknodeDetails ||
+            darknodeDetails.registrationStatus === RegistrationStatus.Unregistered
+        );
+
         // tslint:disable-next-line: await-promise
-        await this.props.actions.removeRegisteringDarknode({ darknodeID });
+        if (continuable) {
+            this.props.actions.removeRegisteringDarknode({ darknodeID });
+        } else if (address) {
+            this.props.actions.removeDarknode({ darknodeID, operator: address });
+        }
+
     }
 }
 
 const mapStateToProps = (state: ApplicationData) => ({
     store: {
+        address: state.trader.address,
         quoteCurrency: state.statistics.quoteCurrency,
     },
 });
@@ -116,6 +142,7 @@ const mapStateToProps = (state: ApplicationData) => ({
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     actions: bindActionCreators({
         removeRegisteringDarknode,
+        removeDarknode,
     }, dispatch),
 });
 
@@ -127,6 +154,7 @@ interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<
 }
 
 interface State {
+    confirmedRemove: boolean;
 }
 
 export const DarknodeCard = connect(mapStateToProps, mapDispatchToProps)(DarknodeCardClass);

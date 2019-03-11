@@ -8,9 +8,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
-import { CurrencyIcon } from "../../../components/CurrencyIcon";
 import { Token } from "../../../lib/ethereum/tokens";
-import { ApplicationData, DarknodeDetails } from "../../../reducers/types";
+import { ApplicationData, DarknodeDetails } from "../../../store/types";
+import { CurrencyIcon } from "../../CurrencyIcon";
 import { TokenBalance } from "../../TokenBalance";
 import { FeesItem } from "../FeesItem";
 import { TokenIcon } from "../TokenIcon";

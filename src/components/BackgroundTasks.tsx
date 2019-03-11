@@ -5,11 +5,11 @@ import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { updateNetworkStatistics, updateTokenPrices } from "../actions/statistics/networkActions";
-import { updateDarknodeStatistics, updateOperatorStatistics } from "../actions/statistics/operatorActions";
-import { login, lookForLogout } from "../actions/trader/accountActions";
 import { _captureBackgroundException_ } from "../lib/errors";
-import { ApplicationData } from "../reducers/types";
+import { updateNetworkStatistics, updateTokenPrices } from "../store/actions/statistics/networkActions";
+import { updateDarknodeStatistics, updateOperatorStatistics } from "../store/actions/statistics/operatorActions";
+import { login, lookForLogout } from "../store/actions/trader/accountActions";
+import { ApplicationData } from "../store/types";
 import { getDarknodeParam } from "./pages/Darknode";
 
 /**

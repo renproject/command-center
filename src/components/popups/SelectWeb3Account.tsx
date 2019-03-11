@@ -3,10 +3,10 @@ import * as React from "react";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
-import { Blocky } from "../../components/Blocky";
-import { Loading } from "../../components/Loading";
 import { _captureBackgroundException_ } from "../../lib/errors";
-import { ApplicationData } from "../../reducers/types";
+import { ApplicationData } from "../../store/types";
+import { Blocky } from "../Blocky";
+import { Loading } from "../Loading";
 
 /**
  * SelectWeb3Account is a popup component for prompting a user to select an
