@@ -22,12 +22,14 @@ class DarknodeCardClass extends React.Component<Props, State> {
     public constructor(props: Props, context: object) {
         super(props, context);
         this.state = {
+            confirmedRemove: false,
         };
     }
 
     public render = (): JSX.Element => {
         const { darknodeID, darknodeDetails, name, store, publicKey } = this.props;
         const { quoteCurrency } = store;
+        const { confirmedRemove } = this.state;
 
         // If we have the public key and the status is unregistered (or the status is not available yet), then link to
         // the registration page
@@ -53,7 +55,7 @@ class DarknodeCardClass extends React.Component<Props, State> {
                 <div className={`darknode-card ${faded ? "darknode-card--faded" : ""}`}>
                     <div className="darknode-card--top">
                         {hidable ? <div role="button" className="card--hide" onClick={this.removeDarknode}>
-                            <FontAwesomeIcon icon={faTimes} pull="left" />
+                            {confirmedRemove ? "Are you sure?" : <FontAwesomeIcon icon={faTimes} pull="left" />}
                         </div> : null}
                     </div>
                     <div className="darknode-card--middle">
@@ -104,6 +106,13 @@ class DarknodeCardClass extends React.Component<Props, State> {
         e.stopPropagation();
         e.preventDefault();
 
+        const { confirmedRemove } = this.state;
+
+        if (!confirmedRemove) {
+            this.setState({ confirmedRemove: true });
+            return;
+        }
+
         const { darknodeID, darknodeDetails, publicKey, store: { address } } = this.props;
 
         // If we have the public key and the status is unregistered (or the status is not available yet), then link to
@@ -145,6 +154,7 @@ interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<
 }
 
 interface State {
+    confirmedRemove: boolean;
 }
 
 export const DarknodeCard = connect(mapStateToProps, mapDispatchToProps)(DarknodeCardClass);
