@@ -4,6 +4,7 @@ import { ActionType, getType } from "typesafe-actions";
 import * as networkActions from "../../actions/statistics/networkActions";
 import * as operatorActions from "../../actions/statistics/operatorActions";
 
+import { _captureInteractionException_ } from "../../../lib/errors";
 import { StatisticsData } from "../../types";
 
 type NetworkAction = ActionType<typeof networkActions>;
@@ -30,6 +31,24 @@ export const statisticsReducer = (
             return state.set("darknodeRegisteringList", state.darknodeRegisteringList.remove(
                 action.payload.darknodeID
             ));
+
+        case getType(operatorActions.removeDarknode):
+            try {
+                let operatorList = state.darknodeList.get(action.payload.operator);
+                if (!operatorList) {
+                    return state;
+                }
+
+                operatorList = operatorList.filter(id => id !== action.payload.darknodeID);
+
+                return state.set("darknodeList", state.darknodeList.set(action.payload.operator, operatorList));
+            } catch (error) {
+                _captureInteractionException_(error, {
+                    description: "Error throw in removeDarknode reducer",
+                    shownToUser: "No",
+                });
+                return state;
+            }
 
         case getType(operatorActions.storeDarknodeList):
             let newList = state.darknodeList.get(action.payload.address) || List();

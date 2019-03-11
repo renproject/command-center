@@ -22,6 +22,11 @@ export const removeRegisteringDarknode = createStandardAction("REMOVE_REGISTERIN
     darknodeID: string;
 }>();
 
+export const removeDarknode = createStandardAction("REMOVE_DARKNODE")<{
+    darknodeID: string;
+    operator: string;
+}>();
+
 export const storeDarknodeList = createStandardAction("STORE_DARKNODE_LIST")<{
     darknodeList: OrderedSet<string>;
     address: string;
