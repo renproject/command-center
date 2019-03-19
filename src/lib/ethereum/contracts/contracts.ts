@@ -2,7 +2,7 @@ import { NETWORK } from "../../environmentVariables";
 
 // Contracts
 interface Contract {
-    ABI: Array<unknown>;
+    ABI: unknown[];
     address: string;
     deployedInBlock?: string; // hex string
 }
