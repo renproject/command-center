@@ -1,5 +1,7 @@
 # Darknode Command Center
 
+[![Build Status](https://travis-ci.org/republicprotocol/darknode-command-center.svg?branch=master)](https://travis-ci.org/republicprotocol/darknode-command-center)
+
 [dcc.republicprotocol.com](https://dcc.republicprotocol.com)
 
 The Darknode Command Center is a dApp for registering, funding and monitoring darknodes, and for withdrawing rewards.
