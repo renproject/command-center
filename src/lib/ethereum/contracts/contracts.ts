@@ -36,8 +36,8 @@ const getContractsForNetwork = (network: string | undefined) => {
             path = "testnet";
 
             // Change these together
-            darknodeRegistry = "0x75Fa8349fc9C7C640A4e9F1A1496fBB95D2Dc3d5";
-            dnrDeployedInBlock = "0x889E55"; // in hex
+            darknodeRegistry = "0x1C6309618338D0EDf9a7Ea8eA18E060fD323020D";
+            dnrDeployedInBlock = "0xA35A7A"; // in hex
 
             darknodeRewardVault = "0xc08Dfa565EdB7216c3b23bBf0848B43fE9a49F0E";
     }
