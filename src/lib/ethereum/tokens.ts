@@ -11,7 +11,8 @@ export enum Token {
     ZEC = "ZEC",
 }
 
-export const RENAddress = "0x408"; // FIXME
+// TODO: Switch on network
+export const RENAddress = "0x2cd647668494c1b15743ab283a0f980d90a87394"; // FIXME
 
 export interface TokenDetails {
     address: string;
@@ -21,11 +22,12 @@ export interface TokenDetails {
     decimals: number;
 }
 
+// TODO: Switch on network
 export const TokenDetails = Map<Token, TokenDetails>()
-    .set(Token.DAI, { symbol: Token.DAI, name: "Dai", decimals: 18, address: "FIXME", })
-    .set(Token.ETH, { symbol: Token.ETH, name: "Ethereum", decimals: 18, address: "FIXME", })
-    .set(Token.BTC, { symbol: Token.BTC, name: "Bitcoin", decimals: 18, address: "FIXME", })
-    .set(Token.ZEC, { symbol: Token.ZEC, name: "ZCash", decimals: 18, address: "FIXME", })
+    .set(Token.DAI, { symbol: Token.DAI, name: "Dai", decimals: 18, address: "0xc4375b7de8af5a38a93548eb8453a498222c4ff2", })
+    .set(Token.ETH, { symbol: Token.ETH, name: "Ethereum", decimals: 18, address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE", })
+    .set(Token.BTC, { symbol: Token.BTC, name: "Bitcoin", decimals: 18, address: "0x2a8368d2a983a0aeae8da0ebc5b7c03a0ea66b37", })
+    .set(Token.ZEC, { symbol: Token.ZEC, name: "ZCash", decimals: 18, address: "0xd67256552f93b39ac30083b4b679718a061feae6", })
     ;
 
 const coinGeckoIDs = Map<Token, string>()
