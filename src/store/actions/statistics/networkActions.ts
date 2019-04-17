@@ -1,5 +1,5 @@
-import RenExSDK from "@renex/renex";
 import BigNumber from "bignumber.js";
+import Web3 from "web3";
 
 import { Dispatch } from "redux";
 import { createStandardAction } from "typesafe-actions";
@@ -12,8 +12,8 @@ export const storeTokenPrices = createStandardAction("STORE_TOKEN_PRICES")<{ tok
 
 export const storeMinimumBond = createStandardAction("STORE_MINIMUM_BOND")<{ minimumBond: BigNumber }>();
 
-export const updateNetworkStatistics = (sdk: RenExSDK) => async (dispatch: Dispatch) => {
-    const darknodeRegistry = new ((sdk.getWeb3()).eth.Contract)(
+export const updateNetworkStatistics = (web3: Web3) => async (dispatch: Dispatch) => {
+    const darknodeRegistry = new (web3.eth.Contract)(
         contracts.DarknodeRegistry.ABI,
         contracts.DarknodeRegistry.address
     );

@@ -1,11 +1,11 @@
 import * as React from "react";
 
+import { Blocky } from "@renex/react-components";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
 import { getWeb3BrowserIcon } from "../../lib/ethereum/browsers";
 import { ApplicationData } from "../../store/types";
-import { Blocky } from "../Blocky";
 import { _catch_ } from "../ErrorBoundary";
 
 /**

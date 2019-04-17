@@ -1,7 +1,7 @@
 import * as React from "react";
 
-import RenExSDK from "@renex/renex";
 import BigNumber from "bignumber.js";
+import Web3 from "web3";
 
 import { Dispatch } from "redux";
 
@@ -16,7 +16,7 @@ import { approveNode, deregisterNode, fundNode, refundNode, registerNode } from 
 import { updateDarknodeStatistics } from "./operatorActions";
 
 export const showRegisterPopup = (
-    sdk: RenExSDK,
+    web3: Web3,
     address: string,
     darknodeID: string,
     publicKey: string,
@@ -24,12 +24,12 @@ export const showRegisterPopup = (
     tokenPrices: TokenPrices, onCancel: () => void, onDone: () => void) => async (dispatch: Dispatch) => {
 
         const step1 = async () => {
-            await approveNode(sdk, address, minimumBond)(dispatch);
+            await approveNode(web3, address, minimumBond)(dispatch);
         };
 
         const step2 = async () => {
             await registerNode(
-                sdk,
+                web3,
                 address,
                 darknodeID,
                 publicKey,
@@ -40,7 +40,7 @@ export const showRegisterPopup = (
 
             if (tokenPrices) {
                 try {
-                    await updateDarknodeStatistics(sdk, darknodeID, tokenPrices)(dispatch);
+                    await updateDarknodeStatistics(web3, darknodeID, tokenPrices)(dispatch);
                 } catch (error) {
                     _captureBackgroundException_(error, {
                         description: "Error thrown in updateDarknodeStatistics in showRegisterPopup",
@@ -73,7 +73,7 @@ Are you sure you want to continue?";
     };
 
 export const showDeregisterPopup = (
-    sdk: RenExSDK,
+    web3: Web3,
     address: string,
     darknodeID: string,
     remainingFees: BigNumber | null,
@@ -83,7 +83,7 @@ export const showDeregisterPopup = (
 ) => async (dispatch: Dispatch) => {
 
     const step1 = async () => {
-        await deregisterNode(sdk, address, darknodeID, onCancel, onDone)(dispatch);
+        await deregisterNode(web3, address, darknodeID, onCancel, onDone)(dispatch);
     };
 
     const steps = [
@@ -127,7 +127,7 @@ export const showDeregisterPopup = (
 };
 
 export const showRefundPopup = (
-    sdk: RenExSDK,
+    web3: Web3,
     address: string,
     darknodeID: string,
     onCancel: () => void,
@@ -135,7 +135,7 @@ export const showRefundPopup = (
 ) => async (dispatch: Dispatch) => {
 
     const step1 = async () => {
-        await refundNode(sdk, address, darknodeID, onCancel, onDone)(dispatch);
+        await refundNode(web3, address, darknodeID, onCancel, onDone)(dispatch);
     };
 
     const steps = [
@@ -160,7 +160,7 @@ export const showRefundPopup = (
 };
 
 export const showFundPopup = (
-    sdk: RenExSDK,
+    web3: Web3,
     address: string,
     darknodeID: string,
     ethAmountStr: string,
@@ -169,7 +169,7 @@ export const showFundPopup = (
 ) => async (dispatch: Dispatch) => {
 
     const step1 = async () => {
-        await fundNode(sdk, address, darknodeID, ethAmountStr, onCancel, onDone)(dispatch);
+        await fundNode(web3, address, darknodeID, ethAmountStr, onCancel, onDone)(dispatch);
     };
 
     const steps = [

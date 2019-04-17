@@ -57,6 +57,7 @@ const mapStateToProps = (state: ApplicationData) => ({
         darknodeList: state.trader.address ? state.statistics.darknodeList.get(state.trader.address, null) : null,
         darknodeRegisteringList: state.statistics.darknodeRegisteringList,
         sdk: state.trader.sdk,
+        web3: state.trader.web3,
     },
 });
 

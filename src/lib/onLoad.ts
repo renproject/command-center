@@ -2,7 +2,7 @@ import * as Sentry from "@sentry/browser";
 
 import Web3 from "web3";
 
-import { HttpProvider } from "web3/providers";
+import { HttpProvider } from "web3-providers";
 
 import { _catch_ } from "../components/ErrorBoundary";
 import { environment, NETWORK, SENTRY_DSN, SOURCE_VERSION } from "./environmentVariables";

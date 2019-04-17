@@ -2,6 +2,7 @@ import * as React from "react";
 
 import { faAngleDown, faBars } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Blocky } from "@renex/react-components";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
 import { bindActionCreators, Dispatch } from "redux";
@@ -10,7 +11,6 @@ import { storeQuoteCurrency } from "../store/actions/statistics/operatorActions"
 import { login, logout } from "../store/actions/trader/accountActions";
 import { showMobileMenu } from "../store/actions/ui/uiActions";
 import { ApplicationData, currencies, Currency } from "../store/types";
-import { Blocky } from "./Blocky";
 import { CurrencyIcon } from "./CurrencyIcon";
 
 import English from "../styles/images/rp-flag-uk.svg";
@@ -157,16 +157,16 @@ class HeaderClass extends React.Component<Props, State> {
     }
 
     private readonly handleLogin = async (): Promise<void> => {
-        const { address, sdk, readOnlyProvider } = this.props.store;
+        const { address, sdk } = this.props.store;
         if (sdk && !address) {
-            await this.props.actions.login(sdk, readOnlyProvider, { redirect: false, showPopup: true, immediatePopup: true });
+            await this.props.actions.login(sdk, { redirect: false, showPopup: true, immediatePopup: true });
         }
     }
 
     private readonly handleLogout = async (): Promise<void> => {
-        const { sdk, readOnlyProvider } = this.props.store;
+        const { sdk } = this.props.store;
         if (sdk) {
-            await this.props.actions.logout(sdk, readOnlyProvider, { reload: false });
+            await this.props.actions.logout(sdk, { reload: false });
         }
     }
 
@@ -218,8 +218,8 @@ const mapStateToProps = (state: ApplicationData) => ({
         address: state.trader.address,
         web3BrowserName: state.trader.web3BrowserName,
         quoteCurrency: state.statistics.quoteCurrency,
-        readOnlyProvider: state.trader.readOnlyProvider,
         sdk: state.trader.sdk,
+        web3: state.trader.web3,
     },
 });
 

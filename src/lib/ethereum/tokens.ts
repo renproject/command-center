@@ -5,43 +5,50 @@ import { Map } from "immutable";
 import { Currency, TokenPrices } from "../../store/types";
 
 export enum Token {
+    DAI = "DAI",
     ETH = "ETH",
-    DGX = "DGX",
-    TUSD = "TUSD",
-    REN = "REN",
-    ZRX = "ZRX",
-    OMG = "OMG",
+    BTC = "BTC",
+    ZEC = "ZEC",
 }
 
-// For iterating over Tokens
-export const Tokens: Token[] = [Token.ETH, Token.DGX, Token.TUSD, Token.REN, Token.OMG, Token.ZRX];
+export const RENAddress = "0x408"; // FIXME
+
+export interface TokenDetails {
+    address: string;
+    name: string;
+    // tslint:disable-next-line: no-reserved-keywords
+    symbol: Token;
+    decimals: number;
+}
+
+export const TokenDetails = Map<Token, TokenDetails>()
+    .set(Token.DAI, { symbol: Token.DAI, name: "Dai", decimals: 18, address: "FIXME", })
+    .set(Token.ETH, { symbol: Token.ETH, name: "Ethereum", decimals: 18, address: "FIXME", })
+    .set(Token.BTC, { symbol: Token.BTC, name: "Bitcoin", decimals: 18, address: "FIXME", })
+    .set(Token.ZEC, { symbol: Token.ZEC, name: "ZCash", decimals: 18, address: "FIXME", })
+    ;
 
 const coinGeckoIDs = Map<Token, string>()
+    .set(Token.DAI, "dai")
     .set(Token.ETH, "ethereum")
-    .set(Token.DGX, "digix-gold")
-    .set(Token.REN, "republic-protocol")
-    .set(Token.TUSD, "true-usd")
-    .set(Token.OMG, "omisego")
-    .set(Token.ZRX, "0x");
+    .set(Token.BTC, "bitcoin")
+    .set(Token.ZEC, "zcash")
+    ;
 
-export async function getPrices(): Promise<TokenPrices> {
+const coinGeckoURL = `https://api.coingecko.com/api/v3`;
+const coinGeckoParams = `localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`;
+export const getPrices = async (): Promise<TokenPrices> => {
 
     let prices: TokenPrices = Map();
 
-    for (const token of Tokens) {
-
-        const coinGeckoID = coinGeckoIDs.get(token, undefined);
-
-        if (!coinGeckoID) {
-            continue;
-        }
-
-        // tslint:disable-next-line:max-line-length
-        const response = await Axios.get(`https://api.coingecko.com/api/v3/coins/${coinGeckoID}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`);
+    coinGeckoIDs.map(async (coinGeckoID, token) => {
+        const response = await Axios.get(
+            `${coinGeckoURL}/coins/${coinGeckoID}?${coinGeckoParams}`
+        );
         const price = Map<Currency, number>(response.data.market_data.current_price);
 
         prices = prices.set(token, price);
-    }
+    });
 
     return prices;
-}
+};

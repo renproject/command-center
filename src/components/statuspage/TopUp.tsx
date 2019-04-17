@@ -93,13 +93,13 @@ class TopUpClass extends React.Component<Props, State> {
     }
 
     private readonly updateTraderBalance = async (): Promise<BigNumber> => {
-        const { store: { address, sdk } } = this.props;
+        const { store: { address, web3 } } = this.props;
 
         let traderBalance;
-        if (!address || !sdk) {
+        if (!address) {
             traderBalance = new BigNumber(-1);
         } else {
-            traderBalance = new BigNumber((await sdk.getWeb3().eth.getBalance(address)).toString())
+            traderBalance = new BigNumber((await web3.eth.getBalance(address)).toString())
                 .div(new BigNumber(10).exponentiatedBy(18));
         }
         this.setState({ traderBalance });
@@ -122,18 +122,13 @@ class TopUpClass extends React.Component<Props, State> {
     }
 
     private readonly sendFunds = async (): Promise<void> => {
-        const { darknodeID, store: { address, sdk, tokenPrices } } = this.props;
+        const { darknodeID, store: { address, web3, tokenPrices } } = this.props;
         const { value } = this.state;
 
         this.setState({ resultMessage: "", pending: true });
 
         if (!address) {
             this.setState({ resultMessage: `Invalid account.`, pending: false });
-            return;
-        }
-
-        if (!sdk) {
-            this.setState({ resultMessage: `An error occurred, please refresh the page and try again.`, pending: false });
             return;
         }
 
@@ -145,7 +140,7 @@ class TopUpClass extends React.Component<Props, State> {
 
         const onDone = async () => {
             try {
-                await this.props.actions.updateDarknodeStatistics(sdk, darknodeID, tokenPrices);
+                await this.props.actions.updateDarknodeStatistics(web3, darknodeID, tokenPrices);
             } catch (error) {
                 // Ignore error
             }
@@ -161,14 +156,14 @@ class TopUpClass extends React.Component<Props, State> {
         };
 
         // tslint:disable-next-line: await-promise
-        await this.props.actions.showFundPopup(sdk, address, darknodeID, value, onCancel, onDone);
+        await this.props.actions.showFundPopup(web3, address, darknodeID, value, onCancel, onDone);
     }
 }
 
 const mapStateToProps = (state: ApplicationData) => ({
     store: {
         address: state.trader.address,
-        sdk: state.trader.sdk,
+        web3: state.trader.web3,
         tokenPrices: state.statistics.tokenPrices,
     },
 });
