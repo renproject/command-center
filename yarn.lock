@@ -1225,10 +1225,10 @@
   resolved "https://registry.yarnpkg.com/@renex/fonts/-/fonts-1.0.1.tgz#7967434b343d5cd31c575b633997677f33f6856c"
   integrity sha512-MXYgG1HVzILdXIzLC17ln33o6MU8p+wDjPmbKgvKpQGJNaT1eflhj078f+ha/VQ2IMs8B5PNZU1X9mDL4enMgQ==
 
-"@renex/react-components@^1.0.18":
-  version "1.0.18"
-  resolved "https://registry.yarnpkg.com/@renex/react-components/-/react-components-1.0.18.tgz#536187dcca6eba542f2bf6388045c1f0a15c8bd2"
-  integrity sha512-DU+CDMcakJ1Wyb57JcExPlTJzF5Ke5fRjoYitl4SZXV/kOaQk6JhNDO1Kd1LXdTB900lrzx9KMCmnbGoytR9ew==
+"@renex/react-components@^1.0.19":
+  version "1.0.19"
+  resolved "https://registry.yarnpkg.com/@renex/react-components/-/react-components-1.0.19.tgz#dfdf7d6aef21f409e51dbc7ac8ef1950261b0e75"
+  integrity sha512-cBZCd7GGGyZqxKqcU0QXSmZY04SHnAqvpy+M8ijrGxQHlW+BugrH4qH/IwXSY5UcwVPIZYiSpH2xcBpS9StZ7g==
   dependencies:
     "@fortawesome/fontawesome-svg-core" "^1.2.17"
     "@fortawesome/free-brands-svg-icons" "^5.8.1"
@@ -1242,11 +1242,11 @@
     react-router-dom "^5.0.0"
     react-select "^2.4.2"
 
-"@renex/renex@github:republicprotocol/renex-sdk-ts#15d91e137f5c2a13a162421b5b30dc5cd6d59b8f":
+"@renex/renex@github:republicprotocol/renex-sdk-ts#a5fbbf7bf3b1278dc6fe1facca23698ff3e97d3f":
   version "0.4.7"
-  resolved "https://codeload.github.com/republicprotocol/renex-sdk-ts/tar.gz/15d91e137f5c2a13a162421b5b30dc5cd6d59b8f"
+  resolved "https://codeload.github.com/republicprotocol/renex-sdk-ts/tar.gz/a5fbbf7bf3b1278dc6fe1facca23698ff3e97d3f"
   dependencies:
-    "@types/bn.js" "^4.11.4"
+    "@types/bn.js" "^4.11.5"
     "@types/bs58" "4.0.0"
     "@types/node-rsa" "1.0.0"
     axios "0.18.0"
@@ -1255,8 +1255,8 @@
     bs58 "4.0.1"
     immutable "^4.0.0-rc.12"
     node-rsa "^1.0.5"
-    web3 "^1.0.0-beta.50"
-    web3-utils "^1.0.0-beta.50"
+    web3 "^1.0.0-beta.52"
+    web3-utils "^1.0.0-beta.52"
 
 "@sentry/browser@^5.0.8":
   version "5.0.8"
@@ -1434,14 +1434,7 @@
   dependencies:
     "@types/node" "*"
 
-"@types/bn.js@*":
-  version "4.11.4"
-  resolved "https://registry.yarnpkg.com/@types/bn.js/-/bn.js-4.11.4.tgz#a7bed5bdef9f16b25c92ba27745ab261374787d7"
-  integrity sha512-AO8WW+aRcKWKQAYTfKLzwnpL6U+TfPqS+haRrhCy5ff04Da8WZud3ZgVjspQXaEXJDcTlsjUEVvL39wegDek5w==
-  dependencies:
-    "@types/node" "*"
-
-"@types/bn.js@^4.11.4":
+"@types/bn.js@^4.11.4", "@types/bn.js@^4.11.5":
   version "4.11.5"
   resolved "https://registry.yarnpkg.com/@types/bn.js/-/bn.js-4.11.5.tgz#40e36197433f78f807524ec623afcf0169ac81dc"
   integrity sha512-AEAZcIZga0JgVMHNtl1CprA/hXX7/wPt79AgR4XqaDt7jyj3QWYw6LPoOiznPtugDmlubUnAahMs2PFxGcQrng==
@@ -1576,11 +1569,6 @@
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/@types/tapable/-/tapable-1.0.2.tgz#e13182e1b69871a422d7863e11a4a6f5b814a4bd"
   integrity sha512-42zEJkBpNfMEAvWR5WlwtTH22oDzcMjFsL9gDGExwF8X8WvAiw7Vwop7hPw03QT8TKfec83LwbHj6SvpqM4ELQ==
-
-"@types/underscore@*":
-  version "1.8.13"
-  resolved "https://registry.yarnpkg.com/@types/underscore/-/underscore-1.8.13.tgz#e1bf89141fbccb71dcb3bf12d86a923c007698e3"
-  integrity sha512-2YEdDHTYAv3YmSoQofzFnlWYDAAtMtVcQ0lOHoURuCt1aT9OgxhhjRRU1WVAiLchNWM7B3a8/iomxenfr9TwKA==
 
 "@types/underscore@^1.8.14":
   version "1.8.14"
@@ -13630,7 +13618,7 @@ web3-shh@1.0.0-beta.52:
     web3-providers "1.0.0-beta.52"
     web3-utils "1.0.0-beta.52"
 
-web3-utils@1.0.0-beta.52, web3-utils@^1.0.0-beta.50, web3-utils@^1.0.0-beta.52:
+web3-utils@1.0.0-beta.52, web3-utils@^1.0.0-beta.52:
   version "1.0.0-beta.52"
   resolved "https://registry.yarnpkg.com/web3-utils/-/web3-utils-1.0.0-beta.52.tgz#27f9beeac3e1ea981eba9824d79e2971f156eebc"
   integrity sha512-WdHyzPcZu/sOnNrkcOZT20QEX9FhwD9OJJXENojQNvMK2a1xo3n8JWBcC2gzAGwsa0Aah6z2B3Xwa1P//8FaoA==
@@ -13646,7 +13634,7 @@ web3-utils@1.0.0-beta.52, web3-utils@^1.0.0-beta.50, web3-utils@^1.0.0-beta.52:
     randomhex "0.1.5"
     utf8 "2.1.1"
 
-web3@^1.0.0-beta.50, web3@^1.0.0-beta.52:
+web3@^1.0.0-beta.52:
   version "1.0.0-beta.52"
   resolved "https://registry.yarnpkg.com/web3/-/web3-1.0.0-beta.52.tgz#a524888b84206d1ceea8abe1d6056bd7a0a8e33f"
   integrity sha512-IWBV1gS7sElHqD2mkwjdyeEmY4YhWn7C+b+pdOWgDJ6j70ux2bqVMfsP0saZ9nWeF1TWMvUnrFsyZ7C4/VnhTA==
