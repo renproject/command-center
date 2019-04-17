@@ -1,11 +1,11 @@
 import * as React from "react";
 
+import { Blocky } from "@renex/react-components";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
 import { RegistrationStatus, setDarknodeName } from "../../store/actions/statistics/operatorActions";
 import { ApplicationData, DarknodeDetails } from "../../store/types";
-import { Blocky } from "../Blocky";
 import { DarknodeID } from "../DarknodeID";
 import { InfoLabel } from "../InfoLabel";
 import { DarknodeAction } from "../pages/Darknode";

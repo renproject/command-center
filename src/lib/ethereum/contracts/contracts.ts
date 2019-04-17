@@ -1,8 +1,10 @@
+import { AbiItem } from "web3-utils";
+
 import { NETWORK } from "../../environmentVariables";
 
 // Contracts
 interface Contract {
-    ABI: unknown[];
+    ABI: AbiItem[];
     address: string;
     deployedInBlock?: string; // hex string
 }

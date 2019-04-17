@@ -4,7 +4,7 @@ import { BigNumber } from "bignumber.js";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
-import { Token } from "../lib/ethereum/tokens";
+import { Token, TokenDetails } from "../lib/ethereum/tokens";
 import { ApplicationData, Currency } from "../store/types";
 
 class TokenBalanceClass extends React.Component<Props, State> {
@@ -20,7 +20,7 @@ class TokenBalanceClass extends React.Component<Props, State> {
         const { sdk } = store;
 
         if (sdk) {
-            const tokenDetails = await sdk._cachedTokenDetails.get(token);
+            const tokenDetails = TokenDetails.get(token);
 
             const decimals = tokenDetails ? new BigNumber(tokenDetails.decimals.toString()).toNumber() : 0;
             this.setState({ decimals });
@@ -33,7 +33,7 @@ class TokenBalanceClass extends React.Component<Props, State> {
         const { token } = this.props;
 
         if (sdk && nextToken !== token) {
-            const tokenDetails = await sdk._cachedTokenDetails.get(nextToken);
+            const tokenDetails = await TokenDetails.get(nextToken);
 
             const decimals = tokenDetails ? new BigNumber(tokenDetails.decimals.toString()).toNumber() : 0;
             this.setState({ decimals });
@@ -84,6 +84,7 @@ const mapStateToProps = (state: ApplicationData) => ({
     store: {
         tokenPrices: state.statistics.tokenPrices,
         sdk: state.trader.sdk,
+        web3: state.trader.web3,
     },
 });
 

@@ -1,18 +1,16 @@
 import * as qs from "query-string";
 import * as React from "react";
 
-import Web3 from "web3";
-
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { RouteComponentProps, withRouter } from "react-router";
 import { bindActionCreators, Dispatch } from "redux";
-
-import { StatusPage } from "../statuspage/StatusPage";
+import { toChecksumAddress } from "web3-utils";
 
 import { EncodedData, Encodings } from "../../lib/encodedData";
 import { addRegisteringDarknode, RegistrationStatus, setDarknodeName } from "../../store/actions/statistics/operatorActions";
 import { ApplicationData } from "../../store/types";
 import { _catch_ } from "../ErrorBoundary";
+import { StatusPage } from "../statuspage/StatusPage";
 import { NotFound } from "./NotFound";
 
 export enum DarknodeAction {
@@ -22,7 +20,7 @@ export enum DarknodeAction {
 }
 
 const darknodeIDBase58ToHex = (darknodeID: string): string =>
-    (new Web3()).utils.toChecksumAddress(
+    toChecksumAddress(
         (`0x${new EncodedData(darknodeID, Encodings.BASE58).toHex("").slice(4)}`).toLowerCase()
     );
 

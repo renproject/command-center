@@ -110,14 +110,10 @@ class RegistrationClass extends React.Component<Props, State> {
 
     private readonly onDone = async () => {
         const { darknodeID } = this.props;
-        const { sdk, tokenPrices } = this.props.store;
-
-        if (!sdk) {
-            return; // FIXME
-        }
+        const { web3, tokenPrices } = this.props.store;
 
         try {
-            await this.props.actions.updateDarknodeStatistics(sdk, darknodeID, tokenPrices);
+            await this.props.actions.updateDarknodeStatistics(web3, darknodeID, tokenPrices);
         } catch (error) {
             // Ignore error
         }
@@ -129,14 +125,14 @@ class RegistrationClass extends React.Component<Props, State> {
     }
 
     private readonly onDoneRegister = async () => {
-        const { sdk, address, tokenPrices, darknodeList } = this.props.store;
+        const { web3, address, tokenPrices, darknodeList } = this.props.store;
 
-        if (!sdk || !address) {
+        if (!address) {
             return; // FIXME
         }
 
         try {
-            await this.props.actions.updateOperatorStatistics(sdk, address, tokenPrices, darknodeList);
+            await this.props.actions.updateOperatorStatistics(web3, address, tokenPrices, darknodeList);
         } catch (error) {
             // Ignore error
         }
@@ -148,16 +144,16 @@ class RegistrationClass extends React.Component<Props, State> {
 
     private readonly handleRegister = async (): Promise<void> => {
         const { darknodeID, publicKey } = this.props;
-        const { sdk, address, minimumBond, tokenPrices } = this.props.store;
+        const { web3, address, minimumBond, tokenPrices } = this.props.store;
 
-        if (!sdk || !publicKey || !address || !minimumBond || !tokenPrices) {
+        if (!publicKey || !address || !minimumBond || !tokenPrices) {
             return; // FIXME
         }
 
         this.setState({ active: true });
         try {
             await this.props.actions.showRegisterPopup(
-                sdk, address, darknodeID, publicKey, minimumBond, tokenPrices, this.onCancel, this.onDoneRegister
+                web3, address, darknodeID, publicKey, minimumBond, tokenPrices, this.onCancel, this.onDoneRegister
             );
         } catch (error) {
             _captureInteractionException_(error, {
@@ -170,15 +166,15 @@ class RegistrationClass extends React.Component<Props, State> {
 
     private readonly handleDeregister = async (): Promise<void> => {
         const { darknodeID, darknodeDetails } = this.props;
-        const { sdk, address, quoteCurrency } = this.props.store;
+        const { web3, address, quoteCurrency } = this.props.store;
 
-        if (!sdk || !address) {
+        if (!address) {
             return;
         }
 
         this.setState({ active: true });
         await this.props.actions.showDeregisterPopup(
-            sdk,
+            web3,
             address,
             darknodeID,
             darknodeDetails && darknodeDetails.feesEarnedTotalEth,
@@ -189,14 +185,14 @@ class RegistrationClass extends React.Component<Props, State> {
 
     private readonly handleRefund = async (): Promise<void> => {
         const { darknodeID } = this.props;
-        const { sdk, address } = this.props.store;
+        const { web3, address } = this.props.store;
 
-        if (!sdk || !address) {
+        if (!address) {
             return;
         }
 
         this.setState({ active: true });
-        await this.props.actions.showRefundPopup(sdk, address, darknodeID, this.onCancel, this.onDone);
+        await this.props.actions.showRefundPopup(web3, address, darknodeID, this.onCancel, this.onDone);
     }
 }
 
@@ -204,6 +200,7 @@ const mapStateToProps = (state: ApplicationData) => ({
     store: {
         address: state.trader.address,
         sdk: state.trader.sdk,
+        web3: state.trader.web3,
         minimumBond: state.statistics.minimumBond,
         tokenPrices: state.statistics.tokenPrices,
         darknodeList: state.trader.address ? state.statistics.darknodeList.get(state.trader.address, null) : null,

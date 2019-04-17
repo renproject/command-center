@@ -42,11 +42,10 @@ class BackgroundTasksClass extends React.Component<Props, State> {
         this.setupLoops();
 
         try {
-            const { sdk, readOnlyProvider } = this.props.store;
+            const { sdk } = this.props.store;
             if (sdk) {
                 await this.props.actions.login(
                     sdk,
-                    readOnlyProvider,
                     {
                         redirect: false,
                         showPopup: darknodeID === undefined || action !== undefined,
@@ -119,11 +118,11 @@ class BackgroundTasksClass extends React.Component<Props, State> {
     private readonly callLookForLogout = async (props?: Props): Promise<void> => {
         props = props || this.props;
 
-        const { sdk, address, readOnlyProvider } = props.store;
+        const { sdk, address, web3 } = props.store;
         if (sdk && address) {
             try {
                 // tslint:disable-next-line: await-promise
-                await props.actions.lookForLogout(sdk, address, readOnlyProvider);
+                await props.actions.lookForLogout(sdk, address, web3);
             } catch (error) {
                 _captureBackgroundException_(error, {
                     description: "Error thrown in callLookForLogout background task",
@@ -138,18 +137,16 @@ class BackgroundTasksClass extends React.Component<Props, State> {
     private readonly callUpdateNetworkStatistics = async (props?: Props): Promise<void> => {
         props = props || this.props;
 
-        const { sdk } = props.store;
+        const { web3 } = props.store;
         let timeout = 1; // Retry in a second, unless the call succeeds
-        if (sdk) {
-            try {
-                // tslint:disable-next-line: await-promise
-                await props.actions.updateNetworkStatistics(sdk);
-                timeout = 3600;
-            } catch (error) {
-                _captureBackgroundException_(error, {
-                    description: "Error thrown in callUpdateNetworkStatistics background task",
-                });
-            }
+        try {
+            // tslint:disable-next-line: await-promise
+            await props.actions.updateNetworkStatistics(web3);
+            timeout = 3600;
+        } catch (error) {
+            _captureBackgroundException_(error, {
+                description: "Error thrown in callUpdateNetworkStatistics background task",
+            });
         }
         if (this.callUpdateNetworkStatisticsTimeout) { clearTimeout(this.callUpdateNetworkStatisticsTimeout); }
         this.callUpdateNetworkStatisticsTimeout = setTimeout(
@@ -162,16 +159,16 @@ class BackgroundTasksClass extends React.Component<Props, State> {
     private readonly callUpdateOperatorStatistics = async (props?: Props): Promise<void> => {
         props = props || this.props;
 
-        const { sdk, address, tokenPrices, darknodeList, darknodeRegisteringList } = props.store;
+        const { web3, address, tokenPrices, darknodeList, darknodeRegisteringList } = props.store;
         let timeout = 1; // Retry in a second, unless the call succeeds
-        if (sdk && address && tokenPrices) {
+        if (address && tokenPrices) {
             try {
                 let list = darknodeRegisteringList.keySeq().toList();
                 if (darknodeList) {
                     list = list.concat(darknodeList);
                 }
                 // tslint:disable-next-line: await-promise
-                await props.actions.updateOperatorStatistics(sdk, address, tokenPrices, list);
+                await props.actions.updateOperatorStatistics(web3, address, tokenPrices, list);
                 timeout = 120;
             } catch (error) {
                 _captureBackgroundException_(error, {
@@ -192,16 +189,16 @@ class BackgroundTasksClass extends React.Component<Props, State> {
         props = props || this.props;
 
         const { match: { params } } = props;
-        const { sdk, tokenPrices } = props.store;
+        const { web3, tokenPrices } = props.store;
 
         const darknodeID = getDarknodeParam(params);
 
         let timeout = 1; // if the action isn't called, try again in 1 second
-        if (sdk && tokenPrices && darknodeID) {
+        if (tokenPrices && darknodeID) {
             try {
                 // tslint:disable-next-line: await-promise
                 await props.actions.updateDarknodeStatistics(
-                    sdk,
+                    web3,
                     darknodeID,
                     tokenPrices,
                 );
@@ -259,7 +256,7 @@ const mapStateToProps = (state: ApplicationData) => ({
     store: {
         address: state.trader.address,
         sdk: state.trader.sdk,
-        readOnlyProvider: state.trader.readOnlyProvider,
+        web3: state.trader.web3,
         tokenPrices: state.statistics.tokenPrices,
         darknodeList: state.trader.address ? state.statistics.darknodeList.get(state.trader.address, null) : null,
         darknodeRegisteringList: state.statistics.darknodeRegisteringList,

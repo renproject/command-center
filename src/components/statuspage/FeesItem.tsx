@@ -38,14 +38,14 @@ class FeesItemClass extends React.Component<Props, State> {
 
     private readonly handleWithdraw = async (): Promise<void> => {
         const { store, darknodeID, token } = this.props;
-        const { sdk, tokenPrices, address } = store;
+        const { web3, tokenPrices, address } = store;
         this.setState({ disabled: true, loading: true });
 
-        if (sdk && address) {
+        if (address) {
             // tslint:disable-next-line: await-promise
-            await this.props.actions.withdrawReward(sdk, address, darknodeID, token);
+            await this.props.actions.withdrawReward(web3, address, darknodeID, token);
             // tslint:disable-next-line: await-promise
-            await this.props.actions.updateDarknodeStatistics(sdk, darknodeID, tokenPrices);
+            await this.props.actions.updateDarknodeStatistics(web3, darknodeID, tokenPrices);
         }
 
         this.setState({ loading: false });
@@ -55,6 +55,7 @@ class FeesItemClass extends React.Component<Props, State> {
 const mapStateToProps = (state: ApplicationData) => ({
     store: {
         sdk: state.trader.sdk,
+        web3: state.trader.web3,
         tokenPrices: state.statistics.tokenPrices,
         address: state.trader.address,
     },

@@ -1,32 +1,30 @@
-import RenExSDK from "@renex/renex";
 import BigNumber from "bignumber.js";
+import Web3 from "web3";
 
 import { Dispatch } from "redux";
 
 import { _noCapture_ } from "../../../lib/errors";
 import { contracts } from "../../../lib/ethereum/contracts/contracts";
-import { Token } from "../../../lib/ethereum/tokens";
+import { RENAddress, Token, TokenDetails } from "../../../lib/ethereum/tokens";
 
-export const withdrawReward = (sdk: RenExSDK, trader: string, darknodeID: string, token: Token) => async (_dispatch: Dispatch) => {
+export const withdrawReward = (web3: Web3, trader: string, darknodeID: string, token: Token) => async (_dispatch: Dispatch) => {
 
-    const contract = new ((sdk.getWeb3()).eth.Contract)(
+    const contract = new (web3.eth.Contract)(
         contracts.DarknodeRewardVault.ABI,
         contracts.DarknodeRewardVault.address
     );
-    const tokenDetails = await sdk._cachedTokenDetails.get(token);
+    const tokenDetails = TokenDetails.get(token);
 
     if (!tokenDetails) {
         throw new Error("Unknown token");
     }
 
-    await contract.methods.withdraw(darknodeID, tokenDetails.addr).send({ from: trader });
+    await contract.methods.withdraw(darknodeID, tokenDetails.address).send({ from: trader });
 };
 
-export const approveNode = (sdk: RenExSDK, trader: string, bond: BigNumber) => async (_dispatch: Dispatch) => {
-
+export const approveNode = (web3: Web3, trader: string, bond: BigNumber) => async (_dispatch: Dispatch) => {
     // tslint:disable-next-line:no-non-null-assertion
-    const renAddr = (await sdk._cachedTokenDetails.get(Token.REN))!.addr;
-    const ercContract = new (sdk.getWeb3().eth.Contract)(contracts.ERC20.ABI, renAddr);
+    const ercContract = new (web3.eth.Contract)(contracts.ERC20.ABI, RENAddress);
     const ercBalance = new BigNumber(await ercContract.methods.balanceOf(trader).call());
     const ercAllowance = new BigNumber(
         await ercContract.methods.allowance(trader, contracts.DarknodeRegistry.address).call(),
@@ -52,7 +50,7 @@ export const approveNode = (sdk: RenExSDK, trader: string, bond: BigNumber) => a
 };
 
 export const registerNode = (
-    sdk: RenExSDK,
+    web3: Web3,
     trader: string,
     darknodeID: string,
     publicKey: string,
@@ -61,39 +59,39 @@ export const registerNode = (
     onDone: () => void
 ) => async (_dispatch: Dispatch) => {
 
-    const hardCodedGas = 500000;
+    // const hardCodedGas = 500000;
 
-    // tslint:disable-next-line:no-non-null-assertion
-    const renAddr = (await sdk._cachedTokenDetails.get(Token.REN))!.addr;
-    const ercContract = new (sdk.getWeb3().eth.Contract)(contracts.ERC20.ABI, renAddr);
+    // // tslint:disable-next-line:no-non-null-assertion
+    // const RENAddress = (await TokenDetails.get(Token.REN))!.addr;
+    // const ercContract = new (web3.eth.Contract)(contracts.ERC20.ABI, RENAddress);
 
-    const ercAllowance = new BigNumber(
-        await ercContract.methods.allowance(trader, contracts.DarknodeRegistry.address).call()
-    );
+    // const ercAllowance = new BigNumber(
+    //     await ercContract.methods.allowance(trader, contracts.DarknodeRegistry.address).call()
+    // );
 
-    let gas: number | undefined = hardCodedGas;
-    if (ercAllowance.gte(bond)) {
-        gas = undefined;
-    }
+    // let gas: number | undefined = hardCodedGas;
+    // if (ercAllowance.gte(bond)) {
+    //     gas = undefined;
+    // }
 
-    let resolved = false;
-    const darknodeRegistry = new ((sdk.getWeb3()).eth.Contract)(
-        contracts.DarknodeRegistry.ABI,
-        contracts.DarknodeRegistry.address
-    );
-    return new Promise(((
-        resolve: (value: string) => void,
-        reject: (reason: Error | string) => void,
-    ) => {
-        darknodeRegistry.methods.register(darknodeID, publicKey, bond.toFixed()).send({ from: trader, gas })
-            .on("transactionHash", (res: string) => { resolve(res); resolved = true; })
-            .once("confirmation", onDone)
-            .on("error", (error: Error) => { if (resolved) { onCancel(); } reject(error); });
-    }));
+    // let resolved = false;
+    // const darknodeRegistry = new ((web3).eth.Contract)(
+    //     contracts.DarknodeRegistry.ABI,
+    //     contracts.DarknodeRegistry.address
+    // );
+    // return new Promise(((
+    //     resolve: (value: string) => void,
+    //     reject: (reason: Error | string) => void,
+    // ) => {
+    //     darknodeRegistry.methods.register(darknodeID, publicKey, bond.toFixed()).send({ from: trader, gas })
+    //         .on("transactionHash", (res: string) => { resolve(res); resolved = true; })
+    //         .once("confirmation", onDone)
+    //         .on("error", (error: Error) => { if (resolved) { onCancel(); } reject(error); });
+    // }));
 };
 
 export const deregisterNode = (
-    sdk: RenExSDK,
+    web3: Web3,
     trader: string,
     darknodeID: string,
     onCancel: () => void,
@@ -101,24 +99,24 @@ export const deregisterNode = (
 ) => async (_dispatch: Dispatch) => {
     // The node has been registered and can be deregistered.
 
-    let resolved = false;
-    const darknodeRegistry = new ((sdk.getWeb3()).eth.Contract)(
-        contracts.DarknodeRegistry.ABI,
-        contracts.DarknodeRegistry.address
-    );
-    return new Promise((
-        resolve: (value: string) => void,
-        reject: (reason: Error | string) => void,
-    ) => {
-        darknodeRegistry.methods.deregister(darknodeID).send({ from: trader })
-            .on("transactionHash", (res: string) => { resolve(res); resolved = true; })
-            .once("confirmation", onDone)
-            .on("error", (error: Error) => { if (resolved) { onCancel(); } reject(error); });
-    });
+    // let resolved = false;
+    // const darknodeRegistry = new ((web3).eth.Contract)(
+    //     contracts.DarknodeRegistry.ABI,
+    //     contracts.DarknodeRegistry.address
+    // );
+    // return new Promise((
+    //     resolve: (value: string) => void,
+    //     reject: (reason: Error | string) => void,
+    // ) => {
+    //     darknodeRegistry.methods.deregister(darknodeID).send({ from: trader })
+    //         .on("transactionHash", (res: string) => { resolve(res); resolved = true; })
+    //         .once("confirmation", onDone)
+    //         .on("error", (error: Error) => { if (resolved) { onCancel(); } reject(error); });
+    // });
 };
 
 export const refundNode = (
-    sdk: RenExSDK,
+    web3: Web3,
     trader: string,
     darknodeID: string,
     onCancel: () => void,
@@ -127,7 +125,7 @@ export const refundNode = (
     // The node is awaiting refund.
 
     let resolved = false;
-    const darknodeRegistry = new ((sdk.getWeb3()).eth.Contract)(
+    const darknodeRegistry = new (web3.eth.Contract)(
         contracts.DarknodeRegistry.ABI,
         contracts.DarknodeRegistry.address
     );
@@ -144,7 +142,7 @@ export const refundNode = (
 };
 
 export const fundNode = (
-    sdk: RenExSDK,
+    web3: Web3,
     address: string,
     darknodeID: string,
     ethAmountStr: string,
@@ -160,7 +158,7 @@ export const fundNode = (
         resolve: (value: string) => void,
         reject: (reason: Error | string) => void,
     ) => {
-        sdk.getWeb3().eth.sendTransaction({
+        web3.eth.sendTransaction({
             to: darknodeID,
             value: weiAmount.toFixed(),
             from: address,

@@ -9,7 +9,7 @@ import { NETWORK } from "../lib/environmentVariables";
 import { _captureBackgroundException_ } from "../lib/errors";
 import { Web3Browser } from "../lib/ethereum/browsers";
 import { Token } from "../lib/ethereum/tokens";
-import { getReadOnlyProvider } from "../lib/ethereum/wallet";
+import { getReadOnlyWeb3 } from "../lib/ethereum/wallet";
 import { Record } from "../lib/record";
 import { RegistrationStatus } from "./actions/statistics/operatorActions";
 
@@ -25,14 +25,14 @@ export interface ApplicationData {
     ui: UIData;
 }
 
-const readOnlyProvider = getReadOnlyProvider();
+export const readOnlyWeb3 = getReadOnlyWeb3();
 
 export class TraderData extends Record({
     // Login data
     address: null as string | null,
     web3BrowserName: Web3Browser.MetaMask,
-    readOnlyProvider,
-    sdk: new RenExSDK(readOnlyProvider, { network: NETWORK }) as RenExSDK | undefined,
+    web3: readOnlyWeb3,
+    sdk: new RenExSDK(readOnlyWeb3.currentProvider, { network: NETWORK }) as RenExSDK | undefined,
 }) { }
 
 export enum LabelLevel {

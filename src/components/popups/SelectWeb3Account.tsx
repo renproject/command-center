@@ -1,11 +1,11 @@
 import * as React from "react";
 
+import { Blocky } from "@renex/react-components";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
 import { _captureBackgroundException_ } from "../../lib/errors";
 import { ApplicationData } from "../../store/types";
-import { Blocky } from "../Blocky";
 import { Loading } from "../Loading";
 
 /**
