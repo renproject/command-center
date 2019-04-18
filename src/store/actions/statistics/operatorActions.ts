@@ -73,8 +73,8 @@ export const calculateSecondsPerBlock = (
 const getBalances = async (web3: Web3, darknodeID: string): Promise<OrderedMap<Token, BigNumber>> => {
 
     const contract = new (web3.eth.Contract)(
-        contracts.DarknodePayment.ABI,
-        contracts.DarknodePayment.address,
+        contracts.DarknodePaymentStore.ABI,
+        contracts.DarknodePaymentStore.address,
     );
 
     let feesEarned = OrderedMap<Token, BigNumber>();

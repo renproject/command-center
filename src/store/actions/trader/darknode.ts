@@ -59,35 +59,34 @@ export const registerNode = (
     onDone: () => void
 ) => async (_dispatch: Dispatch) => {
 
-    // const hardCodedGas = 500000;
+    const hardCodedGas = 500000;
 
-    // // tslint:disable-next-line:no-non-null-assertion
-    // const RENAddress = (await TokenDetails.get(Token.REN))!.addr;
-    // const ercContract = new (web3.eth.Contract)(contracts.ERC20.ABI, RENAddress);
+    // tslint:disable-next-line:no-non-null-assertion
+    const ercContract = new (web3.eth.Contract)(contracts.ERC20.ABI, RENAddress);
 
-    // const ercAllowance = new BigNumber(
-    //     await ercContract.methods.allowance(trader, contracts.DarknodeRegistry.address).call()
-    // );
+    const ercAllowance = new BigNumber(
+        await ercContract.methods.allowance(trader, contracts.DarknodeRegistry.address).call()
+    );
 
-    // let gas: number | undefined = hardCodedGas;
-    // if (ercAllowance.gte(bond)) {
-    //     gas = undefined;
-    // }
+    let gas: number | undefined = hardCodedGas;
+    if (ercAllowance.gte(bond)) {
+        gas = undefined;
+    }
 
-    // let resolved = false;
-    // const darknodeRegistry = new ((web3).eth.Contract)(
-    //     contracts.DarknodeRegistry.ABI,
-    //     contracts.DarknodeRegistry.address
-    // );
-    // return new Promise(((
-    //     resolve: (value: string) => void,
-    //     reject: (reason: Error | string) => void,
-    // ) => {
-    //     darknodeRegistry.methods.register(darknodeID, publicKey, bond.toFixed()).send({ from: trader, gas })
-    //         .on("transactionHash", (res: string) => { resolve(res); resolved = true; })
-    //         .once("confirmation", onDone)
-    //         .on("error", (error: Error) => { if (resolved) { onCancel(); } reject(error); });
-    // }));
+    let resolved = false;
+    const darknodeRegistry = new ((web3).eth.Contract)(
+        contracts.DarknodeRegistry.ABI,
+        contracts.DarknodeRegistry.address
+    );
+    return new Promise(((
+        resolve: (value: string) => void,
+        reject: (reason: Error | string) => void,
+    ) => {
+        darknodeRegistry.methods.register(darknodeID, publicKey, bond.toFixed()).send({ from: trader, gas })
+            .on("transactionHash", (res: string) => { resolve(res); resolved = true; })
+            .once("confirmation", onDone)
+            .on("error", (error: Error) => { if (resolved) { onCancel(); } reject(error); });
+    }));
 };
 
 export const deregisterNode = (
@@ -99,20 +98,20 @@ export const deregisterNode = (
 ) => async (_dispatch: Dispatch) => {
     // The node has been registered and can be deregistered.
 
-    // let resolved = false;
-    // const darknodeRegistry = new ((web3).eth.Contract)(
-    //     contracts.DarknodeRegistry.ABI,
-    //     contracts.DarknodeRegistry.address
-    // );
-    // return new Promise((
-    //     resolve: (value: string) => void,
-    //     reject: (reason: Error | string) => void,
-    // ) => {
-    //     darknodeRegistry.methods.deregister(darknodeID).send({ from: trader })
-    //         .on("transactionHash", (res: string) => { resolve(res); resolved = true; })
-    //         .once("confirmation", onDone)
-    //         .on("error", (error: Error) => { if (resolved) { onCancel(); } reject(error); });
-    // });
+    let resolved = false;
+    const darknodeRegistry = new ((web3).eth.Contract)(
+        contracts.DarknodeRegistry.ABI,
+        contracts.DarknodeRegistry.address
+    );
+    return new Promise((
+        resolve: (value: string) => void,
+        reject: (reason: Error | string) => void,
+    ) => {
+        darknodeRegistry.methods.deregister(darknodeID).send({ from: trader })
+            .on("transactionHash", (res: string) => { resolve(res); resolved = true; })
+            .once("confirmation", onDone)
+            .on("error", (error: Error) => { if (resolved) { onCancel(); } reject(error); });
+    });
 };
 
 export const refundNode = (
