@@ -21,8 +21,8 @@ const getContractsForNetwork = (network: string | undefined) => {
 
     let path;
     let darknodeRegistry;
-    let darknodeRewardVault;
     let dnrDeployedInBlock;
+    let darknodePayment;
     switch (network) {
         case MAINNET:
             path = "mainnet";
@@ -31,7 +31,9 @@ const getContractsForNetwork = (network: string | undefined) => {
             darknodeRegistry = "0x34bd421C7948Bc16f826Fd99f9B785929b121633";
             dnrDeployedInBlock = "0x6AED46"; // in hex
 
-            darknodeRewardVault = "0xa96450d3386ece22db20b0ac96ef5684b6d95d53";
+            darknodePayment = "";
+            throw new Error("mainnet unsupported");
+
             break;
         case TESTNET:
         default:
@@ -41,7 +43,7 @@ const getContractsForNetwork = (network: string | undefined) => {
             darknodeRegistry = "0x1C6309618338D0EDf9a7Ea8eA18E060fD323020D";
             dnrDeployedInBlock = "0xA35A7A"; // in hex
 
-            darknodeRewardVault = "0xc08Dfa565EdB7216c3b23bBf0848B43fE9a49F0E";
+            darknodePayment = "0x803e31322CEa77318C57264eC7AFf9945f69d3ea";
     }
 
     const DarknodeRegistry: Contract = {
@@ -51,13 +53,13 @@ const getContractsForNetwork = (network: string | undefined) => {
         deployedInBlock: dnrDeployedInBlock,
     };
 
-    const DarknodeRewardVault: Contract = {
+    const DarknodePayment: Contract = {
         // tslint:disable-next-line: non-literal-require
-        ABI: require(`./ABIs/${path}/DarknodeRewardVault.json`),
-        address: darknodeRewardVault,
+        ABI: require(`./ABIs/${path}/DarknodePayment.json`),
+        address: darknodePayment,
     };
 
-    return { ERC20, DarknodeRegistry, DarknodeRewardVault };
+    return { ERC20, DarknodeRegistry, DarknodePayment };
 };
 
 export const contracts = getContractsForNetwork(NETWORK);
