@@ -23,6 +23,7 @@ const getContractsForNetwork = (network: string | undefined) => {
     let darknodeRegistry;
     let dnrDeployedInBlock;
     let darknodePayment;
+    let darknodePaymentStore;
     switch (network) {
         case MAINNET:
             path = "mainnet";
@@ -32,6 +33,7 @@ const getContractsForNetwork = (network: string | undefined) => {
             dnrDeployedInBlock = "0x6AED46"; // in hex
 
             darknodePayment = "";
+            darknodePaymentStore = "";
             throw new Error("mainnet unsupported");
 
             break;
@@ -44,6 +46,7 @@ const getContractsForNetwork = (network: string | undefined) => {
             dnrDeployedInBlock = "0xA35A7A"; // in hex
 
             darknodePayment = "0x803e31322CEa77318C57264eC7AFf9945f69d3ea";
+            darknodePaymentStore = "0x4cE24F16F031d10a953C080927012CA07B1575eE";
     }
 
     const DarknodeRegistry: Contract = {
@@ -59,7 +62,13 @@ const getContractsForNetwork = (network: string | undefined) => {
         address: darknodePayment,
     };
 
-    return { ERC20, DarknodeRegistry, DarknodePayment };
+    const DarknodePaymentStore: Contract = {
+        // tslint:disable-next-line: non-literal-require
+        ABI: require(`./ABIs/${path}/DarknodePaymentStore.json`),
+        address: darknodePaymentStore,
+    };
+
+    return { ERC20, DarknodeRegistry, DarknodePayment, DarknodePaymentStore };
 };
 
 export const contracts = getContractsForNetwork(NETWORK);
