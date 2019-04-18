@@ -10,8 +10,8 @@ import { RENAddress, Token, TokenDetails } from "../../../lib/ethereum/tokens";
 export const withdrawReward = (web3: Web3, trader: string, darknodeID: string, token: Token) => async (_dispatch: Dispatch) => {
 
     const contract = new (web3.eth.Contract)(
-        contracts.DarknodeRewardVault.ABI,
-        contracts.DarknodeRewardVault.address
+        contracts.DarknodePayment.ABI,
+        contracts.DarknodePayment.address
     );
     const tokenDetails = TokenDetails.get(token);
 

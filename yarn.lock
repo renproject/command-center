@@ -1246,17 +1246,18 @@
   version "0.4.7"
   resolved "https://codeload.github.com/republicprotocol/renex-sdk-ts/tar.gz/a5fbbf7bf3b1278dc6fe1facca23698ff3e97d3f"
   dependencies:
-    "@types/bn.js" "^4.11.5"
+    "@types/bn.js" "^4.11.4"
     "@types/bs58" "4.0.0"
     "@types/node-rsa" "1.0.0"
+    "@types/web3" "^1.0.14"
     axios "0.18.0"
-    bignumber.js "^8.1.1"
+    bignumber.js "^8.0.2"
     bn.js "4.11.8"
     bs58 "4.0.1"
     immutable "^4.0.0-rc.12"
     node-rsa "^1.0.5"
-    web3 "^1.0.0-beta.52"
-    web3-utils "^1.0.0-beta.52"
+    web3 "1.0.0-beta.37"
+    web3-utils "1.0.0-beta.37"
 
 "@sentry/browser@^5.0.8":
   version "5.0.8"
@@ -1494,10 +1495,10 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.14.1.tgz#8701cd760acc20beba5ffe0b7a1b879f39cb8c41"
   integrity sha512-Rymt08vh1GaW4vYB6QP61/5m/CFLGnFZP++bJpWbiNxceNa6RBipDmb413jvtSf/R1gg5a/jQVl2jY4XVRscEA==
 
-"@types/node@^11.13.4":
-  version "11.13.4"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-11.13.4.tgz#f83ec3c3e05b174b7241fadeb6688267fe5b22ca"
-  integrity sha512-+rabAZZ3Yn7tF/XPGHupKIL5EcAbrLxnTr/hgQICxbeuAfWtT0UZSfULE+ndusckBItcv4o6ZeOJplQikVcLvQ==
+"@types/node@^11.13.5":
+  version "11.13.5"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-11.13.5.tgz#266564afa8a6a09dc778dfacc703ed3f09c80516"
+  integrity sha512-/OMMBnjVtDuwX1tg2pkYVSqRIDSmNTnvVvmvP/2xiMAAWf4a5+JozrApCrO4WCAILmXVxfNoQ3E+0HJbNpFVGg==
 
 "@types/prop-types@*":
   version "15.7.0"
@@ -1523,10 +1524,10 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-redux@^7.0.6":
-  version "7.0.6"
-  resolved "https://registry.yarnpkg.com/@types/react-redux/-/react-redux-7.0.6.tgz#992271450e0d3bf61130ad9e356ad018841c7f78"
-  integrity sha512-Nlofk/xq8oVWpylvrFayezNb/HONsYJfjlSmTmZ7xoMDe+Muf6c1qHMVRZ7C5S2W1+iVcY21ggZwlUgLv+66hQ==
+"@types/react-redux@^7.0.7":
+  version "7.0.7"
+  resolved "https://registry.yarnpkg.com/@types/react-redux/-/react-redux-7.0.7.tgz#55492cb022559f1e1e8685b66b2fee1383ff123a"
+  integrity sha512-IrGTb1UZEP2EdOudTsfLEihL/C/U7nHxvSsMwJmPF9zRGJuCMo28ELVnlhtRtkxYmZT+4IE2Nm1IhTN4z64T4Q==
   dependencies:
     "@types/hoist-non-react-statics" "^3.3.0"
     "@types/react" "*"
