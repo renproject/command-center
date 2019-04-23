@@ -43,14 +43,14 @@ export const getPrices = async (): Promise<TokenPrices> => {
 
     let prices: TokenPrices = Map();
 
-    coinGeckoIDs.map(async (coinGeckoID, token) => {
+    for (const [token, coinGeckoID] of coinGeckoIDs.toArray()) {
         const response = await Axios.get(
             `${coinGeckoURL}/coins/${coinGeckoID}?${coinGeckoParams}`
         );
         const price = Map<Currency, number>(response.data.market_data.current_price);
 
         prices = prices.set(token, price);
-    });
+    }
 
     return prices;
 };
