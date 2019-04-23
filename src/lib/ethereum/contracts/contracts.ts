@@ -68,7 +68,13 @@ const getContractsForNetwork = (network: string | undefined) => {
         address: darknodePaymentStore,
     };
 
-    return { ERC20, DarknodeRegistry, DarknodePayment, DarknodePaymentStore };
+    const WarpGateToken: Contract = {
+        // tslint:disable-next-line: non-literal-require
+        ABI: require(`./ABIs/${path}/WarpGateToken.json`),
+        address: "",
+    };
+
+    return { ERC20, DarknodeRegistry, DarknodePayment, DarknodePaymentStore, WarpGateToken };
 };
 
 export const contracts = getContractsForNetwork(NETWORK);
