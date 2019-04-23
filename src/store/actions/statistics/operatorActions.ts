@@ -79,11 +79,17 @@ const getBalances = async (web3: Web3, darknodeID: string): Promise<OrderedMap<T
 
     let feesEarned = OrderedMap<Token, BigNumber>();
 
+    const address = (await web3.eth.getAccounts())[0];
+
     const balances = TokenDetails.map(async (tokenDetails, token) => {
-        const balance = new BigNumber(await contract.methods.darknodeBalances(darknodeID, tokenDetails.address).call());
+        const balance1 = new BigNumber(await contract.methods.darknodeBalances(darknodeID, tokenDetails.address).call());
+        const balance2 = tokenDetails.wrapped ? await new (web3.eth.Contract)(
+            contracts.WarpGateToken.ABI,
+            tokenDetails.address,
+        ).methods.balanceOf(address).call() : new BigNumber(0);
 
         return {
-            balance,
+            balance: balance1.plus(balance2),
             token,
         };
     }).valueSeq();
