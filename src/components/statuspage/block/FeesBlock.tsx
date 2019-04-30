@@ -30,6 +30,47 @@ class FeesBlockClass extends React.Component<Props, State> {
         const { quoteCurrency } = store;
         const { showAdvanced } = this.state;
 
+        const oldFees = [];
+        if (darknodeDetails) {
+            for (const [token, balance] of darknodeDetails.oldFeesEarned.toArray()) {
+                const tokenName = token.replace(" (old)", "");
+                if (balance.isZero()) {
+                    continue;
+                }
+                oldFees.push(<tr key={token}>
+                    <td>
+                        <TokenIcon className="fees-block--table--icon" token={tokenName} />
+                        {" "}
+                        <span>{tokenName}</span>
+                    </td>
+                    <td className="fees-block--table--value">
+                        <TokenBalance token={token} amount={balance} />
+                    </td>
+                    <td className="fees-block--table--usd">
+                        <CurrencyIcon currency={quoteCurrency} />
+                        <TokenBalance
+                            token={token}
+                            amount={balance}
+                            convertTo={quoteCurrency}
+                        />
+                        {" "}
+                        <span className="fees-block--table--usd-symbol">
+                            {quoteCurrency.toUpperCase()}
+                        </span>
+                    </td>
+                    <td>
+                        <FeesItem
+                            disabled={isOperator}
+                            key={token}
+                            token={token}
+                            amount={balance}
+                            darknodeID={darknodeDetails.ID}
+                        />
+                    </td>
+                </tr>);
+            }
+        }
+
         return (
             <Block
                 className={`fees-block ${showAdvanced ? "" : "basic"}`}
@@ -119,6 +160,14 @@ class FeesBlockClass extends React.Component<Props, State> {
                                                     </td>
                                                 </tr>;
                                             }).valueSeq().toArray()
+                                        }
+                                        {
+                                            oldFees.length > 0 ? <>
+                                                <th colSpan={4}>
+                                                    Old fees
+                                                </th>
+                                                {oldFees}
+                                            </> : <></>
                                         }
                                     </tbody>
                                 </table>

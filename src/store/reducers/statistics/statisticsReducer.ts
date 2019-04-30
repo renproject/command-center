@@ -92,6 +92,15 @@ export const statisticsReducer = (
         case getType(operatorActions.storeSecondsPerBlock):
             return state.set("secondsPerBlock", action.payload.secondsPerBlock);
 
+        case getType(operatorActions.addToWithdrawAddresses):
+            return state.set(
+                "withdrawAddresses",
+                state.withdrawAddresses.set(
+                    action.payload.token,
+                    state.withdrawAddresses.get(action.payload.token, List()).push(action.payload.address),
+                ),
+            );
+
         case getType(operatorActions.setDarknodeDetails):
             const details = action.payload.darknodeDetails;
             return state.set("darknodeDetails", state.darknodeDetails.set(

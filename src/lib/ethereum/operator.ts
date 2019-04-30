@@ -1,8 +1,9 @@
 import Web3 from "web3";
 
+import { OrderedSet } from "immutable";
 import { sha3, toChecksumAddress } from "web3-utils";
 
-import { OrderedSet } from "immutable";
+import { DarknodeRegistryWeb3 } from "./contracts/bindings/darknodeRegistry";
 import { contracts } from "./contracts/contracts";
 
 const NULL = "0x0000000000000000000000000000000000000000";
@@ -13,11 +14,11 @@ const getAllDarknodes = async (web3: Web3): Promise<string[]> => {
     const allDarknodes = [];
     let lastDarknode = NULL;
     do {
-        const darknodeRegistry = new (web3.eth.Contract)(
+        const darknodeRegistry: DarknodeRegistryWeb3 = new (web3.eth.Contract)(
             contracts.DarknodeRegistry.ABI,
             contracts.DarknodeRegistry.address
         );
-        const darknodes = await darknodeRegistry.methods.getDarknodes(lastDarknode, batchSize.toString()).call();
+        const darknodes: string[] = await darknodeRegistry.methods.getDarknodes(lastDarknode, batchSize.toString()).call();
         allDarknodes.push(...darknodes.filter((address: string) => address !== NULL && address !== lastDarknode));
         [lastDarknode] = darknodes.slice(-1);
     } while (lastDarknode !== NULL);
@@ -90,7 +91,7 @@ export const getOperatorDarknodes = async (web3: Web3, address: string): Promise
     //     darknodes.push(darknodeID);
     // }
 
-    const darknodeRegistry = new (web3.eth.Contract)(
+    const darknodeRegistry: DarknodeRegistryWeb3 = new (web3.eth.Contract)(
         contracts.DarknodeRegistry.ABI,
         contracts.DarknodeRegistry.address
     );

@@ -4,9 +4,8 @@ import { BigNumber } from "bignumber.js";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
-import { Token, TokenDetails } from "../lib/ethereum/tokens";
+import { AllTokenDetails, OldToken, Token, } from "../lib/ethereum/tokens";
 import { ApplicationData, Currency } from "../store/types";
-
 class TokenBalanceClass extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
@@ -20,8 +19,7 @@ class TokenBalanceClass extends React.Component<Props, State> {
         const { sdk } = store;
 
         if (sdk) {
-            const tokenDetails = TokenDetails.get(token);
-
+            const tokenDetails = AllTokenDetails.get(token as Token, undefined);
             const decimals = tokenDetails ? new BigNumber(tokenDetails.decimals.toString()).toNumber() : 0;
             this.setState({ decimals });
         }
@@ -33,8 +31,7 @@ class TokenBalanceClass extends React.Component<Props, State> {
         const { token } = this.props;
 
         if (sdk && nextToken !== token) {
-            const tokenDetails = await TokenDetails.get(nextToken);
-
+            const tokenDetails = AllTokenDetails.get(nextToken as Token, undefined);
             const decimals = tokenDetails ? new BigNumber(tokenDetails.decimals.toString()).toNumber() : 0;
             this.setState({ decimals });
         }
@@ -94,7 +91,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
 });
 
 interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps> {
-    token: Token;
+    token: Token | OldToken;
     amount: string | BigNumber;
     convertTo?: Currency;
     digits?: number;

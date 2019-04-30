@@ -113,6 +113,31 @@
     margin-top: 15px;
 }
 
+.withdraw--addresses {
+    margin: 0;
+    padding: 20px 0;
+}
+
+.withdraw--address {
+    cursor: pointer;
+    padding: 10px;
+    border: 1px solid #eee;
+    list-style-type: none;
+    margin: 0;
+    margin-bottom: 10px;
+}
+
+.newAddress {
+    width: 100%;
+}
+
+.withdraw--selected {
+    background-color: $blue-bright;
+    color: white;
+    font-weight: 900;
+    border: 1px solid $blue-bright;
+}
+
 // Open Order
 .popup.open .open--tokens {
     display: flex;
