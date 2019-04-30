@@ -8,7 +8,7 @@ import { List, Map, OrderedMap } from "immutable";
 import { NETWORK } from "../lib/environmentVariables";
 import { _captureBackgroundException_ } from "../lib/errors";
 import { Web3Browser } from "../lib/ethereum/browsers";
-import { Token } from "../lib/ethereum/tokens";
+import { OldToken, Token } from "../lib/ethereum/tokens";
 import { getReadOnlyWeb3 } from "../lib/ethereum/wallet";
 import { Record } from "../lib/record";
 import { RegistrationStatus } from "./actions/statistics/operatorActions";
@@ -77,7 +77,7 @@ export const currencies = [
     { currency: Currency.BTC, description: "Bitcoin (BTC)", },
 ];
 
-export type TokenPrices = Map<Token, Map<Currency, number>>;
+export type TokenPrices = Map<Token | OldToken, Map<Currency, number>>;
 
 export class StatisticsData extends Record({
     minimumBond: null as BigNumber | null,
@@ -96,6 +96,10 @@ export class StatisticsData extends Record({
     darknodeNames: Map<string, string>(),
     darknodeRegisteringList: Map<string, string>(),
     darknodeList: Map<string, List<string>>(),
+
+    transactions: Map<string, string>(),
+
+    withdrawAddresses: Map<Token, List<string>>(),
 }) implements Serializable<StatisticsData> {
     public serialize(): string {
         const js = this.toJS();
@@ -103,6 +107,7 @@ export class StatisticsData extends Record({
             darknodeList: js.darknodeList,
             darknodeNames: js.darknodeNames,
             darknodeRegisteringList: js.darknodeRegisteringList,
+            withdrawAddresses: js.withdrawAddresses,
         });
     }
 
@@ -115,6 +120,7 @@ export class StatisticsData extends Record({
                 darknodeList: data.darknodeList,
                 darknodeNames: data.darknodeNames,
                 darknodeRegisteringList: data.darknodeRegisteringList,
+                withdrawAddresses: data.withdrawAddresses,
             });
         } catch (error) {
             _captureBackgroundException_(error, {
@@ -131,6 +137,7 @@ export class DarknodeDetails extends Record({
     publicKey: "",
     ethBalance: new BigNumber(0),
     feesEarned: OrderedMap<Token, BigNumber>(),
+    oldFeesEarned: OrderedMap<OldToken, BigNumber>(),
     feesEarnedTotalEth: new BigNumber(0),
 
     averageGasUsage: 0,

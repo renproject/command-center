@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
-import { Token } from "../../lib/ethereum/tokens";
+import { OldToken, Token } from "../../lib/ethereum/tokens";
 import { updateDarknodeStatistics } from "../../store/actions/statistics/operatorActions";
 import { withdrawReward } from "../../store/actions/trader/darknode";
 import { ApplicationData } from "../../store/types";
@@ -42,8 +42,14 @@ class FeesItemClass extends React.Component<Props, State> {
         this.setState({ disabled: true, loading: true });
 
         if (address) {
-            // tslint:disable-next-line: await-promise
-            await this.props.actions.withdrawReward(web3, address, darknodeID, token);
+            try {
+                // tslint:disable-next-line: await-promise
+                console.log("handleWithdraw");
+                await this.props.actions.withdrawReward(web3, address, darknodeID, token);
+            } catch (error) {
+                this.setState({ loading: false });
+                return;
+            }
             // tslint:disable-next-line: await-promise
             await this.props.actions.updateDarknodeStatistics(web3, darknodeID, tokenPrices);
         }
@@ -58,6 +64,7 @@ const mapStateToProps = (state: ApplicationData) => ({
         web3: state.trader.web3,
         tokenPrices: state.statistics.tokenPrices,
         address: state.trader.address,
+        withdrawAddresses: state.statistics.withdrawAddresses,
     },
 });
 
@@ -70,7 +77,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
 
 interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps> {
     disabled: boolean;
-    token: Token;
+    token: Token | OldToken;
     amount: string | BigNumber;
     darknodeID: string;
 }

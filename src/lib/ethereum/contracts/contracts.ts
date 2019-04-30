@@ -21,9 +21,9 @@ const getContractsForNetwork = (network: string | undefined) => {
 
     let path;
     let darknodeRegistry;
+    let darknodeRewardVault;
     let dnrDeployedInBlock;
     let darknodePayment;
-    let darknodePaymentStore;
     switch (network) {
         case MAINNET:
             path = "mainnet";
@@ -32,8 +32,8 @@ const getContractsForNetwork = (network: string | undefined) => {
             darknodeRegistry = "0x34bd421C7948Bc16f826Fd99f9B785929b121633";
             dnrDeployedInBlock = "0x6AED46"; // in hex
 
+            darknodeRewardVault = "0xa96450d3386ece22db20b0ac96ef5684b6d95d53";
             darknodePayment = "";
-            darknodePaymentStore = "";
             throw new Error("mainnet unsupported");
 
             break;
@@ -45,8 +45,8 @@ const getContractsForNetwork = (network: string | undefined) => {
             darknodeRegistry = "0x1C6309618338D0EDf9a7Ea8eA18E060fD323020D";
             dnrDeployedInBlock = "0xA35A7A"; // in hex
 
-            darknodePayment = "0x803e31322CEa77318C57264eC7AFf9945f69d3ea";
-            darknodePaymentStore = "0x4cE24F16F031d10a953C080927012CA07B1575eE";
+            darknodeRewardVault = "0xc08Dfa565EdB7216c3b23bBf0848B43fE9a49F0E";
+            darknodePayment = "0x11F0A63d61344a00103Dd7EC9bF6d8c548CEB0A4";
     }
 
     const DarknodeRegistry: Contract = {
@@ -56,16 +56,16 @@ const getContractsForNetwork = (network: string | undefined) => {
         deployedInBlock: dnrDeployedInBlock,
     };
 
+    const DarknodeRewardVault: Contract = {
+        // tslint:disable-next-line: non-literal-require
+        ABI: require(`./ABIs/${path}/DarknodeRewardVault.json`),
+        address: darknodeRewardVault,
+    };
+
     const DarknodePayment: Contract = {
         // tslint:disable-next-line: non-literal-require
         ABI: require(`./ABIs/${path}/DarknodePayment.json`),
         address: darknodePayment,
-    };
-
-    const DarknodePaymentStore: Contract = {
-        // tslint:disable-next-line: non-literal-require
-        ABI: require(`./ABIs/${path}/DarknodePaymentStore.json`),
-        address: darknodePaymentStore,
     };
 
     const WarpGateToken: Contract = {
@@ -74,7 +74,7 @@ const getContractsForNetwork = (network: string | undefined) => {
         address: "",
     };
 
-    return { ERC20, DarknodeRegistry, DarknodePayment, DarknodePaymentStore, WarpGateToken };
+    return { ERC20, DarknodeRegistry, DarknodePayment, DarknodeRewardVault, WarpGateToken };
 };
 
 export const contracts = getContractsForNetwork(NETWORK);

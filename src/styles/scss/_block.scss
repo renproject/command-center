@@ -1,4 +1,6 @@
 .block {
+    @extend .no-scrollbar;
+    overflow-y: scroll;
     flex-grow: 1;
     background-color: $blue-dark;
     border-radius: 2px;
@@ -198,6 +200,12 @@
         font-weight: 400;
         padding-top: 5px;
         padding-bottom: 5px;
+    }
+
+    th {
+        color: white;
+        font-size: 18px;
+        text-align: center;
     }
 
     button {

@@ -11,42 +11,46 @@ import { getOperatorDarknodes } from "../../../lib/ethereum/operator";
 import { Currency, DarknodeDetails, TokenPrices } from "../../types";
 
 import { _captureBackgroundException_ } from "../../../lib/errors";
+import { DarknodePaymentWeb3 } from "../../../lib/ethereum/contracts/bindings/darknodePayment";
+import { DarknodeRegistryWeb3 } from "../../../lib/ethereum/contracts/bindings/darknodeRegistry";
 import { contracts } from "../../../lib/ethereum/contracts/contracts";
-import { Token, TokenDetails } from "../../../lib/ethereum/tokens";
+import { NewTokenDetails, OldToken, OldTokenDetails, Token } from "../../../lib/ethereum/tokens";
 
-export const addRegisteringDarknode = createStandardAction("ADD_REGISTERING_DARKNODE")<{
+export const addRegisteringDarknode = createStandardAction("addRegisteringDarknode")<{
     darknodeID: string;
     publicKey: string;
 }>();
 
-export const removeRegisteringDarknode = createStandardAction("REMOVE_REGISTERING_DARKNODE")<{
+export const removeRegisteringDarknode = createStandardAction("removeRegisteringDarknode")<{
     darknodeID: string;
 }>();
 
-export const removeDarknode = createStandardAction("REMOVE_DARKNODE")<{
+export const removeDarknode = createStandardAction("removeDarknode")<{
     darknodeID: string;
     operator: string;
 }>();
 
-export const storeDarknodeList = createStandardAction("STORE_DARKNODE_LIST")<{
+export const storeDarknodeList = createStandardAction("storeDarknodeList")<{
     darknodeList: OrderedSet<string>;
     address: string;
 }>();
 
-export const storeQuoteCurrency = createStandardAction("SORE_QUOTE_CURRENCY")<{ quoteCurrency: Currency }>();
+export const storeQuoteCurrency = createStandardAction("storeQuoteCurrency")<{ quoteCurrency: Currency }>();
 
-export const storeSecondsPerBlock = createStandardAction("SORE_BLOCKS_PER_SECOND")<{ secondsPerBlock: number }>();
+export const storeSecondsPerBlock = createStandardAction("storeSecondsPerBlock")<{ secondsPerBlock: number }>();
 
-export const setDarknodeDetails = createStandardAction("UPDATE_DARKNODE_DETAILS")<{
+export const addToWithdrawAddresses = createStandardAction("addToWithdrawAddresses")<{ token: Token, address: string }>();
+
+export const setDarknodeDetails = createStandardAction("setDarknodeDetails")<{
     darknodeDetails: DarknodeDetails;
 }>();
 
-export const updateDarknodeHistory = createStandardAction("UPDATE_DARKNODE_HISTORY")<{
+export const updateDarknodeHistory = createStandardAction("updateDarknodeHistory")<{
     darknodeID: string;
     balanceHistory: OrderedMap<number, BigNumber>;
 }>();
 
-export const setDarknodeName = createStandardAction("UPDATE_DARKNODE_NAME")<{ darknodeID: string; name: string }>();
+export const setDarknodeName = createStandardAction("setDarknodeName")<{ darknodeID: string; name: string }>();
 
 export const calculateSecondsPerBlock = (
     web3: Web3,
@@ -61,7 +65,7 @@ export const calculateSecondsPerBlock = (
         currentBlock = await web3.eth.getBlock(currentBlockNumber);
         currentBlockNumber -= 1;
     }
-    const previousBlock = await web3.eth.getBlock(currentBlockNumber - sampleSize);
+    const previousBlock: Block | null = await web3.eth.getBlock(currentBlockNumber - sampleSize);
 
     if (currentBlock !== null && previousBlock !== null) {
         const secondsPerBlock = Math.floor((currentBlock.timestamp - previousBlock.timestamp) / sampleSize);
@@ -70,19 +74,47 @@ export const calculateSecondsPerBlock = (
     }
 };
 
-const getBalances = async (web3: Web3, darknodeID: string): Promise<OrderedMap<Token, BigNumber>> => {
+const getOldBalances = async (web3: Web3, darknodeID: string): Promise<OrderedMap<OldToken, BigNumber>> => {
 
     const contract = new (web3.eth.Contract)(
-        contracts.DarknodePaymentStore.ABI,
-        contracts.DarknodePaymentStore.address,
+        contracts.DarknodeRewardVault.ABI,
+        contracts.DarknodeRewardVault.address,
+    );
+
+    let feesEarned = OrderedMap<OldToken, BigNumber>();
+
+    const balances = OldTokenDetails.map(async (tokenDetails, token) => {
+
+        const balance = new BigNumber(await contract.methods.darknodeBalances(darknodeID, tokenDetails.address).call());
+
+        return {
+            balance,
+            token,
+        };
+    }).valueSeq();
+    // TODO: Don't use Promise.all
+    const res = await Promise.all(balances);
+
+    for (const { balance, token } of res) {
+        feesEarned = feesEarned.set(token, balance);
+    }
+
+    return feesEarned;
+};
+
+const getBalances = async (web3: Web3, darknodeID: string): Promise<OrderedMap<Token, BigNumber>> => {
+
+    const contract: DarknodePaymentWeb3 = new (web3.eth.Contract)(
+        contracts.DarknodePayment.ABI,
+        contracts.DarknodePayment.address,
     );
 
     let feesEarned = OrderedMap<Token, BigNumber>();
 
     const address = (await web3.eth.getAccounts())[0];
 
-    const balances = TokenDetails.map(async (tokenDetails, token) => {
-        const balance1 = new BigNumber(await contract.methods.darknodeBalances(darknodeID, tokenDetails.address).call());
+    const balances = NewTokenDetails.map(async (tokenDetails, token) => {
+        const balance1 = new BigNumber((await contract.methods.darknodeBalances(darknodeID, tokenDetails.address).call()).toString());
         const balance2 = tokenDetails.wrapped ? await new (web3.eth.Contract)(
             contracts.WarpGateToken.ABI,
             tokenDetails.address,
@@ -93,6 +125,7 @@ const getBalances = async (web3: Web3, darknodeID: string): Promise<OrderedMap<T
             token,
         };
     }).valueSeq();
+    // TODO: Don't use Promise.all
     const res = await Promise.all(balances);
 
     for (const { balance, token } of res) {
@@ -104,15 +137,25 @@ const getBalances = async (web3: Web3, darknodeID: string): Promise<OrderedMap<T
 
 const sumUpFees = async (
     feesEarned: OrderedMap<Token, BigNumber>,
+    oldFeesEarned: OrderedMap<OldToken, BigNumber>,
     tokenPrices: TokenPrices,
 ): Promise<BigNumber> => {
 
     let totalEth = new BigNumber(0);
 
-    TokenDetails.map((tokenDetails, token) => {
+    NewTokenDetails.map((tokenDetails, token) => {
         const price = tokenPrices.get(token, undefined);
         const decimals = tokenDetails ? new BigNumber(tokenDetails.decimals.toString()).toNumber() : 0;
         const inEth = feesEarned.get(token, new BigNumber(0))
+            .div(Math.pow(10, decimals))
+            .multipliedBy(price ? price.get(Currency.ETH, 0) : 0);
+        totalEth = totalEth.plus(inEth);
+    });
+
+    OldTokenDetails.map((tokenDetails, token) => {
+        const price = tokenPrices.get(token, undefined);
+        const decimals = tokenDetails ? new BigNumber(tokenDetails.decimals.toString()).toNumber() : 0;
+        const inEth = oldFeesEarned.get(token, new BigNumber(0))
             .div(Math.pow(10, decimals))
             .multipliedBy(price ? price.get(Currency.ETH, 0) : 0);
         totalEth = totalEth.plus(inEth);
@@ -123,7 +166,7 @@ const sumUpFees = async (
 };
 
 const getDarknodeOperator = async (web3: Web3, darknodeID: string): Promise<string> => {
-    const darknodeRegistry = new (web3.eth.Contract)(
+    const darknodeRegistry: DarknodeRegistryWeb3 = new (web3.eth.Contract)(
         contracts.DarknodeRegistry.ABI,
         contracts.DarknodeRegistry.address
     );
@@ -131,7 +174,7 @@ const getDarknodeOperator = async (web3: Web3, darknodeID: string): Promise<stri
 };
 
 const getDarknodePublicKey = async (web3: Web3, darknodeID: string): Promise<string> => {
-    const darknodeRegistry = new (web3.eth.Contract)(
+    const darknodeRegistry: DarknodeRegistryWeb3 = new (web3.eth.Contract)(
         contracts.DarknodeRegistry.ABI,
         contracts.DarknodeRegistry.address
     );
@@ -149,7 +192,7 @@ export enum RegistrationStatus {
 }
 
 const getDarknodeStatus = async (web3: Web3, darknodeID: string): Promise<RegistrationStatus> => {
-    const darknodeRegistry = new (web3.eth.Contract)(
+    const darknodeRegistry: DarknodeRegistryWeb3 = new (web3.eth.Contract)(
         contracts.DarknodeRegistry.ABI,
         contracts.DarknodeRegistry.address
     );
@@ -208,9 +251,10 @@ export const updateDarknodeStatistics = (
 
     // Get earned fees
     const feesEarned = await getBalances(web3, darknodeID);
+    const oldFeesEarned = await getOldBalances(web3, darknodeID);
     let feesEarnedTotalEth = new BigNumber(0);
     if (tokenPrices) {
-        feesEarnedTotalEth = await sumUpFees(feesEarned, tokenPrices);
+        feesEarnedTotalEth = await sumUpFees(feesEarned, oldFeesEarned, tokenPrices);
     }
 
     // Get darknode operator and public key
@@ -226,6 +270,7 @@ export const updateDarknodeStatistics = (
         publicKey,
         ethBalance,
         feesEarned,
+        oldFeesEarned,
         feesEarnedTotalEth,
 
         averageGasUsage: 0,
