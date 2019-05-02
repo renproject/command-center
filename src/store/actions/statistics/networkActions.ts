@@ -4,14 +4,21 @@ import Web3 from "web3";
 import { Dispatch } from "redux";
 import { createStandardAction } from "typesafe-actions";
 
+import { OrderedMap } from "immutable";
 import { DarknodeRegistryWeb3 } from "../../../lib/ethereum/contracts/bindings/darknodeRegistry";
 import { contracts } from "../../../lib/ethereum/contracts/contracts";
-import { getPrices } from "../../../lib/ethereum/tokens";
+import { getPrices, Token } from "../../../lib/ethereum/tokens";
 import { TokenPrices } from "../../types";
 
-export const storeTokenPrices = createStandardAction("storeTokenPrices")<{ tokenPrices: TokenPrices }>();
+export const storeTokenPrices = createStandardAction("storeTokenPrices")<TokenPrices>();
 
-export const storeMinimumBond = createStandardAction("storeMinimumBond")<{ minimumBond: BigNumber }>();
+export const storeMinimumBond = createStandardAction("storeMinimumBond")<BigNumber>();
+
+export const updateCurrentCycle = createStandardAction("updateCurrentCycle")<string>();
+export const updatePreviousCycle = createStandardAction("updatePreviousCycle")<string>();
+
+export const updatePendingRewards = createStandardAction("updatePendingRewards")<OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber>>>();
+export const updatePendingTotalInEth = createStandardAction("updatePendingTotalInEth")<OrderedMap<string /* cycle */, BigNumber>>();
 
 export const updateNetworkStatistics = (web3: Web3) => async (dispatch: Dispatch) => {
     const darknodeRegistry: DarknodeRegistryWeb3 = new (web3.eth.Contract)(
@@ -19,10 +26,10 @@ export const updateNetworkStatistics = (web3: Web3) => async (dispatch: Dispatch
         contracts.DarknodeRegistry.address
     );
     const minimumBond = new BigNumber((await darknodeRegistry.methods.minimumBond().call()).toString());
-    dispatch(storeMinimumBond({ minimumBond }));
+    dispatch(storeMinimumBond(minimumBond));
 };
 
 export const updateTokenPrices = () => async (dispatch: Dispatch) => {
     const tokenPrices = await getPrices();
-    dispatch(storeTokenPrices({ tokenPrices }));
+    dispatch(storeTokenPrices(tokenPrices));
 };

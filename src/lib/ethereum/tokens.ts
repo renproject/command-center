@@ -41,7 +41,7 @@ export const AllTokenDetails = Map<Token | OldToken, TokenDetail<Token | OldToke
     .set(Token.BTC, { symbol: Token.BTC, name: "Bitcoin", decimals: 8, address: "0x2a8368d2a983a0aeae8da0ebc5b7c03a0ea66b37", wrapped: true, coinGeckoID: "bitcoin", old: false, })
     .set(Token.ZEC, { symbol: Token.ZEC, name: "ZCash", decimals: 8, address: "0xd67256552f93b39ac30083b4b679718a061feae6", wrapped: true, coinGeckoID: "zcash", old: false, })
     .set(OldToken.ETH, { symbol: OldToken.ETH, name: "Eth", decimals: 18, address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE", wrapped: false, coinGeckoID: "ethereum", old: true, })
-    .set(OldToken.DGX, { symbol: OldToken.DGX, name: "Dgx", decimals: 18, address: "0x7d6D31326b12B6CBd7f054231D47CbcD16082b71", wrapped: false, coinGeckoID: "digix-gold", old: true, })
+    .set(OldToken.DGX, { symbol: OldToken.DGX, name: "Dgx", decimals: 9, address: "0x7d6D31326b12B6CBd7f054231D47CbcD16082b71", wrapped: false, coinGeckoID: "digix-gold", old: true, })
     .set(OldToken.REN, { symbol: OldToken.REN, name: "Ren", decimals: 18, address: "0x2cd647668494c1b15743ab283a0f980d90a87394", wrapped: false, coinGeckoID: "republic-protocol", old: true, })
     .set(OldToken.TUSD, { symbol: OldToken.TUSD, name: "Tusd", decimals: 18, address: "0x525389752ffe6487d33EF53FBcD4E5D3AD7937a0", wrapped: false, coinGeckoID: "true-usd", old: true, })
     .set(OldToken.OMG, { symbol: OldToken.OMG, name: "Omg", decimals: 18, address: "0x66497ba75dD127b46316d806c077B06395918064", wrapped: false, coinGeckoID: "omisego", old: true, })

@@ -63,6 +63,28 @@
 .block--basic--top {
     white-space: nowrap;
     margin: 40px 10px;
+    margin-bottom: 0;
+}
+
+.block--basic--pending {
+    opacity: 0.8;
+
+    .fees-block--basic--value {
+        font-size: 30px;
+    }
+
+    .fees-block--basic--sign {
+        font-size: 15px;
+        margin-right: 0;
+    }
+
+    .svg-inline--fa {
+        margin-right: 5px;
+    }
+
+    .fees-block--basic--unit {
+        font-size: 15px;
+    }
 }
 
 .block--basic--show {
@@ -133,6 +155,10 @@
 
 .fees-block {
     color: $green;
+
+    .block--title {
+        margin-bottom: 5px;
+    }
 }
 
 .fees-block--basic--value {
@@ -176,6 +202,34 @@
     border: none;
 }
 
+.block--advanced--tabs {
+    border-bottom: 1px solid $green;
+    display: flex;
+    flex-flow: row;
+    width: 100%;
+    margin-bottom: 20px;
+
+    .block--advanced--tab {
+        background: none;
+        border: none;
+        color: $green;
+        width: 100%;
+        cursor: pointer;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        padding: 10px;
+
+        &.selected {
+            font-weight: 900;
+        }
+
+        &:focus {
+            outline: 0;
+        }
+    }
+}
+
 .fees-block--table {
 
     tr {
@@ -203,6 +257,8 @@
     }
 
     th {
+        padding-top: 30px;
+        color: $green;
         color: white;
         font-size: 18px;
         text-align: center;
@@ -228,6 +284,10 @@
 
     .fees-block--table--value {
         font-weight: 500;
+        max-width: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .fees-block--table--usd {

@@ -8,13 +8,15 @@ import { Block } from "web3-eth";
 import { toChecksumAddress } from "web3-utils";
 
 import { getOperatorDarknodes } from "../../../lib/ethereum/operator";
-import { Currency, DarknodeDetails, TokenPrices } from "../../types";
+import { Currency, DarknodeDetails, DarknodeFeeStatus, TokenPrices } from "../../types";
 
 import { _captureBackgroundException_ } from "../../../lib/errors";
 import { DarknodePaymentWeb3 } from "../../../lib/ethereum/contracts/bindings/darknodePayment";
+import { DarknodePaymentStoreWeb3 } from "../../../lib/ethereum/contracts/bindings/darknodePaymentStore";
 import { DarknodeRegistryWeb3 } from "../../../lib/ethereum/contracts/bindings/darknodeRegistry";
 import { contracts } from "../../../lib/ethereum/contracts/contracts";
 import { NewTokenDetails, OldToken, OldTokenDetails, Token } from "../../../lib/ethereum/tokens";
+import { updateCurrentCycle, updatePendingRewards, updatePendingTotalInEth, updatePreviousCycle } from "./networkActions";
 
 export const addRegisteringDarknode = createStandardAction("addRegisteringDarknode")<{
     darknodeID: string;
@@ -135,11 +137,26 @@ const getBalances = async (web3: Web3, darknodeID: string): Promise<OrderedMap<T
     return feesEarned;
 };
 
-const sumUpFees = async (
-    feesEarned: OrderedMap<Token, BigNumber>,
-    oldFeesEarned: OrderedMap<OldToken, BigNumber>,
+// The same as Promise.all except that if an entry throws, it sets it to the
+// provided default value instead of throwing the entire promise.
+// This variation maps over an OrderedMap instead of an array.
+const safePromiseAllMap = async <a, b>(orderedMap: OrderedMap<a, Promise<b>>, defaultValue: b): Promise<OrderedMap<a, b>> => {
+    let newOrderedMap = OrderedMap<a, b>();
+    for (const [key, valueP] of orderedMap.toArray()) {
+        try {
+            newOrderedMap = newOrderedMap.set(key, await valueP);
+        } catch (error) {
+            console.log(error);
+            newOrderedMap = newOrderedMap.set(key, defaultValue);
+        }
+    }
+    return newOrderedMap;
+};
+
+const sumUpFeeMap = (
+    feesEarned: OrderedMap<Token | OldToken, BigNumber>,
     tokenPrices: TokenPrices,
-): Promise<BigNumber> => {
+): BigNumber => {
 
     let totalEth = new BigNumber(0);
 
@@ -152,17 +169,63 @@ const sumUpFees = async (
         totalEth = totalEth.plus(inEth);
     });
 
-    OldTokenDetails.map((tokenDetails, token) => {
-        const price = tokenPrices.get(token, undefined);
-        const decimals = tokenDetails ? new BigNumber(tokenDetails.decimals.toString()).toNumber() : 0;
-        const inEth = oldFeesEarned.get(token, new BigNumber(0))
-            .div(Math.pow(10, decimals))
-            .multipliedBy(price ? price.get(Currency.ETH, 0) : 0);
-        totalEth = totalEth.plus(inEth);
-    });
-
     // Convert to wei
     return totalEth.multipliedBy(new BigNumber(10).pow(18));
+};
+
+const sumUpFees = (
+    feesEarned: OrderedMap<Token, BigNumber>,
+    oldFeesEarned: OrderedMap<OldToken, BigNumber>,
+    tokenPrices: TokenPrices,
+): BigNumber => {
+    return sumUpFeeMap(feesEarned, tokenPrices).plus(sumUpFeeMap(oldFeesEarned, tokenPrices));
+};
+
+const updateCycleAndPendingRewards = (
+    web3: Web3,
+    tokenPrices: TokenPrices | null,
+) => async (dispatch: Dispatch) => {
+    const darknodePayment: DarknodePaymentWeb3 = new (web3.eth.Contract)(
+        contracts.DarknodePayment.ABI,
+        contracts.DarknodePayment.address,
+    );
+
+    const currentCycle = (await darknodePayment.methods.currentCycle().call()).toString();
+    const previousCycle = (await darknodePayment.methods.previousCycle().call()).toString();
+
+    const previous = await safePromiseAllMap(
+        NewTokenDetails.map(async (tokenDetails, token) =>
+            new BigNumber((await darknodePayment.methods.previousCycleRewardShare(tokenDetails.address).call()).toString())
+        ).toOrderedMap(),
+        new BigNumber(0),
+    );
+
+    const currentShareCount = new BigNumber((await darknodePayment.methods.shareCount().call()).toString());
+    const current = await safePromiseAllMap(
+        NewTokenDetails.map(async (tokenDetails, token) =>
+            new BigNumber((await darknodePayment.methods.currentCycleRewardPool(tokenDetails.address).call()).toString()).div(currentShareCount)
+        ).toOrderedMap(),
+        new BigNumber(0),
+    );
+
+    const pendingRewards = OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber>>()
+        .set(previousCycle, previous)
+        .set(currentCycle, current)
+        ;
+
+    dispatch(updateCurrentCycle(currentCycle));
+    dispatch(updatePreviousCycle(previousCycle));
+    dispatch(updatePendingRewards(pendingRewards));
+
+    if (tokenPrices) {
+        const previousTotal = sumUpFeeMap(previous, tokenPrices);
+        const currentTotal = sumUpFeeMap(current, tokenPrices);
+        const pendingTotalInEth = OrderedMap<string /* cycle */, BigNumber>()
+            .set(previousCycle, previousTotal)
+            .set(currentCycle, currentTotal)
+            ;
+        dispatch(updatePendingTotalInEth(pendingTotalInEth));
+    }
 };
 
 const getDarknodeOperator = async (web3: Web3, darknodeID: string): Promise<string> => {
@@ -264,7 +327,7 @@ export const updateDarknodeStatistics = (
     // Get registration status
     const registrationStatus = await getDarknodeStatus(web3, darknodeID);
 
-    const darknodeDetails = new DarknodeDetails({
+    let darknodeDetails = new DarknodeDetails({
         ID: darknodeID,
         multiAddress: "" as string,
         publicKey,
@@ -276,13 +339,61 @@ export const updateDarknodeStatistics = (
         averageGasUsage: 0,
         lastTopUp: null,
         expectedExhaustion: null,
-
         peers: 0,
         registrationStatus,
         operator,
     });
 
     dispatch(setDarknodeDetails({ darknodeDetails }));
+
+    const darknodePayment: DarknodePaymentWeb3 = new (web3.eth.Contract)(
+        contracts.DarknodePayment.ABI,
+        contracts.DarknodePayment.address,
+    );
+
+    const darknodePaymentStore: DarknodePaymentStoreWeb3 = new (web3.eth.Contract)(
+        contracts.DarknodePaymentStore.ABI,
+        contracts.DarknodePaymentStore.address,
+    );
+
+    const currentCycle = (await darknodePayment.methods.currentCycle().call()).toString();
+    const previousCycle = (await darknodePayment.methods.previousCycle().call()).toString();
+    const blacklisted = await darknodePaymentStore.methods.isBlacklisted(darknodeID).call();
+    let currentStatus;
+    let previousStatus;
+    if (blacklisted) {
+        currentStatus = DarknodeFeeStatus.BLACKLISTED;
+        previousStatus = DarknodeFeeStatus.BLACKLISTED;
+    } else {
+        const whitelistedTime = new BigNumber((await darknodePaymentStore.methods.darknodeWhitelist(darknodeID).call()).toString());
+        if (whitelistedTime.isZero()) {
+            currentStatus = DarknodeFeeStatus.NOT_WHITELISTED;
+            previousStatus = DarknodeFeeStatus.NOT_WHITELISTED;
+        } else {
+            currentStatus = DarknodeFeeStatus.NOT_CLAIMED;
+            const cycleStartTime = new BigNumber((await darknodePayment.methods.cycleStartTime().call()).toString());
+            if (whitelistedTime.gte(cycleStartTime)) {
+                previousStatus = DarknodeFeeStatus.NOT_WHITELISTED;
+            } else {
+                const claimed = await darknodePayment.methods.rewardClaimed(darknodeID, previousCycle).call();
+                if (claimed) {
+                    previousStatus = DarknodeFeeStatus.CLAIMED;
+                } else {
+                    previousStatus = DarknodeFeeStatus.NOT_CLAIMED;
+                }
+            }
+        }
+    }
+
+    darknodeDetails = darknodeDetails.set(
+        "cycleStatus",
+        OrderedMap<string, DarknodeFeeStatus>()
+            .set(currentCycle, currentStatus)
+            .set(previousCycle, previousStatus)
+    );
+
+    dispatch(setDarknodeDetails({ darknodeDetails }));
+
 };
 
 export const updateOperatorStatistics = (
@@ -291,6 +402,7 @@ export const updateOperatorStatistics = (
     tokenPrices: TokenPrices | null,
     previousDarknodeList: List<string> | null,
 ) => async (dispatch: Dispatch) => {
+    await updateCycleAndPendingRewards(web3, tokenPrices)(dispatch);
 
     let darknodeList = previousDarknodeList || List<string>();
 

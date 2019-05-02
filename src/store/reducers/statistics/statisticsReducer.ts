@@ -15,11 +15,23 @@ export const statisticsReducer = (
     action: NetworkAction | OperatorActions
 ): StatisticsData => {
     switch (action.type) {
+        case getType(networkActions.updateCurrentCycle):
+            return state.set("currentCycle", action.payload);
+
+        case getType(networkActions.updatePreviousCycle):
+            return state.set("previousCycle", action.payload);
+
+        case getType(networkActions.updatePendingRewards):
+            return state.set("pendingRewards", action.payload);
+
+        case getType(networkActions.updatePendingTotalInEth):
+            return state.set("pendingTotalInEth", action.payload);
+
         case getType(networkActions.storeMinimumBond):
-            return state.set("minimumBond", action.payload.minimumBond);
+            return state.set("minimumBond", action.payload);
 
         case getType(networkActions.storeTokenPrices):
-            return state.set("tokenPrices", action.payload.tokenPrices);
+            return state.set("tokenPrices", action.payload);
 
         case getType(operatorActions.addRegisteringDarknode):
             return state.set("darknodeRegisteringList", state.darknodeRegisteringList.set(
