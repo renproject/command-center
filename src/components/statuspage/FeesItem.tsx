@@ -17,14 +17,13 @@ class FeesItemClass extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.state = {
-            disabled: (new BigNumber(this.props.amount)).lte(0),
             loading: false,
         };
     }
 
     public render = (): JSX.Element => {
         const { loading } = this.state;
-        const disabled = this.state.disabled || !this.props.disabled;
+        const disabled = (new BigNumber(this.props.amount)).lte(0) || !this.props.disabled;
         return (
             <button
                 className="withdraw-fees"
@@ -39,7 +38,7 @@ class FeesItemClass extends React.Component<Props, State> {
     private readonly handleWithdraw = async (): Promise<void> => {
         const { store, darknodeID, token } = this.props;
         const { web3, tokenPrices, address } = store;
-        this.setState({ disabled: true, loading: true });
+        this.setState({ loading: true });
 
         if (address) {
             try {
@@ -83,7 +82,6 @@ interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<
 }
 
 interface State {
-    disabled: boolean;
     loading: boolean;
 }
 

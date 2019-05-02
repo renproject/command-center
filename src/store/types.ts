@@ -100,6 +100,11 @@ export class StatisticsData extends Record({
     transactions: Map<string, string>(),
 
     withdrawAddresses: Map<Token, List<string>>(),
+
+    currentCycle: "",
+    previousCycle: "",
+    pendingRewards: OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber>>(),
+    pendingTotalInEth: OrderedMap<string /* cycle */, BigNumber>(),
 }) implements Serializable<StatisticsData> {
     public serialize(): string {
         const js = this.toJS();
@@ -131,6 +136,13 @@ export class StatisticsData extends Record({
     }
 }
 
+export enum DarknodeFeeStatus {
+    BLACKLISTED = "BLACKLISTED",
+    CLAIMED = "CLAIMED",
+    NOT_CLAIMED = "NOT_CLAIMED",
+    NOT_WHITELISTED = "NOT_WHITELISTED",
+}
+
 export class DarknodeDetails extends Record({
     ID: "",
     multiAddress: "",
@@ -139,6 +151,8 @@ export class DarknodeDetails extends Record({
     feesEarned: OrderedMap<Token, BigNumber>(),
     oldFeesEarned: OrderedMap<OldToken, BigNumber>(),
     feesEarnedTotalEth: new BigNumber(0),
+
+    cycleStatus: OrderedMap<string, DarknodeFeeStatus>(),
 
     averageGasUsage: 0,
     lastTopUp: null,

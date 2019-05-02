@@ -72,7 +72,6 @@ class TokenBalanceClass extends React.Component<Props, State> {
                 defaultDigits = 2;
         }
         defaultDigits = digits === undefined ? defaultDigits : digits;
-
         return <>{amount.multipliedBy(price).toFixed(defaultDigits)}</>;
     }
 }
@@ -94,7 +93,7 @@ interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<
     token: Token | OldToken;
     amount: string | BigNumber;
     convertTo?: Currency;
-    digits?: number;
+    digits?: number; // Always shows this many digits (e.g. for 3 d.p.: 0.100, 0.111)
 }
 
 interface State {

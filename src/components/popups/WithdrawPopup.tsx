@@ -85,7 +85,7 @@ class WithdrawPopupClass extends React.Component<Props, State> {
         switch (stage) {
             case Stage.Pending:
                 return <>
-                    <button className="sign--button" onClick={onCancel}>Submit</button>
+                    <button className="sign--button" onClick={onCancel}>Cancel</button>
                     <button className="sign--button" disabled={selectedAddress === null} onClick={this.callWithdraw}>Submit</button>
                 </>;
             case Stage.Withdrawing:

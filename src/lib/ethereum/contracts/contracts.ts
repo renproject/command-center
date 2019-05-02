@@ -24,6 +24,7 @@ const getContractsForNetwork = (network: string | undefined) => {
     let darknodeRewardVault;
     let dnrDeployedInBlock;
     let darknodePayment;
+    let darknodePaymentStore;
     switch (network) {
         case MAINNET:
             path = "mainnet";
@@ -34,6 +35,7 @@ const getContractsForNetwork = (network: string | undefined) => {
 
             darknodeRewardVault = "0xa96450d3386ece22db20b0ac96ef5684b6d95d53";
             darknodePayment = "";
+            darknodePaymentStore = "";
             throw new Error("mainnet unsupported");
 
             break;
@@ -46,7 +48,8 @@ const getContractsForNetwork = (network: string | undefined) => {
             dnrDeployedInBlock = "0xA35A7A"; // in hex
 
             darknodeRewardVault = "0xc08Dfa565EdB7216c3b23bBf0848B43fE9a49F0E";
-            darknodePayment = "0x11F0A63d61344a00103Dd7EC9bF6d8c548CEB0A4";
+            darknodePayment = "0x89693dd95c6149B7e67df8c5FCeEF0af91d6E29b";
+            darknodePaymentStore = "0xA9411C3AD1fBE168fd119A3B32fB481a0b9877A9";
     }
 
     const DarknodeRegistry: Contract = {
@@ -68,13 +71,19 @@ const getContractsForNetwork = (network: string | undefined) => {
         address: darknodePayment,
     };
 
+    const DarknodePaymentStore: Contract = {
+        // tslint:disable-next-line: non-literal-require
+        ABI: require(`./ABIs/${path}/DarknodePaymentStore.json`),
+        address: darknodePaymentStore,
+    };
+
     const WarpGateToken: Contract = {
         // tslint:disable-next-line: non-literal-require
         ABI: require(`./ABIs/${path}/WarpGateToken.json`),
         address: "",
     };
 
-    return { ERC20, DarknodeRegistry, DarknodePayment, DarknodeRewardVault, WarpGateToken };
+    return { ERC20, DarknodeRegistry, DarknodePayment, DarknodeRewardVault, WarpGateToken, DarknodePaymentStore };
 };
 
 export const contracts = getContractsForNetwork(NETWORK);
