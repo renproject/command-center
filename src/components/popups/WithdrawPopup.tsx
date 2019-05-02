@@ -8,6 +8,8 @@ import { Token } from "../../lib/ethereum/tokens";
 import { addToWithdrawAddresses } from "../../store/actions/statistics/operatorActions";
 import { ApplicationData } from "../../store/types";
 import { Loading } from "../Loading";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
 enum Stage {
     Pending,
@@ -36,21 +38,22 @@ class WithdrawPopupClass extends React.Component<Props, State> {
 
         return <div className="popup withdraw">
             <h2>Select withdraw address</h2>
-            <ul className="withdraw--addresses">
+            <div className="withdraw--addresses">
                 {withdrawAddresses.get(token, List<string>()).map((withdrawAddress: string) => {
-                    const selectAddress = () => {
-                        this.setState({ selectedAddress: withdrawAddress });
-                    };
-                    return <li
+                    return <button
                         role="button"
-                        onClick={selectAddress}
+                        name="withdrawAddress"
+                        onClick={this.selectAddress}
                         key={withdrawAddress}
                         className={`monospace withdraw--address ${selectedAddress === withdrawAddress ? `withdraw--selected` : ""}`}
                     >
                         {withdrawAddress}
-                    </li>;
+                        <button onClick={this.removeAddress}>
+                            <FontAwesomeIcon icon={faTimes} pull="right" className="withdraw--address--remove" />
+                        </button>
+                    </button>;
                 }).toArray()}
-            </ul>
+            </div>
             <form onSubmit={this.addNewAddress}>
                 <input
                     type="text"
@@ -73,9 +76,21 @@ class WithdrawPopupClass extends React.Component<Props, State> {
         }
     }
 
+    private readonly removeAddress = (event: React.FormEvent<HTMLButtonElement>): void => {
+        event.preventDefault();
+        const element = (event.target as HTMLButtonElement);
+        // this.setState({ selectedAddress: element.name });
+    };
+
+    private readonly selectAddress = (event: React.FormEvent<HTMLButtonElement>): void => {
+        const element = (event.target as HTMLButtonElement);
+        console.log(element.name);
+        this.setState({ selectedAddress: element.name });
+    };
+
     private readonly handleInput = (event: React.FormEvent<HTMLInputElement>): void => {
         const element = (event.target as HTMLInputElement);
-        this.setState((current: State) => ({ ...current, [element.name]: element.value }));
+        this.setState((current: State) => ({ ...current, selectedAddress: null, [element.name]: element.value, }));
     }
 
     private readonly renderButtons = () => {

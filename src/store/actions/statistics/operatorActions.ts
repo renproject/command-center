@@ -117,13 +117,13 @@ const getBalances = async (web3: Web3, darknodeID: string): Promise<OrderedMap<T
 
     const balances = NewTokenDetails.map(async (tokenDetails, token) => {
         const balance1 = new BigNumber((await contract.methods.darknodeBalances(darknodeID, tokenDetails.address).call()).toString());
-        const balance2 = tokenDetails.wrapped ? await new (web3.eth.Contract)(
-            contracts.WarpGateToken.ABI,
-            tokenDetails.address,
-        ).methods.balanceOf(address).call() : new BigNumber(0);
+        // const balance2 = tokenDetails.wrapped ? await new (web3.eth.Contract)(
+        //     contracts.WarpGateToken.ABI,
+        //     tokenDetails.address,
+        // ).methods.balanceOf(address).call() : new BigNumber(0);
 
         return {
-            balance: balance1.plus(balance2),
+            balance: balance1, // .plus(balance2),
             token,
         };
     }).valueSeq();
@@ -146,7 +146,7 @@ const safePromiseAllMap = async <a, b>(orderedMap: OrderedMap<a, Promise<b>>, de
         try {
             newOrderedMap = newOrderedMap.set(key, await valueP);
         } catch (error) {
-            console.log(error);
+            console.error(error);
             newOrderedMap = newOrderedMap.set(key, defaultValue);
         }
     }
@@ -327,24 +327,7 @@ export const updateDarknodeStatistics = (
     // Get registration status
     const registrationStatus = await getDarknodeStatus(web3, darknodeID);
 
-    let darknodeDetails = new DarknodeDetails({
-        ID: darknodeID,
-        multiAddress: "" as string,
-        publicKey,
-        ethBalance,
-        feesEarned,
-        oldFeesEarned,
-        feesEarnedTotalEth,
-
-        averageGasUsage: 0,
-        lastTopUp: null,
-        expectedExhaustion: null,
-        peers: 0,
-        registrationStatus,
-        operator,
-    });
-
-    dispatch(setDarknodeDetails({ darknodeDetails }));
+    // Cycle status ////////////////////////////////////////////////////////////
 
     const darknodePayment: DarknodePaymentWeb3 = new (web3.eth.Contract)(
         contracts.DarknodePayment.ABI,
@@ -385,12 +368,28 @@ export const updateDarknodeStatistics = (
         }
     }
 
-    darknodeDetails = darknodeDetails.set(
-        "cycleStatus",
-        OrderedMap<string, DarknodeFeeStatus>()
+    // Store details ///////////////////////////////////////////////////////////
+
+    let darknodeDetails = new DarknodeDetails({
+        ID: darknodeID,
+        multiAddress: "" as string,
+        publicKey,
+        ethBalance,
+        feesEarned,
+        oldFeesEarned,
+        feesEarnedTotalEth,
+
+        cycleStatus: OrderedMap<string, DarknodeFeeStatus>()
             .set(currentCycle, currentStatus)
-            .set(previousCycle, previousStatus)
-    );
+            .set(previousCycle, previousStatus),
+
+        averageGasUsage: 0,
+        lastTopUp: null,
+        expectedExhaustion: null,
+        peers: 0,
+        registrationStatus,
+        operator,
+    });
 
     dispatch(setDarknodeDetails({ darknodeDetails }));
 

@@ -120,11 +120,16 @@
 
 .withdraw--address {
     cursor: pointer;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-flow: row;
     padding: 10px;
     border: 1px solid #eee;
     list-style-type: none;
     margin: 0;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
 }
 
 .newAddress {
