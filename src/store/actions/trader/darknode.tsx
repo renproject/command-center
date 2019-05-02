@@ -9,6 +9,7 @@ import { Contract } from "web3-eth-contract";
 
 import { WithdrawPopup } from "../../../components/popups/WithdrawPopup";
 import { _noCapture_ } from "../../../lib/errors";
+import { DarknodePaymentWeb3 } from "../../../lib/ethereum/contracts/bindings/darknodePayment";
 import { DarknodeRegistryWeb3 } from "../../../lib/ethereum/contracts/bindings/darknodeRegistry";
 import { contracts } from "../../../lib/ethereum/contracts/contracts";
 import { AllTokenDetails, OldToken, RENAddress, Token } from "../../../lib/ethereum/tokens";
@@ -36,7 +37,9 @@ const burn = async (web3: Web3, trader: string, currency: Token, to: string) => 
         currency === Token.ZEC ? zecAddressToHex(to) :
             to;
 
-    const amount = await contract.methods.balanceOf(trader);
+    const amount = new BigNumber((await contract.methods.balanceOf(trader)).toString());
+
+    console.log(`Burning: ${amount.toString()} ${currency}`);
 
     await contract.methods.burn(toHex, amount /* new BigNumber(amount).multipliedBy(10 ** 8).toFixed() */).send({ from: trader });
     console.log("Returned from burn call.");
@@ -44,19 +47,19 @@ const burn = async (web3: Web3, trader: string, currency: Token, to: string) => 
 
 export const withdrawReward = (web3: Web3, trader: string, darknodeID: string, token: Token | OldToken) => async (dispatch: Dispatch) => new Promise(async (resolve, reject) => {
 
-    const details = AllTokenDetails.get(token);
-    if (details === undefined) {
+    const tokenDetails = AllTokenDetails.get(token);
+    if (tokenDetails === undefined) {
         reject(new Error("Unknown token"));
         return;
     }
 
-    if (details.old) {
+    if (tokenDetails.old) {
         try {
             const contract = new (web3.eth.Contract)(
                 contracts.DarknodeRewardVault.ABI,
                 contracts.DarknodeRewardVault.address
             );
-            await contract.methods.withdraw(darknodeID, details.address).send({ from: trader });
+            await contract.methods.withdraw(darknodeID, tokenDetails.address).send({ from: trader });
         } catch (error) {
             reject(error);
             return;
@@ -65,21 +68,25 @@ export const withdrawReward = (web3: Web3, trader: string, darknodeID: string, t
         resolve();
         return;
     } else {
-        const withdraw = async (withdrawAddress: string) => {
+        const withdraw = async (withdrawAddress?: string) => {
 
-            // const darknodePayment: DarknodePaymentWeb3 = new (web3.eth.Contract)(
-            //     contracts.DarknodePayment.ABI,
-            //     contracts.DarknodePayment.address
-            // );
-            // const tokenDetails = TokenDetails.get(token);
+            const darknodePayment: DarknodePaymentWeb3 = new (web3.eth.Contract)(
+                contracts.DarknodePayment.ABI,
+                contracts.DarknodePayment.address
+            );
 
-            // if (!tokenDetails) {
-            //     throw new Error("Unknown token");
-            // }
+            if (!tokenDetails) {
+                throw new Error("Unknown token");
+            }
 
-            // await darknodePayment.methods.withdraw(darknodeID, tokenDetails.address).send({ from: trader });
+            await darknodePayment.methods.withdraw(darknodeID, tokenDetails.address).send({ from: trader });
 
-            await burn(web3, trader, token as Token, withdrawAddress);
+            if (tokenDetails.wrapped) {
+                if (!withdrawAddress) {
+                    throw new Error("Invalid withdraw address");
+                }
+                await burn(web3, trader, token as Token, withdrawAddress);
+            }
         };
         const onCancel = () => {
             dispatch(clearPopup());
@@ -89,18 +96,26 @@ export const withdrawReward = (web3: Web3, trader: string, darknodeID: string, t
             dispatch(clearPopup());
             resolve();
         };
-        dispatch(setPopup(
-            {
-                popup: <WithdrawPopup
-                    token={token as Token}
-                    withdraw={withdraw}
-                    onDone={onDone}
-                    onCancel={onCancel}
-                />,
-                onCancel,
-                overlay: true,
-            },
-        ));
+        if (tokenDetails.wrapped) {
+            dispatch(setPopup(
+                {
+                    popup: <WithdrawPopup
+                        token={token as Token}
+                        withdraw={withdraw}
+                        onDone={onDone}
+                        onCancel={onCancel}
+                    />,
+                    onCancel,
+                    overlay: true,
+                },
+            ));
+        } else {
+            try {
+                await withdraw();
+            } catch (error) {
+                onCancel();
+            }
+        }
     }
 });
 

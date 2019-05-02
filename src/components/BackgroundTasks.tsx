@@ -100,7 +100,6 @@ class BackgroundTasksClass extends React.Component<Props, State> {
 
     // Update token prices every 60 seconds
     private readonly callUpdatePrices = async (props?: Props): Promise<void> => {
-        console.log("callUpdatePrices");
         props = props || this.props;
 
         try {
@@ -117,7 +116,6 @@ class BackgroundTasksClass extends React.Component<Props, State> {
 
     // See if the user has logged out every 5 seconds
     private readonly callLookForLogout = async (props?: Props): Promise<void> => {
-        console.log("callLookForLogout");
         props = props || this.props;
 
         const { sdk, address, web3 } = props.store;
@@ -137,7 +135,6 @@ class BackgroundTasksClass extends React.Component<Props, State> {
 
     // Update network statistics every 3600 seconds
     private readonly callUpdateNetworkStatistics = async (props?: Props): Promise<void> => {
-        console.log("callUpdateNetworkStatistics");
         props = props || this.props;
 
         const { web3 } = props.store;
@@ -160,7 +157,6 @@ class BackgroundTasksClass extends React.Component<Props, State> {
 
     // Update operator statistics every 120 seconds
     private readonly callUpdateOperatorStatistics = async (props?: Props): Promise<void> => {
-        console.log("callUpdateOperatorStatistics");
         props = props || this.props;
 
         const { web3, address, tokenPrices, darknodeList, darknodeRegisteringList } = props.store;
@@ -190,7 +186,6 @@ class BackgroundTasksClass extends React.Component<Props, State> {
 
     // Update selected darknode statistics every 30 seconds
     private readonly callUpdateSelectedDarknode = async (props?: Props): Promise<void> => {
-        console.log("callUpdateSelectedDarknode");
         props = props || this.props;
 
         const { match: { params } } = props;
