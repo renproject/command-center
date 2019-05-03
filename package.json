@@ -41,6 +41,7 @@
     "redux-thunk": "^2.3.0",
     "typesafe-actions": "^4.1.2",
     "typescript": "^3.4.5",
+    "wallet-address-validator": "^0.2.4",
     "web3": "^1.0.0-beta.52",
     "web3-core": "^1.0.0-beta.52",
     "web3-eth-contract": "^1.0.0-beta.52",

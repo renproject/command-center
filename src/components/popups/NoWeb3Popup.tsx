@@ -26,8 +26,8 @@ export class NoWeb3PopupClass extends React.Component<Props, State> {
                     src={getWeb3BrowserIcon(web3BrowserName)}
                 />
                 <h2>{message || Language.wallet.mustConnect}</h2>
-                <button className="styled-button styled-button--light" onClick={this.props.onCancel}>Not now</button>
-                <button className="styled-button" disabled={disabled} onClick={this.props.onConnect}>Retry</button>
+                <button className="button button--white" onClick={this.props.onCancel}>Not now</button>
+                <button className="button" disabled={disabled} onClick={this.props.onConnect}>Retry</button>
             </div>
         );
     }

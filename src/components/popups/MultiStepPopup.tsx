@@ -69,9 +69,9 @@ class MultiStepPopupClass extends React.Component<Props, State> {
                     }
                 </div>
                 <div className="multi-step--buttons" >
-                    <button className="styled-button styled-button--light" onClick={this.onCancel}>Cancel</button>
+                    <button className="button button--white" onClick={this.onCancel}>Cancel</button>
                     {!ignoreWarning ?
-                        <button className={`styled-button ${warning ? "styled-button--red" : ""}`} onClick={this.run}>
+                        <button className={`button ${warning ? "button--red" : ""}`} onClick={this.run}>
                             Confirm
                         </button> :
                         null
@@ -120,31 +120,31 @@ class MultiStepPopupClass extends React.Component<Props, State> {
             <div className="multi-step--buttons" >
                 {running ?
                     // Show spinning icon while running through steps
-                    <button className="styled-button styled-button--light" disabled={true}><Loading /></button> :
+                    <button className="button button--white" disabled={true}><Loading /></button> :
                     complete ?
                         // Get user to click Close instead of automatically closing popup
                         <>
-                            <button className="styled-button" onClick={this.onDone}>
+                            <button className="button" onClick={this.onDone}>
                                 Close
                             </button>
                         </> :
                         error ?
                             // Let user cancel or retry after error
                             <>
-                                <button className="styled-button styled-button--light" onClick={this.onCancel}>
+                                <button className="button button--white" onClick={this.onCancel}>
                                     Cancel
                                 </button>
-                                <button className="styled-button styled-button--light" onClick={this.run}>
+                                <button className="button button--white" onClick={this.run}>
                                     Retry
                                 </button>
                             </> :
                             // Ask user to confirm
                             <>
-                                <button className="styled-button styled-button--light" onClick={this.onCancel}>
+                                <button className="button button--white" onClick={this.onCancel}>
                                     Cancel
                                 </button>
                                 <button
-                                    className={`styled-button ${warning ? "styled-button--red" : ""}`}
+                                    className={`button ${warning ? "button--red" : ""}`}
                                     onClick={this.run}
                                 >
                                     Confirm

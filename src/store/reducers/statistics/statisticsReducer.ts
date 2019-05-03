@@ -105,11 +105,28 @@ export const statisticsReducer = (
             return state.set("secondsPerBlock", action.payload.secondsPerBlock);
 
         case getType(operatorActions.addToWithdrawAddresses):
+            const foundList = state.withdrawAddresses.get(action.payload.token, List());
+            if (foundList.contains(action.payload.address)) {
+                return state;
+            }
             return state.set(
                 "withdrawAddresses",
                 state.withdrawAddresses.set(
                     action.payload.token,
-                    state.withdrawAddresses.get(action.payload.token, List()).push(action.payload.address),
+                    foundList.push(action.payload.address),
+                ),
+            );
+
+        case getType(operatorActions.removeFromWithdrawAddresses):
+            const list = state.withdrawAddresses.get(action.payload.token);
+            if (!list) { return state; }
+            const foundIndex = list.findIndex((address) => address === action.payload.address);
+            if (foundIndex === -1) { return state; }
+            return state.set(
+                "withdrawAddresses",
+                state.withdrawAddresses.set(
+                    action.payload.token,
+                    list.remove(foundIndex),
                 ),
             );
 

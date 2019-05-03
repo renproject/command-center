@@ -42,6 +42,7 @@ export const storeQuoteCurrency = createStandardAction("storeQuoteCurrency")<{ q
 export const storeSecondsPerBlock = createStandardAction("storeSecondsPerBlock")<{ secondsPerBlock: number }>();
 
 export const addToWithdrawAddresses = createStandardAction("addToWithdrawAddresses")<{ token: Token, address: string }>();
+export const removeFromWithdrawAddresses = createStandardAction("removeFromWithdrawAddresses")<{ token: Token, address: string }>();
 
 export const setDarknodeDetails = createStandardAction("setDarknodeDetails")<{
     darknodeDetails: DarknodeDetails;
@@ -113,7 +114,7 @@ const getBalances = async (web3: Web3, darknodeID: string): Promise<OrderedMap<T
 
     let feesEarned = OrderedMap<Token, BigNumber>();
 
-    const address = (await web3.eth.getAccounts())[0];
+    // const address = (await web3.eth.getAccounts())[0];
 
     const balances = NewTokenDetails.map(async (tokenDetails, token) => {
         const balance1 = new BigNumber((await contract.methods.darknodeBalances(darknodeID, tokenDetails.address).call()).toString());
@@ -370,7 +371,7 @@ export const updateDarknodeStatistics = (
 
     // Store details ///////////////////////////////////////////////////////////
 
-    let darknodeDetails = new DarknodeDetails({
+    const darknodeDetails = new DarknodeDetails({
         ID: darknodeID,
         multiAddress: "" as string,
         publicKey,

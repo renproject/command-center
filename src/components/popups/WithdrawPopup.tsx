@@ -1,15 +1,15 @@
 import * as React from "react";
 
+import { faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { List } from "immutable";
 import { connect, ConnectedReturnType } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
 import { Token } from "../../lib/ethereum/tokens";
-import { addToWithdrawAddresses } from "../../store/actions/statistics/operatorActions";
+import { addToWithdrawAddresses, removeFromWithdrawAddresses } from "../../store/actions/statistics/operatorActions";
 import { ApplicationData } from "../../store/types";
 import { Loading } from "../Loading";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
 enum Stage {
     Pending,
@@ -18,15 +18,18 @@ enum Stage {
     Error,
 }
 
+const defaultState = {
+    error: null as string | null,
+    stage: Stage.Pending,
+    selectedAddress: null as string | null,
+    newAddress: null as string | null,
+    newAddressValid: false,
+};
+
 class WithdrawPopupClass extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
-        this.state = {
-            error: null,
-            stage: Stage.Pending,
-            selectedAddress: null,
-            newAddress: null,
-        };
+        this.state = defaultState;
     }
 
     // public componentDidMount = async (): Promise<void> => {
@@ -37,33 +40,40 @@ class WithdrawPopupClass extends React.Component<Props, State> {
         const { store: { withdrawAddresses }, token } = this.props;
 
         return <div className="popup withdraw">
-            <h2>Select withdraw address</h2>
+            <h2>Select {token} withdraw address</h2>
             <div className="withdraw--addresses">
                 {withdrawAddresses.get(token, List<string>()).map((withdrawAddress: string) => {
-                    return <button
-                        role="button"
-                        name="withdrawAddress"
-                        onClick={this.selectAddress}
-                        key={withdrawAddress}
-                        className={`monospace withdraw--address ${selectedAddress === withdrawAddress ? `withdraw--selected` : ""}`}
-                    >
-                        {withdrawAddress}
-                        <button onClick={this.removeAddress}>
-                            <FontAwesomeIcon icon={faTimes} pull="right" className="withdraw--address--remove" />
+                    return <div key={withdrawAddress} className={`withdraw--address--outer ${selectedAddress === withdrawAddress ? `withdraw--selected` : ""}`}>
+                        <button
+                            role="button"
+                            name="selectedAddress"
+                            onClick={this.handleInput}
+                            value={withdrawAddress}
+                            className={`monospace withdraw--address`}
+                        >
+                            {withdrawAddress}
                         </button>
-                    </button>;
+                        <button value={withdrawAddress} onClick={this.removeAddress} className="withdraw--address--remove">
+                            <FontAwesomeIcon icon={faTimes} pull="right" />
+                        </button>
+                    </div>;
                 }).toArray()}
             </div>
             <form onSubmit={this.addNewAddress}>
-                <input
-                    type="text"
-                    placeholder="New address"
-                    value={newAddress || ""}
-                    role="textbox"
-                    name="newAddress"
-                    className="newAddress"
-                    onChange={this.handleInput}
-                />
+                <div className="new-address--outer">
+                    <input
+                        type="text"
+                        placeholder="New address"
+                        value={newAddress || ""}
+                        role="textbox"
+                        name="newAddress"
+                        className="newAddress"
+                        onChange={this.handleInput}
+                    />
+                    <button type="submit" className="new-address--plus">
+                        <FontAwesomeIcon icon={faPlus} pull="right" />
+                    </button>
+                </div>
             </form>
             {this.renderButtons()}
         </div>;
@@ -73,23 +83,20 @@ class WithdrawPopupClass extends React.Component<Props, State> {
         e.preventDefault();
         if (this.state.newAddress) {
             this.props.actions.addToWithdrawAddresses({ token: this.props.token, address: this.state.newAddress });
+            this.setState({ selectedAddress: this.state.newAddress, newAddress: null });
         }
     }
 
     private readonly removeAddress = (event: React.FormEvent<HTMLButtonElement>): void => {
-        event.preventDefault();
-        const element = (event.target as HTMLButtonElement);
-        // this.setState({ selectedAddress: element.name });
-    };
+        const element = (event.currentTarget as HTMLButtonElement);
+        if (this.state.selectedAddress === element.value) {
+            this.setState({ selectedAddress: null });
+        }
+        this.props.actions.removeFromWithdrawAddresses({ token: this.props.token, address: element.value });
+    }
 
-    private readonly selectAddress = (event: React.FormEvent<HTMLButtonElement>): void => {
-        const element = (event.target as HTMLButtonElement);
-        console.log(element.name);
-        this.setState({ selectedAddress: element.name });
-    };
-
-    private readonly handleInput = (event: React.FormEvent<HTMLInputElement>): void => {
-        const element = (event.target as HTMLInputElement);
+    private readonly handleInput = (event: React.FormEvent<HTMLInputElement | HTMLButtonElement>): void => {
+        const element = (event.target as (HTMLInputElement | HTMLButtonElement));
         this.setState((current: State) => ({ ...current, selectedAddress: null, [element.name]: element.value, }));
     }
 
@@ -99,24 +106,24 @@ class WithdrawPopupClass extends React.Component<Props, State> {
 
         switch (stage) {
             case Stage.Pending:
-                return <>
-                    <button className="sign--button" onClick={onCancel}>Cancel</button>
-                    <button className="sign--button" disabled={selectedAddress === null} onClick={this.callWithdraw}>Submit</button>
-                </>;
+                return <div className="popup--buttons">
+                    <button className="sign--button button--white" onClick={onCancel}>Cancel</button>
+                    <button className="sign--button button" disabled={selectedAddress === null} onClick={this.callWithdraw}>Submit</button>
+                </div>;
             case Stage.Withdrawing:
-                return <>
+                return <div className="popup--buttons">
                     <Loading />
-                </>;
+                </div>;
             case Stage.Done:
-                return <>
-                    <button className="sign--button" onClick={this.onDone}>Close</button>
-                </>;
+                return <div className="popup--buttons">
+                    <button className="sign--button button" onClick={this.onDone}>Close</button>
+                </div>;
             case Stage.Error:
-                return <>
+                return <div className="popup--buttons">
                     {error ? <p className="red">{error}</p> : null}
-                    <button className="sign--button" onClick={onCancel}>Submit</button>
-                    <button className="sign--button" disabled={selectedAddress === null} onClick={this.callWithdraw}>Retry</button>
-                </>;
+                    <button className="sign--button button--white" onClick={onCancel}>Cancel</button>
+                    <button className="sign--button button--white" disabled={selectedAddress === null} onClick={this.callWithdraw}>Retry</button>
+                </div>;
         }
     }
 
@@ -153,7 +160,8 @@ const mapStateToProps = (state: ApplicationData) => ({
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     actions: bindActionCreators({
-        addToWithdrawAddresses
+        addToWithdrawAddresses,
+        removeFromWithdrawAddresses,
     }, dispatch),
 });
 
@@ -164,11 +172,6 @@ interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<
     onCancel(): void;
 }
 
-interface State {
-    error: string | null;
-    stage: Stage;
-    selectedAddress: null | string;
-    newAddress: string | null;
-}
+type State = typeof defaultState;
 
 export const WithdrawPopup = connect(mapStateToProps, mapDispatchToProps)(WithdrawPopupClass);
