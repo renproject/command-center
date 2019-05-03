@@ -44,7 +44,6 @@ class FeesItemClass extends React.Component<Props, State> {
             try {
                 // tslint:disable-next-line: await-promise
                 await this.props.actions.withdrawReward(web3, address, darknodeID, token);
-                console.log("Afterwards!!!");
             } catch (error) {
                 this.setState({ loading: false });
                 return;
