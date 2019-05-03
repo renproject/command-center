@@ -116,6 +116,8 @@
 .popup--buttons {
     display: flex;
     flex-flow: row;
+    justify-content: center;
+    align-items: center;
 
     button {
         width: 100%;
@@ -151,8 +153,13 @@
     border: none;
 }
 
-.newAddress {
+.new-address {
     width: 100%;
+    background: none;
+
+    &:-internal-autofill-selected {
+        background-color: none !important;
+    }
 }
 
 .withdraw--selected {
@@ -170,12 +177,18 @@
     background: none;
     border: none;
     min-width: initial;
+    padding: 0 10px;
+}
+
+.input--valid {
+    background-color: #ddffdd;
 }
 
 .new-address--outer {
     display: flex;
     flex-flow: row;
     border: 1px solid #aaa;
+    margin-bottom: 10px;
 
     input[type=text] {
         border: none;
@@ -186,6 +199,7 @@
     min-width: initial;
     border: 0;
     padding: 0 10px;
+    background: none;
 }
 
 // Open Order

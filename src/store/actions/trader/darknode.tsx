@@ -14,6 +14,7 @@ import { DarknodeRegistryWeb3 } from "../../../lib/ethereum/contracts/bindings/d
 import { contracts } from "../../../lib/ethereum/contracts/contracts";
 import { AllTokenDetails, OldToken, RENAddress, Token } from "../../../lib/ethereum/tokens";
 import { clearPopup, setPopup } from "../popup/popupActions";
+import { waitForTX } from "../statistics/operatorActions";
 
 export const bridgedToken = (web3: Web3, address: string): Contract => {
     return new web3.eth.Contract(contracts.WarpGateToken.ABI, address);
@@ -24,7 +25,7 @@ export const zZECAddress = "0xd67256552f93b39ac30083b4b679718a061feae6";
 export const btcAddressToHex = (address: string) => `0x${decode58(address).toString("hex")}`;
 export const zecAddressToHex = (address: string) => `0x${decode58(address).toString("hex")}`;
 
-const burn = async (web3: Web3, trader: string, currency: Token, to: string) => {
+const burn = (web3: Web3, trader: string, currency: Token, to: string) => async (dispatch: Dispatch) => {
     const contract = currency === Token.BTC ? bridgedToken(web3, zBTCAddress) :
         currency === Token.ZEC ? bridgedToken(web3, zZECAddress) :
             undefined;
@@ -41,8 +42,9 @@ const burn = async (web3: Web3, trader: string, currency: Token, to: string) => 
 
     console.log(`Burning: ${amount.toString()} ${currency}`);
 
-    await contract.methods.burn(toHex, amount /* new BigNumber(amount).multipliedBy(10 ** 8).toFixed() */).send({ from: trader });
-    console.log("Returned from burn call.");
+    await waitForTX(
+        contract.methods.burn(toHex, amount /* new BigNumber(amount).multipliedBy(10 ** 8).toFixed() */).send({ from: trader })
+    )(dispatch);
 };
 
 export const withdrawReward = (web3: Web3, trader: string, darknodeID: string, token: Token | OldToken) => async (dispatch: Dispatch) => new Promise(async (resolve, reject) => {
@@ -59,14 +61,14 @@ export const withdrawReward = (web3: Web3, trader: string, darknodeID: string, t
                 contracts.DarknodeRewardVault.ABI,
                 contracts.DarknodeRewardVault.address
             );
-            await contract.methods.withdraw(darknodeID, tokenDetails.address).send({ from: trader });
+            await waitForTX(
+                contract.methods.withdraw(darknodeID, tokenDetails.address).send({ from: trader }),
+                resolve,
+            )(dispatch);
         } catch (error) {
             reject(error);
             return;
         }
-
-        resolve();
-        return;
     } else {
         const withdraw = async (withdrawAddress?: string) => {
 
@@ -79,13 +81,16 @@ export const withdrawReward = (web3: Web3, trader: string, darknodeID: string, t
                 throw new Error("Unknown token");
             }
 
-            await darknodePayment.methods.withdraw(darknodeID, tokenDetails.address).send({ from: trader });
+            await waitForTX(
+                darknodePayment.methods.withdraw(darknodeID, tokenDetails.address).send({ from: trader }),
+                resolve,
+            )(dispatch);
 
             if (tokenDetails.wrapped) {
                 if (!withdrawAddress) {
                     throw new Error("Invalid withdraw address");
                 }
-                await burn(web3, trader, token as Token, withdrawAddress);
+                await burn(web3, trader, token as Token, withdrawAddress)(dispatch);
             }
         };
         const onCancel = () => {
@@ -119,7 +124,7 @@ export const withdrawReward = (web3: Web3, trader: string, darknodeID: string, t
     }
 });
 
-export const approveNode = (web3: Web3, trader: string, bond: BigNumber) => async (_dispatch: Dispatch) => {
+export const approveNode = (web3: Web3, trader: string, bond: BigNumber) => async (dispatch: Dispatch) => {
     // tslint:disable-next-line:no-non-null-assertion
     const ercContract = new (web3.eth.Contract)(contracts.ERC20.ABI, RENAddress);
     const ercBalance = new BigNumber(await ercContract.methods.balanceOf(trader).call());
@@ -136,14 +141,9 @@ export const approveNode = (web3: Web3, trader: string, bond: BigNumber) => asyn
         throw _noCapture_(new Error("You have insufficient REN to register a darknode."));
     }
 
-    return new Promise((
-        resolve: (value: string) => void,
-        reject: (reason: Error | string) => void,
-    ) => {
+    return waitForTX(
         ercContract.methods.approve(contracts.DarknodeRegistry.address, bond.toFixed()).send({ from: trader })
-            .on("transactionHash", resolve)
-            .catch(reject);
-    });
+    )(dispatch);
 };
 
 export const registerNode = (
@@ -154,7 +154,7 @@ export const registerNode = (
     bond: BigNumber,
     onCancel: () => void,
     onDone: () => void
-) => async (_dispatch: Dispatch) => {
+) => async (dispatch: Dispatch): Promise<string> => {
 
     const hardCodedGas = 500000;
 
@@ -175,15 +175,18 @@ export const registerNode = (
         contracts.DarknodeRegistry.ABI,
         contracts.DarknodeRegistry.address
     );
-    return new Promise(((
-        resolve: (value: string) => void,
-        reject: (reason: Error | string) => void,
-    ) => {
-        darknodeRegistry.methods.register(darknodeID, publicKey).send({ from: trader, gas })
-            .on("transactionHash", (res: string) => { resolve(res); resolved = true; })
-            .once("confirmation", onDone)
-            .on("error", (error: Error) => { if (resolved) { onCancel(); } reject(error); });
-    }));
+
+    try {
+        const res = await waitForTX(
+            darknodeRegistry.methods.register(darknodeID, publicKey).send({ from: trader, gas }),
+            onDone
+        )(dispatch);
+        resolved = true;
+        return res;
+    } catch (error) {
+        if (resolved) { onCancel(); }
+        throw error;
+    }
 };
 
 export const deregisterNode = (
@@ -192,7 +195,7 @@ export const deregisterNode = (
     darknodeID: string,
     onCancel: () => void,
     onDone: () => void
-) => async (_dispatch: Dispatch) => {
+) => async (dispatch: Dispatch): Promise<string> => {
     // The node has been registered and can be deregistered.
 
     let resolved = false;
@@ -200,15 +203,17 @@ export const deregisterNode = (
         contracts.DarknodeRegistry.ABI,
         contracts.DarknodeRegistry.address
     );
-    return new Promise((
-        resolve: (value: string) => void,
-        reject: (reason: Error | string) => void,
-    ) => {
-        darknodeRegistry.methods.deregister(darknodeID).send({ from: trader })
-            .on("transactionHash", (res: string) => { resolve(res); resolved = true; })
-            .once("confirmation", onDone)
-            .on("error", (error: Error) => { if (resolved) { onCancel(); } reject(error); });
-    });
+    try {
+        const res = await waitForTX(
+            darknodeRegistry.methods.deregister(darknodeID).send({ from: trader }),
+            onDone
+        )(dispatch);
+        resolved = true;
+        return res;
+    } catch (error) {
+        if (resolved) { onCancel(); }
+        throw error;
+    }
 };
 
 export const refundNode = (
@@ -217,7 +222,7 @@ export const refundNode = (
     darknodeID: string,
     onCancel: () => void,
     onDone: () => void
-) => async (_dispatch: Dispatch) => {
+) => async (dispatch: Dispatch): Promise<string> => {
     // The node is awaiting refund.
 
     let resolved = false;
@@ -225,16 +230,18 @@ export const refundNode = (
         contracts.DarknodeRegistry.ABI,
         contracts.DarknodeRegistry.address
     );
-    return new Promise((
-        resolve: (value: string) => void,
-        reject: (reason: Error | string) => void,
-    ) => {
-        darknodeRegistry.methods.refund(darknodeID).send({ from: trader })
-            .on("transactionHash", (res: string) => { resolve(res); resolved = true; })
-            .once("confirmation", onDone)
-            .on("error", (error: Error) => { if (resolved) { onCancel(); } reject(error); });
-    });
 
+    try {
+        const res = await waitForTX(
+            darknodeRegistry.methods.refund(darknodeID).send({ from: trader }),
+            onDone
+        )(dispatch);
+        resolved = true;
+        return res;
+    } catch (error) {
+        if (resolved) { onCancel(); }
+        throw error;
+    }
 };
 
 export const fundNode = (
@@ -244,23 +251,59 @@ export const fundNode = (
     ethAmountStr: string,
     onCancel: () => void,
     onDone: () => void
-) => async (_dispatch: Dispatch): Promise<string> => {
+) => async (dispatch: Dispatch): Promise<string> => {
     // Convert eth to wei
     const ethAmount = new BigNumber(ethAmountStr);
     const weiAmount = ethAmount.times(new BigNumber(10).exponentiatedBy(18)).decimalPlaces(0);
 
     let resolved = false;
-    return new Promise((
-        resolve: (value: string) => void,
-        reject: (reason: Error | string) => void,
-    ) => {
-        web3.eth.sendTransaction({
-            to: darknodeID,
-            value: weiAmount.toFixed(),
-            from: address,
-        })
-            .on("transactionHash", (res: string) => { resolve(res); resolved = true; })
-            .once("confirmation", onDone)
-            .on("error", (error: Error) => { if (resolved) { onCancel(); } reject(error); });
+
+    const call = () => web3.eth.sendTransaction({
+        to: darknodeID,
+        value: weiAmount.toFixed(),
+        from: address,
     });
+
+    try {
+        const res = await waitForTX(
+            call(),
+            onDone
+        )(dispatch);
+        resolved = true;
+        return res;
+    } catch (error) {
+        if (resolved) { onCancel(); }
+        throw error;
+    }
+};
+
+export const claimForNode = (
+    web3: Web3,
+    address: string,
+    darknodeID: string,
+    onCancel: () => void,
+    onDone: () => void
+) => async (dispatch: Dispatch): Promise<string> => {
+    // Convert eth to wei
+
+    const darknodePayment: DarknodePaymentWeb3 = new (web3.eth.Contract)(
+        contracts.DarknodePayment.ABI,
+        contracts.DarknodePayment.address
+    );
+
+    let resolved = false;
+
+    const call = () => darknodePayment.methods.claim(darknodeID).send({ from: address });
+
+    try {
+        const res = await waitForTX(
+            call(),
+            onDone
+        )(dispatch);
+        resolved = true;
+        return res;
+    } catch (error) {
+        if (resolved) { onCancel(); }
+        throw error;
+    }
 };

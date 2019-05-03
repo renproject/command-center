@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { List } from "immutable";
 import { connect, ConnectedReturnType } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
+import { validate } from "wallet-address-validator";
 
 import { Token } from "../../lib/ethereum/tokens";
 import { addToWithdrawAddresses, removeFromWithdrawAddresses } from "../../store/actions/statistics/operatorActions";
@@ -36,7 +37,7 @@ class WithdrawPopupClass extends React.Component<Props, State> {
     // }
 
     public render = (): JSX.Element => {
-        const { selectedAddress, newAddress } = this.state;
+        const { selectedAddress, newAddress, newAddressValid } = this.state;
         const { store: { withdrawAddresses }, token } = this.props;
 
         return <div className="popup withdraw">
@@ -60,15 +61,15 @@ class WithdrawPopupClass extends React.Component<Props, State> {
                 }).toArray()}
             </div>
             <form onSubmit={this.addNewAddress}>
-                <div className="new-address--outer">
+                <div className={`new-address--outer ${newAddressValid ? "input--valid" : ""}`}>
                     <input
                         type="text"
                         placeholder="New address"
                         value={newAddress || ""}
                         role="textbox"
                         name="newAddress"
-                        className="newAddress"
-                        onChange={this.handleInput}
+                        className="new-address"
+                        onChange={this.handleAddressInput}
                     />
                     <button type="submit" className="new-address--plus">
                         <FontAwesomeIcon icon={faPlus} pull="right" />
@@ -83,7 +84,7 @@ class WithdrawPopupClass extends React.Component<Props, State> {
         e.preventDefault();
         if (this.state.newAddress) {
             this.props.actions.addToWithdrawAddresses({ token: this.props.token, address: this.state.newAddress });
-            this.setState({ selectedAddress: this.state.newAddress, newAddress: null });
+            this.setState({ selectedAddress: this.state.newAddress, newAddress: null, newAddressValid: false });
         }
     }
 
@@ -95,9 +96,16 @@ class WithdrawPopupClass extends React.Component<Props, State> {
         this.props.actions.removeFromWithdrawAddresses({ token: this.props.token, address: element.value });
     }
 
-    private readonly handleInput = (event: React.FormEvent<HTMLInputElement | HTMLButtonElement>): void => {
+    private readonly handleInput = (event: React.FormEvent<HTMLInputElement | HTMLButtonElement>): string => {
         const element = (event.target as (HTMLInputElement | HTMLButtonElement));
         this.setState((current: State) => ({ ...current, selectedAddress: null, [element.name]: element.value, }));
+        return element.value;
+    }
+
+    private readonly handleAddressInput = (event: React.FormEvent<HTMLInputElement | HTMLButtonElement>) => {
+        const address = this.handleInput(event);
+        const newAddressValid = validate(address, this.props.token, "prod") || validate(address, this.props.token, "testnet");
+        this.setState({ newAddressValid });
     }
 
     private readonly renderButtons = () => {
@@ -119,11 +127,13 @@ class WithdrawPopupClass extends React.Component<Props, State> {
                     <button className="sign--button button" onClick={this.onDone}>Close</button>
                 </div>;
             case Stage.Error:
-                return <div className="popup--buttons">
+                return <>
                     {error ? <p className="red">{error}</p> : null}
-                    <button className="sign--button button--white" onClick={onCancel}>Cancel</button>
-                    <button className="sign--button button--white" disabled={selectedAddress === null} onClick={this.callWithdraw}>Retry</button>
-                </div>;
+                    <div className="popup--buttons">
+                        <button className="sign--button button--white" onClick={onCancel}>Cancel</button>
+                        <button className="sign--button button--white" disabled={selectedAddress === null} onClick={this.callWithdraw}>Retry</button>
+                    </div>
+                </>;
         }
     }
 

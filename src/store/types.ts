@@ -4,6 +4,7 @@ import RenExSDK from "@renex/renex";
 import BigNumber from "bignumber.js";
 
 import { List, Map, OrderedMap } from "immutable";
+import { PromiEvent } from "web3-core";
 
 import { NETWORK } from "../lib/environmentVariables";
 import { _captureBackgroundException_ } from "../lib/errors";
@@ -97,7 +98,9 @@ export class StatisticsData extends Record({
     darknodeRegisteringList: Map<string, string>(),
     darknodeList: Map<string, List<string>>(),
 
-    transactions: Map<string, string>(),
+    // tslint:disable-next-line: no-any
+    transactions: OrderedMap<string, PromiEvent<any>>(),
+    confirmations: OrderedMap<string, number>(),
 
     withdrawAddresses: Map<Token, List<string>>(),
 

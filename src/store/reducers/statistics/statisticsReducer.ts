@@ -137,6 +137,12 @@ export const statisticsReducer = (
                 action.payload.darknodeDetails,
             ));
 
+        case getType(operatorActions.addTransaction):
+            return state.set("transactions", state.transactions.set(action.payload.txHash, action.payload.tx));
+
+        case getType(operatorActions.setTxConfirmations):
+            return state.set("confirmations", state.confirmations.set(action.payload.txHash, action.payload.confirmations));
+
         case getType(operatorActions.setDarknodeName):
             return state.set("darknodeNames", state.darknodeNames.set(action.payload.darknodeID, action.payload.name));
 

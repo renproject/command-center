@@ -11,11 +11,14 @@ import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
 import { OldToken, Token } from "../../../lib/ethereum/tokens";
+import { showClaimPopup } from "../../../store/actions/statistics/operatorPopupActions";
 import { ApplicationData, DarknodeDetails, DarknodeFeeStatus } from "../../../store/types";
 import { CurrencyIcon } from "../../CurrencyIcon";
 import { TokenBalance } from "../../TokenBalance";
 import { FeesItem } from "../FeesItem";
 import { Block, BlockBody, BlockTitle } from "./Block";
+import { updateDarknodeStatistics } from "../../../store/actions/statistics/operatorActions";
+
 
 enum Tab {
     Withdrawable = "Withdrawable",
@@ -32,13 +35,23 @@ const mergeFees = (left: OrderedMap<Token | OldToken, BigNumber>, right: Ordered
 };
 
 class FeesBlockClass extends React.Component<Props, State> {
+    private _isMounted = false;
 
     public constructor(props: Props, context: object) {
         super(props, context);
         this.state = {
             showAdvanced: false,
             tab: Tab.Withdrawable,
+            claiming: false,
         };
+    }
+
+    public componentDidMount = async () => {
+        this._isMounted = true;
+    }
+
+    public componentWillUnmount = () => {
+        this._isMounted = false;
     }
 
     public render = (): JSX.Element => {
@@ -56,9 +69,11 @@ class FeesBlockClass extends React.Component<Props, State> {
         const showCurrentPending = darknodeDetails && darknodeDetails.cycleStatus.get(currentCycle) === DarknodeFeeStatus.NOT_CLAIMED;
         let pendingTotal = new BigNumber(0);
         let summedPendingRewards = OrderedMap<Token | OldToken, BigNumber>();
+        let summedClaimable = new BigNumber(0);
         if (showPreviousPending) {
             pendingTotal = pendingTotal.plus(pendingTotalInEth.get(previousCycle, new BigNumber(0)));
             summedPendingRewards = pendingRewards.get(previousCycle, OrderedMap());
+            summedClaimable = pendingTotal;
         }
         if (showCurrentPending) {
             pendingTotal = pendingTotal.plus(pendingTotalInEth.get(currentCycle, new BigNumber(0)));
@@ -196,6 +211,19 @@ class FeesBlockClass extends React.Component<Props, State> {
                                 </span>
                                 <span className="fees-block--advanced--unit">{quoteCurrency.toUpperCase()}</span>
                             </div>
+                            {tab === Tab.Pending && showPreviousPending ? <>
+                                <button className="button--white block--advanced--claim" onClick={this.onClaim}>
+                                    Claim{" "}<CurrencyIcon currency={quoteCurrency} />
+                                    <TokenBalance
+                                        token={Token.ETH}
+                                        convertTo={quoteCurrency}
+                                        amount={
+                                            summedClaimable
+                                        }
+                                    />{" "}{quoteCurrency.toUpperCase()}{" "}now
+                                </button>
+                            </> : <></>
+                            }
                             <div className="block--advanced--bottom scrollable">
                                 <table className="fees-block--table">
                                     <tbody>
@@ -262,20 +290,57 @@ class FeesBlockClass extends React.Component<Props, State> {
         this.setState({ showAdvanced: !this.state.showAdvanced });
     }
 
+    private readonly onClaim = async () => {
+        const { darknodeDetails, store: { web3, address, tokenPrices, quoteCurrency } } = this.props;
+
+        if (!address || !darknodeDetails) {
+            this.setState({ claiming: false });
+            return;
+        }
+
+        const darknodeID = darknodeDetails.ID;
+
+        const onCancel = () => {
+            if (this._isMounted) {
+                this.setState({ claiming: false });
+            }
+        };
+
+        const onDone = async () => {
+            try {
+                await this.props.actions.updateDarknodeStatistics(web3, darknodeID, tokenPrices);
+            } catch (error) {
+                // Ignore error
+            }
+
+            if (this._isMounted) {
+                this.setState({ claiming: false });
+            }
+        };
+
+        const title = `Claim rewards`;
+        await this.props.actions.showClaimPopup(web3, address, darknodeID, title, onCancel, onDone);
+    }
+
 }
 
 const mapStateToProps = (state: ApplicationData) => ({
     store: {
+        address: state.trader.address,
+        web3: state.trader.web3,
         quoteCurrency: state.statistics.quoteCurrency,
         currentCycle: state.statistics.currentCycle,
         previousCycle: state.statistics.previousCycle,
         pendingRewards: state.statistics.pendingRewards,
         pendingTotalInEth: state.statistics.pendingTotalInEth,
+        tokenPrices: state.statistics.tokenPrices,
     },
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     actions: bindActionCreators({
+        showClaimPopup,
+        updateDarknodeStatistics,
     }, dispatch),
 });
 
@@ -287,6 +352,7 @@ interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<
 interface State {
     showAdvanced: boolean;
     tab: Tab;
+    claiming: boolean;
 }
 
 export const FeesBlock = connect(mapStateToProps, mapDispatchToProps)(FeesBlockClass);
