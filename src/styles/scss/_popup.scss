@@ -113,9 +113,27 @@
     margin-top: 15px;
 }
 
+.popup--buttons {
+    display: flex;
+    flex-flow: row;
+
+    button {
+        width: 100%;
+    }
+}
+
 .withdraw--addresses {
     margin: 0;
     padding: 20px 0;
+}
+
+.withdraw--address--outer {
+    display: flex;
+    flex-flow: row;
+
+    &:not(:last-child) {
+        border-bottom: 1px solid #aaa;
+    }
 }
 
 .withdraw--address {
@@ -126,10 +144,11 @@
     align-items: center;
     flex-flow: row;
     padding: 10px;
-    border: 1px solid #eee;
     list-style-type: none;
-    margin: 0;
+    margin: 0 !important;
     margin-bottom: 5px;
+    background: none;
+    border: none;
 }
 
 .newAddress {
@@ -137,10 +156,36 @@
 }
 
 .withdraw--selected {
-    background-color: $blue-bright;
-    color: white;
+    background-color: $blue-bright !important;
+
+    >* {
+        color: white;
+    }
+
     font-weight: 900;
-    border: 1px solid $blue-bright;
+    // border: 1px solid $blue-bright;
+}
+
+.withdraw--address--remove {
+    background: none;
+    border: none;
+    min-width: initial;
+}
+
+.new-address--outer {
+    display: flex;
+    flex-flow: row;
+    border: 1px solid #aaa;
+
+    input[type=text] {
+        border: none;
+    }
+}
+
+.new-address--plus {
+    min-width: initial;
+    border: 0;
+    padding: 0 10px;
 }
 
 // Open Order
@@ -181,10 +226,6 @@
 
 .popup.open .open--details span {
     font-weight: 500;
-}
-
-.popup.open .open--confirm {
-    @extend .styled-button;
 }
 
 $noWeb3Width: 450px;

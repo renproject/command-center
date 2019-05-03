@@ -47,8 +47,8 @@ class LoggedOutClass extends React.Component<Props, State> {
                         <div className="popup--description">Select an account to access your darknodes.</div>
                     </>
                 }
-                <button className="styled-button styled-button--light" onClick={this.props.onCancel}>Not now</button>
-                <button className="styled-button" onClick={this.props.onConnect}>Connect</button>
+                <button className="button button--white" onClick={this.props.onCancel}>Not now</button>
+                <button className="button" onClick={this.props.onConnect}>Connect</button>
             </div>
         );
     }
