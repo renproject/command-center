@@ -336,8 +336,6 @@ export const updateDarknodeStatistics = (
 
     // Get earned fees
     const feesEarned = await getBalances(web3, darknodeID);
-    console.log(`Fees earnt:`);
-    console.log(JSON.stringify(feesEarned.toJSON()));
     const oldFeesEarned = await getOldBalances(web3, darknodeID);
     let feesEarnedTotalEth = new BigNumber(0);
     if (tokenPrices) {

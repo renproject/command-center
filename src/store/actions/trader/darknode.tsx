@@ -40,8 +40,6 @@ const burn = (web3: Web3, trader: string, currency: Token, to: string) => async 
 
     const amount = new BigNumber((await contract.methods.balanceOf(trader).call({ from: trader })).toString());
 
-    console.log(`Burning: ${amount.toString()} ${currency}`);
-
     await waitForTX(
         contract.methods.burn(toHex, amount.toString() /* new BigNumber(amount).multipliedBy(10 ** 8).toFixed() */).send({ from: trader })
     )(dispatch);
