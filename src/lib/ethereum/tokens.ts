@@ -36,9 +36,6 @@ export interface TokenDetail<T extends Token | OldToken> {
     blockchain: Token; // Used for address validation
 }
 
-export const btcMainnetRegex = new RegExp("^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$");
-export const btcTestnetRegex = new RegExp("^[mn2][a-km-zA-HJ-NP-Z1-9]{25,34}$");
-
 // TODO: Switch on network
 export const AllTokenDetails = Map<Token | OldToken, TokenDetail<Token | OldToken>>()
     .set(Token.DAI, { symbol: Token.DAI, name: "Dai", decimals: 18, address: "0xc4375b7de8af5a38a93548eb8453a498222c4ff2", wrapped: false, coinGeckoID: "dai", old: false, blockchain: Token.ETH })

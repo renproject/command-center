@@ -2,11 +2,12 @@ import * as React from "react";
 
 import { faAngleDown, faBars } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Blocky } from "@renex/react-components";
+import { Blocky, Loading } from "@renex/react-components";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
 import { bindActionCreators, Dispatch } from "redux";
 
+import { etherscan } from "../lib/environmentVariables";
 import { storeQuoteCurrency } from "../store/actions/statistics/operatorActions";
 import { login, logout } from "../store/actions/trader/accountActions";
 import { showMobileMenu } from "../store/actions/ui/uiActions";
@@ -30,8 +31,14 @@ class HeaderClass extends React.Component<Props, State> {
     }
 
     public render = (): JSX.Element => {
-        const { address, web3BrowserName, quoteCurrency } = this.props.store;
+        const { address, web3BrowserName, quoteCurrency, transactions, confirmations } = this.props.store;
         const { accountDropdown, languageDropdown, currencyDropdown, copied } = this.state;
+
+        // `pendingTXs` calculates whether or not the user has any ethereum
+        // transactions that haven't been confirmed yet.
+        const pendingTXs = transactions.reduce((reduction: boolean, _value, key: string) => {
+            return reduction || confirmations.get(key, 0) === 0;
+        }, false);
 
         return (
             <div className="header">
@@ -110,7 +117,7 @@ class HeaderClass extends React.Component<Props, State> {
                                         "header--account--disconnected"}`}
                                 >
                                     <div className="header--account--type">
-                                        {web3BrowserName}
+                                        {web3BrowserName} {pendingTXs ? <Loading alt={true} className="header--account--spinner" /> : <></>}
                                     </div>
                                     {address ?
                                         <div className="header--account--address">
@@ -138,6 +145,19 @@ class HeaderClass extends React.Component<Props, State> {
                                         >
                                             Log out
                                         </li>
+                                        {transactions.size > 0 ?
+                                            <>
+                                                {transactions.map((tx, txHash) => {
+                                                    const confs = confirmations.get(txHash, 0);
+                                                    return <li key={txHash} className="transaction">
+                                                        {confs === 0 ? <Loading /> : <></>}
+                                                        {confs === -1 ? <span className="red">(ERR) {" "}</span> : <></>}
+                                                        <a className="transaction--hash" target="_blank" rel="noreferrer" href={`${etherscan}/tx/${txHash}`}>{txHash.substring(0, 12)}...</a>
+                                                        {confs > 0 ? <>{" "}({confs} conf.)</> : ""}
+                                                    </li>;
+                                                }).valueSeq().toArray()}
+                                            </> : <></>
+                                        }
                                     </> :
                                         <li
                                             role="button"
@@ -220,6 +240,8 @@ const mapStateToProps = (state: ApplicationData) => ({
         quoteCurrency: state.statistics.quoteCurrency,
         sdk: state.trader.sdk,
         web3: state.trader.web3,
+        transactions: state.statistics.transactions,
+        confirmations: state.statistics.confirmations,
     },
 });
 

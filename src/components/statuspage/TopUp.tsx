@@ -12,7 +12,7 @@ import { ApplicationData } from "../../store/types";
 const CONFIRMATION_MESSAGE = "Transaction confirmed.";
 
 class TopUpClass extends React.Component<Props, State> {
-    private _isMounded = false;
+    private _isMounted = false;
 
     constructor(props: Props) {
         super(props);
@@ -26,7 +26,7 @@ class TopUpClass extends React.Component<Props, State> {
     }
 
     public componentDidMount = async () => {
-        this._isMounded = true;
+        this._isMounted = true;
         this.updateTraderBalance().catch((error) => {
             _captureBackgroundException_(error, {
                 description: "Error in updateTraderBalance in TopUp",
@@ -35,7 +35,7 @@ class TopUpClass extends React.Component<Props, State> {
     }
 
     public componentWillUnmount = () => {
-        this._isMounded = false;
+        this._isMounted = false;
     }
 
     public render = (): JSX.Element => {
@@ -133,7 +133,7 @@ class TopUpClass extends React.Component<Props, State> {
         }
 
         const onCancel = () => {
-            if (this._isMounded) {
+            if (this._isMounted) {
                 this.setState({ pending: false });
             }
         };
@@ -145,7 +145,7 @@ class TopUpClass extends React.Component<Props, State> {
                 // Ignore error
             }
 
-            if (this._isMounded) {
+            if (this._isMounted) {
                 this.setState({ resultMessage: CONFIRMATION_MESSAGE, pending: false });
 
                 // If the user hasn't changed the value, set it to 0.

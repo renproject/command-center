@@ -12,7 +12,7 @@ import { _captureBackgroundException_ } from "../../../lib/errors";
 import { Token } from "../../../lib/ethereum/tokens";
 import { Currency, TokenPrices } from "../..//types";
 import { setPopup } from "../popup/popupActions";
-import { approveNode, deregisterNode, fundNode, refundNode, registerNode } from "../trader/darknode";
+import { approveNode, deregisterNode, fundNode, refundNode, registerNode, claimForNode } from "../trader/darknode";
 import { updateDarknodeStatistics } from "./operatorActions";
 
 export const showRegisterPopup = (
@@ -177,6 +177,38 @@ export const showFundPopup = (
     ];
 
     const title = "Fund darknode";
+
+    dispatch(setPopup(
+        {
+            popup: <MultiStepPopup
+                steps={steps}
+                onCancel={onCancel}
+                title={title}
+                confirm={false}
+            />,
+            onCancel,
+            dismissible: false,
+            overlay: true,
+        },
+    ));
+};
+
+export const showClaimPopup = (
+    web3: Web3,
+    address: string,
+    darknodeID: string,
+    title: string,
+    onCancel: () => void,
+    onDone: () => void,
+) => async (dispatch: Dispatch) => {
+
+    const step1 = async () => {
+        await claimForNode(web3, address, darknodeID, onCancel, onDone)(dispatch);
+    };
+
+    const steps = [
+        { call: step1, name: "Claim rewards" },
+    ];
 
     dispatch(setPopup(
         {

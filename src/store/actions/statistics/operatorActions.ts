@@ -4,6 +4,7 @@ import Web3 from "web3";
 import { List, OrderedMap, OrderedSet } from "immutable";
 import { Dispatch } from "redux";
 import { createStandardAction } from "typesafe-actions";
+import { PromiEvent } from "web3-core";
 import { Block } from "web3-eth";
 import { toChecksumAddress } from "web3-utils";
 
@@ -54,6 +55,26 @@ export const updateDarknodeHistory = createStandardAction("updateDarknodeHistory
 }>();
 
 export const setDarknodeName = createStandardAction("setDarknodeName")<{ darknodeID: string; name: string }>();
+
+// tslint:disable-next-line: no-any
+export const addTransaction = createStandardAction("addTransaction")<{ txHash: string; tx: PromiEvent<any> }>();
+export const setTxConfirmations = createStandardAction("setTxConfirmations")<{ txHash: string; confirmations: number }>();
+
+export const waitForTX = <T>(promiEvent: PromiEvent<T>, onConfirmation?: (confirmations?: number) => void) => async (dispatch: Dispatch) => new Promise<string>((resolve, reject) => {
+    promiEvent.on("transactionHash", (txHash) => {
+        resolve(txHash);
+        dispatch(addTransaction({ txHash, tx: promiEvent }));
+        (window as any).tx = promiEvent;
+        promiEvent.on("confirmation", (confirmations) => {
+            dispatch(setTxConfirmations({ txHash, confirmations }));
+            if (onConfirmation) { onConfirmation(confirmations); }
+        });
+        promiEvent.on("error", () => {
+            dispatch(setTxConfirmations({ txHash, confirmations: -1 }));
+        });
+    }).catch(reject);
+});
+
 
 export const calculateSecondsPerBlock = (
     web3: Web3,
@@ -315,6 +336,8 @@ export const updateDarknodeStatistics = (
 
     // Get earned fees
     const feesEarned = await getBalances(web3, darknodeID);
+    console.log(`Fees earnt:`);
+    console.log(JSON.stringify(feesEarned.toJSON()));
     const oldFeesEarned = await getOldBalances(web3, darknodeID);
     let feesEarnedTotalEth = new BigNumber(0);
     if (tokenPrices) {
