@@ -120,6 +120,10 @@
     color: #58585B;
 }
 
+.header--dropdown--option {
+    min-width: 100%;
+}
+
 .header--dropdown .header--dropdown--highlight {
     color: $blue-bright;
 
@@ -176,8 +180,8 @@
 }
 
 .header--selected {
-    color: white;
-    border: 0;
+    color: white !important;
+    border: 0 !important;
 
     svg {
         opacity: 1 !important;
@@ -239,6 +243,10 @@
 
     a.transaction--hash {
         color: $blue-bright;
+    }
+
+    &:last-child {
+        margin-bottom: 10px;
     }
 }
 

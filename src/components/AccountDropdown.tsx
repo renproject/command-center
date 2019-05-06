@@ -120,7 +120,7 @@ class AccountDropdownClass extends React.Component<Props, State> {
                             <li
                                 role="button"
                                 onClick={this.handleLogin}
-                                className="header--dropdown--highlight"
+                                className="header--dropdown--option header--dropdown--highlight"
                             >
                                 Connect {web3BrowserName}
                             </li>
