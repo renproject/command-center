@@ -45,7 +45,7 @@ const requireABIsForNetwork = (ethNetwork: EthNetwork) => {
             dnrDeployedInBlock = "0xA35A7A"; // in hex
 
             darknodeRewardVault = "0xc08Dfa565EdB7216c3b23bBf0848B43fE9a49F0E";
-            darknodePayment = "0x89693dd95c6149B7e67df8c5FCeEF0af91d6E29b";
+            darknodePayment = "0x05c2F7a859A957BF23438DEBC7C5D4fAC8583995";
             darknodePaymentStore = "0xA9411C3AD1fBE168fd119A3B32fB481a0b9877A9";
     }
 
