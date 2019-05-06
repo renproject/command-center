@@ -177,17 +177,14 @@ class HeaderClass extends React.Component<Props, State> {
     }
 
     private readonly handleLogin = async (): Promise<void> => {
-        const { address, sdk } = this.props.store;
-        if (sdk && !address) {
-            await this.props.actions.login(sdk, { redirect: false, showPopup: true, immediatePopup: true });
+        const { address } = this.props.store;
+        if (!address) {
+            await this.props.actions.login({ redirect: false, showPopup: true, immediatePopup: true });
         }
     }
 
     private readonly handleLogout = async (): Promise<void> => {
-        const { sdk } = this.props.store;
-        if (sdk) {
-            await this.props.actions.logout(sdk, { reload: false });
-        }
+        await this.props.actions.logout({ reload: false });
     }
 
     private readonly toggleDropdown = (e: React.MouseEvent<HTMLLIElement>): void => {
@@ -238,7 +235,6 @@ const mapStateToProps = (state: ApplicationData) => ({
         address: state.trader.address,
         web3BrowserName: state.trader.web3BrowserName,
         quoteCurrency: state.statistics.quoteCurrency,
-        sdk: state.trader.sdk,
         web3: state.trader.web3,
         transactions: state.statistics.transactions,
         confirmations: state.statistics.confirmations,

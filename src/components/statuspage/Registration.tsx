@@ -199,7 +199,6 @@ class RegistrationClass extends React.Component<Props, State> {
 const mapStateToProps = (state: ApplicationData) => ({
     store: {
         address: state.trader.address,
-        sdk: state.trader.sdk,
         web3: state.trader.web3,
         minimumBond: state.statistics.minimumBond,
         tokenPrices: state.statistics.tokenPrices,

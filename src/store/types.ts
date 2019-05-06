@@ -1,12 +1,10 @@
 // tslint:disable:no-object-literal-type-assertion
 
-import RenExSDK from "@renex/renex";
 import BigNumber from "bignumber.js";
 
 import { List, Map, OrderedMap } from "immutable";
 import { PromiEvent } from "web3-core";
 
-import { NETWORK } from "../lib/environmentVariables";
 import { _captureBackgroundException_ } from "../lib/errors";
 import { Web3Browser } from "../lib/ethereum/browsers";
 import { OldToken, Token } from "../lib/ethereum/tokens";
@@ -33,7 +31,6 @@ export class TraderData extends Record({
     address: null as string | null,
     web3BrowserName: Web3Browser.MetaMask,
     web3: readOnlyWeb3,
-    sdk: new RenExSDK(readOnlyWeb3.currentProvider, { network: NETWORK }) as RenExSDK | undefined,
 }) { }
 
 export enum LabelLevel {

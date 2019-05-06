@@ -58,7 +58,6 @@ class FeesItemClass extends React.Component<Props, State> {
 
 const mapStateToProps = (state: ApplicationData) => ({
     store: {
-        sdk: state.trader.sdk,
         web3: state.trader.web3,
         tokenPrices: state.statistics.tokenPrices,
         address: state.trader.address,
