@@ -140,9 +140,13 @@ class BackgroundTasksClass extends React.Component<Props, State> {
             await props.actions.updateNetworkStatistics(web3, ethNetwork);
             timeout = 3600;
         } catch (error) {
-            _captureBackgroundException_(error, {
-                description: "Error thrown in callUpdateNetworkStatistics background task",
-            });
+            if (error && error.message && error.message.match("Cannot read property 'toString' of")) {
+                // Ignore
+            } else {
+                _captureBackgroundException_(error, {
+                    description: "Error thrown in callUpdateNetworkStatistics background task",
+                });
+            }
         }
         if (this.callUpdateNetworkStatisticsTimeout) { clearTimeout(this.callUpdateNetworkStatisticsTimeout); }
         this.callUpdateNetworkStatisticsTimeout = setTimeout(
