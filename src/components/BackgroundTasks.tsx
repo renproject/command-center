@@ -42,17 +42,13 @@ class BackgroundTasksClass extends React.Component<Props, State> {
         this.setupLoops();
 
         try {
-            const { sdk } = this.props.store;
-            if (sdk) {
-                await this.props.actions.login(
-                    sdk,
-                    {
-                        redirect: false,
-                        showPopup: darknodeID === undefined || action !== undefined,
-                        immediatePopup: false,
-                    }
-                );
-            }
+            await this.props.actions.login(
+                {
+                    redirect: false,
+                    showPopup: darknodeID === undefined || action !== undefined,
+                    immediatePopup: false,
+                }
+            );
         } catch (error) {
             _captureBackgroundException_(error, {
                 description: "Error logging in on load",
@@ -118,11 +114,11 @@ class BackgroundTasksClass extends React.Component<Props, State> {
     private readonly callLookForLogout = async (props?: Props): Promise<void> => {
         props = props || this.props;
 
-        const { sdk, address, web3 } = props.store;
-        if (sdk && address) {
+        const { address, web3 } = props.store;
+        if (address) {
             try {
                 // tslint:disable-next-line: await-promise
-                await props.actions.lookForLogout(sdk, address, web3);
+                await props.actions.lookForLogout(address, web3);
             } catch (error) {
                 _captureBackgroundException_(error, {
                     description: "Error thrown in callLookForLogout background task",
@@ -255,7 +251,6 @@ class BackgroundTasksClass extends React.Component<Props, State> {
 const mapStateToProps = (state: ApplicationData) => ({
     store: {
         address: state.trader.address,
-        sdk: state.trader.sdk,
         web3: state.trader.web3,
         tokenPrices: state.statistics.tokenPrices,
         darknodeList: state.trader.address ? state.statistics.darknodeList.get(state.trader.address, null) : null,

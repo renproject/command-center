@@ -57,22 +57,18 @@ class TokenBalanceClass extends React.Component<Props, State> {
     }
 
     public componentDidMount = async (): Promise<void> => {
-        const { token, store } = this.props;
-        const { sdk } = store;
+        const { token } = this.props;
 
-        if (sdk) {
-            const tokenDetails = AllTokenDetails.get(token as Token, undefined);
-            const decimals = tokenDetails ? new BigNumber(tokenDetails.decimals.toString()).toNumber() : 0;
-            this.setState({ decimals });
-        }
+        const tokenDetails = AllTokenDetails.get(token as Token, undefined);
+        const decimals = tokenDetails ? new BigNumber(tokenDetails.decimals.toString()).toNumber() : 0;
+        this.setState({ decimals });
     }
 
     public componentWillReceiveProps = async (nextProps: Props): Promise<void> => {
-        const { token: nextToken, store } = nextProps;
-        const { sdk } = store;
+        const { token: nextToken } = nextProps;
         const { token } = this.props;
 
-        if (sdk && nextToken !== token) {
+        if (nextToken !== token) {
             const tokenDetails = AllTokenDetails.get(nextToken as Token, undefined);
             const decimals = tokenDetails ? new BigNumber(tokenDetails.decimals.toString()).toNumber() : 0;
             this.setState({ decimals });
@@ -121,7 +117,6 @@ class TokenBalanceClass extends React.Component<Props, State> {
 const mapStateToProps = (state: ApplicationData) => ({
     store: {
         tokenPrices: state.statistics.tokenPrices,
-        sdk: state.trader.sdk,
         web3: state.trader.web3,
     },
 });

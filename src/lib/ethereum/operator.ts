@@ -77,7 +77,7 @@ export const getOperatorDarknodes = async (web3: Web3, address: string): Promise
     // Note: Deregistration events are not included because we are unable to retrieve the operator
 
     // // Get Deregistration events
-    // const recentDeregistrationEvents = await sdk.getWeb3().eth.getPastLogs({
+    // const recentDeregistrationEvents = await web3.eth.getPastLogs({
     //     address: contracts.DarknodeRegistry.address,
     //     // tslint:disable-next-line:no-any
     //     fromBlock: "0x889E55" as any, // FIXME: Change this based on network or get from address deployment
