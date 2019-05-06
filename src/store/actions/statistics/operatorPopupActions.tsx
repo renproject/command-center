@@ -35,7 +35,7 @@ export const showRegisterPopup = (
                 address,
                 darknodeID,
                 publicKey,
-                minimumBond || new BigNumber(100000),
+                minimumBond || new BigNumber(100000000000000000000000),
                 onCancel,
                 onDone
             )(dispatch);
