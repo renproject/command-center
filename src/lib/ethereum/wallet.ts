@@ -3,7 +3,8 @@ import Web3 from "web3";
 import { provider } from "web3-providers";
 
 import { Language } from "../../languages/language";
-import { ETH_NETWORK, PUBLIC_NODE } from "../environmentVariables";
+import { EthNetwork } from "../../store/types";
+import { PUBLIC_NODE } from "../environmentVariables";
 import { _noCapture_ } from "../errors";
 
 export const ErrorCanceledByUser = "User denied transaction signature.";
@@ -38,8 +39,10 @@ export const getInjectedWeb3Provider = async (onAnyProvider: (provider: provider
     const web3 = new Web3(injectedProvider);
 
     // Check that the provider is using the correct network
+    // tslint:disable-next-line: no-any
+    const network = (await (web3.eth.net as any).getNetworkType());
     // tslint:disable-next-line:no-any
-    if ((await (web3.eth.net as any).getNetworkType()) !== ETH_NETWORK) {
+    if (network !== EthNetwork.Kovan && network !== EthNetwork.Mainnet) {
         throw _noCapture_(new Error(ErrorWrongNetwork));
     }
 

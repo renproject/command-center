@@ -7,11 +7,10 @@ import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { etherscan } from "../lib/environmentVariables";
 import { storeQuoteCurrency } from "../store/actions/statistics/operatorActions";
 import { login, logout } from "../store/actions/trader/accountActions";
 import { showMobileMenu } from "../store/actions/ui/uiActions";
-import { ApplicationData, currencies, Currency } from "../store/types";
+import { ApplicationData, currencies, Currency, EthNetwork } from "../store/types";
 import { CurrencyIcon } from "./CurrencyIcon";
 
 import English from "../styles/images/rp-flag-uk.svg";
@@ -31,7 +30,7 @@ class HeaderClass extends React.Component<Props, State> {
     }
 
     public render = (): JSX.Element => {
-        const { address, web3BrowserName, quoteCurrency, transactions, confirmations } = this.props.store;
+        const { address, web3BrowserName, quoteCurrency, transactions, confirmations, ethNetwork } = this.props.store;
         const { accountDropdown, languageDropdown, currencyDropdown, copied } = this.state;
 
         // `pendingTXs` calculates whether or not the user has any ethereum
@@ -39,6 +38,8 @@ class HeaderClass extends React.Component<Props, State> {
         const pendingTXs = transactions.reduce((reduction: boolean, _value, key: string) => {
             return reduction || confirmations.get(key, 0) === 0;
         }, false);
+
+        const etherscan = `https://${ethNetwork === EthNetwork.Mainnet ? "" : `${ethNetwork}.`}etherscan.io`;
 
         return (
             <div className="header">
@@ -238,6 +239,7 @@ const mapStateToProps = (state: ApplicationData) => ({
         web3: state.trader.web3,
         transactions: state.statistics.transactions,
         confirmations: state.statistics.confirmations,
+        ethNetwork: state.trader.ethNetwork,
     },
 });
 

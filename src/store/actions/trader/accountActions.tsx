@@ -15,11 +15,12 @@ import { _captureBackgroundException_ } from "../../../lib/errors";
 import { getWeb3BrowserName, Web3Browser } from "../../../lib/ethereum/browsers";
 import { getInjectedWeb3Provider } from "../../../lib/ethereum/wallet";
 import { history } from "../../../lib/history";
-import { readOnlyWeb3 } from "../../types";
+import { EthNetwork, readOnlyWeb3 } from "../../types";
 import { clearPopup, setPopup } from "../popup/popupActions";
 
-export const storeAddress = createStandardAction("storeAddress")<string | null>();
 export const storeWeb3 = createStandardAction("storeWeb3")<Web3>();
+export const storeAddress = createStandardAction("storeAddress")<string | null>();
+export const storeEthNetwork = createStandardAction("storeEthNetwork")<EthNetwork>();
 
 export const storeWeb3BrowserName = createStandardAction("storeWeb3BrowserName")<Web3Browser>();
 
@@ -121,6 +122,10 @@ export const login = (
     if (accounts.length === 0) {
         return;
     }
+
+    // tslint:disable-next-line: no-any
+    const network = (await (newWeb3.eth.net as any).getNetworkType());
+    dispatch(storeEthNetwork(network));
 
     dispatch(clearPopup());
 

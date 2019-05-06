@@ -334,3 +334,42 @@ label {
         display: none !important;
     }
 }
+
+.network--banner {
+    top: 0;
+    width: 100%;
+    background-color: $red;
+    position: fixed;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 22px;
+
+    .banner--bold {
+        font-weight: 900;
+        margin: 0 5px;
+    }
+}
+
+.with-banner--main {
+    .network--banner {
+        background-color: $green;
+        color: $dark-grey;
+    }
+}
+
+.with-banner {
+    .header {
+        margin-top: 15px;
+    }
+
+    .popup--container {
+        top: 15px;
+    }
+
+    .sidebar {
+        top: 15px;
+        height: calc(100vh - 15px);
+    }
+}

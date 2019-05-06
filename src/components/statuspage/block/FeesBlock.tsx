@@ -290,7 +290,7 @@ class FeesBlockClass extends React.Component<Props, State> {
     }
 
     private readonly onClaim = async () => {
-        const { darknodeDetails, store: { web3, address, tokenPrices } } = this.props;
+        const { darknodeDetails, store: { web3, address, tokenPrices, ethNetwork } } = this.props;
 
         if (!address || !darknodeDetails) {
             this.setState({ claiming: false });
@@ -307,7 +307,7 @@ class FeesBlockClass extends React.Component<Props, State> {
 
         const onDone = async () => {
             try {
-                await this.props.actions.updateDarknodeStatistics(web3, darknodeID, tokenPrices);
+                await this.props.actions.updateDarknodeStatistics(web3, ethNetwork, darknodeID, tokenPrices);
             } catch (error) {
                 // Ignore error
             }
@@ -318,7 +318,7 @@ class FeesBlockClass extends React.Component<Props, State> {
         };
 
         const title = `Claim rewards`;
-        await this.props.actions.showClaimPopup(web3, address, darknodeID, title, onCancel, onDone);
+        await this.props.actions.showClaimPopup(web3, ethNetwork, address, darknodeID, title, onCancel, onDone);
     }
 
 }
@@ -333,6 +333,7 @@ const mapStateToProps = (state: ApplicationData) => ({
         pendingRewards: state.statistics.pendingRewards,
         pendingTotalInEth: state.statistics.pendingTotalInEth,
         tokenPrices: state.statistics.tokenPrices,
+        ethNetwork: state.trader.ethNetwork,
     },
 });
 

@@ -3,20 +3,21 @@ import Web3 from "web3";
 import { OrderedSet } from "immutable";
 import { sha3, toChecksumAddress } from "web3-utils";
 
+import { EthNetwork } from "../../store/types";
 import { DarknodeRegistryWeb3 } from "./contracts/bindings/darknodeRegistry";
-import { contracts } from "./contracts/contracts";
+import { getContracts } from "./contracts/contracts";
 
 const NULL = "0x0000000000000000000000000000000000000000";
 
-const getAllDarknodes = async (web3: Web3): Promise<string[]> => {
+const getAllDarknodes = async (web3: Web3, ethNetwork: EthNetwork): Promise<string[]> => {
     const batchSize = 10;
 
     const allDarknodes = [];
     let lastDarknode = NULL;
     do {
         const darknodeRegistry: DarknodeRegistryWeb3 = new (web3.eth.Contract)(
-            contracts.DarknodeRegistry.ABI,
-            contracts.DarknodeRegistry.address
+            getContracts(ethNetwork).DarknodeRegistry.ABI,
+            getContracts(ethNetwork).DarknodeRegistry.address
         );
         const darknodes: string[] = await darknodeRegistry.methods.getDarknodes(lastDarknode, batchSize.toString()).call();
         allDarknodes.push(...darknodes.filter((address: string) => address !== NULL && address !== lastDarknode));
@@ -26,14 +27,18 @@ const getAllDarknodes = async (web3: Web3): Promise<string[]> => {
     return allDarknodes;
 };
 
-export const getOperatorDarknodes = async (web3: Web3, address: string): Promise<OrderedSet<string>> => {
+export const getOperatorDarknodes = async (
+    web3: Web3,
+    ethNetwork: EthNetwork,
+    address: string,
+): Promise<OrderedSet<string>> => {
     // TODO: Should addresses be made lower case or checksum addresses first?
 
     // Currently, the LogDarknodeRegistered logs don't include the registrar, so
     // instead we loop through every darknode and get it's owner first.
     // NOTE: Retrieving all logs only returns recent logs.
 
-    const darknodes = await getAllDarknodes(web3);
+    const darknodes = await getAllDarknodes(web3, ethNetwork);
 
     /*
     Sample log:
@@ -56,9 +61,9 @@ export const getOperatorDarknodes = async (web3: Web3, address: string): Promise
 
     // Get Registration events
     const recentRegistrationEvents = await web3.eth.getPastLogs({
-        address: contracts.DarknodeRegistry.address,
+        address: getContracts(ethNetwork).DarknodeRegistry.address,
         // tslint:disable-next-line:no-any
-        fromBlock: contracts.DarknodeRegistry.deployedInBlock || "0x600000" as any,
+        fromBlock: getContracts(ethNetwork).DarknodeRegistry.deployedInBlock || "0x600000" as any,
         toBlock: "latest",
         // topics: [sha3("LogDarknodeRegistered(address,uint256)"), "0x000000000000000000000000" +
         // address.slice(2), null, null] as any,
@@ -92,8 +97,8 @@ export const getOperatorDarknodes = async (web3: Web3, address: string): Promise
     // }
 
     const darknodeRegistry: DarknodeRegistryWeb3 = new (web3.eth.Contract)(
-        contracts.DarknodeRegistry.ABI,
-        contracts.DarknodeRegistry.address
+        getContracts(ethNetwork).DarknodeRegistry.ABI,
+        getContracts(ethNetwork).DarknodeRegistry.address
     );
     const operatorPromises = darknodes.map(async (darknodeID: string) =>
         darknodeRegistry.methods.getDarknodeOwner(darknodeID).call()

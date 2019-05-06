@@ -10,13 +10,14 @@ import { MultiStepPopup } from "../../../components/popups/MultiStepPopup";
 import { TokenBalance } from "../../../components/TokenBalance";
 import { _captureBackgroundException_ } from "../../../lib/errors";
 import { Token } from "../../../lib/ethereum/tokens";
-import { Currency, TokenPrices } from "../..//types";
+import { Currency, EthNetwork, TokenPrices } from "../../types";
 import { setPopup } from "../popup/popupActions";
 import { approveNode, claimForNode, deregisterNode, fundNode, refundNode, registerNode } from "../trader/darknode";
 import { updateDarknodeStatistics } from "./operatorActions";
 
 export const showRegisterPopup = (
     web3: Web3,
+    ethNetwork: EthNetwork,
     address: string,
     darknodeID: string,
     publicKey: string,
@@ -24,12 +25,13 @@ export const showRegisterPopup = (
     tokenPrices: TokenPrices, onCancel: () => void, onDone: () => void) => async (dispatch: Dispatch) => {
 
         const step1 = async () => {
-            await approveNode(web3, address, minimumBond)(dispatch);
+            await approveNode(web3, ethNetwork, address, minimumBond)(dispatch);
         };
 
         const step2 = async () => {
             await registerNode(
                 web3,
+                ethNetwork,
                 address,
                 darknodeID,
                 publicKey,
@@ -40,7 +42,7 @@ export const showRegisterPopup = (
 
             if (tokenPrices) {
                 try {
-                    await updateDarknodeStatistics(web3, darknodeID, tokenPrices)(dispatch);
+                    await updateDarknodeStatistics(web3, ethNetwork, darknodeID, tokenPrices)(dispatch);
                 } catch (error) {
                     _captureBackgroundException_(error, {
                         description: "Error thrown in updateDarknodeStatistics in showRegisterPopup",
@@ -74,6 +76,7 @@ Are you sure you want to continue?";
 
 export const showDeregisterPopup = (
     web3: Web3,
+    ethNetwork: EthNetwork,
     address: string,
     darknodeID: string,
     remainingFees: BigNumber | null,
@@ -83,7 +86,7 @@ export const showDeregisterPopup = (
 ) => async (dispatch: Dispatch) => {
 
     const step1 = async () => {
-        await deregisterNode(web3, address, darknodeID, onCancel, onDone)(dispatch);
+        await deregisterNode(web3, ethNetwork, address, darknodeID, onCancel, onDone)(dispatch);
     };
 
     const steps = [
@@ -128,6 +131,7 @@ export const showDeregisterPopup = (
 
 export const showRefundPopup = (
     web3: Web3,
+    ethNetwork: EthNetwork,
     address: string,
     darknodeID: string,
     onCancel: () => void,
@@ -135,7 +139,7 @@ export const showRefundPopup = (
 ) => async (dispatch: Dispatch) => {
 
     const step1 = async () => {
-        await refundNode(web3, address, darknodeID, onCancel, onDone)(dispatch);
+        await refundNode(web3, ethNetwork, address, darknodeID, onCancel, onDone)(dispatch);
     };
 
     const steps = [
@@ -195,6 +199,7 @@ export const showFundPopup = (
 
 export const showClaimPopup = (
     web3: Web3,
+    ethNetwork: EthNetwork,
     address: string,
     darknodeID: string,
     title: string,
@@ -203,7 +208,7 @@ export const showClaimPopup = (
 ) => async (dispatch: Dispatch) => {
 
     const step1 = async () => {
-        await claimForNode(web3, address, darknodeID, onCancel, onDone)(dispatch);
+        await claimForNode(web3, ethNetwork, address, darknodeID, onCancel, onDone)(dispatch);
     };
 
     const steps = [

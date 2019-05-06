@@ -1,4 +1,3 @@
-import { ETH_NETWORK_LABEL } from "../lib/environmentVariables";
 import { Language } from "./language";
 
 export const ENGLISH: Language = {
@@ -6,9 +5,9 @@ export const ENGLISH: Language = {
         metamask: `MetaMask`,
 
         noAccounts: `No accounts found. Ensure your wallet is unlocked.`,
-        mustInstallMetaMask: `You must install MetaMask to access your darknodes.`,
-        mustChangeNetwork: `You must change your wallet to the ${ETH_NETWORK_LABEL} network.`,
-        mustUnlock: `You must unlock MetaMask to access your darknodes.`,
-        mustConnect: `You must connect MetaMask to access your darknodes.`,
+        mustInstallMetaMask: `Please install MetaMask to access your darknodes.`,
+        mustChangeNetwork: `Please change your wallet network to Mainnet.`,
+        mustUnlock: `Please unlock MetaMask to access your darknodes.`,
+        mustConnect: `Please connect MetaMask to access your darknodes.`,
     }
 };

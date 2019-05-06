@@ -1,6 +1,6 @@
 import { AbiItem } from "web3-utils";
 
-import { ETH_NETWORK, EthNetwork, NETWORK, Network } from "../../environmentVariables";
+import { EthNetwork, Network } from "../../../store/types";
 import { OldToken, Token } from "../tokens";
 
 // Contracts
@@ -10,7 +10,7 @@ interface Contract {
     deployedInBlock?: string; // hex string
 }
 
-const getContractsForNetwork = (network: Network | undefined) => {
+const requireABIsForNetwork = (ethNetwork: EthNetwork) => {
     const ERC20: Contract = {
         // tslint:disable-next-line: no-require-imports
         ABI: require("./ABIs/ERC20.json"),
@@ -23,8 +23,8 @@ const getContractsForNetwork = (network: Network | undefined) => {
     let dnrDeployedInBlock;
     let darknodePayment;
     let darknodePaymentStore;
-    switch (network) {
-        case Network.Mainnet:
+    switch (ethNetwork) {
+        case EthNetwork.Mainnet:
             path = "mainnet";
 
             // Change these together
@@ -32,12 +32,11 @@ const getContractsForNetwork = (network: Network | undefined) => {
             dnrDeployedInBlock = "0x6AED46"; // in hex
 
             darknodeRewardVault = "0xa96450d3386ece22db20b0ac96ef5684b6d95d53";
-            darknodePayment = "";
-            darknodePaymentStore = "";
-            throw new Error("mainnet unsupported");
+            darknodePayment = "FIXME";
+            darknodePaymentStore = "FIXME";
 
             break;
-        case Network.Testnet:
+        case EthNetwork.Kovan:
         default:
             path = "testnet";
 
@@ -84,10 +83,20 @@ const getContractsForNetwork = (network: Network | undefined) => {
     return { ERC20, DarknodeRegistry, DarknodePayment, DarknodeRewardVault, WarpGateToken, DarknodePaymentStore };
 };
 
-export const contracts = getContractsForNetwork(NETWORK);
+const kovanContracts = requireABIsForNetwork(EthNetwork.Kovan);
+const mainnetContracts = requireABIsForNetwork(EthNetwork.Mainnet);
 
-export const tokenAddresses = (token: Token | OldToken): string => {
-    switch (ETH_NETWORK) {
+export const getContracts = (ethNetwork: EthNetwork) => {
+    switch (ethNetwork) {
+        case EthNetwork.Kovan:
+            return kovanContracts;
+        case EthNetwork.Mainnet:
+            return mainnetContracts;
+    }
+};
+
+export const tokenAddresses = (token: Token | OldToken, ethNetwork: EthNetwork): string => {
+    switch (ethNetwork) {
         case EthNetwork.Mainnet:
             switch (token) {
                 case Token.DAI:
@@ -135,6 +144,5 @@ export const tokenAddresses = (token: Token | OldToken): string => {
                     return "0x6EB628dCeFA95802899aD3A9EE0C7650Ac63d543";
             }
     }
-
     throw new Error(`Unknown network ${Network} or token ${token}`);
 };
