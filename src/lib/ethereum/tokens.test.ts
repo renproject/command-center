@@ -1,18 +1,18 @@
 import { } from "./tokens";
 
-const testnetAddresses = [
-    "mipcBbFg9gMiCh81Kj8tqqdgoZub1ZJRfn",
-    "2MzQwSSnBHWHqSAqtTVQ6v47XtaisrJa1Vc",
-];
+// const testnetAddresses = [
+//     "mipcBbFg9gMiCh81Kj8tqqdgoZub1ZJRfn",
+//     "2MzQwSSnBHWHqSAqtTVQ6v47XtaisrJa1Vc",
+// ];
 
-const mainnetAddresses = [
-    "17VZNX1SN5NtKa8UQFxwQbFeFc3iqRYhem",
-    "3EktnHQD7RiAE6uzMj2ZifT9YgRrkSgzQX",
-];
+// const mainnetAddresses = [
+//     "17VZNX1SN5NtKa8UQFxwQbFeFc3iqRYhem",
+//     "3EktnHQD7RiAE6uzMj2ZifT9YgRrkSgzQX",
+// ];
 
-const badAddresses = [
-    "0x17VZNX1SN5NtKa8UQFxwQbFeFc3iqRYhem",
-];
+// const badAddresses = [
+//     "0x17VZNX1SN5NtKa8UQFxwQbFeFc3iqRYhem",
+// ];
 
 // test("btcTestnetRegex", async () => {
 //     testnetAddresses.map((address) => expect(btcTestnetRegex.test(address)).toBeTruthy());

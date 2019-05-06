@@ -11,8 +11,8 @@ import { WithdrawPopup } from "../../../components/popups/WithdrawPopup";
 import { _noCapture_ } from "../../../lib/errors";
 import { DarknodePaymentWeb3 } from "../../../lib/ethereum/contracts/bindings/darknodePayment";
 import { DarknodeRegistryWeb3 } from "../../../lib/ethereum/contracts/bindings/darknodeRegistry";
-import { contracts } from "../../../lib/ethereum/contracts/contracts";
-import { AllTokenDetails, OldToken, RENAddress, Token } from "../../../lib/ethereum/tokens";
+import { contracts, tokenAddresses } from "../../../lib/ethereum/contracts/contracts";
+import { AllTokenDetails, OldToken, Token } from "../../../lib/ethereum/tokens";
 import { clearPopup, setPopup } from "../popup/popupActions";
 import { waitForTX } from "../statistics/operatorActions";
 
@@ -20,14 +20,12 @@ export const bridgedToken = (web3: Web3, address: string): Contract => {
     return new web3.eth.Contract(contracts.WarpGateToken.ABI, address);
 };
 
-export const zBTCAddress = "0x2a8368d2a983a0aeae8da0ebc5b7c03a0ea66b37";
-export const zZECAddress = "0xd67256552f93b39ac30083b4b679718a061feae6";
 export const btcAddressToHex = (address: string) => `0x${decode58(address).toString("hex")}`;
 export const zecAddressToHex = (address: string) => `0x${decode58(address).toString("hex")}`;
 
 const burn = (web3: Web3, trader: string, currency: Token, to: string) => async (dispatch: Dispatch) => {
-    const contract = currency === Token.BTC ? bridgedToken(web3, zBTCAddress) :
-        currency === Token.ZEC ? bridgedToken(web3, zZECAddress) :
+    const contract = currency === Token.BTC ? bridgedToken(web3, tokenAddresses(Token.BTC)) :
+        currency === Token.ZEC ? bridgedToken(web3, tokenAddresses(Token.ZEC)) :
             undefined;
 
     if (contract === undefined) {
@@ -60,7 +58,7 @@ export const withdrawReward = (web3: Web3, trader: string, darknodeID: string, t
                 contracts.DarknodeRewardVault.address
             );
             await waitForTX(
-                contract.methods.withdraw(darknodeID, tokenDetails.address).send({ from: trader }),
+                contract.methods.withdraw(darknodeID, tokenAddresses(token)).send({ from: trader }),
                 resolve,
             )(dispatch);
         } catch (error) {
@@ -80,7 +78,7 @@ export const withdrawReward = (web3: Web3, trader: string, darknodeID: string, t
             }
 
             await waitForTX(
-                darknodePayment.methods.withdraw(darknodeID, tokenDetails.address).send({ from: trader }),
+                darknodePayment.methods.withdraw(darknodeID, tokenAddresses(token)).send({ from: trader }),
                 resolve,
             )(dispatch);
 
@@ -124,7 +122,7 @@ export const withdrawReward = (web3: Web3, trader: string, darknodeID: string, t
 
 export const approveNode = (web3: Web3, trader: string, bond: BigNumber) => async (dispatch: Dispatch) => {
     // tslint:disable-next-line:no-non-null-assertion
-    const ercContract = new (web3.eth.Contract)(contracts.ERC20.ABI, RENAddress);
+    const ercContract = new (web3.eth.Contract)(contracts.ERC20.ABI, tokenAddresses(OldToken.REN));
     const ercBalance = new BigNumber(await ercContract.methods.balanceOf(trader).call());
     const ercAllowance = new BigNumber(
         await ercContract.methods.allowance(trader, contracts.DarknodeRegistry.address).call(),
@@ -157,7 +155,7 @@ export const registerNode = (
     const hardCodedGas = 500000;
 
     // tslint:disable-next-line:no-non-null-assertion
-    const ercContract = new (web3.eth.Contract)(contracts.ERC20.ABI, RENAddress);
+    const ercContract = new (web3.eth.Contract)(contracts.ERC20.ABI, tokenAddresses(OldToken.REN));
 
     const ercAllowance = new BigNumber(
         await ercContract.methods.allowance(trader, contracts.DarknodeRegistry.address).call()

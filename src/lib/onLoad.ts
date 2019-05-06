@@ -5,7 +5,7 @@ import Web3 from "web3";
 import { HttpProvider } from "web3-providers";
 
 import { _catch_ } from "../components/ErrorBoundary";
-import { environment, NETWORK, SENTRY_DSN, SOURCE_VERSION } from "./environmentVariables";
+import { environment, NETWORK, Network, SENTRY_DSN, SOURCE_VERSION } from "./environmentVariables";
 import { pageLoadedAt } from "./errors";
 
 interface EthereumProvider extends HttpProvider {
@@ -55,7 +55,7 @@ export const onLoad = (title: string) => {
     });
 
     // Update document title to show network
-    if (NETWORK !== "mainnet") {
+    if (NETWORK !== Network.Mainnet) {
         document.title = `${title} (${NETWORK})`;
     } else {
         document.title = title; // Also set in index.html

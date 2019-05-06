@@ -15,7 +15,7 @@ import { _captureBackgroundException_ } from "../../../lib/errors";
 import { DarknodePaymentWeb3 } from "../../../lib/ethereum/contracts/bindings/darknodePayment";
 import { DarknodePaymentStoreWeb3 } from "../../../lib/ethereum/contracts/bindings/darknodePaymentStore";
 import { DarknodeRegistryWeb3 } from "../../../lib/ethereum/contracts/bindings/darknodeRegistry";
-import { contracts } from "../../../lib/ethereum/contracts/contracts";
+import { contracts, tokenAddresses } from "../../../lib/ethereum/contracts/contracts";
 import { NewTokenDetails, OldToken, OldTokenDetails, Token } from "../../../lib/ethereum/tokens";
 import { updateCurrentCycle, updatePendingRewards, updatePendingTotalInEth, updatePreviousCycle } from "./networkActions";
 
@@ -64,6 +64,7 @@ export const waitForTX = <T>(promiEvent: PromiEvent<T>, onConfirmation?: (confir
     promiEvent.on("transactionHash", (txHash) => {
         resolve(txHash);
         dispatch(addTransaction({ txHash, tx: promiEvent }));
+        // tslint:disable-next-line: no-any
         (window as any).tx = promiEvent;
         promiEvent.on("confirmation", (confirmations) => {
             dispatch(setTxConfirmations({ txHash, confirmations }));
@@ -74,7 +75,6 @@ export const waitForTX = <T>(promiEvent: PromiEvent<T>, onConfirmation?: (confir
         });
     }).catch(reject);
 });
-
 
 export const calculateSecondsPerBlock = (
     web3: Web3,
@@ -89,7 +89,7 @@ export const calculateSecondsPerBlock = (
         currentBlock = await web3.eth.getBlock(currentBlockNumber);
         currentBlockNumber -= 1;
     }
-    const previousBlock: Block | null = await web3.eth.getBlock(currentBlockNumber - sampleSize);
+    const previousBlock: Block | null = await web3.eth.getBlock(currentBlockNumber - sampleSize) as Block | null;
 
     if (currentBlock !== null && previousBlock !== null) {
         const secondsPerBlock = Math.floor((currentBlock.timestamp - previousBlock.timestamp) / sampleSize);
@@ -107,9 +107,9 @@ const getOldBalances = async (web3: Web3, darknodeID: string): Promise<OrderedMa
 
     let feesEarned = OrderedMap<OldToken, BigNumber>();
 
-    const balances = OldTokenDetails.map(async (tokenDetails, token) => {
+    const balances = OldTokenDetails.map(async (_tokenDetails, token) => {
 
-        const balance = new BigNumber(await contract.methods.darknodeBalances(darknodeID, tokenDetails.address).call());
+        const balance = new BigNumber(await contract.methods.darknodeBalances(darknodeID, tokenAddresses(token)).call());
 
         return {
             balance,
@@ -137,8 +137,8 @@ const getBalances = async (web3: Web3, darknodeID: string): Promise<OrderedMap<T
 
     // const address = (await web3.eth.getAccounts())[0];
 
-    const balances = NewTokenDetails.map(async (tokenDetails, token) => {
-        const balance1 = new BigNumber((await contract.methods.darknodeBalances(darknodeID, tokenDetails.address).call()).toString());
+    const balances = NewTokenDetails.map(async (_tokenDetails, token) => {
+        const balance1 = new BigNumber((await contract.methods.darknodeBalances(darknodeID, tokenAddresses(token)).call()).toString());
         // const balance2 = tokenDetails.wrapped ? await new (web3.eth.Contract)(
         //     contracts.WarpGateToken.ABI,
         //     tokenDetails.address,
@@ -216,16 +216,16 @@ const updateCycleAndPendingRewards = (
     const previousCycle = (await darknodePayment.methods.previousCycle().call()).toString();
 
     const previous = await safePromiseAllMap(
-        NewTokenDetails.map(async (tokenDetails, token) =>
-            new BigNumber((await darknodePayment.methods.previousCycleRewardShare(tokenDetails.address).call()).toString())
+        NewTokenDetails.map(async (_tokenDetails, token) =>
+            new BigNumber((await darknodePayment.methods.previousCycleRewardShare(tokenAddresses(token)).call()).toString())
         ).toOrderedMap(),
         new BigNumber(0),
     );
 
     const currentShareCount = new BigNumber((await darknodePayment.methods.shareCount().call()).toString());
     const current = await safePromiseAllMap(
-        NewTokenDetails.map(async (tokenDetails, token) =>
-            new BigNumber((await darknodePayment.methods.currentCycleRewardPool(tokenDetails.address).call()).toString()).div(currentShareCount)
+        NewTokenDetails.map(async (_tokenDetails, token) =>
+            new BigNumber((await darknodePayment.methods.currentCycleRewardPool(tokenAddresses(token)).call()).toString()).div(currentShareCount)
         ).toOrderedMap(),
         new BigNumber(0),
     );
@@ -339,7 +339,7 @@ export const updateDarknodeStatistics = (
     const oldFeesEarned = await getOldBalances(web3, darknodeID);
     let feesEarnedTotalEth = new BigNumber(0);
     if (tokenPrices) {
-        feesEarnedTotalEth = await sumUpFees(feesEarned, oldFeesEarned, tokenPrices);
+        feesEarnedTotalEth = sumUpFees(feesEarned, oldFeesEarned, tokenPrices);
     }
 
     // Get darknode operator and public key
@@ -480,7 +480,7 @@ export const fetchDarknodeBalanceHistory = (
         block = block - block % jump;
 
         if (!balanceHistory.has(block)) {
-            const blockBalance = await web3.eth.getBalance(darknodeID, block);
+            const blockBalance = await web3.eth.getBalance(darknodeID, block) as string | null;
 
             if (blockBalance !== null) {
                 const balance = new BigNumber(blockBalance.toString());
@@ -491,7 +491,7 @@ export const fetchDarknodeBalanceHistory = (
 
     // Also add most recent block
     if (!balanceHistory.has(currentBlock)) {
-        const currentBalance = await web3.eth.getBalance(darknodeID, currentBlock);
+        const currentBalance = await web3.eth.getBalance(darknodeID, currentBlock) as string | null;
 
         if (currentBalance !== null) {
             const balance = new BigNumber(currentBalance.toString());
