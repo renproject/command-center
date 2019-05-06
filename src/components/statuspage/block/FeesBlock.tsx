@@ -11,7 +11,7 @@ import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
 import { OldToken, Token } from "../../../lib/ethereum/tokens";
-import { updateDarknodeStatistics } from "../../../store/actions/statistics/operatorActions";
+import { RegistrationStatus, updateDarknodeStatistics } from "../../../store/actions/statistics/operatorActions";
 import { showClaimPopup } from "../../../store/actions/statistics/operatorPopupActions";
 import { ApplicationData, DarknodeDetails, DarknodeFeeStatus } from "../../../store/types";
 import { CurrencyIcon } from "../../CurrencyIcon";
@@ -65,6 +65,7 @@ class FeesBlockClass extends React.Component<Props, State> {
         } = store;
         const { showAdvanced, tab } = this.state;
 
+        const showWhitelist = darknodeDetails && darknodeDetails.cycleStatus.get(currentCycle) === DarknodeFeeStatus.NOT_WHITELISTED;
         const showPreviousPending = darknodeDetails && darknodeDetails.cycleStatus.get(previousCycle) === DarknodeFeeStatus.NOT_CLAIMED;
         const showCurrentPending = darknodeDetails && darknodeDetails.cycleStatus.get(currentCycle) === DarknodeFeeStatus.NOT_CLAIMED;
         let pendingTotal = new BigNumber(0);
@@ -170,16 +171,18 @@ class FeesBlockClass extends React.Component<Props, State> {
                                 </span>
                                 <span className="fees-block--advanced--unit">{quoteCurrency.toUpperCase()}</span>
                             </div>
-                            {tab === Tab.Pending && showPreviousPending ? <>
+                            {darknodeDetails.registrationStatus === RegistrationStatus.Registered && (showPreviousPending || showWhitelist) ? <>
                                 <button className="button--white block--advanced--claim" onClick={this.onClaim}>
-                                    Claim{" "}<CurrencyIcon currency={quoteCurrency} />
-                                    <TokenBalance
-                                        token={Token.ETH}
-                                        convertTo={quoteCurrency}
-                                        amount={
-                                            summedClaimable
-                                        }
-                                    />{" "}{quoteCurrency.toUpperCase()}{" "}now
+                                    {showWhitelist ? "Whitelist now" : <>
+                                        Claim{" "}<CurrencyIcon currency={quoteCurrency} />
+                                        <TokenBalance
+                                            token={Token.ETH}
+                                            convertTo={quoteCurrency}
+                                            amount={
+                                                summedClaimable
+                                            }
+                                        />{" "}{quoteCurrency.toUpperCase()}{" "}now
+                                    </>}
                                 </button>
                             </> : <></>
                             }

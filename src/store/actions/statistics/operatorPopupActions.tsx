@@ -12,7 +12,7 @@ import { _captureBackgroundException_ } from "../../../lib/errors";
 import { Token } from "../../../lib/ethereum/tokens";
 import { Currency, EthNetwork, TokenPrices } from "../../types";
 import { setPopup } from "../popup/popupActions";
-import { approveNode, claimForNode, deregisterNode, fundNode, refundNode, registerNode } from "../trader/darknode";
+import { approveNode, changeCycle, claimForNode, deregisterNode, fundNode, refundNode, registerNode } from "../trader/darknode";
 import { updateDarknodeStatistics } from "./operatorActions";
 
 export const showRegisterPopup = (
@@ -211,8 +211,13 @@ export const showClaimPopup = (
         await claimForNode(web3, ethNetwork, address, darknodeID, onCancel, onDone)(dispatch);
     };
 
+    const step2 = async () => {
+        await changeCycle(web3, ethNetwork, address, darknodeID, onCancel, onDone)(dispatch);
+    };
+
     const steps = [
         { call: step1, name: "Claim rewards" },
+        { call: step2, name: "Change cycle (optional)" },
     ];
 
     dispatch(setPopup(
