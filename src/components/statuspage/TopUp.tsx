@@ -122,7 +122,7 @@ class TopUpClass extends React.Component<Props, State> {
     }
 
     private readonly sendFunds = async (): Promise<void> => {
-        const { darknodeID, store: { address, web3, tokenPrices } } = this.props;
+        const { darknodeID, store: { address, web3, tokenPrices, ethNetwork } } = this.props;
         const { value } = this.state;
 
         this.setState({ resultMessage: "", pending: true });
@@ -140,7 +140,7 @@ class TopUpClass extends React.Component<Props, State> {
 
         const onDone = async () => {
             try {
-                await this.props.actions.updateDarknodeStatistics(web3, darknodeID, tokenPrices);
+                await this.props.actions.updateDarknodeStatistics(web3, ethNetwork, darknodeID, tokenPrices);
             } catch (error) {
                 // Ignore error
             }
@@ -165,6 +165,7 @@ const mapStateToProps = (state: ApplicationData) => ({
         address: state.trader.address,
         web3: state.trader.web3,
         tokenPrices: state.statistics.tokenPrices,
+        ethNetwork: state.trader.ethNetwork,
     },
 });
 

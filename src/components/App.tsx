@@ -7,8 +7,9 @@ import { bindActionCreators, Dispatch } from "redux";
 import { Home } from "./pages/Home";
 import { PopupController } from "./popups/PopupController";
 
+import { DEPLOYMENT } from "../lib/environmentVariables";
 import { _captureBackgroundException_ } from "../lib/errors";
-import { ApplicationData } from "../store/types";
+import { ApplicationData, EthNetwork, getNetworkLabel, Network } from "../store/types";
 import { BackgroundTasks } from "./BackgroundTasks";
 import { _catch_ } from "./ErrorBoundary";
 import { Header } from "./Header";
@@ -50,9 +51,10 @@ class AppClass extends React.Component<Props, State> {
         this.props.store.address ? component : LoggingIn
 
     public render = (): JSX.Element => {
-        const { match: { params } } = this.props;
-        const { address } = this.props.store;
+        const { match: { params }, store: { address, ethNetwork } } = this.props;
         const darknodeID = getDarknodeParam(params);
+        console.log(DEPLOYMENT);
+        const showNetworkBanner = ethNetwork !== EthNetwork.Mainnet || DEPLOYMENT === Network.Staging;
 
         return <div className="app">
             <BackgroundTasks />
@@ -62,7 +64,11 @@ class AppClass extends React.Component<Props, State> {
               * (e.g. if in
               * the middle of a transaction, etc.)
               */}
-            <div key={address || undefined}>
+            <div key={`${address || undefined} ${ethNetwork}`} className={showNetworkBanner ? `with-banner with-banner--${ethNetwork}` : ""}>
+                {showNetworkBanner ?
+                    <div className="network--banner">Using <span className="banner--bold">{getNetworkLabel(ethNetwork)}</span> Ethereum network</div> :
+                    <></>
+                }
                 <PopupController>
                     {address ? _catch_(<Sidebar selectedDarknode={darknodeID} />) : null}
                     <div className="app--body">
@@ -83,6 +89,7 @@ const mapStateToProps = (state: ApplicationData) => ({
     store: {
         address: state.trader.address,
         web3: state.trader.web3,
+        ethNetwork: state.trader.ethNetwork,
     },
 });
 

@@ -11,21 +11,28 @@ import { WithdrawPopup } from "../../../components/popups/WithdrawPopup";
 import { _noCapture_ } from "../../../lib/errors";
 import { DarknodePaymentWeb3 } from "../../../lib/ethereum/contracts/bindings/darknodePayment";
 import { DarknodeRegistryWeb3 } from "../../../lib/ethereum/contracts/bindings/darknodeRegistry";
-import { contracts, tokenAddresses } from "../../../lib/ethereum/contracts/contracts";
+import { getContracts, tokenAddresses } from "../../../lib/ethereum/contracts/contracts";
 import { AllTokenDetails, OldToken, Token } from "../../../lib/ethereum/tokens";
+import { EthNetwork } from "../../../store/types";
 import { clearPopup, setPopup } from "../popup/popupActions";
 import { waitForTX } from "../statistics/operatorActions";
 
-export const bridgedToken = (web3: Web3, address: string): Contract => {
-    return new web3.eth.Contract(contracts.WarpGateToken.ABI, address);
+export const bridgedToken = (web3: Web3, ethNetwork: EthNetwork, address: string): Contract => {
+    return new web3.eth.Contract(getContracts(ethNetwork).WarpGateToken.ABI, address);
 };
 
 export const btcAddressToHex = (address: string) => `0x${decode58(address).toString("hex")}`;
 export const zecAddressToHex = (address: string) => `0x${decode58(address).toString("hex")}`;
 
-const burn = (web3: Web3, trader: string, currency: Token, to: string) => async (dispatch: Dispatch) => {
-    const contract = currency === Token.BTC ? bridgedToken(web3, tokenAddresses(Token.BTC)) :
-        currency === Token.ZEC ? bridgedToken(web3, tokenAddresses(Token.ZEC)) :
+const burn = (
+    web3: Web3,
+    ethNetwork: EthNetwork,
+    trader: string,
+    currency: Token,
+    to: string,
+) => async (dispatch: Dispatch) => {
+    const contract = currency === Token.BTC ? bridgedToken(web3, ethNetwork, tokenAddresses(Token.BTC, ethNetwork)) :
+        currency === Token.ZEC ? bridgedToken(web3, ethNetwork, tokenAddresses(Token.ZEC, ethNetwork)) :
             undefined;
 
     if (contract === undefined) {
@@ -43,7 +50,13 @@ const burn = (web3: Web3, trader: string, currency: Token, to: string) => async 
     )(dispatch);
 };
 
-export const withdrawReward = (web3: Web3, trader: string, darknodeID: string, token: Token | OldToken) => async (dispatch: Dispatch) => new Promise(async (resolve, reject) => {
+export const withdrawReward = (
+    web3: Web3,
+    ethNetwork: EthNetwork,
+    trader: string,
+    darknodeID: string,
+    token: Token | OldToken,
+) => async (dispatch: Dispatch) => new Promise(async (resolve, reject) => {
 
     const tokenDetails = AllTokenDetails.get(token);
     if (tokenDetails === undefined) {
@@ -54,11 +67,11 @@ export const withdrawReward = (web3: Web3, trader: string, darknodeID: string, t
     if (tokenDetails.old) {
         try {
             const contract = new (web3.eth.Contract)(
-                contracts.DarknodeRewardVault.ABI,
-                contracts.DarknodeRewardVault.address
+                getContracts(ethNetwork).DarknodeRewardVault.ABI,
+                getContracts(ethNetwork).DarknodeRewardVault.address
             );
             await waitForTX(
-                contract.methods.withdraw(darknodeID, tokenAddresses(token)).send({ from: trader }),
+                contract.methods.withdraw(darknodeID, tokenAddresses(token, ethNetwork)).send({ from: trader }),
                 resolve,
             )(dispatch);
         } catch (error) {
@@ -69,8 +82,8 @@ export const withdrawReward = (web3: Web3, trader: string, darknodeID: string, t
         const withdraw = async (withdrawAddress?: string) => {
 
             const darknodePayment: DarknodePaymentWeb3 = new (web3.eth.Contract)(
-                contracts.DarknodePayment.ABI,
-                contracts.DarknodePayment.address
+                getContracts(ethNetwork).DarknodePayment.ABI,
+                getContracts(ethNetwork).DarknodePayment.address
             );
 
             if (!tokenDetails) {
@@ -78,7 +91,7 @@ export const withdrawReward = (web3: Web3, trader: string, darknodeID: string, t
             }
 
             await waitForTX(
-                darknodePayment.methods.withdraw(darknodeID, tokenAddresses(token)).send({ from: trader }),
+                darknodePayment.methods.withdraw(darknodeID, tokenAddresses(token, ethNetwork)).send({ from: trader }),
                 resolve,
             )(dispatch);
 
@@ -86,7 +99,7 @@ export const withdrawReward = (web3: Web3, trader: string, darknodeID: string, t
                 if (!withdrawAddress) {
                     throw new Error("Invalid withdraw address");
                 }
-                await burn(web3, trader, token as Token, withdrawAddress)(dispatch);
+                await burn(web3, ethNetwork, trader, token as Token, withdrawAddress)(dispatch);
             }
         };
         const onCancel = () => {
@@ -120,12 +133,17 @@ export const withdrawReward = (web3: Web3, trader: string, darknodeID: string, t
     }
 });
 
-export const approveNode = (web3: Web3, trader: string, bond: BigNumber) => async (dispatch: Dispatch) => {
+export const approveNode = (
+    web3: Web3,
+    ethNetwork: EthNetwork,
+    trader: string,
+    bond: BigNumber
+) => async (dispatch: Dispatch) => {
     // tslint:disable-next-line:no-non-null-assertion
-    const ercContract = new (web3.eth.Contract)(contracts.ERC20.ABI, tokenAddresses(OldToken.REN));
+    const ercContract = new (web3.eth.Contract)(getContracts(ethNetwork).ERC20.ABI, tokenAddresses(OldToken.REN, ethNetwork));
     const ercBalance = new BigNumber(await ercContract.methods.balanceOf(trader).call());
     const ercAllowance = new BigNumber(
-        await ercContract.methods.allowance(trader, contracts.DarknodeRegistry.address).call(),
+        await ercContract.methods.allowance(trader, getContracts(ethNetwork).DarknodeRegistry.address).call(),
     );
 
     if (ercAllowance.gte(bond)) {
@@ -138,12 +156,13 @@ export const approveNode = (web3: Web3, trader: string, bond: BigNumber) => asyn
     }
 
     return waitForTX(
-        ercContract.methods.approve(contracts.DarknodeRegistry.address, bond.toFixed()).send({ from: trader })
+        ercContract.methods.approve(getContracts(ethNetwork).DarknodeRegistry.address, bond.toFixed()).send({ from: trader })
     )(dispatch);
 };
 
 export const registerNode = (
     web3: Web3,
+    ethNetwork: EthNetwork,
     trader: string,
     darknodeID: string,
     publicKey: string,
@@ -155,10 +174,10 @@ export const registerNode = (
     const hardCodedGas = 500000;
 
     // tslint:disable-next-line:no-non-null-assertion
-    const ercContract = new (web3.eth.Contract)(contracts.ERC20.ABI, tokenAddresses(OldToken.REN));
+    const ercContract = new (web3.eth.Contract)(getContracts(ethNetwork).ERC20.ABI, tokenAddresses(OldToken.REN, ethNetwork));
 
     const ercAllowance = new BigNumber(
-        await ercContract.methods.allowance(trader, contracts.DarknodeRegistry.address).call()
+        await ercContract.methods.allowance(trader, getContracts(ethNetwork).DarknodeRegistry.address).call()
     );
 
     let gas: number | undefined = hardCodedGas;
@@ -168,8 +187,8 @@ export const registerNode = (
 
     let resolved = false;
     const darknodeRegistry: DarknodeRegistryWeb3 = new (web3.eth.Contract)(
-        contracts.DarknodeRegistry.ABI,
-        contracts.DarknodeRegistry.address
+        getContracts(ethNetwork).DarknodeRegistry.ABI,
+        getContracts(ethNetwork).DarknodeRegistry.address
     );
 
     try {
@@ -187,6 +206,7 @@ export const registerNode = (
 
 export const deregisterNode = (
     web3: Web3,
+    ethNetwork: EthNetwork,
     trader: string,
     darknodeID: string,
     onCancel: () => void,
@@ -196,8 +216,8 @@ export const deregisterNode = (
 
     let resolved = false;
     const darknodeRegistry = new ((web3).eth.Contract)(
-        contracts.DarknodeRegistry.ABI,
-        contracts.DarknodeRegistry.address
+        getContracts(ethNetwork).DarknodeRegistry.ABI,
+        getContracts(ethNetwork).DarknodeRegistry.address
     );
     try {
         const res = await waitForTX(
@@ -214,6 +234,7 @@ export const deregisterNode = (
 
 export const refundNode = (
     web3: Web3,
+    ethNetwork: EthNetwork,
     trader: string,
     darknodeID: string,
     onCancel: () => void,
@@ -223,8 +244,8 @@ export const refundNode = (
 
     let resolved = false;
     const darknodeRegistry: DarknodeRegistryWeb3 = new (web3.eth.Contract)(
-        contracts.DarknodeRegistry.ABI,
-        contracts.DarknodeRegistry.address
+        getContracts(ethNetwork).DarknodeRegistry.ABI,
+        getContracts(ethNetwork).DarknodeRegistry.address
     );
 
     try {
@@ -275,6 +296,7 @@ export const fundNode = (
 
 export const claimForNode = (
     web3: Web3,
+    ethNetwork: EthNetwork,
     address: string,
     darknodeID: string,
     onCancel: () => void,
@@ -283,8 +305,8 @@ export const claimForNode = (
     // Convert eth to wei
 
     const darknodePayment: DarknodePaymentWeb3 = new (web3.eth.Contract)(
-        contracts.DarknodePayment.ABI,
-        contracts.DarknodePayment.address
+        getContracts(ethNetwork).DarknodePayment.ABI,
+        getContracts(ethNetwork).DarknodePayment.address
     );
 
     let resolved = false;

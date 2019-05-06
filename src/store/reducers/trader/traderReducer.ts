@@ -17,6 +17,9 @@ export const traderReducer = (state: TraderData = new TraderData(), action: Acco
         case getType(accountActions.storeWeb3BrowserName):
             return state.set("web3BrowserName", action.payload);
 
+        case getType(accountActions.storeEthNetwork):
+            return state.set("ethNetwork", action.payload);
+
         default:
             return state;
     }

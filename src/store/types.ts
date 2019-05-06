@@ -12,6 +12,22 @@ import { getReadOnlyWeb3 } from "../lib/ethereum/wallet";
 import { Record } from "../lib/record";
 import { RegistrationStatus } from "./actions/statistics/operatorActions";
 
+export enum Network {
+    Staging = "staging",
+    Production = "production",
+}
+
+export enum EthNetwork {
+    Kovan = "kovan",
+    Mainnet = "main",
+}
+
+export const EthNetworkLabel = {
+    [EthNetwork.Kovan]: "Kovan",
+    [EthNetwork.Mainnet]: "Mainnet",
+};
+export const getNetworkLabel = (ethNetwork: EthNetwork | undefined) => ethNetwork ? EthNetworkLabel[ethNetwork] || ethNetwork : ethNetwork;
+
 interface Serializable<T> {
     serialize(): string;
     deserialize(str: string): T;
@@ -31,6 +47,8 @@ export class TraderData extends Record({
     address: null as string | null,
     web3BrowserName: Web3Browser.MetaMask,
     web3: readOnlyWeb3,
+
+    ethNetwork: EthNetwork.Mainnet,
 }) { }
 
 export enum LabelLevel {

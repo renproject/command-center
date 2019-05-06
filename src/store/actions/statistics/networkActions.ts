@@ -6,9 +6,9 @@ import { createStandardAction } from "typesafe-actions";
 
 import { OrderedMap } from "immutable";
 import { DarknodeRegistryWeb3 } from "../../../lib/ethereum/contracts/bindings/darknodeRegistry";
-import { contracts } from "../../../lib/ethereum/contracts/contracts";
+import { getContracts } from "../../../lib/ethereum/contracts/contracts";
 import { getPrices, Token } from "../../../lib/ethereum/tokens";
-import { TokenPrices } from "../../types";
+import { EthNetwork, TokenPrices } from "../../types";
 
 export const storeTokenPrices = createStandardAction("storeTokenPrices")<TokenPrices>();
 
@@ -20,10 +20,10 @@ export const updatePreviousCycle = createStandardAction("updatePreviousCycle")<s
 export const updatePendingRewards = createStandardAction("updatePendingRewards")<OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber>>>();
 export const updatePendingTotalInEth = createStandardAction("updatePendingTotalInEth")<OrderedMap<string /* cycle */, BigNumber>>();
 
-export const updateNetworkStatistics = (web3: Web3) => async (dispatch: Dispatch) => {
+export const updateNetworkStatistics = (web3: Web3, ethNetwork: EthNetwork) => async (dispatch: Dispatch) => {
     const darknodeRegistry: DarknodeRegistryWeb3 = new (web3.eth.Contract)(
-        contracts.DarknodeRegistry.ABI,
-        contracts.DarknodeRegistry.address
+        getContracts(ethNetwork).DarknodeRegistry.ABI,
+        getContracts(ethNetwork).DarknodeRegistry.address
     );
     const minimumBond = new BigNumber((await darknodeRegistry.methods.minimumBond().call()).toString());
     dispatch(storeMinimumBond(minimumBond));
