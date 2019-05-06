@@ -1,19 +1,39 @@
 import * as React from "react";
 
-import { faAngleDown, faBars } from "@fortawesome/free-solid-svg-icons";
+import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Blocky, Loading } from "@renex/react-components";
+import { Dropdown } from "@renex/react-components";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
 import { bindActionCreators, Dispatch } from "redux";
 
 import { storeQuoteCurrency } from "../store/actions/statistics/operatorActions";
-import { login, logout } from "../store/actions/trader/accountActions";
 import { showMobileMenu } from "../store/actions/ui/uiActions";
-import { ApplicationData, currencies, Currency, EthNetwork } from "../store/types";
+import { ApplicationData, currencies, Currency } from "../store/types";
+import { AccountDropdown } from "./AccountDropdown";
 import { CurrencyIcon } from "./CurrencyIcon";
 
-import English from "../styles/images/rp-flag-uk.svg";
+import { ReactComponent as English } from "../styles/images/rp-flag-uk.svg";
+
+const languageOptions = new Map()
+    .set("EN",
+        <><English /> English</>
+    );
+
+const getCurrencyOptions = () => {
+    const options = new Map<string, React.ReactNode>();
+
+    for (const currency of currencies) {
+        options.set(currency.currency, <>
+            <CurrencyIcon currency={currency.currency} />
+            {" "}{currency.description}
+        </>);
+    }
+
+    return options;
+};
+
+const currencyOptions = getCurrencyOptions();
 
 /**
  * Header is a visual component providing page branding and navigation.
@@ -30,16 +50,30 @@ class HeaderClass extends React.Component<Props, State> {
     }
 
     public render = (): JSX.Element => {
-        const { address, web3BrowserName, quoteCurrency, transactions, confirmations, ethNetwork } = this.props.store;
-        const { accountDropdown, languageDropdown, currencyDropdown, copied } = this.state;
+        const { address, quoteCurrency } = this.props.store;
 
-        // `pendingTXs` calculates whether or not the user has any ethereum
-        // transactions that haven't been confirmed yet.
-        const pendingTXs = transactions.reduce((reduction: boolean, _value, key: string) => {
-            return reduction || confirmations.get(key, 0) === 0;
-        }, false);
+        const languageDropdownNode = <Dropdown
+            key="languageDropdown"
+            selected={{
+                value: "EN",
+                render: "English",
+            }}
+            options={languageOptions}
+            setValue={this.setLanguage}
+        />;
 
-        const etherscan = `https://${ethNetwork === EthNetwork.Mainnet ? "" : `${ethNetwork}.`}etherscan.io`;
+        const currencyDropdownNode = <Dropdown
+            key="currencyDropdown"
+            selected={{
+                value: quoteCurrency,
+                render: <>
+                    <CurrencyIcon currency={quoteCurrency} />
+                    {" "}{quoteCurrency.toUpperCase()}
+                </>
+            }}
+            options={currencyOptions}
+            setValue={this.setCurrency}
+        />;
 
         return (
             <div className="header">
@@ -54,199 +88,34 @@ class HeaderClass extends React.Component<Props, State> {
                     <Link className="no-underline" to="/">
                         <div className="header--logo" />
                     </Link>
-                    <ul className="header--menu">
-                        <li
-                            data-id="languageDropdown"
-                            className="header--group header--group--language"
-                            role="menuitem"
-                            onClick={this.toggleDropdown}
-                            onMouseEnter={this.showDropdown}
-                            onMouseLeave={this.hideDropdown}
-                        >
-                            English <FontAwesomeIcon icon={faAngleDown} />
-                            {languageDropdown ?
-                                <ul className="header--dropdown header--dropdown--options">
-                                    <li role="button" className="header--dropdown--selected">
-                                        <img alt="" role="presentation" src={English} />
-                                        {" "}
-                                        English
-                                            </li>
-                                </ul> : null
-                            }
-                        </li>
-
-                        <li
-                            data-id="currencyDropdown"
-                            className="header--group header--group--currency"
-                            role="menuitem"
-                            onClick={this.toggleDropdown}
-                            onMouseEnter={this.showDropdown}
-                            onMouseLeave={this.hideDropdown}
-                        >
-                            {quoteCurrency.toUpperCase()} <FontAwesomeIcon icon={faAngleDown} />
-                            {currencyDropdown ?
-                                <ul className="header--dropdown header--dropdown--currency">
-                                    {currencies.map(({ currency, description }) => <li
-                                        key={currency}
-                                        role="button"
-                                        data-id={currency}
-                                        className={quoteCurrency === currency ?
-                                            "header--dropdown--selected" :
-                                            ""}
-                                        onClick={this.setCurrency}
-                                    >
-                                        <CurrencyIcon currency={currency} />
-                                        {" "}
-                                        {description}
-                                    </li>)}
-                                </ul> : null
-                            }
-                        </li>
-                        <li
-                            data-id="accountDropdown"
-                            className="header--group"
-                            role="menuitem"
-                            onClick={this.toggleDropdown}
-                            onMouseEnter={this.showDropdown}
-                            onMouseLeave={this.hideDropdown}
-                        >
-                            <div className="header--account">
-                                {address && <Blocky address={address} />}
-                                <div
-                                    className={`header--account--right ${address ?
-                                        "header--account--connected" :
-                                        "header--account--disconnected"}`}
-                                >
-                                    <div className="header--account--type">
-                                        {web3BrowserName} {pendingTXs ? <Loading alt={true} className="header--account--spinner" /> : <></>}
-                                    </div>
-                                    {address ?
-                                        <div className="header--account--address">
-                                            {address.substring(0, 8)}...{address.slice(-5)}
-                                        </div> :
-                                        <div className="header--account--address">Not connected</div>
-                                    }
-                                </div>
-                            </div>
-                            {accountDropdown ?
-                                <ul className={`header--dropdown ${!address ? "header--dropdown--login" : ""}`}>
-                                    {address ? <>
-                                        <li role="button" onClick={this.copyToClipboard}>
-                                            <span data-addr={address}>
-                                                {copied ?
-                                                    <span>Copied</span>
-                                                    :
-                                                    <span>Copy to clipboard</span>
-                                                }
-                                            </span>
-                                        </li>
-                                        <li
-                                            role="button"
-                                            onClick={this.handleLogout}
-                                        >
-                                            Log out
-                                        </li>
-                                        {transactions.size > 0 ?
-                                            <>
-                                                {transactions.map((tx, txHash) => {
-                                                    const confs = confirmations.get(txHash, 0);
-                                                    return <li key={txHash} className="transaction">
-                                                        {confs === 0 ? <Loading /> : <></>}
-                                                        {confs === -1 ? <span className="red">(ERR) {" "}</span> : <></>}
-                                                        <a className="transaction--hash" target="_blank" rel="noreferrer" href={`${etherscan}/tx/${txHash}`}>{txHash.substring(0, 12)}...</a>
-                                                        {confs > 0 ? <>{" "}({confs} conf.)</> : ""}
-                                                    </li>;
-                                                }).valueSeq().toArray()}
-                                            </> : <></>
-                                        }
-                                    </> :
-                                        <li
-                                            role="button"
-                                            onClick={this.handleLogin}
-                                            className="header--dropdown--highlight"
-                                        >
-                                            Connect {web3BrowserName}
-                                        </li>
-                                    }
-                                </ul> : null
-                            }
-                        </li>
-                    </ul>
+                    <div className="header--menu">
+                        {languageDropdownNode}
+                        {currencyDropdownNode}
+                        <AccountDropdown />
+                    </div>
                 </div>
             </div>
         );
     }
 
-    private readonly handleLogin = async (): Promise<void> => {
-        const { address } = this.props.store;
-        if (!address) {
-            await this.props.actions.login({ redirect: false, showPopup: true, immediatePopup: true });
-        }
+    private readonly setCurrency = (currency: string): void => {
+        this.props.actions.storeQuoteCurrency({ quoteCurrency: currency as Currency });
     }
 
-    private readonly handleLogout = async (): Promise<void> => {
-        await this.props.actions.logout({ reload: false });
-    }
-
-    private readonly toggleDropdown = (e: React.MouseEvent<HTMLLIElement>): void => {
-        const id = e.currentTarget.dataset ? e.currentTarget.dataset.id : undefined;
-        if (id) {
-            this.setState((state: State) => ({ ...state, [id]: !state[id], copied: false }));
-        }
-    }
-
-    private readonly showDropdown = (e: React.MouseEvent<HTMLLIElement>): void => {
-        const id = e.currentTarget.dataset ? e.currentTarget.dataset.id : undefined;
-        if (id) {
-            this.setState((state: State) => ({ ...state, [id]: true, copied: false }));
-        }
-    }
-
-    private readonly hideDropdown = (e: React.MouseEvent<HTMLLIElement>): void => {
-        const id = e.currentTarget.dataset ? e.currentTarget.dataset.id : undefined;
-        if (id) {
-            this.setState((state: State) => ({ ...state, [id]: false, copied: false }));
-        }
-    }
-
-    private readonly setCurrency = (e: React.MouseEvent<HTMLLIElement>): void => {
-        const id = e.currentTarget.dataset ? e.currentTarget.dataset.id : undefined;
-        if (id) {
-            this.props.actions.storeQuoteCurrency({ quoteCurrency: id as Currency });
-        }
-    }
-
-    private readonly copyToClipboard = (e: React.MouseEvent<HTMLElement>): void => {
-        const el = e.currentTarget.childNodes[0] as Element;
-        const address = el.getAttribute("data-addr");
-        if (address) {
-            const dummy = document.createElement("input");
-            document.body.appendChild(dummy);
-            dummy.setAttribute("value", address);
-            dummy.select();
-            document.execCommand("copy");
-            document.body.removeChild(dummy);
-        }
-        this.setState({ copied: true });
+    private readonly setLanguage = (language: string): void => {
+        // NOT IMPLEMENTED
     }
 }
 
 const mapStateToProps = (state: ApplicationData) => ({
     store: {
         address: state.trader.address,
-        web3BrowserName: state.trader.web3BrowserName,
         quoteCurrency: state.statistics.quoteCurrency,
-        web3: state.trader.web3,
-        transactions: state.statistics.transactions,
-        confirmations: state.statistics.confirmations,
-        ethNetwork: state.trader.ethNetwork,
     },
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     actions: bindActionCreators({
-        login,
-        logout,
         storeQuoteCurrency,
         showMobileMenu,
     }, dispatch),
@@ -257,10 +126,6 @@ interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<
 }
 
 interface State {
-    accountDropdown: boolean;
-    languageDropdown: boolean;
-    currencyDropdown: boolean;
-    copied: boolean;
 }
 
 export const Header = connect(mapStateToProps, mapDispatchToProps)(withRouter(HeaderClass));

@@ -53,7 +53,6 @@ class AppClass extends React.Component<Props, State> {
     public render = (): JSX.Element => {
         const { match: { params }, store: { address, ethNetwork } } = this.props;
         const darknodeID = getDarknodeParam(params);
-        console.log(DEPLOYMENT);
         const showNetworkBanner = ethNetwork !== EthNetwork.Mainnet || DEPLOYMENT === Network.Staging;
 
         return <div className="app">
