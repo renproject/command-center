@@ -193,7 +193,7 @@ export const registerNode = (
 
     try {
         const res = await waitForTX(
-            darknodeRegistry.methods.register(darknodeID, publicKey).send({ from: trader, gas }),
+            darknodeRegistry.methods.register(darknodeID, publicKey, bond.toFixed()).send({ from: trader, gas }),
             onDone
         )(dispatch);
         resolved = true;
@@ -323,5 +323,43 @@ export const claimForNode = (
     } catch (error) {
         if (resolved) { onCancel(); }
         throw error;
+    }
+};
+
+export const changeCycle = (
+    web3: Web3,
+    ethNetwork: EthNetwork,
+    address: string,
+    darknodeID: string,
+    onCancel: () => void,
+    onDone: () => void
+) => async (dispatch: Dispatch): Promise<string> => {
+    // Convert eth to wei
+
+    const darknodePayment: DarknodePaymentWeb3 = new (web3.eth.Contract)(
+        getContracts(ethNetwork).DarknodePayment.ABI,
+        getContracts(ethNetwork).DarknodePayment.address
+    );
+
+    let resolved = false;
+
+    // tslint:disable-next-line: no-any
+    const check = await (darknodePayment.methods.changeCycle() as any).call({ from: address });
+    if (check) {
+        const call = () => darknodePayment.methods.changeCycle().send({ from: address });
+
+        try {
+            const res = await waitForTX(
+                call(),
+                onDone
+            )(dispatch);
+            resolved = true;
+            return res;
+        } catch (error) {
+            if (resolved) { onCancel(); }
+            throw error;
+        }
+    } else {
+        return "";
     }
 };

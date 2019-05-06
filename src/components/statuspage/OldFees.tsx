@@ -4,8 +4,6 @@ import { TokenIcon } from "@renex/react-components";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
-import { updateDarknodeStatistics } from "../../store/actions/statistics/operatorActions";
-import { showClaimPopup } from "../../store/actions/statistics/operatorPopupActions";
 import { ApplicationData, DarknodeDetails } from "../../store/types";
 import { CurrencyIcon } from "../CurrencyIcon";
 import { TokenBalance } from "../TokenBalance";
@@ -82,8 +80,6 @@ const mapStateToProps = (state: ApplicationData) => ({
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     actions: bindActionCreators({
-        showClaimPopup,
-        updateDarknodeStatistics,
     }, dispatch),
 });
 

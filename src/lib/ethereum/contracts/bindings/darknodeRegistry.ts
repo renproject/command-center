@@ -37,7 +37,7 @@ export interface DarknodeRegistryWeb3 extends Contract {
         minimumPodSize(): Read<BigNumber>;
         transferOwnership(newOwner: string): Write;
         VERSION(): Read<string>;
-        register(_darknodeID: string, _publicKey: string): Write;
+        register(_darknodeID: string, _publicKey: string, _bond: BigNumber): Write;
         deregister(_darknodeID: string): Write;
         epoch(): Write;
         transferStoreOwnership(_newOwner: string): Write;
