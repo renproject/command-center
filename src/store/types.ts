@@ -22,7 +22,7 @@ export enum EthNetwork {
     Mainnet = "main",
 }
 
-export const EthNetworkLabel = {
+const EthNetworkLabel = {
     [EthNetwork.Kovan]: "Kovan",
     [EthNetwork.Mainnet]: "Mainnet",
 };

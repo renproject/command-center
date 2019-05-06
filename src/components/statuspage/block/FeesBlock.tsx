@@ -17,6 +17,7 @@ import { ApplicationData, DarknodeDetails, DarknodeFeeStatus } from "../../../st
 import { CurrencyIcon } from "../../CurrencyIcon";
 import { TokenBalance } from "../../TokenBalance";
 import { FeesItem } from "../FeesItem";
+import { OldFees } from "../OldFees";
 import { Block, BlockBody, BlockTitle } from "./Block";
 
 enum Tab {
@@ -93,47 +94,6 @@ class FeesBlockClass extends React.Component<Props, State> {
                         summedPendingRewards,
                         darknodeDetails.feesEarned
                     );
-        }
-
-        const oldFees = [];
-        if (darknodeDetails) {
-            for (const [token, balance] of darknodeDetails.oldFeesEarned.toArray()) {
-                const tokenName = token.replace(" (old)", "");
-                if (balance.isZero()) {
-                    continue;
-                }
-                oldFees.push(<tr key={token}>
-                    <td>
-                        <TokenIcon className="fees-block--table--icon" token={tokenName} />
-                        {" "}
-                        <span>{tokenName}</span>
-                    </td>
-                    <td className="fees-block--table--value">
-                        <TokenBalance token={token} amount={balance} />
-                    </td>
-                    <td className="fees-block--table--usd">
-                        <CurrencyIcon currency={quoteCurrency} />
-                        <TokenBalance
-                            token={token}
-                            amount={balance}
-                            convertTo={quoteCurrency}
-                        />
-                        {" "}
-                        <span className="fees-block--table--usd-symbol">
-                            {quoteCurrency.toUpperCase()}
-                        </span>
-                    </td>
-                    {isOperator ? <td>
-                        <FeesItem
-                            disabled={true}
-                            key={token}
-                            token={token}
-                            amount={balance}
-                            darknodeID={darknodeDetails.ID}
-                        />
-                    </td> : <></>}
-                </tr>);
-            }
         }
 
         return (
@@ -262,12 +222,7 @@ class FeesBlockClass extends React.Component<Props, State> {
                                             }).valueSeq().toArray()
                                         }
                                         {
-                                            tab !== Tab.Pending && oldFees.length > 0 ? <>
-                                                <th colSpan={4}>
-                                                    Old fees
-                                                </th>
-                                                {oldFees}
-                                            </> : <></>
+                                            tab !== Tab.Pending ? <OldFees darknodeDetails={darknodeDetails} isOperator={isOperator} /> : <></>
                                         }
                                     </tbody>
                                 </table>
