@@ -26,9 +26,6 @@ export const updateNetworkStatistics = (web3: Web3, ethNetwork: EthNetwork) => a
         getContracts(ethNetwork).DarknodeRegistry.address
     );
     const minimumBondBN = await darknodeRegistry.methods.minimumBond().call();
-    if ((minimumBondBN as unknown) === null) {
-        return;
-    }
     const minimumBond = new BigNumber(minimumBondBN.toString());
     dispatch(storeMinimumBond(minimumBond));
 };
