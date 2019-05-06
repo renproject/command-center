@@ -3,7 +3,7 @@ import Web3 from "web3";
 import { provider } from "web3-providers";
 
 import { Language } from "../../languages/language";
-import { ETH_NETWORK, INFURA_URL } from "../environmentVariables";
+import { ETH_NETWORK, PUBLIC_NODE } from "../environmentVariables";
 import { _noCapture_ } from "../errors";
 
 export const ErrorCanceledByUser = "User denied transaction signature.";
@@ -14,7 +14,7 @@ const ErrorAccountAccessRejected = Language.wallet.mustConnect;
 const ErrorWrongNetwork = Language.wallet.mustChangeNetwork;
 
 export const getReadOnlyWeb3 = (): Web3 => {
-    return new Web3(INFURA_URL);
+    return new Web3(PUBLIC_NODE || "");
 };
 
 export const getInjectedWeb3Provider = async (onAnyProvider: (provider: provider) => void): Promise<provider> => {

@@ -12,7 +12,7 @@ import { _captureBackgroundException_ } from "../../../lib/errors";
 import { Token } from "../../../lib/ethereum/tokens";
 import { Currency, TokenPrices } from "../..//types";
 import { setPopup } from "../popup/popupActions";
-import { approveNode, deregisterNode, fundNode, refundNode, registerNode, claimForNode } from "../trader/darknode";
+import { approveNode, claimForNode, deregisterNode, fundNode, refundNode, registerNode } from "../trader/darknode";
 import { updateDarknodeStatistics } from "./operatorActions";
 
 export const showRegisterPopup = (

@@ -1,6 +1,7 @@
 import { AbiItem } from "web3-utils";
 
-import { NETWORK } from "../../environmentVariables";
+import { ETH_NETWORK, EthNetwork, NETWORK, Network } from "../../environmentVariables";
+import { OldToken, Token } from "../tokens";
 
 // Contracts
 interface Contract {
@@ -9,10 +10,7 @@ interface Contract {
     deployedInBlock?: string; // hex string
 }
 
-const TESTNET = "testnet";
-const MAINNET = "mainnet";
-
-const getContractsForNetwork = (network: string | undefined) => {
+const getContractsForNetwork = (network: Network | undefined) => {
     const ERC20: Contract = {
         // tslint:disable-next-line: no-require-imports
         ABI: require("./ABIs/ERC20.json"),
@@ -26,7 +24,7 @@ const getContractsForNetwork = (network: string | undefined) => {
     let darknodePayment;
     let darknodePaymentStore;
     switch (network) {
-        case MAINNET:
+        case Network.Mainnet:
             path = "mainnet";
 
             // Change these together
@@ -39,7 +37,7 @@ const getContractsForNetwork = (network: string | undefined) => {
             throw new Error("mainnet unsupported");
 
             break;
-        case TESTNET:
+        case Network.Testnet:
         default:
             path = "testnet";
 
@@ -87,3 +85,56 @@ const getContractsForNetwork = (network: string | undefined) => {
 };
 
 export const contracts = getContractsForNetwork(NETWORK);
+
+export const tokenAddresses = (token: Token | OldToken): string => {
+    switch (ETH_NETWORK) {
+        case EthNetwork.Mainnet:
+            switch (token) {
+                case Token.DAI:
+                    return "0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359";
+                case Token.ETH:
+                    return "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
+                case Token.BTC:
+                    return "FIXME";
+                case Token.ZEC:
+                    return "FIXME";
+                case OldToken.ETH:
+                    return "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
+                case OldToken.DGX:
+                    return "0x4f3AfEC4E5a3F2A6a1A411DEF7D7dFe50eE057bF";
+                case OldToken.REN:
+                    return "0x408e41876cCCDC0F92210600ef50372656052a38";
+                case OldToken.TUSD:
+                    return "0xdd5fbCe2F6a956C3022bA3663759011Dd51e73E";
+                case OldToken.OMG:
+                    return "0xd26114cd6EE289AccF82350c8d8487fedB8A0C07";
+                case OldToken.ZRX:
+                    return "0xE41d2489571d322189246DaFA5ebDe1F4699F498";
+            }
+        case EthNetwork.Kovan:
+            switch (token) {
+                case Token.DAI:
+                    return "0xc4375b7de8af5a38a93548eb8453a498222c4ff2";
+                case Token.ETH:
+                    return "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
+                case Token.BTC:
+                    return "0x2a8368d2a983a0aeae8da0ebc5b7c03a0ea66b37";
+                case Token.ZEC:
+                    return "0xd67256552f93b39ac30083b4b679718a061feae6";
+                case OldToken.ETH:
+                    return "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
+                case OldToken.DGX:
+                    return "0x7d6D31326b12B6CBd7f054231D47CbcD16082b71";
+                case OldToken.REN:
+                    return "0x2cd647668494c1b15743ab283a0f980d90a87394";
+                case OldToken.TUSD:
+                    return "0x525389752ffe6487d33EF53FBcD4E5D3AD7937a0";
+                case OldToken.OMG:
+                    return "0x66497ba75dD127b46316d806c077B06395918064";
+                case OldToken.ZRX:
+                    return "0x6EB628dCeFA95802899aD3A9EE0C7650Ac63d543";
+            }
+    }
+
+    throw new Error(`Unknown network ${Network} or token ${token}`);
+};

@@ -11,14 +11,13 @@ import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
 import { OldToken, Token } from "../../../lib/ethereum/tokens";
+import { updateDarknodeStatistics } from "../../../store/actions/statistics/operatorActions";
 import { showClaimPopup } from "../../../store/actions/statistics/operatorPopupActions";
 import { ApplicationData, DarknodeDetails, DarknodeFeeStatus } from "../../../store/types";
 import { CurrencyIcon } from "../../CurrencyIcon";
 import { TokenBalance } from "../../TokenBalance";
 import { FeesItem } from "../FeesItem";
 import { Block, BlockBody, BlockTitle } from "./Block";
-import { updateDarknodeStatistics } from "../../../store/actions/statistics/operatorActions";
-
 
 enum Tab {
     Withdrawable = "Withdrawable",
@@ -291,7 +290,7 @@ class FeesBlockClass extends React.Component<Props, State> {
     }
 
     private readonly onClaim = async () => {
-        const { darknodeDetails, store: { web3, address, tokenPrices, quoteCurrency } } = this.props;
+        const { darknodeDetails, store: { web3, address, tokenPrices } } = this.props;
 
         if (!address || !darknodeDetails) {
             this.setState({ claiming: false });
