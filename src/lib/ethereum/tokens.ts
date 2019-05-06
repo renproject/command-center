@@ -20,7 +20,7 @@ export enum OldToken {
     OMG = "OMG (old)",
 }
 
-export interface TokenDetail<T extends Token | OldToken> {
+interface TokenDetail<T extends Token | OldToken> {
     name: string;
     // tslint:disable-next-line: no-reserved-keywords
     symbol: T;
