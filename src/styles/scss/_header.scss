@@ -225,6 +225,7 @@
 
 .transaction {
     margin-top: 10px;
+    margin-bottom: 10px;
 
     font-weight: 100;
     font-size: 14px;
@@ -245,9 +246,6 @@
         color: $blue-bright;
     }
 
-    &:last-child {
-        margin-bottom: 10px;
-    }
 }
 
 .transaction+.transaction {
