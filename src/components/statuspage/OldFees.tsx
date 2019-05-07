@@ -57,9 +57,11 @@ const OldFeesClass: React.StatelessComponent<Props> = (props) => {
     }
 
     return oldFees.length > 0 ? <>
-        <th colSpan={4}>
-            Old fees
-            </th>
+        <tr className="tr">
+            <td colSpan={4}>
+                Old fees
+            </td>
+        </tr>
         {oldFees}
     </> : <></>;
 };

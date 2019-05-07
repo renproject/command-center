@@ -272,12 +272,21 @@
         padding-bottom: 5px;
     }
 
-    th {
-        padding-top: 30px;
-        color: $green;
-        color: white;
-        font-size: 18px;
-        text-align: center;
+    .tr {
+
+        &,
+        td {
+            padding-top: 30px;
+            color: $green;
+            color: white;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        &:hover,
+        td:hover {
+            background: initial;
+        }
     }
 
     button {

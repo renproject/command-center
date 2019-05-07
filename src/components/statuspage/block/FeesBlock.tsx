@@ -59,7 +59,10 @@ class FeesBlockClass extends React.Component<Props, State> {
     }
 
     public componentWillReceiveProps = (nextProps: Props) => {
-        if (this.state.disableClaim && nextProps.store.cycleTimeout.isGreaterThan(this.props.store.cycleTimeout)) {
+        // If the darknode's cycles have been updated
+        if (this.state.disableClaim && nextProps.darknodeDetails && this.props.darknodeDetails &&
+            nextProps.darknodeDetails.cycleStatus.keySeq().first() !== this.props.darknodeDetails.cycleStatus.keySeq().first()) {
+            // console.log(`Status for ${nextProps.store.previousCycle}: ${nextProps.darknodeDetails.cycleStatus.get(nextProps.store.previousCycle)}`);
             this.setState({ disableClaim: false });
         }
     }
@@ -182,7 +185,7 @@ class FeesBlockClass extends React.Component<Props, State> {
                                 </span>
                                 <span className="fees-block--advanced--unit">{quoteCurrency.toUpperCase()}</span>
                             </div>
-                            {darknodeDetails.registrationStatus === RegistrationStatus.Registered ?
+                            {isOperator && darknodeDetails.registrationStatus === RegistrationStatus.Registered ?
                                 cycleTimeout.isZero() || claiming || disableClaim ? <button className="button--white block--advanced--claim" disabled={true}>
                                     <Loading alt={true} />
                                 </button> :
@@ -199,14 +202,14 @@ class FeesBlockClass extends React.Component<Props, State> {
                                                 />{" "}{quoteCurrency.toUpperCase()}{" "}now
                                         </>}
                                         </button> :
-                                        alreadyPast(cycleTimeout.toNumber()) ?
+                                        alreadyPast(cycleTimeout.toNumber() + 5) ?
                                             <button className="button--white block--advanced--claim" onClick={this.onClaimAfterCycle}>
                                                 {showWhitelist ? "Whitelist now" : <>
                                                     Claim pending rewards now
                                             </>}
                                             </button> :
                                             <button className="button--white block--advanced--claim" disabled={true}>
-                                                {naturalTime(cycleTimeout.toNumber(), {
+                                                {naturalTime(cycleTimeout.toNumber() + 5, {
                                                     message: "Refresh page to claim pending rewards",
                                                     prefix: "Claim again in",
                                                     countDown: true,
@@ -296,14 +299,14 @@ class FeesBlockClass extends React.Component<Props, State> {
 
         const onCancel = () => {
             if (this._isMounted) {
-                this.setState({ claiming: false });
+                this.setState({ claiming: false, disableClaim: false });
             }
         };
 
         const onDone = async () => {
             try {
-                await this.props.actions.updateDarknodeStatistics(web3, ethNetwork, darknodeID, tokenPrices);
                 await this.props.actions.updateCycleAndPendingRewards(web3, ethNetwork, tokenPrices);
+                await this.props.actions.updateDarknodeStatistics(web3, ethNetwork, darknodeID, tokenPrices);
             } catch (error) {
                 // Ignore error
             }
