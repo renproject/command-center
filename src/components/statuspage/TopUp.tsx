@@ -11,7 +11,7 @@ import { ApplicationData } from "../../store/types";
 
 const CONFIRMATION_MESSAGE = "Transaction confirmed.";
 
-const defaultState = {
+const defaultState = { // Entries must be immutable
     value: "0.1",
     resultMessage: "",
     pending: false,

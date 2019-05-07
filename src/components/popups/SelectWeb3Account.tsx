@@ -8,7 +8,7 @@ import { _captureBackgroundException_ } from "../../lib/errors";
 import { ApplicationData } from "../../store/types";
 import { Loading } from "../Loading";
 
-const defaultState = {
+const defaultState = { // Entries must be immutable
     accounts: null as string[] | null,
     error: null as string | null,
 };

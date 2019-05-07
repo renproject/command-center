@@ -23,7 +23,7 @@ export const statusText = {
     [RegistrationStatus.Refundable]: "Refundable",
 };
 
-const defaultState = {
+const defaultState = { // Entries must be immutable
     active: false,
 };
 

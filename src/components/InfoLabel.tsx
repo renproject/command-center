@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { LabelLevel } from "../store/types";
 
-const defaultState = {
+const defaultState = { // Entries must be immutable
     top: 0,
     left: 0,
 };

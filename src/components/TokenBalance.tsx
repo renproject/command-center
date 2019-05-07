@@ -48,7 +48,7 @@ import { ApplicationData, Currency } from "../store/types";
 //     return `${amount.multipliedBy(price).toFixed(defaultDigits)}`;
 // }
 
-const defaultState = {
+const defaultState = { // Entries must be immutable
     decimals: 0,
 };
 

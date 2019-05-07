@@ -13,7 +13,7 @@ import { Loading } from "../Loading";
 
 import Warn from "../../styles/images/warn.svg";
 
-const defaultState = {
+const defaultState = { // Entries must be immutable
     running: false,
     complete: false,
     rejected: false,

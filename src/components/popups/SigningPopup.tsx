@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { Loading } from "../Loading";
 
-const defaultState = {
+const defaultState = { // Entries must be immutable
     error: null as string | null,
     signing: true,
 };

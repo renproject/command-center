@@ -16,7 +16,7 @@ import { NetworkBlock } from "./block/NetworkBlock";
 import { Notifications } from "./Notifications";
 import { Registration } from "./Registration";
 
-const defaultState = {
+const defaultState = { // Entries must be immutable
     renaming: false,
     newName: undefined as string | undefined,
 };

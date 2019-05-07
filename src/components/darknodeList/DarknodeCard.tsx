@@ -17,7 +17,7 @@ import { darknodeIDHexToBase58 } from "../pages/Darknode";
 import { statusText } from "../statuspage/Registration";
 import { TokenBalance } from "../TokenBalance";
 
-const defaultState = {
+const defaultState = { // Entries must be immutable
     confirmedRemove: false,
 };
 
