@@ -8,7 +8,6 @@ import { Home } from "./pages/Home";
 import { PopupController } from "./popups/PopupController";
 
 import { DEPLOYMENT } from "../lib/environmentVariables";
-import { _captureBackgroundException_ } from "../lib/errors";
 import { ApplicationData, EthNetwork, getNetworkLabel, Network } from "../store/types";
 import { BackgroundTasks } from "./BackgroundTasks";
 import { _catch_ } from "./ErrorBoundary";

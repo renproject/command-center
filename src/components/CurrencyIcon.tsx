@@ -11,7 +11,8 @@ export const CurrencyIcon: React.StatelessComponent<{
 
     // Note: Typescript will warn if the switch statement is non-exhaustive
 
-    // tslint:disable-next-line: switch-default
+    // tslint:disable: switch-default
+    // eslint-disable-next-line
     switch (currency) {
         case Currency.AUD:
             return <FontAwesomeIcon icon={faDollarSign} />;

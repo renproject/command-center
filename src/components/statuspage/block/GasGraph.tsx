@@ -194,6 +194,7 @@ class GasGraphClass extends React.Component<Props, State> {
                     if (x >= first) {
                         xyPoints.push({ x, y: y ? y.div(shift).toNumber() : 0 });
                     }
+                    return null;
                 });
 
                 // for (let i = 0; i < HistoryIterations; i++) {

@@ -87,6 +87,7 @@ const kovanContracts = requireABIsForNetwork(EthNetwork.Kovan);
 const mainnetContracts = requireABIsForNetwork(EthNetwork.Mainnet);
 
 export const getContracts = (ethNetwork: EthNetwork) => {
+    // eslint-disable-next-line
     switch (ethNetwork) {
         case EthNetwork.Kovan:
             return kovanContracts;
@@ -96,8 +97,10 @@ export const getContracts = (ethNetwork: EthNetwork) => {
 };
 
 export const tokenAddresses = (token: Token | OldToken, ethNetwork: EthNetwork): string => {
+    // eslint-disable-next-line
     switch (ethNetwork) {
         case EthNetwork.Mainnet:
+            // eslint-disable-next-line
             switch (token) {
                 case Token.DAI:
                     return "0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359";
@@ -120,7 +123,9 @@ export const tokenAddresses = (token: Token | OldToken, ethNetwork: EthNetwork):
                 case OldToken.ZRX:
                     return "0xE41d2489571d322189246DaFA5ebDe1F4699F498";
             }
+            break;
         case EthNetwork.Kovan:
+            // eslint-disable-next-line
             switch (token) {
                 case Token.DAI:
                     return "0xc4375b7de8af5a38a93548eb8453a498222c4ff2";
@@ -143,6 +148,7 @@ export const tokenAddresses = (token: Token | OldToken, ethNetwork: EthNetwork):
                 case OldToken.ZRX:
                     return "0x6EB628dCeFA95802899aD3A9EE0C7650Ac63d543";
             }
+            break;
     }
     throw new Error(`Unknown network ${Network} or token ${token}`);
 };

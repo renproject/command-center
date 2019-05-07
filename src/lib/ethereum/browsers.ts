@@ -45,7 +45,8 @@ export const getWeb3BrowserName = (newProvider: provider): Web3Browser => {
 export const getWeb3BrowserIcon = (web3Browser: Web3Browser): string => {
     // Note: Typescript will warn if the switch statement is non-exhaustive
 
-    // tslint:disable-next-line: switch-default
+    // tslint:disable: switch-default
+    // eslint-disable-next-line
     switch (web3Browser) {
         case Web3Browser.CoinbaseWallet:
             return toshiIcon;

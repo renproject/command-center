@@ -76,12 +76,14 @@ export const statisticsReducer = (
                     //     newNames = newNames.set(darknodeID, `Darknode ${newList.indexOf(darknodeID) + 1}`);
                     // }
                 }
+                return null;
             });
 
             newList.map((darknodeID: string) => {
                 if (!newNames.has(darknodeID)) {
                     newNames = newNames.set(darknodeID, `Darknode ${newList.indexOf(darknodeID) + 1}`);
                 }
+                return null;
             });
 
             const darknodeRegisteringList = state.darknodeRegisteringList

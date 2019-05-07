@@ -46,7 +46,6 @@ class WithdrawPopupClass extends React.Component<Props, State> {
                 {withdrawAddresses.get(token, List<string>()).map((withdrawAddress: string) => {
                     return <div key={withdrawAddress} className={`withdraw--address--outer ${selectedAddress === withdrawAddress ? `withdraw--selected` : ""}`}>
                         <button
-                            role="button"
                             name="selectedAddress"
                             onClick={this.handleInput}
                             value={withdrawAddress}
@@ -66,7 +65,6 @@ class WithdrawPopupClass extends React.Component<Props, State> {
                         type="text"
                         placeholder="New address"
                         value={newAddress || ""}
-                        role="textbox"
                         name="newAddress"
                         className="new-address"
                         onChange={this.handleAddressInput}
@@ -112,6 +110,7 @@ class WithdrawPopupClass extends React.Component<Props, State> {
         const { stage, error, selectedAddress } = this.state;
         const { onCancel } = this.props;
 
+        // eslint-disable-next-line
         switch (stage) {
             case Stage.Pending:
                 return <div className="popup--buttons">

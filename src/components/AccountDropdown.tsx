@@ -112,7 +112,7 @@ class AccountDropdownClass extends React.Component<Props, typeof defaultState> {
                                         return <li key={txHash} className="transaction">
                                             {confs === 0 ? <Loading /> : <></>}
                                             {confs === -1 ? <span className="red">(ERR) {" "}</span> : <></>}
-                                            <a className="transaction--hash" target="_blank" rel="noreferrer" href={`${etherscan}/tx/${txHash}`}>{txHash.substring(0, 12)}...</a>
+                                            <a className="transaction--hash" target="_blank" rel="noopener noreferrer" href={`${etherscan}/tx/${txHash}`}>{txHash.substring(0, 12)}...</a>
                                             {confs > 0 ? <>{" "}({confs} conf.)</> : ""}
                                         </li>;
                                     }).valueSeq().toArray()}

@@ -14,13 +14,14 @@ const getAllDarknodes = async (web3: Web3, ethNetwork: EthNetwork): Promise<stri
 
     const allDarknodes = [];
     let lastDarknode = NULL;
+    const filter = (address: string) => address !== NULL && address !== lastDarknode;
     do {
         const darknodeRegistry: DarknodeRegistryWeb3 = new (web3.eth.Contract)(
             getContracts(ethNetwork).DarknodeRegistry.ABI,
             getContracts(ethNetwork).DarknodeRegistry.address
         );
         const darknodes: string[] = await darknodeRegistry.methods.getDarknodes(lastDarknode, batchSize.toString()).call();
-        allDarknodes.push(...darknodes.filter((address: string) => address !== NULL && address !== lastDarknode));
+        allDarknodes.push(...darknodes.filter(filter));
         [lastDarknode] = darknodes.slice(-1);
     } while (lastDarknode !== NULL);
 
