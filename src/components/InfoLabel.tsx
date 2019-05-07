@@ -2,17 +2,19 @@ import * as React from "react";
 
 import { LabelLevel } from "../store/types";
 
+const defaultState = {
+    top: 0,
+    left: 0,
+};
+
 /**
  * InfoLabel is a visual component for displaying an information message for
  * another component
  */
-export class InfoLabel extends React.Component<Props, State> {
+export class InfoLabel extends React.Component<Props, typeof defaultState> {
     constructor(props: Props) {
         super(props);
-        this.state = {
-            top: 0,
-            left: 0,
-        };
+        this.state = defaultState;
     }
 
     /**
@@ -42,9 +44,4 @@ export class InfoLabel extends React.Component<Props, State> {
 interface Props {
     level?: LabelLevel;
     children?: React.ReactNode;
-}
-
-interface State {
-    top: number;
-    left: number;
 }

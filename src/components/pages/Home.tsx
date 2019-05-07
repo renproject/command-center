@@ -8,17 +8,19 @@ import { ApplicationData } from "../../store/types";
 import { DarknodeList } from "../darknodeList/DarknodeList";
 import { _catch_ } from "../ErrorBoundary";
 
+const defaultState = {
+    checkingVerification: false,
+    darknodeList: null as List<string> | null,
+};
+
 /**
  * Home is a page whose principal components are wallet selection to allow users
  * to log-in, and the hidden orderbook
  */
-class HomeClass extends React.Component<Props, State> {
+class HomeClass extends React.Component<Props, typeof defaultState> {
     public constructor(props: Props, context: object) {
         super(props, context);
-        this.state = {
-            checkingVerification: false,
-            darknodeList: null,
-        };
+        this.state = defaultState;
     }
 
     public render = (): JSX.Element => {
@@ -66,11 +68,6 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
 });
 
 interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps> {
-}
-
-interface State {
-    checkingVerification: boolean;
-    darknodeList: List<string> | null;
 }
 
 export const Home = connect(mapStateToProps, mapDispatchToProps)(HomeClass);

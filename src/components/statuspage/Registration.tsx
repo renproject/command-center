@@ -23,14 +23,16 @@ export const statusText = {
     [RegistrationStatus.Refundable]: "Refundable",
 };
 
-class RegistrationClass extends React.Component<Props, State> {
+const defaultState = {
+    active: false,
+};
+
+class RegistrationClass extends React.Component<Props, typeof defaultState> {
     private _isMounted = false;
 
     constructor(props: Props) {
         super(props);
-        this.state = {
-            active: false,
-        };
+        this.state = defaultState;
     }
 
     public componentDidMount = () => {
@@ -225,10 +227,6 @@ interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<
     darknodeID: string;
     darknodeDetails: DarknodeDetails | null;
     publicKey?: string;
-}
-
-interface State {
-    active: boolean;
 }
 
 export const Registration = connect(mapStateToProps, mapDispatchToProps)(RegistrationClass);

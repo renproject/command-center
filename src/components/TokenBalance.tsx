@@ -48,12 +48,14 @@ import { ApplicationData, Currency } from "../store/types";
 //     return `${amount.multipliedBy(price).toFixed(defaultDigits)}`;
 // }
 
-class TokenBalanceClass extends React.Component<Props, State> {
+const defaultState = {
+    decimals: 0,
+};
+
+class TokenBalanceClass extends React.Component<Props, typeof defaultState> {
     constructor(props: Props) {
         super(props);
-        this.state = {
-            decimals: 0,
-        };
+        this.state = defaultState;
     }
 
     public componentDidMount = async (): Promise<void> => {
@@ -131,10 +133,6 @@ interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<
     amount: string | BigNumber;
     convertTo?: Currency;
     digits?: number; // Always shows this many digits (e.g. for 3 d.p.: 0.100, 0.111)
-}
-
-interface State {
-    decimals: number;
 }
 
 export const TokenBalance = connect(mapStateToProps, mapDispatchToProps)(TokenBalanceClass);

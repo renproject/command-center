@@ -7,16 +7,18 @@ import { bindActionCreators, Dispatch } from "redux";
 import { login, logout } from "../store/actions/trader/accountActions";
 import { ApplicationData, EthNetwork } from "../store/types";
 
+const defaultState = {
+    shown: false,
+    copied: false,
+};
+
 // tslint:disable: react-unused-props-and-state
-class AccountDropdownClass extends React.Component<Props, State> {
+class AccountDropdownClass extends React.Component<Props, typeof defaultState> {
     private ref: HTMLDivElement | null = null;
 
     constructor(props: Props) {
         super(props);
-        this.state = {
-            shown: false,
-            copied: false,
-        };
+        this.state = defaultState;
     }
 
     public render = () => {
@@ -202,11 +204,6 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
 });
 
 interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps> {
-}
-
-interface State {
-    shown: boolean;
-    copied: boolean;
 }
 
 export const AccountDropdown = connect(mapStateToProps, mapDispatchToProps)(AccountDropdownClass);

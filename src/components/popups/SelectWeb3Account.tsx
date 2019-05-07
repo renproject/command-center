@@ -8,17 +8,19 @@ import { _captureBackgroundException_ } from "../../lib/errors";
 import { ApplicationData } from "../../store/types";
 import { Loading } from "../Loading";
 
+const defaultState = {
+    accounts: null as string[] | null,
+    error: null as string | null,
+};
+
 /**
  * SelectWeb3Account is a popup component for prompting a user to select an
  * Ethereum account
  */
-class SelectWeb3AccountClass extends React.Component<Props, State> {
+class SelectWeb3AccountClass extends React.Component<Props, typeof defaultState> {
     constructor(props: Props) {
         super(props);
-        this.state = {
-            accounts: null,
-            error: null,
-        };
+        this.state = defaultState;
     }
 
     public componentDidMount = async (): Promise<void> => {
@@ -108,11 +110,6 @@ interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<
     getAccounts(): Promise<string[]>;
     resolve(address: string): void;
     // reject(address: string, reason: string): void;
-}
-
-interface State {
-    accounts: string[] | null;
-    error: string | null;
 }
 
 export const SelectWeb3Account = connect(mapStateToProps, mapDispatchToProps)(SelectWeb3AccountClass);

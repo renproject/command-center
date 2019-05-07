@@ -13,12 +13,14 @@ import { withdrawReward } from "../../store/actions/trader/darknode";
 import { ApplicationData } from "../../store/types";
 import { Loading } from "../Loading";
 
-class FeesItemClass extends React.Component<Props, State> {
+const defaultState = {
+    loading: false,
+};
+
+class FeesItemClass extends React.Component<Props, typeof defaultState> {
     constructor(props: Props) {
         super(props);
-        this.state = {
-            loading: false,
-        };
+        this.state = defaultState;
     }
 
     public render = (): JSX.Element => {
@@ -78,10 +80,6 @@ interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<
     token: Token | OldToken;
     amount: string | BigNumber;
     darknodeID: string;
-}
-
-interface State {
-    loading: boolean;
 }
 
 export const FeesItem = connect(mapStateToProps, mapDispatchToProps)(FeesItemClass);

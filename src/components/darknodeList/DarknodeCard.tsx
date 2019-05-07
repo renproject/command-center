@@ -17,13 +17,15 @@ import { darknodeIDHexToBase58 } from "../pages/Darknode";
 import { statusText } from "../statuspage/Registration";
 import { TokenBalance } from "../TokenBalance";
 
-class DarknodeCardClass extends React.Component<Props, State> {
+const defaultState = {
+    confirmedRemove: false,
+};
+
+class DarknodeCardClass extends React.Component<Props, typeof defaultState> {
 
     public constructor(props: Props, context: object) {
         super(props, context);
-        this.state = {
-            confirmedRemove: false,
-        };
+        this.state = defaultState;
     }
 
     public render = (): JSX.Element => {
@@ -151,10 +153,6 @@ interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<
     darknodeDetails: DarknodeDetails | null;
     name: string | undefined;
     publicKey: string | undefined;
-}
-
-interface State {
-    confirmedRemove: boolean;
 }
 
 export const DarknodeCard = connect(mapStateToProps, mapDispatchToProps)(DarknodeCardClass);

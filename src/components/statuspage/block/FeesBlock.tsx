@@ -34,16 +34,18 @@ const mergeFees = (left: OrderedMap<Token | OldToken, BigNumber>, right: Ordered
     return newFees;
 };
 
+const defaultState = {
+    showAdvanced: false,
+    tab: Tab.Withdrawable,
+    claiming: false,
+};
+
 class FeesBlockClass extends React.Component<Props, State> {
     private _isMounted = false;
 
     public constructor(props: Props, context: object) {
         super(props, context);
-        this.state = {
-            showAdvanced: false,
-            tab: Tab.Withdrawable,
-            claiming: false,
-        };
+        this.state = defaultState;
     }
 
     public componentDidMount = async () => {
@@ -307,10 +309,6 @@ interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<
     darknodeDetails: DarknodeDetails | null;
 }
 
-interface State {
-    showAdvanced: boolean;
-    tab: Tab;
-    claiming: boolean;
-}
+type State = typeof defaultState;
 
 export const FeesBlock = connect(mapStateToProps, mapDispatchToProps)(FeesBlockClass);

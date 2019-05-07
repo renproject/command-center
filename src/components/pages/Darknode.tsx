@@ -43,6 +43,13 @@ export const getDarknodeParam = (params: unknown): string | undefined => {
     return darknodeID;
 };
 
+const defaultState = {
+    darknodeID: undefined as string | undefined,
+    action: undefined as string | undefined,
+    publicKey: undefined as string | undefined,
+    providedName: undefined as string | undefined,
+};
+
 /**
  * Darknode shows the details of a darknode. The user does not have to be logged
  * in.
@@ -51,15 +58,10 @@ export const getDarknodeParam = (params: unknown): string | undefined => {
  *     1) action: either "register" or "deregister"
  *     2) public_key: only used if action is "register"
  */
-class DarknodeClass extends React.Component<Props, State> {
+class DarknodeClass extends React.Component<Props, typeof defaultState> {
     public constructor(props: Props, context: object) {
         super(props, context);
-        this.state = {
-            darknodeID: undefined,
-            action: undefined,
-            publicKey: undefined,
-            providedName: undefined,
-        };
+        this.state = defaultState;
     }
 
     public componentDidMount = (): void => {
@@ -164,13 +166,6 @@ interface Props extends
     ReturnType<typeof mapStateToProps>,
     ConnectedReturnType<typeof mapDispatchToProps>,
     RouteComponentProps {
-}
-
-interface State {
-    darknodeID: string | undefined;
-    action: string | undefined;
-    publicKey: string | undefined;
-    providedName: string | undefined;
 }
 
 export const Darknode = connect(mapStateToProps, mapDispatchToProps)(withRouter(DarknodeClass));

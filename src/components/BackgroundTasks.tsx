@@ -16,18 +16,12 @@ import { getDarknodeParam } from "./pages/Darknode";
  * BackgroundTasks is the main visual component responsible for displaying different routes
  * and running background app loops
  */
-class BackgroundTasksClass extends React.Component<Props, State> {
+class BackgroundTasksClass extends React.Component<Props> {
     private callUpdatePricesTimeout: NodeJS.Timer | undefined;
     private callLookForLogoutTimeout: NodeJS.Timer | undefined;
     private callUpdateNetworkStatisticsTimeout: NodeJS.Timer | undefined;
     private callUpdateOperatorStatisticsTimeout: NodeJS.Timer | undefined;
     private callUpdateSelectedDarknodeTimeout: NodeJS.Timer | undefined;
-
-    public constructor(props: Props, context: object) {
-        super(props, context);
-        this.state = {
-        };
-    }
 
     public componentDidMount = async (): Promise<void> => {
         const { match: { params } } = this.props;
@@ -279,9 +273,6 @@ interface Props extends
     ReturnType<typeof mapStateToProps>,
     ConnectedReturnType<typeof mapDispatchToProps>,
     RouteComponentProps {
-}
-
-interface State {
 }
 
 export const BackgroundTasks = connect(mapStateToProps, mapDispatchToProps)(withRouter(BackgroundTasksClass));

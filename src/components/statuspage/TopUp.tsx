@@ -11,18 +11,20 @@ import { ApplicationData } from "../../store/types";
 
 const CONFIRMATION_MESSAGE = "Transaction confirmed.";
 
-class TopUpClass extends React.Component<Props, State> {
+const defaultState = {
+    value: "0.1",
+    resultMessage: "",
+    pending: false,
+    disabled: false,
+    traderBalance: new BigNumber(0),
+};
+
+class TopUpClass extends React.Component<Props, typeof defaultState> {
     private _isMounted = false;
 
     constructor(props: Props) {
         super(props);
-        this.state = {
-            value: "0.1",
-            resultMessage: "",
-            pending: false,
-            disabled: false,
-            traderBalance: new BigNumber(0),
-        };
+        this.state = defaultState;
     }
 
     public componentDidMount = async () => {
@@ -178,14 +180,6 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
 
 interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps> {
     darknodeID: string;
-}
-
-interface State {
-    value: string;
-    resultMessage: string;
-    pending: boolean;
-    disabled: boolean;
-    traderBalance: BigNumber;
 }
 
 export const TopUp = connect(mapStateToProps, mapDispatchToProps)(TopUpClass);
