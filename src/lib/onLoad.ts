@@ -4,7 +4,6 @@ import Web3 from "web3";
 
 import { HttpProvider } from "web3-providers";
 
-import { _catch_ } from "../components/ErrorBoundary";
 import { environment, SENTRY_DSN, SOURCE_VERSION } from "./environmentVariables";
 import { pageLoadedAt } from "./errors";
 

@@ -22,10 +22,6 @@ import { TokenBalance } from "./TokenBalance";
  * as well as a breakdown of each darknode
  */
 class SidebarClass extends React.Component<Props> {
-    public constructor(props: Props, context: object) {
-        super(props, context);
-    }
-
     public render = (): JSX.Element => {
         const { selectedDarknode, store } = this.props;
         const { darknodeList, darknodeDetails, darknodeNames, quoteCurrency, mobileMenuActive } = store;

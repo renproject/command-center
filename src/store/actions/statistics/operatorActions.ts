@@ -196,6 +196,7 @@ const sumUpFeeMap = (
             .div(Math.pow(10, decimals))
             .multipliedBy(price ? price.get(Currency.ETH, 0) : 0);
         totalEth = totalEth.plus(inEth);
+        return null;
     });
 
     // Convert to wei
@@ -446,6 +447,7 @@ export const updateOperatorStatistics = (
         if (!darknodeList.contains(darknodeID)) {
             darknodeList = darknodeList.push(darknodeID);
         }
+        return null;
     });
 
     await Promise.all(darknodeList.toList().map(async (darknodeID: string) => {

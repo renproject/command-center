@@ -65,7 +65,6 @@ class StatusPageClass extends React.Component<Props, State> {
                                 <form className="statuspage--rename" onSubmit={this.handleSubmitName}>
                                     <input
                                         ref={this.focusInputRef}
-                                        role="textbox"
                                         type="text"
                                         name="newName"
                                         onChange={this.handleInput}

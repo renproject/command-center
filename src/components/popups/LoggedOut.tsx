@@ -6,7 +6,6 @@ import { bindActionCreators, Dispatch } from "redux";
 
 import { getWeb3BrowserIcon } from "../../lib/ethereum/browsers";
 import { ApplicationData } from "../../store/types";
-import { _catch_ } from "../ErrorBoundary";
 
 /**
  * LoggedOut is a popup component for prompting a user to select an
