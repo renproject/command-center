@@ -123,6 +123,7 @@ export class StatisticsData extends Record({
     previousCycle: "",
     pendingRewards: OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber>>(),
     pendingTotalInEth: OrderedMap<string /* cycle */, BigNumber>(),
+    cycleTimeout: new BigNumber(0),
 }) implements Serializable<StatisticsData> {
     public serialize(): string {
         const js = this.toJS();

@@ -16,7 +16,7 @@ import { getContracts, tokenAddresses } from "../../../lib/ethereum/contracts/co
 import { getOperatorDarknodes } from "../../../lib/ethereum/operator";
 import { NewTokenDetails, OldToken, OldTokenDetails, Token } from "../../../lib/ethereum/tokens";
 import { Currency, DarknodeDetails, DarknodeFeeStatus, EthNetwork, TokenPrices } from "../../types";
-import { updateCurrentCycle, updatePendingRewards, updatePendingTotalInEth, updatePreviousCycle } from "./networkActions";
+import { updateCurrentCycle, updateCycleTimeout, updatePendingRewards, updatePendingTotalInEth, updatePreviousCycle } from "./networkActions";
 
 export const addRegisteringDarknode = createStandardAction("addRegisteringDarknode")<{
     darknodeID: string;
@@ -211,7 +211,7 @@ const sumUpFees = (
     return sumUpFeeMap(feesEarned, tokenPrices).plus(sumUpFeeMap(oldFeesEarned, tokenPrices));
 };
 
-const updateCycleAndPendingRewards = (
+export const updateCycleAndPendingRewards = (
     web3: Web3,
     ethNetwork: EthNetwork,
     tokenPrices: TokenPrices | null,
@@ -259,6 +259,9 @@ const updateCycleAndPendingRewards = (
             ;
         dispatch(updatePendingTotalInEth(pendingTotalInEth));
     }
+
+    const cycleTimeout = new BigNumber((await darknodePayment.methods.cycleTimeout().call()).toString());
+    dispatch(updateCycleTimeout(cycleTimeout));
 };
 
 const getDarknodeOperator = async (web3: Web3, ethNetwork: EthNetwork, darknodeID: string): Promise<string> => {

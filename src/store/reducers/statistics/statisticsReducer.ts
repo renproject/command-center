@@ -27,6 +27,9 @@ export const statisticsReducer = (
         case getType(networkActions.updatePendingTotalInEth):
             return state.set("pendingTotalInEth", action.payload);
 
+        case getType(networkActions.updateCycleTimeout):
+            return state.set("cycleTimeout", action.payload);
+
         case getType(networkActions.storeMinimumBond):
             return state.set("minimumBond", action.payload);
 

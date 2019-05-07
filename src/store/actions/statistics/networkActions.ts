@@ -19,6 +19,7 @@ export const updatePreviousCycle = createStandardAction("updatePreviousCycle")<s
 
 export const updatePendingRewards = createStandardAction("updatePendingRewards")<OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber>>>();
 export const updatePendingTotalInEth = createStandardAction("updatePendingTotalInEth")<OrderedMap<string /* cycle */, BigNumber>>();
+export const updateCycleTimeout = createStandardAction("updateCycleTimeout")<BigNumber>();
 
 export const updateNetworkStatistics = (web3: Web3, ethNetwork: EthNetwork) => async (dispatch: Dispatch) => {
     const darknodeRegistry: DarknodeRegistryWeb3 = new (web3.eth.Contract)(

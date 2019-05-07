@@ -212,8 +212,9 @@
     .block--advanced--tab {
         background: none;
         border: none;
-        color: $green;
         width: 100%;
+        color: white;
+        font-weight: 100;
         cursor: pointer;
         text-align: center;
         display: flex;
@@ -221,6 +222,7 @@
         padding: 10px;
 
         &.selected {
+            color: $green;
             font-weight: 900;
         }
 
@@ -233,6 +235,10 @@
 .block--advanced--claim {
     background: none !important;
     color: white !important;
+    border: 1px solid white;
+    width: initial;
+    padding-left: 20px;
+    padding-right: 20px;
 
     .svg-inline--fa {
         margin-right: 2px;
