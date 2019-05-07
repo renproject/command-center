@@ -234,7 +234,9 @@ const updateCycleAndPendingRewards = (
     const currentShareCount = new BigNumber((await darknodePayment.methods.shareCount().call()).toString());
     const current = await safePromiseAllMap(
         NewTokenDetails.map(async (_tokenDetails, token) =>
-            new BigNumber((await darknodePayment.methods.currentCycleRewardPool(tokenAddresses(token, ethNetwork)).call()).toString()).div(currentShareCount)
+            currentShareCount.isZero() ?
+                new BigNumber(0) :
+                new BigNumber((await darknodePayment.methods.currentCycleRewardPool(tokenAddresses(token, ethNetwork)).call()).toString()).div(currentShareCount)
         ).toOrderedMap(),
         new BigNumber(0),
     );
