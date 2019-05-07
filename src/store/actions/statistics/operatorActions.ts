@@ -246,9 +246,7 @@ export const updateCycleAndPendingRewards = (
         .set(currentCycle, current)
         ;
 
-    dispatch(updateCurrentCycle(currentCycle));
-    dispatch(updatePreviousCycle(previousCycle));
-    dispatch(updatePendingRewards(pendingRewards));
+    const cycleTimeout = new BigNumber((await darknodePayment.methods.cycleTimeout().call()).toString());
 
     if (tokenPrices) {
         const previousTotal = sumUpFeeMap(previous, tokenPrices);
@@ -260,7 +258,9 @@ export const updateCycleAndPendingRewards = (
         dispatch(updatePendingTotalInEth(pendingTotalInEth));
     }
 
-    const cycleTimeout = new BigNumber((await darknodePayment.methods.cycleTimeout().call()).toString());
+    dispatch(updateCurrentCycle(currentCycle));
+    dispatch(updatePreviousCycle(previousCycle));
+    dispatch(updatePendingRewards(pendingRewards));
     dispatch(updateCycleTimeout(cycleTimeout));
 };
 
