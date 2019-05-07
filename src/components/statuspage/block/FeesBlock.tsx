@@ -5,13 +5,14 @@ import BigNumber from "bignumber.js";
 import { faStar } from "@fortawesome/free-regular-svg-icons";
 import { faChevronRight, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { TokenIcon } from "@renex/react-components";
+import { Loading, TokenIcon } from "@renex/react-components";
 import { OrderedMap } from "immutable";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
+import { alreadyPast, naturalTime } from "../../../lib/conversion";
 import { OldToken, Token } from "../../../lib/ethereum/tokens";
-import { RegistrationStatus, updateDarknodeStatistics } from "../../../store/actions/statistics/operatorActions";
+import { RegistrationStatus, updateCycleAndPendingRewards, updateDarknodeStatistics } from "../../../store/actions/statistics/operatorActions";
 import { showClaimPopup } from "../../../store/actions/statistics/operatorPopupActions";
 import { ApplicationData, DarknodeDetails, DarknodeFeeStatus } from "../../../store/types";
 import { CurrencyIcon } from "../../CurrencyIcon";
@@ -38,6 +39,7 @@ const defaultState = { // Entries must be immutable
     showAdvanced: false,
     tab: Tab.Withdrawable,
     claiming: false,
+    disableClaim: false,
 };
 
 class FeesBlockClass extends React.Component<Props, State> {
@@ -56,6 +58,12 @@ class FeesBlockClass extends React.Component<Props, State> {
         this._isMounted = false;
     }
 
+    public componentWillReceiveProps = (nextProps: Props) => {
+        if (this.state.disableClaim && nextProps.store.cycleTimeout.isGreaterThan(this.props.store.cycleTimeout)) {
+            this.setState({ disableClaim: false });
+        }
+    }
+
     public render = (): JSX.Element => {
         const { darknodeDetails, store, isOperator } = this.props;
         const {
@@ -64,8 +72,9 @@ class FeesBlockClass extends React.Component<Props, State> {
             previousCycle,
             pendingRewards,
             pendingTotalInEth,
+            cycleTimeout,
         } = store;
-        const { showAdvanced, tab } = this.state;
+        const { showAdvanced, tab, disableClaim, claiming } = this.state;
 
         const showWhitelist = darknodeDetails && darknodeDetails.cycleStatus.get(currentCycle) === DarknodeFeeStatus.NOT_WHITELISTED;
         const showPreviousPending = darknodeDetails && darknodeDetails.cycleStatus.get(previousCycle) === DarknodeFeeStatus.NOT_CLAIMED;
@@ -173,20 +182,38 @@ class FeesBlockClass extends React.Component<Props, State> {
                                 </span>
                                 <span className="fees-block--advanced--unit">{quoteCurrency.toUpperCase()}</span>
                             </div>
-                            {darknodeDetails.registrationStatus === RegistrationStatus.Registered && (showPreviousPending || showWhitelist) ? <>
-                                <button className="button--white block--advanced--claim" onClick={this.onClaim}>
-                                    {showWhitelist ? "Whitelist now" : <>
-                                        Claim{" "}<CurrencyIcon currency={quoteCurrency} />
-                                        <TokenBalance
-                                            token={Token.ETH}
-                                            convertTo={quoteCurrency}
-                                            amount={
-                                                summedClaimable
-                                            }
-                                        />{" "}{quoteCurrency.toUpperCase()}{" "}now
-                                    </>}
-                                </button>
-                            </> : <></>
+                            {darknodeDetails.registrationStatus === RegistrationStatus.Registered ?
+                                cycleTimeout.isZero() || claiming || disableClaim ? <button className="button--white block--advanced--claim" disabled={true}>
+                                    <Loading alt={true} />
+                                </button> :
+                                    (showPreviousPending || showWhitelist) ?
+                                        <button className="button--white block--advanced--claim" onClick={this.onClaimBeforeCycle}>
+                                            {showWhitelist ? "Whitelist now" : <>
+                                                Claim{" "}<CurrencyIcon currency={quoteCurrency} />
+                                                <TokenBalance
+                                                    token={Token.ETH}
+                                                    convertTo={quoteCurrency}
+                                                    amount={
+                                                        summedClaimable
+                                                    }
+                                                />{" "}{quoteCurrency.toUpperCase()}{" "}now
+                                        </>}
+                                        </button> :
+                                        alreadyPast(cycleTimeout.toNumber()) ?
+                                            <button className="button--white block--advanced--claim" onClick={this.onClaimAfterCycle}>
+                                                {showWhitelist ? "Whitelist now" : <>
+                                                    Claim pending rewards now
+                                            </>}
+                                            </button> :
+                                            <button className="button--white block--advanced--claim" disabled={true}>
+                                                {naturalTime(cycleTimeout.toNumber(), {
+                                                    message: "Refresh page to claim pending rewards",
+                                                    prefix: "Claim again in",
+                                                    countDown: true,
+                                                    showingSeconds: true,
+                                                })}
+                                            </button>
+                                : <></>
                             }
                             <div className="block--advanced--bottom scrollable">
                                 <table className="fees-block--table">
@@ -249,7 +276,15 @@ class FeesBlockClass extends React.Component<Props, State> {
         this.setState({ showAdvanced: !this.state.showAdvanced });
     }
 
-    private readonly onClaim = async () => {
+    private readonly onClaimAfterCycle = async () => {
+        await this.onClaim(false);
+    }
+
+    private readonly onClaimBeforeCycle = async () => {
+        await this.onClaim(true);
+    }
+
+    private readonly onClaim = async (claimBeforeCycle: boolean) => {
         const { darknodeDetails, store: { web3, address, tokenPrices, ethNetwork } } = this.props;
 
         if (!address || !darknodeDetails) {
@@ -268,6 +303,7 @@ class FeesBlockClass extends React.Component<Props, State> {
         const onDone = async () => {
             try {
                 await this.props.actions.updateDarknodeStatistics(web3, ethNetwork, darknodeID, tokenPrices);
+                await this.props.actions.updateCycleAndPendingRewards(web3, ethNetwork, tokenPrices);
             } catch (error) {
                 // Ignore error
             }
@@ -278,7 +314,8 @@ class FeesBlockClass extends React.Component<Props, State> {
         };
 
         const title = `Claim rewards`;
-        await this.props.actions.showClaimPopup(web3, ethNetwork, address, darknodeID, title, onCancel, onDone);
+        this.setState({ disableClaim: true });
+        await this.props.actions.showClaimPopup(web3, ethNetwork, claimBeforeCycle, address, darknodeID, title, onCancel, onDone);
     }
 
 }
@@ -294,6 +331,7 @@ const mapStateToProps = (state: ApplicationData) => ({
         pendingTotalInEth: state.statistics.pendingTotalInEth,
         tokenPrices: state.statistics.tokenPrices,
         ethNetwork: state.trader.ethNetwork,
+        cycleTimeout: state.statistics.cycleTimeout,
     },
 });
 
@@ -301,6 +339,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     actions: bindActionCreators({
         showClaimPopup,
         updateDarknodeStatistics,
+        updateCycleAndPendingRewards,
     }, dispatch),
 });
 

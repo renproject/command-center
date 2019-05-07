@@ -200,6 +200,7 @@ export const showFundPopup = (
 export const showClaimPopup = (
     web3: Web3,
     ethNetwork: EthNetwork,
+    claimBeforeCycle: boolean,
     address: string,
     darknodeID: string,
     title: string,
@@ -207,18 +208,27 @@ export const showClaimPopup = (
     onDone: () => void,
 ) => async (dispatch: Dispatch) => {
 
-    const step1 = async () => {
-        await claimForNode(web3, ethNetwork, address, darknodeID, onCancel, onDone)(dispatch);
+    const useFixedGasLimit = !claimBeforeCycle;
+
+    const claimStep = {
+        call: async () => {
+            await claimForNode(web3, ethNetwork, useFixedGasLimit, address, darknodeID, onCancel, onDone)(dispatch);
+        },
+        name: "Claim rewards",
     };
 
-    const step2 = async () => {
-        await changeCycle(web3, ethNetwork, address, darknodeID, onCancel, onDone)(dispatch);
+    const ignoreError = claimBeforeCycle;
+    const changeCycleStep = {
+        call: async () => {
+            await changeCycle(web3, ethNetwork, ignoreError, address, onCancel, onDone)(dispatch);
+        },
+        name: `Change cycle${claimBeforeCycle ? " (optional)" : ""}`,
     };
 
-    const steps = [
-        { call: step1, name: "Claim rewards" },
-        { call: step2, name: "Change cycle (optional)" },
-    ];
+    const step1 = claimBeforeCycle ? claimStep : changeCycleStep;
+    const step2 = claimBeforeCycle ? changeCycleStep : claimStep;
+
+    const steps = [step1, step2];
 
     dispatch(setPopup(
         {

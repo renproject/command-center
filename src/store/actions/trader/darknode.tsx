@@ -8,6 +8,7 @@ import { Dispatch } from "redux";
 import { Contract } from "web3-eth-contract";
 
 import { WithdrawPopup } from "../../../components/popups/WithdrawPopup";
+import { alreadyPast } from "../../../lib/conversion";
 import { _noCapture_ } from "../../../lib/errors";
 import { DarknodePaymentWeb3 } from "../../../lib/ethereum/contracts/bindings/darknodePayment";
 import { DarknodeRegistryWeb3 } from "../../../lib/ethereum/contracts/bindings/darknodeRegistry";
@@ -297,6 +298,7 @@ export const fundNode = (
 export const claimForNode = (
     web3: Web3,
     ethNetwork: EthNetwork,
+    useFixedGasLimit: boolean,
     address: string,
     darknodeID: string,
     onCancel: () => void,
@@ -311,7 +313,7 @@ export const claimForNode = (
 
     let resolved = false;
 
-    const call = () => darknodePayment.methods.claim(darknodeID).send({ from: address });
+    const call = () => darknodePayment.methods.claim(darknodeID).send({ from: address, gas: useFixedGasLimit ? 200000 : undefined });
 
     try {
         const res = await waitForTX(
@@ -329,8 +331,8 @@ export const claimForNode = (
 export const changeCycle = (
     web3: Web3,
     ethNetwork: EthNetwork,
+    ignoreError: boolean,
     address: string,
-    darknodeID: string,
     onCancel: () => void,
     onDone: () => void
 ) => async (dispatch: Dispatch): Promise<string> => {
@@ -343,23 +345,27 @@ export const changeCycle = (
 
     let resolved = false;
 
-    // tslint:disable-next-line: no-any
-    const check = await (darknodePayment.methods.changeCycle() as any).call({ from: address });
-    if (check) {
-        const call = () => darknodePayment.methods.changeCycle().send({ from: address });
-
-        try {
-            const res = await waitForTX(
-                call(),
-                onDone
-            )(dispatch);
-            resolved = true;
-            return res;
-        } catch (error) {
-            if (resolved) { onCancel(); }
-            throw error;
-        }
-    } else {
+    // Try to call `changeCycle` as a read function to see if it reverts
+    const canCall = new BigNumber((await darknodePayment.methods.cycleTimeout().call({ from: address })).toString());
+    if (canCall.isEqualTo(0) || !alreadyPast(canCall.toNumber())) {
         return "";
+    }
+
+    const call = () => darknodePayment.methods.changeCycle().send({ from: address });
+
+    try {
+        const res = await waitForTX(
+            call(),
+            onDone,
+        )(dispatch);
+        resolved = true;
+        return res;
+    } catch (error) {
+        if (ignoreError) {
+            resolved = true;
+            return "";
+        }
+        if (resolved) { onCancel(); }
+        throw error;
     }
 };
