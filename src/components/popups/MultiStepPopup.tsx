@@ -13,23 +13,25 @@ import { Loading } from "../Loading";
 
 import Warn from "../../styles/images/warn.svg";
 
+const defaultState = {
+    running: false,
+    complete: false,
+    rejected: false,
+    currentStep: 0,
+    error: null as Error | null,
+    bond: null as BigNumber | null,
+    warningIgnored: false,
+};
+
 /**
  * MultiStepPopup is a popup component that prompts the user to approve a
  * series of Ethereum transactions
  */
-class MultiStepPopupClass extends React.Component<Props, State> {
+class MultiStepPopupClass extends React.Component<Props, typeof defaultState> {
 
     constructor(props: Props) {
         super(props);
-        this.state = {
-            running: false,
-            complete: false,
-            rejected: false,
-            currentStep: 0,
-            error: null,
-            bond: null,
-            warningIgnored: false,
-        };
+        this.state = defaultState;
     }
 
     public componentDidMount = () => {
@@ -237,17 +239,6 @@ interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<
 
     onCancel?: (() => void) | (() => Promise<void>);
     // onDone?: (() => void) | (() => Promise<void>);
-}
-
-interface State {
-    currentStep: number;
-    running: boolean;
-    complete: boolean;
-    rejected: boolean;
-    warningIgnored: boolean;
-
-    error: Error | null;
-    bond: BigNumber | null;
 }
 
 export const MultiStepPopup = connect(mapStateToProps, mapDispatchToProps)(MultiStepPopupClass);

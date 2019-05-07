@@ -38,17 +38,7 @@ const currencyOptions = getCurrencyOptions();
 /**
  * Header is a visual component providing page branding and navigation.
  */
-class HeaderClass extends React.Component<Props, State> {
-    public constructor(props: Props, context: object) {
-        super(props, context);
-        this.state = {
-            copied: false,
-            accountDropdown: false,
-            languageDropdown: false,
-            currencyDropdown: false,
-        };
-    }
-
+class HeaderClass extends React.Component<Props> {
     public render = (): JSX.Element => {
         const { address, quoteCurrency } = this.props.store;
 
@@ -123,9 +113,6 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
 
 interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps>,
     RouteComponentProps {
-}
-
-interface State {
 }
 
 export const Header = connect(mapStateToProps, mapDispatchToProps)(withRouter(HeaderClass));

@@ -39,13 +39,7 @@ const ScrollToTop = withRouter(
  * App is the main visual component responsible for displaying different routes
  * and running background app loops
  */
-class AppClass extends React.Component<Props, State> {
-    public constructor(props: Props, context: object) {
-        super(props, context);
-        this.state = {
-        };
-    }
-
+class AppClass extends React.Component<Props> {
     public withAccount = <T extends React.ComponentClass>(component: T):
         React.ComponentClass | React.StatelessComponent =>
         this.props.store.address ? component : LoggingIn
@@ -101,9 +95,6 @@ interface Props extends
     ReturnType<typeof mapStateToProps>,
     ConnectedReturnType<typeof mapDispatchToProps>,
     RouteComponentProps {
-}
-
-interface State {
 }
 
 export const App = connect(mapStateToProps, mapDispatchToProps)(withRouter(AppClass));

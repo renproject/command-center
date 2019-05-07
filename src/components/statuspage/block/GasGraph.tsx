@@ -60,6 +60,12 @@ const periods: Array<[HistoryPeriods, string]> = [
     [HistoryPeriods.Year, "1Y"],
 ];
 
+const defaultState = {
+    historyPeriod: HistoryPeriods.Week,
+    nextHistoryPeriod: HistoryPeriods.Week,
+    loadingHistory: false,
+};
+
 class GasGraphClass extends React.Component<Props, State> {
     private updateHistoryStarted: boolean = false;
     private updateHistoryTimeout: NodeJS.Timer | undefined;
@@ -72,11 +78,7 @@ class GasGraphClass extends React.Component<Props, State> {
 
     constructor(props: Props) {
         super(props);
-        this.state = {
-            historyPeriod: HistoryPeriods.Week,
-            nextHistoryPeriod: HistoryPeriods.Week,
-            loadingHistory: false,
-        };
+        this.state = defaultState;
     }
 
     public componentDidMount = (): void => {
@@ -305,10 +307,6 @@ interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<
     darknodeDetails: DarknodeDetails | null;
 }
 
-interface State {
-    historyPeriod: HistoryPeriods;
-    nextHistoryPeriod: HistoryPeriods;
-    loadingHistory: boolean;
-}
+type State = typeof defaultState;
 
 export const GasGraph = connect(mapStateToProps, mapDispatchToProps)(GasGraphClass);

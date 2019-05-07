@@ -16,15 +16,17 @@ import { NetworkBlock } from "./block/NetworkBlock";
 import { Notifications } from "./Notifications";
 import { Registration } from "./Registration";
 
+const defaultState = {
+    renaming: false,
+    newName: undefined as string | undefined,
+};
+
 class StatusPageClass extends React.Component<Props, State> {
     private focusInput: HTMLInputElement | null = null;
 
     public constructor(props: Props, context: object) {
         super(props, context);
-        this.state = {
-            renaming: false,
-            newName: props.name,
-        };
+        this.state = { ...defaultState, newName: props.name };
     }
 
     public componentWillReceiveProps = (nextProps: Props) => {
@@ -186,9 +188,6 @@ interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<
     publicKey: string | undefined;
 }
 
-interface State {
-    renaming: boolean;
-    newName: string | undefined;
-}
+type State = typeof defaultState;
 
 export const StatusPage = connect(mapStateToProps, mapDispatchToProps)(StatusPageClass);

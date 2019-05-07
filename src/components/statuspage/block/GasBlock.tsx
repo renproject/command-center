@@ -10,13 +10,15 @@ import { CurrencyIcon } from "../../CurrencyIcon";
 import { TopUp } from "../TopUp";
 import { Block, BlockBody, BlockTitle } from "./Block";
 
-export class GasBlock extends React.Component<Props, State> {
+const defaultState = {
+    showAdvanced: false,
+};
+
+export class GasBlock extends React.Component<Props, typeof defaultState> {
 
     public constructor(props: Props, context: object) {
         super(props, context);
-        this.state = {
-            showAdvanced: false,
-        };
+        this.state = defaultState;
     }
 
     public render = (): JSX.Element => {
@@ -79,8 +81,4 @@ export class GasBlock extends React.Component<Props, State> {
 
 interface Props {
     darknodeDetails: DarknodeDetails | null;
-}
-
-interface State {
-    showAdvanced: boolean;
 }
