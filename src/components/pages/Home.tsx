@@ -8,7 +8,7 @@ import { ApplicationData } from "../../store/types";
 import { DarknodeList } from "../darknodeList/DarknodeList";
 import { _catch_ } from "../ErrorBoundary";
 
-const defaultState = {
+const defaultState = { // Entries must be immutable
     checkingVerification: false,
     darknodeList: null as List<string> | null,
 };

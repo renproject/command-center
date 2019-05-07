@@ -3,7 +3,7 @@ import * as React from "react";
 
 import { _captureComponentException_ } from "../lib/errors";
 
-const defaultState = {
+const defaultState = { // Entries must be immutable
     error: null as null | Error,
     errorInfo: null as null | React.ErrorInfo,
 };

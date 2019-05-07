@@ -7,7 +7,7 @@ const NUMERATOR = 164; // pixels
 const DENOMINATOR = 94; // pixels
 const OFFSET = 8994; // pixels
 
-const defaultState = {
+const defaultState = { // Entries must be immutable
     level: OFFSET,
 };
 

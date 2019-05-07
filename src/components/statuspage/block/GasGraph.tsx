@@ -60,7 +60,7 @@ const periods: Array<[HistoryPeriods, string]> = [
     [HistoryPeriods.Year, "1Y"],
 ];
 
-const defaultState = {
+const defaultState = { // Entries must be immutable
     historyPeriod: HistoryPeriods.Week,
     nextHistoryPeriod: HistoryPeriods.Week,
     loadingHistory: false,

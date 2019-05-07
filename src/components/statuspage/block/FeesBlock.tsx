@@ -34,7 +34,7 @@ const mergeFees = (left: OrderedMap<Token | OldToken, BigNumber>, right: Ordered
     return newFees;
 };
 
-const defaultState = {
+const defaultState = { // Entries must be immutable
     showAdvanced: false,
     tab: Tab.Withdrawable,
     claiming: false,

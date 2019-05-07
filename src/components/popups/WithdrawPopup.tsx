@@ -19,7 +19,7 @@ enum Stage {
     Error,
 }
 
-const defaultState = {
+const defaultState = { // Entries must be immutable
     error: null as string | null,
     stage: Stage.Pending,
     selectedAddress: null as string | null,

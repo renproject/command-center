@@ -13,7 +13,7 @@ import { withdrawReward } from "../../store/actions/trader/darknode";
 import { ApplicationData } from "../../store/types";
 import { Loading } from "../Loading";
 
-const defaultState = {
+const defaultState = { // Entries must be immutable
     loading: false,
 };
 

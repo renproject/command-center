@@ -10,7 +10,7 @@ import { CurrencyIcon } from "../../CurrencyIcon";
 import { TopUp } from "../TopUp";
 import { Block, BlockBody, BlockTitle } from "./Block";
 
-const defaultState = {
+const defaultState = { // Entries must be immutable
     showAdvanced: false,
 };
 

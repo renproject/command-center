@@ -7,7 +7,7 @@ import { bindActionCreators, Dispatch } from "redux";
 import { login, logout } from "../store/actions/trader/accountActions";
 import { ApplicationData, EthNetwork } from "../store/types";
 
-const defaultState = {
+const defaultState = { // Entries must be immutable
     shown: false,
     copied: false,
 };

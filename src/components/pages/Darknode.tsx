@@ -43,7 +43,7 @@ export const getDarknodeParam = (params: unknown): string | undefined => {
     return darknodeID;
 };
 
-const defaultState = {
+const defaultState = { // Entries must be immutable
     darknodeID: undefined as string | undefined,
     action: undefined as string | undefined,
     publicKey: undefined as string | undefined,
