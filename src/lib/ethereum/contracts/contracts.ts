@@ -32,8 +32,8 @@ const requireABIsForNetwork = (ethNetwork: EthNetwork) => {
             dnrDeployedInBlock = "0x6AED46"; // in hex
 
             darknodeRewardVault = "0xa96450d3386ece22db20b0ac96ef5684b6d95d53";
-            darknodePayment = "0x5a7802E66b067cB1770ee5b1165AA201690A8B6a";
             darknodePaymentStore = "0x731Ea4Ba77fF184d89dBeB160A0078274Acbe9D2";
+            darknodePayment = "0x5a7802E66b067cB1770ee5b1165AA201690A8B6a";
 
             break;
         case EthNetwork.Kovan:
@@ -45,8 +45,8 @@ const requireABIsForNetwork = (ethNetwork: EthNetwork) => {
             dnrDeployedInBlock = "0xA35A7A"; // in hex
 
             darknodeRewardVault = "0xc08Dfa565EdB7216c3b23bBf0848B43fE9a49F0E";
-            darknodePayment = "0xba8d77a48d24866be4b775e732f6f8d198f7ba26";
             darknodePaymentStore = "0xA9411C3AD1fBE168fd119A3B32fB481a0b9877A9";
+            darknodePayment = "0xba8d77a48d24866be4b775e732f6f8d198f7ba26";
     }
 
     const DarknodeRegistry: Contract = {
