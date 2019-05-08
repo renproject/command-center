@@ -46,6 +46,7 @@ const requireABIsForNetwork = (ethNetwork: EthNetwork) => {
             darknodeRewardVault = "0xc08Dfa565EdB7216c3b23bBf0848B43fE9a49F0E";
             darknodePaymentStore = "0xA9411C3AD1fBE168fd119A3B32fB481a0b9877A9";
             darknodePayment = "0x8E11B87547f4072CC8A094F2888201CAF4EA0B9e";
+            break;
         default:
             throw new Error(`Unsupported network ${ethNetwork}`);
     }
