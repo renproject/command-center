@@ -37,7 +37,6 @@ const requireABIsForNetwork = (ethNetwork: EthNetwork) => {
 
             break;
         case EthNetwork.Kovan:
-        default:
             path = "testnet";
 
             // Change these together
@@ -46,7 +45,9 @@ const requireABIsForNetwork = (ethNetwork: EthNetwork) => {
 
             darknodeRewardVault = "0xc08Dfa565EdB7216c3b23bBf0848B43fE9a49F0E";
             darknodePaymentStore = "0xA9411C3AD1fBE168fd119A3B32fB481a0b9877A9";
-            darknodePayment = "0xba8d77a48d24866be4b775e732f6f8d198f7ba26";
+            darknodePayment = "0x8E11B87547f4072CC8A094F2888201CAF4EA0B9e";
+        default:
+            throw new Error(`Unsupported network ${ethNetwork}`);
     }
 
     const DarknodeRegistry: Contract = {
