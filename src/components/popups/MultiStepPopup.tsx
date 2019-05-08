@@ -13,23 +13,25 @@ import { Loading } from "../Loading";
 
 import Warn from "../../styles/images/warn.svg";
 
+const defaultState = { // Entries must be immutable
+    running: false,
+    complete: false,
+    rejected: false,
+    currentStep: 0,
+    error: null as Error | null,
+    bond: null as BigNumber | null,
+    warningIgnored: false,
+};
+
 /**
  * MultiStepPopup is a popup component that prompts the user to approve a
  * series of Ethereum transactions
  */
-class MultiStepPopupClass extends React.Component<Props, State> {
+class MultiStepPopupClass extends React.Component<Props, typeof defaultState> {
 
     constructor(props: Props) {
         super(props);
-        this.state = {
-            running: false,
-            complete: false,
-            rejected: false,
-            currentStep: 0,
-            error: null,
-            bond: null,
-            warningIgnored: false,
-        };
+        this.state = defaultState;
     }
 
     public componentDidMount = () => {
@@ -69,9 +71,9 @@ class MultiStepPopupClass extends React.Component<Props, State> {
                     }
                 </div>
                 <div className="multi-step--buttons" >
-                    <button className="styled-button styled-button--light" onClick={this.onCancel}>Cancel</button>
+                    <button className="button button--white" onClick={this.onCancel}>Cancel</button>
                     {!ignoreWarning ?
-                        <button className={`styled-button ${warning ? "styled-button--red" : ""}`} onClick={this.run}>
+                        <button className={`button ${warning ? "button--red" : ""}`} onClick={this.run}>
                             Confirm
                         </button> :
                         null
@@ -120,31 +122,31 @@ class MultiStepPopupClass extends React.Component<Props, State> {
             <div className="multi-step--buttons" >
                 {running ?
                     // Show spinning icon while running through steps
-                    <button className="styled-button styled-button--light" disabled={true}><Loading /></button> :
+                    <button className="button button--white" disabled={true}><Loading /></button> :
                     complete ?
                         // Get user to click Close instead of automatically closing popup
                         <>
-                            <button className="styled-button" onClick={this.onDone}>
+                            <button className="button" onClick={this.onDone}>
                                 Close
                             </button>
                         </> :
                         error ?
                             // Let user cancel or retry after error
                             <>
-                                <button className="styled-button styled-button--light" onClick={this.onCancel}>
+                                <button className="button button--white" onClick={this.onCancel}>
                                     Cancel
                                 </button>
-                                <button className="styled-button styled-button--light" onClick={this.run}>
+                                <button className="button button--white" onClick={this.run}>
                                     Retry
                                 </button>
                             </> :
                             // Ask user to confirm
                             <>
-                                <button className="styled-button styled-button--light" onClick={this.onCancel}>
+                                <button className="button button--white" onClick={this.onCancel}>
                                     Cancel
                                 </button>
                                 <button
-                                    className={`styled-button ${warning ? "styled-button--red" : ""}`}
+                                    className={`button ${warning ? "button--red" : ""}`}
                                     onClick={this.run}
                                 >
                                     Confirm
@@ -237,17 +239,6 @@ interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<
 
     onCancel?: (() => void) | (() => Promise<void>);
     // onDone?: (() => void) | (() => Promise<void>);
-}
-
-interface State {
-    currentStep: number;
-    running: boolean;
-    complete: boolean;
-    rejected: boolean;
-    warningIgnored: boolean;
-
-    error: Error | null;
-    bond: BigNumber | null;
 }
 
 export const MultiStepPopup = connect(mapStateToProps, mapDispatchToProps)(MultiStepPopupClass);

@@ -113,6 +113,95 @@
     margin-top: 15px;
 }
 
+.popup--buttons {
+    display: flex;
+    flex-flow: row;
+    justify-content: center;
+    align-items: center;
+
+    button {
+        width: 100%;
+    }
+}
+
+.withdraw--addresses {
+    margin: 0;
+    padding: 20px 0;
+}
+
+.withdraw--address--outer {
+    display: flex;
+    flex-flow: row;
+
+    &:not(:last-child) {
+        border-bottom: 1px solid #aaa;
+    }
+}
+
+.withdraw--address {
+    cursor: pointer;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-flow: row;
+    padding: 10px;
+    list-style-type: none;
+    margin: 0 !important;
+    margin-bottom: 5px;
+    background: none;
+    border: none;
+}
+
+.new-address {
+    width: 100%;
+    background: none;
+
+    &:-internal-autofill-selected {
+        background-color: none !important;
+    }
+}
+
+.withdraw--selected {
+    background-color: $blue-bright !important;
+
+    >* {
+        color: white;
+    }
+
+    font-weight: 900;
+    // border: 1px solid $blue-bright;
+}
+
+.withdraw--address--remove {
+    background: none;
+    border: none;
+    min-width: initial;
+    padding: 0 10px;
+}
+
+.input--valid {
+    background-color: #ddffdd;
+}
+
+.new-address--outer {
+    display: flex;
+    flex-flow: row;
+    border: 1px solid #aaa;
+    margin-bottom: 10px;
+
+    input[type=text] {
+        border: none;
+    }
+}
+
+.new-address--plus {
+    min-width: initial;
+    border: 0;
+    padding: 0 10px;
+    background: none;
+}
+
 // Open Order
 .popup.open .open--tokens {
     display: flex;
@@ -151,10 +240,6 @@
 
 .popup.open .open--details span {
     font-weight: 500;
-}
-
-.popup.open .open--confirm {
-    @extend .styled-button;
 }
 
 $noWeb3Width: 450px;
@@ -210,6 +295,7 @@ p.popup--error {
     padding: 10px;
     width: 300px;
     font-weight: 500;
+    word-break: break-all;
 }
 
 .popup--blur {

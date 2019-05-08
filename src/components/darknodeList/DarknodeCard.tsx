@@ -7,23 +7,25 @@ import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { Link } from "react-router-dom";
 import { bindActionCreators, Dispatch } from "redux";
 
+import { Blocky } from "@renex/react-components";
 import { Token } from "../../lib/ethereum/tokens";
 import { RegistrationStatus, removeDarknode, removeRegisteringDarknode } from "../../store/actions/statistics/operatorActions";
 import { ApplicationData, Currency, DarknodeDetails } from "../../store/types";
-import { Blocky } from "../Blocky";
 import { CurrencyIcon } from "../CurrencyIcon";
 import { DarknodeID } from "../DarknodeID";
 import { darknodeIDHexToBase58 } from "../pages/Darknode";
 import { statusText } from "../statuspage/Registration";
 import { TokenBalance } from "../TokenBalance";
 
-class DarknodeCardClass extends React.Component<Props, State> {
+const defaultState = { // Entries must be immutable
+    confirmedRemove: false,
+};
+
+class DarknodeCardClass extends React.Component<Props, typeof defaultState> {
 
     public constructor(props: Props, context: object) {
         super(props, context);
-        this.state = {
-            confirmedRemove: false,
-        };
+        this.state = defaultState;
     }
 
     public render = (): JSX.Element => {
@@ -151,10 +153,6 @@ interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<
     darknodeDetails: DarknodeDetails | null;
     name: string | undefined;
     publicKey: string | undefined;
-}
-
-interface State {
-    confirmedRemove: boolean;
 }
 
 export const DarknodeCard = connect(mapStateToProps, mapDispatchToProps)(DarknodeCardClass);

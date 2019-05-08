@@ -1,11 +1,11 @@
 import * as React from "react";
 
+import { Blocky } from "@renex/react-components";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
 import { RegistrationStatus, setDarknodeName } from "../../store/actions/statistics/operatorActions";
 import { ApplicationData, DarknodeDetails } from "../../store/types";
-import { Blocky } from "../Blocky";
 import { DarknodeID } from "../DarknodeID";
 import { InfoLabel } from "../InfoLabel";
 import { DarknodeAction } from "../pages/Darknode";
@@ -16,15 +16,17 @@ import { NetworkBlock } from "./block/NetworkBlock";
 import { Notifications } from "./Notifications";
 import { Registration } from "./Registration";
 
+const defaultState = { // Entries must be immutable
+    renaming: false,
+    newName: undefined as string | undefined,
+};
+
 class StatusPageClass extends React.Component<Props, State> {
     private focusInput: HTMLInputElement | null = null;
 
     public constructor(props: Props, context: object) {
         super(props, context);
-        this.state = {
-            renaming: false,
-            newName: props.name,
-        };
+        this.state = { ...defaultState, newName: props.name };
     }
 
     public componentWillReceiveProps = (nextProps: Props) => {
@@ -63,7 +65,6 @@ class StatusPageClass extends React.Component<Props, State> {
                                 <form className="statuspage--rename" onSubmit={this.handleSubmitName}>
                                     <input
                                         ref={this.focusInputRef}
-                                        role="textbox"
                                         type="text"
                                         name="newName"
                                         onChange={this.handleInput}
@@ -186,9 +187,6 @@ interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<
     publicKey: string | undefined;
 }
 
-interface State {
-    renaming: boolean;
-    newName: string | undefined;
-}
+type State = typeof defaultState;
 
 export const StatusPage = connect(mapStateToProps, mapDispatchToProps)(StatusPageClass);

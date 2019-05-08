@@ -3,6 +3,7 @@ import * as React from "react";
 import { faStar } from "@fortawesome/free-regular-svg-icons";
 import { faFire, faThLarge, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Blocky } from "@renex/react-components";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { Link } from "react-router-dom";
 import { bindActionCreators, Dispatch } from "redux";
@@ -11,7 +12,6 @@ import { Token } from "../lib/ethereum/tokens";
 import { RegistrationStatus } from "../store/actions/statistics/operatorActions";
 import { hideMobileMenu } from "../store/actions/ui/uiActions";
 import { ApplicationData, Currency } from "../store/types";
-import { Blocky } from "./Blocky";
 import { CurrencyIcon } from "./CurrencyIcon";
 import { DarknodeID } from "./DarknodeID";
 import { darknodeIDHexToBase58 } from "./pages/Darknode";
@@ -22,10 +22,6 @@ import { TokenBalance } from "./TokenBalance";
  * as well as a breakdown of each darknode
  */
 class SidebarClass extends React.Component<Props> {
-    public constructor(props: Props, context: object) {
-        super(props, context);
-    }
-
     public render = (): JSX.Element => {
         const { selectedDarknode, store } = this.props;
         const { darknodeList, darknodeDetails, darknodeNames, quoteCurrency, mobileMenuActive } = store;

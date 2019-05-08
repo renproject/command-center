@@ -11,10 +11,6 @@ import { _catch_ } from "../ErrorBoundary";
  * foreground with the rest of the page in the background
  */
 class PopupControllerClass extends React.Component<Props> {
-    constructor(props: Props) {
-        super(props);
-    }
-
     public render(): JSX.Element | null {
         const { popup, overlay, onCancel } = this.props.store.popup;
 

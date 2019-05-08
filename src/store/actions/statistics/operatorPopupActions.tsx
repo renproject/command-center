@@ -1,7 +1,7 @@
 import * as React from "react";
 
-import RenExSDK from "@renex/renex";
 import BigNumber from "bignumber.js";
+import Web3 from "web3";
 
 import { Dispatch } from "redux";
 
@@ -10,13 +10,14 @@ import { MultiStepPopup } from "../../../components/popups/MultiStepPopup";
 import { TokenBalance } from "../../../components/TokenBalance";
 import { _captureBackgroundException_ } from "../../../lib/errors";
 import { Token } from "../../../lib/ethereum/tokens";
-import { Currency, TokenPrices } from "../..//types";
+import { Currency, EthNetwork, TokenPrices } from "../../types";
 import { setPopup } from "../popup/popupActions";
-import { approveNode, deregisterNode, fundNode, refundNode, registerNode } from "../trader/darknode";
+import { approveNode, changeCycle, claimForNode, deregisterNode, fundNode, refundNode, registerNode } from "../trader/darknode";
 import { updateDarknodeStatistics } from "./operatorActions";
 
 export const showRegisterPopup = (
-    sdk: RenExSDK,
+    web3: Web3,
+    ethNetwork: EthNetwork,
     address: string,
     darknodeID: string,
     publicKey: string,
@@ -24,23 +25,24 @@ export const showRegisterPopup = (
     tokenPrices: TokenPrices, onCancel: () => void, onDone: () => void) => async (dispatch: Dispatch) => {
 
         const step1 = async () => {
-            await approveNode(sdk, address, minimumBond)(dispatch);
+            await approveNode(web3, ethNetwork, address, minimumBond)(dispatch);
         };
 
         const step2 = async () => {
             await registerNode(
-                sdk,
+                web3,
+                ethNetwork,
                 address,
                 darknodeID,
                 publicKey,
-                minimumBond || new BigNumber(100000),
+                minimumBond || new BigNumber(100000000000000000000000),
                 onCancel,
                 onDone
             )(dispatch);
 
             if (tokenPrices) {
                 try {
-                    await updateDarknodeStatistics(sdk, darknodeID, tokenPrices)(dispatch);
+                    await updateDarknodeStatistics(web3, ethNetwork, darknodeID, tokenPrices)(dispatch);
                 } catch (error) {
                     _captureBackgroundException_(error, {
                         description: "Error thrown in updateDarknodeStatistics in showRegisterPopup",
@@ -54,8 +56,8 @@ export const showRegisterPopup = (
             { call: step2, name: "Register darknode" },
         ];
 
-        const warning = "Due to a large number of registrations, estimated Darknode profits are currently negative. \
-Are you sure you want to continue?";
+        const warning = `Due to a large number of registrations, estimated Darknode profits are currently negative.\
+Are you sure you want to continue?`;
         const title = "Register darknode";
 
         dispatch(setPopup({
@@ -73,7 +75,8 @@ Are you sure you want to continue?";
     };
 
 export const showDeregisterPopup = (
-    sdk: RenExSDK,
+    web3: Web3,
+    ethNetwork: EthNetwork,
     address: string,
     darknodeID: string,
     remainingFees: BigNumber | null,
@@ -83,7 +86,7 @@ export const showDeregisterPopup = (
 ) => async (dispatch: Dispatch) => {
 
     const step1 = async () => {
-        await deregisterNode(sdk, address, darknodeID, onCancel, onDone)(dispatch);
+        await deregisterNode(web3, ethNetwork, address, darknodeID, onCancel, onDone)(dispatch);
     };
 
     const steps = [
@@ -127,7 +130,8 @@ export const showDeregisterPopup = (
 };
 
 export const showRefundPopup = (
-    sdk: RenExSDK,
+    web3: Web3,
+    ethNetwork: EthNetwork,
     address: string,
     darknodeID: string,
     onCancel: () => void,
@@ -135,7 +139,7 @@ export const showRefundPopup = (
 ) => async (dispatch: Dispatch) => {
 
     const step1 = async () => {
-        await refundNode(sdk, address, darknodeID, onCancel, onDone)(dispatch);
+        await refundNode(web3, ethNetwork, address, darknodeID, onCancel, onDone)(dispatch);
     };
 
     const steps = [
@@ -160,7 +164,7 @@ export const showRefundPopup = (
 };
 
 export const showFundPopup = (
-    sdk: RenExSDK,
+    web3: Web3,
     address: string,
     darknodeID: string,
     ethAmountStr: string,
@@ -169,7 +173,7 @@ export const showFundPopup = (
 ) => async (dispatch: Dispatch) => {
 
     const step1 = async () => {
-        await fundNode(sdk, address, darknodeID, ethAmountStr, onCancel, onDone)(dispatch);
+        await fundNode(web3, address, darknodeID, ethAmountStr, onCancel, onDone)(dispatch);
     };
 
     const steps = [
@@ -177,6 +181,54 @@ export const showFundPopup = (
     ];
 
     const title = "Fund darknode";
+
+    dispatch(setPopup(
+        {
+            popup: <MultiStepPopup
+                steps={steps}
+                onCancel={onCancel}
+                title={title}
+                confirm={false}
+            />,
+            onCancel,
+            dismissible: false,
+            overlay: true,
+        },
+    ));
+};
+
+export const showClaimPopup = (
+    web3: Web3,
+    ethNetwork: EthNetwork,
+    claimBeforeCycle: boolean,
+    address: string,
+    darknodeID: string,
+    title: string,
+    onCancel: () => void,
+    onDone: () => void,
+) => async (dispatch: Dispatch) => {
+
+    const useFixedGasLimit = !claimBeforeCycle;
+
+    const claimStep = {
+        call: async () => {
+            await claimForNode(web3, ethNetwork, useFixedGasLimit, address, darknodeID, onCancel, onDone)(dispatch);
+        },
+        name: "Claim rewards",
+    };
+
+    const ignoreError = claimBeforeCycle;
+    const changeCycleStep = {
+        call: async () => {
+            await changeCycle(web3, ethNetwork, ignoreError, address, onCancel, onDone)(dispatch);
+        },
+        name: `Change cycle${claimBeforeCycle ? " (optional)" : ""}`,
+    };
+
+    const step1 = claimBeforeCycle ? claimStep : changeCycleStep;
+    const step2 = claimBeforeCycle ? changeCycleStep : claimStep;
+
+    const steps = [step1, step2];
 
     dispatch(setPopup(
         {

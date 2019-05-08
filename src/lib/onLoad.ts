@@ -2,10 +2,9 @@ import * as Sentry from "@sentry/browser";
 
 import Web3 from "web3";
 
-import { HttpProvider } from "web3/providers";
+import { HttpProvider } from "web3-providers";
 
-import { _catch_ } from "../components/ErrorBoundary";
-import { environment, NETWORK, SENTRY_DSN, SOURCE_VERSION } from "./environmentVariables";
+import { environment, SENTRY_DSN, SOURCE_VERSION } from "./environmentVariables";
 import { pageLoadedAt } from "./errors";
 
 interface EthereumProvider extends HttpProvider {
@@ -19,6 +18,11 @@ declare global {
     }
 }
 
+/**
+ *  onLoad runs setup tasks when the page is loaded
+ *
+ * @param title The HTML title to show
+ */
 export const onLoad = (title: string) => {
 
     // Initialize Sentry error logging
@@ -54,12 +58,8 @@ export const onLoad = (title: string) => {
         scope.setExtra("pageLoadedAt", pageLoadedAt());
     });
 
-    // Update document title to show network
-    if (NETWORK !== "mainnet") {
-        document.title = `${title} (${NETWORK})`;
-    } else {
-        document.title = title; // Also set in index.html
-    }
+    // Update document title
+    document.title = title; // Also set in index.html
 
     // tslint:disable-next-line: no-console
     console.log(`${title} version hash: ${SOURCE_VERSION}`);

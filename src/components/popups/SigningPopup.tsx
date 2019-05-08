@@ -2,17 +2,19 @@ import * as React from "react";
 
 import { Loading } from "../Loading";
 
+const defaultState = { // Entries must be immutable
+    error: null as string | null,
+    signing: true,
+};
+
 /**
  * SigningPopup is a popup component for prompting for a user's ethereum
  * signature
  */
-export class SigningPopup extends React.Component<Props, State> {
+export class SigningPopup extends React.Component<Props, typeof defaultState> {
     constructor(props: Props) {
         super(props);
-        this.state = {
-            error: null,
-            signing: true,
-        };
+        this.state = defaultState;
     }
 
     public componentDidMount = async (): Promise<void> => {
@@ -61,9 +63,4 @@ export class SigningPopup extends React.Component<Props, State> {
 interface Props {
     data: string[];
     sign(): Promise<void>;
-}
-
-interface State {
-    error: string | null;
-    signing: boolean;
 }

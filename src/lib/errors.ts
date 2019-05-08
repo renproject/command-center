@@ -2,6 +2,7 @@
 
 import * as Sentry from "@sentry/browser";
 
+import { Network } from "../store/types";
 import { naturalTime } from "./conversion";
 import { environment } from "./environmentVariables";
 
@@ -121,7 +122,7 @@ const _captureException_ = <X extends Details>(error: any, details: X) => {
         // tslint:disable-next-line: no-console
         console.error(error);
 
-        if (environment !== "mainnet") {
+        if (environment !== Network.Production) {
             if (typeof error === "string") {
                 // tslint:disable-next-line: no-parameter-reassignment
                 error = `[${environment.toUpperCase()}] ${error}`;

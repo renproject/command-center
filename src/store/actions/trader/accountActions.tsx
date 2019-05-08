@@ -1,28 +1,31 @@
 import * as Sentry from "@sentry/browser";
 import * as React from "react";
 
-import RenExSDK from "@renex/renex";
 import Web3 from "web3";
 
 import { Dispatch } from "redux";
 import { createStandardAction } from "typesafe-actions";
-import { Provider } from "web3/providers";
+import { provider } from "web3-providers";
+import { toChecksumAddress } from "web3-utils";
 
 import { LoggedOut } from "../../../components/popups/LoggedOut";
 import { NoWeb3Popup } from "../../../components/popups/NoWeb3Popup";
 import { Language } from "../../../languages/language";
 import { _captureBackgroundException_ } from "../../../lib/errors";
 import { getWeb3BrowserName, Web3Browser } from "../../../lib/ethereum/browsers";
-import { getInjectedWeb3Provider, ProviderEngine } from "../../../lib/ethereum/wallet";
+import { getInjectedWeb3Provider } from "../../../lib/ethereum/wallet";
 import { history } from "../../../lib/history";
+import { EthNetwork, readOnlyWeb3 } from "../../types";
 import { clearPopup, setPopup } from "../popup/popupActions";
 
-export const storeAddress = createStandardAction("STORE_ADDRESS")<string | null>();
+export const storeWeb3 = createStandardAction("storeWeb3")<Web3>();
+export const storeAddress = createStandardAction("storeAddress")<string | null>();
+export const storeEthNetwork = createStandardAction("storeEthNetwork")<EthNetwork>();
 
-export const storeWeb3BrowserName = createStandardAction("STORE_WEB3_BROWSER_NAME")<Web3Browser>();
+export const storeWeb3BrowserName = createStandardAction("storeWeb3BrowserName")<Web3Browser>();
 
 export const updateWeb3BrowserName = (
-    provider: Provider,
+    newProvider: provider,
 ) => (dispatch: Dispatch) => {
     /*
     // Check for mobile
@@ -31,19 +34,17 @@ export const updateWeb3BrowserName = (
     const isAndroid = ua.includes('Android')
     */
 
-    const web3BrowserName = getWeb3BrowserName(provider);
+    const web3BrowserName = getWeb3BrowserName(newProvider);
 
     dispatch(storeWeb3BrowserName(web3BrowserName));
 };
 
 export const login = (
-    sdk: RenExSDK,
-    readOnlyProvider: ProviderEngine,
     options: { redirect: boolean; showPopup: boolean; immediatePopup: boolean },
 ) => async (dispatch: Dispatch) => {
     let cancelled = false;
 
-    const onClick = async () => (login(sdk, readOnlyProvider, { redirect: false, showPopup: true, immediatePopup: true })(dispatch));
+    const onClick = async () => (login({ redirect: false, showPopup: true, immediatePopup: true })(dispatch));
     const onCancel = () => {
         dispatch(clearPopup());
         cancelled = true;
@@ -88,16 +89,18 @@ export const login = (
         }
     }, 5 * 1000);
 
-    let provider;
+    let newProvider;
+    let newWeb3;
     try {
 
         // Even if the provider is on the wrong network, etc., we can still
         // detect the browser name (MetaMask, Status, etc.)
-        const onAnyProvider = (anyProvider: Provider) => {
+        const onAnyProvider = (anyProvider: provider) => {
             updateWeb3BrowserName(anyProvider)(dispatch);
         };
 
-        provider = await getInjectedWeb3Provider(onAnyProvider);
+        newProvider = await getInjectedWeb3Provider(onAnyProvider);
+        newWeb3 = new Web3(newProvider);
     } catch (error) {
         clearTimeout(timeout);
         if (options.showPopup && !cancelled) {
@@ -114,18 +117,21 @@ export const login = (
 
     clearTimeout(timeout);
 
-    const accounts = await (new Web3(provider)).eth.getAccounts();
+    const accounts = await newWeb3.eth.getAccounts();
 
     if (accounts.length === 0) {
         return;
     }
 
+    // tslint:disable-next-line: no-any
+    const network = (await (newWeb3.eth.net as any).getNetworkType());
+    dispatch(storeEthNetwork(network));
+
     dispatch(clearPopup());
 
     // For now we use first account
     // TODO: Add support for selecting other accounts other than first
-    const address = sdk.getWeb3().utils
-        .toChecksumAddress(accounts[0].toLowerCase());
+    const address = toChecksumAddress(accounts[0].toLowerCase());
 
     Sentry.configureScope((scope) => {
         // scope.setUser({ id: address });
@@ -134,12 +140,7 @@ export const login = (
 
     // Store address in the store (and in local storage)
     dispatch(storeAddress(address));
-
-    // Configure SDK
-    sdk.updateProvider(provider);
-    sdk.setAddress(address);
-
-    readOnlyProvider.stop();
+    dispatch(storeWeb3(newWeb3));
 
     /*
     // Check for mobile
@@ -148,7 +149,7 @@ export const login = (
     const isAndroid = ua.includes('Android')
     */
 
-    const web3BrowserName = getWeb3BrowserName(provider);
+    const web3BrowserName = getWeb3BrowserName(newProvider);
 
     dispatch(storeWeb3BrowserName(web3BrowserName));
 
@@ -159,18 +160,12 @@ export const login = (
 };
 
 export const logout = (
-    sdk: RenExSDK,
-    readOnlyProvider: ProviderEngine,
     options: { reload: boolean },
 ) => async (dispatch: Dispatch) => {
 
     // Clear session account in store (and in local storage)
     dispatch(storeAddress(null));
-
-    // Use read-only provider and clear address
-    readOnlyProvider.start();
-    sdk.updateProvider(readOnlyProvider);
-    sdk.setAddress("");
+    dispatch(storeWeb3(readOnlyWeb3));
 
     Sentry.configureScope((scope) => {
         scope.setExtra("loggedIn", false);
@@ -186,35 +181,30 @@ export const logout = (
 };
 
 // lookForLogout detects if 1) the user has changed or logged out of their Web3
-// wallet, or if the SDK's selected address has been changed (this should not
-// usually happen)
+// wallet
 export const lookForLogout = (
-    sdk: RenExSDK,
     address: string,
-    readOnlyProvider: ProviderEngine,
+    web3: Web3,
 ) => async (dispatch: Dispatch) => {
-    const sdkAddress = sdk.getAddress();
 
-    if (!address && !sdkAddress) {
+    if (!address) {
         return;
     }
 
-    const accounts = (await sdk.getWeb3().eth.getAccounts())
+    const accounts = (await web3.eth.getAccounts())
         .map((web3Address: string) => web3Address.toLowerCase());
 
-    if (address.toLowerCase() !== sdkAddress.toLowerCase() || !accounts.includes(sdkAddress.toLowerCase())) {
-        // console.error(`User has logged out of their web3 provider (${sdkAddress} not in [${accounts.join(", ")}])`);
-
+    if (!accounts.includes(address.toLowerCase())) {
         const onClick = async () => {
-            await logout(sdk, readOnlyProvider, { reload: true })(dispatch).catch((error) => {
+            await logout({ reload: true })(dispatch).catch((error) => {
                 _captureBackgroundException_(error, {
                     description: "Error in logout in accountActions",
                 });
             });
-            await login(sdk, readOnlyProvider, { redirect: false, showPopup: true, immediatePopup: false })(dispatch);
+            await login({ redirect: false, showPopup: true, immediatePopup: false })(dispatch);
         };
         const onCancel = async () => {
-            await logout(sdk, readOnlyProvider, { reload: true })(dispatch).catch((error) => {
+            await logout({ reload: true })(dispatch).catch((error) => {
                 _captureBackgroundException_(error, {
                     description: "Error in logout in accountActions",
                 });

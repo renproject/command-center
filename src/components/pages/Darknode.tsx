@@ -1,18 +1,16 @@
 import * as qs from "query-string";
 import * as React from "react";
 
-import Web3 from "web3";
-
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { RouteComponentProps, withRouter } from "react-router";
 import { bindActionCreators, Dispatch } from "redux";
-
-import { StatusPage } from "../statuspage/StatusPage";
+import { toChecksumAddress } from "web3-utils";
 
 import { EncodedData, Encodings } from "../../lib/encodedData";
 import { addRegisteringDarknode, RegistrationStatus, setDarknodeName } from "../../store/actions/statistics/operatorActions";
 import { ApplicationData } from "../../store/types";
 import { _catch_ } from "../ErrorBoundary";
+import { StatusPage } from "../statuspage/StatusPage";
 import { NotFound } from "./NotFound";
 
 export enum DarknodeAction {
@@ -22,7 +20,7 @@ export enum DarknodeAction {
 }
 
 const darknodeIDBase58ToHex = (darknodeID: string): string =>
-    (new Web3()).utils.toChecksumAddress(
+    toChecksumAddress(
         (`0x${new EncodedData(darknodeID, Encodings.BASE58).toHex("").slice(4)}`).toLowerCase()
     );
 
@@ -45,6 +43,13 @@ export const getDarknodeParam = (params: unknown): string | undefined => {
     return darknodeID;
 };
 
+const defaultState = { // Entries must be immutable
+    darknodeID: undefined as string | undefined,
+    action: undefined as string | undefined,
+    publicKey: undefined as string | undefined,
+    providedName: undefined as string | undefined,
+};
+
 /**
  * Darknode shows the details of a darknode. The user does not have to be logged
  * in.
@@ -53,15 +58,10 @@ export const getDarknodeParam = (params: unknown): string | undefined => {
  *     1) action: either "register" or "deregister"
  *     2) public_key: only used if action is "register"
  */
-class DarknodeClass extends React.Component<Props, State> {
+class DarknodeClass extends React.Component<Props, typeof defaultState> {
     public constructor(props: Props, context: object) {
         super(props, context);
-        this.state = {
-            darknodeID: undefined,
-            action: undefined,
-            publicKey: undefined,
-            providedName: undefined,
-        };
+        this.state = defaultState;
     }
 
     public componentDidMount = (): void => {
@@ -166,13 +166,6 @@ interface Props extends
     ReturnType<typeof mapStateToProps>,
     ConnectedReturnType<typeof mapDispatchToProps>,
     RouteComponentProps {
-}
-
-interface State {
-    darknodeID: string | undefined;
-    action: string | undefined;
-    publicKey: string | undefined;
-    providedName: string | undefined;
 }
 
 export const Darknode = connect(mapStateToProps, mapDispatchToProps)(withRouter(DarknodeClass));

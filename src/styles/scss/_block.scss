@@ -1,4 +1,6 @@
 .block {
+    @extend .no-scrollbar;
+    overflow-y: scroll;
     flex-grow: 1;
     background-color: $blue-dark;
     border-radius: 2px;
@@ -61,6 +63,28 @@
 .block--basic--top {
     white-space: nowrap;
     margin: 40px 10px;
+    margin-bottom: 0;
+}
+
+.block--basic--pending {
+    opacity: 0.8;
+
+    .fees-block--basic--value {
+        font-size: 30px;
+    }
+
+    .fees-block--basic--sign {
+        font-size: 15px;
+        margin-right: 0;
+    }
+
+    .svg-inline--fa {
+        margin-right: 5px;
+    }
+
+    .fees-block--basic--unit {
+        font-size: 15px;
+    }
 }
 
 .block--basic--show {
@@ -131,6 +155,10 @@
 
 .fees-block {
     color: $green;
+
+    .block--title {
+        margin-bottom: 5px;
+    }
 }
 
 .fees-block--basic--value {
@@ -174,6 +202,51 @@
     border: none;
 }
 
+.block--advanced--tabs {
+    border-bottom: 1px solid $green;
+    display: flex;
+    flex-flow: row;
+    width: 100%;
+    margin-bottom: 20px;
+
+    .block--advanced--tab {
+        background: none;
+        border: none;
+        width: 100%;
+        color: white;
+        font-weight: 100;
+        cursor: pointer;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        padding: 10px;
+
+        &.selected {
+            color: $green;
+            font-weight: 900;
+        }
+
+        &:focus {
+            outline: 0;
+        }
+    }
+}
+
+.block--advanced--claim {
+    // TODO: Look into stylings being overridden
+    background: none !important;
+    color: white !important;
+    border: 1px solid white !important;
+    width: initial !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+
+    .svg-inline--fa {
+        margin-right: 2px;
+        font-size: 12px;
+    }
+}
+
 .fees-block--table {
 
     tr {
@@ -200,6 +273,23 @@
         padding-bottom: 5px;
     }
 
+    .tr {
+
+        &,
+        td {
+            padding-top: 30px;
+            color: $green;
+            color: white;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        &:hover,
+        td:hover {
+            background: initial;
+        }
+    }
+
     button {
         border: none;
         background: none;
@@ -220,6 +310,10 @@
 
     .fees-block--table--value {
         font-weight: 500;
+        max-width: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .fees-block--table--usd {

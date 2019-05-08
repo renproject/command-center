@@ -15,11 +15,26 @@ export const statisticsReducer = (
     action: NetworkAction | OperatorActions
 ): StatisticsData => {
     switch (action.type) {
+        case getType(networkActions.updateCurrentCycle):
+            return state.set("currentCycle", action.payload);
+
+        case getType(networkActions.updatePreviousCycle):
+            return state.set("previousCycle", action.payload);
+
+        case getType(networkActions.updatePendingRewards):
+            return state.set("pendingRewards", action.payload);
+
+        case getType(networkActions.updatePendingTotalInEth):
+            return state.set("pendingTotalInEth", action.payload);
+
+        case getType(networkActions.updateCycleTimeout):
+            return state.set("cycleTimeout", action.payload);
+
         case getType(networkActions.storeMinimumBond):
-            return state.set("minimumBond", action.payload.minimumBond);
+            return state.set("minimumBond", action.payload);
 
         case getType(networkActions.storeTokenPrices):
-            return state.set("tokenPrices", action.payload.tokenPrices);
+            return state.set("tokenPrices", action.payload);
 
         case getType(operatorActions.addRegisteringDarknode):
             return state.set("darknodeRegisteringList", state.darknodeRegisteringList.set(
@@ -64,12 +79,14 @@ export const statisticsReducer = (
                     //     newNames = newNames.set(darknodeID, `Darknode ${newList.indexOf(darknodeID) + 1}`);
                     // }
                 }
+                return null;
             });
 
             newList.map((darknodeID: string) => {
                 if (!newNames.has(darknodeID)) {
                     newNames = newNames.set(darknodeID, `Darknode ${newList.indexOf(darknodeID) + 1}`);
                 }
+                return null;
             });
 
             const darknodeRegisteringList = state.darknodeRegisteringList
@@ -92,12 +109,44 @@ export const statisticsReducer = (
         case getType(operatorActions.storeSecondsPerBlock):
             return state.set("secondsPerBlock", action.payload.secondsPerBlock);
 
+        case getType(operatorActions.addToWithdrawAddresses):
+            const foundList = state.withdrawAddresses.get(action.payload.token, List());
+            if (foundList.contains(action.payload.address)) {
+                return state;
+            }
+            return state.set(
+                "withdrawAddresses",
+                state.withdrawAddresses.set(
+                    action.payload.token,
+                    foundList.push(action.payload.address),
+                ),
+            );
+
+        case getType(operatorActions.removeFromWithdrawAddresses):
+            const list = state.withdrawAddresses.get(action.payload.token);
+            if (!list) { return state; }
+            const foundIndex = list.findIndex((address) => address === action.payload.address);
+            if (foundIndex === -1) { return state; }
+            return state.set(
+                "withdrawAddresses",
+                state.withdrawAddresses.set(
+                    action.payload.token,
+                    list.remove(foundIndex),
+                ),
+            );
+
         case getType(operatorActions.setDarknodeDetails):
             const details = action.payload.darknodeDetails;
             return state.set("darknodeDetails", state.darknodeDetails.set(
                 details.ID,
                 action.payload.darknodeDetails,
             ));
+
+        case getType(operatorActions.addTransaction):
+            return state.set("transactions", state.transactions.set(action.payload.txHash, action.payload.tx));
+
+        case getType(operatorActions.setTxConfirmations):
+            return state.set("confirmations", state.confirmations.set(action.payload.txHash, action.payload.confirmations));
 
         case getType(operatorActions.setDarknodeName):
             return state.set("darknodeNames", state.darknodeNames.set(action.payload.darknodeID, action.payload.name));

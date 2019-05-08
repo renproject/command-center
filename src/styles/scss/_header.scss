@@ -88,28 +88,6 @@
     text-decoration: none;
 }
 
-.header--menu .header--group {
-    display: flex;
-    justify-content: center;
-
-    @media(min-width: $min-sm) {
-        display: flex;
-    }
-
-    >.svg-inline--fa {
-        margin-left: 10px;
-    }
-
-    position: relative;
-
-    &.header--group--language,
-    &.header--group--currency {
-        @media(max-width: $max-sm) {
-            display: none;
-        }
-    }
-}
-
 .header--menu .header--logout {
     @media(min-width: $min-sm) {
         display: none;
@@ -125,58 +103,14 @@
     margin-right: 15px;
 }
 
-.header--dropdown {
-    background: #FAFAFA;
-    border: 1px solid #E1E1E1;
-
-    z-index: 11;
-
-    text-align: center;
-    border-radius: 2px;
-    list-style: none;
+.header--dropdown--alt {
     padding: 0;
     position: absolute;
     top: 100%;
     cursor: auto;
 }
 
-.header--dropdown--login {
-    // Add 20px to each side
-    width: calc(100% + 40px);
-    right: -20px;
-}
-
-.header--dropdown:after,
-.header--dropdown:before {
-    bottom: 100%;
-    left: 50%;
-    border: solid transparent;
-    content: " ";
-    height: 0;
-    width: 0;
-    position: absolute;
-    pointer-events: none;
-}
-
-$arrow-size: 7px;
-
-.header--dropdown:after {
-    border-color: rgba(255, 255, 255, 0);
-    border-bottom-color: #ffffff;
-    border-width: $arrow-size;
-    margin-left: -$arrow-size;
-}
-
-.header--dropdown:before {
-    border-color: rgba(0, 0, 0, 0);
-    border-bottom-color: #E1E1E1;
-    border-width: $arrow-size + 2px;
-    margin-left: -($arrow-size + 2px);
-}
-
-
-
-.header--dropdown li {
+.header--dropdown--alt li {
     padding: 9px 20px;
     cursor: pointer;
 
@@ -186,15 +120,8 @@ $arrow-size: 7px;
     color: #58585B;
 }
 
-.header--dropdown li+li {
-    border-top: 1px solid #f0f0f0;
-}
-
-li.header--dropdown--selected,
-.header--dropdown li:hover,
-.header--dropdown li:active {
-    font-weight: 900;
-    color: #001B3A;
+.header--dropdown--option {
+    min-width: 100%;
 }
 
 .header--dropdown .header--dropdown--highlight {
@@ -238,43 +165,33 @@ li.header--dropdown--selected,
     -webkit-border-radius: 3.5px;
     border-radius: 3.5px;
     background-color: #F45532;
+    margin-top: 5px;
 }
 
 .header--account--connected .header--account--type::before {
     background-color: #3CBC98;
 }
 
-.header--dropdown--options {
-    text-align: left;
-    margin-top: -10px;
-
-    // Add 10px to each side
-    width: calc(100% + 20px);
-    right: -10px;
-
-    .svg-inline--fa {
-        margin-right: 5px;
-    }
-
-    img {
-        margin-bottom: -1px;
-    }
+.header--account--type {
+    display: flex;
+    flex-flow: row;
+    justify-content: center;
+    align-content: center;
 }
 
-.header--dropdown--currency {
-    @extend .header--dropdown--options;
+.header--selected {
+    color: white !important;
+    border: 0 !important;
 
-    // Add 60px to each side
-    width: calc(100% + 120px);
+    svg {
+        opacity: 1 !important;
 
-    @media(max-width: $max-sm) {
-        width: 100%;
+        path {
+            fill: white !important;
+            stroke: white !important;
+        }
     }
-
-    right: -60px;
 }
-
-
 
 .header--mobile-menu--button {
     @extend .mobile-only;
@@ -295,5 +212,86 @@ li.header--dropdown--selected,
         @media(max-width: $max-xs) {
             margin-left: 22px;
         }
+    }
+}
+
+.header--dropdown--accounts {
+    width: 200px;
+}
+
+.header--group:not(.header--group--account) {
+    @extend .no-mobile;
+}
+
+.transaction {
+    margin-top: 10px;
+    margin-bottom: 10px;
+
+    font-weight: 100;
+    font-size: 14px;
+    display: flex;
+    flex-flow: row;
+    justify-content: center;
+    align-items: center;
+
+    div {
+        margin-right: 10px;
+    }
+
+    >.lds-dual-ring::after {
+        border-width: 1px;
+    }
+
+    a.transaction--hash {
+        color: $blue-bright;
+    }
+
+}
+
+.transaction+.transaction {
+    margin-top: 0;
+}
+
+.header--account--spinner {
+    margin-left: 10px;
+}
+
+.network--banner {
+    box-shadow: $blue-darker 0px 10px 10px;
+    top: 0;
+    width: 100%;
+    background-color: $red;
+    position: fixed;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 22px;
+
+    .banner--bold {
+        font-weight: 900;
+        margin: 0 5px;
+    }
+}
+
+.with-banner--main {
+    .network--banner {
+        background-color: $green;
+        color: $blue-dark;
+    }
+}
+
+.with-banner {
+    .header {
+        margin-top: 15px;
+    }
+
+    .popup--container {
+        top: 15px;
+    }
+
+    .sidebar {
+        top: 15px;
+        height: calc(100vh - 15px);
     }
 }

@@ -1,36 +1,45 @@
-import RenExSDK from "@renex/renex";
+import Web3 from "web3";
 
 import { OrderedSet } from "immutable";
-import { contracts } from "./contracts/contracts";
+import { sha3, toChecksumAddress } from "web3-utils";
+
+import { EthNetwork } from "../../store/types";
+import { DarknodeRegistryWeb3 } from "./contracts/bindings/darknodeRegistry";
+import { getContracts } from "./contracts/contracts";
 
 const NULL = "0x0000000000000000000000000000000000000000";
 
-async function getAllDarknodes(sdk: RenExSDK): Promise<string[]> {
+const getAllDarknodes = async (web3: Web3, ethNetwork: EthNetwork): Promise<string[]> => {
     const batchSize = 10;
 
     const allDarknodes = [];
     let lastDarknode = NULL;
+    const filter = (address: string) => address !== NULL && address !== lastDarknode;
     do {
-        const darknodeRegistry = new ((sdk.getWeb3()).eth.Contract)(
-            contracts.DarknodeRegistry.ABI,
-            contracts.DarknodeRegistry.address
+        const darknodeRegistry: DarknodeRegistryWeb3 = new (web3.eth.Contract)(
+            getContracts(ethNetwork).DarknodeRegistry.ABI,
+            getContracts(ethNetwork).DarknodeRegistry.address
         );
-        const darknodes = await darknodeRegistry.methods.getDarknodes(lastDarknode, batchSize.toString()).call();
-        allDarknodes.push(...darknodes.filter((address: string) => address !== NULL && address !== lastDarknode));
+        const darknodes: string[] = await darknodeRegistry.methods.getDarknodes(lastDarknode, batchSize.toString()).call();
+        allDarknodes.push(...darknodes.filter(filter));
         [lastDarknode] = darknodes.slice(-1);
     } while (lastDarknode !== NULL);
 
     return allDarknodes;
-}
+};
 
-export const getOperatorDarknodes = async (sdk: RenExSDK, address: string): Promise<OrderedSet<string>> => {
+export const getOperatorDarknodes = async (
+    web3: Web3,
+    ethNetwork: EthNetwork,
+    address: string,
+): Promise<OrderedSet<string>> => {
     // TODO: Should addresses be made lower case or checksum addresses first?
 
     // Currently, the LogDarknodeRegistered logs don't include the registrar, so
     // instead we loop through every darknode and get it's owner first.
     // NOTE: Retrieving all logs only returns recent logs.
 
-    const darknodes = await getAllDarknodes(sdk);
+    const darknodes = await getAllDarknodes(web3, ethNetwork);
 
     /*
     Sample log:
@@ -52,45 +61,45 @@ export const getOperatorDarknodes = async (sdk: RenExSDK, address: string): Prom
     */
 
     // Get Registration events
-    const recentRegistrationEvents = await sdk.getWeb3().eth.getPastLogs({
-        address: contracts.DarknodeRegistry.address,
+    const recentRegistrationEvents = await web3.eth.getPastLogs({
+        address: getContracts(ethNetwork).DarknodeRegistry.address,
         // tslint:disable-next-line:no-any
-        fromBlock: contracts.DarknodeRegistry.deployedInBlock || "0x600000" as any,
+        fromBlock: getContracts(ethNetwork).DarknodeRegistry.deployedInBlock || "0x600000" as any,
         toBlock: "latest",
-        // topics: [sdk.getWeb3().utils.sha3("LogDarknodeRegistered(address,uint256)"), "0x000000000000000000000000" +
+        // topics: [sha3("LogDarknodeRegistered(address,uint256)"), "0x000000000000000000000000" +
         // address.slice(2), null, null] as any,
         // tslint:disable-next-line:no-any
-        topics: [sdk.getWeb3().utils.sha3("LogDarknodeRegistered(address,uint256)")] as any,
+        topics: [sha3("LogDarknodeRegistered(address,uint256)")] as any,
     });
     for (const event of recentRegistrationEvents) {
         // The log data returns back like this:
         // 0x000000000000000000000000945458e071eca54bb534d8ac7c8cd1a3eb318d92000000000000000000000000000000000000000000\
         // 00152d02c7e14af6800000
         // and we want to extract this: 0x945458e071eca54bb534d8ac7c8cd1a3eb318d92 (20 bytes, 40 characters long)
-        const darknodeID = sdk.getWeb3().utils.toChecksumAddress(`0x${event.data.substr(26, 40)}`);
+        const darknodeID = toChecksumAddress(`0x${event.data.substr(26, 40)}`);
         darknodes.push(darknodeID);
     }
 
     // Note: Deregistration events are not included because we are unable to retrieve the operator
 
     // // Get Deregistration events
-    // const recentDeregistrationEvents = await sdk.getWeb3().eth.getPastLogs({
+    // const recentDeregistrationEvents = await web3.eth.getPastLogs({
     //     address: contracts.DarknodeRegistry.address,
     //     // tslint:disable-next-line:no-any
     //     fromBlock: "0x889E55" as any, // FIXME: Change this based on network or get from address deployment
     //     toBlock: "latest",
     //     // tslint:disable-next-line:no-any
-    //     topics: [sdk.getWeb3().utils.sha3("LogDarknodeDeregistered(address)"), null] as any,
+    //     topics: [sha3("LogDarknodeDeregistered(address)"), null] as any,
     // });
 
     // for (const event of recentDeregistrationEvents) {
-    //     const darknodeID = sdk.getWeb3().utils.toChecksumAddress("0x" + event.data.substr(26, 40));
+    //     const darknodeID = toChecksumAddress("0x" + event.data.substr(26, 40));
     //     darknodes.push(darknodeID);
     // }
 
-    const darknodeRegistry = new ((sdk.getWeb3()).eth.Contract)(
-        contracts.DarknodeRegistry.ABI,
-        contracts.DarknodeRegistry.address
+    const darknodeRegistry: DarknodeRegistryWeb3 = new (web3.eth.Contract)(
+        getContracts(ethNetwork).DarknodeRegistry.ABI,
+        getContracts(ethNetwork).DarknodeRegistry.address
     );
     const operatorPromises = darknodes.map(async (darknodeID: string) =>
         darknodeRegistry.methods.getDarknodeOwner(darknodeID).call()

@@ -2,7 +2,7 @@
     "extends": [
         "tslint:recommended",
         "tslint-react",
-        "tslint-microsoft-contrib"
+        "tslint-microsoft-contrib/latest"
     ],
     "rulesDirectory": [
         "node_modules/tslint-microsoft-contrib"
@@ -19,13 +19,11 @@
         "interface-name": false,
         "jsx-boolean-value": false,
         "max-classes-per-file": false,
-        "no-console": false,
         "no-empty-interface": false,
         "no-var-requires": false,
         "object-literal-sort-keys": false,
         "no-implicit-dependencies": false,
         "space-before-function-paren": false,
-        "strict-type-predicates": false,
         "arrow-parens": false,
         "jsx-wrap-multiline": false,
         "one-variable-per-declaration": false,
@@ -45,9 +43,19 @@
         "newline-per-chained-call": false,
         "prefer-array-literal": false,
         "match-default-export-name": false,
+        "function-name": false,
+        "no-return-await": false,
+        "interface-over-type-literal": false,
+        // "ter-indent": false,
 
         // Warnings
         "no-suspicious-comment": {
+            "severity": "warning"
+        },
+        "no-console": {
+            "severity": "warning"
+        },
+        "strict-type-predicates": {
             "severity": "warning"
         },
 
@@ -69,6 +77,10 @@
         "react-this-binding-issue": true,
         "no-string-based-set-timeout": true,
         "no-unnecessary-type-assertion": true,
+        "no-unused-variable": [true, {
+            "ignore-pattern": "^_"
+        }],
+        "only-arrow-functions": true,
 
         // Configured
         "quotemark": [
@@ -102,10 +114,7 @@
                 "esSpecCompliant": true
             }
         ],
-        "no-increment-decrement": [
-            true,
-            "allow-for-loops"
-        ],
+        "increment-decrement": [true, "allow-post"],
         "align": [
             true,
             "parameters",
@@ -120,8 +129,6 @@
         "max-func-body-length": false,
         "react-a11y-input-elements": false,
         "react-a11y-role-has-required-aria-props": false,
-        "completed-docs": false,
-        "cyclomatic-complexity": false,
-        "no-parameter-reassignment": false
+        "completed-docs": false
     }
 }
