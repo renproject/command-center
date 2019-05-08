@@ -1,4 +1,4 @@
-import { Provider } from "web3/providers";
+import { provider } from "web3-providers";
 
 import cipherIcon from "../../styles/images/browsers/cipher.png";
 import metamaskIcon from "../../styles/images/browsers/metamask.svg";
@@ -22,18 +22,18 @@ export enum Web3Browser {
     Web3Browser = "Web3 Browser",
 }
 
-export const getWeb3BrowserName = (provider: Provider): Web3Browser => {
+export const getWeb3BrowserName = (newProvider: provider): Web3Browser => {
     // tslint:disable:no-any
-    if ((provider as any).isToshi) {
+    if ((newProvider as any).isToshi) {
         // Toshi has become Coinbase wallet
         return Web3Browser.CoinbaseWallet;
-    } else if ((provider as any).isCipher) {
+    } else if ((newProvider as any).isCipher) {
         return Web3Browser.Cipher;
-    } else if ((provider as any).isStatus) {
+    } else if ((newProvider as any).isStatus) {
         return Web3Browser.Status;
-    } else if ((provider as any).isTrust) {
+    } else if ((newProvider as any).isTrust) {
         return Web3Browser.Trust;
-    } else if ((provider as any).isMetaMask) {
+    } else if ((newProvider as any).isMetaMask) {
         return Web3Browser.MetaMask;
     } else if ((window as any).mist) {
         return Web3Browser.Mist; // Not tested
@@ -45,7 +45,8 @@ export const getWeb3BrowserName = (provider: Provider): Web3Browser => {
 export const getWeb3BrowserIcon = (web3Browser: Web3Browser): string => {
     // Note: Typescript will warn if the switch statement is non-exhaustive
 
-    // tslint:disable-next-line: switch-default
+    // tslint:disable: switch-default
+    // eslint-disable-next-line
     switch (web3Browser) {
         case Web3Browser.CoinbaseWallet:
             return toshiIcon;

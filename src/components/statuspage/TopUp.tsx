@@ -11,22 +11,24 @@ import { ApplicationData } from "../../store/types";
 
 const CONFIRMATION_MESSAGE = "Transaction confirmed.";
 
-class TopUpClass extends React.Component<Props, State> {
-    private _isMounded = false;
+const defaultState = { // Entries must be immutable
+    value: "0.1",
+    resultMessage: "",
+    pending: false,
+    disabled: false,
+    traderBalance: new BigNumber(0),
+};
+
+class TopUpClass extends React.Component<Props, typeof defaultState> {
+    private _isMounted = false;
 
     constructor(props: Props) {
         super(props);
-        this.state = {
-            value: "0.1",
-            resultMessage: "",
-            pending: false,
-            disabled: false,
-            traderBalance: new BigNumber(0),
-        };
+        this.state = defaultState;
     }
 
     public componentDidMount = async () => {
-        this._isMounded = true;
+        this._isMounted = true;
         this.updateTraderBalance().catch((error) => {
             _captureBackgroundException_(error, {
                 description: "Error in updateTraderBalance in TopUp",
@@ -35,7 +37,7 @@ class TopUpClass extends React.Component<Props, State> {
     }
 
     public componentWillUnmount = () => {
-        this._isMounded = false;
+        this._isMounted = false;
     }
 
     public render = (): JSX.Element => {
@@ -93,13 +95,13 @@ class TopUpClass extends React.Component<Props, State> {
     }
 
     private readonly updateTraderBalance = async (): Promise<BigNumber> => {
-        const { store: { address, sdk } } = this.props;
+        const { store: { address, web3 } } = this.props;
 
         let traderBalance;
-        if (!address || !sdk) {
+        if (!address) {
             traderBalance = new BigNumber(-1);
         } else {
-            traderBalance = new BigNumber((await sdk.getWeb3().eth.getBalance(address)).toString())
+            traderBalance = new BigNumber((await web3.eth.getBalance(address)).toString())
                 .div(new BigNumber(10).exponentiatedBy(18));
         }
         this.setState({ traderBalance });
@@ -122,7 +124,7 @@ class TopUpClass extends React.Component<Props, State> {
     }
 
     private readonly sendFunds = async (): Promise<void> => {
-        const { darknodeID, store: { address, sdk, tokenPrices } } = this.props;
+        const { darknodeID, store: { address, web3, tokenPrices, ethNetwork } } = this.props;
         const { value } = this.state;
 
         this.setState({ resultMessage: "", pending: true });
@@ -132,25 +134,20 @@ class TopUpClass extends React.Component<Props, State> {
             return;
         }
 
-        if (!sdk) {
-            this.setState({ resultMessage: `An error occurred, please refresh the page and try again.`, pending: false });
-            return;
-        }
-
         const onCancel = () => {
-            if (this._isMounded) {
+            if (this._isMounted) {
                 this.setState({ pending: false });
             }
         };
 
         const onDone = async () => {
             try {
-                await this.props.actions.updateDarknodeStatistics(sdk, darknodeID, tokenPrices);
+                await this.props.actions.updateDarknodeStatistics(web3, ethNetwork, darknodeID, tokenPrices);
             } catch (error) {
                 // Ignore error
             }
 
-            if (this._isMounded) {
+            if (this._isMounted) {
                 this.setState({ resultMessage: CONFIRMATION_MESSAGE, pending: false });
 
                 // If the user hasn't changed the value, set it to 0.
@@ -161,15 +158,16 @@ class TopUpClass extends React.Component<Props, State> {
         };
 
         // tslint:disable-next-line: await-promise
-        await this.props.actions.showFundPopup(sdk, address, darknodeID, value, onCancel, onDone);
+        await this.props.actions.showFundPopup(web3, address, darknodeID, value, onCancel, onDone);
     }
 }
 
 const mapStateToProps = (state: ApplicationData) => ({
     store: {
         address: state.trader.address,
-        sdk: state.trader.sdk,
+        web3: state.trader.web3,
         tokenPrices: state.statistics.tokenPrices,
+        ethNetwork: state.trader.ethNetwork,
     },
 });
 
@@ -182,14 +180,6 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
 
 interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps> {
     darknodeID: string;
-}
-
-interface State {
-    value: string;
-    resultMessage: string;
-    pending: boolean;
-    disabled: boolean;
-    traderBalance: BigNumber;
 }
 
 export const TopUp = connect(mapStateToProps, mapDispatchToProps)(TopUpClass);

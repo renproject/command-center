@@ -7,13 +7,15 @@ const NUMERATOR = 164; // pixels
 const DENOMINATOR = 94; // pixels
 const OFFSET = 8994; // pixels
 
-export class Console extends React.Component<Props, State> {
+const defaultState = { // Entries must be immutable
+    level: OFFSET,
+};
+
+export class Console extends React.Component<Props, typeof defaultState> {
     private bottomElement: HTMLElement | null = null;
     constructor(props: Props) {
         super(props);
-        this.state = {
-            level: OFFSET,
-        };
+        this.state = defaultState;
     }
 
     public render = (): JSX.Element => {
@@ -55,8 +57,4 @@ export class Console extends React.Component<Props, State> {
 
 interface Props {
     logs: List<JSX.Element>;
-}
-
-interface State {
-    level: number;
 }

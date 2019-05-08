@@ -23,14 +23,16 @@ export const statusText = {
     [RegistrationStatus.Refundable]: "Refundable",
 };
 
-class RegistrationClass extends React.Component<Props, State> {
+const defaultState = { // Entries must be immutable
+    active: false,
+};
+
+class RegistrationClass extends React.Component<Props, typeof defaultState> {
     private _isMounted = false;
 
     constructor(props: Props) {
         super(props);
-        this.state = {
-            active: false,
-        };
+        this.state = defaultState;
     }
 
     public componentDidMount = () => {
@@ -110,14 +112,10 @@ class RegistrationClass extends React.Component<Props, State> {
 
     private readonly onDone = async () => {
         const { darknodeID } = this.props;
-        const { sdk, tokenPrices } = this.props.store;
-
-        if (!sdk) {
-            return; // FIXME
-        }
+        const { web3, tokenPrices, ethNetwork } = this.props.store;
 
         try {
-            await this.props.actions.updateDarknodeStatistics(sdk, darknodeID, tokenPrices);
+            await this.props.actions.updateDarknodeStatistics(web3, ethNetwork, darknodeID, tokenPrices);
         } catch (error) {
             // Ignore error
         }
@@ -129,14 +127,14 @@ class RegistrationClass extends React.Component<Props, State> {
     }
 
     private readonly onDoneRegister = async () => {
-        const { sdk, address, tokenPrices, darknodeList } = this.props.store;
+        const { web3, address, tokenPrices, darknodeList, ethNetwork } = this.props.store;
 
-        if (!sdk || !address) {
+        if (!address) {
             return; // FIXME
         }
 
         try {
-            await this.props.actions.updateOperatorStatistics(sdk, address, tokenPrices, darknodeList);
+            await this.props.actions.updateOperatorStatistics(web3, ethNetwork, address, tokenPrices, darknodeList);
         } catch (error) {
             // Ignore error
         }
@@ -148,16 +146,16 @@ class RegistrationClass extends React.Component<Props, State> {
 
     private readonly handleRegister = async (): Promise<void> => {
         const { darknodeID, publicKey } = this.props;
-        const { sdk, address, minimumBond, tokenPrices } = this.props.store;
+        const { web3, address, minimumBond, tokenPrices, ethNetwork } = this.props.store;
 
-        if (!sdk || !publicKey || !address || !minimumBond || !tokenPrices) {
+        if (!publicKey || !address || !minimumBond || !tokenPrices) {
             return; // FIXME
         }
 
         this.setState({ active: true });
         try {
             await this.props.actions.showRegisterPopup(
-                sdk, address, darknodeID, publicKey, minimumBond, tokenPrices, this.onCancel, this.onDoneRegister
+                web3, ethNetwork, address, darknodeID, publicKey, minimumBond, tokenPrices, this.onCancel, this.onDoneRegister
             );
         } catch (error) {
             _captureInteractionException_(error, {
@@ -170,15 +168,16 @@ class RegistrationClass extends React.Component<Props, State> {
 
     private readonly handleDeregister = async (): Promise<void> => {
         const { darknodeID, darknodeDetails } = this.props;
-        const { sdk, address, quoteCurrency } = this.props.store;
+        const { web3, address, quoteCurrency, ethNetwork } = this.props.store;
 
-        if (!sdk || !address) {
+        if (!address) {
             return;
         }
 
         this.setState({ active: true });
         await this.props.actions.showDeregisterPopup(
-            sdk,
+            web3,
+            ethNetwork,
             address,
             darknodeID,
             darknodeDetails && darknodeDetails.feesEarnedTotalEth,
@@ -189,25 +188,26 @@ class RegistrationClass extends React.Component<Props, State> {
 
     private readonly handleRefund = async (): Promise<void> => {
         const { darknodeID } = this.props;
-        const { sdk, address } = this.props.store;
+        const { web3, address, ethNetwork } = this.props.store;
 
-        if (!sdk || !address) {
+        if (!address) {
             return;
         }
 
         this.setState({ active: true });
-        await this.props.actions.showRefundPopup(sdk, address, darknodeID, this.onCancel, this.onDone);
+        await this.props.actions.showRefundPopup(web3, ethNetwork, address, darknodeID, this.onCancel, this.onDone);
     }
 }
 
 const mapStateToProps = (state: ApplicationData) => ({
     store: {
         address: state.trader.address,
-        sdk: state.trader.sdk,
+        web3: state.trader.web3,
         minimumBond: state.statistics.minimumBond,
         tokenPrices: state.statistics.tokenPrices,
         darknodeList: state.trader.address ? state.statistics.darknodeList.get(state.trader.address, null) : null,
         quoteCurrency: state.statistics.quoteCurrency,
+        ethNetwork: state.trader.ethNetwork,
     },
 });
 
@@ -227,10 +227,6 @@ interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<
     darknodeID: string;
     darknodeDetails: DarknodeDetails | null;
     publicKey?: string;
-}
-
-interface State {
-    active: boolean;
 }
 
 export const Registration = connect(mapStateToProps, mapDispatchToProps)(RegistrationClass);

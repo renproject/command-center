@@ -60,6 +60,12 @@ const periods: Array<[HistoryPeriods, string]> = [
     [HistoryPeriods.Year, "1Y"],
 ];
 
+const defaultState = { // Entries must be immutable
+    historyPeriod: HistoryPeriods.Week,
+    nextHistoryPeriod: HistoryPeriods.Week,
+    loadingHistory: false,
+};
+
 class GasGraphClass extends React.Component<Props, State> {
     private updateHistoryStarted: boolean = false;
     private updateHistoryTimeout: NodeJS.Timer | undefined;
@@ -72,18 +78,14 @@ class GasGraphClass extends React.Component<Props, State> {
 
     constructor(props: Props) {
         super(props);
-        this.state = {
-            historyPeriod: HistoryPeriods.Week,
-            nextHistoryPeriod: HistoryPeriods.Week,
-            loadingHistory: false,
-        };
+        this.state = defaultState;
     }
 
     public componentDidMount = (): void => {
         this._isMounted = true;
-        const { store: { secondsPerBlock, sdk } } = this.props;
-        if (sdk && secondsPerBlock === null) {
-            this.props.actions.calculateSecondsPerBlock(sdk)
+        const { store: { secondsPerBlock, web3 } } = this.props;
+        if (secondsPerBlock === null) {
+            this.props.actions.calculateSecondsPerBlock(web3)
                 .catch((error) => {
                     _captureBackgroundException_(error, {
                         description: "Error in componentDidMount in GasGraph",
@@ -130,18 +132,18 @@ class GasGraphClass extends React.Component<Props, State> {
         }, 100);
 
         historyPeriod = historyPeriod || this.state.nextHistoryPeriod;
-        const { store: { balanceHistories, sdk, secondsPerBlock }, darknodeDetails } = props || this.props;
+        const { store: { balanceHistories, web3, secondsPerBlock }, darknodeDetails } = props || this.props;
 
         let retry = 1; // Retry in a second, unless the call succeeds.
 
-        if (sdk && darknodeDetails && secondsPerBlock !== null) {
+        if (darknodeDetails && secondsPerBlock !== null) {
             retry = 60 * 5; // 5 minutes
 
             const balanceHistory = balanceHistories.get(darknodeDetails.ID) || OrderedMap<number, BigNumber>();
             try {
                 // tslint:disable-next-line: await-promise
                 await this.props.actions.fetchDarknodeBalanceHistory(
-                    sdk,
+                    web3,
                     darknodeDetails.ID,
                     balanceHistory,
                     historyPeriod,
@@ -192,6 +194,7 @@ class GasGraphClass extends React.Component<Props, State> {
                     if (x >= first) {
                         xyPoints.push({ x, y: y ? y.div(shift).toNumber() : 0 });
                     }
+                    return null;
                 });
 
                 // for (let i = 0; i < HistoryIterations; i++) {
@@ -288,7 +291,7 @@ class GasGraphClass extends React.Component<Props, State> {
 
 const mapStateToProps = (state: ApplicationData) => ({
     store: {
-        sdk: state.trader.sdk,
+        web3: state.trader.web3,
         balanceHistories: state.statistics.balanceHistories,
         secondsPerBlock: state.statistics.secondsPerBlock,
     },
@@ -305,10 +308,6 @@ interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<
     darknodeDetails: DarknodeDetails | null;
 }
 
-interface State {
-    historyPeriod: HistoryPeriods;
-    nextHistoryPeriod: HistoryPeriods;
-    loadingHistory: boolean;
-}
+type State = typeof defaultState;
 
 export const GasGraph = connect(mapStateToProps, mapDispatchToProps)(GasGraphClass);

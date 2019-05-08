@@ -3,10 +3,15 @@ import * as React from "react";
 
 import { _captureComponentException_ } from "../lib/errors";
 
-class ErrorBoundary extends React.Component<Props, State> {
+const defaultState = { // Entries must be immutable
+    error: null as null | Error,
+    errorInfo: null as null | React.ErrorInfo,
+};
+
+class ErrorBoundary extends React.Component<Props, typeof defaultState> {
     constructor(props: Props) {
         super(props);
-        this.state = { error: null, errorInfo: null };
+        this.state = defaultState;
     }
 
     public componentDidCatch = (error: Error, errorInfo: React.ErrorInfo) => {
@@ -60,11 +65,6 @@ interface Props {
      * If `popup` is true, then onCancel should also be provided.
      */
     onCancel?(): void;
-}
-
-interface State {
-    error: null | Error;
-    errorInfo: null | React.ErrorInfo;
 }
 
 export const _catch_ = (

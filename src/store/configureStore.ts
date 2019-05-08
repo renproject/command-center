@@ -16,13 +16,13 @@ if (process.env.NODE_ENV === "development") {
 }
 
 // Workaround createStore not liking type of persistReducer
-function typedPersistReducer<S, A extends Action>(config: PersistConfig, reducer: Reducer<S, A>):
-    Reducer<S & PersistPartial, A> {
-    return persistReducer<S | undefined, A>(
+const typedPersistReducer = <S, A extends Action>(config: PersistConfig, reducer: Reducer<S, A>):
+    Reducer<S & PersistPartial, A> => {
+    return persistReducer<S, A>(
         config,
         reducer
     );
-}
+};
 
 const persistedReducer = typedPersistReducer(persistConfig, rootReducer);
 

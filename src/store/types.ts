@@ -1,17 +1,32 @@
 // tslint:disable:no-object-literal-type-assertion
 
-import RenExSDK from "@renex/renex";
 import BigNumber from "bignumber.js";
 
 import { List, Map, OrderedMap } from "immutable";
+import { PromiEvent } from "web3-core";
 
-import { NETWORK } from "../lib/environmentVariables";
 import { _captureBackgroundException_ } from "../lib/errors";
 import { Web3Browser } from "../lib/ethereum/browsers";
-import { Token } from "../lib/ethereum/tokens";
-import { getReadOnlyProvider } from "../lib/ethereum/wallet";
+import { OldToken, Token } from "../lib/ethereum/tokens";
+import { getReadOnlyWeb3 } from "../lib/ethereum/wallet";
 import { Record } from "../lib/record";
 import { RegistrationStatus } from "./actions/statistics/operatorActions";
+
+export enum Network {
+    Staging = "staging",
+    Production = "production",
+}
+
+export enum EthNetwork {
+    Kovan = "kovan",
+    Mainnet = "main",
+}
+
+const EthNetworkLabel = {
+    [EthNetwork.Kovan]: "Kovan",
+    [EthNetwork.Mainnet]: "Mainnet",
+};
+export const getNetworkLabel = (ethNetwork: EthNetwork | undefined) => ethNetwork ? EthNetworkLabel[ethNetwork] || ethNetwork : ethNetwork;
 
 interface Serializable<T> {
     serialize(): string;
@@ -25,14 +40,15 @@ export interface ApplicationData {
     ui: UIData;
 }
 
-const readOnlyProvider = getReadOnlyProvider();
+export const readOnlyWeb3 = getReadOnlyWeb3();
 
 export class TraderData extends Record({
     // Login data
     address: null as string | null,
     web3BrowserName: Web3Browser.MetaMask,
-    readOnlyProvider,
-    sdk: new RenExSDK(readOnlyProvider, { network: NETWORK }) as RenExSDK | undefined,
+    web3: readOnlyWeb3,
+
+    ethNetwork: EthNetwork.Mainnet,
 }) { }
 
 export enum LabelLevel {
@@ -77,7 +93,7 @@ export const currencies = [
     { currency: Currency.BTC, description: "Bitcoin (BTC)", },
 ];
 
-export type TokenPrices = Map<Token, Map<Currency, number>>;
+export type TokenPrices = Map<Token | OldToken, Map<Currency, number>>;
 
 export class StatisticsData extends Record({
     minimumBond: null as BigNumber | null,
@@ -96,6 +112,18 @@ export class StatisticsData extends Record({
     darknodeNames: Map<string, string>(),
     darknodeRegisteringList: Map<string, string>(),
     darknodeList: Map<string, List<string>>(),
+
+    // tslint:disable-next-line: no-any
+    transactions: OrderedMap<string, PromiEvent<any>>(),
+    confirmations: OrderedMap<string, number>(),
+
+    withdrawAddresses: Map<Token, List<string>>(),
+
+    currentCycle: "",
+    previousCycle: "",
+    pendingRewards: OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber>>(),
+    pendingTotalInEth: OrderedMap<string /* cycle */, BigNumber>(),
+    cycleTimeout: new BigNumber(0),
 }) implements Serializable<StatisticsData> {
     public serialize(): string {
         const js = this.toJS();
@@ -103,6 +131,7 @@ export class StatisticsData extends Record({
             darknodeList: js.darknodeList,
             darknodeNames: js.darknodeNames,
             darknodeRegisteringList: js.darknodeRegisteringList,
+            withdrawAddresses: js.withdrawAddresses,
         });
     }
 
@@ -115,6 +144,7 @@ export class StatisticsData extends Record({
                 darknodeList: data.darknodeList,
                 darknodeNames: data.darknodeNames,
                 darknodeRegisteringList: data.darknodeRegisteringList,
+                withdrawAddresses: data.withdrawAddresses,
             });
         } catch (error) {
             _captureBackgroundException_(error, {
@@ -125,13 +155,23 @@ export class StatisticsData extends Record({
     }
 }
 
+export enum DarknodeFeeStatus {
+    BLACKLISTED = "BLACKLISTED",
+    CLAIMED = "CLAIMED",
+    NOT_CLAIMED = "NOT_CLAIMED",
+    NOT_WHITELISTED = "NOT_WHITELISTED",
+}
+
 export class DarknodeDetails extends Record({
     ID: "",
     multiAddress: "",
     publicKey: "",
     ethBalance: new BigNumber(0),
     feesEarned: OrderedMap<Token, BigNumber>(),
+    oldFeesEarned: OrderedMap<OldToken, BigNumber>(),
     feesEarnedTotalEth: new BigNumber(0),
+
+    cycleStatus: OrderedMap<string, DarknodeFeeStatus>(),
 
     averageGasUsage: 0,
     lastTopUp: null,
