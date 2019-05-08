@@ -1,3 +1,5 @@
+/////////// WEB3 ///////////////////////////////////////////////////////////////
+
 // tslint:disable
 
 import BN from "bn.js";
@@ -27,7 +29,6 @@ export interface DarknodePaymentWeb3 extends Contract {
         previousCycleRewardShare(index_0: string): Read<BigNumber>;
         cycleStartTime(): Read<BigNumber>;
         pendingTokens(index_0: BigNumber): Read<string>;
-        pendingDeregisterTokens(index_0: BigNumber): Read<string>;
         cycleDuration(): Read<BigNumber>;
         renounceOwnership(): Write;
         shareCount(): Read<BigNumber>;
@@ -57,7 +58,7 @@ export interface DarknodePaymentWeb3 extends Contract {
         registerToken(_token: string): Write;
         deregisterToken(_token: string): Write;
         updateBlacklister(_addr: string): Write;
-        updateCycleDuration(_duration: BigNumber): Write;
+        updateCycleDuration(_durationSeconds: BigNumber): Write;
         transferStoreOwnership(_newOwner: string): Write;
         claimStoreOwnership(): Write;
     }
