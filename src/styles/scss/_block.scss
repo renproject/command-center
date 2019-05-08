@@ -233,12 +233,13 @@
 }
 
 .block--advanced--claim {
+    // TODO: Look into stylings being overridden
     background: none !important;
     color: white !important;
-    border: 1px solid white;
-    width: initial;
-    padding-left: 20px;
-    padding-right: 20px;
+    border: 1px solid white !important;
+    width: initial !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
 
     .svg-inline--fa {
         margin-right: 2px;
