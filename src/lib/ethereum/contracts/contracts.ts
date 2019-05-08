@@ -32,8 +32,8 @@ const requireABIsForNetwork = (ethNetwork: EthNetwork) => {
             dnrDeployedInBlock = "0x6AED46"; // in hex
 
             darknodeRewardVault = "0xa96450d3386ece22db20b0ac96ef5684b6d95d53";
-            darknodePayment = "FIXME";
-            darknodePaymentStore = "FIXME";
+            darknodePayment = "0x5a7802E66b067cB1770ee5b1165AA201690A8B6a";
+            darknodePaymentStore = "0x731Ea4Ba77fF184d89dBeB160A0078274Acbe9D2";
 
             break;
         case EthNetwork.Kovan:
@@ -107,9 +107,9 @@ export const tokenAddresses = (token: Token | OldToken, ethNetwork: EthNetwork):
                 case Token.ETH:
                     return "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
                 case Token.BTC:
-                    return "FIXME";
+                    throw new Error("No address");
                 case Token.ZEC:
-                    return "FIXME";
+                    throw new Error("No address");
                 case OldToken.ETH:
                     return "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
                 case OldToken.DGX:
@@ -117,7 +117,7 @@ export const tokenAddresses = (token: Token | OldToken, ethNetwork: EthNetwork):
                 case OldToken.REN:
                     return "0x408e41876cCCDC0F92210600ef50372656052a38";
                 case OldToken.TUSD:
-                    return "0xdd5fbCe2F6a956C3022bA3663759011Dd51e73E";
+                    return "0x8dd5fbCe2F6a956C3022bA3663759011Dd51e73E";
                 case OldToken.OMG:
                     return "0xd26114cd6EE289AccF82350c8d8487fedB8A0C07";
                 case OldToken.ZRX:

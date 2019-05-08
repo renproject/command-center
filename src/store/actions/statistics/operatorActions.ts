@@ -129,6 +129,38 @@ const getOldBalances = async (
     return feesEarned;
 };
 
+// FIXME: safePromiseAllList still throws uncaught error
+// The same as Promise.all except that if an entry throws, it sets it to the
+// provided default value instead of throwing the entire promise.
+const safePromiseAllList = async <b>(orderedMap: List<Promise<b>>, defaultValue: b): Promise<List<b>> => {
+    let newOrderedMap = List<b>();
+    for (const valueP of orderedMap.toArray()) {
+        try {
+            newOrderedMap = newOrderedMap.push(await valueP);
+        } catch (error) {
+            console.log(error);
+            newOrderedMap = newOrderedMap.push(defaultValue);
+        }
+    }
+    return newOrderedMap;
+};
+
+// The same as Promise.all except that if an entry throws, it sets it to the
+// provided default value instead of throwing the entire promise.
+// This variation maps over an OrderedMap instead of an array.
+const safePromiseAllMap = async <a, b>(orderedMap: OrderedMap<a, Promise<b>>, defaultValue: b): Promise<OrderedMap<a, b>> => {
+    let newOrderedMap = OrderedMap<a, b>();
+    for (const [key, valueP] of orderedMap.toArray()) {
+        try {
+            newOrderedMap = newOrderedMap.set(key, await valueP);
+        } catch (error) {
+            console.log(error);
+            newOrderedMap = newOrderedMap.set(key, defaultValue);
+        }
+    }
+    return newOrderedMap;
+};
+
 const getBalances = async (
     web3: Web3,
     ethNetwork: EthNetwork,
@@ -144,42 +176,37 @@ const getBalances = async (
 
     // const address = (await web3.eth.getAccounts())[0];
 
-    const balances = NewTokenDetails.map(async (_tokenDetails, token) => {
-        const balance1 = new BigNumber((await contract.methods.darknodeBalances(darknodeID, tokenAddresses(token, ethNetwork)).call()).toString());
-        // const balance2 = tokenDetails.wrapped ? await new (web3.eth.Contract)(
-        //     contracts.WarpGateToken.ABI,
-        //     tokenDetails.address,
-        // ).methods.balanceOf(address).call() : new BigNumber(0);
+    const balances = await safePromiseAllList(
+        NewTokenDetails.map(async (_tokenDetails, token) => {
+            let balance1;
+            try {
+                balance1 = new BigNumber((await contract.methods.darknodeBalances(darknodeID, tokenAddresses(token, ethNetwork)).call()).toString());
+            } catch (error) {
+                balance1 = new BigNumber(0);
+            }
+            // const balance2 = tokenDetails.wrapped ? await new (web3.eth.Contract)(
+            //     contracts.WarpGateToken.ABI,
+            //     tokenDetails.address,
+            // ).methods.balanceOf(address).call() : new BigNumber(0);
 
-        return {
-            balance: balance1, // .plus(balance2),
-            token,
-        };
-    }).valueSeq();
-    // TODO: Don't use Promise.all
-    const res = await Promise.all(balances);
+            return {
+                balance: balance1, // .plus(balance2),
+                token: token as Token | null,
+            };
+        }).valueSeq().toList(),
+        {
+            balance: new BigNumber(0),
+            token: null,
+        }
+    );
 
-    for (const { balance, token } of res) {
-        feesEarned = feesEarned.set(token, balance);
+    for (const { balance, token } of balances.toArray()) {
+        if (token) {
+            feesEarned = feesEarned.set(token, balance);
+        }
     }
 
     return feesEarned;
-};
-
-// The same as Promise.all except that if an entry throws, it sets it to the
-// provided default value instead of throwing the entire promise.
-// This variation maps over an OrderedMap instead of an array.
-const safePromiseAllMap = async <a, b>(orderedMap: OrderedMap<a, Promise<b>>, defaultValue: b): Promise<OrderedMap<a, b>> => {
-    let newOrderedMap = OrderedMap<a, b>();
-    for (const [key, valueP] of orderedMap.toArray()) {
-        try {
-            newOrderedMap = newOrderedMap.set(key, await valueP);
-        } catch (error) {
-            console.error(error);
-            newOrderedMap = newOrderedMap.set(key, defaultValue);
-        }
-    }
-    return newOrderedMap;
 };
 
 const sumUpFeeMap = (
@@ -225,18 +252,27 @@ export const updateCycleAndPendingRewards = (
     const previousCycle = (await darknodePayment.methods.previousCycle().call()).toString();
 
     const previous = await safePromiseAllMap(
-        NewTokenDetails.map(async (_tokenDetails, token) =>
-            new BigNumber((await darknodePayment.methods.previousCycleRewardShare(tokenAddresses(token, ethNetwork)).call()).toString())
-        ).toOrderedMap(),
+        NewTokenDetails.map(async (_tokenDetails, token) => {
+            try {
+                return new BigNumber((await darknodePayment.methods.previousCycleRewardShare(tokenAddresses(token, ethNetwork)).call()).toString());
+            } catch (error) {
+                return new BigNumber(0);
+            }
+        }).toOrderedMap(),
         new BigNumber(0),
     );
 
     const currentShareCount = new BigNumber((await darknodePayment.methods.shareCount().call()).toString());
     const current = await safePromiseAllMap(
-        NewTokenDetails.map(async (_tokenDetails, token) =>
-            currentShareCount.isZero() ?
-                new BigNumber(0) :
-                new BigNumber((await darknodePayment.methods.currentCycleRewardPool(tokenAddresses(token, ethNetwork)).call()).toString()).div(currentShareCount)
+        NewTokenDetails.map(async (_tokenDetails, token) => {
+            try {
+                return currentShareCount.isZero() ?
+                    new BigNumber(0) :
+                    new BigNumber((await darknodePayment.methods.currentCycleRewardPool(tokenAddresses(token, ethNetwork)).call()).toString()).div(currentShareCount);
+            } catch (error) {
+                return new BigNumber(0);
+            }
+        }
         ).toOrderedMap(),
         new BigNumber(0),
     );
