@@ -1,6 +1,6 @@
 import { AbiItem } from "web3-utils";
 
-import { EthNetwork, Network } from "../../../store/types";
+import { EthNetwork } from "../../../store/types";
 import { OldToken, Token } from "../tokens";
 
 // Contracts
@@ -152,5 +152,5 @@ export const tokenAddresses = (token: Token | OldToken, ethNetwork: EthNetwork):
             }
             break;
     }
-    throw new Error(`Unknown network ${Network} or token ${token}`);
+    throw new Error(`Unknown network ${ethNetwork} or token ${token}`);
 };
