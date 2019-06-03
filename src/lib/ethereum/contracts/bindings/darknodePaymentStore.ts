@@ -19,7 +19,7 @@ type BigNumber = string | number | BN;
 
 
 export interface Read<T> {
-    call: (options?: SendOptions) => Promise<T>;
+    call: (options?: SendOptions) => Promise<T | null>;
 }
 export interface Write {
     send: (options?: SendOptions) => PromiEvent<Transaction>;
