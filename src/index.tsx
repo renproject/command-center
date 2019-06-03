@@ -13,8 +13,6 @@ import { onLoad } from "./lib/onLoad";
 import { configureStore } from "./store/configureStore";
 import "./styles/index.scss";
 
-const { store, persistor } = configureStore();
-
 // Redirect to https if we aren't serving locally
 if (environment !== "local") {
     const loc = window.location.href + "";
@@ -24,6 +22,9 @@ if (environment !== "local") {
         window.location.href = loc.replace("http://", "https://");
     }
 }
+
+const { store, persistor } = configureStore();
+
 onLoad("Darknode Command Center");
 
 ReactDOM.render(
