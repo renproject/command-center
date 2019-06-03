@@ -88,6 +88,7 @@ const rawError = (errorObject: Error) => {
 
 const _captureException_ = <X extends Details>(error: any, details: X) => {
     if (error._noCapture_) {
+        console.error(error);
         return;
     }
 

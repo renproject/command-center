@@ -1,10 +1,9 @@
 import * as React from "react";
 
 import BigNumber from "bignumber.js";
-import Web3 from "web3";
-
 import { decode as decode58 } from "bs58";
 import { Dispatch } from "redux";
+import Web3 from "web3";
 import { Contract } from "web3-eth-contract";
 
 import { WithdrawPopup } from "../../../components/popups/WithdrawPopup";
@@ -346,7 +345,11 @@ export const changeCycle = (
     let resolved = false;
 
     // Try to call `changeCycle` as a read function to see if it reverts
-    const canCall = new BigNumber((await darknodePayment.methods.cycleTimeout().call({ from: address })).toString());
+    const cycleTimeoutCall = await darknodePayment.methods.cycleTimeout().call({ from: address });
+    if (!cycleTimeoutCall) {
+        throw _noCapture_(new Error("Unable to change timeout - please try again"));
+    }
+    const canCall = new BigNumber(cycleTimeoutCall.toString());
     if (canCall.isEqualTo(0) || !alreadyPast(canCall.toNumber())) {
         return "";
     }

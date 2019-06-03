@@ -7,11 +7,21 @@ import { PersistGate } from "redux-persist/integration/react";
 
 import { App } from "./components/App";
 import { _catch_ } from "./components/ErrorBoundary";
+import { environment } from "./lib/environmentVariables";
 import { history } from "./lib/history";
 import { onLoad } from "./lib/onLoad";
 import { configureStore } from "./store/configureStore";
-
 import "./styles/index.scss";
+
+// Redirect to https if we aren't serving locally
+if (environment !== "local") {
+    const loc = window.location.href + "";
+    // tslint:disable-next-line: no-http-string
+    if (loc.indexOf("http://") === 0) {
+        // tslint:disable-next-line: no-http-string
+        window.location.href = loc.replace("http://", "https://");
+    }
+}
 
 const { store, persistor } = configureStore();
 

@@ -1,8 +1,8 @@
-import thunk from "redux-thunk";
-
 import { Action, applyMiddleware, createStore, Middleware, Reducer } from "redux";
 import { PersistConfig, PersistPartial, persistReducer, persistStore } from "redux-persist";
+import thunk from "redux-thunk";
 
+import { environment } from "../lib/environmentVariables";
 import { persistConfig } from "./persistConfig";
 import { rootReducer } from "./reducers/rootReducer";
 
@@ -11,7 +11,7 @@ const middlewares: Middleware[] = [
 ];
 
 // Log Redux actions (only in development)
-if (process.env.NODE_ENV === "development") {
+if (environment === "local") {
     // middlewares.push(createLogger({ collapsed: true }));
 }
 

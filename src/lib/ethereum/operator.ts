@@ -1,9 +1,9 @@
-import Web3 from "web3";
-
 import { OrderedSet } from "immutable";
+import Web3 from "web3";
 import { sha3, toChecksumAddress } from "web3-utils";
 
 import { EthNetwork } from "../../store/types";
+import { _noCapture_ } from "../errors";
 import { DarknodeRegistryWeb3 } from "./contracts/bindings/darknodeRegistry";
 import { getContracts } from "./contracts/contracts";
 
@@ -20,7 +20,10 @@ const getAllDarknodes = async (web3: Web3, ethNetwork: EthNetwork): Promise<stri
             getContracts(ethNetwork).DarknodeRegistry.ABI,
             getContracts(ethNetwork).DarknodeRegistry.address
         );
-        const darknodes: string[] = await darknodeRegistry.methods.getDarknodes(lastDarknode, batchSize.toString()).call();
+        const darknodes = (await darknodeRegistry.methods.getDarknodes(lastDarknode, batchSize.toString()).call());
+        if (darknodes === null) {
+            throw _noCapture_(new Error("Error calling 'darknodeRegistry.methods.getDarknodes'"));
+        }
         allDarknodes.push(...darknodes.filter(filter));
         [lastDarknode] = darknodes.slice(-1);
     } while (lastDarknode !== NULL);
