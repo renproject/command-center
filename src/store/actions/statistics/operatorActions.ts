@@ -1,22 +1,26 @@
 import BigNumber from "bignumber.js";
-import Web3 from "web3";
-
 import { List, OrderedMap, OrderedSet } from "immutable";
 import { Dispatch } from "redux";
 import { createStandardAction } from "typesafe-actions";
+import Web3 from "web3";
 import { PromiEvent } from "web3-core";
 import { Block } from "web3-eth";
 import { toChecksumAddress } from "web3-utils";
 
-import { _captureBackgroundException_ } from "../../../lib/errors";
+import { _captureBackgroundException_, _noCapture_ } from "../../../lib/errors";
 import { DarknodePaymentWeb3 } from "../../../lib/ethereum/contracts/bindings/darknodePayment";
-import { DarknodePaymentStoreWeb3 } from "../../../lib/ethereum/contracts/bindings/darknodePaymentStore";
+import {
+    DarknodePaymentStoreWeb3,
+} from "../../../lib/ethereum/contracts/bindings/darknodePaymentStore";
 import { DarknodeRegistryWeb3 } from "../../../lib/ethereum/contracts/bindings/darknodeRegistry";
 import { getContracts, tokenAddresses } from "../../../lib/ethereum/contracts/contracts";
 import { getOperatorDarknodes } from "../../../lib/ethereum/operator";
 import { NewTokenDetails, OldToken, OldTokenDetails, Token } from "../../../lib/ethereum/tokens";
 import { Currency, DarknodeDetails, DarknodeFeeStatus, EthNetwork, TokenPrices } from "../../types";
-import { updateCurrentCycle, updateCycleTimeout, updatePendingRewards, updatePendingTotalInEth, updatePreviousCycle } from "./networkActions";
+import {
+    updateCurrentCycle, updateCycleTimeout, updatePendingRewards, updatePendingTotalInEth,
+    updatePreviousCycle,
+} from "./networkActions";
 
 export const addRegisteringDarknode = createStandardAction("addRegisteringDarknode")<{
     darknodeID: string;
@@ -91,7 +95,9 @@ export const calculateSecondsPerBlock = (
     const previousBlock: Block | null = await web3.eth.getBlock(currentBlockNumber - sampleSize) as Block | null;
 
     if (currentBlock !== null && previousBlock !== null) {
-        const secondsPerBlock = Math.floor((currentBlock.timestamp - previousBlock.timestamp) / sampleSize);
+        const currentTimestamp = parseInt(currentBlock.timestamp.toString(), 10);
+        const previousTimestamp = parseInt(previousBlock.timestamp.toString(), 10);
+        const secondsPerBlock = Math.floor((currentTimestamp - previousTimestamp) / sampleSize);
 
         dispatch(storeSecondsPerBlock({ secondsPerBlock }));
     }
@@ -180,7 +186,8 @@ const getBalances = async (
         NewTokenDetails.map(async (_tokenDetails, token) => {
             let balance1;
             try {
-                balance1 = new BigNumber((await contract.methods.darknodeBalances(darknodeID, tokenAddresses(token, ethNetwork)).call()).toString());
+                const balance1Call = await contract.methods.darknodeBalances(darknodeID, tokenAddresses(token, ethNetwork)).call();
+                balance1 = new BigNumber((balance1Call || "0").toString());
             } catch (error) {
                 balance1 = new BigNumber(0);
             }
@@ -248,27 +255,45 @@ export const updateCycleAndPendingRewards = (
         getContracts(ethNetwork).DarknodePayment.address,
     );
 
-    const currentCycle = (await darknodePayment.methods.currentCycle().call()).toString();
-    const previousCycle = (await darknodePayment.methods.previousCycle().call()).toString();
+    let pendingRewards = OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber>>();
+
+    const currentCycle = await darknodePayment.methods.currentCycle().call();
+    const previousCycle = await darknodePayment.methods.previousCycle().call();
 
     const previous = await safePromiseAllMap(
         NewTokenDetails.map(async (_tokenDetails, token) => {
             try {
-                return new BigNumber((await darknodePayment.methods.previousCycleRewardShare(tokenAddresses(token, ethNetwork)).call()).toString());
+                const previousCycleRewardShareBN = await darknodePayment.methods.previousCycleRewardShare(tokenAddresses(token, ethNetwork)).call();
+                if (previousCycleRewardShareBN === null) {
+                    return new BigNumber(0);
+                }
+                return new BigNumber(previousCycleRewardShareBN.toString());
             } catch (error) {
                 return new BigNumber(0);
             }
         }).toOrderedMap(),
         new BigNumber(0),
     );
+    if (previousCycle !== null) {
+        pendingRewards = pendingRewards.set(previousCycle.toString(), previous);
+    }
 
-    const currentShareCount = new BigNumber((await darknodePayment.methods.shareCount().call()).toString());
+    const currentShareCountBN = await darknodePayment.methods.shareCount().call();
     const current = await safePromiseAllMap(
         NewTokenDetails.map(async (_tokenDetails, token) => {
+            if (currentShareCountBN === null) {
+                return new BigNumber(0);
+            }
+            const currentShareCount = new BigNumber(currentShareCountBN.toString());
             try {
-                return currentShareCount.isZero() ?
-                    new BigNumber(0) :
-                    new BigNumber((await darknodePayment.methods.currentCycleRewardPool(tokenAddresses(token, ethNetwork)).call()).toString()).div(currentShareCount);
+                if (currentShareCount.isZero()) {
+                    return new BigNumber(0);
+                }
+                const currentCycleRewardPool = await darknodePayment.methods.currentCycleRewardPool(tokenAddresses(token, ethNetwork)).call();
+                if (currentCycleRewardPool === null) {
+                    return new BigNumber(0);
+                }
+                return new BigNumber((currentCycleRewardPool).toString()).div(currentShareCount);
             } catch (error) {
                 return new BigNumber(0);
             }
@@ -276,28 +301,35 @@ export const updateCycleAndPendingRewards = (
         ).toOrderedMap(),
         new BigNumber(0),
     );
+    if (currentCycle !== null) {
+        pendingRewards = pendingRewards.set(currentCycle.toString(), current);
+    }
 
-    const pendingRewards = OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber>>()
-        .set(previousCycle, previous)
-        .set(currentCycle, current)
-        ;
-
-    const cycleTimeout = new BigNumber((await darknodePayment.methods.cycleTimeout().call()).toString());
+    const cycleTimeoutBN = (await darknodePayment.methods.cycleTimeout().call());
 
     if (tokenPrices) {
         const previousTotal = sumUpFeeMap(previous, tokenPrices);
         const currentTotal = sumUpFeeMap(current, tokenPrices);
-        const pendingTotalInEth = OrderedMap<string /* cycle */, BigNumber>()
-            .set(previousCycle, previousTotal)
-            .set(currentCycle, currentTotal)
-            ;
+        let pendingTotalInEth = OrderedMap<string /* cycle */, BigNumber>();
+        if (previousCycle !== null) {
+            pendingTotalInEth = pendingTotalInEth.set(previousCycle.toString(), previousTotal);
+        }
+        if (currentCycle !== null) {
+            pendingTotalInEth = pendingTotalInEth.set(currentCycle.toString(), currentTotal);
+        }
         dispatch(updatePendingTotalInEth(pendingTotalInEth));
     }
 
-    dispatch(updateCurrentCycle(currentCycle));
-    dispatch(updatePreviousCycle(previousCycle));
+    if (currentCycle !== null) {
+        dispatch(updateCurrentCycle(currentCycle.toString()));
+    }
+    if (previousCycle !== null) {
+        dispatch(updatePreviousCycle(previousCycle.toString()));
+    }
     dispatch(updatePendingRewards(pendingRewards));
-    dispatch(updateCycleTimeout(cycleTimeout));
+    if (cycleTimeoutBN !== null) {
+        dispatch(updateCycleTimeout(new BigNumber(cycleTimeoutBN.toString())));
+    }
 };
 
 const getDarknodeOperator = async (web3: Web3, ethNetwork: EthNetwork, darknodeID: string): Promise<string> => {
@@ -305,7 +337,11 @@ const getDarknodeOperator = async (web3: Web3, ethNetwork: EthNetwork, darknodeI
         getContracts(ethNetwork).DarknodeRegistry.ABI,
         getContracts(ethNetwork).DarknodeRegistry.address
     );
-    return darknodeRegistry.methods.getDarknodeOwner(darknodeID).call();
+    const owner = await darknodeRegistry.methods.getDarknodeOwner(darknodeID).call();
+    if (owner === null) {
+        throw _noCapture_(new Error("Unable to retrieve darknode owner"));
+    }
+    return owner;
 };
 
 const getDarknodePublicKey = async (web3: Web3, ethNetwork: EthNetwork, darknodeID: string): Promise<string> => {
@@ -313,7 +349,11 @@ const getDarknodePublicKey = async (web3: Web3, ethNetwork: EthNetwork, darknode
         getContracts(ethNetwork).DarknodeRegistry.ABI,
         getContracts(ethNetwork).DarknodeRegistry.address
     );
-    return darknodeRegistry.methods.getDarknodePublicKey(darknodeID).call();
+    const publicKey = await darknodeRegistry.methods.getDarknodePublicKey(darknodeID).call();
+    if (publicKey === null) {
+        throw _noCapture_(new Error("Unable to retrieve darknode public key"));
+    }
+    return publicKey;
 };
 
 export enum RegistrationStatus {
@@ -412,8 +452,8 @@ export const updateDarknodeStatistics = (
         getContracts(ethNetwork).DarknodePaymentStore.address,
     );
 
-    const currentCycle = (await darknodePayment.methods.currentCycle().call()).toString();
-    const previousCycle = (await darknodePayment.methods.previousCycle().call()).toString();
+    const currentCycleBN = await darknodePayment.methods.currentCycle().call();
+    const previousCycleBN = await darknodePayment.methods.previousCycle().call();
     const blacklisted = await darknodePaymentStore.methods.isBlacklisted(darknodeID).call();
     let currentStatus;
     let previousStatus;
@@ -421,24 +461,37 @@ export const updateDarknodeStatistics = (
         currentStatus = DarknodeFeeStatus.BLACKLISTED;
         previousStatus = DarknodeFeeStatus.BLACKLISTED;
     } else {
-        const whitelistedTime = new BigNumber((await darknodePaymentStore.methods.darknodeWhitelist(darknodeID).call()).toString());
+        const whitelistedTimeCall = await darknodePaymentStore.methods.darknodeWhitelist(darknodeID).call();
+        const whitelistedTime = whitelistedTimeCall === null ? new BigNumber(0) : new BigNumber(whitelistedTimeCall.toString());
         if (whitelistedTime.isZero()) {
             currentStatus = DarknodeFeeStatus.NOT_WHITELISTED;
             previousStatus = DarknodeFeeStatus.NOT_WHITELISTED;
         } else {
             currentStatus = DarknodeFeeStatus.NOT_CLAIMED;
-            const cycleStartTime = new BigNumber((await darknodePayment.methods.cycleStartTime().call()).toString());
-            if (whitelistedTime.gte(cycleStartTime)) {
+            const cycleStartTimeBN = await darknodePayment.methods.cycleStartTime().call();
+            if (!cycleStartTimeBN || whitelistedTime.gte(cycleStartTimeBN.toString())) {
                 previousStatus = DarknodeFeeStatus.NOT_WHITELISTED;
             } else {
-                const claimed = await darknodePayment.methods.rewardClaimed(darknodeID, previousCycle).call();
-                if (claimed) {
+                if (previousCycleBN === null) {
                     previousStatus = DarknodeFeeStatus.CLAIMED;
                 } else {
-                    previousStatus = DarknodeFeeStatus.NOT_CLAIMED;
+                    const claimed = await darknodePayment.methods.rewardClaimed(darknodeID, previousCycleBN.toString()).call();
+                    if (claimed) {
+                        previousStatus = DarknodeFeeStatus.CLAIMED;
+                    } else {
+                        previousStatus = DarknodeFeeStatus.NOT_CLAIMED;
+                    }
                 }
             }
         }
+    }
+
+    let cycleStatus = OrderedMap<string, DarknodeFeeStatus>();
+    if (currentCycleBN !== null) {
+        cycleStatus = cycleStatus.set(currentCycleBN.toString(), currentStatus);
+    }
+    if (previousCycleBN !== null) {
+        cycleStatus = cycleStatus.set(previousCycleBN.toString(), previousStatus);
     }
 
     // Store details ///////////////////////////////////////////////////////////
@@ -452,10 +505,7 @@ export const updateDarknodeStatistics = (
         oldFeesEarned,
         feesEarnedTotalEth,
 
-        cycleStatus: OrderedMap<string, DarknodeFeeStatus>()
-            .set(currentCycle, currentStatus)
-            .set(previousCycle, previousStatus),
-
+        cycleStatus,
         averageGasUsage: 0,
         lastTopUp: null,
         expectedExhaustion: null,
@@ -465,7 +515,6 @@ export const updateDarknodeStatistics = (
     });
 
     dispatch(setDarknodeDetails({ darknodeDetails }));
-
 };
 
 export const updateOperatorStatistics = (

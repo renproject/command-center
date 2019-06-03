@@ -1,10 +1,9 @@
 import BigNumber from "bignumber.js";
-import Web3 from "web3";
-
+import { OrderedMap } from "immutable";
 import { Dispatch } from "redux";
 import { createStandardAction } from "typesafe-actions";
+import Web3 from "web3";
 
-import { OrderedMap } from "immutable";
 import { DarknodeRegistryWeb3 } from "../../../lib/ethereum/contracts/bindings/darknodeRegistry";
 import { getContracts } from "../../../lib/ethereum/contracts/contracts";
 import { getPrices, Token } from "../../../lib/ethereum/tokens";
@@ -27,8 +26,10 @@ export const updateNetworkStatistics = (web3: Web3, ethNetwork: EthNetwork) => a
         getContracts(ethNetwork).DarknodeRegistry.address
     );
     const minimumBondBN = await darknodeRegistry.methods.minimumBond().call();
-    const minimumBond = new BigNumber(minimumBondBN.toString());
-    dispatch(storeMinimumBond(minimumBond));
+    if (minimumBondBN) {
+        const minimumBond = new BigNumber(minimumBondBN.toString());
+        dispatch(storeMinimumBond(minimumBond));
+    }
 };
 
 export const updateTokenPrices = () => async (dispatch: Dispatch) => {
