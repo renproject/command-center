@@ -8,6 +8,7 @@
     "@fortawesome/free-regular-svg-icons": "^5.8.2",
     "@fortawesome/free-solid-svg-icons": "^5.8.2",
     "@fortawesome/react-fontawesome": "^0.1.4",
+    "@renex/fonts": "^1.0.1",
     "@renex/react-components": "^1.0.21",
     "@sentry/browser": "^5.4.0",
     "@sentry/core": "^5.4.0",
