@@ -15,7 +15,9 @@ import {
     RegistrationStatus, updateCycleAndPendingRewards, updateDarknodeStatistics,
 } from "../../../store/actions/statistics/operatorActions";
 import { showClaimPopup } from "../../../store/actions/statistics/operatorPopupActions";
-import { ApplicationData, DarknodeDetails, DarknodeFeeStatus } from "../../../store/types";
+import {
+    ApplicationData, DarknodeDetails, DarknodeFeeStatus, EthNetworkMap,
+} from "../../../store/types";
 import { TokenBalance } from "../../TokenBalance";
 import { FeesItem } from "../FeesItem";
 import { OldFees } from "../OldFees";
@@ -288,7 +290,7 @@ class FeesBlockClass extends React.Component<Props, State> {
     }
 
     private readonly onClaim = async (claimBeforeCycle: boolean) => {
-        const { darknodeDetails, store: { web3, address, tokenPrices, ethNetwork } } = this.props;
+        const { darknodeDetails, store: { web3, address, tokenPrices, renNetwork } } = this.props;
 
         if (!address || !darknodeDetails) {
             this.setState({ claiming: false });
@@ -305,8 +307,8 @@ class FeesBlockClass extends React.Component<Props, State> {
 
         const onDone = async () => {
             try {
-                await this.props.actions.updateCycleAndPendingRewards(web3, ethNetwork, tokenPrices);
-                await this.props.actions.updateDarknodeStatistics(web3, ethNetwork, darknodeID, tokenPrices);
+                await this.props.actions.updateCycleAndPendingRewards(web3, EthNetworkMap[renNetwork], tokenPrices);
+                await this.props.actions.updateDarknodeStatistics(web3, EthNetworkMap[renNetwork], darknodeID, tokenPrices);
             } catch (error) {
                 // Ignore error
             }
@@ -318,7 +320,7 @@ class FeesBlockClass extends React.Component<Props, State> {
 
         const title = `Claim rewards`;
         this.setState({ disableClaim: true });
-        await this.props.actions.showClaimPopup(web3, ethNetwork, claimBeforeCycle, address, darknodeID, title, onCancel, onDone);
+        await this.props.actions.showClaimPopup(web3, EthNetworkMap[renNetwork], claimBeforeCycle, address, darknodeID, title, onCancel, onDone);
     }
 
 }
@@ -333,7 +335,7 @@ const mapStateToProps = (state: ApplicationData) => ({
         pendingRewards: state.statistics.pendingRewards,
         pendingTotalInEth: state.statistics.pendingTotalInEth,
         tokenPrices: state.statistics.tokenPrices,
-        ethNetwork: state.trader.ethNetwork,
+        renNetwork: state.trader.renNetwork,
         cycleTimeout: state.statistics.cycleTimeout,
     },
 });

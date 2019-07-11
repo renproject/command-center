@@ -5,7 +5,7 @@ import { connect, ConnectedReturnType } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
 import { login, logout } from "../store/actions/trader/accountActions";
-import { ApplicationData, EthNetwork } from "../store/types";
+import { ApplicationData, EthNetwork, EthNetworkMap } from "../store/types";
 
 const defaultState = { // Entries must be immutable
     shown: false,
@@ -22,7 +22,7 @@ class AccountDropdownClass extends React.Component<Props, typeof defaultState> {
     }
 
     public render = () => {
-        const { address, web3BrowserName, transactions, confirmations, ethNetwork } = this.props.store;
+        const { address, web3BrowserName, transactions, confirmations, renNetwork } = this.props.store;
         const { copied } = this.state;
 
         // `pendingTXs` calculates whether or not the user has any ethereum
@@ -31,7 +31,7 @@ class AccountDropdownClass extends React.Component<Props, typeof defaultState> {
             return reduction || confirmations.get(key, 0) === 0;
         }, false);
 
-        const etherscan = `https://${ethNetwork === EthNetwork.Mainnet ? "" : `${ethNetwork}.`}etherscan.io`;
+        const etherscan = `https://${EthNetworkMap[renNetwork] === EthNetwork.Mainnet ? "" : `${EthNetworkMap[renNetwork]}.`}etherscan.io`;
 
         const { shown } = this.state;
 
@@ -134,9 +134,9 @@ class AccountDropdownClass extends React.Component<Props, typeof defaultState> {
     }
 
     private readonly handleLogin = async (): Promise<void> => {
-        const { address } = this.props.store;
+        const { address, renNetwork } = this.props.store;
         if (!address) {
-            await this.props.actions.login({ redirect: false, showPopup: true, immediatePopup: true });
+            await this.props.actions.login(renNetwork, { redirect: false, showPopup: true, immediatePopup: true });
         }
     }
 
@@ -192,7 +192,7 @@ const mapStateToProps = (state: ApplicationData) => ({
         web3: state.trader.web3,
         transactions: state.statistics.transactions,
         confirmations: state.statistics.confirmations,
-        ethNetwork: state.trader.ethNetwork,
+        renNetwork: state.trader.renNetwork,
     },
 });
 

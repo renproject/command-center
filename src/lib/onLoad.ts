@@ -1,10 +1,9 @@
 import * as Sentry from "@sentry/browser";
 
 import Web3 from "web3";
-
 import { HttpProvider } from "web3-providers";
 
-import { environment, SENTRY_DSN, SOURCE_VERSION } from "./environmentVariables";
+import { DEPLOYMENT, SENTRY_DSN, SOURCE_VERSION } from "./environmentVariables";
 import { pageLoadedAt } from "./errors";
 
 interface EthereumProvider extends HttpProvider {
@@ -31,7 +30,7 @@ export const onLoad = (title: string) => {
         dsn: SENTRY_DSN,
 
         // Used to separate testnet and mainnet errors
-        environment,
+        environment: `${DEPLOYMENT}-${process.env.NODE_ENV}`,
 
         // Used to track errors across versions
         release: SOURCE_VERSION,

@@ -107,7 +107,7 @@ $mobile-full-width: 100vw;
     -webkit-transition: width .1s linear;
     transition: width .1s linear;
     -webkit-transform: translateZ(0) scale(1, 1);
-    z-index: 4;
+    z-index: 20;
 }
 
 .sidebar::-webkit-scrollbar {

@@ -12,8 +12,8 @@ import { getReadOnlyWeb3 } from "../lib/ethereum/wallet";
 import { Record } from "../lib/record";
 import { RegistrationStatus } from "./actions/statistics/operatorActions";
 
-export enum Network {
-    Mainnet = "Mainnet",
+export enum RenNetwork {
+    Mainnet = "mainnet",
     Testnet = "testnet",
     Devnet = "devnet",
     Localnet = "localnet",
@@ -24,11 +24,22 @@ export enum EthNetwork {
     Mainnet = "main",
 }
 
-const EthNetworkLabel = {
+export const EthNetworkMap = {
+    [RenNetwork.Mainnet]: EthNetwork.Mainnet,
+    [RenNetwork.Testnet]: EthNetwork.Kovan,
+    [RenNetwork.Devnet]: EthNetwork.Kovan,
+    [RenNetwork.Localnet]: EthNetwork.Kovan,
+};
+export const RenNetworkLabel = {
+    [RenNetwork.Mainnet]: "Mainnet",
+    [RenNetwork.Testnet]: "Testnet",
+    [RenNetwork.Devnet]: "Devnet",
+    [RenNetwork.Localnet]: "Localnet",
+};
+export const EthNetworkLabel = {
     [EthNetwork.Kovan]: "Kovan",
     [EthNetwork.Mainnet]: "Mainnet",
 };
-export const getNetworkLabel = (ethNetwork: EthNetwork | undefined) => ethNetwork ? EthNetworkLabel[ethNetwork] || ethNetwork : ethNetwork;
 
 interface Serializable<T> {
     serialize(): string;
@@ -50,8 +61,35 @@ export class TraderData extends Record({
     web3BrowserName: Web3Browser.MetaMask,
     web3: readOnlyWeb3,
 
-    ethNetwork: EthNetwork.Mainnet,
-}) { }
+    renNetwork: DEPLOYMENT || (process.env.REACT_APP_DEPLOYMENT as RenNetwork) || RenNetwork.Testnet,
+}) implements Serializable<TraderData> {
+    public serialize(): string {
+        const js = this.toJS();
+        return JSON.stringify({
+            renNetwork: js.renNetwork,
+        });
+    }
+
+    public deserialize(str: string): TraderData {
+        // let next = this;
+        try {
+            const data = JSON.parse(str);
+            // tslint:disable-next-line: no-any
+            const inner: any = {};
+            if (data.renNetwork) {
+                inner.renNetwork = data.renNetwork;
+            }
+            console.log(`data.renNetwork: ${data.renNetwork}`);
+            // next = next.set("address", data.address);
+            return new TraderData(inner);
+        } catch (error) {
+            _captureBackgroundException_(error, {
+                description: "Cannot deserialize local storage",
+            });
+            return this;
+        }
+    }
+}
 
 export enum LabelLevel {
     Info = "info",
@@ -98,8 +136,6 @@ export const currencies = [
 export type TokenPrices = Map<Token | OldToken, Map<Currency, number>>;
 
 export class StatisticsData extends Record({
-    network: DEPLOYMENT,
-
     minimumBond: null as BigNumber | null,
     secondsPerBlock: null as number | null,
 

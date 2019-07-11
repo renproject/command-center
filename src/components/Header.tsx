@@ -7,9 +7,10 @@ import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { storeNetwork, storeQuoteCurrency } from "../store/actions/statistics/operatorActions";
+import { storeQuoteCurrency } from "../store/actions/statistics/operatorActions";
+import { storeRenNetwork } from "../store/actions/trader/accountActions";
 import { showMobileMenu } from "../store/actions/ui/uiActions";
-import { ApplicationData, currencies, Currency, Network } from "../store/types";
+import { ApplicationData, currencies, Currency, RenNetwork } from "../store/types";
 import { ReactComponent as English } from "../styles/images/rp-flag-uk.svg";
 import { AccountDropdown } from "./AccountDropdown";
 
@@ -19,10 +20,10 @@ const languageOptions = new Map()
     );
 
 const networkOptions = new Map()
-    .set(Network.Mainnet, <>Mainnet</>)
-    .set(Network.Testnet, <>Testnet</>)
-    .set(Network.Devnet, <>Devnet</>)
-    .set(Network.Localnet, <>Localnet</>)
+    .set(RenNetwork.Mainnet, <>Mainnet</>)
+    .set(RenNetwork.Testnet, <>Testnet</>)
+    .set(RenNetwork.Devnet, <>Devnet</>)
+    .set(RenNetwork.Localnet, <>Localnet</>)
     ;
 
 const getCurrencyOptions = () => {
@@ -45,7 +46,7 @@ const currencyOptions = getCurrencyOptions();
  */
 class HeaderClass extends React.Component<Props> {
     public render = (): JSX.Element => {
-        const { address, quoteCurrency, network } = this.props.store;
+        const { address, quoteCurrency, renNetwork } = this.props.store;
 
         const languageDropdownNode = <Dropdown
             key="languageDropdown"
@@ -60,8 +61,8 @@ class HeaderClass extends React.Component<Props> {
         const networkDropdownNode = <Dropdown
             key="networkDropdown"
             selected={{
-                value: network,
-                render: network.toUpperCase(),
+                value: renNetwork,
+                render: networkOptions.get(renNetwork),
             }}
             options={networkOptions}
             setValue={this.setNetwork}
@@ -109,7 +110,14 @@ class HeaderClass extends React.Component<Props> {
     }
 
     private readonly setNetwork = (network: string): void => {
-        this.props.actions.storeNetwork(network as Network);
+        this.props.actions.storeRenNetwork(network as RenNetwork);
+        setInterval(() => {
+            const currentLocation = window.location.pathname;
+            // history.push("/loading");
+            // Reload to clear all stores and cancel timeouts
+            // (e.g. deposit/withdrawal confirmations)
+            window.location.replace(currentLocation);
+        }, 100);
     }
 
     private readonly setLanguage = (language: string): void => {
@@ -121,7 +129,7 @@ const mapStateToProps = (state: ApplicationData) => ({
     store: {
         address: state.trader.address,
         quoteCurrency: state.statistics.quoteCurrency,
-        network: state.statistics.network,
+        renNetwork: state.trader.renNetwork,
     },
 });
 
@@ -129,7 +137,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     actions: bindActionCreators({
         storeQuoteCurrency,
         showMobileMenu,
-        storeNetwork,
+        storeRenNetwork,
     }, dispatch),
 });
 

@@ -4,17 +4,16 @@ import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { Route, RouteComponentProps, Switch, withRouter } from "react-router-dom";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { Home } from "./pages/Home";
-import { PopupController } from "./popups/PopupController";
-
 import { DEPLOYMENT } from "../lib/environmentVariables";
-import { ApplicationData, EthNetwork, getNetworkLabel, Network } from "../store/types";
+import { ApplicationData, EthNetworkLabel, EthNetworkMap, RenNetworkLabel } from "../store/types";
 import { BackgroundTasks } from "./BackgroundTasks";
 import { _catch_ } from "./ErrorBoundary";
 import { Header } from "./Header";
 import { Darknode, getDarknodeParam } from "./pages/Darknode";
+import { Home } from "./pages/Home";
 import { LoggingIn } from "./pages/LoggingIn";
 import { NotFound } from "./pages/NotFound";
+import { PopupController } from "./popups/PopupController";
 import { Sidebar } from "./Sidebar";
 
 // Scroll restoration based on https://reacttraining.com/react-router/web/guides/scroll-restoration
@@ -44,11 +43,11 @@ class AppClass extends React.Component<Props> {
         this.props.store.address ? component : LoggingIn
 
     public render = (): JSX.Element => {
-        const { match: { params }, store: { address, ethNetwork } } = this.props;
+        const { match: { params }, store: { address, renNetwork } } = this.props;
         const darknodeID = getDarknodeParam(params);
-        const showNetworkBanner = ethNetwork !== EthNetwork.Mainnet || DEPLOYMENT === Network.Staging;
+        const showNetworkBanner = renNetwork !== DEPLOYMENT;
 
-        return <div className="app">
+        return <div key={`${address || undefined} ${renNetwork}`} className="app">
             <BackgroundTasks />
             <ScrollToTop />
             {/*
@@ -56,9 +55,9 @@ class AppClass extends React.Component<Props> {
               * (e.g. if in
               * the middle of a transaction, etc.)
               */}
-            <div key={`${address || undefined} ${ethNetwork}`} className={showNetworkBanner ? `with-banner with-banner--${ethNetwork}` : ""}>
+            <div className={showNetworkBanner ? `with-banner with-banner--${EthNetworkMap[renNetwork]}` : ""}>
                 {showNetworkBanner ?
-                    <div className="network--banner">Using <span className="banner--bold">{getNetworkLabel(ethNetwork)}</span> Ethereum network</div> :
+                    <div className="network--banner">Using <span className="banner--bold">{RenNetworkLabel[renNetwork]}</span> RenVM network, <span className="banner--bold">{EthNetworkLabel[EthNetworkMap[renNetwork]]}</span> Ethereum network</div> :
                     <></>
                 }
                 <PopupController>
@@ -81,7 +80,7 @@ const mapStateToProps = (state: ApplicationData) => ({
     store: {
         address: state.trader.address,
         web3: state.trader.web3,
-        ethNetwork: state.trader.ethNetwork,
+        renNetwork: state.trader.renNetwork,
     },
 });
 

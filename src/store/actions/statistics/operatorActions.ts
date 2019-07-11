@@ -17,7 +17,7 @@ import { getContracts, tokenAddresses } from "../../../lib/ethereum/contracts/co
 import { getOperatorDarknodes } from "../../../lib/ethereum/operator";
 import { NewTokenDetails, OldToken, OldTokenDetails, Token } from "../../../lib/ethereum/tokens";
 import {
-    Currency, DarknodeDetails, DarknodeFeeStatus, EthNetwork, Network, TokenPrices,
+    Currency, DarknodeDetails, DarknodeFeeStatus, EthNetwork, TokenPrices,
 } from "../../types";
 import {
     updateCurrentCycle, updateCycleTimeout, updatePendingRewards, updatePendingTotalInEth,
@@ -44,7 +44,6 @@ export const storeDarknodeList = createStandardAction("storeDarknodeList")<{
 }>();
 
 export const storeQuoteCurrency = createStandardAction("storeQuoteCurrency")<{ quoteCurrency: Currency }>();
-export const storeNetwork = createStandardAction("storeNetwork")<Network>();
 
 export const storeSecondsPerBlock = createStandardAction("storeSecondsPerBlock")<{ secondsPerBlock: number }>();
 

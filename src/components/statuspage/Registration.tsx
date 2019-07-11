@@ -5,12 +5,12 @@ import { bindActionCreators, Dispatch } from "redux";
 
 import { _captureInteractionException_ } from "../../lib/errors";
 import {
-    RegistrationStatus,
-    updateDarknodeStatistics,
-    updateOperatorStatistics
+    RegistrationStatus, updateDarknodeStatistics, updateOperatorStatistics,
 } from "../../store/actions/statistics/operatorActions";
-import { showDeregisterPopup, showRefundPopup, showRegisterPopup } from "../../store/actions/statistics/operatorPopupActions";
-import { ApplicationData, DarknodeDetails } from "../../store/types";
+import {
+    showDeregisterPopup, showRefundPopup, showRegisterPopup,
+} from "../../store/actions/statistics/operatorPopupActions";
+import { ApplicationData, DarknodeDetails, EthNetworkMap } from "../../store/types";
 import { Loading } from "../Loading";
 
 export const statusText = {
@@ -112,10 +112,10 @@ class RegistrationClass extends React.Component<Props, typeof defaultState> {
 
     private readonly onDone = async () => {
         const { darknodeID } = this.props;
-        const { web3, tokenPrices, ethNetwork } = this.props.store;
+        const { web3, tokenPrices, renNetwork } = this.props.store;
 
         try {
-            await this.props.actions.updateDarknodeStatistics(web3, ethNetwork, darknodeID, tokenPrices);
+            await this.props.actions.updateDarknodeStatistics(web3, EthNetworkMap[renNetwork], darknodeID, tokenPrices);
         } catch (error) {
             // Ignore error
         }
@@ -127,14 +127,14 @@ class RegistrationClass extends React.Component<Props, typeof defaultState> {
     }
 
     private readonly onDoneRegister = async () => {
-        const { web3, address, tokenPrices, darknodeList, ethNetwork } = this.props.store;
+        const { web3, address, tokenPrices, darknodeList, renNetwork } = this.props.store;
 
         if (!address) {
             return; // FIXME
         }
 
         try {
-            await this.props.actions.updateOperatorStatistics(web3, ethNetwork, address, tokenPrices, darknodeList);
+            await this.props.actions.updateOperatorStatistics(web3, EthNetworkMap[renNetwork], address, tokenPrices, darknodeList);
         } catch (error) {
             // Ignore error
         }
@@ -146,7 +146,7 @@ class RegistrationClass extends React.Component<Props, typeof defaultState> {
 
     private readonly handleRegister = async (): Promise<void> => {
         const { darknodeID, publicKey } = this.props;
-        const { web3, address, minimumBond, tokenPrices, ethNetwork } = this.props.store;
+        const { web3, address, minimumBond, tokenPrices, renNetwork } = this.props.store;
 
         if (!publicKey || !address || !minimumBond || !tokenPrices) {
             return; // FIXME
@@ -155,7 +155,7 @@ class RegistrationClass extends React.Component<Props, typeof defaultState> {
         this.setState({ active: true });
         try {
             await this.props.actions.showRegisterPopup(
-                web3, ethNetwork, address, darknodeID, publicKey, minimumBond, tokenPrices, this.onCancel, this.onDoneRegister
+                web3, EthNetworkMap[renNetwork], address, darknodeID, publicKey, minimumBond, tokenPrices, this.onCancel, this.onDoneRegister
             );
         } catch (error) {
             _captureInteractionException_(error, {
@@ -168,7 +168,7 @@ class RegistrationClass extends React.Component<Props, typeof defaultState> {
 
     private readonly handleDeregister = async (): Promise<void> => {
         const { darknodeID, darknodeDetails } = this.props;
-        const { web3, address, quoteCurrency, ethNetwork } = this.props.store;
+        const { web3, address, quoteCurrency, renNetwork } = this.props.store;
 
         if (!address) {
             return;
@@ -177,7 +177,7 @@ class RegistrationClass extends React.Component<Props, typeof defaultState> {
         this.setState({ active: true });
         await this.props.actions.showDeregisterPopup(
             web3,
-            ethNetwork,
+            EthNetworkMap[renNetwork],
             address,
             darknodeID,
             darknodeDetails && darknodeDetails.feesEarnedTotalEth,
@@ -188,14 +188,14 @@ class RegistrationClass extends React.Component<Props, typeof defaultState> {
 
     private readonly handleRefund = async (): Promise<void> => {
         const { darknodeID } = this.props;
-        const { web3, address, ethNetwork } = this.props.store;
+        const { web3, address, renNetwork } = this.props.store;
 
         if (!address) {
             return;
         }
 
         this.setState({ active: true });
-        await this.props.actions.showRefundPopup(web3, ethNetwork, address, darknodeID, this.onCancel, this.onDone);
+        await this.props.actions.showRefundPopup(web3, EthNetworkMap[renNetwork], address, darknodeID, this.onCancel, this.onDone);
     }
 }
 
@@ -207,7 +207,7 @@ const mapStateToProps = (state: ApplicationData) => ({
         tokenPrices: state.statistics.tokenPrices,
         darknodeList: state.trader.address ? state.statistics.darknodeList.get(state.trader.address, null) : null,
         quoteCurrency: state.statistics.quoteCurrency,
-        ethNetwork: state.trader.ethNetwork,
+        renNetwork: state.trader.renNetwork,
     },
 });
 

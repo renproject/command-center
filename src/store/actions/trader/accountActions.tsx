@@ -1,10 +1,9 @@
 import * as Sentry from "@sentry/browser";
 import * as React from "react";
 
-import Web3 from "web3";
-
 import { Dispatch } from "redux";
 import { createStandardAction } from "typesafe-actions";
+import Web3 from "web3";
 import { provider } from "web3-providers";
 import { toChecksumAddress } from "web3-utils";
 
@@ -15,12 +14,12 @@ import { _captureBackgroundException_ } from "../../../lib/errors";
 import { getWeb3BrowserName, Web3Browser } from "../../../lib/ethereum/browsers";
 import { getInjectedWeb3Provider } from "../../../lib/ethereum/wallet";
 import { history } from "../../../lib/history";
-import { EthNetwork, readOnlyWeb3 } from "../../types";
+import { EthNetworkLabel, EthNetworkMap, readOnlyWeb3, RenNetwork } from "../../types";
 import { clearPopup, setPopup } from "../popup/popupActions";
 
 export const storeWeb3 = createStandardAction("storeWeb3")<Web3>();
 export const storeAddress = createStandardAction("storeAddress")<string | null>();
-export const storeEthNetwork = createStandardAction("storeEthNetwork")<EthNetwork>();
+export const storeRenNetwork = createStandardAction("storeRenNetwork")<RenNetwork>();
 
 export const storeWeb3BrowserName = createStandardAction("storeWeb3BrowserName")<Web3Browser>();
 
@@ -40,11 +39,12 @@ export const updateWeb3BrowserName = (
 };
 
 export const login = (
+    renNetwork: RenNetwork,
     options: { redirect: boolean; showPopup: boolean; immediatePopup: boolean },
 ) => async (dispatch: Dispatch) => {
     let cancelled = false;
 
-    const onClick = async () => (login({ redirect: false, showPopup: true, immediatePopup: true })(dispatch));
+    const onClick = async () => (login(renNetwork, { redirect: false, showPopup: true, immediatePopup: true })(dispatch));
     const onCancel = () => {
         dispatch(clearPopup());
         cancelled = true;
@@ -125,7 +125,19 @@ export const login = (
 
     // tslint:disable-next-line: no-any
     const network = (await (newWeb3.eth.net as any).getNetworkType());
-    dispatch(storeEthNetwork(network));
+
+    if (network !== EthNetworkMap[renNetwork]) {
+        if (options.showPopup && !cancelled) {
+            dispatch(setPopup(
+                {
+                    popup: <NoWeb3Popup onConnect={onClick} onCancel={onCancel} message={`Please change your network to ${EthNetworkLabel[EthNetworkMap[renNetwork]]}`} />,
+                    onCancel,
+                    overlay: true,
+                },
+            ));
+        }
+        return;
+    }
 
     dispatch(clearPopup());
 
@@ -183,6 +195,7 @@ export const logout = (
 // lookForLogout detects if 1) the user has changed or logged out of their Web3
 // wallet
 export const lookForLogout = (
+    renNetwork: RenNetwork,
     address: string,
     web3: Web3,
 ) => async (dispatch: Dispatch) => {
@@ -201,7 +214,7 @@ export const lookForLogout = (
                     description: "Error in logout in accountActions",
                 });
             });
-            await login({ redirect: false, showPopup: true, immediatePopup: false })(dispatch);
+            await login(renNetwork, { redirect: false, showPopup: true, immediatePopup: false })(dispatch);
         };
         const onCancel = async () => {
             await logout({ reload: true })(dispatch).catch((error) => {

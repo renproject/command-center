@@ -13,7 +13,7 @@ import {
     updateDarknodeStatistics, updateOperatorStatistics,
 } from "../store/actions/statistics/operatorActions";
 import { login, lookForLogout } from "../store/actions/trader/accountActions";
-import { ApplicationData } from "../store/types";
+import { ApplicationData, EthNetworkMap } from "../store/types";
 import { getDarknodeParam } from "./pages/Darknode";
 
 /**
@@ -28,7 +28,7 @@ class BackgroundTasksClass extends React.Component<Props> {
     private callUpdateSelectedDarknodeTimeout: NodeJS.Timer | undefined;
 
     public componentDidMount = async (): Promise<void> => {
-        const { match: { params } } = this.props;
+        const { match: { params }, store: { renNetwork } } = this.props;
 
         const darknodeID = getDarknodeParam(params);
 
@@ -41,6 +41,7 @@ class BackgroundTasksClass extends React.Component<Props> {
 
         try {
             await this.props.actions.login(
+                renNetwork,
                 {
                     redirect: false,
                     showPopup: darknodeID === undefined || action !== undefined,
@@ -112,11 +113,11 @@ class BackgroundTasksClass extends React.Component<Props> {
     private readonly callLookForLogout = async (props?: Props): Promise<void> => {
         props = props || this.props;
 
-        const { address, web3 } = props.store;
+        const { address, web3, renNetwork } = props.store;
         if (address) {
             try {
                 // tslint:disable-next-line: await-promise
-                await props.actions.lookForLogout(address, web3);
+                await props.actions.lookForLogout(renNetwork, address, web3);
             } catch (error) {
                 _captureBackgroundException_(error, {
                     description: "Error thrown in callLookForLogout background task",
@@ -131,11 +132,11 @@ class BackgroundTasksClass extends React.Component<Props> {
     private readonly callUpdateNetworkStatistics = async (props?: Props): Promise<void> => {
         props = props || this.props;
 
-        const { web3, ethNetwork } = props.store;
+        const { web3, renNetwork } = props.store;
         let timeout = 1; // Retry in a second, unless the call succeeds
         try {
             // tslint:disable-next-line: await-promise
-            await props.actions.updateNetworkStatistics(web3, ethNetwork);
+            await props.actions.updateNetworkStatistics(web3, EthNetworkMap[renNetwork]);
             timeout = 3600;
         } catch (error) {
             if (error && error.message && error.message.match("Cannot read property 'toString' of")) {
@@ -157,7 +158,7 @@ class BackgroundTasksClass extends React.Component<Props> {
     private readonly callUpdateOperatorStatistics = async (props?: Props): Promise<void> => {
         props = props || this.props;
 
-        const { web3, address, tokenPrices, darknodeList, darknodeRegisteringList, ethNetwork } = props.store;
+        const { web3, address, tokenPrices, darknodeList, darknodeRegisteringList, renNetwork } = props.store;
         let timeout = 1; // Retry in a second, unless the call succeeds
         if (address && tokenPrices) {
             try {
@@ -166,7 +167,7 @@ class BackgroundTasksClass extends React.Component<Props> {
                     list = list.concat(darknodeList);
                 }
                 // tslint:disable-next-line: await-promise
-                await props.actions.updateOperatorStatistics(web3, ethNetwork, address, tokenPrices, list);
+                await props.actions.updateOperatorStatistics(web3, EthNetworkMap[renNetwork], address, tokenPrices, list);
                 timeout = 120;
             } catch (error) {
                 _captureBackgroundException_(error, {
@@ -187,7 +188,7 @@ class BackgroundTasksClass extends React.Component<Props> {
         props = props || this.props;
 
         const { match: { params } } = props;
-        const { web3, tokenPrices, ethNetwork } = props.store;
+        const { web3, tokenPrices, renNetwork } = props.store;
 
         const darknodeID = getDarknodeParam(params);
 
@@ -197,7 +198,7 @@ class BackgroundTasksClass extends React.Component<Props> {
                 // tslint:disable-next-line: await-promise
                 await props.actions.updateDarknodeStatistics(
                     web3,
-                    ethNetwork,
+                    EthNetworkMap[renNetwork],
                     darknodeID,
                     tokenPrices,
                 );
@@ -258,7 +259,7 @@ const mapStateToProps = (state: ApplicationData) => ({
         tokenPrices: state.statistics.tokenPrices,
         darknodeList: state.trader.address ? state.statistics.darknodeList.get(state.trader.address, null) : null,
         darknodeRegisteringList: state.statistics.darknodeRegisteringList,
-        ethNetwork: state.trader.ethNetwork,
+        renNetwork: state.trader.renNetwork,
     },
 });
 
