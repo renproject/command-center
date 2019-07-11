@@ -2,23 +2,28 @@ import * as React from "react";
 
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Dropdown } from "@renex/react-components";
+import { CurrencyIcon, Dropdown } from "@renproject/react-components";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { storeQuoteCurrency } from "../store/actions/statistics/operatorActions";
+import { storeNetwork, storeQuoteCurrency } from "../store/actions/statistics/operatorActions";
 import { showMobileMenu } from "../store/actions/ui/uiActions";
-import { ApplicationData, currencies, Currency } from "../store/types";
-import { AccountDropdown } from "./AccountDropdown";
-import { CurrencyIcon } from "./CurrencyIcon";
-
+import { ApplicationData, currencies, Currency, Network } from "../store/types";
 import { ReactComponent as English } from "../styles/images/rp-flag-uk.svg";
+import { AccountDropdown } from "./AccountDropdown";
 
 const languageOptions = new Map()
     .set("EN",
         <><English /> English</>
     );
+
+const networkOptions = new Map()
+    .set(Network.Mainnet, <>Mainnet</>)
+    .set(Network.Testnet, <>Testnet</>)
+    .set(Network.Devnet, <>Devnet</>)
+    .set(Network.Localnet, <>Localnet</>)
+    ;
 
 const getCurrencyOptions = () => {
     const options = new Map<string, React.ReactNode>();
@@ -40,7 +45,7 @@ const currencyOptions = getCurrencyOptions();
  */
 class HeaderClass extends React.Component<Props> {
     public render = (): JSX.Element => {
-        const { address, quoteCurrency } = this.props.store;
+        const { address, quoteCurrency, network } = this.props.store;
 
         const languageDropdownNode = <Dropdown
             key="languageDropdown"
@@ -50,6 +55,16 @@ class HeaderClass extends React.Component<Props> {
             }}
             options={languageOptions}
             setValue={this.setLanguage}
+        />;
+
+        const networkDropdownNode = <Dropdown
+            key="networkDropdown"
+            selected={{
+                value: network,
+                render: network.toUpperCase(),
+            }}
+            options={networkOptions}
+            setValue={this.setNetwork}
         />;
 
         const currencyDropdownNode = <Dropdown
@@ -81,6 +96,7 @@ class HeaderClass extends React.Component<Props> {
                     <div className="header--menu">
                         {languageDropdownNode}
                         {currencyDropdownNode}
+                        {networkDropdownNode}
                         <AccountDropdown />
                     </div>
                 </div>
@@ -92,6 +108,10 @@ class HeaderClass extends React.Component<Props> {
         this.props.actions.storeQuoteCurrency({ quoteCurrency: currency as Currency });
     }
 
+    private readonly setNetwork = (network: string): void => {
+        this.props.actions.storeNetwork(network as Network);
+    }
+
     private readonly setLanguage = (language: string): void => {
         // NOT IMPLEMENTED
     }
@@ -101,6 +121,7 @@ const mapStateToProps = (state: ApplicationData) => ({
     store: {
         address: state.trader.address,
         quoteCurrency: state.statistics.quoteCurrency,
+        network: state.statistics.network,
     },
 });
 
@@ -108,6 +129,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     actions: bindActionCreators({
         storeQuoteCurrency,
         showMobileMenu,
+        storeNetwork,
     }, dispatch),
 });
 

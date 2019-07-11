@@ -299,9 +299,11 @@ label {
 
 .no-scrollbar {
     overflow: -moz-scrollbars-none;
+    scrollbar-width: none;
 
     &::-webkit-scrollbar {
         /* remove scrollbar space */
+        display: none;
         width: 0px;
         height: 0px;
     }

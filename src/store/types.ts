@@ -1,10 +1,10 @@
 // tslint:disable:no-object-literal-type-assertion
 
 import BigNumber from "bignumber.js";
-
 import { List, Map, OrderedMap } from "immutable";
 import { PromiEvent } from "web3-core";
 
+import { DEPLOYMENT } from "../lib/environmentVariables";
 import { _captureBackgroundException_ } from "../lib/errors";
 import { Web3Browser } from "../lib/ethereum/browsers";
 import { OldToken, Token } from "../lib/ethereum/tokens";
@@ -13,8 +13,10 @@ import { Record } from "../lib/record";
 import { RegistrationStatus } from "./actions/statistics/operatorActions";
 
 export enum Network {
-    Staging = "staging",
-    Production = "production",
+    Mainnet = "Mainnet",
+    Testnet = "testnet",
+    Devnet = "devnet",
+    Localnet = "localnet",
 }
 
 export enum EthNetwork {
@@ -96,6 +98,8 @@ export const currencies = [
 export type TokenPrices = Map<Token | OldToken, Map<Currency, number>>;
 
 export class StatisticsData extends Record({
+    network: DEPLOYMENT,
+
     minimumBond: null as BigNumber | null,
     secondsPerBlock: null as number | null,
 

@@ -1,18 +1,19 @@
 import * as React from "react";
 
+import { CurrencyIcon } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
+import { Dispatch } from "redux";
 import Web3 from "web3";
 
-import { Dispatch } from "redux";
-
-import { CurrencyIcon } from "../../../components/CurrencyIcon";
 import { MultiStepPopup } from "../../../components/popups/MultiStepPopup";
 import { TokenBalance } from "../../../components/TokenBalance";
 import { _captureBackgroundException_ } from "../../../lib/errors";
 import { Token } from "../../../lib/ethereum/tokens";
 import { Currency, EthNetwork, TokenPrices } from "../../types";
 import { setPopup } from "../popup/popupActions";
-import { approveNode, changeCycle, claimForNode, deregisterNode, fundNode, refundNode, registerNode } from "../trader/darknode";
+import {
+    approveNode, changeCycle, claimForNode, deregisterNode, fundNode, refundNode, registerNode,
+} from "../trader/darknode";
 import { updateDarknodeStatistics } from "./operatorActions";
 
 export const showRegisterPopup = (

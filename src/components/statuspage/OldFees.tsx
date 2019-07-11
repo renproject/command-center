@@ -1,11 +1,10 @@
 import * as React from "react";
 
-import { TokenIcon } from "@renex/react-components";
+import { CurrencyIcon, TokenIcon } from "@renproject/react-components";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
 import { ApplicationData, DarknodeDetails } from "../../store/types";
-import { CurrencyIcon } from "../CurrencyIcon";
 import { TokenBalance } from "../TokenBalance";
 import { FeesItem } from "./FeesItem";
 

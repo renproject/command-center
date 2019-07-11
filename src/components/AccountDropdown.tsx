@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { Blocky, Loading } from "@renex/react-components";
+import { Blocky, Loading } from "@renproject/react-components";
 import { connect, ConnectedReturnType } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 

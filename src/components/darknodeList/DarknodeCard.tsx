@@ -7,11 +7,10 @@ import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { Link } from "react-router-dom";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { Blocky } from "@renex/react-components";
+import { Blocky, CurrencyIcon } from "@renproject/react-components";
 import { Token } from "../../lib/ethereum/tokens";
 import { RegistrationStatus, removeDarknode, removeRegisteringDarknode } from "../../store/actions/statistics/operatorActions";
 import { ApplicationData, Currency, DarknodeDetails } from "../../store/types";
-import { CurrencyIcon } from "../CurrencyIcon";
 import { DarknodeID } from "../DarknodeID";
 import { darknodeIDHexToBase58 } from "../pages/Darknode";
 import { statusText } from "../statuspage/Registration";

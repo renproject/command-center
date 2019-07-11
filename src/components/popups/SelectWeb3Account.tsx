@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { Blocky } from "@renex/react-components";
+import { Blocky } from "@renproject/react-components";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 

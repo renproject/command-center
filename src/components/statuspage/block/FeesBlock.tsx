@@ -1,21 +1,21 @@
 import * as React from "react";
 
-import BigNumber from "bignumber.js";
-
 import { faStar } from "@fortawesome/free-regular-svg-icons";
 import { faChevronRight, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Loading, TokenIcon } from "@renex/react-components";
+import { CurrencyIcon, Loading, TokenIcon } from "@renproject/react-components";
+import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
 import { alreadyPast, naturalTime } from "../../../lib/conversion";
 import { OldToken, Token } from "../../../lib/ethereum/tokens";
-import { RegistrationStatus, updateCycleAndPendingRewards, updateDarknodeStatistics } from "../../../store/actions/statistics/operatorActions";
+import {
+    RegistrationStatus, updateCycleAndPendingRewards, updateDarknodeStatistics,
+} from "../../../store/actions/statistics/operatorActions";
 import { showClaimPopup } from "../../../store/actions/statistics/operatorPopupActions";
 import { ApplicationData, DarknodeDetails, DarknodeFeeStatus } from "../../../store/types";
-import { CurrencyIcon } from "../../CurrencyIcon";
 import { TokenBalance } from "../../TokenBalance";
 import { FeesItem } from "../FeesItem";
 import { OldFees } from "../OldFees";

@@ -1,10 +1,9 @@
 import { List } from "immutable";
 import { ActionType, getType } from "typesafe-actions";
 
+import { _captureInteractionException_ } from "../../../lib/errors";
 import * as networkActions from "../../actions/statistics/networkActions";
 import * as operatorActions from "../../actions/statistics/operatorActions";
-
-import { _captureInteractionException_ } from "../../../lib/errors";
 import { StatisticsData } from "../../types";
 
 type NetworkAction = ActionType<typeof networkActions>;
@@ -99,6 +98,9 @@ export const statisticsReducer = (
 
         case getType(operatorActions.storeQuoteCurrency):
             return state.set("quoteCurrency", action.payload.quoteCurrency);
+
+        case getType(operatorActions.storeNetwork):
+            return state.set("network", action.payload);
 
         case getType(operatorActions.updateDarknodeHistory):
             return state.set("balanceHistories", state.balanceHistories.set(

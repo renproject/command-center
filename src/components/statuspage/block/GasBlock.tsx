@@ -1,12 +1,11 @@
 import * as React from "react";
 
-import BigNumber from "bignumber.js";
-
 import { faChevronRight, faFire, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { CurrencyIcon } from "@renproject/react-components";
+import BigNumber from "bignumber.js";
 
 import { Currency, DarknodeDetails } from "../../../store/types";
-import { CurrencyIcon } from "../../CurrencyIcon";
 import { TopUp } from "../TopUp";
 import { Block, BlockBody, BlockTitle } from "./Block";
 
