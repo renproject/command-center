@@ -5,7 +5,7 @@ import BigNumber from "bignumber.js";
 import { List, Map, OrderedMap } from "immutable";
 import { PromiEvent } from "web3-core";
 
-import { DEPLOYMENT } from "../lib/environmentVariables";
+import { DEFAULT_REN_NETWORK } from "../lib/environmentVariables";
 import { _captureBackgroundException_ } from "../lib/errors";
 import { Web3Browser } from "../lib/ethereum/browsers";
 import { OldToken, Token } from "../lib/ethereum/tokens";
@@ -33,7 +33,7 @@ export class TraderData extends Record({
     web3BrowserName: Web3Browser.MetaMask,
     web3: readOnlyWeb3,
 
-    renNetwork: RenNetworks[DEPLOYMENT || (process.env.REACT_APP_DEPLOYMENT as RenNetwork) || RenNetwork.Testnet] as RenNetworkDetails,
+    renNetwork: RenNetworks[DEFAULT_REN_NETWORK || RenNetwork.Testnet] as RenNetworkDetails,
 }) implements Serializable<TraderData> {
     public serialize(): string {
         // const js = this.toJS();

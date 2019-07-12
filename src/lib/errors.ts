@@ -5,7 +5,7 @@ import * as Sentry from "@sentry/browser";
 import { RenNetwork } from "@renproject/contracts";
 
 import { naturalTime } from "./conversion";
-import { DEPLOYMENT } from "./environmentVariables";
+import { DEFAULT_REN_NETWORK, NODE_ENV } from "./environmentVariables";
 
 interface Details {
     description?: string;
@@ -124,13 +124,13 @@ const _captureException_ = <X extends Details>(error: any, details: X) => {
         // tslint:disable-next-line: no-console
         console.error(error);
 
-        if (DEPLOYMENT !== RenNetwork.Mainnet) {
+        if (DEFAULT_REN_NETWORK !== RenNetwork.Mainnet) {
             if (typeof error === "string") {
                 // tslint:disable-next-line: no-parameter-reassignment
-                error = `[${DEPLOYMENT}-${process.env.NODE_ENV}] ${error}`;
+                error = `[${DEFAULT_REN_NETWORK}-${NODE_ENV}] ${error}`;
             } else {
                 try {
-                    error.message = `[${DEPLOYMENT}-${process.env.NODE_ENV}] ${error.message || error}`;
+                    error.message = `[${DEFAULT_REN_NETWORK}-${NODE_ENV}] ${error.message || error}`;
                 } catch {
                     // Ignore: Unable to overwrite message (may be read-only)
                 }

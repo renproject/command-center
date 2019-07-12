@@ -9,12 +9,13 @@ import { PersistGate } from "redux-persist/integration/react";
 
 import { App } from "./components/App";
 import { _catch_ } from "./components/ErrorBoundary";
+import { NODE_ENV } from "./lib/environmentVariables";
 import { history } from "./lib/history";
 import { onLoad } from "./lib/onLoad";
 import { configureStore } from "./store/configureStore";
 
 // Redirect to https if we aren't serving locally
-if (process.env.NODE_ENV !== "development") {
+if (NODE_ENV !== "development") {
     const loc = window.location.href + "";
     // tslint:disable-next-line: no-http-string
     if (loc.indexOf("http://") === 0) {

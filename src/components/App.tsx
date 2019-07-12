@@ -4,7 +4,7 @@ import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { Route, RouteComponentProps, Switch, withRouter } from "react-router-dom";
 import { bindActionCreators, Dispatch } from "redux";
 
-import { DEPLOYMENT } from "../lib/environmentVariables";
+import { DEFAULT_REN_NETWORK } from "../lib/environmentVariables";
 import { ApplicationData } from "../store/types";
 import { BackgroundTasks } from "./BackgroundTasks";
 import { _catch_ } from "./ErrorBoundary";
@@ -45,7 +45,7 @@ class AppClass extends React.Component<Props> {
     public render = (): JSX.Element => {
         const { match: { params }, store: { address, renNetwork } } = this.props;
         const darknodeID = getDarknodeParam(params);
-        const showNetworkBanner = renNetwork.name !== DEPLOYMENT;
+        const showNetworkBanner = renNetwork.name !== DEFAULT_REN_NETWORK;
 
         return <div key={`${address || undefined} ${renNetwork}`} className="app">
             <BackgroundTasks />
