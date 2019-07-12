@@ -26,7 +26,7 @@ if (NODE_ENV !== "development") {
 
 const { store, persistor } = configureStore();
 
-onLoad("Darknode Command Center");
+onLoad("Command Center");
 
 ReactDOM.render(
     _catch_(<Provider store={store}>
