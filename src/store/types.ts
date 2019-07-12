@@ -1,5 +1,6 @@
 // tslint:disable:no-object-literal-type-assertion
 
+import { RenNetwork, RenNetworkDetails, RenNetworks } from "@renproject/contracts";
 import BigNumber from "bignumber.js";
 import { List, Map, OrderedMap } from "immutable";
 import { PromiEvent } from "web3-core";
@@ -11,35 +12,6 @@ import { OldToken, Token } from "../lib/ethereum/tokens";
 import { getReadOnlyWeb3 } from "../lib/ethereum/wallet";
 import { Record } from "../lib/record";
 import { RegistrationStatus } from "./actions/statistics/operatorActions";
-
-export enum RenNetwork {
-    Mainnet = "mainnet",
-    Testnet = "testnet",
-    Devnet = "devnet",
-    Localnet = "localnet",
-}
-
-export enum EthNetwork {
-    Kovan = "kovan",
-    Mainnet = "main",
-}
-
-export const EthNetworkMap = {
-    [RenNetwork.Mainnet]: EthNetwork.Mainnet,
-    [RenNetwork.Testnet]: EthNetwork.Kovan,
-    [RenNetwork.Devnet]: EthNetwork.Kovan,
-    [RenNetwork.Localnet]: EthNetwork.Kovan,
-};
-export const RenNetworkLabel = {
-    [RenNetwork.Mainnet]: "Mainnet",
-    [RenNetwork.Testnet]: "Testnet",
-    [RenNetwork.Devnet]: "Devnet",
-    [RenNetwork.Localnet]: "Localnet",
-};
-export const EthNetworkLabel = {
-    [EthNetwork.Kovan]: "Kovan",
-    [EthNetwork.Mainnet]: "Mainnet",
-};
 
 interface Serializable<T> {
     serialize(): string;
@@ -61,12 +33,12 @@ export class TraderData extends Record({
     web3BrowserName: Web3Browser.MetaMask,
     web3: readOnlyWeb3,
 
-    renNetwork: DEPLOYMENT || (process.env.REACT_APP_DEPLOYMENT as RenNetwork) || RenNetwork.Testnet,
+    renNetwork: RenNetworks[DEPLOYMENT || (process.env.REACT_APP_DEPLOYMENT as RenNetwork) || RenNetwork.Testnet] as RenNetworkDetails,
 }) implements Serializable<TraderData> {
     public serialize(): string {
-        const js = this.toJS();
+        // const js = this.toJS();
         return JSON.stringify({
-            renNetwork: js.renNetwork,
+            renNetwork: this.renNetwork.name,
         });
     }
 
@@ -75,13 +47,11 @@ export class TraderData extends Record({
         try {
             const data = JSON.parse(str);
             // tslint:disable-next-line: no-any
-            const inner: any = {};
+            let traderData = new TraderData();
             if (data.renNetwork) {
-                inner.renNetwork = data.renNetwork;
+                traderData = traderData.set("renNetwork", RenNetworks[data.renNetwork]);
             }
-            console.log(`data.renNetwork: ${data.renNetwork}`);
-            // next = next.set("address", data.address);
-            return new TraderData(inner);
+            return traderData;
         } catch (error) {
             _captureBackgroundException_(error, {
                 description: "Cannot deserialize local storage",

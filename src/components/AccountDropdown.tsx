@@ -5,7 +5,7 @@ import { connect, ConnectedReturnType } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 
 import { login, logout } from "../store/actions/trader/accountActions";
-import { ApplicationData, EthNetwork, EthNetworkMap } from "../store/types";
+import { ApplicationData } from "../store/types";
 
 const defaultState = { // Entries must be immutable
     shown: false,
@@ -30,8 +30,6 @@ class AccountDropdownClass extends React.Component<Props, typeof defaultState> {
         const pendingTXs = transactions.reduce((reduction: boolean, _value, key: string) => {
             return reduction || confirmations.get(key, 0) === 0;
         }, false);
-
-        const etherscan = `https://${EthNetworkMap[renNetwork] === EthNetwork.Mainnet ? "" : `${EthNetworkMap[renNetwork]}.`}etherscan.io`;
 
         const { shown } = this.state;
 
@@ -112,7 +110,7 @@ class AccountDropdownClass extends React.Component<Props, typeof defaultState> {
                                         return <li key={txHash} className="transaction">
                                             {confs === 0 ? <Loading /> : <></>}
                                             {confs === -1 ? <span className="red">(ERR) {" "}</span> : <></>}
-                                            <a className="transaction--hash" target="_blank" rel="noopener noreferrer" href={`${etherscan}/tx/${txHash}`}>{txHash.substring(0, 12)}...</a>
+                                            <a className="transaction--hash" target="_blank" rel="noopener noreferrer" href={`${renNetwork.etherscan}/tx/${txHash}`}>{txHash.substring(0, 12)}...</a>
                                             {confs > 0 ? <>{" "}({confs} conf.)</> : ""}
                                         </li>;
                                     }).valueSeq().toArray()}

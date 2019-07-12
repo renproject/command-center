@@ -7,7 +7,7 @@ import { bindActionCreators, Dispatch } from "redux";
 import { _captureBackgroundException_ } from "../../lib/errors";
 import { updateDarknodeStatistics } from "../../store/actions/statistics/operatorActions";
 import { showFundPopup } from "../../store/actions/statistics/operatorPopupActions";
-import { ApplicationData, EthNetworkMap } from "../../store/types";
+import { ApplicationData } from "../../store/types";
 
 const CONFIRMATION_MESSAGE = "Transaction confirmed.";
 
@@ -142,7 +142,7 @@ class TopUpClass extends React.Component<Props, typeof defaultState> {
 
         const onDone = async () => {
             try {
-                await this.props.actions.updateDarknodeStatistics(web3, EthNetworkMap[renNetwork], darknodeID, tokenPrices);
+                await this.props.actions.updateDarknodeStatistics(web3, renNetwork, darknodeID, tokenPrices);
             } catch (error) {
                 // Ignore error
             }

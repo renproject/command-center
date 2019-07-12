@@ -2,6 +2,7 @@ import * as React from "react";
 
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { RenNetwork, RenNetworks } from "@renproject/contracts";
 import { CurrencyIcon, Dropdown } from "@renproject/react-components";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
@@ -10,7 +11,7 @@ import { bindActionCreators, Dispatch } from "redux";
 import { storeQuoteCurrency } from "../store/actions/statistics/operatorActions";
 import { storeRenNetwork } from "../store/actions/trader/accountActions";
 import { showMobileMenu } from "../store/actions/ui/uiActions";
-import { ApplicationData, currencies, Currency, RenNetwork } from "../store/types";
+import { ApplicationData, currencies, Currency } from "../store/types";
 import { ReactComponent as English } from "../styles/images/rp-flag-uk.svg";
 import { AccountDropdown } from "./AccountDropdown";
 
@@ -61,8 +62,8 @@ class HeaderClass extends React.Component<Props> {
         const networkDropdownNode = <Dropdown
             key="networkDropdown"
             selected={{
-                value: renNetwork,
-                render: networkOptions.get(renNetwork),
+                value: renNetwork.name,
+                render: networkOptions.get(renNetwork.name),
             }}
             options={networkOptions}
             setValue={this.setNetwork}
@@ -110,7 +111,7 @@ class HeaderClass extends React.Component<Props> {
     }
 
     private readonly setNetwork = (network: string): void => {
-        this.props.actions.storeRenNetwork(network as RenNetwork);
+        this.props.actions.storeRenNetwork(RenNetworks[network]);
         setInterval(() => {
             const currentLocation = window.location.pathname;
             // history.push("/loading");

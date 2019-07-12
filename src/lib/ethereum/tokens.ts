@@ -1,5 +1,4 @@
 import Axios from "axios";
-
 import { Map } from "immutable";
 
 import { Currency, TokenPrices } from "../../store/types";
@@ -12,12 +11,12 @@ export enum Token {
 }
 
 export enum OldToken {
-    ETH = "ETH (old)",
-    DGX = "DGX (old)",
-    TUSD = "TUSD (old)",
-    REN = "REN (old)",
-    ZRX = "ZRX (old)",
-    OMG = "OMG (old)",
+    ETH = "ETH",
+    DGX = "DGX",
+    TUSD = "TUSD",
+    REN = "REN",
+    ZRX = "ZRX",
+    OMG = "OMG",
 }
 
 interface TokenDetail<T extends Token | OldToken> {

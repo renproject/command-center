@@ -1,15 +1,14 @@
+import { RenNetworkDetails } from "@renproject/contracts";
 import { OrderedSet } from "immutable";
 import Web3 from "web3";
 import { sha3, toChecksumAddress } from "web3-utils";
 
-import { EthNetwork } from "../../store/types";
 import { _noCapture_ } from "../errors";
 import { DarknodeRegistryWeb3 } from "./contracts/bindings/darknodeRegistry";
-import { getContracts } from "./contracts/contracts";
 
 const NULL = "0x0000000000000000000000000000000000000000";
 
-const getAllDarknodes = async (web3: Web3, ethNetwork: EthNetwork): Promise<string[]> => {
+const getAllDarknodes = async (web3: Web3, renNetwork: RenNetworkDetails): Promise<string[]> => {
     const batchSize = 10;
 
     const allDarknodes = [];
@@ -17,8 +16,8 @@ const getAllDarknodes = async (web3: Web3, ethNetwork: EthNetwork): Promise<stri
     const filter = (address: string) => address !== NULL && address !== lastDarknode;
     do {
         const darknodeRegistry: DarknodeRegistryWeb3 = new (web3.eth.Contract)(
-            getContracts(ethNetwork).DarknodeRegistry.ABI,
-            getContracts(ethNetwork).DarknodeRegistry.address
+            renNetwork.addresses.ren.DarknodeRegistry.abi,
+            renNetwork.addresses.ren.DarknodeRegistry.address
         );
         const darknodes = (await darknodeRegistry.methods.getDarknodes(lastDarknode, batchSize.toString()).call());
         if (darknodes === null) {
@@ -33,7 +32,7 @@ const getAllDarknodes = async (web3: Web3, ethNetwork: EthNetwork): Promise<stri
 
 export const getOperatorDarknodes = async (
     web3: Web3,
-    ethNetwork: EthNetwork,
+    renNetwork: RenNetworkDetails,
     address: string,
 ): Promise<OrderedSet<string>> => {
     // TODO: Should addresses be made lower case or checksum addresses first?
@@ -42,7 +41,7 @@ export const getOperatorDarknodes = async (
     // instead we loop through every darknode and get it's owner first.
     // NOTE: Retrieving all logs only returns recent logs.
 
-    const darknodes = await getAllDarknodes(web3, ethNetwork);
+    const darknodes = await getAllDarknodes(web3, renNetwork);
 
     /*
     Sample log:
@@ -65,9 +64,9 @@ export const getOperatorDarknodes = async (
 
     // Get Registration events
     const recentRegistrationEvents = await web3.eth.getPastLogs({
-        address: getContracts(ethNetwork).DarknodeRegistry.address,
+        address: renNetwork.addresses.ren.DarknodeRegistry.address,
         // tslint:disable-next-line:no-any
-        fromBlock: getContracts(ethNetwork).DarknodeRegistry.deployedInBlock || "0x600000" as any,
+        fromBlock: renNetwork.addresses.ren.DarknodeRegistry.block || "0x600000" as any,
         toBlock: "latest",
         // topics: [sha3("LogDarknodeRegistered(address,uint256)"), "0x000000000000000000000000" +
         // address.slice(2), null, null] as any,
@@ -101,8 +100,8 @@ export const getOperatorDarknodes = async (
     // }
 
     const darknodeRegistry: DarknodeRegistryWeb3 = new (web3.eth.Contract)(
-        getContracts(ethNetwork).DarknodeRegistry.ABI,
-        getContracts(ethNetwork).DarknodeRegistry.address
+        renNetwork.addresses.ren.DarknodeRegistry.abi,
+        renNetwork.addresses.ren.DarknodeRegistry.address
     );
     const operatorPromises = darknodes.map(async (darknodeID: string) =>
         darknodeRegistry.methods.getDarknodeOwner(darknodeID).call()

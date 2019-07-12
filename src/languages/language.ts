@@ -6,7 +6,6 @@ export interface Language {
 
         noAccounts: string;
         mustInstallMetaMask: string;
-        mustChangeNetwork: string;
         mustUnlock: string;
         mustConnect: string;
     };

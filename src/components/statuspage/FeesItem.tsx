@@ -9,7 +9,7 @@ import { bindActionCreators, Dispatch } from "redux";
 import { OldToken, Token } from "../../lib/ethereum/tokens";
 import { updateDarknodeStatistics } from "../../store/actions/statistics/operatorActions";
 import { withdrawReward } from "../../store/actions/trader/darknode";
-import { ApplicationData, EthNetworkMap } from "../../store/types";
+import { ApplicationData } from "../../store/types";
 import { Loading } from "../Loading";
 
 const defaultState = { // Entries must be immutable
@@ -44,13 +44,13 @@ class FeesItemClass extends React.Component<Props, typeof defaultState> {
         if (address) {
             try {
                 // tslint:disable-next-line: await-promise
-                await this.props.actions.withdrawReward(web3, EthNetworkMap[renNetwork], address, darknodeID, token);
+                await this.props.actions.withdrawReward(web3, renNetwork, address, darknodeID, token);
             } catch (error) {
                 this.setState({ loading: false });
                 return;
             }
             // tslint:disable-next-line: await-promise
-            await this.props.actions.updateDarknodeStatistics(web3, EthNetworkMap[renNetwork], darknodeID, tokenPrices);
+            await this.props.actions.updateDarknodeStatistics(web3, renNetwork, darknodeID, tokenPrices);
         }
 
         this.setState({ loading: false });

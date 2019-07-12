@@ -5,7 +5,7 @@ import { Route, RouteComponentProps, Switch, withRouter } from "react-router-dom
 import { bindActionCreators, Dispatch } from "redux";
 
 import { DEPLOYMENT } from "../lib/environmentVariables";
-import { ApplicationData, EthNetworkLabel, EthNetworkMap, RenNetworkLabel } from "../store/types";
+import { ApplicationData } from "../store/types";
 import { BackgroundTasks } from "./BackgroundTasks";
 import { _catch_ } from "./ErrorBoundary";
 import { Header } from "./Header";
@@ -45,7 +45,7 @@ class AppClass extends React.Component<Props> {
     public render = (): JSX.Element => {
         const { match: { params }, store: { address, renNetwork } } = this.props;
         const darknodeID = getDarknodeParam(params);
-        const showNetworkBanner = renNetwork !== DEPLOYMENT;
+        const showNetworkBanner = renNetwork.name !== DEPLOYMENT;
 
         return <div key={`${address || undefined} ${renNetwork}`} className="app">
             <BackgroundTasks />
@@ -55,9 +55,9 @@ class AppClass extends React.Component<Props> {
               * (e.g. if in
               * the middle of a transaction, etc.)
               */}
-            <div className={showNetworkBanner ? `with-banner with-banner--${EthNetworkMap[renNetwork]}` : ""}>
+            <div className={showNetworkBanner ? `with-banner with-banner--${renNetwork.chain}` : ""}>
                 {showNetworkBanner ?
-                    <div className="network--banner">Using <span className="banner--bold">{RenNetworkLabel[renNetwork]}</span> RenVM network, <span className="banner--bold">{EthNetworkLabel[EthNetworkMap[renNetwork]]}</span> Ethereum network</div> :
+                    <div className="network--banner">Using <span className="banner--bold">{renNetwork.label}</span> RenVM network, <span className="banner--bold">{renNetwork.chainLabel}</span> Ethereum network</div> :
                     <></>
                 }
                 <PopupController>

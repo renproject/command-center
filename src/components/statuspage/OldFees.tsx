@@ -17,15 +17,14 @@ const OldFeesClass: React.StatelessComponent<Props> = (props) => {
     const oldFees = [];
     if (darknodeDetails) {
         for (const [token, balance] of darknodeDetails.oldFeesEarned.toArray()) {
-            const tokenName = token.replace(" (old)", "");
             if (balance.isZero()) {
                 continue;
             }
             oldFees.push(<tr key={token}>
                 <td>
-                    <TokenIcon className="fees-block--table--icon" token={tokenName} />
+                    <TokenIcon className="fees-block--table--icon" token={token} />
                     {" "}
-                    <span>{tokenName}</span>
+                    <span>{token}</span>
                 </td>
                 <td className="fees-block--table--value">
                     <TokenBalance token={token} amount={balance} />

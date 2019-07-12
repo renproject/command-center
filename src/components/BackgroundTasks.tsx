@@ -13,7 +13,7 @@ import {
     updateDarknodeStatistics, updateOperatorStatistics,
 } from "../store/actions/statistics/operatorActions";
 import { login, lookForLogout } from "../store/actions/trader/accountActions";
-import { ApplicationData, EthNetworkMap } from "../store/types";
+import { ApplicationData } from "../store/types";
 import { getDarknodeParam } from "./pages/Darknode";
 
 /**
@@ -136,7 +136,7 @@ class BackgroundTasksClass extends React.Component<Props> {
         let timeout = 1; // Retry in a second, unless the call succeeds
         try {
             // tslint:disable-next-line: await-promise
-            await props.actions.updateNetworkStatistics(web3, EthNetworkMap[renNetwork]);
+            await props.actions.updateNetworkStatistics(web3, renNetwork);
             timeout = 3600;
         } catch (error) {
             if (error && error.message && error.message.match("Cannot read property 'toString' of")) {
@@ -167,7 +167,7 @@ class BackgroundTasksClass extends React.Component<Props> {
                     list = list.concat(darknodeList);
                 }
                 // tslint:disable-next-line: await-promise
-                await props.actions.updateOperatorStatistics(web3, EthNetworkMap[renNetwork], address, tokenPrices, list);
+                await props.actions.updateOperatorStatistics(web3, renNetwork, address, tokenPrices, list);
                 timeout = 120;
             } catch (error) {
                 _captureBackgroundException_(error, {
@@ -198,7 +198,7 @@ class BackgroundTasksClass extends React.Component<Props> {
                 // tslint:disable-next-line: await-promise
                 await props.actions.updateDarknodeStatistics(
                     web3,
-                    EthNetworkMap[renNetwork],
+                    renNetwork,
                     darknodeID,
                     tokenPrices,
                 );

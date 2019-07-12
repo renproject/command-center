@@ -49,6 +49,9 @@
         // "ter-indent": false,
 
         // Warnings
+        "no-unnecessary-type-assertion": {
+            "severity": "warning"
+        },
         "no-suspicious-comment": {
             "severity": "warning"
         },
@@ -76,7 +79,6 @@
         "await-promise": true,
         "react-this-binding-issue": true,
         "no-string-based-set-timeout": true,
-        "no-unnecessary-type-assertion": true,
         "no-unused-variable": [true, {
             "ignore-pattern": "^_"
         }],

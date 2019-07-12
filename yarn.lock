@@ -1326,10 +1326,10 @@
   resolved "https://registry.yarnpkg.com/@nodelib/fs.stat/-/fs.stat-1.1.3.tgz#2b5a3ab3f918cca48a8c754c08168e3f03eba61b"
   integrity sha512-shAmDyaQC4H92APFoIaVDHCx5bStIocgvbwQyxPRrbUY20V1EYTbSDchWbuwlMG3V17cprZhA6+78JfB+3DTPw==
 
-"@renproject/contracts@^0.3.0":
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/@renproject/contracts/-/contracts-0.3.0.tgz#8d7f062319cdecdc24b806bb99310a0385688052"
-  integrity sha512-N9/V1nI8YDaEiIVprLSnZnnd3lmhGviE/HxPTVNe1bsiHIxRUuRwnqpDnyS37S8/b/fhNNj5z+mmuTaOEZoWnQ==
+"@renproject/contracts@^0.3.1":
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/@renproject/contracts/-/contracts-0.3.1.tgz#81aac258b780cd4e9a6e294e3224c0f16a816c63"
+  integrity sha512-TheoywmFnYHgAzuPEENAq0OZiFJvm+p7/nPd4bwEMkJXqUXVr4ZHB9ZHForxpaJita9xluT5NsEIlcZWoUkTCQ==
   dependencies:
     tslint-react "^4.0.0"
     web3-utils "^1.0.0-beta.55"

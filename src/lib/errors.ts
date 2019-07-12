@@ -2,7 +2,8 @@
 
 import * as Sentry from "@sentry/browser";
 
-import { RenNetwork } from "../store/types";
+import { RenNetwork } from "@renproject/contracts";
+
 import { naturalTime } from "./conversion";
 import { DEPLOYMENT } from "./environmentVariables";
 

@@ -15,9 +15,7 @@ import {
     RegistrationStatus, updateCycleAndPendingRewards, updateDarknodeStatistics,
 } from "../../../store/actions/statistics/operatorActions";
 import { showClaimPopup } from "../../../store/actions/statistics/operatorPopupActions";
-import {
-    ApplicationData, DarknodeDetails, DarknodeFeeStatus, EthNetworkMap,
-} from "../../../store/types";
+import { ApplicationData, DarknodeDetails, DarknodeFeeStatus } from "../../../store/types";
 import { TokenBalance } from "../../TokenBalance";
 import { FeesItem } from "../FeesItem";
 import { OldFees } from "../OldFees";
@@ -307,8 +305,8 @@ class FeesBlockClass extends React.Component<Props, State> {
 
         const onDone = async () => {
             try {
-                await this.props.actions.updateCycleAndPendingRewards(web3, EthNetworkMap[renNetwork], tokenPrices);
-                await this.props.actions.updateDarknodeStatistics(web3, EthNetworkMap[renNetwork], darknodeID, tokenPrices);
+                await this.props.actions.updateCycleAndPendingRewards(web3, renNetwork, tokenPrices);
+                await this.props.actions.updateDarknodeStatistics(web3, renNetwork, darknodeID, tokenPrices);
             } catch (error) {
                 // Ignore error
             }
@@ -320,7 +318,7 @@ class FeesBlockClass extends React.Component<Props, State> {
 
         const title = `Claim rewards`;
         this.setState({ disableClaim: true });
-        await this.props.actions.showClaimPopup(web3, EthNetworkMap[renNetwork], claimBeforeCycle, address, darknodeID, title, onCancel, onDone);
+        await this.props.actions.showClaimPopup(web3, renNetwork, claimBeforeCycle, address, darknodeID, title, onCancel, onDone);
     }
 
 }

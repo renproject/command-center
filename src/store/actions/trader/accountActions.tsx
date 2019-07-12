@@ -1,6 +1,7 @@
 import * as Sentry from "@sentry/browser";
 import * as React from "react";
 
+import { RenNetworkDetails } from "@renproject/contracts";
 import { Dispatch } from "redux";
 import { createStandardAction } from "typesafe-actions";
 import Web3 from "web3";
@@ -14,12 +15,12 @@ import { _captureBackgroundException_ } from "../../../lib/errors";
 import { getWeb3BrowserName, Web3Browser } from "../../../lib/ethereum/browsers";
 import { getInjectedWeb3Provider } from "../../../lib/ethereum/wallet";
 import { history } from "../../../lib/history";
-import { EthNetworkLabel, EthNetworkMap, readOnlyWeb3, RenNetwork } from "../../types";
+import { readOnlyWeb3 } from "../../types";
 import { clearPopup, setPopup } from "../popup/popupActions";
 
 export const storeWeb3 = createStandardAction("storeWeb3")<Web3>();
 export const storeAddress = createStandardAction("storeAddress")<string | null>();
-export const storeRenNetwork = createStandardAction("storeRenNetwork")<RenNetwork>();
+export const storeRenNetwork = createStandardAction("storeRenNetwork")<RenNetworkDetails>();
 
 export const storeWeb3BrowserName = createStandardAction("storeWeb3BrowserName")<Web3Browser>();
 
@@ -39,7 +40,7 @@ export const updateWeb3BrowserName = (
 };
 
 export const login = (
-    renNetwork: RenNetwork,
+    renNetwork: RenNetworkDetails,
     options: { redirect: boolean; showPopup: boolean; immediatePopup: boolean },
 ) => async (dispatch: Dispatch) => {
     let cancelled = false;
@@ -126,11 +127,11 @@ export const login = (
     // tslint:disable-next-line: no-any
     const network = (await (newWeb3.eth.net as any).getNetworkType());
 
-    if (network !== EthNetworkMap[renNetwork]) {
+    if (network !== renNetwork.chain) {
         if (options.showPopup && !cancelled) {
             dispatch(setPopup(
                 {
-                    popup: <NoWeb3Popup onConnect={onClick} onCancel={onCancel} message={`Please change your network to ${EthNetworkLabel[EthNetworkMap[renNetwork]]}`} />,
+                    popup: <NoWeb3Popup onConnect={onClick} onCancel={onCancel} message={`Please change your network to ${renNetwork.chainLabel}`} />,
                     onCancel,
                     overlay: true,
                 },
@@ -195,7 +196,7 @@ export const logout = (
 // lookForLogout detects if 1) the user has changed or logged out of their Web3
 // wallet
 export const lookForLogout = (
-    renNetwork: RenNetwork,
+    renNetwork: RenNetworkDetails,
     address: string,
     web3: Web3,
 ) => async (dispatch: Dispatch) => {
