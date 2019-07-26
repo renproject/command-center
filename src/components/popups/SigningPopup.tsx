@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { Loading } from "../Loading";
+import { Loading } from "@renproject/react-components";
 
 const defaultState = { // Entries must be immutable
     error: null as string | null,

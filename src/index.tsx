@@ -8,6 +8,7 @@ import { Route, Router, Switch } from "react-router-dom";
 import { PersistGate } from "redux-persist/integration/react";
 
 import { App } from "./components/App";
+import { MapContainer } from "./components/darknodeMap/mapContainer";
 import { _catch_ } from "./components/ErrorBoundary";
 import { NODE_ENV } from "./lib/environmentVariables";
 import { history } from "./lib/history";
@@ -30,15 +31,18 @@ onLoad("Command Center");
 
 ReactDOM.render(
     _catch_(<Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-            <Router history={history}>
-                <Switch>
-                    {/* We add the routes here as well as in App so that App has access to the URL parameters */}
-                    <Route path="/darknode/:darknodeID" exact component={App} />
-                    <Route component={App} />
-                </Switch>
-            </Router>
-        </PersistGate>
+        <MapContainer.Provider>
+            <PersistGate loading={null} persistor={persistor}>
+                <Router history={history}>
+                    <Switch>
+                        {/* We add the routes here as well as in App so that App has access to the URL parameters */}
+                        <Route path="/darknode/:darknodeID" exact component={App} />
+                        <Route component={App} />
+                        {/* Don't add extra routes here - add them in App */}
+                    </Switch>
+                </Router>
+            </PersistGate>
+        </MapContainer.Provider>
     </Provider>),
     document.getElementById("root") as HTMLElement
 );

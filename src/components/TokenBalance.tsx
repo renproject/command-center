@@ -4,49 +4,8 @@ import { BigNumber } from "bignumber.js";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
-import { AllTokenDetails, OldToken, Token, } from "../lib/ethereum/tokens";
+import { AllTokenDetails, OldToken, Token } from "../lib/ethereum/tokens";
 import { ApplicationData, Currency } from "../store/types";
-
-// export const tokenBalanceToString = (
-//     token: Token | OldToken,
-//     amountIn: string | BigNumber,
-//     decimals: number,
-//     tokenPrices: Map<Token | OldToken, Map<Currency, number>> | null,
-//     convertTo?: Currency,
-//     digits?: number,
-// ): string => {
-//     const amount = new BigNumber(amountIn)
-//         .div(new BigNumber(Math.pow(10, decimals)));
-
-//     if (!convertTo) {
-//         return `${digits !== undefined ? amount.toFixed(digits) : amount.toFixed()}`;
-//     }
-
-//     if (!tokenPrices) {
-//         return `...`;
-//     }
-
-//     const tokenPriceMap = tokenPrices.get(token, undefined);
-//     if (!tokenPriceMap) {
-//         return `...`;
-//     }
-
-//     const price = tokenPriceMap.get(convertTo, undefined);
-//     if (!price) {
-//         return `ERR`;
-//     }
-
-//     let defaultDigits;
-//     switch (convertTo) {
-//         case Currency.BTC:
-//         case Currency.ETH:
-//             defaultDigits = 3; break;
-//         default:
-//             defaultDigits = 2;
-//     }
-//     defaultDigits = digits === undefined ? defaultDigits : digits;
-//     return `${amount.multipliedBy(price).toFixed(defaultDigits)}`;
-// }
 
 const defaultState = { // Entries must be immutable
     decimals: 0,

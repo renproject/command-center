@@ -1,7 +1,7 @@
 import * as React from "react";
 
+import { Loading } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
-
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
@@ -9,8 +9,6 @@ import { _captureBackgroundException_, _captureInteractionException_ } from "../
 import { ErrorCanceledByUser } from "../../lib/ethereum/wallet";
 import { clearPopup } from "../../store/actions/popup/popupActions";
 import { ApplicationData } from "../../store/types";
-import { Loading } from "../Loading";
-
 import Warn from "../../styles/images/warn.svg";
 
 const defaultState = { // Entries must be immutable

@@ -8,62 +8,6 @@ import { ApplicationData, DarknodeDetails } from "../../store/types";
 import { TokenBalance } from "../TokenBalance";
 import { FeesItem } from "./FeesItem";
 
-const OldFeesClass: React.StatelessComponent<Props> = (props) => {
-    const { darknodeDetails, store, isOperator } = props;
-    const {
-        quoteCurrency,
-    } = store;
-
-    const oldFees = [];
-    if (darknodeDetails) {
-        for (const [token, balance] of darknodeDetails.oldFeesEarned.toArray()) {
-            if (balance.isZero()) {
-                continue;
-            }
-            oldFees.push(<tr key={token}>
-                <td>
-                    <TokenIcon className="fees-block--table--icon" token={token} />
-                    {" "}
-                    <span>{token}</span>
-                </td>
-                <td className="fees-block--table--value">
-                    <TokenBalance token={token} amount={balance} />
-                </td>
-                <td className="fees-block--table--usd">
-                    <CurrencyIcon currency={quoteCurrency} />
-                    <TokenBalance
-                        token={token}
-                        amount={balance}
-                        convertTo={quoteCurrency}
-                    />
-                    {" "}
-                    <span className="fees-block--table--usd-symbol">
-                        {quoteCurrency.toUpperCase()}
-                    </span>
-                </td>
-                {isOperator ? <td>
-                    <FeesItem
-                        disabled={true}
-                        key={token}
-                        token={token}
-                        amount={balance}
-                        darknodeID={darknodeDetails.ID}
-                    />
-                </td> : <></>}
-            </tr>);
-        }
-    }
-
-    return oldFees.length > 0 ? <>
-        <tr className="tr">
-            <td colSpan={4}>
-                Old fees
-            </td>
-        </tr>
-        {oldFees}
-    </> : <></>;
-};
-
 const mapStateToProps = (state: ApplicationData) => ({
     store: {
         quoteCurrency: state.statistics.quoteCurrency,
@@ -80,4 +24,60 @@ interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<
     darknodeDetails: DarknodeDetails | null;
 }
 
-export const OldFees = connect(mapStateToProps, mapDispatchToProps)(OldFeesClass);
+export const OldFees = connect(mapStateToProps, mapDispatchToProps)(
+    (props: Props) => {
+        const { darknodeDetails, store, isOperator } = props;
+        const {
+            quoteCurrency,
+        } = store;
+
+        const oldFees = [];
+        if (darknodeDetails) {
+            for (const [token, balance] of darknodeDetails.oldFeesEarned.toArray()) {
+                if (balance.isZero()) {
+                    continue;
+                }
+                oldFees.push(<tr key={token}>
+                    <td>
+                        <TokenIcon className="fees-block--table--icon" token={token} />
+                        {" "}
+                        <span>{token}</span>
+                    </td>
+                    <td className="fees-block--table--value">
+                        <TokenBalance token={token} amount={balance} />
+                    </td>
+                    <td className="fees-block--table--usd">
+                        <CurrencyIcon currency={quoteCurrency} />
+                        <TokenBalance
+                            token={token}
+                            amount={balance}
+                            convertTo={quoteCurrency}
+                        />
+                        {" "}
+                        <span className="fees-block--table--usd-symbol">
+                            {quoteCurrency.toUpperCase()}
+                        </span>
+                    </td>
+                    {isOperator ? <td>
+                        <FeesItem
+                            disabled={true}
+                            key={token}
+                            token={token}
+                            amount={balance}
+                            darknodeID={darknodeDetails.ID}
+                        />
+                    </td> : <></>}
+                </tr>);
+            }
+        }
+
+        return oldFees.length > 0 ? <>
+            <tr className="tr">
+                <td colSpan={4}>
+                    Old fees
+            </td>
+            </tr>
+            {oldFees}
+        </> : <></>;
+    }
+);

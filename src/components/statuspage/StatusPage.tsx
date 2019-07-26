@@ -1,13 +1,14 @@
 import * as React from "react";
 
-import { Blocky } from "@renproject/react-components";
+import { Blocky, InfoLabel } from "@renproject/react-components";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
-import { RegistrationStatus, setDarknodeName } from "../../store/actions/statistics/operatorActions";
+import {
+    RegistrationStatus, setDarknodeName,
+} from "../../store/actions/statistics/operatorActions";
 import { ApplicationData, DarknodeDetails } from "../../store/types";
 import { DarknodeID } from "../DarknodeID";
-import { InfoLabel } from "../InfoLabel";
 import { DarknodeAction } from "../pages/Darknode";
 import { FeesBlock } from "./block/FeesBlock";
 import { GasBlock } from "./block/GasBlock";

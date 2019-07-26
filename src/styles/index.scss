@@ -23,5 +23,8 @@
 @import 'scss/statuspage';
 @import 'scss/view';
 
+// Styles in src/components
+@import '../components/darknodeMap/darknodeMap';
+
 // Styles for html, body, anchors etc. should go in _general
 @import 'scss/_general';
