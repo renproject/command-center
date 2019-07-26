@@ -8,7 +8,7 @@ executors:
   default:
     docker:
       - image: circleci/node:10.16
-    working_directory: ~/darknode-sol
+    working_directory: ~/command-center
 
 commands:
   install_deps:
