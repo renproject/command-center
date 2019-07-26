@@ -1,5 +1,6 @@
 import * as React from "react";
 
+import { Loading } from "@renproject/react-components";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
@@ -11,7 +12,6 @@ import {
     showDeregisterPopup, showRefundPopup, showRegisterPopup,
 } from "../../store/actions/statistics/operatorPopupActions";
 import { ApplicationData, DarknodeDetails } from "../../store/types";
-import { Loading } from "../Loading";
 
 export const statusText = {
     [RegistrationStatus.Unknown]: "Loading...",

@@ -1,10 +1,10 @@
 import * as React from "react";
 
+import { Loading } from "@renproject/react-components";
 import { List, Map } from "immutable";
 
 import { DarknodeDetails } from "../../store/types";
 import { _catch_ } from "../ErrorBoundary";
-import { Loading } from "../Loading";
 import { DarknodeCard } from "./DarknodeCard";
 import { EmptyDarknodeCard } from "./EmptyDarknodeCard";
 import { EmptyDarknodeList } from "./EmptyDarknodeList";

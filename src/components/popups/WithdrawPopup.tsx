@@ -2,15 +2,17 @@ import * as React from "react";
 
 import { faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Loading } from "@renproject/react-components";
 import { List } from "immutable";
 import { connect, ConnectedReturnType } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 import { validate } from "wallet-address-validator";
 
 import { Token } from "../../lib/ethereum/tokens";
-import { addToWithdrawAddresses, removeFromWithdrawAddresses } from "../../store/actions/statistics/operatorActions";
+import {
+    addToWithdrawAddresses, removeFromWithdrawAddresses,
+} from "../../store/actions/statistics/operatorActions";
 import { ApplicationData } from "../../store/types";
-import { Loading } from "../Loading";
 
 enum Stage {
     Pending,

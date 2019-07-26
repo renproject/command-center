@@ -1,12 +1,11 @@
 import * as React from "react";
 
-import { Blocky } from "@renproject/react-components";
+import { Blocky, Loading } from "@renproject/react-components";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators, Dispatch } from "redux";
 
 import { _captureBackgroundException_ } from "../../lib/errors";
 import { ApplicationData } from "../../store/types";
-import { Loading } from "../Loading";
 
 const defaultState = { // Entries must be immutable
     accounts: null as string[] | null,

@@ -1,9 +1,9 @@
 import * as React from "react";
 
-import BigNumber from "bignumber.js";
-
 import { faFire } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Loading } from "@renproject/react-components";
+import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
 import { Scatter } from "react-chartjs-2";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
@@ -11,13 +11,9 @@ import { bindActionCreators, Dispatch } from "redux";
 
 import { _captureBackgroundException_ } from "../../../lib/errors";
 import {
-    calculateSecondsPerBlock,
-    fetchDarknodeBalanceHistory,
-    HistoryIterations,
-    HistoryPeriods,
+    calculateSecondsPerBlock, fetchDarknodeBalanceHistory, HistoryIterations, HistoryPeriods,
 } from "../../../store/actions/statistics/operatorActions";
 import { ApplicationData, DarknodeDetails } from "../../../store/types";
-import { Loading } from "../../Loading";
 import { Block, BlockBody, BlockTitle } from "./Block";
 
 const shift = new BigNumber(10).exponentiatedBy(18);
