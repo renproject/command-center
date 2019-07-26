@@ -1,9 +1,9 @@
 import * as React from "react";
 
-import BigNumber from "bignumber.js";
 import { faFire } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Loading } from "@renproject/react-components";
+import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
 import { Scatter } from "react-chartjs-2";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings

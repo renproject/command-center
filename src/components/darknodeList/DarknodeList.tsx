@@ -1,7 +1,7 @@
 import * as React from "react";
 
-import { List, Map } from "immutable";
 import { Loading } from "@renproject/react-components";
+import { List, Map } from "immutable";
 
 import { DarknodeDetails } from "../../store/types";
 import { _catch_ } from "../ErrorBoundary";
