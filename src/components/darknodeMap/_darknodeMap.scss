@@ -1,0 +1,14 @@
+.map {
+    display: flex;
+
+    .map--world {
+        width: 100%;
+        max-width: 980px;
+        margin: 0 auto;
+    }
+
+    circle {
+        fill: #87C0FF;
+        filter: drop-shadow(0px 0px 5px rgba(135, 192, 255, 0.9));
+    }
+}
