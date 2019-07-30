@@ -22,7 +22,7 @@ commands:
       - run:
           name: Install Dependencies
           command:
-            npm install --global yarn
+            sudo npm install --global yarn
             yarn version
             yarn install
       - save_cache:
