@@ -106,7 +106,7 @@ class AccountDropdownClass extends React.Component<Props, typeof defaultState> {
                             </li>
                             {transactions.size > 0 ?
                                 <>
-                                    {transactions.map((tx, txHash) => {
+                                    {transactions.map((_tx, txHash) => {
                                         const confs = confirmations.get(txHash, 0);
                                         return <li key={txHash} className="transaction">
                                             {confs === 0 ? <Loading /> : <></>}

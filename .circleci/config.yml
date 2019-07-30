@@ -28,12 +28,38 @@ commands:
             - node_modules
           key: v1-dependencies-{{ checksum "yarn.lock" }}
 
+  setup_local_network:
+    description: "Set up local network"
+    steps:
+      - cd-darknode-sol:
+          cd ./node_modules/darknode-sol
+      - restore_cache:
+          name: Restore node_modules
+          keys:
+            - v1-dependencies-{{ checksum "yarn.lock" }}
+      - run:
+          name: Install Dependencies
+          command: yarn install
+      - save_cache:
+          name: Save node_modules
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "yarn.lock" }}
+      - run-ganache:
+          (yarn ganache-cli -d  > /dev/null &) && sleep 5
+      - run-migration:
+          yarn truffle migrate
+
 jobs:
   build:
     executor: default
     steps:
       - checkout
       - install_deps
+      - setup_local_network
+      - run:
+          name: Test
+          command: yarn run test
       - run:
           name: Build
           command: yarn run build
