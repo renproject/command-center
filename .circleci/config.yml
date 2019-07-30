@@ -18,40 +18,28 @@ commands:
       - restore_cache:
           name: Restore node_modules
           keys:
-            - v1-cc-dependencies-{{ checksum "yarn.lock" }}
+            - v1-dependencies-{{ checksum "yarn.lock" }}
       - run:
-          name: Install Dependencies
+          name: Install dependencies
           command: sudo npm install --global yarn && yarn version && yarn cache clean && yarn install --network-concurrency 1
+      - run:
+          name: Install darknode-sol dependencies
+          command: cd ./node_modules/darknode-sol && yarn install --network-concurrency 1
       - save_cache:
           name: Save node_modules
           paths:
             - node_modules
-          key: v1-cc-dependencies-{{ checksum "yarn.lock" }}
+          key: v1-dependencies-{{ checksum "yarn.lock" }}
 
   setup_local_network:
     description: "Set up local network"
     steps:
       - run:
-          name: CD into darknode-sol
-          command: cd ./node_modules/darknode-sol
-      - restore_cache:
-          name: Restore node_modules
-          keys:
-            - v1-sol-dependencies-{{ checksum "yarn.lock" }}
-      - run:
-          name: Install Dependencies
-          command: yarn install
-      - save_cache:
-          name: Save node_modules
-          paths:
-            - node_modules
-          key: v1-sol-dependencies-{{ checksum "yarn.lock" }}
-      - run:
           name: Start ganache
-          command: (yarn ganache-cli -d  > /dev/null &) && sleep 5
+          command: cd ./node_modules/darknode-sol && (yarn ganache-cli -d  > /dev/null &) && sleep 5
       - run:
           name: Migrate contracts
-          command: yarn truffle migrate
+          command: cd ./node_modules/darknode-sol && yarn truffle migrate
 
 jobs:
   build:
