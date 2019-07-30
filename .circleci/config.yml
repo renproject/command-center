@@ -21,7 +21,7 @@ commands:
             - v1-cc-dependencies-{{ checksum "yarn.lock" }}
       - run:
           name: Install Dependencies
-          command: sudo npm install --global yarn && yarn version && yarn install
+          command: sudo rm -rf /home/circleci/.cache/ && sudo yarn global add yarn && yarn version && yarn install
       - save_cache:
           name: Save node_modules
           paths:
