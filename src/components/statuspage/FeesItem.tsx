@@ -10,7 +10,7 @@ import { bindActionCreators } from "redux";
 import { OldToken, Token } from "../../lib/ethereum/tokens";
 import { ApplicationState } from "../../store/applicationState";
 import { AppDispatch } from "../../store/rootReducer";
-import { updateDarknodeStatistics } from "../../store/statistics/operatorActions";
+import { updateDarknodeStatistics, waitForTX } from "../../store/statistics/operatorActions";
 import { withdrawReward } from "../../store/trader/darknode";
 
 const FeesItemClass = ({ darknodeID, token, amount, disabled, actions, store }: Props) => {
@@ -23,7 +23,7 @@ const FeesItemClass = ({ darknodeID, token, amount, disabled, actions, store }: 
         if (address) {
             try {
                 // tslint:disable-next-line: await-promise
-                await actions.withdrawReward(darknodeID, token);
+                await actions.withdrawReward(darknodeID, token, actions.waitForTX);
             } catch (error) {
                 setLoading(false);
                 return;
@@ -61,6 +61,7 @@ const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({
         withdrawReward,
         updateDarknodeStatistics,
+        waitForTX,
     }, dispatch),
 });
 

@@ -3,11 +3,10 @@ import * as React from "react";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators } from "redux";
 
+import { RegistrationStatus } from "../../lib/ethereum/network";
 import { ApplicationState, DarknodesState } from "../../store/applicationState";
 import { AppDispatch } from "../../store/rootReducer";
-import {
-    RegistrationStatus, removeDarknode, removeRegisteringDarknode,
-} from "../../store/statistics/operatorActions";
+import { removeDarknode, removeRegisteringDarknode } from "../../store/statistics/operatorActions";
 import { darknodeIDHexToBase58 } from "../pages/Darknode";
 import { CardView } from "./CardView";
 

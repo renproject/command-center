@@ -3,7 +3,7 @@ import { Component, createElement } from "react";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators } from "redux";
 
-import { _captureBackgroundException_ } from "../../../lib/errors";
+import { _captureBackgroundException_ } from "../../../lib/react/errors";
 import { ApplicationState } from "../../../store/applicationState";
 import { AppDispatch } from "../../../store/rootReducer";
 import { updateDarknodeStatistics } from "../../../store/statistics/operatorActions";

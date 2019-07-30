@@ -9,10 +9,10 @@ import { PersistGate } from "redux-persist/integration/react";
 
 import { App } from "./components/App";
 import { _catch_ } from "./components/ErrorBoundary";
-import { NODE_ENV } from "./lib/environmentVariables";
-import { history } from "./lib/history";
-import { onLoad } from "./lib/onLoad";
-import { configureStore } from "./store/configureStore";
+import { NODE_ENV } from "./lib/react/environmentVariables";
+import { history } from "./lib/react/history";
+import { onLoad } from "./lib/react/onLoad";
+import { persistor, store } from "./store/configureStore";
 
 // Redirect to https if we aren't serving locally
 if (NODE_ENV !== "development") {
@@ -23,8 +23,6 @@ if (NODE_ENV !== "development") {
         window.location.href = loc.replace("http://", "https://");
     }
 }
-
-const { store, persistor } = configureStore();
 
 onLoad("Command Center");
 

@@ -11,11 +11,12 @@ import { bindActionCreators } from "redux";
 
 import { alreadyPast, naturalTime } from "../../../lib/conversion";
 import { DarknodeFeeStatus } from "../../../lib/darknodeFeeStatus";
+import { RegistrationStatus } from "../../../lib/ethereum/network";
 import { OldToken, Token } from "../../../lib/ethereum/tokens";
 import { ApplicationState, DarknodesState } from "../../../store/applicationState";
 import { AppDispatch } from "../../../store/rootReducer";
 import {
-    RegistrationStatus, updateCycleAndPendingRewards, updateDarknodeStatistics,
+    updateCycleAndPendingRewards, updateDarknodeStatistics,
 } from "../../../store/statistics/operatorActions";
 import { showClaimPopup } from "../../../store/statistics/operatorPopupActions";
 import { TokenBalance } from "../../TokenBalance";

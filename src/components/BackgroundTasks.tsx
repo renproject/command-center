@@ -5,7 +5,7 @@ import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { bindActionCreators } from "redux";
 
-import { _captureBackgroundException_ } from "../lib/errors";
+import { _captureBackgroundException_ } from "../lib/react/errors";
 import { ApplicationState } from "../store/applicationState";
 import { AppDispatch } from "../store/rootReducer";
 import { updateNetworkStatistics, updateTokenPrices } from "../store/statistics/networkActions";

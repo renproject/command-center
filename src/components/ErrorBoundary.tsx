@@ -1,7 +1,7 @@
 import * as Sentry from "@sentry/browser";
 import * as React from "react";
 
-import { _captureComponentException_ } from "../lib/errors";
+import { _captureComponentException_ } from "../lib/react/errors";
 
 const defaultState = { // Entries must be immutable
     error: null as null | Error,

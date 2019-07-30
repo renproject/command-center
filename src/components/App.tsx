@@ -4,7 +4,7 @@ import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { Route, RouteComponentProps, Switch, withRouter } from "react-router-dom";
 import { bindActionCreators } from "redux";
 
-import { DEFAULT_REN_NETWORK } from "../lib/environmentVariables";
+import { DEFAULT_REN_NETWORK } from "../lib/react/environmentVariables";
 import { ApplicationState } from "../store/applicationState";
 import { AppDispatch } from "../store/rootReducer";
 import { BackgroundTasks } from "./BackgroundTasks";

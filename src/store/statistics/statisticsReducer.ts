@@ -1,7 +1,7 @@
 import { List } from "immutable";
 import { ActionType, getType } from "typesafe-actions";
 
-import { _captureInteractionException_ } from "../../lib/errors";
+import { _captureInteractionException_ } from "../../lib/react/errors";
 import { StatisticsState } from "../applicationState";
 import * as networkActions from "./networkActions";
 import * as operatorActions from "./operatorActions";

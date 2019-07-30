@@ -1,6 +1,5 @@
+import { Record } from "@renproject/react-components";
 import base58 from "bs58";
-
-import { Record } from "./record";
 
 export enum Encodings {
     AUTO = "auto",

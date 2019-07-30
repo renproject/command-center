@@ -1,7 +1,7 @@
 import { createTransform, PersistConfig } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 
-import { _captureBackgroundException_ } from "../lib/errors";
+import { _captureBackgroundException_ } from "../lib/react/errors";
 import { ApplicationState, StatisticsState, TraderState } from "./applicationState";
 
 // Local Storage:

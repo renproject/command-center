@@ -2,8 +2,8 @@ import Web3 from "web3";
 import { provider } from "web3-providers";
 
 import { Language } from "../../languages/language";
-import { PUBLIC_NODE } from "../environmentVariables";
-import { _noCapture_ } from "../errors";
+import { PUBLIC_NODE } from "../react/environmentVariables";
+import { _noCapture_ } from "../react/errors";
 
 export const ErrorCanceledByUser = "User denied transaction signature.";
 

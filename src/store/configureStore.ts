@@ -2,7 +2,7 @@ import { Action, applyMiddleware, createStore, Middleware, Reducer } from "redux
 import { PersistConfig, PersistPartial, persistReducer, persistStore } from "redux-persist";
 import thunk from "redux-thunk";
 
-import { NODE_ENV } from "../lib/environmentVariables";
+import { NODE_ENV } from "../lib/react/environmentVariables";
 import { persistConfig } from "./persistConfig";
 import { rootReducer } from "./rootReducer";
 
@@ -26,10 +26,7 @@ const typedPersistReducer = <S, A extends Action>(config: PersistConfig, reducer
 
 const persistedReducer = typedPersistReducer(persistConfig, rootReducer);
 
-export const configureStore = () => {
-    const store = createStore(persistedReducer,
-        applyMiddleware(...middlewares),
-    );
-    const persistor = persistStore(store);
-    return { store, persistor };
-};
+export const store = createStore(persistedReducer,
+    applyMiddleware(...middlewares),
+);
+export const persistor = persistStore(store);

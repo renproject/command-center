@@ -9,11 +9,12 @@ import { Scatter } from "react-chartjs-2";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators } from "redux";
 
-import { _captureBackgroundException_ } from "../../../lib/errors";
+import { HistoryIterations, HistoryPeriods } from "../../../lib/ethereum/network";
+import { _captureBackgroundException_ } from "../../../lib/react/errors";
 import { ApplicationState, DarknodesState } from "../../../store/applicationState";
 import { AppDispatch } from "../../../store/rootReducer";
 import {
-    calculateSecondsPerBlock, fetchDarknodeBalanceHistory, HistoryIterations, HistoryPeriods,
+    updateDarknodeBalanceHistory, updateSecondsPerBlock,
 } from "../../../store/statistics/operatorActions";
 import { Block, BlockBody, BlockTitle } from "./Block";
 
@@ -82,7 +83,7 @@ class GasGraphClass extends React.Component<Props, State> {
         this._isMounted = true;
         const { store: { secondsPerBlock, web3 } } = this.props;
         if (secondsPerBlock === null) {
-            this.props.actions.calculateSecondsPerBlock(web3)
+            this.props.actions.updateSecondsPerBlock(web3)
                 .catch((error) => {
                     _captureBackgroundException_(error, {
                         description: "Error in componentDidMount in GasGraph",
@@ -296,8 +297,8 @@ const mapStateToProps = (state: ApplicationState) => ({
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({
-        fetchDarknodeBalanceHistory,
-        calculateSecondsPerBlock,
+        fetchDarknodeBalanceHistory: updateDarknodeBalanceHistory,
+        updateSecondsPerBlock,
     }, dispatch),
 });
 

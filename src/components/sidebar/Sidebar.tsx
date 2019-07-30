@@ -6,9 +6,9 @@ import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { Link } from "react-router-dom";
 import { bindActionCreators } from "redux";
 
+import { RegistrationStatus } from "../../lib/ethereum/network";
 import { ApplicationState } from "../../store/applicationState";
 import { AppDispatch } from "../../store/rootReducer";
-import { RegistrationStatus } from "../../store/statistics/operatorActions";
 import { hideMobileMenu } from "../../store/ui/uiActions";
 import { SidebarIcon } from "./SidebarIcon";
 

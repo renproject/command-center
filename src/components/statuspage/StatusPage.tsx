@@ -4,9 +4,10 @@ import { Blocky, InfoLabel } from "@renproject/react-components";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators } from "redux";
 
+import { RegistrationStatus } from "../../lib/ethereum/network";
 import { ApplicationState, DarknodesState } from "../../store/applicationState";
 import { AppDispatch } from "../../store/rootReducer";
-import { RegistrationStatus, setDarknodeName } from "../../store/statistics/operatorActions";
+import { setDarknodeName } from "../../store/statistics/operatorActions";
 import { DarknodeID } from "../DarknodeID";
 import { DarknodeAction } from "../pages/Darknode";
 import { FeesBlock } from "./block/FeesBlock";

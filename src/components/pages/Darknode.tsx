@@ -7,11 +7,10 @@ import { bindActionCreators } from "redux";
 import { toChecksumAddress } from "web3-utils";
 
 import { EncodedData, Encodings } from "../../lib/encodedData";
+import { RegistrationStatus } from "../../lib/ethereum/network";
 import { ApplicationState } from "../../store/applicationState";
 import { AppDispatch } from "../../store/rootReducer";
-import {
-    addRegisteringDarknode, RegistrationStatus, setDarknodeName,
-} from "../../store/statistics/operatorActions";
+import { addRegisteringDarknode, setDarknodeName } from "../../store/statistics/operatorActions";
 import { _catch_ } from "../ErrorBoundary";
 import { StatusPage } from "../statuspage/StatusPage";
 import { NotFound } from "./NotFound";
@@ -22,7 +21,7 @@ export enum DarknodeAction {
     Deregister = "deregister",
 }
 
-const darknodeIDBase58ToHex = (darknodeID: string): string =>
+export const darknodeIDBase58ToHex = (darknodeID: string): string =>
     toChecksumAddress(
         (`0x${new EncodedData(darknodeID, Encodings.BASE58).toHex("").slice(4)}`).toLowerCase()
     );

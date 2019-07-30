@@ -1,21 +1,20 @@
 // tslint:disable:no-object-literal-type-assertion
 
 import { RenNetwork, RenNetworkDetails, RenNetworks } from "@renproject/contracts";
-import { Currency } from "@renproject/react-components";
+import { Currency, Record } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import { List, Map, OrderedMap } from "immutable";
 import { PromiEvent } from "web3-core";
 
 import { DarknodeFeeStatus } from "../lib/darknodeFeeStatus";
-import { DEFAULT_REN_NETWORK } from "../lib/environmentVariables";
-import { _captureBackgroundException_ } from "../lib/errors";
 import { Web3Browser } from "../lib/ethereum/browsers";
+import { RegistrationStatus } from "../lib/ethereum/network";
 import { OldToken, Token } from "../lib/ethereum/tokens";
 import { readOnlyWeb3 } from "../lib/ethereum/wallet";
-import { Record } from "../lib/record";
-import { Serializable } from "../lib/serializable";
+import { DEFAULT_REN_NETWORK } from "../lib/react/environmentVariables";
+import { _captureBackgroundException_ } from "../lib/react/errors";
+import { Serializable } from "../lib/react/serializable";
 import { TokenPrices } from "../lib/tokenPrices";
-import { RegistrationStatus } from "./statistics/operatorActions";
 
 export interface ApplicationState {
     trader: TraderState;

@@ -5,8 +5,10 @@ import BigNumber from "bignumber.js";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators } from "redux";
 
-import { _captureBackgroundException_, _captureInteractionException_ } from "../../lib/errors";
 import { ErrorCanceledByUser } from "../../lib/ethereum/wallet";
+import {
+    _captureBackgroundException_, _captureInteractionException_,
+} from "../../lib/react/errors";
 import { ApplicationState } from "../../store/applicationState";
 import { clearPopup } from "../../store/popup/popupActions";
 import { AppDispatch } from "../../store/rootReducer";

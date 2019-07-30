@@ -140,7 +140,7 @@ class AccountDropdownClass extends React.Component<Props, typeof defaultState> {
     }
 
     private readonly handleLogout = async (): Promise<void> => {
-        await this.props.actions.logout({ reload: false });
+        this.props.actions.logout();
     }
 
     private readonly copyToClipboard = (e: React.MouseEvent<HTMLElement>): void => {

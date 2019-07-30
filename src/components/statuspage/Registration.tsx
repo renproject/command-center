@@ -4,11 +4,12 @@ import { Loading } from "@renproject/react-components";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators } from "redux";
 
-import { _captureInteractionException_ } from "../../lib/errors";
+import { RegistrationStatus } from "../../lib/ethereum/network";
+import { _captureInteractionException_ } from "../../lib/react/errors";
 import { ApplicationState, DarknodesState } from "../../store/applicationState";
 import { AppDispatch } from "../../store/rootReducer";
 import {
-    RegistrationStatus, updateDarknodeStatistics, updateOperatorStatistics,
+    updateDarknodeStatistics, updateOperatorStatistics,
 } from "../../store/statistics/operatorActions";
 import {
     showDeregisterPopup, showRefundPopup, showRegisterPopup,
