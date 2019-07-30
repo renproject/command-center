@@ -15,10 +15,10 @@ import { RegistrationStatus } from "../../../lib/ethereum/network";
 import { OldToken, Token } from "../../../lib/ethereum/tokens";
 import { showClaimPopup } from "../../../store/account/operatorPopupActions";
 import { ApplicationState, DarknodesState } from "../../../store/applicationState";
-import { AppDispatch } from "../../../store/rootReducer";
 import {
-    updateCycleAndPendingRewards, updateDarknodeStatistics,
-} from "../../../store/statistics/operatorActions";
+    updateCycleAndPendingRewards, updateDarknodeDetails,
+} from "../../../store/network/operatorActions";
+import { AppDispatch } from "../../../store/rootReducer";
 import { TokenBalance } from "../../TokenBalance";
 import { FeesItem } from "../FeesItem";
 import { OldFees } from "../OldFees";
@@ -309,7 +309,7 @@ class FeesBlockClass extends React.Component<Props, State> {
         const onDone = async () => {
             try {
                 await this.props.actions.updateCycleAndPendingRewards(web3, renNetwork, tokenPrices);
-                await this.props.actions.updateDarknodeStatistics(web3, renNetwork, darknodeID, tokenPrices);
+                await this.props.actions.updateDarknodeDetails(web3, renNetwork, darknodeID, tokenPrices);
             } catch (error) {
                 // Ignore error
             }
@@ -330,21 +330,21 @@ const mapStateToProps = (state: ApplicationState) => ({
     store: {
         address: state.account.address,
         web3: state.account.web3,
-        quoteCurrency: state.statistics.quoteCurrency,
-        currentCycle: state.statistics.currentCycle,
-        previousCycle: state.statistics.previousCycle,
-        pendingRewards: state.statistics.pendingRewards,
-        pendingTotalInEth: state.statistics.pendingTotalInEth,
-        tokenPrices: state.statistics.tokenPrices,
+        quoteCurrency: state.network.quoteCurrency,
+        currentCycle: state.network.currentCycle,
+        previousCycle: state.network.previousCycle,
+        pendingRewards: state.network.pendingRewards,
+        pendingTotalInEth: state.network.pendingTotalInEth,
+        tokenPrices: state.network.tokenPrices,
         renNetwork: state.account.renNetwork,
-        cycleTimeout: state.statistics.cycleTimeout,
+        cycleTimeout: state.network.cycleTimeout,
     },
 });
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({
         showClaimPopup,
-        updateDarknodeStatistics,
+        updateDarknodeDetails,
         updateCycleAndPendingRewards,
     }, dispatch),
 });

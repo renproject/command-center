@@ -247,7 +247,7 @@ const getDarknodeOperator = async (web3: Web3, renNetwork: RenNetworkDetails, da
     return owner;
 };
 
-export const fetchDarknodeStatistics = async (
+export const fetchDarknodeDetails = async (
     web3: Web3,
     renNetwork: RenNetworkDetails,
     darknodeID: string,

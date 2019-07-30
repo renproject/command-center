@@ -8,7 +8,7 @@ import { PromiEvent } from "web3-core";
 
 import {
     calculateSecondsPerBlock, fetchCycleAndPendingRewards, fetchDarknodeBalanceHistory,
-    fetchDarknodeStatistics, HistoryPeriods,
+    fetchDarknodeDetails, HistoryPeriods,
 } from "../../lib/ethereum/network";
 import { getOperatorDarknodes } from "../../lib/ethereum/operator";
 import { Token } from "../../lib/ethereum/tokens";
@@ -116,17 +116,17 @@ export const updateCycleAndPendingRewards = (
     }
 };
 
-export const updateDarknodeStatistics = (
+export const updateDarknodeDetails = (
     web3: Web3,
     renNetwork: RenNetworkDetails,
     darknodeID: string,
     tokenPrices: TokenPrices | null,
 ) => async (dispatch: AppDispatch) => {
-    const darknodeDetails = await fetchDarknodeStatistics(web3, renNetwork, darknodeID, tokenPrices);
+    const darknodeDetails = await fetchDarknodeDetails(web3, renNetwork, darknodeID, tokenPrices);
     dispatch(setDarknodeDetails({ darknodeDetails }));
 };
 
-export const updateOperatorStatistics = (
+export const updateOperatorDarknodes = (
     web3: Web3,
     renNetwork: RenNetworkDetails,
     address: string,
@@ -141,7 +141,7 @@ export const updateOperatorStatistics = (
     dispatch(storeDarknodeList({ darknodeList: currentDarknodes, address }));
 
     // The lists are merged in the reducer as well, but we combine them again
-    // before passing into `updateDarknodeStatistics`
+    // before passing into `updateDarknodeDetails`
     currentDarknodes.map((darknodeID: string) => {
         if (!darknodeList.contains(darknodeID)) {
             darknodeList = darknodeList.push(darknodeID);
@@ -150,7 +150,7 @@ export const updateOperatorStatistics = (
     });
 
     await Promise.all(darknodeList.toList().map(async (darknodeID: string) => {
-        return dispatch(updateDarknodeStatistics(web3, renNetwork, darknodeID, tokenPrices));
+        return dispatch(updateDarknodeDetails(web3, renNetwork, darknodeID, tokenPrices));
     }).toArray());
 };
 

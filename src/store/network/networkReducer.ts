@@ -2,17 +2,17 @@ import { List } from "immutable";
 import { ActionType, getType } from "typesafe-actions";
 
 import { _captureInteractionException_ } from "../../lib/react/errors";
-import { StatisticsState } from "../applicationState";
+import { NetworkState } from "../applicationState";
 import * as networkActions from "./networkActions";
 import * as operatorActions from "./operatorActions";
 
 type NetworkAction = ActionType<typeof networkActions>;
 type OperatorActions = ActionType<typeof operatorActions>;
 
-export const statisticsReducer = (
-    state: StatisticsState = new StatisticsState(),
+export const networkReducer = (
+    state: NetworkState = new NetworkState(),
     action: NetworkAction | OperatorActions
-): StatisticsState => {
+): NetworkState => {
     switch (action.type) {
         case getType(networkActions.updateCurrentCycle):
             return state.set("currentCycle", action.payload);

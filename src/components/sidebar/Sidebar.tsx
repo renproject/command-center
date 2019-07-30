@@ -14,10 +14,10 @@ import { SidebarIcon } from "./SidebarIcon";
 
 const mapStateToProps = (state: ApplicationState) => ({
     store: {
-        darknodeList: state.account.address ? state.statistics.darknodeList.get(state.account.address) : null,
-        darknodeDetails: state.statistics.darknodeDetails,
-        darknodeNames: state.statistics.darknodeNames,
-        quoteCurrency: state.statistics.quoteCurrency,
+        darknodeList: state.account.address ? state.network.darknodeList.get(state.account.address) : null,
+        darknodeDetails: state.network.darknodeDetails,
+        darknodeNames: state.network.darknodeNames,
+        quoteCurrency: state.network.quoteCurrency,
         mobileMenuActive: state.ui.mobileMenuActive,
     },
 });

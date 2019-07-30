@@ -10,10 +10,10 @@ import {
     showDeregisterPopup, showRefundPopup, showRegisterPopup,
 } from "../../store/account/operatorPopupActions";
 import { ApplicationState, DarknodesState } from "../../store/applicationState";
-import { AppDispatch } from "../../store/rootReducer";
 import {
-    updateDarknodeStatistics, updateOperatorStatistics,
-} from "../../store/statistics/operatorActions";
+    updateDarknodeDetails, updateOperatorDarknodes,
+} from "../../store/network/operatorActions";
+import { AppDispatch } from "../../store/rootReducer";
 
 export const statusText = {
     [RegistrationStatus.Unknown]: "Loading...",
@@ -117,7 +117,7 @@ class RegistrationClass extends React.Component<Props, typeof defaultState> {
         const { web3, tokenPrices, renNetwork } = this.props.store;
 
         try {
-            await this.props.actions.updateDarknodeStatistics(web3, renNetwork, darknodeID, tokenPrices);
+            await this.props.actions.updateDarknodeDetails(web3, renNetwork, darknodeID, tokenPrices);
         } catch (error) {
             // Ignore error
         }
@@ -136,7 +136,7 @@ class RegistrationClass extends React.Component<Props, typeof defaultState> {
         }
 
         try {
-            await this.props.actions.updateOperatorStatistics(web3, renNetwork, address, tokenPrices, darknodeList);
+            await this.props.actions.updateOperatorDarknodes(web3, renNetwork, address, tokenPrices, darknodeList);
         } catch (error) {
             // Ignore error
         }
@@ -205,9 +205,9 @@ const mapStateToProps = (state: ApplicationState) => ({
     store: {
         address: state.account.address,
         web3: state.account.web3,
-        tokenPrices: state.statistics.tokenPrices,
-        darknodeList: state.account.address ? state.statistics.darknodeList.get(state.account.address, null) : null,
-        quoteCurrency: state.statistics.quoteCurrency,
+        tokenPrices: state.network.tokenPrices,
+        darknodeList: state.account.address ? state.network.darknodeList.get(state.account.address, null) : null,
+        quoteCurrency: state.network.quoteCurrency,
         renNetwork: state.account.renNetwork,
     },
 });
@@ -217,8 +217,8 @@ const mapDispatchToProps = (dispatch: AppDispatch) => ({
         showRegisterPopup,
         showDeregisterPopup,
         showRefundPopup,
-        updateDarknodeStatistics,
-        updateOperatorStatistics,
+        updateDarknodeDetails,
+        updateOperatorDarknodes,
     }, dispatch),
 });
 

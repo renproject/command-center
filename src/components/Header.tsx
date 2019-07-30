@@ -10,8 +10,8 @@ import { bindActionCreators } from "redux";
 
 import { storeRenNetwork } from "../store/account/accountActions";
 import { ApplicationState } from "../store/applicationState";
+import { storeQuoteCurrency } from "../store/network/operatorActions";
 import { AppDispatch } from "../store/rootReducer";
-import { storeQuoteCurrency } from "../store/statistics/operatorActions";
 import { showMobileMenu } from "../store/ui/uiActions";
 import { ReactComponent as English } from "../styles/images/rp-flag-uk.svg";
 import { AccountDropdown } from "./AccountDropdown";
@@ -130,7 +130,7 @@ class HeaderClass extends React.Component<Props> {
 const mapStateToProps = (state: ApplicationState) => ({
     store: {
         address: state.account.address,
-        quoteCurrency: state.statistics.quoteCurrency,
+        quoteCurrency: state.network.quoteCurrency,
         renNetwork: state.account.renNetwork,
     },
 });

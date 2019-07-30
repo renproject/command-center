@@ -11,26 +11,24 @@ import { LoggedOut } from "../../components/popups/LoggedOut";
 import { NoWeb3Popup } from "../../components/popups/NoWeb3Popup";
 import { Language } from "../../languages/language";
 import { getInjectedWeb3Provider } from "../../lib/ethereum/wallet";
-import { _captureBackgroundException_ } from "../../lib/react/errors";
 import { history } from "../../lib/react/history";
 import { ApplicationState } from "../applicationState";
 import { clearPopup, setPopup } from "../popup/popupActions";
 import { AppDispatch } from "../rootReducer";
 
 export const logout = createStandardAction("LOGOUT")();
-export const storeWeb3 = createStandardAction("STORE_WEB3")<Web3>();
-export const storeAddress = createStandardAction("STORE_ADDRESS")<string>();
+export const login = createStandardAction("LOGIN")<{ web3: Web3, address: string }>();
 export const storeRenNetwork = createStandardAction("STORE_REN_NETWORK")<RenNetworkDetails>();
 
 export const storeWeb3BrowserName = createStandardAction("STORE_WEB3_BROWSER_NAME")<provider>();
 
-export const login = (
+export const promptLogin = (
     renNetwork: RenNetworkDetails,
     options: { redirect: boolean; showPopup: boolean; immediatePopup: boolean },
 ) => async (dispatch: AppDispatch) => {
     let cancelled = false;
 
-    const onClick = async () => (dispatch(login(renNetwork, { redirect: false, showPopup: true, immediatePopup: true })));
+    const onClick = async () => (dispatch(promptLogin(renNetwork, { redirect: false, showPopup: true, immediatePopup: true })));
     const onCancel = () => {
         dispatch(clearPopup());
         cancelled = true;
@@ -137,8 +135,7 @@ export const login = (
     });
 
     // Store address in the store (and in local storage)
-    dispatch(storeAddress(address));
-    dispatch(storeWeb3(newWeb3));
+    dispatch(login({ web3: newWeb3, address }));
 
     /*
     // Check for mobile
@@ -170,7 +167,7 @@ export const lookForLogout = () => async (dispatch: AppDispatch, getState: () =>
     if (!accounts.includes(address.toLowerCase())) {
         const onClick = async () => {
             dispatch(logout());
-            await dispatch(login(renNetwork, { redirect: false, showPopup: true, immediatePopup: false }));
+            await dispatch(promptLogin(renNetwork, { redirect: false, showPopup: true, immediatePopup: false }));
         };
         const onCancel = async () => {
             dispatch(logout());

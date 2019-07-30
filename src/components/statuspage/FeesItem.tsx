@@ -8,10 +8,10 @@ import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators } from "redux";
 
 import { OldToken, Token } from "../../lib/ethereum/tokens";
-import { withdrawReward } from "../../store/account/darknode";
+import { withdrawReward } from "../../store/account/darknodeActions";
 import { ApplicationState } from "../../store/applicationState";
+import { updateDarknodeDetails, waitForTX } from "../../store/network/operatorActions";
 import { AppDispatch } from "../../store/rootReducer";
-import { updateDarknodeStatistics, waitForTX } from "../../store/statistics/operatorActions";
 
 const FeesItemClass = ({ darknodeID, token, amount, disabled, actions, store }: Props) => {
     const [loading, setLoading] = React.useState(false);
@@ -29,7 +29,7 @@ const FeesItemClass = ({ darknodeID, token, amount, disabled, actions, store }: 
                 return;
             }
             // tslint:disable-next-line: await-promise
-            await actions.updateDarknodeStatistics(web3, renNetwork, darknodeID, tokenPrices);
+            await actions.updateDarknodeDetails(web3, renNetwork, darknodeID, tokenPrices);
         }
 
         setLoading(false);
@@ -50,9 +50,9 @@ const FeesItemClass = ({ darknodeID, token, amount, disabled, actions, store }: 
 const mapStateToProps = (state: ApplicationState) => ({
     store: {
         web3: state.account.web3,
-        tokenPrices: state.statistics.tokenPrices,
+        tokenPrices: state.network.tokenPrices,
         address: state.account.address,
-        withdrawAddresses: state.statistics.withdrawAddresses,
+        withdrawAddresses: state.network.withdrawAddresses,
         renNetwork: state.account.renNetwork,
     },
 });
@@ -60,7 +60,7 @@ const mapStateToProps = (state: ApplicationState) => ({
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({
         withdrawReward,
-        updateDarknodeStatistics,
+        updateDarknodeDetails,
         waitForTX,
     }, dispatch),
 });

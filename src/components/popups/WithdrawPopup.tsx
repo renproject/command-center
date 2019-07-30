@@ -10,10 +10,10 @@ import { validate } from "wallet-address-validator";
 
 import { Token } from "../../lib/ethereum/tokens";
 import { ApplicationState } from "../../store/applicationState";
-import { AppDispatch } from "../../store/rootReducer";
 import {
     addToWithdrawAddresses, removeFromWithdrawAddresses,
-} from "../../store/statistics/operatorActions";
+} from "../../store/network/operatorActions";
+import { AppDispatch } from "../../store/rootReducer";
 
 enum Stage {
     Pending,
@@ -166,7 +166,7 @@ class WithdrawPopupClass extends React.Component<Props, State> {
 
 const mapStateToProps = (state: ApplicationState) => ({
     store: {
-        withdrawAddresses: state.statistics.withdrawAddresses,
+        withdrawAddresses: state.network.withdrawAddresses,
     },
 });
 

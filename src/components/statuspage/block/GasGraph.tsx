@@ -12,10 +12,10 @@ import { bindActionCreators } from "redux";
 import { HistoryIterations, HistoryPeriods } from "../../../lib/ethereum/network";
 import { _captureBackgroundException_ } from "../../../lib/react/errors";
 import { ApplicationState, DarknodesState } from "../../../store/applicationState";
-import { AppDispatch } from "../../../store/rootReducer";
 import {
     updateDarknodeBalanceHistory, updateSecondsPerBlock,
-} from "../../../store/statistics/operatorActions";
+} from "../../../store/network/operatorActions";
+import { AppDispatch } from "../../../store/rootReducer";
 import { Block, BlockBody, BlockTitle } from "./Block";
 
 const shift = new BigNumber(10).exponentiatedBy(18);
@@ -290,8 +290,8 @@ class GasGraphClass extends React.Component<Props, State> {
 const mapStateToProps = (state: ApplicationState) => ({
     store: {
         web3: state.account.web3,
-        balanceHistories: state.statistics.balanceHistories,
-        secondsPerBlock: state.statistics.secondsPerBlock,
+        balanceHistories: state.network.balanceHistories,
+        secondsPerBlock: state.network.secondsPerBlock,
     },
 });
 

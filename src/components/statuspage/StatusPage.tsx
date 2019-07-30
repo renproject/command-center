@@ -6,8 +6,8 @@ import { bindActionCreators } from "redux";
 
 import { RegistrationStatus } from "../../lib/ethereum/network";
 import { ApplicationState, DarknodesState } from "../../store/applicationState";
+import { setDarknodeName } from "../../store/network/operatorActions";
 import { AppDispatch } from "../../store/rootReducer";
-import { setDarknodeName } from "../../store/statistics/operatorActions";
 import { DarknodeID } from "../DarknodeID";
 import { DarknodeAction } from "../pages/Darknode";
 import { FeesBlock } from "./block/FeesBlock";
@@ -168,7 +168,7 @@ class StatusPageClass extends React.Component<Props, State> {
 
 const mapStateToProps = (state: ApplicationState) => ({
     store: {
-        tokenPrices: state.statistics.tokenPrices,
+        tokenPrices: state.network.tokenPrices,
     },
 });
 

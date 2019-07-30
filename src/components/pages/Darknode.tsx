@@ -9,8 +9,8 @@ import { toChecksumAddress } from "web3-utils";
 import { EncodedData, Encodings } from "../../lib/encodedData";
 import { RegistrationStatus } from "../../lib/ethereum/network";
 import { ApplicationState } from "../../store/applicationState";
+import { addRegisteringDarknode, setDarknodeName } from "../../store/network/operatorActions";
 import { AppDispatch } from "../../store/rootReducer";
-import { addRegisteringDarknode, setDarknodeName } from "../../store/statistics/operatorActions";
 import { _catch_ } from "../ErrorBoundary";
 import { StatusPage } from "../statuspage/StatusPage";
 import { NotFound } from "./NotFound";
@@ -147,8 +147,8 @@ class DarknodeClass extends React.Component<Props, typeof defaultState> {
 const mapStateToProps = (state: ApplicationState) => ({
     store: {
         address: state.account.address,
-        darknodeDetails: state.statistics.darknodeDetails,
-        darknodeNames: state.statistics.darknodeNames,
+        darknodeDetails: state.network.darknodeDetails,
+        darknodeNames: state.network.darknodeNames,
     },
 });
 

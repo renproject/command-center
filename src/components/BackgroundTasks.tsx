@@ -6,13 +6,11 @@ import { RouteComponentProps, withRouter } from "react-router-dom";
 import { bindActionCreators } from "redux";
 
 import { _captureBackgroundException_ } from "../lib/react/errors";
-import { login, lookForLogout } from "../store/account/accountActions";
+import { lookForLogout, promptLogin } from "../store/account/accountActions";
 import { ApplicationState } from "../store/applicationState";
+import { updateTokenPrices } from "../store/network/networkActions";
+import { updateDarknodeDetails, updateOperatorDarknodes } from "../store/network/operatorActions";
 import { AppDispatch } from "../store/rootReducer";
-import { updateTokenPrices } from "../store/statistics/networkActions";
-import {
-    updateDarknodeStatistics, updateOperatorStatistics,
-} from "../store/statistics/operatorActions";
 import { getDarknodeParam } from "./pages/Darknode";
 
 /**
@@ -22,7 +20,7 @@ import { getDarknodeParam } from "./pages/Darknode";
 class BackgroundTasksClass extends React.Component<Props> {
     private callUpdatePricesTimeout: NodeJS.Timer | undefined;
     private callLookForLogoutInterval: NodeJS.Timer | undefined;
-    private callUpdateOperatorStatisticsTimeout: NodeJS.Timer | undefined;
+    private callUpdateOperatorDarknodesTimeout: NodeJS.Timer | undefined;
     private callUpdateSelectedDarknodeTimeout: NodeJS.Timer | undefined;
 
     public componentDidMount = async (): Promise<void> => {
@@ -57,9 +55,9 @@ class BackgroundTasksClass extends React.Component<Props> {
 
     public componentWillReceiveProps = (nextProps: Props): void => {
         if (this.props.store.address !== nextProps.store.address) {
-            this.callUpdateOperatorStatistics(nextProps).catch(error => {
+            this.callUpdateOperatorDarknodes(nextProps).catch(error => {
                 _captureBackgroundException_(error, {
-                    description: "Error in callUpdateOperatorStatistics in BackgroundTasks",
+                    description: "Error in callUpdateOperatorDarknodes in BackgroundTasks",
                 });
             });
         }
@@ -83,7 +81,7 @@ class BackgroundTasksClass extends React.Component<Props> {
         // Clear timeouts
         if (this.callUpdatePricesTimeout) { clearTimeout(this.callUpdatePricesTimeout); }
         if (this.callLookForLogoutInterval) { clearTimeout(this.callLookForLogoutInterval); }
-        if (this.callUpdateOperatorStatisticsTimeout) { clearTimeout(this.callUpdateOperatorStatisticsTimeout); }
+        if (this.callUpdateOperatorDarknodesTimeout) { clearTimeout(this.callUpdateOperatorDarknodesTimeout); }
         if (this.callUpdateSelectedDarknodeTimeout) { clearTimeout(this.callUpdateSelectedDarknodeTimeout); }
     }
 
@@ -115,7 +113,7 @@ class BackgroundTasksClass extends React.Component<Props> {
     }
 
     // Update operator statistics every 120 seconds
-    private readonly callUpdateOperatorStatistics = async (props?: Props): Promise<void> => {
+    private readonly callUpdateOperatorDarknodes = async (props?: Props): Promise<void> => {
         props = props || this.props;
 
         const { web3, address, tokenPrices, darknodeList, darknodeRegisteringList, renNetwork } = props.store;
@@ -127,18 +125,18 @@ class BackgroundTasksClass extends React.Component<Props> {
                     list = list.concat(darknodeList);
                 }
                 // tslint:disable-next-line: await-promise
-                await props.actions.updateOperatorStatistics(web3, renNetwork, address, tokenPrices, list);
+                await props.actions.updateOperatorDarknodes(web3, renNetwork, address, tokenPrices, list);
                 timeout = 120;
             } catch (error) {
                 _captureBackgroundException_(error, {
-                    description: "Error thrown in callUpdateOperatorStatistics background task",
+                    description: "Error thrown in callUpdateOperatorDarknodes background task",
                 });
                 timeout = 10;
             }
         }
-        if (this.callUpdateOperatorStatisticsTimeout) { clearTimeout(this.callUpdateOperatorStatisticsTimeout); }
-        this.callUpdateOperatorStatisticsTimeout = setTimeout(
-            this.callUpdateOperatorStatistics,
+        if (this.callUpdateOperatorDarknodesTimeout) { clearTimeout(this.callUpdateOperatorDarknodesTimeout); }
+        this.callUpdateOperatorDarknodesTimeout = setTimeout(
+            this.callUpdateOperatorDarknodes,
             timeout * 1000,
         ) as unknown as NodeJS.Timer;
     }
@@ -156,7 +154,7 @@ class BackgroundTasksClass extends React.Component<Props> {
         if (tokenPrices && darknodeID) {
             try {
                 // tslint:disable-next-line: await-promise
-                await props.actions.updateDarknodeStatistics(
+                await props.actions.updateDarknodeDetails(
                     web3,
                     renNetwork,
                     darknodeID,
@@ -194,9 +192,9 @@ class BackgroundTasksClass extends React.Component<Props> {
     // tslint:disable-next-line:member-ordering
     public setupLoopsWithAccount(): void {
         this.callLookForLogoutInterval = setInterval(this.callLookForLogout, 5000);
-        this.callUpdateOperatorStatistics().catch(error => {
+        this.callUpdateOperatorDarknodes().catch(error => {
             _captureBackgroundException_(error, {
-                description: "Error in callUpdateOperatorStatistics in BackgroundTasks",
+                description: "Error in callUpdateOperatorDarknodes in BackgroundTasks",
             });
         });
     }
@@ -207,20 +205,20 @@ const mapStateToProps = (state: ApplicationState) => ({
     store: {
         address: state.account.address,
         web3: state.account.web3,
-        tokenPrices: state.statistics.tokenPrices,
-        darknodeList: state.account.address ? state.statistics.darknodeList.get(state.account.address, null) : null,
-        darknodeRegisteringList: state.statistics.darknodeRegisteringList,
+        tokenPrices: state.network.tokenPrices,
+        darknodeList: state.account.address ? state.network.darknodeList.get(state.account.address, null) : null,
+        darknodeRegisteringList: state.network.darknodeRegisteringList,
         renNetwork: state.account.renNetwork,
     },
 });
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({
-        login,
+        login: promptLogin,
         lookForLogout,
         updateTokenPrices,
-        updateOperatorStatistics,
-        updateDarknodeStatistics,
+        updateOperatorDarknodes,
+        updateDarknodeDetails,
     }, dispatch),
 });
 

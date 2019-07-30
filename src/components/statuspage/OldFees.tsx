@@ -11,7 +11,7 @@ import { FeesItem } from "./FeesItem";
 
 const mapStateToProps = (state: ApplicationState) => ({
     store: {
-        quoteCurrency: state.statistics.quoteCurrency,
+        quoteCurrency: state.network.quoteCurrency,
     },
 });
 

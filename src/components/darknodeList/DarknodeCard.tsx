@@ -5,15 +5,15 @@ import { bindActionCreators } from "redux";
 
 import { RegistrationStatus } from "../../lib/ethereum/network";
 import { ApplicationState, DarknodesState } from "../../store/applicationState";
+import { removeDarknode, removeRegisteringDarknode } from "../../store/network/operatorActions";
 import { AppDispatch } from "../../store/rootReducer";
-import { removeDarknode, removeRegisteringDarknode } from "../../store/statistics/operatorActions";
 import { darknodeIDHexToBase58 } from "../pages/Darknode";
 import { CardView } from "./CardView";
 
 const mapStateToProps = (state: ApplicationState) => ({
     store: {
         address: state.account.address,
-        quoteCurrency: state.statistics.quoteCurrency,
+        quoteCurrency: state.network.quoteCurrency,
     },
 });
 

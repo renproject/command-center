@@ -15,9 +15,9 @@ import {
 import { Token } from "../../lib/ethereum/tokens";
 import { _captureBackgroundException_ } from "../../lib/react/errors";
 import { TokenPrices } from "../../lib/tokenPrices";
+import { connectWaitForTX, updateDarknodeDetails } from "../network/operatorActions";
 import { setPopup } from "../popup/popupActions";
 import { AppDispatch } from "../rootReducer";
-import { connectWaitForTX, updateDarknodeStatistics } from "../statistics/operatorActions";
 
 export const showRegisterPopup = (
     web3: Web3,
@@ -48,10 +48,10 @@ export const showRegisterPopup = (
 
             if (tokenPrices) {
                 try {
-                    await dispatch(updateDarknodeStatistics(web3, renNetwork, darknodeID, tokenPrices));
+                    await dispatch(updateDarknodeDetails(web3, renNetwork, darknodeID, tokenPrices));
                 } catch (error) {
                     _captureBackgroundException_(error, {
-                        description: "Error thrown in updateDarknodeStatistics in showRegisterPopup",
+                        description: "Error thrown in updateDarknodeDetails in showRegisterPopup",
                     });
                 }
             }

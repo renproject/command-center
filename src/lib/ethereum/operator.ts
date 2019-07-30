@@ -4,7 +4,7 @@ import { OrderedSet } from "immutable";
 import Web3 from "web3";
 import { sha3, toChecksumAddress } from "web3-utils";
 
-import { WaitForTX } from "../../store/statistics/operatorActions";
+import { WaitForTX } from "../../store/network/operatorActions";
 import { alreadyPast } from "../conversion";
 import { _noCapture_ } from "../react/errors";
 import { DarknodePaymentWeb3 } from "./contracts/bindings/darknodePayment";

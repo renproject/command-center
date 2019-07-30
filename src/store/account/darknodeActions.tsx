@@ -6,11 +6,10 @@ import Web3 from "web3";
 import { WithdrawPopup } from "../../components/popups/WithdrawPopup";
 import { withdrawOldToken, withdrawToken } from "../../lib/ethereum/operator";
 import { AllTokenDetails, OldToken, Token } from "../../lib/ethereum/tokens";
-import { _noCapture_ } from "../../lib/react/errors";
 import { ApplicationState } from "../applicationState";
+import { WaitForTX } from "../network/operatorActions";
 import { clearPopup, setPopup } from "../popup/popupActions";
 import { AppDispatch } from "../rootReducer";
-import { WaitForTX } from "../statistics/operatorActions";
 
 export const showWithdrawToken = async (
     web3: Web3,

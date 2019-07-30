@@ -4,7 +4,7 @@ import { Blocky, Loading } from "@renproject/react-components";
 import { connect, ConnectedReturnType } from "react-redux";
 import { bindActionCreators } from "redux";
 
-import { login, logout } from "../store/account/accountActions";
+import { logout, promptLogin } from "../store/account/accountActions";
 import { ApplicationState } from "../store/applicationState";
 import { AppDispatch } from "../store/rootReducer";
 
@@ -187,17 +187,17 @@ const mapStateToProps = (state: ApplicationState) => ({
     store: {
         address: state.account.address,
         web3BrowserName: state.account.web3BrowserName,
-        quoteCurrency: state.statistics.quoteCurrency,
+        quoteCurrency: state.network.quoteCurrency,
         web3: state.account.web3,
-        transactions: state.statistics.transactions,
-        confirmations: state.statistics.confirmations,
+        transactions: state.network.transactions,
+        confirmations: state.network.confirmations,
         renNetwork: state.account.renNetwork,
     },
 });
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({
-        login,
+        login: promptLogin,
         logout,
     }, dispatch),
 });

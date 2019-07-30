@@ -19,7 +19,7 @@ import { TokenPrices } from "../lib/tokenPrices";
 export interface ApplicationState {
     account: AccountState;
     popup: PopupState;
-    statistics: StatisticsState;
+    network: NetworkState;
     ui: UIState;
 }
 
@@ -68,7 +68,7 @@ export class UIState extends Record({
     mobileMenuActive: false,
 }) { }
 
-export class StatisticsState extends Record({
+export class NetworkState extends Record({
     secondsPerBlock: null as number | null,
 
     tokenPrices: null as TokenPrices | null,
@@ -96,7 +96,7 @@ export class StatisticsState extends Record({
     pendingRewards: OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber>>(),
     pendingTotalInEth: OrderedMap<string /* cycle */, BigNumber>(),
     cycleTimeout: new BigNumber(0),
-}) implements Serializable<StatisticsState> {
+}) implements Serializable<NetworkState> {
     public serialize(): string {
         const js = this.toJS();
         return JSON.stringify({
@@ -107,11 +107,11 @@ export class StatisticsState extends Record({
         });
     }
 
-    public deserialize(str: string): StatisticsState {
+    public deserialize(str: string): NetworkState {
         // let next = this;
         try {
             const data = JSON.parse(str);
-            return new StatisticsState({
+            return new NetworkState({
                 darknodeList: data.darknodeList,
                 darknodeNames: data.darknodeNames,
                 darknodeRegisteringList: data.darknodeRegisteringList,

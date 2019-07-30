@@ -6,8 +6,8 @@ import { bindActionCreators } from "redux";
 import { _captureBackgroundException_ } from "../../../lib/react/errors";
 import { showFundPopup } from "../../../store/account/operatorPopupActions";
 import { ApplicationState } from "../../../store/applicationState";
+import { updateDarknodeDetails } from "../../../store/network/operatorActions";
 import { AppDispatch } from "../../../store/rootReducer";
-import { updateDarknodeStatistics } from "../../../store/statistics/operatorActions";
 import { TopUp } from "./TopUp";
 
 export const CONFIRMATION_MESSAGE = "Transaction confirmed.";
@@ -117,7 +117,7 @@ class TopUpControllerClass extends Component<Props, typeof defaultState> {
 
         const onDone = async () => {
             try {
-                await this.props.actions.updateDarknodeStatistics(web3, renNetwork, darknodeID, tokenPrices);
+                await this.props.actions.updateDarknodeDetails(web3, renNetwork, darknodeID, tokenPrices);
             } catch (error) {
                 // Ignore error
             }
@@ -141,7 +141,7 @@ const mapStateToProps = (state: ApplicationState) => ({
     store: {
         address: state.account.address,
         web3: state.account.web3,
-        tokenPrices: state.statistics.tokenPrices,
+        tokenPrices: state.network.tokenPrices,
         renNetwork: state.account.renNetwork,
     },
 });
@@ -149,7 +149,7 @@ const mapStateToProps = (state: ApplicationState) => ({
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({
         showFundPopup,
-        updateDarknodeStatistics,
+        updateDarknodeDetails,
     }, dispatch),
 });
 
