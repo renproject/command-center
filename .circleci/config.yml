@@ -18,15 +18,15 @@ commands:
       - restore_cache:
           name: Restore node_modules
           keys:
-            - v1-cc-dependencies-{{ checksum "yarn.lock" }}
+            - v1-cc-dependencies-{{ checksum "package-lock.json" }}
       - run:
           name: Install Dependencies
-          command: sudo rm -rf /home/circleci/.cache/ && sudo yarn global add yarn && yarn version && yarn install
+          command: npm install
       - save_cache:
           name: Save node_modules
           paths:
             - node_modules
-          key: v1-cc-dependencies-{{ checksum "yarn.lock" }}
+          key: v1-cc-dependencies-{{ checksum "package-lock.json" }}
 
   setup_local_network:
     description: "Set up local network"
@@ -37,21 +37,21 @@ commands:
       - restore_cache:
           name: Restore node_modules
           keys:
-            - v1-sol-dependencies-{{ checksum "yarn.lock" }}
+            - v1-sol-dependencies-{{ checksum "package-lock.json" }}
       - run:
           name: Install Dependencies
-          command: yarn install
+          command: npm install
       - save_cache:
           name: Save node_modules
           paths:
             - node_modules
-          key: v1-sol-dependencies-{{ checksum "yarn.lock" }}
+          key: v1-sol-dependencies-{{ checksum "package-lock.json" }}
       - run:
           name: Start ganache
-          command: (yarn ganache-cli -d  > /dev/null &) && sleep 5
+          command: (npm run ganache-cli -d  > /dev/null &) && sleep 5
       - run:
           name: Migrate contracts
-          command: yarn truffle migrate
+          command: npm run truffle migrate
 
 jobs:
   build:
@@ -62,16 +62,16 @@ jobs:
       - setup_local_network
       - run:
           name: Test
-          command: yarn run test
+          command: npm run test
       - run:
           name: Build
-          command: yarn run build
+          command: npm run build
       - run:
           name: Lint
-          command: yarn run lint
+          command: npm run lint
       - run:
           name: Lint with warnings
-          command: yarn run lint:extra || true # FIXME
+          command: npm run lint:extra || true # FIXME
 
 workflows:
   build:
