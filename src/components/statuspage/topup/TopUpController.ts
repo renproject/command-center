@@ -1,15 +1,16 @@
-import * as React from "react";
-
 import { BigNumber } from "bignumber.js";
+import { Component, createElement } from "react";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
-import { bindActionCreators, Dispatch } from "redux";
+import { bindActionCreators } from "redux";
 
-import { _captureBackgroundException_ } from "../../lib/errors";
-import { updateDarknodeStatistics } from "../../store/actions/statistics/operatorActions";
-import { showFundPopup } from "../../store/actions/statistics/operatorPopupActions";
-import { ApplicationData } from "../../store/types";
+import { _captureBackgroundException_ } from "../../../lib/errors";
+import { ApplicationState } from "../../../store/applicationState";
+import { AppDispatch } from "../../../store/rootReducer";
+import { updateDarknodeStatistics } from "../../../store/statistics/operatorActions";
+import { showFundPopup } from "../../../store/statistics/operatorPopupActions";
+import { TopUp } from "./TopUp";
 
-const CONFIRMATION_MESSAGE = "Transaction confirmed.";
+export const CONFIRMATION_MESSAGE = "Transaction confirmed.";
 
 const defaultState = { // Entries must be immutable
     value: "0.1",
@@ -19,7 +20,7 @@ const defaultState = { // Entries must be immutable
     traderBalance: new BigNumber(0),
 };
 
-class TopUpClass extends React.Component<Props, typeof defaultState> {
+class TopUpControllerClass extends Component<Props, typeof defaultState> {
     private _isMounted = false;
 
     constructor(props: Props) {
@@ -40,44 +41,18 @@ class TopUpClass extends React.Component<Props, typeof defaultState> {
         this._isMounted = false;
     }
 
-    public render = (): JSX.Element => {
-        const { value, resultMessage, pending, disabled } = this.state;
-        return (
-            <div className="topup">
-                <label>
-                    <div className="topup--title">Enter the amount of Ether you would like to deposit</div>
-                    <p className="topup--withdraw">Funds can be withdrawn through the Darknode CLI.</p>
-                    <span className="topup--input">
-                        <input
-                            disabled={pending}
-                            type="number"
-                            value={value}
-                            min={0}
-                            onChange={this.handleChange}
-                            onBlur={this.handleBlur}
-                        />
-                        {pending ?
-                            <button disabled>Depositing...</button> :
-                            <button className="hover green" onClick={this.sendFunds} disabled={disabled}>
-                                <span>Deposit</span>
-                            </button>
-                        }
-                    </span>
-                </label>
-                {resultMessage &&
-                    <p
-                        className={`${resultMessage === CONFIRMATION_MESSAGE ? "topup--input--success success" :
-                            "topup--input--warning warning"}`}
-                    >
-                        {resultMessage}
-                    </p>
-                }
-            </div>
-        );
-    }
+    public render = (): JSX.Element => createElement(TopUp, {
+        darknodeID: this.props.darknodeID,
+        value: this.state.value,
+        resultMessage: this.state.resultMessage,
+        pending: this.state.pending,
+        disabled: this.state.disabled,
+        handleChange: this.handleChange,
+        handleBlur: this.handleBlur,
+        sendFunds: this.sendFunds,
+    })
 
-    private readonly handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-        const value = event.target.value;
+    private readonly handleChange = (value: string): void => {
         this.setState({ value });
 
         const { traderBalance, resultMessage, disabled } = this.state;
@@ -108,7 +83,7 @@ class TopUpClass extends React.Component<Props, typeof defaultState> {
         return traderBalance;
     }
 
-    private readonly handleBlur = async (_event: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
+    private readonly handleBlur = async (): Promise<void> => {
         const { value } = this.state;
         let traderBalance;
         try {
@@ -162,7 +137,7 @@ class TopUpClass extends React.Component<Props, typeof defaultState> {
     }
 }
 
-const mapStateToProps = (state: ApplicationData) => ({
+const mapStateToProps = (state: ApplicationState) => ({
     store: {
         address: state.trader.address,
         web3: state.trader.web3,
@@ -171,7 +146,7 @@ const mapStateToProps = (state: ApplicationData) => ({
     },
 });
 
-const mapDispatchToProps = (dispatch: Dispatch) => ({
+const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({
         showFundPopup,
         updateDarknodeStatistics,
@@ -182,4 +157,4 @@ interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<
     darknodeID: string;
 }
 
-export const TopUp = connect(mapStateToProps, mapDispatchToProps)(TopUpClass);
+export const TopUpController = connect(mapStateToProps, mapDispatchToProps)(TopUpControllerClass);

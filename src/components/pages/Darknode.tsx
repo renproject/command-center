@@ -3,12 +3,15 @@ import * as React from "react";
 
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { RouteComponentProps, withRouter } from "react-router";
-import { bindActionCreators, Dispatch } from "redux";
+import { bindActionCreators } from "redux";
 import { toChecksumAddress } from "web3-utils";
 
 import { EncodedData, Encodings } from "../../lib/encodedData";
-import { addRegisteringDarknode, RegistrationStatus, setDarknodeName } from "../../store/actions/statistics/operatorActions";
-import { ApplicationData } from "../../store/types";
+import { ApplicationState } from "../../store/applicationState";
+import { AppDispatch } from "../../store/rootReducer";
+import {
+    addRegisteringDarknode, RegistrationStatus, setDarknodeName,
+} from "../../store/statistics/operatorActions";
 import { _catch_ } from "../ErrorBoundary";
 import { StatusPage } from "../statuspage/StatusPage";
 import { NotFound } from "./NotFound";
@@ -102,22 +105,17 @@ class DarknodeClass extends React.Component<Props, typeof defaultState> {
             return <NotFound />;
         }
 
-        return (
-            <div>
-                {/* <Header /> */}
-                <div className="container">
-                    {_catch_(<StatusPage
-                        key={darknodeID}
-                        action={darknodeAction}
-                        publicKey={publicKey}
-                        name={name}
-                        darknodeID={darknodeID}
-                        isOperator={!readOnly}
-                        darknodeDetails={details}
-                    />)}
-                </div>
-            </div >
-        );
+        return <div className="container">
+            {_catch_(<StatusPage
+                key={darknodeID}
+                action={darknodeAction}
+                publicKey={publicKey}
+                name={name}
+                darknodeID={darknodeID}
+                isOperator={!readOnly}
+                darknodeDetails={details}
+            />)}
+        </div>;
     }
 
     private readonly handleNewProps = (nextProps: Props, firstTime: boolean): void => {
@@ -147,7 +145,7 @@ class DarknodeClass extends React.Component<Props, typeof defaultState> {
 
 }
 
-const mapStateToProps = (state: ApplicationData) => ({
+const mapStateToProps = (state: ApplicationState) => ({
     store: {
         address: state.trader.address,
         darknodeDetails: state.statistics.darknodeDetails,
@@ -155,7 +153,7 @@ const mapStateToProps = (state: ApplicationData) => ({
     },
 });
 
-const mapDispatchToProps = (dispatch: Dispatch) => ({
+const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({
         setDarknodeName,
         addRegisteringDarknode,

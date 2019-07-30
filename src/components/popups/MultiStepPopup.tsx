@@ -3,12 +3,13 @@ import * as React from "react";
 import { Loading } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
-import { bindActionCreators, Dispatch } from "redux";
+import { bindActionCreators } from "redux";
 
 import { _captureBackgroundException_, _captureInteractionException_ } from "../../lib/errors";
 import { ErrorCanceledByUser } from "../../lib/ethereum/wallet";
-import { clearPopup } from "../../store/actions/popup/popupActions";
-import { ApplicationData } from "../../store/types";
+import { ApplicationState } from "../../store/applicationState";
+import { clearPopup } from "../../store/popup/popupActions";
+import { AppDispatch } from "../../store/rootReducer";
 import Warn from "../../styles/images/warn.svg";
 
 const defaultState = { // Entries must be immutable
@@ -213,12 +214,12 @@ class MultiStepPopupClass extends React.Component<Props, typeof defaultState> {
 
 }
 
-const mapStateToProps = (_state: ApplicationData) => ({
+const mapStateToProps = (_state: ApplicationState) => ({
     store: {
     },
 });
 
-const mapDispatchToProps = (dispatch: Dispatch) => ({
+const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({
         clearPopup,
     }, dispatch),

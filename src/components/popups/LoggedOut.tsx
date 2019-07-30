@@ -2,10 +2,11 @@ import * as React from "react";
 
 import { Blocky } from "@renproject/react-components";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
-import { bindActionCreators, Dispatch } from "redux";
+import { bindActionCreators } from "redux";
 
 import { getWeb3BrowserIcon } from "../../lib/ethereum/browsers";
-import { ApplicationData } from "../../store/types";
+import { ApplicationState } from "../../store/applicationState";
+import { AppDispatch } from "../../store/rootReducer";
 
 /**
  * LoggedOut is a popup component for prompting a user to select an
@@ -39,13 +40,13 @@ const LoggedOutClass: React.StatelessComponent<Props> = (props) => {
     </div>;
 };
 
-const mapStateToProps = (state: ApplicationData) => ({
+const mapStateToProps = (state: ApplicationState) => ({
     store: {
         web3BrowserName: state.trader.web3BrowserName,
     },
 });
 
-const mapDispatchToProps = (dispatch: Dispatch) => ({
+const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({
     }, dispatch),
 });

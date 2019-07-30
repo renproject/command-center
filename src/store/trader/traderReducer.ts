@@ -1,11 +1,11 @@
 import { ActionType, getType } from "typesafe-actions";
 
-import * as accountActions from "../../actions/trader/accountActions";
-import { TraderData } from "../../types";
+import { TraderState } from "../applicationState";
+import * as accountActions from "./accountActions";
 
 type AccountAction = ActionType<typeof accountActions>;
 
-export const traderReducer = (state: TraderData = new TraderData(), action: AccountAction): TraderData => {
+export const traderReducer = (state: TraderState = new TraderState(), action: AccountAction): TraderState => {
     switch (action.type) {
         case getType(accountActions.storeAddress):
             return state.set("address", action.payload);

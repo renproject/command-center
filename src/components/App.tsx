@@ -2,12 +2,13 @@ import * as React from "react";
 
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { Route, RouteComponentProps, Switch, withRouter } from "react-router-dom";
-import { bindActionCreators, Dispatch } from "redux";
+import { bindActionCreators } from "redux";
 
 import { DEFAULT_REN_NETWORK } from "../lib/environmentVariables";
-import { ApplicationData } from "../store/types";
+import { ApplicationState } from "../store/applicationState";
+import { AppDispatch } from "../store/rootReducer";
 import { BackgroundTasks } from "./BackgroundTasks";
-import { DarknodeMap } from "./darknodeMap/darknodeMap";
+import { DarknodeMapProvider } from "./darknodeMap/darknodeMap";
 import { _catch_ } from "./ErrorBoundary";
 import { Header } from "./Header";
 import { Darknode, getDarknodeParam } from "./pages/Darknode";
@@ -15,7 +16,7 @@ import { Home } from "./pages/Home";
 import { LoggingIn } from "./pages/LoggingIn";
 import { NotFound } from "./pages/NotFound";
 import { PopupController } from "./popups/PopupController";
-import { Sidebar } from "./Sidebar";
+import { Sidebar } from "./sidebar/Sidebar";
 
 // Scroll restoration based on https://reacttraining.com/react-router/web/guides/scroll-restoration
 const ScrollToTop = withRouter(
@@ -65,7 +66,7 @@ class AppClass extends React.Component<Props> {
                     {address ? _catch_(<Sidebar selectedDarknode={darknodeID} />) : null}
                     <div className="app--body">
                         <Switch>
-                            <Route path="/" exact component={DarknodeMap} />
+                            <Route path="/" exact component={DarknodeMapProvider} />
                             <Route path="/all" exact component={this.withAccount(Home)} />
                             <Route path="/darknode/:darknodeID" exact component={Darknode} />
                             <Route component={NotFound} />
@@ -78,7 +79,7 @@ class AppClass extends React.Component<Props> {
     }
 }
 
-const mapStateToProps = (state: ApplicationData) => ({
+const mapStateToProps = (state: ApplicationState) => ({
     store: {
         address: state.trader.address,
         web3: state.trader.web3,
@@ -86,7 +87,7 @@ const mapStateToProps = (state: ApplicationData) => ({
     },
 });
 
-const mapDispatchToProps = (dispatch: Dispatch) => ({
+const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({
     }, dispatch),
 });

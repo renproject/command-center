@@ -2,16 +2,17 @@ import * as React from "react";
 
 import { Loading } from "@renproject/react-components";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
-import { bindActionCreators, Dispatch } from "redux";
+import { bindActionCreators } from "redux";
 
 import { _captureInteractionException_ } from "../../lib/errors";
+import { ApplicationState, DarknodesState } from "../../store/applicationState";
+import { AppDispatch } from "../../store/rootReducer";
 import {
     RegistrationStatus, updateDarknodeStatistics, updateOperatorStatistics,
-} from "../../store/actions/statistics/operatorActions";
+} from "../../store/statistics/operatorActions";
 import {
     showDeregisterPopup, showRefundPopup, showRegisterPopup,
-} from "../../store/actions/statistics/operatorPopupActions";
-import { ApplicationData, DarknodeDetails } from "../../store/types";
+} from "../../store/statistics/operatorPopupActions";
 
 export const statusText = {
     [RegistrationStatus.Unknown]: "Loading...",
@@ -199,7 +200,7 @@ class RegistrationClass extends React.Component<Props, typeof defaultState> {
     }
 }
 
-const mapStateToProps = (state: ApplicationData) => ({
+const mapStateToProps = (state: ApplicationState) => ({
     store: {
         address: state.trader.address,
         web3: state.trader.web3,
@@ -211,7 +212,7 @@ const mapStateToProps = (state: ApplicationData) => ({
     },
 });
 
-const mapDispatchToProps = (dispatch: Dispatch) => ({
+const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({
         showRegisterPopup,
         showDeregisterPopup,
@@ -225,7 +226,7 @@ interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<
     isOperator: boolean;
     registrationStatus: RegistrationStatus;
     darknodeID: string;
-    darknodeDetails: DarknodeDetails | null;
+    darknodeDetails: DarknodesState | null;
     publicKey?: string;
 }
 

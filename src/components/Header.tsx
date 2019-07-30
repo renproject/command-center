@@ -3,15 +3,16 @@ import * as React from "react";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { RenNetwork, RenNetworks } from "@renproject/contracts";
-import { CurrencyIcon, Dropdown } from "@renproject/react-components";
+import { currencies, Currency, CurrencyIcon, Dropdown } from "@renproject/react-components";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
-import { bindActionCreators, Dispatch } from "redux";
+import { bindActionCreators } from "redux";
 
-import { storeQuoteCurrency } from "../store/actions/statistics/operatorActions";
-import { storeRenNetwork } from "../store/actions/trader/accountActions";
-import { showMobileMenu } from "../store/actions/ui/uiActions";
-import { ApplicationData, currencies, Currency } from "../store/types";
+import { ApplicationState } from "../store/applicationState";
+import { AppDispatch } from "../store/rootReducer";
+import { storeQuoteCurrency } from "../store/statistics/operatorActions";
+import { storeRenNetwork } from "../store/trader/accountActions";
+import { showMobileMenu } from "../store/ui/uiActions";
 import { ReactComponent as English } from "../styles/images/rp-flag-uk.svg";
 import { AccountDropdown } from "./AccountDropdown";
 
@@ -126,7 +127,7 @@ class HeaderClass extends React.Component<Props> {
     }
 }
 
-const mapStateToProps = (state: ApplicationData) => ({
+const mapStateToProps = (state: ApplicationState) => ({
     store: {
         address: state.trader.address,
         quoteCurrency: state.statistics.quoteCurrency,
@@ -134,7 +135,7 @@ const mapStateToProps = (state: ApplicationData) => ({
     },
 });
 
-const mapDispatchToProps = (dispatch: Dispatch) => ({
+const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({
         storeQuoteCurrency,
         showMobileMenu,

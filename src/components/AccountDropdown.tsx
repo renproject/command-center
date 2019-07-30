@@ -2,10 +2,11 @@ import * as React from "react";
 
 import { Blocky, Loading } from "@renproject/react-components";
 import { connect, ConnectedReturnType } from "react-redux";
-import { bindActionCreators, Dispatch } from "redux";
+import { bindActionCreators } from "redux";
 
-import { login, logout } from "../store/actions/trader/accountActions";
-import { ApplicationData } from "../store/types";
+import { ApplicationState } from "../store/applicationState";
+import { AppDispatch } from "../store/rootReducer";
+import { login, logout } from "../store/trader/accountActions";
 
 const defaultState = { // Entries must be immutable
     shown: false,
@@ -182,7 +183,7 @@ class AccountDropdownClass extends React.Component<Props, typeof defaultState> {
     }
 }
 
-const mapStateToProps = (state: ApplicationData) => ({
+const mapStateToProps = (state: ApplicationState) => ({
     store: {
         address: state.trader.address,
         web3BrowserName: state.trader.web3BrowserName,
@@ -194,7 +195,7 @@ const mapStateToProps = (state: ApplicationData) => ({
     },
 });
 
-const mapDispatchToProps = (dispatch: Dispatch) => ({
+const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({
         login,
         logout,

@@ -3,17 +3,16 @@ import * as React from "react";
 
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { RouteComponentProps, withRouter } from "react-router-dom";
-import { bindActionCreators, Dispatch } from "redux";
+import { bindActionCreators } from "redux";
 
 import { _captureBackgroundException_ } from "../lib/errors";
-import {
-    updateNetworkStatistics, updateTokenPrices,
-} from "../store/actions/statistics/networkActions";
+import { ApplicationState } from "../store/applicationState";
+import { AppDispatch } from "../store/rootReducer";
+import { updateNetworkStatistics, updateTokenPrices } from "../store/statistics/networkActions";
 import {
     updateDarknodeStatistics, updateOperatorStatistics,
-} from "../store/actions/statistics/operatorActions";
-import { login, lookForLogout } from "../store/actions/trader/accountActions";
-import { ApplicationData } from "../store/types";
+} from "../store/statistics/operatorActions";
+import { login, lookForLogout } from "../store/trader/accountActions";
 import { getDarknodeParam } from "./pages/Darknode";
 
 /**
@@ -113,11 +112,11 @@ class BackgroundTasksClass extends React.Component<Props> {
     private readonly callLookForLogout = async (props?: Props): Promise<void> => {
         props = props || this.props;
 
-        const { address, web3, renNetwork } = props.store;
+        const { address } = props.store;
         if (address) {
             try {
                 // tslint:disable-next-line: await-promise
-                await props.actions.lookForLogout(renNetwork, address, web3);
+                await props.actions.lookForLogout();
             } catch (error) {
                 _captureBackgroundException_(error, {
                     description: "Error thrown in callLookForLogout background task",
@@ -252,7 +251,7 @@ class BackgroundTasksClass extends React.Component<Props> {
 
 }
 
-const mapStateToProps = (state: ApplicationData) => ({
+const mapStateToProps = (state: ApplicationState) => ({
     store: {
         address: state.trader.address,
         web3: state.trader.web3,
@@ -263,7 +262,7 @@ const mapStateToProps = (state: ApplicationData) => ({
     },
 });
 
-const mapDispatchToProps = (dispatch: Dispatch) => ({
+const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({
         login,
         lookForLogout,

@@ -2,12 +2,11 @@ import * as React from "react";
 
 import { Blocky, InfoLabel } from "@renproject/react-components";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
-import { bindActionCreators, Dispatch } from "redux";
+import { bindActionCreators } from "redux";
 
-import {
-    RegistrationStatus, setDarknodeName,
-} from "../../store/actions/statistics/operatorActions";
-import { ApplicationData, DarknodeDetails } from "../../store/types";
+import { ApplicationState, DarknodesState } from "../../store/applicationState";
+import { AppDispatch } from "../../store/rootReducer";
+import { RegistrationStatus, setDarknodeName } from "../../store/statistics/operatorActions";
 import { DarknodeID } from "../DarknodeID";
 import { DarknodeAction } from "../pages/Darknode";
 import { FeesBlock } from "./block/FeesBlock";
@@ -166,13 +165,13 @@ class StatusPageClass extends React.Component<Props, State> {
     }
 }
 
-const mapStateToProps = (state: ApplicationData) => ({
+const mapStateToProps = (state: ApplicationState) => ({
     store: {
         tokenPrices: state.statistics.tokenPrices,
     },
 });
 
-const mapDispatchToProps = (dispatch: Dispatch) => ({
+const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({
         setDarknodeName,
     }, dispatch),
@@ -183,7 +182,7 @@ interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<
     isOperator: boolean;
 
     darknodeID: string;
-    darknodeDetails: DarknodeDetails | null;
+    darknodeDetails: DarknodesState | null;
     name: string | undefined;
     publicKey: string | undefined;
 }

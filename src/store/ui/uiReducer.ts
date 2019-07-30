@@ -1,12 +1,11 @@
 import { ActionType, getType } from "typesafe-actions";
 
-import * as uiActions from "../../actions/ui/uiActions";
-
-import { UIData } from "../../types";
+import { UIState } from "../applicationState";
+import * as uiActions from "./uiActions";
 
 type UIAction = ActionType<typeof uiActions>;
 
-export const uiReducer = (state: UIData = new UIData(), action: UIAction): UIData => {
+export const uiReducer = (state: UIState = new UIState(), action: UIAction): UIState => {
     switch (action.type) {
         case getType(uiActions.showMobileMenu):
             return state.set("mobileMenuActive", true);

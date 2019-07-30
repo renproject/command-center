@@ -2,10 +2,11 @@ import * as React from "react";
 
 import { Blocky, Loading } from "@renproject/react-components";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
-import { bindActionCreators, Dispatch } from "redux";
+import { bindActionCreators } from "redux";
 
 import { _captureBackgroundException_ } from "../../lib/errors";
-import { ApplicationData } from "../../store/types";
+import { ApplicationState } from "../../store/applicationState";
+import { AppDispatch } from "../../store/rootReducer";
 
 const defaultState = { // Entries must be immutable
     accounts: null as string[] | null,
@@ -94,12 +95,12 @@ class SelectWeb3AccountClass extends React.Component<Props, typeof defaultState>
     }
 }
 
-const mapStateToProps = (_state: ApplicationData) => ({
+const mapStateToProps = (_state: ApplicationState) => ({
     store: {
     },
 });
 
-const mapDispatchToProps = (dispatch: Dispatch) => ({
+const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({
     }, dispatch),
 });

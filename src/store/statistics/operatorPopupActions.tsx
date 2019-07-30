@@ -1,17 +1,18 @@
 import * as React from "react";
+import {} from "redux";
 
 import { RenNetworkDetails } from "@renproject/contracts";
-import { CurrencyIcon } from "@renproject/react-components";
+import { Currency, CurrencyIcon } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
-import { Dispatch } from "redux";
 import Web3 from "web3";
 
-import { MultiStepPopup } from "../../../components/popups/MultiStepPopup";
-import { TokenBalance } from "../../../components/TokenBalance";
-import { _captureBackgroundException_ } from "../../../lib/errors";
-import { Token } from "../../../lib/ethereum/tokens";
-import { Currency, TokenPrices } from "../../types";
+import { MultiStepPopup } from "../../components/popups/MultiStepPopup";
+import { TokenBalance } from "../../components/TokenBalance";
+import { _captureBackgroundException_ } from "../../lib/errors";
+import { Token } from "../../lib/ethereum/tokens";
+import { TokenPrices } from "../../lib/tokenPrices";
 import { setPopup } from "../popup/popupActions";
+import { AppDispatch } from "../rootReducer";
 import {
     approveNode, changeCycle, claimForNode, deregisterNode, fundNode, refundNode, registerNode,
 } from "../trader/darknode";
@@ -24,14 +25,14 @@ export const showRegisterPopup = (
     darknodeID: string,
     publicKey: string,
     minimumBond: BigNumber,
-    tokenPrices: TokenPrices, onCancel: () => void, onDone: () => void) => async (dispatch: Dispatch) => {
+    tokenPrices: TokenPrices, onCancel: () => void, onDone: () => void) => async (dispatch: AppDispatch) => {
 
         const step1 = async () => {
-            await approveNode(web3, renNetwork, address, minimumBond)(dispatch);
+            await dispatch(approveNode(web3, renNetwork, address, minimumBond));
         };
 
         const step2 = async () => {
-            await registerNode(
+            await dispatch(registerNode(
                 web3,
                 renNetwork,
                 address,
@@ -40,11 +41,11 @@ export const showRegisterPopup = (
                 minimumBond || new BigNumber(100000000000000000000000),
                 onCancel,
                 onDone
-            )(dispatch);
+            ));
 
             if (tokenPrices) {
                 try {
-                    await updateDarknodeStatistics(web3, renNetwork, darknodeID, tokenPrices)(dispatch);
+                    await dispatch(updateDarknodeStatistics(web3, renNetwork, darknodeID, tokenPrices));
                 } catch (error) {
                     _captureBackgroundException_(error, {
                         description: "Error thrown in updateDarknodeStatistics in showRegisterPopup",
@@ -85,10 +86,10 @@ export const showDeregisterPopup = (
     quoteCurrency: Currency,
     onCancel: () => void,
     onDone: () => void
-) => async (dispatch: Dispatch) => {
+) => async (dispatch: AppDispatch) => {
 
     const step1 = async () => {
-        await deregisterNode(web3, renNetwork, address, darknodeID, onCancel, onDone)(dispatch);
+        await dispatch(deregisterNode(web3, renNetwork, address, darknodeID, onCancel, onDone));
     };
 
     const steps = [
@@ -138,10 +139,10 @@ export const showRefundPopup = (
     darknodeID: string,
     onCancel: () => void,
     onDone: () => void,
-) => async (dispatch: Dispatch) => {
+) => async (dispatch: AppDispatch) => {
 
     const step1 = async () => {
-        await refundNode(web3, renNetwork, address, darknodeID, onCancel, onDone)(dispatch);
+        await dispatch(refundNode(web3, renNetwork, address, darknodeID, onCancel, onDone));
     };
 
     const steps = [
@@ -172,10 +173,10 @@ export const showFundPopup = (
     ethAmountStr: string,
     onCancel: () => void,
     onDone: () => void,
-) => async (dispatch: Dispatch) => {
+) => async (dispatch: AppDispatch) => {
 
     const step1 = async () => {
-        await fundNode(web3, address, darknodeID, ethAmountStr, onCancel, onDone)(dispatch);
+        await dispatch(fundNode(web3, address, darknodeID, ethAmountStr, onCancel, onDone));
     };
 
     const steps = [
@@ -208,13 +209,13 @@ export const showClaimPopup = (
     title: string,
     onCancel: () => void,
     onDone: () => void,
-) => async (dispatch: Dispatch) => {
+) => async (dispatch: AppDispatch) => {
 
     const useFixedGasLimit = !claimBeforeCycle;
 
     const claimStep = {
         call: async () => {
-            await claimForNode(web3, renNetwork, useFixedGasLimit, address, darknodeID, onCancel, onDone)(dispatch);
+            await dispatch(claimForNode(web3, renNetwork, useFixedGasLimit, address, darknodeID, onCancel, onDone));
         },
         name: "Claim rewards",
     };
@@ -222,7 +223,7 @@ export const showClaimPopup = (
     const ignoreError = claimBeforeCycle;
     const changeCycleStep = {
         call: async () => {
-            await changeCycle(web3, renNetwork, ignoreError, address, onCancel, onDone)(dispatch);
+            await dispatch(changeCycle(web3, renNetwork, ignoreError, address, onCancel, onDone));
         },
         name: `Change cycle${claimBeforeCycle ? " (optional)" : ""}`,
     };

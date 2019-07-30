@@ -3,19 +3,26 @@ import * as React from "react";
 import { Loading } from "@renproject/react-components";
 import { List, Map } from "immutable";
 
-import { DarknodeDetails } from "../../store/types";
+import { DarknodesState } from "../../store/applicationState";
 import { _catch_ } from "../ErrorBoundary";
 import { DarknodeCard } from "./DarknodeCard";
 import { EmptyDarknodeCard } from "./EmptyDarknodeCard";
 import { EmptyDarknodeList } from "./EmptyDarknodeList";
+
+interface Props {
+    darknodeList: List<string> | null;
+    darknodeDetails: Map<string, DarknodesState>;
+    darknodeNames: Map<string, string>;
+    darknodeRegisteringList: Map<string, string>;
+}
 
 export const DarknodeList: React.StatelessComponent<Props> = ({
     darknodeList,
     darknodeDetails,
     darknodeNames,
     darknodeRegisteringList,
-}) => {
-    return <div className={`darknode-list`}>
+}) =>
+    <div className={`darknode-list`}>
         {darknodeList === null ? <div className="darknode-list--loading"><Loading alt={true} /></div> : <>
             {darknodeList && darknodeList.map((darknodeID: string) => {
                 const details = darknodeDetails.get(darknodeID) || null;
@@ -36,11 +43,3 @@ export const DarknodeList: React.StatelessComponent<Props> = ({
             </>}
         </>}
     </div>;
-};
-
-interface Props {
-    darknodeList: List<string> | null;
-    darknodeDetails: Map<string, DarknodeDetails>;
-    darknodeNames: Map<string, string>;
-    darknodeRegisteringList: Map<string, string>;
-}

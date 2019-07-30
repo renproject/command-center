@@ -1,69 +1,72 @@
 import { mainnet, RenNetworkDetails } from "@renproject/contracts";
+import { Currency } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import { List, OrderedMap, OrderedSet } from "immutable";
-import { Dispatch } from "redux";
 import { createStandardAction } from "typesafe-actions";
 import Web3 from "web3";
 import { PromiEvent } from "web3-core";
 import { Block } from "web3-eth";
 import { toChecksumAddress } from "web3-utils";
 
-import { _captureBackgroundException_, _noCapture_ } from "../../../lib/errors";
-import { DarknodePaymentWeb3 } from "../../../lib/ethereum/contracts/bindings/darknodePayment";
+import { DarknodeFeeStatus } from "../../lib/darknodeFeeStatus";
+import { _captureBackgroundException_, _noCapture_ } from "../../lib/errors";
+import { DarknodePaymentWeb3 } from "../../lib/ethereum/contracts/bindings/darknodePayment";
 import {
     DarknodePaymentStoreWeb3,
-} from "../../../lib/ethereum/contracts/bindings/darknodePaymentStore";
-import { DarknodeRegistryWeb3 } from "../../../lib/ethereum/contracts/bindings/darknodeRegistry";
-import { getOperatorDarknodes } from "../../../lib/ethereum/operator";
-import { NewTokenDetails, OldToken, OldTokenDetails, Token } from "../../../lib/ethereum/tokens";
-import { Currency, DarknodeDetails, DarknodeFeeStatus, TokenPrices } from "../../types";
+} from "../../lib/ethereum/contracts/bindings/darknodePaymentStore";
+import { DarknodeRegistryWeb3 } from "../../lib/ethereum/contracts/bindings/darknodeRegistry";
+import { getOperatorDarknodes } from "../../lib/ethereum/operator";
+import { NewTokenDetails, OldToken, OldTokenDetails, Token } from "../../lib/ethereum/tokens";
+import { TokenPrices } from "../../lib/tokenPrices";
+import { DarknodesState } from "../applicationState";
+import { AppDispatch } from "../rootReducer";
 import {
     updateCurrentCycle, updateCycleTimeout, updatePendingRewards, updatePendingTotalInEth,
     updatePreviousCycle,
 } from "./networkActions";
 
-export const addRegisteringDarknode = createStandardAction("addRegisteringDarknode")<{
+export const addRegisteringDarknode = createStandardAction("ADD_REGISTERING_DARKNODE")<{
     darknodeID: string;
     publicKey: string;
 }>();
 
-export const removeRegisteringDarknode = createStandardAction("removeRegisteringDarknode")<{
+export const removeRegisteringDarknode = createStandardAction("REMOVE_REGISTERING_DARKNODE")<{
     darknodeID: string;
 }>();
 
-export const removeDarknode = createStandardAction("removeDarknode")<{
+export const removeDarknode = createStandardAction("REMOVE_DARKNODE")<{
     darknodeID: string;
     operator: string;
 }>();
 
-export const storeDarknodeList = createStandardAction("storeDarknodeList")<{
+export const storeDarknodeList = createStandardAction("STORE_DARKNODE_LIST")<{
     darknodeList: OrderedSet<string>;
     address: string;
 }>();
 
-export const storeQuoteCurrency = createStandardAction("storeQuoteCurrency")<{ quoteCurrency: Currency }>();
+export const storeQuoteCurrency = createStandardAction("STORE_QUOTE_CURRENCY")<{ quoteCurrency: Currency }>();
 
-export const storeSecondsPerBlock = createStandardAction("storeSecondsPerBlock")<{ secondsPerBlock: number }>();
+export const storeSecondsPerBlock = createStandardAction("STORE_SECONDS_PER_BLOCK")<{ secondsPerBlock: number }>();
 
-export const addToWithdrawAddresses = createStandardAction("addToWithdrawAddresses")<{ token: Token, address: string }>();
-export const removeFromWithdrawAddresses = createStandardAction("removeFromWithdrawAddresses")<{ token: Token, address: string }>();
+export const addToWithdrawAddresses = createStandardAction("ADD_TO_WITHDRAW_ADDRESSES")<{ token: Token, address: string }>();
+export const removeFromWithdrawAddresses = createStandardAction("REMOVE_FROM_WITHDRAW_ADDRESSES")<{ token: Token, address: string }>();
 
-export const setDarknodeDetails = createStandardAction("setDarknodeDetails")<{
-    darknodeDetails: DarknodeDetails;
+export const setDarknodeDetails = createStandardAction("SET_DARKNODE_DETAILS")<{
+    darknodeDetails: DarknodesState;
 }>();
 
-export const updateDarknodeHistory = createStandardAction("updateDarknodeHistory")<{
+export const updateDarknodeHistory = createStandardAction("UPDATE_DARKNODE_HISTORY")<{
     darknodeID: string;
     balanceHistory: OrderedMap<number, BigNumber>;
 }>();
 
-export const setDarknodeName = createStandardAction("setDarknodeName")<{ darknodeID: string; name: string }>();
+export const setDarknodeName = createStandardAction("SET_DARKNODE_NAME")<{ darknodeID: string; name: string }>();
 
 // tslint:disable-next-line: no-any
-export const addTransaction = createStandardAction("addTransaction")<{ txHash: string; tx: PromiEvent<any> }>();
-export const setTxConfirmations = createStandardAction("setTxConfirmations")<{ txHash: string; confirmations: number }>();
+export const addTransaction = createStandardAction("ADD_TRANSACTION")<{ txHash: string; tx: PromiEvent<any> }>();
+export const setTxConfirmations = createStandardAction("SET_TX_CONFIRMATIONS")<{ txHash: string; confirmations: number }>();
 
-export const waitForTX = <T>(promiEvent: PromiEvent<T>, onConfirmation?: (confirmations?: number) => void) => async (dispatch: Dispatch) => new Promise<string>((resolve, reject) => {
+export const waitForTX = <T>(promiEvent: PromiEvent<T>, onConfirmation?: (confirmations?: number) => void) => async (dispatch: AppDispatch) => new Promise<string>((resolve, reject) => {
     promiEvent.on("transactionHash", (txHash) => {
         resolve(txHash);
         dispatch(addTransaction({ txHash, tx: promiEvent }));
@@ -81,7 +84,7 @@ export const waitForTX = <T>(promiEvent: PromiEvent<T>, onConfirmation?: (confir
 
 export const calculateSecondsPerBlock = (
     web3: Web3,
-) => async (dispatch: Dispatch) => {
+) => async (dispatch: AppDispatch) => {
     const sampleSize = 1000;
 
     const fetchedBlockNumber = await web3.eth.getBlockNumber();
@@ -249,7 +252,7 @@ export const updateCycleAndPendingRewards = (
     web3: Web3,
     renNetwork: RenNetworkDetails,
     tokenPrices: TokenPrices | null,
-) => async (dispatch: Dispatch) => {
+) => async (dispatch: AppDispatch) => {
     const darknodePayment: DarknodePaymentWeb3 = new (web3.eth.Contract)(
         renNetwork.addresses.ren.DarknodePayment.abi,
         renNetwork.addresses.ren.DarknodePayment.address,
@@ -414,7 +417,7 @@ export const updateDarknodeStatistics = (
     renNetwork: RenNetworkDetails,
     darknodeID: string,
     tokenPrices: TokenPrices | null,
-) => async (dispatch: Dispatch) => {
+) => async (dispatch: AppDispatch) => {
     darknodeID = toChecksumAddress(darknodeID.toLowerCase());
 
     // Get eth Balance
@@ -499,7 +502,7 @@ export const updateDarknodeStatistics = (
 
     // Store details ///////////////////////////////////////////////////////////
 
-    const darknodeDetails = new DarknodeDetails({
+    const darknodeDetails = new DarknodesState({
         ID: darknodeID,
         multiAddress: "" as string,
         publicKey,
@@ -526,8 +529,8 @@ export const updateOperatorStatistics = (
     address: string,
     tokenPrices: TokenPrices | null,
     previousDarknodeList: List<string> | null,
-) => async (dispatch: Dispatch) => {
-    await updateCycleAndPendingRewards(web3, renNetwork, tokenPrices)(dispatch);
+) => async (dispatch: AppDispatch) => {
+    await dispatch(updateCycleAndPendingRewards(web3, renNetwork, tokenPrices));
 
     let darknodeList = previousDarknodeList || List<string>();
 
@@ -544,7 +547,7 @@ export const updateOperatorStatistics = (
     });
 
     await Promise.all(darknodeList.toList().map(async (darknodeID: string) => {
-        return updateDarknodeStatistics(web3, renNetwork, darknodeID, tokenPrices)(dispatch);
+        return dispatch(updateDarknodeStatistics(web3, renNetwork, darknodeID, tokenPrices));
     }).toArray());
 };
 
@@ -564,7 +567,7 @@ export const fetchDarknodeBalanceHistory = (
     previousHistory: OrderedMap<number, BigNumber> | null,
     historyPeriod: HistoryPeriods,
     secondsPerBlock: number,
-) => async (dispatch: Dispatch) => {
+) => async (dispatch: AppDispatch) => {
     let balanceHistory = previousHistory || OrderedMap<number, BigNumber>();
 
     // If the page is kept open, the history data will keep growing, so we limit

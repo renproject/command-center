@@ -1,11 +1,13 @@
 import * as React from "react";
 
+import { Currency } from "@renproject/react-components";
 import { BigNumber } from "bignumber.js";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
-import { bindActionCreators, Dispatch } from "redux";
+import { bindActionCreators } from "redux";
 
 import { AllTokenDetails, OldToken, Token } from "../lib/ethereum/tokens";
-import { ApplicationData, Currency } from "../store/types";
+import { ApplicationState } from "../store/applicationState";
+import { AppDispatch } from "../store/rootReducer";
 
 const defaultState = { // Entries must be immutable
     decimals: 0,
@@ -75,14 +77,14 @@ class TokenBalanceClass extends React.Component<Props, typeof defaultState> {
     }
 }
 
-const mapStateToProps = (state: ApplicationData) => ({
+const mapStateToProps = (state: ApplicationState) => ({
     store: {
         tokenPrices: state.statistics.tokenPrices,
         web3: state.trader.web3,
     },
 });
 
-const mapDispatchToProps = (dispatch: Dispatch) => ({
+const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({
     }, dispatch),
 });

@@ -5,14 +5,15 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Loading } from "@renproject/react-components";
 import { List } from "immutable";
 import { connect, ConnectedReturnType } from "react-redux";
-import { bindActionCreators, Dispatch } from "redux";
+import { bindActionCreators } from "redux";
 import { validate } from "wallet-address-validator";
 
 import { Token } from "../../lib/ethereum/tokens";
+import { ApplicationState } from "../../store/applicationState";
+import { AppDispatch } from "../../store/rootReducer";
 import {
     addToWithdrawAddresses, removeFromWithdrawAddresses,
-} from "../../store/actions/statistics/operatorActions";
-import { ApplicationData } from "../../store/types";
+} from "../../store/statistics/operatorActions";
 
 enum Stage {
     Pending,
@@ -163,13 +164,13 @@ class WithdrawPopupClass extends React.Component<Props, State> {
     }
 }
 
-const mapStateToProps = (state: ApplicationData) => ({
+const mapStateToProps = (state: ApplicationState) => ({
     store: {
         withdrawAddresses: state.statistics.withdrawAddresses,
     },
 });
 
-const mapDispatchToProps = (dispatch: Dispatch) => ({
+const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({
         addToWithdrawAddresses,
         removeFromWithdrawAddresses,

@@ -3,7 +3,7 @@ import * as React from "react";
 import { faServer } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { DarknodeDetails } from "../../../store/types";
+import { DarknodesState } from "../../../store/applicationState";
 import { darknodeIDHexToBase58 } from "../../pages/Darknode";
 import { Block, BlockBody, BlockTitle } from "./Block";
 
@@ -44,5 +44,5 @@ export const NetworkBlock = (props: Props): JSX.Element => {
 
 // tslint:disable: react-unused-props-and-state
 interface Props {
-    darknodeDetails: DarknodeDetails | null;
+    darknodeDetails: DarknodesState | null;
 }

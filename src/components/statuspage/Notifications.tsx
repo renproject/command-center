@@ -1,12 +1,13 @@
 import * as React from "react";
 
+import {
+    faExclamationTriangle, faInfoCircle, faTimesCircle,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import BigNumber from "bignumber.js";
 
-import { faExclamationTriangle, faInfoCircle, faTimesCircle } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
-import { RegistrationStatus } from "../../store/actions/statistics/operatorActions";
-import { DarknodeDetails } from "../../store/types";
+import { DarknodesState } from "../../store/applicationState";
+import { RegistrationStatus } from "../../store/statistics/operatorActions";
 
 const lowValue = new BigNumber(Math.pow(10, 18)).multipliedBy(0.1);
 
@@ -84,5 +85,5 @@ export const Notifications: React.StatelessComponent<Props> = (props) => {
 
 interface Props {
     isOperator: boolean;
-    darknodeDetails: DarknodeDetails | null;
+    darknodeDetails: DarknodesState | null;
 }

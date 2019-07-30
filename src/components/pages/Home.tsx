@@ -2,9 +2,10 @@ import * as React from "react";
 
 import { List } from "immutable";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
-import { bindActionCreators, Dispatch } from "redux";
+import { bindActionCreators } from "redux";
 
-import { ApplicationData } from "../../store/types";
+import { ApplicationState } from "../../store/applicationState";
+import { AppDispatch } from "../../store/rootReducer";
 import { DarknodeList } from "../darknodeList/DarknodeList";
 import { _catch_ } from "../ErrorBoundary";
 
@@ -51,7 +52,7 @@ class HomeClass extends React.Component<Props, typeof defaultState> {
     }
 }
 
-const mapStateToProps = (state: ApplicationData) => ({
+const mapStateToProps = (state: ApplicationState) => ({
     store: {
         address: state.trader.address,
         darknodeDetails: state.statistics.darknodeDetails,
@@ -62,7 +63,7 @@ const mapStateToProps = (state: ApplicationData) => ({
     },
 });
 
-const mapDispatchToProps = (dispatch: Dispatch) => ({
+const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({
     }, dispatch),
 });

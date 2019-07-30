@@ -1,18 +1,19 @@
 import * as React from "react";
 
+// import { decode as decode58 } from "bs58";
 import { mainnet, RenNetworkDetails } from "@renproject/contracts";
 import BigNumber from "bignumber.js";
-// import { decode as decode58 } from "bs58";
-import { Dispatch } from "redux";
 import Web3 from "web3";
 
-import { WithdrawPopup } from "../../../components/popups/WithdrawPopup";
-import { alreadyPast } from "../../../lib/conversion";
-import { _noCapture_ } from "../../../lib/errors";
-import { DarknodePaymentWeb3 } from "../../../lib/ethereum/contracts/bindings/darknodePayment";
-import { DarknodeRegistryWeb3 } from "../../../lib/ethereum/contracts/bindings/darknodeRegistry";
-import { AllTokenDetails, OldToken, Token } from "../../../lib/ethereum/tokens";
+import { WithdrawPopup } from "../../components/popups/WithdrawPopup";
+import { alreadyPast } from "../../lib/conversion";
+import { _noCapture_ } from "../../lib/errors";
+import { DarknodePaymentWeb3 } from "../../lib/ethereum/contracts/bindings/darknodePayment";
+import { DarknodeRegistryWeb3 } from "../../lib/ethereum/contracts/bindings/darknodeRegistry";
+import { AllTokenDetails, OldToken, Token } from "../../lib/ethereum/tokens";
+import { ApplicationState } from "../applicationState";
 import { clearPopup, setPopup } from "../popup/popupActions";
+import { AppDispatch } from "../rootReducer";
 import { waitForTX } from "../statistics/operatorActions";
 
 // export const bridgedToken = (web3: Web3, renNetwork: RenNetworkDetails, address: string): Contract => {
@@ -49,21 +50,30 @@ import { waitForTX } from "../statistics/operatorActions";
 // };
 
 const withdrawOldToken = (
-    web3: Web3,
-    renNetwork: typeof mainnet,
-    trader: string,
     darknodeID: string,
     token: Token | OldToken,
-) => async (dispatch: Dispatch) => new Promise(async (resolve, reject) => {
+) => async (dispatch: AppDispatch, getState: () => ApplicationState) => new Promise(async (resolve, reject) => {
+    const { web3, renNetwork, address } = getState().trader;
+
+    if (renNetwork.name !== "mainnet") {
+        throw new Error(`Withdrawing old tokens not supported on network ${renNetwork.name}`);
+    }
+
+    if (!address) {
+        throw new Error(`Unable to retrieve account address.`);
+    }
+
+    const network = renNetwork as typeof mainnet;
+
     try {
         const contract = new (web3.eth.Contract)(
-            renNetwork.addresses.ren.DarknodeRewardVault.abi,
-            renNetwork.addresses.ren.DarknodeRewardVault.address
+            network.addresses.ren.DarknodeRewardVault.abi,
+            network.addresses.ren.DarknodeRewardVault.address
         );
-        await waitForTX(
-            contract.methods.withdraw(darknodeID, renNetwork.addresses.oldTokens[token].address).send({ from: trader }),
+        await dispatch(waitForTX(
+            contract.methods.withdraw(darknodeID, network.addresses.oldTokens[token].address).send({ from: address }),
             resolve,
-        )(dispatch);
+        ));
     } catch (error) {
         reject(error);
         return;
@@ -71,16 +81,18 @@ const withdrawOldToken = (
 });
 
 export const withdrawToken = (
-    web3: Web3,
-    renNetwork: RenNetworkDetails,
-    trader: string,
     darknodeID: string,
     token: Token | OldToken,
-) => async (dispatch: Dispatch) => new Promise(async (resolve, reject) => {
+) => async (dispatch: AppDispatch, getState: () => ApplicationState) => new Promise(async (resolve, reject) => {
+    const { renNetwork, web3, address } = getState().trader;
 
     const tokenDetails = AllTokenDetails.get(token);
     if (tokenDetails === undefined) {
         throw new Error("Unknown token");
+    }
+
+    if (!address) {
+        throw new Error(`Unable to retrieve account address.`);
     }
 
     const withdraw = async (_withdrawAddress?: string) => {
@@ -94,10 +106,10 @@ export const withdrawToken = (
             throw new Error("Unknown token");
         }
 
-        await waitForTX(
-            darknodePayment.methods.withdraw(darknodeID, renNetwork.addresses.tokens[token]).send({ from: trader }),
+        await dispatch(waitForTX(
+            darknodePayment.methods.withdraw(darknodeID, renNetwork.addresses.tokens[token]).send({ from: address }),
             resolve,
-        )(dispatch);
+        ));
 
         // if (tokenDetails.wrapped) {
         //     if (!withdrawAddress) {
@@ -137,12 +149,10 @@ export const withdrawToken = (
 });
 
 export const withdrawReward = (
-    web3: Web3,
-    renNetwork: RenNetworkDetails,
-    trader: string,
     darknodeID: string,
     token: Token | OldToken,
-) => async (dispatch: Dispatch) => {
+) => async (dispatch: AppDispatch, getState: () => ApplicationState) => {
+    const { renNetwork } = getState().trader;
 
     const tokenDetails = AllTokenDetails.get(token);
     if (tokenDetails === undefined) {
@@ -150,9 +160,9 @@ export const withdrawReward = (
     }
 
     if (tokenDetails.old && renNetwork.name === "mainnet") {
-        await withdrawOldToken(web3, renNetwork as typeof mainnet, trader, darknodeID, token)(dispatch);
+        await withdrawOldToken(darknodeID, token)(dispatch, getState);
     } else {
-        await withdrawToken(web3, renNetwork, trader, darknodeID, token)(dispatch);
+        await withdrawToken(darknodeID, token)(dispatch, getState);
     }
 };
 
@@ -161,7 +171,7 @@ export const approveNode = (
     renNetwork: RenNetworkDetails,
     trader: string,
     bond: BigNumber
-) => async (dispatch: Dispatch) => {
+) => async (dispatch: AppDispatch) => {
     // tslint:disable-next-line:no-non-null-assertion
     const ercContract = new (web3.eth.Contract)(renNetwork.addresses.erc.ERC20.abi, renNetwork.addresses.tokens.REN.address);
     const ercBalance = new BigNumber(await ercContract.methods.balanceOf(trader).call());
@@ -178,9 +188,9 @@ export const approveNode = (
         throw _noCapture_(new Error("You have insufficient REN to register a darknode."));
     }
 
-    return waitForTX(
+    return dispatch(waitForTX(
         ercContract.methods.approve(renNetwork.addresses.ren.DarknodeRegistry.address, bond.toFixed()).send({ from: trader })
-    )(dispatch);
+    ));
 };
 
 export const registerNode = (
@@ -192,7 +202,7 @@ export const registerNode = (
     bond: BigNumber,
     onCancel: () => void,
     onDone: () => void
-) => async (dispatch: Dispatch): Promise<string> => {
+) => async (dispatch: AppDispatch): Promise<string> => {
 
     const hardCodedGas = 500000;
 
@@ -215,10 +225,10 @@ export const registerNode = (
     );
 
     try {
-        const res = await waitForTX(
+        const res = await dispatch(waitForTX(
             darknodeRegistry.methods.register(darknodeID, publicKey, bond.toFixed()).send({ from: trader, gas }),
             onDone
-        )(dispatch);
+        ));
         resolved = true;
         return res;
     } catch (error) {
@@ -234,7 +244,7 @@ export const deregisterNode = (
     darknodeID: string,
     onCancel: () => void,
     onDone: () => void
-) => async (dispatch: Dispatch): Promise<string> => {
+) => async (dispatch: AppDispatch): Promise<string> => {
     // The node has been registered and can be deregistered.
 
     let resolved = false;
@@ -243,10 +253,10 @@ export const deregisterNode = (
         renNetwork.addresses.ren.DarknodeRegistry.address
     );
     try {
-        const res = await waitForTX(
+        const res = await dispatch(waitForTX(
             darknodeRegistry.methods.deregister(darknodeID).send({ from: trader }),
             onDone
-        )(dispatch);
+        ));
         resolved = true;
         return res;
     } catch (error) {
@@ -262,7 +272,7 @@ export const refundNode = (
     darknodeID: string,
     onCancel: () => void,
     onDone: () => void
-) => async (dispatch: Dispatch): Promise<string> => {
+) => async (dispatch: AppDispatch): Promise<string> => {
     // The node is awaiting refund.
 
     let resolved = false;
@@ -272,10 +282,10 @@ export const refundNode = (
     );
 
     try {
-        const res = await waitForTX(
+        const res = await dispatch(waitForTX(
             darknodeRegistry.methods.refund(darknodeID).send({ from: trader }),
             onDone
-        )(dispatch);
+        ));
         resolved = true;
         return res;
     } catch (error) {
@@ -291,7 +301,7 @@ export const fundNode = (
     ethAmountStr: string,
     onCancel: () => void,
     onDone: () => void
-) => async (dispatch: Dispatch): Promise<string> => {
+) => async (dispatch: AppDispatch): Promise<string> => {
     // Convert eth to wei
     const ethAmount = new BigNumber(ethAmountStr);
     const weiAmount = ethAmount.times(new BigNumber(10).exponentiatedBy(18)).decimalPlaces(0);
@@ -305,10 +315,10 @@ export const fundNode = (
     });
 
     try {
-        const res = await waitForTX(
+        const res = await dispatch(waitForTX(
             call(),
             onDone
-        )(dispatch);
+        ));
         resolved = true;
         return res;
     } catch (error) {
@@ -325,7 +335,7 @@ export const claimForNode = (
     darknodeID: string,
     onCancel: () => void,
     onDone: () => void
-) => async (dispatch: Dispatch): Promise<string> => {
+) => async (dispatch: AppDispatch): Promise<string> => {
     // Convert eth to wei
 
     const darknodePayment: DarknodePaymentWeb3 = new (web3.eth.Contract)(
@@ -338,10 +348,10 @@ export const claimForNode = (
     const call = () => darknodePayment.methods.claim(darknodeID).send({ from: address, gas: useFixedGasLimit ? 200000 : undefined });
 
     try {
-        const res = await waitForTX(
+        const res = await dispatch(waitForTX(
             call(),
             onDone
-        )(dispatch);
+        ));
         resolved = true;
         return res;
     } catch (error) {
@@ -357,7 +367,7 @@ export const changeCycle = (
     address: string,
     onCancel: () => void,
     onDone: () => void
-) => async (dispatch: Dispatch): Promise<string> => {
+) => async (dispatch: AppDispatch): Promise<string> => {
     // Convert eth to wei
 
     const darknodePayment: DarknodePaymentWeb3 = new (web3.eth.Contract)(
@@ -380,10 +390,10 @@ export const changeCycle = (
     const call = () => darknodePayment.methods.changeCycle().send({ from: address });
 
     try {
-        const res = await waitForTX(
+        const res = await dispatch(waitForTX(
             call(),
             onDone,
-        )(dispatch);
+        ));
         resolved = true;
         return res;
     } catch (error) {

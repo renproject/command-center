@@ -7,7 +7,7 @@ import {
 import { MapContainer } from "./mapContainer";
 import MapJSON from "./world-50m.json";
 
-export const DarknodeMap = () => {
+const DarknodeMap = () => {
     const counter = MapContainer.useContainer();
 
     // useEffect replaces `componentDidMount` and `componentDidUpdate`.
@@ -18,7 +18,7 @@ export const DarknodeMap = () => {
             setInitialized(true);
             counter.fetchDarknodes().catch(console.error);
         }
-    }, [initialized]);
+    }, [initialized, counter]);
 
     return (
         <div className="map container">
@@ -85,3 +85,7 @@ export const DarknodeMap = () => {
         </div>
     );
 };
+
+export const DarknodeMapProvider = () => <MapContainer.Provider>
+    <DarknodeMap />
+</MapContainer.Provider>;

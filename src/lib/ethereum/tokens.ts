@@ -1,7 +1,8 @@
+import { Currency } from "@renproject/react-components";
 import Axios from "axios";
 import { Map } from "immutable";
 
-import { Currency, TokenPrices } from "../../store/types";
+import { TokenPrices } from "../tokenPrices";
 
 export enum Token {
     DAI = "DAI",

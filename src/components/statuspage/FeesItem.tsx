@@ -5,12 +5,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Loading } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
-import { bindActionCreators, Dispatch } from "redux";
+import { bindActionCreators } from "redux";
 
 import { OldToken, Token } from "../../lib/ethereum/tokens";
-import { updateDarknodeStatistics } from "../../store/actions/statistics/operatorActions";
-import { withdrawReward } from "../../store/actions/trader/darknode";
-import { ApplicationData } from "../../store/types";
+import { ApplicationState } from "../../store/applicationState";
+import { AppDispatch } from "../../store/rootReducer";
+import { updateDarknodeStatistics } from "../../store/statistics/operatorActions";
+import { withdrawReward } from "../../store/trader/darknode";
 
 const FeesItemClass = ({ darknodeID, token, amount, disabled, actions, store }: Props) => {
     const [loading, setLoading] = React.useState(false);
@@ -22,7 +23,7 @@ const FeesItemClass = ({ darknodeID, token, amount, disabled, actions, store }: 
         if (address) {
             try {
                 // tslint:disable-next-line: await-promise
-                await actions.withdrawReward(web3, renNetwork, address, darknodeID, token);
+                await actions.withdrawReward(darknodeID, token);
             } catch (error) {
                 setLoading(false);
                 return;
@@ -46,7 +47,7 @@ const FeesItemClass = ({ darknodeID, token, amount, disabled, actions, store }: 
     );
 };
 
-const mapStateToProps = (state: ApplicationData) => ({
+const mapStateToProps = (state: ApplicationState) => ({
     store: {
         web3: state.trader.web3,
         tokenPrices: state.statistics.tokenPrices,
@@ -56,7 +57,7 @@ const mapStateToProps = (state: ApplicationData) => ({
     },
 });
 
-const mapDispatchToProps = (dispatch: Dispatch) => ({
+const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({
         withdrawReward,
         updateDarknodeStatistics,

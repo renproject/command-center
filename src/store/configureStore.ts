@@ -4,7 +4,7 @@ import thunk from "redux-thunk";
 
 import { NODE_ENV } from "../lib/environmentVariables";
 import { persistConfig } from "./persistConfig";
-import { rootReducer } from "./reducers/rootReducer";
+import { rootReducer } from "./rootReducer";
 
 const middlewares: Middleware[] = [
     thunk,

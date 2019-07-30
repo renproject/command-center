@@ -7,13 +7,14 @@ import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
 import { Scatter } from "react-chartjs-2";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
-import { bindActionCreators, Dispatch } from "redux";
+import { bindActionCreators } from "redux";
 
 import { _captureBackgroundException_ } from "../../../lib/errors";
+import { ApplicationState, DarknodesState } from "../../../store/applicationState";
+import { AppDispatch } from "../../../store/rootReducer";
 import {
     calculateSecondsPerBlock, fetchDarknodeBalanceHistory, HistoryIterations, HistoryPeriods,
-} from "../../../store/actions/statistics/operatorActions";
-import { ApplicationData, DarknodeDetails } from "../../../store/types";
+} from "../../../store/statistics/operatorActions";
 import { Block, BlockBody, BlockTitle } from "./Block";
 
 const shift = new BigNumber(10).exponentiatedBy(18);
@@ -285,7 +286,7 @@ class GasGraphClass extends React.Component<Props, State> {
     }
 }
 
-const mapStateToProps = (state: ApplicationData) => ({
+const mapStateToProps = (state: ApplicationState) => ({
     store: {
         web3: state.trader.web3,
         balanceHistories: state.statistics.balanceHistories,
@@ -293,7 +294,7 @@ const mapStateToProps = (state: ApplicationData) => ({
     },
 });
 
-const mapDispatchToProps = (dispatch: Dispatch) => ({
+const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({
         fetchDarknodeBalanceHistory,
         calculateSecondsPerBlock,
@@ -301,7 +302,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
 });
 
 interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps> {
-    darknodeDetails: DarknodeDetails | null;
+    darknodeDetails: DarknodesState | null;
 }
 
 type State = typeof defaultState;

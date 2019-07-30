@@ -1,0 +1,7 @@
+
+export enum DarknodeFeeStatus {
+    BLACKLISTED = "BLACKLISTED",
+    CLAIMED = "CLAIMED",
+    NOT_CLAIMED = "NOT_CLAIMED",
+    NOT_WHITELISTED = "NOT_WHITELISTED",
+}

@@ -1,32 +1,33 @@
 import * as Sentry from "@sentry/browser";
 import * as React from "react";
+import {} from "redux";
 
 import { RenNetworkDetails } from "@renproject/contracts";
-import { Dispatch } from "redux";
 import { createStandardAction } from "typesafe-actions";
 import Web3 from "web3";
 import { provider } from "web3-providers";
 import { toChecksumAddress } from "web3-utils";
 
-import { LoggedOut } from "../../../components/popups/LoggedOut";
-import { NoWeb3Popup } from "../../../components/popups/NoWeb3Popup";
-import { Language } from "../../../languages/language";
-import { _captureBackgroundException_ } from "../../../lib/errors";
-import { getWeb3BrowserName, Web3Browser } from "../../../lib/ethereum/browsers";
-import { getInjectedWeb3Provider } from "../../../lib/ethereum/wallet";
-import { history } from "../../../lib/history";
-import { readOnlyWeb3 } from "../../types";
+import { LoggedOut } from "../../components/popups/LoggedOut";
+import { NoWeb3Popup } from "../../components/popups/NoWeb3Popup";
+import { Language } from "../../languages/language";
+import { _captureBackgroundException_ } from "../../lib/errors";
+import { getWeb3BrowserName, Web3Browser } from "../../lib/ethereum/browsers";
+import { getInjectedWeb3Provider, readOnlyWeb3 } from "../../lib/ethereum/wallet";
+import { history } from "../../lib/history";
+import { ApplicationState } from "../applicationState";
 import { clearPopup, setPopup } from "../popup/popupActions";
+import { AppDispatch } from "../rootReducer";
 
-export const storeWeb3 = createStandardAction("storeWeb3")<Web3>();
-export const storeAddress = createStandardAction("storeAddress")<string | null>();
-export const storeRenNetwork = createStandardAction("storeRenNetwork")<RenNetworkDetails>();
+export const storeWeb3 = createStandardAction("STORE_WEB3")<Web3>();
+export const storeAddress = createStandardAction("STORE_ADDRESS")<string | null>();
+export const storeRenNetwork = createStandardAction("STORE_REN_NETWORK")<RenNetworkDetails>();
 
-export const storeWeb3BrowserName = createStandardAction("storeWeb3BrowserName")<Web3Browser>();
+export const storeWeb3BrowserName = createStandardAction("STORE_WEB3_BROWSER_NAME")<Web3Browser>();
 
 export const updateWeb3BrowserName = (
     newProvider: provider,
-) => (dispatch: Dispatch) => {
+) => (dispatch: AppDispatch) => {
     /*
     // Check for mobile
     const { userAgent: ua } = navigator
@@ -42,10 +43,10 @@ export const updateWeb3BrowserName = (
 export const login = (
     renNetwork: RenNetworkDetails,
     options: { redirect: boolean; showPopup: boolean; immediatePopup: boolean },
-) => async (dispatch: Dispatch) => {
+) => async (dispatch: AppDispatch) => {
     let cancelled = false;
 
-    const onClick = async () => (login(renNetwork, { redirect: false, showPopup: true, immediatePopup: true })(dispatch));
+    const onClick = async () => (dispatch(login(renNetwork, { redirect: false, showPopup: true, immediatePopup: true })));
     const onCancel = () => {
         dispatch(clearPopup());
         cancelled = true;
@@ -97,7 +98,7 @@ export const login = (
         // Even if the provider is on the wrong network, etc., we can still
         // detect the browser name (MetaMask, Status, etc.)
         const onAnyProvider = (anyProvider: provider) => {
-            updateWeb3BrowserName(anyProvider)(dispatch);
+            dispatch(updateWeb3BrowserName(anyProvider));
         };
 
         newProvider = await getInjectedWeb3Provider(onAnyProvider);
@@ -174,7 +175,7 @@ export const login = (
 
 export const logout = (
     options: { reload: boolean },
-) => async (dispatch: Dispatch) => {
+) => async (dispatch: AppDispatch) => {
 
     // Clear session account in store (and in local storage)
     dispatch(storeAddress(null));
@@ -195,11 +196,8 @@ export const logout = (
 
 // lookForLogout detects if 1) the user has changed or logged out of their Web3
 // wallet
-export const lookForLogout = (
-    renNetwork: RenNetworkDetails,
-    address: string,
-    web3: Web3,
-) => async (dispatch: Dispatch) => {
+export const lookForLogout = () => async (dispatch: AppDispatch, getState: () => ApplicationState) => {
+    const { renNetwork, address, web3 } = getState().trader;
 
     if (!address) {
         return;
@@ -210,15 +208,15 @@ export const lookForLogout = (
 
     if (!accounts.includes(address.toLowerCase())) {
         const onClick = async () => {
-            await logout({ reload: true })(dispatch).catch((error) => {
+            await dispatch(logout({ reload: true })).catch((error) => {
                 _captureBackgroundException_(error, {
                     description: "Error in logout in accountActions",
                 });
             });
-            await login(renNetwork, { redirect: false, showPopup: true, immediatePopup: false })(dispatch);
+            await dispatch(login(renNetwork, { redirect: false, showPopup: true, immediatePopup: false }));
         };
         const onCancel = async () => {
-            await logout({ reload: true })(dispatch).catch((error) => {
+            await dispatch(logout({ reload: true })).catch((error) => {
                 _captureBackgroundException_(error, {
                     description: "Error in logout in accountActions",
                 });

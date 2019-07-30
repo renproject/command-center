@@ -1,12 +1,11 @@
 import { ActionType, getType } from "typesafe-actions";
 
-import * as popupActions from "../../actions/popup/popupActions";
-
-import { PopupData } from "../../types";
+import { PopupState } from "../applicationState";
+import * as popupActions from "./popupActions";
 
 type PopupAction = ActionType<typeof popupActions>;
 
-export const popupReducer = (state: PopupData = new PopupData(), action: PopupAction): PopupData => {
+export const popupReducer = (state: PopupState = new PopupState(), action: PopupAction): PopupState => {
     switch (action.type) {
         case getType(popupActions.setPopup):
             if (document.documentElement) {

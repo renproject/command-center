@@ -2,11 +2,11 @@ import * as React from "react";
 
 import { faChevronRight, faFire, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { CurrencyIcon } from "@renproject/react-components";
+import { Currency, CurrencyIcon } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 
-import { Currency, DarknodeDetails } from "../../../store/types";
-import { TopUp } from "../TopUp";
+import { DarknodesState } from "../../../store/applicationState";
+import { TopUpController } from "../topup/TopUpController";
 import { Block, BlockBody, BlockTitle } from "./Block";
 
 const defaultState = { // Entries must be immutable
@@ -63,7 +63,7 @@ export class GasBlock extends React.Component<Props, typeof defaultState> {
                                 <span className="gas-block--advanced--unit">ETH</span>
                             </div>
                             <div className="block--advanced--bottom">
-                                <TopUp darknodeID={darknodeDetails.ID} />
+                                <TopUpController darknodeID={darknodeDetails.ID} />
                             </div>
                         </div>
                     }
@@ -79,5 +79,5 @@ export class GasBlock extends React.Component<Props, typeof defaultState> {
 }
 
 interface Props {
-    darknodeDetails: DarknodeDetails | null;
+    darknodeDetails: DarknodesState | null;
 }

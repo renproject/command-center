@@ -2,26 +2,27 @@ import * as React from "react";
 
 import { CurrencyIcon, TokenIcon } from "@renproject/react-components";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
-import { bindActionCreators, Dispatch } from "redux";
+import { bindActionCreators } from "redux";
 
-import { ApplicationData, DarknodeDetails } from "../../store/types";
+import { ApplicationState, DarknodesState } from "../../store/applicationState";
+import { AppDispatch } from "../../store/rootReducer";
 import { TokenBalance } from "../TokenBalance";
 import { FeesItem } from "./FeesItem";
 
-const mapStateToProps = (state: ApplicationData) => ({
+const mapStateToProps = (state: ApplicationState) => ({
     store: {
         quoteCurrency: state.statistics.quoteCurrency,
     },
 });
 
-const mapDispatchToProps = (dispatch: Dispatch) => ({
+const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({
     }, dispatch),
 });
 
 interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps> {
     isOperator: boolean;
-    darknodeDetails: DarknodeDetails | null;
+    darknodeDetails: DarknodesState | null;
 }
 
 export const OldFees = connect(mapStateToProps, mapDispatchToProps)(

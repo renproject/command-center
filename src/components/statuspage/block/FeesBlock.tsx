@@ -7,15 +7,17 @@ import { CurrencyIcon, Loading, TokenIcon } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
-import { bindActionCreators, Dispatch } from "redux";
+import { bindActionCreators } from "redux";
 
 import { alreadyPast, naturalTime } from "../../../lib/conversion";
+import { DarknodeFeeStatus } from "../../../lib/darknodeFeeStatus";
 import { OldToken, Token } from "../../../lib/ethereum/tokens";
+import { ApplicationState, DarknodesState } from "../../../store/applicationState";
+import { AppDispatch } from "../../../store/rootReducer";
 import {
     RegistrationStatus, updateCycleAndPendingRewards, updateDarknodeStatistics,
-} from "../../../store/actions/statistics/operatorActions";
-import { showClaimPopup } from "../../../store/actions/statistics/operatorPopupActions";
-import { ApplicationData, DarknodeDetails, DarknodeFeeStatus } from "../../../store/types";
+} from "../../../store/statistics/operatorActions";
+import { showClaimPopup } from "../../../store/statistics/operatorPopupActions";
 import { TokenBalance } from "../../TokenBalance";
 import { FeesItem } from "../FeesItem";
 import { OldFees } from "../OldFees";
@@ -323,7 +325,7 @@ class FeesBlockClass extends React.Component<Props, State> {
 
 }
 
-const mapStateToProps = (state: ApplicationData) => ({
+const mapStateToProps = (state: ApplicationState) => ({
     store: {
         address: state.trader.address,
         web3: state.trader.web3,
@@ -338,7 +340,7 @@ const mapStateToProps = (state: ApplicationData) => ({
     },
 });
 
-const mapDispatchToProps = (dispatch: Dispatch) => ({
+const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({
         showClaimPopup,
         updateDarknodeStatistics,
@@ -348,7 +350,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
 
 interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps> {
     isOperator: boolean;
-    darknodeDetails: DarknodeDetails | null;
+    darknodeDetails: DarknodesState | null;
 }
 
 type State = typeof defaultState;
