@@ -22,9 +22,9 @@ commands:
       - run:
           name: Install Dependencies
           command:
-            sudo npm install --global yarn
-            yarn version
-            yarn install
+            - sudo npm install --global yarn
+            - yarn version
+            - yarn install
       - save_cache:
           name: Save node_modules
           paths:
