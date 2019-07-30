@@ -21,7 +21,10 @@ commands:
             - v1-cc-dependencies-{{ checksum "yarn.lock" }}
       - run:
           name: Install Dependencies
-          command: yarn install
+          command:
+            npm install --global yarn
+            yarn version
+            yarn install
       - save_cache:
           name: Save node_modules
           paths:
