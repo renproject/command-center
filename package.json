@@ -59,6 +59,7 @@
     "chai": "^4.2.0",
     "darknode-sol": "https://github.com/renproject/darknode-sol#localnet",
     "npm-check-updates": "^3.1.20",
+    "truffle-hdwallet-provider": "^1.0.15",
     "ts-unused-exports": "^2.0.11",
     "tslint": "^5.18.0",
     "tslint-microsoft-contrib": "^6.2.0",
@@ -82,5 +83,9 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "jest": {
+    "globalSetup": "./test/globalSetup.ts",
+    "globalTeardown": "./test/globalTeardown.ts"
+  }
 }

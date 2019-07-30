@@ -8,9 +8,10 @@ import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators } from "redux";
 
 import { OldToken, Token } from "../../lib/ethereum/tokens";
+import { waitForTX } from "../../lib/ethereum/waitForTX";
 import { withdrawReward } from "../../store/account/darknodeActions";
 import { ApplicationState } from "../../store/applicationState";
-import { updateDarknodeDetails, waitForTX } from "../../store/network/operatorActions";
+import { updateDarknodeDetails } from "../../store/network/operatorActions";
 import { AppDispatch } from "../../store/rootReducer";
 
 const FeesItemClass = ({ darknodeID, token, amount, disabled, actions, store }: Props) => {

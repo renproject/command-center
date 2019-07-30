@@ -4,12 +4,12 @@ import { OrderedSet } from "immutable";
 import Web3 from "web3";
 import { sha3, toChecksumAddress } from "web3-utils";
 
-import { WaitForTX } from "../../store/network/operatorActions";
 import { alreadyPast } from "../conversion";
 import { _noCapture_ } from "../react/errors";
 import { DarknodePaymentWeb3 } from "./contracts/bindings/darknodePayment";
 import { DarknodeRegistryWeb3 } from "./contracts/bindings/darknodeRegistry";
 import { AllTokenDetails, OldToken, Token } from "./tokens";
+import { WaitForTX } from "./waitForTX";
 
 const NULL = "0x0000000000000000000000000000000000000000";
 
@@ -218,8 +218,10 @@ export const registerNode = async (
     );
 
     try {
+        const params = renNetwork.name === mainnet.name ? [darknodeID, publicKey, bond.toFixed()] : [darknodeID, publicKey];
         const res = await waitForTX(
-            darknodeRegistry.methods.register(darknodeID, publicKey, bond.toFixed()).send({ from: address, gas }),
+            // @ts-ignore
+            darknodeRegistry.methods.register(...params).send({ from: address, gas }),
             onDone
         );
         resolved = true;

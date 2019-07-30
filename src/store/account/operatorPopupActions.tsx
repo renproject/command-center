@@ -13,9 +13,10 @@ import {
     approveNode, changeCycle, claimForNode, deregisterNode, fundNode, refundNode, registerNode,
 } from "../../lib/ethereum/operator";
 import { Token } from "../../lib/ethereum/tokens";
+import { connectWaitForTX } from "../../lib/ethereum/waitForTX";
 import { _captureBackgroundException_ } from "../../lib/react/errors";
 import { TokenPrices } from "../../lib/tokenPrices";
-import { connectWaitForTX, updateDarknodeDetails } from "../network/operatorActions";
+import { updateDarknodeDetails } from "../network/operatorActions";
 import { setPopup } from "../popup/popupActions";
 import { AppDispatch } from "../rootReducer";
 

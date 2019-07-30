@@ -61,24 +61,6 @@ export const setDarknodeName = createStandardAction("SET_DARKNODE_NAME")<{ darkn
 export const addTransaction = createStandardAction("ADD_TRANSACTION")<{ txHash: string; tx: PromiEvent<any> }>();
 export const setTxConfirmations = createStandardAction("SET_TX_CONFIRMATIONS")<{ txHash: string; confirmations: number }>();
 
-export type WaitForTX = <T>(promiEvent: PromiEvent<T>, onConfirmation?: (confirmations?: number) => void) => Promise<string>;
-export const waitForTX = <T>(promiEvent: PromiEvent<T>, onConfirmation?: (confirmations?: number) => void) => async (dispatch: AppDispatch) => new Promise<string>((resolve, reject) => {
-    promiEvent.on("transactionHash", (txHash) => {
-        resolve(txHash);
-        dispatch(addTransaction({ txHash, tx: promiEvent }));
-        // tslint:disable-next-line: no-any
-        (window as any).tx = promiEvent;
-        promiEvent.on("confirmation", (confirmations) => {
-            dispatch(setTxConfirmations({ txHash, confirmations }));
-            if (onConfirmation) { onConfirmation(confirmations); }
-        });
-        promiEvent.on("error", () => {
-            dispatch(setTxConfirmations({ txHash, confirmations: -1 }));
-        });
-    }).catch(reject);
-});
-export const connectWaitForTX = (dispatch: AppDispatch) => <T>(promiEvent: PromiEvent<T>, onConfirmation?: (confirmations?: number) => void) => dispatch(waitForTX(promiEvent, onConfirmation));
-
 export const updateSecondsPerBlock = (
     web3: Web3,
 ) => async (dispatch: AppDispatch) => {
