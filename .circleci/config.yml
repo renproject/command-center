@@ -7,7 +7,7 @@ version: 2.1
 executors:
   default:
     docker:
-      - image: circleci/node:latest
+      - image: circleci/node:10.16
     working_directory: ~/command-center
 
 commands:
@@ -21,7 +21,7 @@ commands:
             - v1-cc-dependencies-{{ checksum "yarn.lock" }}
       - run:
           name: Install Dependencies
-          command: sudo rm -rf /home/circleci/.cache/ && sudo npm install --global yarn && yarn version && yarn cache clean && yarn install --network-concurrency 1
+          command: sudo npm install --global yarn && yarn version && yarn cache clean && yarn install --network-concurrency 1
       - save_cache:
           name: Save node_modules
           paths:
