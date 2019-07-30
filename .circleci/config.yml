@@ -18,7 +18,7 @@ commands:
       - restore_cache:
           name: Restore node_modules
           keys:
-            - v1-dependencies-{{ checksum "yarn.lock" }}
+            - v1-cc-dependencies-{{ checksum "yarn.lock" }}
       - run:
           name: Install Dependencies
           command: yarn install
@@ -26,17 +26,18 @@ commands:
           name: Save node_modules
           paths:
             - node_modules
-          key: v1-dependencies-{{ checksum "yarn.lock" }}
+          key: v1-cc-dependencies-{{ checksum "yarn.lock" }}
 
   setup_local_network:
     description: "Set up local network"
     steps:
-      - cd-darknode-sol:
-          cd ./node_modules/darknode-sol
+      - run:
+          name: CD into darknode-sol
+          command: cd ./node_modules/darknode-sol
       - restore_cache:
           name: Restore node_modules
           keys:
-            - v1-dependencies-{{ checksum "yarn.lock" }}
+            - v1-sol-dependencies-{{ checksum "yarn.lock" }}
       - run:
           name: Install Dependencies
           command: yarn install
@@ -44,11 +45,13 @@ commands:
           name: Save node_modules
           paths:
             - node_modules
-          key: v1-dependencies-{{ checksum "yarn.lock" }}
-      - run-ganache:
-          (yarn ganache-cli -d  > /dev/null &) && sleep 5
-      - run-migration:
-          yarn truffle migrate
+          key: v1-sol-dependencies-{{ checksum "yarn.lock" }}
+      - run:
+          name: Start ganache
+          command: (yarn ganache-cli -d  > /dev/null &) && sleep 5
+      - run:
+          name: Migrate contracts
+          command: yarn truffle migrate
 
 jobs:
   build:
