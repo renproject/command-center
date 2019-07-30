@@ -81,9 +81,9 @@ class AppClass extends React.Component<Props> {
 
 const mapStateToProps = (state: ApplicationState) => ({
     store: {
-        address: state.trader.address,
-        web3: state.trader.web3,
-        renNetwork: state.trader.renNetwork,
+        address: state.account.address,
+        web3: state.account.web3,
+        renNetwork: state.account.renNetwork,
     },
 });
 

@@ -9,7 +9,7 @@ import { alreadyPast } from "../conversion";
 import { _noCapture_ } from "../react/errors";
 import { DarknodePaymentWeb3 } from "./contracts/bindings/darknodePayment";
 import { DarknodeRegistryWeb3 } from "./contracts/bindings/darknodeRegistry";
-import { OldToken, Token } from "./tokens";
+import { AllTokenDetails, OldToken, Token } from "./tokens";
 
 const NULL = "0x0000000000000000000000000000000000000000";
 
@@ -160,15 +160,15 @@ export const withdrawOldToken = async (
 export const approveNode = async (
     web3: Web3,
     renNetwork: RenNetworkDetails,
-    trader: string,
+    address: string,
     bond: BigNumber,
     waitForTX: WaitForTX,
 ) => {
     // tslint:disable-next-line:no-non-null-assertion
     const ercContract = new (web3.eth.Contract)(renNetwork.addresses.erc.ERC20.abi, renNetwork.addresses.tokens.REN.address);
-    const ercBalance = new BigNumber(await ercContract.methods.balanceOf(trader).call());
+    const ercBalance = new BigNumber(await ercContract.methods.balanceOf(address).call());
     const ercAllowance = new BigNumber(
-        await ercContract.methods.allowance(trader, renNetwork.addresses.ren.DarknodeRegistry.address).call(),
+        await ercContract.methods.allowance(address, renNetwork.addresses.ren.DarknodeRegistry.address).call(),
     );
 
     if (ercAllowance.gte(bond)) {
@@ -181,14 +181,14 @@ export const approveNode = async (
     }
 
     return waitForTX(
-        ercContract.methods.approve(renNetwork.addresses.ren.DarknodeRegistry.address, bond.toFixed()).send({ from: trader })
+        ercContract.methods.approve(renNetwork.addresses.ren.DarknodeRegistry.address, bond.toFixed()).send({ from: address })
     );
 };
 
 export const registerNode = async (
     web3: Web3,
     renNetwork: RenNetworkDetails,
-    trader: string,
+    address: string,
     darknodeID: string,
     publicKey: string,
     bond: BigNumber,
@@ -203,7 +203,7 @@ export const registerNode = async (
     const ercContract = new (web3.eth.Contract)(renNetwork.addresses.erc.ERC20.abi, renNetwork.addresses.tokens.REN.address);
 
     const ercAllowance = new BigNumber(
-        await ercContract.methods.allowance(trader, renNetwork.addresses.ren.DarknodeRegistry.address).call()
+        await ercContract.methods.allowance(address, renNetwork.addresses.ren.DarknodeRegistry.address).call()
     );
 
     let gas: number | undefined = hardCodedGas;
@@ -219,7 +219,7 @@ export const registerNode = async (
 
     try {
         const res = await waitForTX(
-            darknodeRegistry.methods.register(darknodeID, publicKey, bond.toFixed()).send({ from: trader, gas }),
+            darknodeRegistry.methods.register(darknodeID, publicKey, bond.toFixed()).send({ from: address, gas }),
             onDone
         );
         resolved = true;
@@ -233,7 +233,7 @@ export const registerNode = async (
 export const deregisterNode = async (
     web3: Web3,
     renNetwork: RenNetworkDetails,
-    trader: string,
+    address: string,
     darknodeID: string,
     onCancel: () => void,
     onDone: () => void,
@@ -248,7 +248,7 @@ export const deregisterNode = async (
     );
     try {
         const res = await waitForTX(
-            darknodeRegistry.methods.deregister(darknodeID).send({ from: trader }),
+            darknodeRegistry.methods.deregister(darknodeID).send({ from: address }),
             onDone
         );
         resolved = true;
@@ -262,7 +262,7 @@ export const deregisterNode = async (
 export const refundNode = async (
     web3: Web3,
     renNetwork: RenNetworkDetails,
-    trader: string,
+    address: string,
     darknodeID: string,
     onCancel: () => void,
     onDone: () => void,
@@ -278,7 +278,7 @@ export const refundNode = async (
 
     try {
         const res = await waitForTX(
-            darknodeRegistry.methods.refund(darknodeID).send({ from: trader }),
+            darknodeRegistry.methods.refund(darknodeID).send({ from: address }),
             onDone
         );
         resolved = true;
@@ -414,7 +414,7 @@ export const changeCycle = async (
 // const burn = (
 //     web3: Web3,
 //     renNetwork: RenNetworkDetails,
-//     trader: string,
+//     address: string,
 //     currency: Token,
 //     to: string,
 //     waitForTX: WaitForTX,
@@ -431,9 +431,49 @@ export const changeCycle = async (
 //         currency === Token.ZEC ? zecAddressToHex(to) :
 //             to;
 
-//     const amount = new BigNumber((await contract.methods.balanceOf(trader).call({ from: trader })).toString());
+//     const amount = new BigNumber((await contract.methods.balanceOf(address).call({ from: address })).toString());
 
 //     await waitForTX(
-//         contract.methods.burn(toHex, amount.toString() /* new BigNumber(amount).multipliedBy(10 ** 8).toFixed() */).send({ from: trader })
+//         contract.methods.burn(toHex, amount.toString() /* new BigNumber(amount).multipliedBy(10 ** 8).toFixed() */).send({ from: address })
 //     );
 // };
+
+export const withdrawToken = (
+    web3: Web3,
+    renNetwork: RenNetworkDetails,
+    address: string | null,
+    darknodeID: string,
+    token: Token | OldToken,
+    waitForTX: WaitForTX,
+) => async (_widthrawAddress?: string) => {
+
+    const tokenDetails = AllTokenDetails.get(token);
+    if (tokenDetails === undefined) {
+        throw new Error("Unknown token");
+    }
+
+    if (!address) {
+        throw new Error(`Unable to retrieve account address.`);
+    }
+
+    const darknodePayment: DarknodePaymentWeb3 = new (web3.eth.Contract)(
+        renNetwork.addresses.ren.DarknodePayment.abi,
+        renNetwork.addresses.ren.DarknodePayment.address
+    );
+
+    if (!tokenDetails) {
+        throw new Error("Unknown token");
+    }
+
+    await new Promise((resolve) => waitForTX(
+        darknodePayment.methods.withdraw(darknodeID, renNetwork.addresses.tokens[token]).send({ from: address }),
+        resolve,
+    ));
+
+    // if (tokenDetails.wrapped) {
+    //     if (!withdrawAddress) {
+    //         throw new Error("Invalid withdraw address");
+    //     }
+    //     await burn(web3, renNetwork, address, token as Token, withdrawAddress)(dispatch);
+    // }
+};

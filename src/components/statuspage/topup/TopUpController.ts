@@ -4,10 +4,10 @@ import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators } from "redux";
 
 import { _captureBackgroundException_ } from "../../../lib/react/errors";
+import { showFundPopup } from "../../../store/account/operatorPopupActions";
 import { ApplicationState } from "../../../store/applicationState";
 import { AppDispatch } from "../../../store/rootReducer";
 import { updateDarknodeStatistics } from "../../../store/statistics/operatorActions";
-import { showFundPopup } from "../../../store/statistics/operatorPopupActions";
 import { TopUp } from "./TopUp";
 
 export const CONFIRMATION_MESSAGE = "Transaction confirmed.";
@@ -17,7 +17,7 @@ const defaultState = { // Entries must be immutable
     resultMessage: "",
     pending: false,
     disabled: false,
-    traderBalance: new BigNumber(0),
+    accountBalance: new BigNumber(0),
 };
 
 class TopUpControllerClass extends Component<Props, typeof defaultState> {
@@ -55,7 +55,7 @@ class TopUpControllerClass extends Component<Props, typeof defaultState> {
     private readonly handleChange = (value: string): void => {
         this.setState({ value });
 
-        const { traderBalance, resultMessage, disabled } = this.state;
+        const { accountBalance: traderBalance, resultMessage, disabled } = this.state;
         // If input is invalid, show an error.
         if (isNaN(parseFloat(value)) || parseFloat(value) <= 0) {
             this.setState({ disabled: true });
@@ -79,7 +79,7 @@ class TopUpControllerClass extends Component<Props, typeof defaultState> {
             traderBalance = new BigNumber((await web3.eth.getBalance(address)).toString())
                 .div(new BigNumber(10).exponentiatedBy(18));
         }
-        this.setState({ traderBalance });
+        this.setState({ accountBalance: traderBalance });
         return traderBalance;
     }
 
@@ -139,10 +139,10 @@ class TopUpControllerClass extends Component<Props, typeof defaultState> {
 
 const mapStateToProps = (state: ApplicationState) => ({
     store: {
-        address: state.trader.address,
-        web3: state.trader.web3,
+        address: state.account.address,
+        web3: state.account.web3,
         tokenPrices: state.statistics.tokenPrices,
-        renNetwork: state.trader.renNetwork,
+        renNetwork: state.account.renNetwork,
     },
 });
 

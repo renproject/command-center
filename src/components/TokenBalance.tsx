@@ -80,7 +80,7 @@ class TokenBalanceClass extends React.Component<Props, typeof defaultState> {
 const mapStateToProps = (state: ApplicationState) => ({
     store: {
         tokenPrices: state.statistics.tokenPrices,
-        web3: state.trader.web3,
+        web3: state.account.web3,
     },
 });
 

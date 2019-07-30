@@ -6,13 +6,13 @@ import { RouteComponentProps, withRouter } from "react-router-dom";
 import { bindActionCreators } from "redux";
 
 import { _captureBackgroundException_ } from "../lib/react/errors";
+import { login, lookForLogout } from "../store/account/accountActions";
 import { ApplicationState } from "../store/applicationState";
 import { AppDispatch } from "../store/rootReducer";
-import { updateNetworkStatistics, updateTokenPrices } from "../store/statistics/networkActions";
+import { updateTokenPrices } from "../store/statistics/networkActions";
 import {
     updateDarknodeStatistics, updateOperatorStatistics,
 } from "../store/statistics/operatorActions";
-import { login, lookForLogout } from "../store/trader/accountActions";
 import { getDarknodeParam } from "./pages/Darknode";
 
 /**
@@ -21,8 +21,7 @@ import { getDarknodeParam } from "./pages/Darknode";
  */
 class BackgroundTasksClass extends React.Component<Props> {
     private callUpdatePricesTimeout: NodeJS.Timer | undefined;
-    private callLookForLogoutTimeout: NodeJS.Timer | undefined;
-    private callUpdateNetworkStatisticsTimeout: NodeJS.Timer | undefined;
+    private callLookForLogoutInterval: NodeJS.Timer | undefined;
     private callUpdateOperatorStatisticsTimeout: NodeJS.Timer | undefined;
     private callUpdateSelectedDarknodeTimeout: NodeJS.Timer | undefined;
 
@@ -78,14 +77,12 @@ class BackgroundTasksClass extends React.Component<Props> {
                 });
             });
         }
-
     }
 
     public componentWillUnmount(): void {
         // Clear timeouts
         if (this.callUpdatePricesTimeout) { clearTimeout(this.callUpdatePricesTimeout); }
-        if (this.callLookForLogoutTimeout) { clearTimeout(this.callLookForLogoutTimeout); }
-        if (this.callUpdateNetworkStatisticsTimeout) { clearTimeout(this.callUpdateNetworkStatisticsTimeout); }
+        if (this.callLookForLogoutInterval) { clearTimeout(this.callLookForLogoutInterval); }
         if (this.callUpdateOperatorStatisticsTimeout) { clearTimeout(this.callUpdateOperatorStatisticsTimeout); }
         if (this.callUpdateSelectedDarknodeTimeout) { clearTimeout(this.callUpdateSelectedDarknodeTimeout); }
     }
@@ -93,12 +90,10 @@ class BackgroundTasksClass extends React.Component<Props> {
     public render = (): JSX.Element => <></>;
 
     // Update token prices every 60 seconds
-    private readonly callUpdatePrices = async (props?: Props): Promise<void> => {
-        props = props || this.props;
-
+    private readonly callUpdatePrices = async (): Promise<void> => {
         try {
             // tslint:disable-next-line: await-promise
-            await props.actions.updateTokenPrices();
+            await this.props.actions.updateTokenPrices();
         } catch (error) {
             _captureBackgroundException_(error, {
                 description: "Error thrown in callUpdatePrices background task",
@@ -109,48 +104,14 @@ class BackgroundTasksClass extends React.Component<Props> {
     }
 
     // See if the user has logged out every 5 seconds
-    private readonly callLookForLogout = async (props?: Props): Promise<void> => {
-        props = props || this.props;
-
-        const { address } = props.store;
-        if (address) {
-            try {
-                // tslint:disable-next-line: await-promise
-                await props.actions.lookForLogout();
-            } catch (error) {
+    private readonly callLookForLogout = async (): Promise<void> => {
+        if (this.props.store.address) {
+            await (this.props.actions.lookForLogout() as unknown as Promise<void>).catch((error) => {
                 _captureBackgroundException_(error, {
                     description: "Error thrown in callLookForLogout background task",
                 });
-            }
+            });
         }
-        if (this.callLookForLogoutTimeout) { clearTimeout(this.callLookForLogoutTimeout); }
-        this.callLookForLogoutTimeout = setTimeout(this.callLookForLogout, 5 * 1000) as unknown as NodeJS.Timer;
-    }
-
-    // Update network statistics every 3600 seconds
-    private readonly callUpdateNetworkStatistics = async (props?: Props): Promise<void> => {
-        props = props || this.props;
-
-        const { web3, renNetwork } = props.store;
-        let timeout = 1; // Retry in a second, unless the call succeeds
-        try {
-            // tslint:disable-next-line: await-promise
-            await props.actions.updateNetworkStatistics(web3, renNetwork);
-            timeout = 3600;
-        } catch (error) {
-            if (error && error.message && error.message.match("Cannot read property 'toString' of")) {
-                // Ignore
-            } else {
-                _captureBackgroundException_(error, {
-                    description: "Error thrown in callUpdateNetworkStatistics background task",
-                });
-            }
-        }
-        if (this.callUpdateNetworkStatisticsTimeout) { clearTimeout(this.callUpdateNetworkStatisticsTimeout); }
-        this.callUpdateNetworkStatisticsTimeout = setTimeout(
-            this.callUpdateNetworkStatistics,
-            timeout * 1000,
-        ) as unknown as NodeJS.Timer;
     }
 
     // Update operator statistics every 120 seconds
@@ -223,11 +184,6 @@ class BackgroundTasksClass extends React.Component<Props> {
                 description: "Error in callUpdatePrices in BackgroundTasks",
             });
         });
-        this.callUpdateNetworkStatistics().catch(error => {
-            _captureBackgroundException_(error, {
-                description: "Error in callUpdateNetworkStatistics in BackgroundTasks",
-            });
-        });
         this.callUpdateSelectedDarknode().catch(error => {
             _captureBackgroundException_(error, {
                 description: "Error in callUpdateSelectedDarknode in BackgroundTasks",
@@ -237,11 +193,7 @@ class BackgroundTasksClass extends React.Component<Props> {
 
     // tslint:disable-next-line:member-ordering
     public setupLoopsWithAccount(): void {
-        this.callLookForLogout().catch(error => {
-            _captureBackgroundException_(error, {
-                description: "Error in callLookForLogout in BackgroundTasks",
-            });
-        });
+        this.callLookForLogoutInterval = setInterval(this.callLookForLogout, 5000);
         this.callUpdateOperatorStatistics().catch(error => {
             _captureBackgroundException_(error, {
                 description: "Error in callUpdateOperatorStatistics in BackgroundTasks",
@@ -253,12 +205,12 @@ class BackgroundTasksClass extends React.Component<Props> {
 
 const mapStateToProps = (state: ApplicationState) => ({
     store: {
-        address: state.trader.address,
-        web3: state.trader.web3,
+        address: state.account.address,
+        web3: state.account.web3,
         tokenPrices: state.statistics.tokenPrices,
-        darknodeList: state.trader.address ? state.statistics.darknodeList.get(state.trader.address, null) : null,
+        darknodeList: state.account.address ? state.statistics.darknodeList.get(state.account.address, null) : null,
         darknodeRegisteringList: state.statistics.darknodeRegisteringList,
-        renNetwork: state.trader.renNetwork,
+        renNetwork: state.account.renNetwork,
     },
 });
 
@@ -267,7 +219,6 @@ const mapDispatchToProps = (dispatch: AppDispatch) => ({
         login,
         lookForLogout,
         updateTokenPrices,
-        updateNetworkStatistics,
         updateOperatorStatistics,
         updateDarknodeStatistics,
     }, dispatch),

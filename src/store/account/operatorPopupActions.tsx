@@ -8,6 +8,7 @@ import Web3 from "web3";
 
 import { MultiStepPopup } from "../../components/popups/MultiStepPopup";
 import { TokenBalance } from "../../components/TokenBalance";
+import { getMinimumBond } from "../../lib/ethereum/network";
 import {
     approveNode, changeCycle, claimForNode, deregisterNode, fundNode, refundNode, registerNode,
 } from "../../lib/ethereum/operator";
@@ -16,7 +17,7 @@ import { _captureBackgroundException_ } from "../../lib/react/errors";
 import { TokenPrices } from "../../lib/tokenPrices";
 import { setPopup } from "../popup/popupActions";
 import { AppDispatch } from "../rootReducer";
-import { connectWaitForTX, updateDarknodeStatistics } from "./operatorActions";
+import { connectWaitForTX, updateDarknodeStatistics } from "../statistics/operatorActions";
 
 export const showRegisterPopup = (
     web3: Web3,
@@ -24,8 +25,9 @@ export const showRegisterPopup = (
     address: string,
     darknodeID: string,
     publicKey: string,
-    minimumBond: BigNumber,
     tokenPrices: TokenPrices, onCancel: () => void, onDone: () => void) => async (dispatch: AppDispatch) => {
+
+        const minimumBond = await getMinimumBond(web3, renNetwork);
 
         const step1 = async () => {
             await approveNode(web3, renNetwork, address, minimumBond, connectWaitForTX(dispatch));
@@ -38,7 +40,7 @@ export const showRegisterPopup = (
                 address,
                 darknodeID,
                 publicKey,
-                minimumBond || new BigNumber(100000000000000000000000),
+                minimumBond,
                 onCancel,
                 onDone,
                 connectWaitForTX(dispatch),

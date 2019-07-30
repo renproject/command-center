@@ -12,7 +12,7 @@ import { CardView } from "./CardView";
 
 const mapStateToProps = (state: ApplicationState) => ({
     store: {
-        address: state.trader.address,
+        address: state.account.address,
         quoteCurrency: state.statistics.quoteCurrency,
     },
 });

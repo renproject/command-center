@@ -14,7 +14,7 @@ import { SidebarIcon } from "./SidebarIcon";
 
 const mapStateToProps = (state: ApplicationState) => ({
     store: {
-        darknodeList: state.trader.address ? state.statistics.darknodeList.get(state.trader.address) : null,
+        darknodeList: state.account.address ? state.statistics.darknodeList.get(state.account.address) : null,
         darknodeDetails: state.statistics.darknodeDetails,
         darknodeNames: state.statistics.darknodeNames,
         quoteCurrency: state.statistics.quoteCurrency,

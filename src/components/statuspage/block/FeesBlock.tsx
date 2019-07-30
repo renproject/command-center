@@ -13,12 +13,12 @@ import { alreadyPast, naturalTime } from "../../../lib/conversion";
 import { DarknodeFeeStatus } from "../../../lib/darknodeFeeStatus";
 import { RegistrationStatus } from "../../../lib/ethereum/network";
 import { OldToken, Token } from "../../../lib/ethereum/tokens";
+import { showClaimPopup } from "../../../store/account/operatorPopupActions";
 import { ApplicationState, DarknodesState } from "../../../store/applicationState";
 import { AppDispatch } from "../../../store/rootReducer";
 import {
     updateCycleAndPendingRewards, updateDarknodeStatistics,
 } from "../../../store/statistics/operatorActions";
-import { showClaimPopup } from "../../../store/statistics/operatorPopupActions";
 import { TokenBalance } from "../../TokenBalance";
 import { FeesItem } from "../FeesItem";
 import { OldFees } from "../OldFees";
@@ -328,15 +328,15 @@ class FeesBlockClass extends React.Component<Props, State> {
 
 const mapStateToProps = (state: ApplicationState) => ({
     store: {
-        address: state.trader.address,
-        web3: state.trader.web3,
+        address: state.account.address,
+        web3: state.account.web3,
         quoteCurrency: state.statistics.quoteCurrency,
         currentCycle: state.statistics.currentCycle,
         previousCycle: state.statistics.previousCycle,
         pendingRewards: state.statistics.pendingRewards,
         pendingTotalInEth: state.statistics.pendingTotalInEth,
         tokenPrices: state.statistics.tokenPrices,
-        renNetwork: state.trader.renNetwork,
+        renNetwork: state.account.renNetwork,
         cycleTimeout: state.statistics.cycleTimeout,
     },
 });

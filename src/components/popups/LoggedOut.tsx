@@ -42,7 +42,7 @@ const LoggedOutClass: React.StatelessComponent<Props> = (props) => {
 
 const mapStateToProps = (state: ApplicationState) => ({
     store: {
-        web3BrowserName: state.trader.web3BrowserName,
+        web3BrowserName: state.account.web3BrowserName,
     },
 });
 

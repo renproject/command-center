@@ -4,9 +4,9 @@ import { Blocky, Loading } from "@renproject/react-components";
 import { connect, ConnectedReturnType } from "react-redux";
 import { bindActionCreators } from "redux";
 
+import { login, logout } from "../store/account/accountActions";
 import { ApplicationState } from "../store/applicationState";
 import { AppDispatch } from "../store/rootReducer";
-import { login, logout } from "../store/trader/accountActions";
 
 const defaultState = { // Entries must be immutable
     shown: false,
@@ -185,13 +185,13 @@ class AccountDropdownClass extends React.Component<Props, typeof defaultState> {
 
 const mapStateToProps = (state: ApplicationState) => ({
     store: {
-        address: state.trader.address,
-        web3BrowserName: state.trader.web3BrowserName,
+        address: state.account.address,
+        web3BrowserName: state.account.web3BrowserName,
         quoteCurrency: state.statistics.quoteCurrency,
-        web3: state.trader.web3,
+        web3: state.account.web3,
         transactions: state.statistics.transactions,
         confirmations: state.statistics.confirmations,
-        renNetwork: state.trader.renNetwork,
+        renNetwork: state.account.renNetwork,
     },
 });
 

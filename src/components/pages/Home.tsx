@@ -54,12 +54,12 @@ class HomeClass extends React.Component<Props, typeof defaultState> {
 
 const mapStateToProps = (state: ApplicationState) => ({
     store: {
-        address: state.trader.address,
+        address: state.account.address,
         darknodeDetails: state.statistics.darknodeDetails,
         darknodeNames: state.statistics.darknodeNames,
-        darknodeList: state.trader.address ? state.statistics.darknodeList.get(state.trader.address, null) : null,
+        darknodeList: state.account.address ? state.statistics.darknodeList.get(state.account.address, null) : null,
         darknodeRegisteringList: state.statistics.darknodeRegisteringList,
-        web3: state.trader.web3,
+        web3: state.account.web3,
     },
 });
 

@@ -289,7 +289,7 @@ class GasGraphClass extends React.Component<Props, State> {
 
 const mapStateToProps = (state: ApplicationState) => ({
     store: {
-        web3: state.trader.web3,
+        web3: state.account.web3,
         balanceHistories: state.statistics.balanceHistories,
         secondsPerBlock: state.statistics.secondsPerBlock,
     },

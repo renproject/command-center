@@ -146,7 +146,7 @@ class DarknodeClass extends React.Component<Props, typeof defaultState> {
 
 const mapStateToProps = (state: ApplicationState) => ({
     store: {
-        address: state.trader.address,
+        address: state.account.address,
         darknodeDetails: state.statistics.darknodeDetails,
         darknodeNames: state.statistics.darknodeNames,
     },

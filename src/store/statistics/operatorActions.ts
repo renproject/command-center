@@ -6,13 +6,12 @@ import { createStandardAction } from "typesafe-actions";
 import Web3 from "web3";
 import { PromiEvent } from "web3-core";
 
-import { DarknodePaymentWeb3 } from "../../lib/ethereum/contracts/bindings/darknodePayment";
 import {
-    calculateSecondsPerBlock, fetchDarknodeBalanceHistory, fetchDarknodeStatistics, HistoryPeriods,
-    safePromiseAllMap, sumUpFeeMap,
+    calculateSecondsPerBlock, fetchCycleAndPendingRewards, fetchDarknodeBalanceHistory,
+    fetchDarknodeStatistics, HistoryPeriods,
 } from "../../lib/ethereum/network";
 import { getOperatorDarknodes } from "../../lib/ethereum/operator";
-import { NewTokenDetails, Token } from "../../lib/ethereum/tokens";
+import { Token } from "../../lib/ethereum/tokens";
 import { TokenPrices } from "../../lib/tokenPrices";
 import { DarknodesState } from "../applicationState";
 import { AppDispatch } from "../rootReducer";
@@ -94,76 +93,17 @@ export const updateCycleAndPendingRewards = (
     renNetwork: RenNetworkDetails,
     tokenPrices: TokenPrices | null,
 ) => async (dispatch: AppDispatch) => {
-    const darknodePayment: DarknodePaymentWeb3 = new (web3.eth.Contract)(
-        renNetwork.addresses.ren.DarknodePayment.abi,
-        renNetwork.addresses.ren.DarknodePayment.address,
-    );
+    const {
+        pendingRewards,
+        currentCycle,
+        previousCycle,
+        cycleTimeoutBN,
+        pendingTotalInEth,
+    } = await fetchCycleAndPendingRewards(web3, renNetwork, tokenPrices);
 
-    let pendingRewards = OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber>>();
-
-    const currentCycle = await darknodePayment.methods.currentCycle().call();
-    const previousCycle = await darknodePayment.methods.previousCycle().call();
-
-    const previous = await safePromiseAllMap(
-        NewTokenDetails.map(async (_tokenDetails, token) => {
-            try {
-                const previousCycleRewardShareBN = await darknodePayment.methods.previousCycleRewardShare((token)).call();
-                if (previousCycleRewardShareBN === null) {
-                    return new BigNumber(0);
-                }
-                return new BigNumber(previousCycleRewardShareBN.toString());
-            } catch (error) {
-                return new BigNumber(0);
-            }
-        }).toOrderedMap(),
-        new BigNumber(0),
-    );
-    if (previousCycle !== null) {
-        pendingRewards = pendingRewards.set(previousCycle.toString(), previous);
-    }
-
-    const currentShareCountBN = await darknodePayment.methods.shareCount().call();
-    const current = await safePromiseAllMap(
-        NewTokenDetails.map(async (_tokenDetails, token) => {
-            if (currentShareCountBN === null) {
-                return new BigNumber(0);
-            }
-            const currentShareCount = new BigNumber(currentShareCountBN.toString());
-            try {
-                if (currentShareCount.isZero()) {
-                    return new BigNumber(0);
-                }
-                const currentCycleRewardPool = await darknodePayment.methods.currentCycleRewardPool(renNetwork.addresses.tokens[token]).call();
-                if (currentCycleRewardPool === null) {
-                    return new BigNumber(0);
-                }
-                return new BigNumber((currentCycleRewardPool).toString()).div(currentShareCount);
-            } catch (error) {
-                return new BigNumber(0);
-            }
-        }
-        ).toOrderedMap(),
-        new BigNumber(0),
-    );
-    if (currentCycle !== null) {
-        pendingRewards = pendingRewards.set(currentCycle.toString(), current);
-    }
-
-    const cycleTimeoutBN = (await darknodePayment.methods.cycleTimeout().call());
-
-    if (tokenPrices) {
-        const previousTotal = sumUpFeeMap(previous, tokenPrices);
-        const currentTotal = sumUpFeeMap(current, tokenPrices);
-        let pendingTotalInEth = OrderedMap<string /* cycle */, BigNumber>();
-        if (previousCycle !== null) {
-            pendingTotalInEth = pendingTotalInEth.set(previousCycle.toString(), previousTotal);
-        }
-        if (currentCycle !== null) {
-            pendingTotalInEth = pendingTotalInEth.set(currentCycle.toString(), currentTotal);
-        }
+    if (pendingTotalInEth !== null) {
         dispatch(updatePendingTotalInEth(pendingTotalInEth));
     }
-
     if (currentCycle !== null) {
         dispatch(updateCurrentCycle(currentCycle.toString()));
     }

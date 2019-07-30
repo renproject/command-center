@@ -29,9 +29,6 @@ export const statisticsReducer = (
         case getType(networkActions.updateCycleTimeout):
             return state.set("cycleTimeout", action.payload);
 
-        case getType(networkActions.storeMinimumBond):
-            return state.set("minimumBond", action.payload);
-
         case getType(networkActions.storeTokenPrices):
             return state.set("tokenPrices", action.payload);
 

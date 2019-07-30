@@ -6,14 +6,14 @@ import { bindActionCreators } from "redux";
 
 import { RegistrationStatus } from "../../lib/ethereum/network";
 import { _captureInteractionException_ } from "../../lib/react/errors";
+import {
+    showDeregisterPopup, showRefundPopup, showRegisterPopup,
+} from "../../store/account/operatorPopupActions";
 import { ApplicationState, DarknodesState } from "../../store/applicationState";
 import { AppDispatch } from "../../store/rootReducer";
 import {
     updateDarknodeStatistics, updateOperatorStatistics,
 } from "../../store/statistics/operatorActions";
-import {
-    showDeregisterPopup, showRefundPopup, showRegisterPopup,
-} from "../../store/statistics/operatorPopupActions";
 
 export const statusText = {
     [RegistrationStatus.Unknown]: "Loading...",
@@ -53,11 +53,11 @@ class RegistrationClass extends React.Component<Props, typeof defaultState> {
 
     public render = (): JSX.Element => {
         const { isOperator, registrationStatus, publicKey } = this.props;
-        const { address, minimumBond, tokenPrices } = this.props.store;
+        const { address, tokenPrices } = this.props.store;
         const { active } = this.state;
 
         const disabled = active || !address;
-        const registrationDisabled = disabled || !publicKey || !minimumBond || !tokenPrices;
+        const registrationDisabled = disabled || !publicKey || !tokenPrices;
 
         const noStatus =
             (registrationStatus === RegistrationStatus.Unregistered) ||
@@ -148,16 +148,16 @@ class RegistrationClass extends React.Component<Props, typeof defaultState> {
 
     private readonly handleRegister = async (): Promise<void> => {
         const { darknodeID, publicKey } = this.props;
-        const { web3, address, minimumBond, tokenPrices, renNetwork } = this.props.store;
+        const { web3, address, tokenPrices, renNetwork } = this.props.store;
 
-        if (!publicKey || !address || !minimumBond || !tokenPrices) {
+        if (!publicKey || !address || !tokenPrices) {
             return; // FIXME
         }
 
         this.setState({ active: true });
         try {
             await this.props.actions.showRegisterPopup(
-                web3, renNetwork, address, darknodeID, publicKey, minimumBond, tokenPrices, this.onCancel, this.onDoneRegister
+                web3, renNetwork, address, darknodeID, publicKey, tokenPrices, this.onCancel, this.onDoneRegister
             );
         } catch (error) {
             _captureInteractionException_(error, {
@@ -203,13 +203,12 @@ class RegistrationClass extends React.Component<Props, typeof defaultState> {
 
 const mapStateToProps = (state: ApplicationState) => ({
     store: {
-        address: state.trader.address,
-        web3: state.trader.web3,
-        minimumBond: state.statistics.minimumBond,
+        address: state.account.address,
+        web3: state.account.web3,
         tokenPrices: state.statistics.tokenPrices,
-        darknodeList: state.trader.address ? state.statistics.darknodeList.get(state.trader.address, null) : null,
+        darknodeList: state.account.address ? state.statistics.darknodeList.get(state.account.address, null) : null,
         quoteCurrency: state.statistics.quoteCurrency,
-        renNetwork: state.trader.renNetwork,
+        renNetwork: state.account.renNetwork,
     },
 });
 

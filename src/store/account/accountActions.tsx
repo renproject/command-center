@@ -158,7 +158,7 @@ export const login = (
 // lookForLogout detects if 1) the user has changed or logged out of their Web3
 // wallet
 export const lookForLogout = () => async (dispatch: AppDispatch, getState: () => ApplicationState) => {
-    const { renNetwork, address, web3 } = getState().trader;
+    const { renNetwork, address, web3 } = getState().account;
 
     if (!address) {
         return;

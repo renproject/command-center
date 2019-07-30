@@ -8,10 +8,10 @@ import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
 import { bindActionCreators } from "redux";
 
+import { storeRenNetwork } from "../store/account/accountActions";
 import { ApplicationState } from "../store/applicationState";
 import { AppDispatch } from "../store/rootReducer";
 import { storeQuoteCurrency } from "../store/statistics/operatorActions";
-import { storeRenNetwork } from "../store/trader/accountActions";
 import { showMobileMenu } from "../store/ui/uiActions";
 import { ReactComponent as English } from "../styles/images/rp-flag-uk.svg";
 import { AccountDropdown } from "./AccountDropdown";
@@ -129,9 +129,9 @@ class HeaderClass extends React.Component<Props> {
 
 const mapStateToProps = (state: ApplicationState) => ({
     store: {
-        address: state.trader.address,
+        address: state.account.address,
         quoteCurrency: state.statistics.quoteCurrency,
-        renNetwork: state.trader.renNetwork,
+        renNetwork: state.account.renNetwork,
     },
 });
 

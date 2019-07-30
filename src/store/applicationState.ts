@@ -17,20 +17,20 @@ import { Serializable } from "../lib/react/serializable";
 import { TokenPrices } from "../lib/tokenPrices";
 
 export interface ApplicationState {
-    trader: TraderState;
+    account: AccountState;
     popup: PopupState;
     statistics: StatisticsState;
     ui: UIState;
 }
 
-export class TraderState extends Record({
+export class AccountState extends Record({
     // Login data
     address: null as string | null,
     web3BrowserName: Web3Browser.MetaMask,
     web3: readOnlyWeb3,
 
     renNetwork: RenNetworks[DEFAULT_REN_NETWORK || RenNetwork.Testnet] as RenNetworkDetails,
-}) implements Serializable<TraderState> {
+}) implements Serializable<AccountState> {
     public serialize(): string {
         // const js = this.toJS();
         return JSON.stringify({
@@ -38,16 +38,16 @@ export class TraderState extends Record({
         });
     }
 
-    public deserialize(str: string): TraderState {
+    public deserialize(str: string): AccountState {
         // let next = this;
         try {
             const data = JSON.parse(str);
             // tslint:disable-next-line: no-any
-            let traderData = new TraderState();
+            let accountData = new AccountState();
             if (data.renNetwork) {
-                traderData = traderData.set("renNetwork", RenNetworks[data.renNetwork]);
+                accountData = accountData.set("renNetwork", RenNetworks[data.renNetwork]);
             }
-            return traderData;
+            return accountData;
         } catch (error) {
             _captureBackgroundException_(error, {
                 description: "Cannot deserialize local storage",
@@ -69,7 +69,6 @@ export class UIState extends Record({
 }) { }
 
 export class StatisticsState extends Record({
-    minimumBond: null as BigNumber | null,
     secondsPerBlock: null as number | null,
 
     tokenPrices: null as TokenPrices | null,
@@ -112,7 +111,6 @@ export class StatisticsState extends Record({
         // let next = this;
         try {
             const data = JSON.parse(str);
-            // next = next.set("address", data.address);
             return new StatisticsState({
                 darknodeList: data.darknodeList,
                 darknodeNames: data.darknodeNames,

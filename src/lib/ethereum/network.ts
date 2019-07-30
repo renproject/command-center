@@ -15,6 +15,15 @@ import { NewTokenDetails, OldToken, OldTokenDetails, Token } from "../ethereum/t
 import { _captureBackgroundException_, _noCapture_ } from "../react/errors";
 import { TokenPrices } from "../tokenPrices";
 
+export const getMinimumBond = async (web3: Web3, renNetwork: RenNetworkDetails) => {
+    const darknodeRegistry: DarknodeRegistryWeb3 = new (web3.eth.Contract)(
+        renNetwork.addresses.ren.DarknodeRegistry.abi,
+        renNetwork.addresses.ren.DarknodeRegistry.address
+    );
+    const minimumBond = (await darknodeRegistry.methods.minimumBond().call()) || "100000000000000000000000";
+    return new BigNumber((minimumBond).toString());
+};
+
 // export const getDarknodeCount = async (web3: Web3, renNetwork: RenNetworkDetails): Promise<BigNumber> => {
 //     const darknodeRegistry: DarknodeRegistryWeb3 = new (web3.eth.Contract)(
 //         renNetwork.addresses.ren.DarknodeRegistry.abi,
@@ -123,7 +132,7 @@ const safePromiseAllList = async <b>(orderedMap: List<Promise<b>>, defaultValue:
 // The same as Promise.all except that if an entry throws, it sets it to the
 // provided default value instead of throwing the entire promise.
 // This variation maps over an OrderedMap instead of an array.
-export const safePromiseAllMap = async <a, b>(orderedMap: OrderedMap<a, Promise<b>>, defaultValue: b): Promise<OrderedMap<a, b>> => {
+const safePromiseAllMap = async <a, b>(orderedMap: OrderedMap<a, Promise<b>>, defaultValue: b): Promise<OrderedMap<a, b>> => {
     let newOrderedMap = OrderedMap<a, b>();
     for (const [key, valueP] of orderedMap.toArray()) {
         try {
@@ -393,7 +402,7 @@ export const fetchDarknodeBalanceHistory = async (
     previousHistory: OrderedMap<number, BigNumber> | null,
     historyPeriod: HistoryPeriods,
     secondsPerBlock: number,
-) => {
+): Promise<OrderedMap<number, BigNumber>> => {
     let balanceHistory = previousHistory || OrderedMap<number, BigNumber>();
 
     // If the page is kept open, the history data will keep growing, so we limit
@@ -436,4 +445,88 @@ export const fetchDarknodeBalanceHistory = async (
     balanceHistory = balanceHistory.sortBy((_: BigNumber, value: number) => value);
 
     return balanceHistory;
+};
+
+export const fetchCycleAndPendingRewards = async (
+    web3: Web3,
+    renNetwork: RenNetworkDetails,
+    tokenPrices: TokenPrices | null,
+) => {
+    const darknodePayment: DarknodePaymentWeb3 = new (web3.eth.Contract)(
+        renNetwork.addresses.ren.DarknodePayment.abi,
+        renNetwork.addresses.ren.DarknodePayment.address,
+    );
+
+    let pendingRewards = OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber>>();
+
+    const currentCycle = await darknodePayment.methods.currentCycle().call();
+    const previousCycle = await darknodePayment.methods.previousCycle().call();
+
+    const previous = await safePromiseAllMap(
+        NewTokenDetails.map(async (_tokenDetails, token) => {
+            try {
+                const previousCycleRewardShareBN = await darknodePayment.methods.previousCycleRewardShare((token)).call();
+                if (previousCycleRewardShareBN === null) {
+                    return new BigNumber(0);
+                }
+                return new BigNumber(previousCycleRewardShareBN.toString());
+            } catch (error) {
+                return new BigNumber(0);
+            }
+        }).toOrderedMap(),
+        new BigNumber(0),
+    );
+    if (previousCycle !== null) {
+        pendingRewards = pendingRewards.set(previousCycle.toString(), previous);
+    }
+
+    const currentShareCountBN = await darknodePayment.methods.shareCount().call();
+    const current = await safePromiseAllMap(
+        NewTokenDetails.map(async (_tokenDetails, token) => {
+            if (currentShareCountBN === null) {
+                return new BigNumber(0);
+            }
+            const currentShareCount = new BigNumber(currentShareCountBN.toString());
+            try {
+                if (currentShareCount.isZero()) {
+                    return new BigNumber(0);
+                }
+                const currentCycleRewardPool = await darknodePayment.methods.currentCycleRewardPool(renNetwork.addresses.tokens[token]).call();
+                if (currentCycleRewardPool === null) {
+                    return new BigNumber(0);
+                }
+                return new BigNumber((currentCycleRewardPool).toString()).div(currentShareCount);
+            } catch (error) {
+                return new BigNumber(0);
+            }
+        }
+        ).toOrderedMap(),
+        new BigNumber(0),
+    );
+    if (currentCycle !== null) {
+        pendingRewards = pendingRewards.set(currentCycle.toString(), current);
+    }
+
+    const cycleTimeoutBN = (await darknodePayment.methods.cycleTimeout().call());
+
+    let pendingTotalInEth = null;
+    if (tokenPrices) {
+        const previousTotal = sumUpFeeMap(previous, tokenPrices);
+        const currentTotal = sumUpFeeMap(current, tokenPrices);
+        pendingTotalInEth = OrderedMap<string /* cycle */, BigNumber>();
+        if (previousCycle !== null) {
+            pendingTotalInEth = pendingTotalInEth.set(previousCycle.toString(), previousTotal);
+        }
+        if (currentCycle !== null) {
+            pendingTotalInEth = pendingTotalInEth.set(currentCycle.toString(), currentTotal);
+        }
+    }
+
+    return {
+        pendingRewards,
+        currentCycle,
+        previousCycle,
+        cycleTimeoutBN,
+        pendingTotalInEth,
+    };
 };
