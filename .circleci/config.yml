@@ -31,15 +31,12 @@ commands:
             - node_modules
           key: v1-dependencies-{{ checksum "yarn.lock" }}
 
-  setup_local_network:
-    description: "Set up local network"
+  test_on_local_network:
+    description: "Test on local network"
     steps:
       - run:
-          name: Start ganache
-          command: cd ./node_modules/darknode-sol && (yarn ganache-cli -d  > /dev/null &) && sleep 5
-      - run:
           name: Migrate contracts
-          command: cd ./node_modules/darknode-sol && yarn truffle migrate
+          command: cd ./node_modules/darknode-sol && (yarn ganache-cli -d  > /dev/null &) && sleep 5 && yarn truffle migrate && cd ../../ && yarn run test
 
 jobs:
   build:
@@ -47,10 +44,7 @@ jobs:
     steps:
       - checkout
       - install_deps
-      - setup_local_network
-      - run:
-          name: Test
-          command: yarn run test
+      - test_on_local_network
       - run:
           name: Build
           command: yarn run build
