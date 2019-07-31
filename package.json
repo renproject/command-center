@@ -85,7 +85,7 @@
     "not op_mini all"
   ],
   "jest": {
-    "globalSetup": "./test/globalSetup.ts",
-    "globalTeardown": "./test/globalTeardown.ts"
+    "globalSetup": "./src/test/globalSetup.ts",
+    "globalTeardown": "./src/test/globalTeardown.ts"
   }
 }
