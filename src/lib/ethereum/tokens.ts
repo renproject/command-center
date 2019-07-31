@@ -2,8 +2,6 @@ import { Currency } from "@renproject/react-components";
 import Axios from "axios";
 import { Map } from "immutable";
 
-import { TokenPrices } from "../tokenPrices";
-
 export enum Token {
     DAI = "DAI",
     ETH = "ETH",
@@ -158,3 +156,5 @@ export const getPrices = async (): Promise<TokenPrices> => {
 
     return prices;
 };
+
+export type TokenPrices = Map<Token | OldToken, Map<Currency, number>>;

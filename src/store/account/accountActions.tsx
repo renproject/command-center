@@ -10,7 +10,7 @@ import { toChecksumAddress } from "web3-utils";
 import { LoggedOut } from "../../components/popups/LoggedOut";
 import { NoWeb3Popup } from "../../components/popups/NoWeb3Popup";
 import { Language } from "../../languages/language";
-import { getInjectedWeb3Provider } from "../../lib/ethereum/wallet";
+import { getInjectedWeb3Provider } from "../../lib/ethereum/getWeb3";
 import { history } from "../../lib/react/history";
 import { ApplicationState } from "../applicationState";
 import { clearPopup, setPopup } from "../popup/popupActions";

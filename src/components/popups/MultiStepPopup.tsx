@@ -5,7 +5,7 @@ import BigNumber from "bignumber.js";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators } from "redux";
 
-import { ErrorCanceledByUser } from "../../lib/ethereum/wallet";
+import { ErrorCanceledByUser } from "../../lib/ethereum/getWeb3";
 import {
     _captureBackgroundException_, _captureInteractionException_,
 } from "../../lib/react/errors";

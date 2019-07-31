@@ -6,8 +6,8 @@ import { RouteComponentProps, withRouter } from "react-router";
 import { bindActionCreators } from "redux";
 import { toChecksumAddress } from "web3-utils";
 
-import { EncodedData, Encodings } from "../../lib/encodedData";
 import { RegistrationStatus } from "../../lib/ethereum/contractReads";
+import { EncodedData, Encodings } from "../../lib/general/encodedData";
 import { ApplicationState } from "../../store/applicationState";
 import { addRegisteringDarknode, setDarknodeName } from "../../store/network/operatorActions";
 import { AppDispatch } from "../../store/rootReducer";

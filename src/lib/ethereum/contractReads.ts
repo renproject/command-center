@@ -7,12 +7,10 @@ import { Block } from "web3-eth";
 import { sha3, toChecksumAddress } from "web3-utils";
 
 import { DarknodesState } from "../../store/applicationState";
-import { DarknodeFeeStatus } from "../darknodeFeeStatus";
-import { safePromiseAllList, safePromiseAllMap } from "../promiseAll";
+import { safePromiseAllList, safePromiseAllMap } from "../general/promiseAll";
 import { _captureBackgroundException_, _noCapture_ } from "../react/errors";
-import { TokenPrices } from "../tokenPrices";
 import { getDarknodePayment, getDarknodePaymentStore, getDarknodeRegistry } from "./contract";
-import { NewTokenDetails, OldToken, OldTokenDetails, Token } from "./tokens";
+import { NewTokenDetails, OldToken, OldTokenDetails, Token, TokenPrices } from "./tokens";
 
 /**
  * Fetches the minimum bond from the Darknode Registry contract.
@@ -235,6 +233,13 @@ const sumUpFeeMap = (
     // Convert to wei
     return totalEth.multipliedBy(new BigNumber(10).pow(18));
 };
+
+export enum DarknodeFeeStatus {
+    BLACKLISTED = "BLACKLISTED",
+    CLAIMED = "CLAIMED",
+    NOT_CLAIMED = "NOT_CLAIMED",
+    NOT_WHITELISTED = "NOT_WHITELISTED",
+}
 
 /**
  * Fetches various pieces of information about a darknode, including:
@@ -603,7 +608,7 @@ export const getOperatorDarknodes = async (
     renNetwork: RenNetworkDetails,
     operatorAddress: string,
 ): Promise<OrderedSet<string>> => {
-    const darknodes = await getAllDarknodes(web3, renNetwork);
+    let darknodes = OrderedSet(await getAllDarknodes(web3, renNetwork));
 
     /**
      * Sample log:
@@ -644,7 +649,7 @@ export const getOperatorDarknodes = async (
         // 00152d02c7e14af6800000
         // and we want to extract this: 0x945458e071eca54bb534d8ac7c8cd1a3eb318d92 (20 bytes, 40 characters long)
         const darknodeID = toChecksumAddress(`0x${event.data.substr(26, 40)}`);
-        darknodes.push(darknodeID);
+        darknodes = darknodes.add(darknodeID);
     }
 
     // Note: Deregistration events are not included because we are unable to retrieve the operator
@@ -666,7 +671,7 @@ export const getOperatorDarknodes = async (
 
     let operatorDarknodes = OrderedSet<string>();
 
-    for (let i = 0; i < darknodes.length; i++) {
+    for (let i = 0; i < darknodes.size; i++) {
         if (await operatorPromises[i] === operatorAddress && !operatorDarknodes.contains(operatorAddress)) {
             operatorDarknodes = operatorDarknodes.add(darknodes[i]);
         }

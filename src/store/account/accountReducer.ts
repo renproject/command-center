@@ -1,8 +1,7 @@
 import { ActionType, getType } from "typesafe-actions";
 
 import { getWeb3BrowserName } from "../../lib/ethereum/browsers";
-import { readOnlyWeb3 } from "../../lib/ethereum/wallet";
-import { AccountState } from "../applicationState";
+import { AccountState, readOnlyWeb3 } from "../applicationState";
 import * as accountActions from "./accountActions";
 
 type AccountAction = ActionType<typeof accountActions>;

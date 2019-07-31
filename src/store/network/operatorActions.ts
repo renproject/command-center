@@ -10,8 +10,7 @@ import {
     calculateSecondsPerBlock, fetchCycleAndPendingRewards, fetchDarknodeBalanceHistory,
     fetchDarknodeDetails, getOperatorDarknodes, HistoryPeriod,
 } from "../../lib/ethereum/contractReads";
-import { Token } from "../../lib/ethereum/tokens";
-import { TokenPrices } from "../../lib/tokenPrices";
+import { Token, TokenPrices } from "../../lib/ethereum/tokens";
 import { DarknodesState } from "../applicationState";
 import { AppDispatch } from "../rootReducer";
 import {

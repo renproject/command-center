@@ -2,7 +2,7 @@ import { mainnet, RenNetworkDetails } from "@renproject/contracts";
 import BigNumber from "bignumber.js";
 import Web3 from "web3";
 
-import { alreadyPast } from "../conversion";
+import { alreadyPast } from "../general/conversion";
 import { _noCapture_ } from "../react/errors";
 import { getDarknodePayment, getDarknodeRegistry } from "./contract";
 import { AllTokenDetails, OldToken, Token } from "./tokens";

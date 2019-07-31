@@ -6,15 +6,13 @@ import BigNumber from "bignumber.js";
 import { List, Map, OrderedMap } from "immutable";
 import { PromiEvent } from "web3-core";
 
-import { DarknodeFeeStatus } from "../lib/darknodeFeeStatus";
 import { Web3Browser } from "../lib/ethereum/browsers";
-import { RegistrationStatus } from "../lib/ethereum/contractReads";
-import { OldToken, Token } from "../lib/ethereum/tokens";
-import { readOnlyWeb3 } from "../lib/ethereum/wallet";
+import { DarknodeFeeStatus, RegistrationStatus } from "../lib/ethereum/contractReads";
+import { getReadOnlyWeb3 } from "../lib/ethereum/getWeb3";
+import { OldToken, Token, TokenPrices } from "../lib/ethereum/tokens";
 import { DEFAULT_REN_NETWORK } from "../lib/react/environmentVariables";
 import { _captureBackgroundException_ } from "../lib/react/errors";
 import { Serializable } from "../lib/react/serializable";
-import { TokenPrices } from "../lib/tokenPrices";
 
 export interface ApplicationState {
     account: AccountState;
@@ -22,6 +20,8 @@ export interface ApplicationState {
     network: NetworkState;
     ui: UIState;
 }
+
+export const readOnlyWeb3 = getReadOnlyWeb3();
 
 export class AccountState extends Record({
     // Login data

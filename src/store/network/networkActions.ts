@@ -4,8 +4,7 @@ import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
 import { createStandardAction } from "typesafe-actions";
 
-import { getPrices, Token } from "../../lib/ethereum/tokens";
-import { TokenPrices } from "../../lib/tokenPrices";
+import { getPrices, Token, TokenPrices } from "../../lib/ethereum/tokens";
 import { AppDispatch } from "../rootReducer";
 
 export const storeTokenPrices = createStandardAction("STORE_TOKEN_PRICES")<TokenPrices>();

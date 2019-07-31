@@ -11,11 +11,9 @@ const ErrorNoWeb3 = Language.wallet.mustInstallMetaMask;
 const ErrorNoAccounts = Language.wallet.noAccounts;
 const ErrorAccountAccessRejected = Language.wallet.mustConnect;
 
-const getReadOnlyWeb3 = (): Web3 => {
+export const getReadOnlyWeb3 = (): Web3 => {
     return new Web3(PUBLIC_NODE);
 };
-
-export const readOnlyWeb3 = getReadOnlyWeb3();
 
 export const getInjectedWeb3Provider = async (onAnyProvider: (provider: provider) => void): Promise<provider> => {
     let injectedProvider;

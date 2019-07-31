@@ -9,10 +9,9 @@ import { OrderedMap } from "immutable";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators } from "redux";
 
-import { alreadyPast, naturalTime } from "../../../lib/conversion";
-import { DarknodeFeeStatus } from "../../../lib/darknodeFeeStatus";
-import { RegistrationStatus } from "../../../lib/ethereum/contractReads";
+import { DarknodeFeeStatus, RegistrationStatus } from "../../../lib/ethereum/contractReads";
 import { OldToken, Token } from "../../../lib/ethereum/tokens";
+import { alreadyPast, naturalTime } from "../../../lib/general/conversion";
 import { showClaimPopup } from "../../../store/account/operatorPopupActions";
 import { ApplicationState, DarknodesState } from "../../../store/applicationState";
 import {
