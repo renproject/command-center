@@ -3,26 +3,19 @@
 // tslint:disable
 
 import BN from "bn.js";
-import { Log, PromiEvent, TransactionReceipt } from "web3-core";
+import { Log, PromiEvent, TransactionReceipt, TransactionConfig } from "web3-core";
 import { Contract } from "web3-eth-contract";
 
 export interface Transaction { receipt: TransactionReceipt; tx: string; logs: Log[]; }
-
-export interface SendOptions {
-    from?: string;
-    gasPrice?: string;
-    gas?: number;
-    value?: number | string | BN;
-}
 
 type BigNumber = string | number | BN;
 
 
 export interface Read<T> {
-    call: (options?: SendOptions) => Promise<T | null>;
+    call: (options?: TransactionConfig) => Promise<T | null>;
 }
 export interface Write {
-    send: (options?: SendOptions) => PromiEvent<Transaction>;
+    send: (options?: TransactionConfig) => PromiEvent<Transaction>;
 }
 export interface DarknodePaymentStoreWeb3 extends Contract {
     methods: {

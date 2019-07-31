@@ -1,6 +1,7 @@
 import { mainnet, RenNetworkDetails } from "@renproject/contracts";
 import BigNumber from "bignumber.js";
 import Web3 from "web3";
+import { TransactionConfig } from "web3-core";
 
 import { alreadyPast } from "../general/conversion";
 import { _noCapture_ } from "../react/errors";
@@ -8,39 +9,57 @@ import { getDarknodePayment, getDarknodeRegistry } from "./contract";
 import { AllTokenDetails, OldToken, Token } from "./tokens";
 import { WaitForTX } from "./waitForTX";
 
-export const withdrawOldToken = async (
+export const fundNode = async (
     web3: Web3,
-    renNetwork: RenNetworkDetails,
-    address: string | null,
+    address: string,
     darknodeID: string,
-    token: Token | OldToken,
+    ethAmountStr: string,
+    onCancel: () => void,
+    onDone: () => void,
     waitForTX: WaitForTX,
-) => new Promise(async (resolve, reject) => {
+): Promise<string> => {
+    // Convert eth to wei
+    const ethAmount = new BigNumber(ethAmountStr);
+    const weiAmount = ethAmount.times(new BigNumber(10).exponentiatedBy(18)).decimalPlaces(0);
 
-    if (renNetwork.name !== "mainnet") {
-        throw new Error(`Withdrawing old tokens not supported on network ${renNetwork.name}`);
-    }
+    let resolved = false;
 
-    if (!address) {
-        throw new Error(`Unable to retrieve account address.`);
-    }
-
-    const network = renNetwork as typeof mainnet;
+    const call = () => web3.eth.sendTransaction({
+        to: darknodeID,
+        value: weiAmount.toFixed(),
+        from: address,
+    });
 
     try {
-        const rewardVault = new (web3.eth.Contract)(
-            network.addresses.ren.DarknodeRewardVault.abi,
-            network.addresses.ren.DarknodeRewardVault.address
+        const res = await waitForTX(
+            call(),
+            onDone
         );
-        await waitForTX(
-            rewardVault.methods.withdraw(darknodeID, network.addresses.oldTokens[token].address).send({ from: address }),
-            resolve,
-        );
+        resolved = true;
+        return res;
     } catch (error) {
-        reject(error);
-        return;
+        if (resolved) { onCancel(); }
+        throw error;
     }
-});
+};
+
+////////////////////////////////
+// Darknode Registry contract //
+////////////////////////////////
+
+export const callEpoch = async (
+    web3: Web3,
+    renNetwork: RenNetworkDetails,
+    address: string,
+    waitForTX: WaitForTX,
+    txConfig?: TransactionConfig,
+) => {
+    const darknodeRegistry = getDarknodeRegistry(web3, renNetwork);
+
+    return await waitForTX(
+        darknodeRegistry.methods.epoch().send({ ...txConfig, from: address }),
+    );
+};
 
 export const approveNode = async (
     web3: Web3,
@@ -81,7 +100,6 @@ export const registerNode = async (
     onDone: () => void,
     waitForTX: WaitForTX,
 ): Promise<string> => {
-
     const hardCodedGas = 500000;
 
     // tslint:disable-next-line:no-non-null-assertion
@@ -170,39 +188,9 @@ export const refundNode = async (
     }
 };
 
-export const fundNode = async (
-    web3: Web3,
-    address: string,
-    darknodeID: string,
-    ethAmountStr: string,
-    onCancel: () => void,
-    onDone: () => void,
-    waitForTX: WaitForTX,
-): Promise<string> => {
-    // Convert eth to wei
-    const ethAmount = new BigNumber(ethAmountStr);
-    const weiAmount = ethAmount.times(new BigNumber(10).exponentiatedBy(18)).decimalPlaces(0);
-
-    let resolved = false;
-
-    const call = () => web3.eth.sendTransaction({
-        to: darknodeID,
-        value: weiAmount.toFixed(),
-        from: address,
-    });
-
-    try {
-        const res = await waitForTX(
-            call(),
-            onDone
-        );
-        resolved = true;
-        return res;
-    } catch (error) {
-        if (resolved) { onCancel(); }
-        throw error;
-    }
-};
+///////////////////////////////
+// Darknode Payment contract //
+///////////////////////////////
 
 export const claimForNode = async (
     web3: Web3,
@@ -277,6 +265,40 @@ export const changeCycle = async (
         throw error;
     }
 };
+
+export const withdrawOldToken = async (
+    web3: Web3,
+    renNetwork: RenNetworkDetails,
+    address: string | null,
+    darknodeID: string,
+    token: Token | OldToken,
+    waitForTX: WaitForTX,
+) => new Promise(async (resolve, reject) => {
+
+    if (renNetwork.name !== "mainnet") {
+        throw new Error(`Withdrawing old tokens not supported on network ${renNetwork.name}`);
+    }
+
+    if (!address) {
+        throw new Error(`Unable to retrieve account address.`);
+    }
+
+    const network = renNetwork as typeof mainnet;
+
+    try {
+        const rewardVault = new (web3.eth.Contract)(
+            network.addresses.ren.DarknodeRewardVault.abi,
+            network.addresses.ren.DarknodeRewardVault.address
+        );
+        await waitForTX(
+            rewardVault.methods.withdraw(darknodeID, network.addresses.oldTokens[token].address).send({ from: address }),
+            resolve,
+        );
+    } catch (error) {
+        reject(error);
+        return;
+    }
+});
 
 // export const bridgedToken = (web3: Web3, renNetwork: RenNetworkDetails, address: string): Contract => {
 //     return new web3.eth.Contract(renNetwork.WarpGateToken.abi, address);

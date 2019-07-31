@@ -1,7 +1,7 @@
 import { RenNetworkDetails } from "@renproject/contracts";
 import { Currency } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
-import { List, OrderedMap, OrderedSet } from "immutable";
+import { List, OrderedMap } from "immutable";
 import { createStandardAction } from "typesafe-actions";
 import Web3 from "web3";
 import { PromiEvent } from "web3-core";
@@ -32,8 +32,8 @@ export const removeDarknode = createStandardAction("REMOVE_DARKNODE")<{
     operator: string;
 }>();
 
-export const storeDarknodeList = createStandardAction("STORE_DARKNODE_LIST")<{
-    darknodeList: OrderedSet<string>;
+export const addDarknode = createStandardAction("ADD_DARKNODE")<{
+    darknodeID: string;
     address: string;
 }>();
 
@@ -117,8 +117,9 @@ export const updateOperatorDarknodes = (
 
     let darknodeList = previousDarknodeList || List<string>();
 
-    const currentDarknodes = await getOperatorDarknodes(web3, renNetwork, address);
-    dispatch(storeDarknodeList({ darknodeList: currentDarknodes, address }));
+    const currentDarknodes = await getOperatorDarknodes(web3, renNetwork, address, (darknodeID) => {
+        dispatch(addDarknode({ darknodeID, address }));
+    });
 
     // The lists are merged in the reducer as well, but we combine them again
     // before passing into `updateDarknodeDetails`

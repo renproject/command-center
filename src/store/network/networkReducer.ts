@@ -61,22 +61,14 @@ export const networkReducer = (
                 return state;
             }
 
-        case getType(operatorActions.storeDarknodeList):
+        case getType(operatorActions.addDarknode):
             let newList = state.darknodeList.get(action.payload.address) || List();
             let newNames = state.darknodeNames;
 
-            // Add to list if it's not already in there (this is an inefficient
-            // process but it's only run on a small number of strings every two minutes)
-            action.payload.darknodeList.map((darknodeID: string) => {
-                if (!newList.contains(darknodeID)) {
-                    newList = newList.push(darknodeID);
-
-                    // if (!newNames.has(darknodeID)) {
-                    //     newNames = newNames.set(darknodeID, `Darknode ${newList.indexOf(darknodeID) + 1}`);
-                    // }
-                }
-                return null;
-            });
+            // Add to list if it's not already in there
+            if (!newList.contains(action.payload.darknodeID)) {
+                newList = newList.push(action.payload.darknodeID);
+            }
 
             newList.map((darknodeID: string) => {
                 if (!newNames.has(darknodeID)) {

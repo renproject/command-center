@@ -570,7 +570,7 @@ export const fetchCycleAndPendingRewards = async (
  * @param renNetwork A Ren network object.
  * @returns A promise to the list of all darknode IDs (as hex string).
  */
-const getAllDarknodes = async (web3: Web3, renNetwork: RenNetworkDetails): Promise<string[]> => {
+export const getAllDarknodes = async (web3: Web3, renNetwork: RenNetworkDetails): Promise<string[]> => {
     const batchSize = 10;
     const NULL = "0x0000000000000000000000000000000000000000";
 
@@ -591,24 +591,15 @@ const getAllDarknodes = async (web3: Web3, renNetwork: RenNetworkDetails): Promi
 };
 
 /**
- * Find the darknodes for an operator by reading the logs of the Darknode
- * Registry.
- *
- * Currently, the LogDarknodeRegistered logs don't include the registrar, so
- * instead we loop through every darknode and get it's owner first.
- * This would be a lot faster if the logs indexed the operator!
+ * Find the darknodes by reading the logs of the Darknode Registry.
  *
  * @param web3 A Web3 instance.
  * @param renNetwork A Ren network object.
- * @param operatorAddress The address of the operator to look up darknodes for.
- * @returns An immutable list of darknode IDs (as hex strings).
+ * @param fromBlock The starting block to look at logs for.
+ * @returns An immutable set of darknode IDs (as hex strings).
  */
-export const getOperatorDarknodes = async (
-    web3: Web3,
-    renNetwork: RenNetworkDetails,
-    operatorAddress: string,
-): Promise<OrderedSet<string>> => {
-    let darknodes = OrderedSet(await getAllDarknodes(web3, renNetwork));
+const retrieveDarknodesInLogs = async (web3: Web3, renNetwork: RenNetworkDetails, fromBlock: string | number) => {
+    let darknodes = OrderedSet();
 
     /**
      * Sample log:
@@ -631,13 +622,9 @@ export const getOperatorDarknodes = async (
      * ```
      */
 
-    // Get Registration events
-    // TODO:
-    // Only look from the last epoch, since we are only interested in
-    // newly registered darknodes.
     const recentRegistrationEvents = await web3.eth.getPastLogs({
         address: renNetwork.addresses.ren.DarknodeRegistry.address,
-        fromBlock: renNetwork.addresses.ren.DarknodeRegistry.block || "0x600000",
+        fromBlock,
         toBlock: "latest",
         // topics: [sha3("LogDarknodeRegistered(address,uint256)"), "0x000000000000000000000000" +
         // address.slice(2), null, null] as any,
@@ -648,7 +635,12 @@ export const getOperatorDarknodes = async (
         // 0x000000000000000000000000945458e071eca54bb534d8ac7c8cd1a3eb318d92000000000000000000000000000000000000000000\
         // 00152d02c7e14af6800000
         // and we want to extract this: 0x945458e071eca54bb534d8ac7c8cd1a3eb318d92 (20 bytes, 40 characters long)
-        const darknodeID = toChecksumAddress(`0x${event.data.substr(26, 40)}`);
+        let darknodeID;
+        if (event.topics.length === 2) {
+            darknodeID = toChecksumAddress(`0x${(event.topics[1] as string).substr(26, 40)}`);
+        } else {
+            darknodeID = toChecksumAddress(`0x${event.data.substr(26, 40)}`);
+        }
         darknodes = darknodes.add(darknodeID);
     }
 
@@ -664,16 +656,66 @@ export const getOperatorDarknodes = async (
     //     darknodes.push(darknodeID);
     // }
 
-    const darknodeRegistry = getDarknodeRegistry(web3, renNetwork);
-    const operatorPromises = darknodes.map(async (darknodeID: string) =>
-        darknodeRegistry.methods.getDarknodeOwner(darknodeID).call()
+    return darknodes;
+};
+
+/**
+ * Find the darknodes for an operator.
+ *
+ * Currently, the LogDarknodeRegistered logs don't include the registrar, so
+ * instead we loop through every darknode and get it's owner first.
+ * This would be a lot faster if the logs indexed the operator! 🤦
+ *
+ * @param web3 A Web3 instance.
+ * @param renNetwork A Ren network object.
+ * @param operatorAddress The address of the operator to look up darknodes for.
+ * @param onDarknode An optional callback to retrieve darknodes as they are
+ *        found, instead of waiting for all of them to be returned together.
+ * @returns An immutable set of darknode IDs (as hex strings).
+ */
+export const getOperatorDarknodes = async (
+    web3: Web3,
+    renNetwork: RenNetworkDetails,
+    operatorAddress: string,
+    onDarknode?: (darknodeID: string) => void,
+): Promise<OrderedSet<string>> => {
+
+    // Skip calling getAllDarknodes - they will all be in the logs as well.
+    let darknodes = OrderedSet(
+        // Retrieve currently registered darknodes.
+        // await getAllDarknodes(web3, renNetwork)
     );
+
+    const darknodeRegistry = getDarknodeRegistry(web3, renNetwork);
+
+    // Retrieve darknodes that are pending registration.
+
+    // Get Registration events.
+
+    // We may want to only look at the current epoch first, to retrieve pending
+    // registrations, before looking for deregistrations across all blocks.
+    // Only look from the last epoch, since we are
+    // only interested in newly registered darknodes.
+    // const epoch = await darknodeRegistry.methods.currentEpoch().call();
+    // const fromBlock = epoch ? `0x${new BigNumber(epoch.blocknumber.toString()).toString(16)}` : renNetwork.addresses.ren.DarknodeRegistry.block || "0x00";
+
+    const fromBlock = renNetwork.addresses.ren.DarknodeRegistry.block || "0x00";
+
+    darknodes = darknodes.concat(await retrieveDarknodesInLogs(web3, renNetwork, fromBlock));
+
+    const operatorPromises = darknodes.map(async (darknodeID: string) => {
+        return [darknodeID, await darknodeRegistry.methods.getDarknodeOwner(darknodeID).call()] as [string, string];
+    });
 
     let operatorDarknodes = OrderedSet<string>();
 
-    for (let i = 0; i < darknodes.size; i++) {
-        if (await operatorPromises[i] === operatorAddress && !operatorDarknodes.contains(operatorAddress)) {
-            operatorDarknodes = operatorDarknodes.add(darknodes[i]);
+    operatorAddress = toChecksumAddress(operatorAddress);
+
+    for (const operatorPromise of operatorPromises.toArray()) {
+        const [darknodeID, operator] = await operatorPromise;
+        if (operator === operatorAddress && !operatorDarknodes.contains(operatorAddress)) {
+            operatorDarknodes = operatorDarknodes.add(darknodeID);
+            if (onDarknode) { onDarknode(darknodeID); }
         }
     }
 
