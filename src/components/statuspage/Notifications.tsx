@@ -6,7 +6,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import BigNumber from "bignumber.js";
 
-import { RegistrationStatus } from "../../lib/ethereum/network";
+import { RegistrationStatus } from "../../lib/ethereum/contractReads";
 import { DarknodesState } from "../../store/applicationState";
 
 const lowValue = new BigNumber(Math.pow(10, 18)).multipliedBy(0.1);

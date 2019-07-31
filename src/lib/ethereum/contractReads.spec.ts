@@ -3,7 +3,7 @@ import Web3 from "web3";
 
 import { createWeb3, Provider } from "../../../test/globalSetup";
 import { darknodeIDBase58ToHex } from "../../components/pages/Darknode";
-import { getDarknodeStatus, RegistrationStatus } from "./network";
+import { getDarknodeStatus, RegistrationStatus } from "./contractReads";
 
 let web3: Web3, network: RenNetworkDetails, provider: Provider;
 beforeAll(async () => { ({ web3, network, provider } = await createWeb3()); });

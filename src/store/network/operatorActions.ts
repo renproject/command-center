@@ -8,9 +8,8 @@ import { PromiEvent } from "web3-core";
 
 import {
     calculateSecondsPerBlock, fetchCycleAndPendingRewards, fetchDarknodeBalanceHistory,
-    fetchDarknodeDetails, HistoryPeriods,
-} from "../../lib/ethereum/network";
-import { getOperatorDarknodes } from "../../lib/ethereum/operator";
+    fetchDarknodeDetails, getOperatorDarknodes, HistoryPeriod,
+} from "../../lib/ethereum/contractReads";
 import { Token } from "../../lib/ethereum/tokens";
 import { TokenPrices } from "../../lib/tokenPrices";
 import { DarknodesState } from "../applicationState";
@@ -79,7 +78,7 @@ export const updateCycleAndPendingRewards = (
         pendingRewards,
         currentCycle,
         previousCycle,
-        cycleTimeoutBN,
+        cycleTimeout,
         pendingTotalInEth,
     } = await fetchCycleAndPendingRewards(web3, renNetwork, tokenPrices);
 
@@ -93,8 +92,8 @@ export const updateCycleAndPendingRewards = (
         dispatch(updatePreviousCycle(previousCycle.toString()));
     }
     dispatch(updatePendingRewards(pendingRewards));
-    if (cycleTimeoutBN !== null) {
-        dispatch(updateCycleTimeout(new BigNumber(cycleTimeoutBN.toString())));
+    if (cycleTimeout !== null) {
+        dispatch(updateCycleTimeout(cycleTimeout));
     }
 };
 
@@ -140,7 +139,7 @@ export const updateDarknodeBalanceHistory = (
     web3: Web3,
     darknodeID: string,
     previousHistory: OrderedMap<number, BigNumber> | null,
-    historyPeriod: HistoryPeriods,
+    historyPeriod: HistoryPeriod,
     secondsPerBlock: number,
 ) => async (dispatch: AppDispatch) => {
     const balanceHistory = await fetchDarknodeBalanceHistory(web3, darknodeID, previousHistory, historyPeriod, secondsPerBlock);

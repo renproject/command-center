@@ -4,7 +4,7 @@ import { Loading } from "@renproject/react-components";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators } from "redux";
 
-import { RegistrationStatus } from "../../lib/ethereum/network";
+import { RegistrationStatus } from "../../lib/ethereum/contractReads";
 import { _captureInteractionException_ } from "../../lib/react/errors";
 import {
     showDeregisterPopup, showRefundPopup, showRegisterPopup,

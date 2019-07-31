@@ -8,7 +8,7 @@ import { PromiEvent } from "web3-core";
 
 import { DarknodeFeeStatus } from "../lib/darknodeFeeStatus";
 import { Web3Browser } from "../lib/ethereum/browsers";
-import { RegistrationStatus } from "../lib/ethereum/network";
+import { RegistrationStatus } from "../lib/ethereum/contractReads";
 import { OldToken, Token } from "../lib/ethereum/tokens";
 import { readOnlyWeb3 } from "../lib/ethereum/wallet";
 import { DEFAULT_REN_NETWORK } from "../lib/react/environmentVariables";

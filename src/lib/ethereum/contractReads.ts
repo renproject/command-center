@@ -1,34 +1,63 @@
 import { mainnet, RenNetworkDetails } from "@renproject/contracts";
 import { Currency } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
-import { List, OrderedMap } from "immutable";
+import { OrderedMap, OrderedSet } from "immutable";
 import Web3 from "web3";
 import { Block } from "web3-eth";
-import { toChecksumAddress } from "web3-utils";
+import { sha3, toChecksumAddress } from "web3-utils";
 
 import { DarknodesState } from "../../store/applicationState";
 import { DarknodeFeeStatus } from "../darknodeFeeStatus";
-import { DarknodePaymentWeb3 } from "../ethereum/contracts/bindings/darknodePayment";
-import { DarknodePaymentStoreWeb3 } from "../ethereum/contracts/bindings/darknodePaymentStore";
-import { DarknodeRegistryWeb3 } from "../ethereum/contracts/bindings/darknodeRegistry";
-import { NewTokenDetails, OldToken, OldTokenDetails, Token } from "../ethereum/tokens";
+import { safePromiseAllList, safePromiseAllMap } from "../promiseAll";
 import { _captureBackgroundException_, _noCapture_ } from "../react/errors";
 import { TokenPrices } from "../tokenPrices";
+import { getDarknodePayment, getDarknodePaymentStore, getDarknodeRegistry } from "./contract";
+import { NewTokenDetails, OldToken, OldTokenDetails, Token } from "./tokens";
 
-export const getMinimumBond = async (web3: Web3, renNetwork: RenNetworkDetails) => {
-    const darknodeRegistry: DarknodeRegistryWeb3 = new (web3.eth.Contract)(
-        renNetwork.addresses.ren.DarknodeRegistry.abi,
-        renNetwork.addresses.ren.DarknodeRegistry.address
-    );
-    const minimumBond = (await darknodeRegistry.methods.minimumBond().call()) || "100000000000000000000000";
+/**
+ * Fetches the minimum bond from the Darknode Registry contract.
+ *
+ * @param web3 A Web3 instance.
+ * @param renNetwork A Ren network object.
+ * @returns A promise to the minimum bond as a BigNumber.
+ */
+export const getMinimumBond = async (web3: Web3, renNetwork: RenNetworkDetails): Promise<BigNumber> => {
+    const minimumBond = (await getDarknodeRegistry(web3, renNetwork).methods.minimumBond().call()) || "100000000000000000000000";
     return new BigNumber((minimumBond).toString());
 };
 
+/**
+ * Fetches a darknode's public key from the Darknode Registry contract.
+ *
+ * @param web3 A Web3 instance.
+ * @param renNetwork A Ren network object.
+ * @returns A promise to the public key as a hex string.
+ */
+const getDarknodePublicKey = async (web3: Web3, renNetwork: RenNetworkDetails, darknodeID: string): Promise<string> => {
+    const publicKey = await getDarknodeRegistry(web3, renNetwork).methods.getDarknodePublicKey(darknodeID).call();
+    if (publicKey === null) {
+        throw _noCapture_(new Error("Unable to retrieve darknode public key"));
+    }
+    return publicKey;
+};
+
+/**
+ * Fetches a darknode's operator address from the Darknode Registry contract.
+ *
+ * @param web3 A Web3 instance.
+ * @param renNetwork A Ren network object.
+ * @returns A promise to the operator as a hex string.
+ */
+const getDarknodeOperator = async (web3: Web3, renNetwork: RenNetworkDetails, darknodeID: string): Promise<string> => {
+    const owner = await getDarknodeRegistry(web3, renNetwork).methods.getDarknodeOwner(darknodeID).call();
+    if (owner === null) {
+        throw _noCapture_(new Error("Unable to retrieve darknode owner"));
+    }
+    return owner;
+};
+
 // export const getDarknodeCount = async (web3: Web3, renNetwork: RenNetworkDetails): Promise<BigNumber> => {
-//     const darknodeRegistry: DarknodeRegistryWeb3 = new (web3.eth.Contract)(
-//         renNetwork.addresses.ren.DarknodeRegistry.abi,
-//         renNetwork.addresses.ren.DarknodeRegistry.address
-//     );
+//     const darknodeRegistry = getDarknodeRegistry(web3, renNetwork);
 //     const darknodeCount = await darknodeRegistry.methods.numDarknodes().call();
 //     if (darknodeCount === null) {
 //         throw _noCapture_(new Error("Unable to retrieve darknode count"));
@@ -46,11 +75,19 @@ export enum RegistrationStatus {
     Refundable = "refundable",
 }
 
+/**
+ * Retrieves the registration status of a darknode.
+ *
+ * It can be one of Unregistered, RegistrationPending, Registered,
+ * DeregistrationPending, Deregistered or Refundable.
+ *
+ * @param web3 A Web3 instance.
+ * @param renNetwork A Ren network object.
+ * @param darknodeID The ID of the darknode as a hex string.
+ * @returns A promise to the registration status.
+ */
 export const getDarknodeStatus = async (web3: Web3, renNetwork: RenNetworkDetails, darknodeID: string): Promise<RegistrationStatus> => {
-    const darknodeRegistry: DarknodeRegistryWeb3 = new (web3.eth.Contract)(
-        renNetwork.addresses.ren.DarknodeRegistry.abi,
-        renNetwork.addresses.ren.DarknodeRegistry.address
-    );
+    const darknodeRegistry = getDarknodeRegistry(web3, renNetwork);
 
     const [
         isPendingRegistration,
@@ -81,6 +118,16 @@ export const getDarknodeStatus = async (web3: Web3, renNetwork: RenNetworkDetail
     }
 };
 
+/**
+ * Retrieves the balances from the old DarknodeRewardVault contract, which is
+ * only deployed on mainnet.
+ *
+ * @param web3 A Web3 instance.
+ * @param renNetwork A Ren network object.
+ * @param darknodeID The ID of the darknode as a hex string.
+ * @returns Returns a promise to an immutable map from token codes to balances
+ *          as BigNumbers.
+ */
 export const getOldBalances = async (
     web3: Web3,
     renNetwork: typeof mainnet,
@@ -113,48 +160,21 @@ export const getOldBalances = async (
     return feesEarned;
 };
 
-// FIXME: safePromiseAllList still throws uncaught error
-// The same as Promise.all except that if an entry throws, it sets it to the
-// provided default value instead of throwing the entire promise.
-const safePromiseAllList = async <b>(orderedMap: List<Promise<b>>, defaultValue: b): Promise<List<b>> => {
-    let newOrderedMap = List<b>();
-    for (const valueP of orderedMap.toArray()) {
-        try {
-            newOrderedMap = newOrderedMap.push(await valueP);
-        } catch (error) {
-            console.error(error);
-            newOrderedMap = newOrderedMap.push(defaultValue);
-        }
-    }
-    return newOrderedMap;
-};
-
-// The same as Promise.all except that if an entry throws, it sets it to the
-// provided default value instead of throwing the entire promise.
-// This variation maps over an OrderedMap instead of an array.
-const safePromiseAllMap = async <a, b>(orderedMap: OrderedMap<a, Promise<b>>, defaultValue: b): Promise<OrderedMap<a, b>> => {
-    let newOrderedMap = OrderedMap<a, b>();
-    for (const [key, valueP] of orderedMap.toArray()) {
-        try {
-            newOrderedMap = newOrderedMap.set(key, await valueP);
-        } catch (error) {
-            console.error(error);
-            newOrderedMap = newOrderedMap.set(key, defaultValue);
-        }
-    }
-    return newOrderedMap;
-};
-
+/**
+ * Retrieves the balances from the DarknodePayment contract.
+ *
+ * @param web3 A Web3 instance.
+ * @param renNetwork A Ren network object.
+ * @param darknodeID The ID of the darknode as a hex string.
+ * @returns Returns a promise to an immutable map from token codes to balances
+ *          as BigNumbers.
+ */
 const getBalances = async (
     web3: Web3,
     renNetwork: RenNetworkDetails,
     darknodeID: string,
 ): Promise<OrderedMap<Token, BigNumber>> => {
-
-    const contract: DarknodePaymentWeb3 = new (web3.eth.Contract)(
-        renNetwork.addresses.ren.DarknodePayment.abi,
-        renNetwork.addresses.ren.DarknodePayment.address,
-    );
+    const darknodePayment = getDarknodePayment(web3, renNetwork);
 
     let feesEarned = OrderedMap<Token, BigNumber>();
 
@@ -164,7 +184,7 @@ const getBalances = async (
         NewTokenDetails.map(async (_tokenDetails, token) => {
             let balance1;
             try {
-                const balance1Call = await contract.methods.darknodeBalances(darknodeID, renNetwork.addresses.tokens[token]).call();
+                const balance1Call = await darknodePayment.methods.darknodeBalances(darknodeID, renNetwork.addresses.tokens[token]).call();
                 balance1 = new BigNumber((balance1Call || "0").toString());
             } catch (error) {
                 balance1 = new BigNumber(0);
@@ -194,7 +214,8 @@ const getBalances = async (
     return feesEarned;
 };
 
-export const sumUpFeeMap = (
+// Sum up fees into the total ETH value (in wei).
+const sumUpFeeMap = (
     feesEarned: OrderedMap<Token | OldToken, BigNumber>,
     tokenPrices: TokenPrices,
 ): BigNumber => {
@@ -215,44 +236,26 @@ export const sumUpFeeMap = (
     return totalEth.multipliedBy(new BigNumber(10).pow(18));
 };
 
-const sumUpFees = (
-    feesEarned: OrderedMap<Token, BigNumber>,
-    oldFeesEarned: OrderedMap<OldToken, BigNumber>,
-    tokenPrices: TokenPrices,
-): BigNumber => {
-    return sumUpFeeMap(feesEarned, tokenPrices).plus(sumUpFeeMap(oldFeesEarned, tokenPrices));
-};
-
-const getDarknodePublicKey = async (web3: Web3, renNetwork: RenNetworkDetails, darknodeID: string): Promise<string> => {
-    const darknodeRegistry: DarknodeRegistryWeb3 = new (web3.eth.Contract)(
-        renNetwork.addresses.ren.DarknodeRegistry.abi,
-        renNetwork.addresses.ren.DarknodeRegistry.address
-    );
-    const publicKey = await darknodeRegistry.methods.getDarknodePublicKey(darknodeID).call();
-    if (publicKey === null) {
-        throw _noCapture_(new Error("Unable to retrieve darknode public key"));
-    }
-    return publicKey;
-};
-
-const getDarknodeOperator = async (web3: Web3, renNetwork: RenNetworkDetails, darknodeID: string): Promise<string> => {
-    const darknodeRegistry: DarknodeRegistryWeb3 = new (web3.eth.Contract)(
-        renNetwork.addresses.ren.DarknodeRegistry.abi,
-        renNetwork.addresses.ren.DarknodeRegistry.address
-    );
-    const owner = await darknodeRegistry.methods.getDarknodeOwner(darknodeID).call();
-    if (owner === null) {
-        throw _noCapture_(new Error("Unable to retrieve darknode owner"));
-    }
-    return owner;
-};
-
+/**
+ * Fetches various pieces of information about a darknode, including:
+ *  1. publicKey,
+ *  2. balances and fees
+ *  3. its status
+ *  4. its gas usage information
+ *  5. its network information (NOTE: not implemented yet)
+ *
+ * @param web3 A Web3 instance.
+ * @param renNetwork A Ren network object.
+ * @param darknodeID The ID of the darknode as a hex string.
+ * @param tokenPrices
+ * @returns A promise to the darknode state record.
+ */
 export const fetchDarknodeDetails = async (
     web3: Web3,
     renNetwork: RenNetworkDetails,
     darknodeID: string,
     tokenPrices: TokenPrices | null,
-) => {
+): Promise<DarknodesState> => {
     darknodeID = toChecksumAddress(darknodeID.toLowerCase());
 
     // Get eth Balance
@@ -271,7 +274,7 @@ export const fetchDarknodeDetails = async (
     }
     let feesEarnedTotalEth = new BigNumber(0);
     if (tokenPrices) {
-        feesEarnedTotalEth = sumUpFees(feesEarned, oldFeesEarned, tokenPrices);
+        feesEarnedTotalEth = sumUpFeeMap(feesEarned, tokenPrices).plus(sumUpFeeMap(oldFeesEarned, tokenPrices));
     }
 
     // Get darknode operator and public key
@@ -290,15 +293,8 @@ export const fetchDarknodeDetails = async (
 
     // Cycle status ////////////////////////////////////////////////////////////
 
-    const darknodePayment: DarknodePaymentWeb3 = new (web3.eth.Contract)(
-        renNetwork.addresses.ren.DarknodePayment.abi,
-        renNetwork.addresses.ren.DarknodePayment.address,
-    );
-
-    const darknodePaymentStore: DarknodePaymentStoreWeb3 = new (web3.eth.Contract)(
-        renNetwork.addresses.ren.DarknodePaymentStore.abi,
-        renNetwork.addresses.ren.DarknodePaymentStore.address,
-    );
+    const darknodePayment = getDarknodePayment(web3, renNetwork);
+    const darknodePaymentStore = getDarknodePaymentStore(web3, renNetwork);
 
     const currentCycleBN = await darknodePayment.methods.currentCycle().call();
     const previousCycleBN = await darknodePayment.methods.previousCycle().call();
@@ -363,6 +359,12 @@ export const fetchDarknodeDetails = async (
     });
 };
 
+/**
+ * Estimates the number of seconds per block for the network.
+ *
+ * @param web3 A Web3 instance.
+ * @returns A promise to the estimate or null.
+ */
 export const calculateSecondsPerBlock = async (
     web3: Web3,
 ): Promise<number | null> => {
@@ -388,7 +390,7 @@ export const calculateSecondsPerBlock = async (
 
 export const HistoryIterations = 5;
 
-export enum HistoryPeriods {
+export enum HistoryPeriod {
     Day = 60 * 60 * 24,
     Week = Day * 7,
     Month = Week * 4,
@@ -396,11 +398,23 @@ export enum HistoryPeriods {
     Year = Week * 52,
 }
 
+/**
+ * Given a history period, retrieves the darknode's balance history for
+ * intervals in the period.
+ *
+ * @param web3 A Web3 instance.
+ * @param darknodeID The ID of the darknode as a hex string.
+ * @param previousHistory The previous data-points so we don't repeat requests.
+ * @param historyPeriod The history period to fetch the balance history for.
+ * @param secondsPerBlock An estimate of the time between blocks in the network.
+ * @returns Returns a promise to a map from block numbers to the corresponding
+ *          balance.
+ */
 export const fetchDarknodeBalanceHistory = async (
     web3: Web3,
     darknodeID: string,
     previousHistory: OrderedMap<number, BigNumber> | null,
-    historyPeriod: HistoryPeriods,
+    historyPeriod: HistoryPeriod,
     secondsPerBlock: number,
 ): Promise<OrderedMap<number, BigNumber>> => {
     let balanceHistory = previousHistory || OrderedMap<number, BigNumber>();
@@ -447,15 +461,27 @@ export const fetchDarknodeBalanceHistory = async (
     return balanceHistory;
 };
 
+/**
+ * Retrieves information about the pending rewards in the Darknode Payment
+ * contract.
+ *
+ * @param web3 A Web3 instance.
+ * @param renNetwork A Ren network object.
+ * @param tokenPrices A TokenPrices map to convert the total in ETH.
+ * @returns {
+ *     pendingRewards: For each cycle, a map from tokens to rewards
+ *     currentCycle: The current cycle (as a block number)
+ *     previousCycle: The previous cycle (as a block number)
+ *     cycleTimeout: The earliest the current cycle could end (as a block number)
+ *     pendingTotalInEth: For each cycle, The pending rewards added up as ETH
+ * }
+ */
 export const fetchCycleAndPendingRewards = async (
     web3: Web3,
     renNetwork: RenNetworkDetails,
     tokenPrices: TokenPrices | null,
 ) => {
-    const darknodePayment: DarknodePaymentWeb3 = new (web3.eth.Contract)(
-        renNetwork.addresses.ren.DarknodePayment.abi,
-        renNetwork.addresses.ren.DarknodePayment.address,
-    );
+    const darknodePayment = getDarknodePayment(web3, renNetwork);
 
     let pendingRewards = OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber>>();
 
@@ -507,7 +533,8 @@ export const fetchCycleAndPendingRewards = async (
         pendingRewards = pendingRewards.set(currentCycle.toString(), current);
     }
 
-    const cycleTimeoutBN = (await darknodePayment.methods.cycleTimeout().call());
+    const cycleTimeoutBN = await darknodePayment.methods.cycleTimeout().call();
+    const cycleTimeout = cycleTimeoutBN ? new BigNumber(cycleTimeoutBN.toString()) : null;
 
     let pendingTotalInEth = null;
     if (tokenPrices) {
@@ -526,7 +553,124 @@ export const fetchCycleAndPendingRewards = async (
         pendingRewards,
         currentCycle,
         previousCycle,
-        cycleTimeoutBN,
+        cycleTimeout,
         pendingTotalInEth,
     };
+};
+
+/**
+ * Fetches all the darknodes from the Darknode Registry contract.
+ *
+ * @param web3 A Web3 instance.
+ * @param renNetwork A Ren network object.
+ * @returns A promise to the list of all darknode IDs (as hex string).
+ */
+const getAllDarknodes = async (web3: Web3, renNetwork: RenNetworkDetails): Promise<string[]> => {
+    const batchSize = 10;
+    const NULL = "0x0000000000000000000000000000000000000000";
+
+    const allDarknodes = [];
+    let lastDarknode = NULL;
+    const filter = (address: string) => address !== NULL && address !== lastDarknode;
+    do {
+        const darknodeRegistry = getDarknodeRegistry(web3, renNetwork);
+        const darknodes = (await darknodeRegistry.methods.getDarknodes(lastDarknode, batchSize.toString()).call());
+        if (darknodes === null) {
+            throw _noCapture_(new Error("Error calling 'darknodeRegistry.methods.getDarknodes'"));
+        }
+        allDarknodes.push(...darknodes.filter(filter));
+        [lastDarknode] = darknodes.slice(-1);
+    } while (lastDarknode !== NULL);
+
+    return allDarknodes;
+};
+
+/**
+ * Find the darknodes for an operator by reading the logs of the Darknode
+ * Registry.
+ *
+ * Currently, the LogDarknodeRegistered logs don't include the registrar, so
+ * instead we loop through every darknode and get it's owner first.
+ * This would be a lot faster if the logs indexed the operator!
+ *
+ * @param web3 A Web3 instance.
+ * @param renNetwork A Ren network object.
+ * @param operatorAddress The address of the operator to look up darknodes for.
+ * @returns An immutable list of darknode IDs (as hex strings).
+ */
+export const getOperatorDarknodes = async (
+    web3: Web3,
+    renNetwork: RenNetworkDetails,
+    operatorAddress: string,
+): Promise<OrderedSet<string>> => {
+    const darknodes = await getAllDarknodes(web3, renNetwork);
+
+    /**
+     * Sample log:
+     * ```json
+     * {
+     *     address: "0x75Fa8349fc9C7C640A4e9F1A1496fBB95D2Dc3d5",
+     *     blockHash: "0xfab9c0e4d7ccca3e56d6961fbe17917923898828b3f929093e6b976b8727db39",
+     *     blockNumber: 9740948,
+     *     data: "0x000000000000000000000000945458e071eca54bb534d8ac7c8cd1a3eb318d92000000000000000000000000000000000000\
+     *     00000000152d02c7e14af6800000",
+     *     id: "log_98d2346b",
+     *     logIndex: 2,
+     *     removed: false,
+     *     topics: ["0xd2819ba4c736158371edf0be38fd8d1fc435609832e392f118c4c79160e5bd7b"],
+     *     transactionHash: "0x8ed0e53dffda6c356e25cb1ac3ebe7a69bcab8ebf668a7b2e770480bdb47598b",
+     *     transactionIndex: 2,
+     *     transactionLogIndex: "0x2",
+     *     type: "mined",
+     * }
+     * ```
+     */
+
+    // Get Registration events
+    // TODO:
+    // Only look from the last epoch, since we are only interested in
+    // newly registered darknodes.
+    const recentRegistrationEvents = await web3.eth.getPastLogs({
+        address: renNetwork.addresses.ren.DarknodeRegistry.address,
+        fromBlock: renNetwork.addresses.ren.DarknodeRegistry.block || "0x600000",
+        toBlock: "latest",
+        // topics: [sha3("LogDarknodeRegistered(address,uint256)"), "0x000000000000000000000000" +
+        // address.slice(2), null, null] as any,
+        topics: [sha3("LogDarknodeRegistered(address,uint256)")],
+    });
+    for (const event of recentRegistrationEvents) {
+        // The log data returns back like this:
+        // 0x000000000000000000000000945458e071eca54bb534d8ac7c8cd1a3eb318d92000000000000000000000000000000000000000000\
+        // 00152d02c7e14af6800000
+        // and we want to extract this: 0x945458e071eca54bb534d8ac7c8cd1a3eb318d92 (20 bytes, 40 characters long)
+        const darknodeID = toChecksumAddress(`0x${event.data.substr(26, 40)}`);
+        darknodes.push(darknodeID);
+    }
+
+    // Note: Deregistration events are not included because we are unable to retrieve the operator
+    // const recentDeregistrationEvents = await web3.eth.getPastLogs({
+    //     address: contracts.DarknodeRegistry.address,
+    //     fromBlock: renNetwork.addresses.ren.DarknodeRegistry.block || "0x600000",
+    //     toBlock: "latest",
+    //     topics: [sha3("LogDarknodeDeregistered(address)"), null],
+    // });
+    // for (const event of recentDeregistrationEvents) {
+    //     const darknodeID = toChecksumAddress("0x" + event.data.substr(26, 40));
+    //     darknodes.push(darknodeID);
+    // }
+
+    const darknodeRegistry = getDarknodeRegistry(web3, renNetwork);
+    const operatorPromises = darknodes.map(async (darknodeID: string) =>
+        darknodeRegistry.methods.getDarknodeOwner(darknodeID).call()
+    );
+
+    let operatorDarknodes = OrderedSet<string>();
+
+    for (let i = 0; i < darknodes.length; i++) {
+        if (await operatorPromises[i] === operatorAddress && !operatorDarknodes.contains(operatorAddress)) {
+            operatorDarknodes = operatorDarknodes.add(darknodes[i]);
+        }
+    }
+
+    return operatorDarknodes;
 };

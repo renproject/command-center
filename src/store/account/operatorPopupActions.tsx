@@ -8,10 +8,10 @@ import Web3 from "web3";
 
 import { MultiStepPopup } from "../../components/popups/MultiStepPopup";
 import { TokenBalance } from "../../components/TokenBalance";
-import { getMinimumBond } from "../../lib/ethereum/network";
+import { getMinimumBond } from "../../lib/ethereum/contractReads";
 import {
     approveNode, changeCycle, claimForNode, deregisterNode, fundNode, refundNode, registerNode,
-} from "../../lib/ethereum/operator";
+} from "../../lib/ethereum/contractWrites";
 import { Token } from "../../lib/ethereum/tokens";
 import { connectWaitForTX } from "../../lib/ethereum/waitForTX";
 import { _captureBackgroundException_ } from "../../lib/react/errors";

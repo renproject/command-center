@@ -7,7 +7,7 @@ import { bindActionCreators } from "redux";
 import { toChecksumAddress } from "web3-utils";
 
 import { EncodedData, Encodings } from "../../lib/encodedData";
-import { RegistrationStatus } from "../../lib/ethereum/network";
+import { RegistrationStatus } from "../../lib/ethereum/contractReads";
 import { ApplicationState } from "../../store/applicationState";
 import { addRegisteringDarknode, setDarknodeName } from "../../store/network/operatorActions";
 import { AppDispatch } from "../../store/rootReducer";

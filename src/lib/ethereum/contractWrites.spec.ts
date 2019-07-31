@@ -3,8 +3,8 @@ import Web3 from "web3";
 
 import { createWeb3, Provider } from "../../../test/globalSetup";
 import { darknodeIDBase58ToHex } from "../../components/pages/Darknode";
-import { getDarknodeStatus, getMinimumBond, RegistrationStatus } from "./network";
-import { approveNode, registerNode } from "./operator";
+import { getDarknodeStatus, getMinimumBond, RegistrationStatus } from "./contractReads";
+import { approveNode, registerNode } from "./contractWrites";
 import { simpleWaitForTX } from "./waitForTX";
 
 let web3: Web3, network: RenNetworkDetails, provider: Provider, address: string;

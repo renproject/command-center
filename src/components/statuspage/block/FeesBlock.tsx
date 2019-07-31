@@ -11,7 +11,7 @@ import { bindActionCreators } from "redux";
 
 import { alreadyPast, naturalTime } from "../../../lib/conversion";
 import { DarknodeFeeStatus } from "../../../lib/darknodeFeeStatus";
-import { RegistrationStatus } from "../../../lib/ethereum/network";
+import { RegistrationStatus } from "../../../lib/ethereum/contractReads";
 import { OldToken, Token } from "../../../lib/ethereum/tokens";
 import { showClaimPopup } from "../../../store/account/operatorPopupActions";
 import { ApplicationState, DarknodesState } from "../../../store/applicationState";

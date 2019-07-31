@@ -4,7 +4,7 @@ import { Blocky, InfoLabel } from "@renproject/react-components";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators } from "redux";
 
-import { RegistrationStatus } from "../../lib/ethereum/network";
+import { RegistrationStatus } from "../../lib/ethereum/contractReads";
 import { ApplicationState, DarknodesState } from "../../store/applicationState";
 import { setDarknodeName } from "../../store/network/operatorActions";
 import { AppDispatch } from "../../store/rootReducer";

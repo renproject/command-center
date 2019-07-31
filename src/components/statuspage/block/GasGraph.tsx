@@ -9,7 +9,7 @@ import { Scatter } from "react-chartjs-2";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators } from "redux";
 
-import { HistoryIterations, HistoryPeriods } from "../../../lib/ethereum/network";
+import { HistoryIterations, HistoryPeriod } from "../../../lib/ethereum/contractReads";
 import { _captureBackgroundException_ } from "../../../lib/react/errors";
 import { ApplicationState, DarknodesState } from "../../../store/applicationState";
 import {
@@ -50,17 +50,17 @@ const options = {
     }
 };
 
-const periods: Array<[HistoryPeriods, string]> = [
-    [HistoryPeriods.Day, "1D"],
-    [HistoryPeriods.Week, "1W"],
-    [HistoryPeriods.Month, "1M"],
-    [HistoryPeriods.HalfYear, "6M"],
-    [HistoryPeriods.Year, "1Y"],
+const periods: Array<[HistoryPeriod, string]> = [
+    [HistoryPeriod.Day, "1D"],
+    [HistoryPeriod.Week, "1W"],
+    [HistoryPeriod.Month, "1M"],
+    [HistoryPeriod.HalfYear, "6M"],
+    [HistoryPeriod.Year, "1Y"],
 ];
 
 const defaultState = { // Entries must be immutable
-    historyPeriod: HistoryPeriods.Week,
-    nextHistoryPeriod: HistoryPeriods.Week,
+    historyPeriod: HistoryPeriod.Week,
+    nextHistoryPeriod: HistoryPeriod.Week,
     loadingHistory: false,
 };
 
@@ -118,7 +118,7 @@ class GasGraphClass extends React.Component<Props, State> {
 
     public updateHistory = async (
         props: Props | undefined,
-        historyPeriod?: HistoryPeriods | undefined
+        historyPeriod?: HistoryPeriod | undefined
     ): Promise<void> => {
         this.updateHistoryStarted = true;
 
@@ -248,7 +248,7 @@ class GasGraphClass extends React.Component<Props, State> {
                 <BlockBody>
                     {chartData ? <Scatter data={chartData} options={options} /> : <div className="graph-placeholder" />}
                     <div className="gas-graph--times">
-                        {periods.map(([period, periodString]: [HistoryPeriods, string]) => {
+                        {periods.map(([period, periodString]: [HistoryPeriod, string]) => {
                             return <button
                                 key={period}
                                 className={nextHistoryPeriod === period ? "selected" : ""}
