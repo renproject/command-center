@@ -1,4 +1,4 @@
-# Darknode Command Center
+# `🎛️ Command Center`
 
 [![Build Status](https://travis-ci.org/republicprotocol/darknode-command-center.svg?branch=master)](https://travis-ci.org/republicprotocol/darknode-command-center)
 
