@@ -43,6 +43,14 @@ export const Sidebar = connect(mapStateToProps, mapDispatchToProps)(
             <nav className={`sidebar ${mobileMenuActive ? "sidebar--mobile--active" : ""}`}>
                 <ul>
                     <div className="sidebar--nav">
+
+                        <li className="mobile-only" role="menuitem" onClick={actions.hideMobileMenu}>
+                            <div className="sidebar--nav--icon sidebar--icon">
+                                <FontAwesomeIcon icon={faTimes} className="darknode-card--bottom--icon" />
+                            </div>
+                            <div className="sidebar--text">Close</div>
+                        </li>
+
                         <Link className="no-underline" to="/">
                             <li>
                                 <div className="sidebar--nav--icon sidebar--icon">
@@ -51,13 +59,6 @@ export const Sidebar = connect(mapStateToProps, mapDispatchToProps)(
                                 <div className="sidebar--text">Overview</div>
                             </li>
                         </Link>
-
-                        <li className="mobile-only" role="menuitem" onClick={actions.hideMobileMenu}>
-                            <div className="sidebar--nav--icon sidebar--icon">
-                                <FontAwesomeIcon icon={faTimes} className="darknode-card--bottom--icon" />
-                            </div>
-                            <div className="sidebar--text">Close</div>
-                        </li>
 
                         <Link className="no-underline" to="/all" onClick={actions.hideMobileMenu}>
                             <li>

@@ -8,7 +8,8 @@ import { DEFAULT_REN_NETWORK } from "../lib/react/environmentVariables";
 import { ApplicationState } from "../store/applicationState";
 import { AppDispatch } from "../store/rootReducer";
 import { BackgroundTasks } from "./BackgroundTasks";
-import { DarknodeMapProvider } from "./darknodeMap/darknodeMap";
+import { Connect } from "./Connect";
+import { DarknodeMap } from "./darknodeMap/darknodeMap";
 import { _catch_ } from "./ErrorBoundary";
 import { Header } from "./Header";
 import { Darknode, getDarknodeParam } from "./pages/Darknode";
@@ -62,17 +63,21 @@ class AppClass extends React.Component<Props> {
                     <div className="network--banner">Using <span className="banner--bold">{renNetwork.label}</span> RenVM network, <span className="banner--bold">{renNetwork.chainLabel}</span> Ethereum network</div> :
                     <></>
                 }
-                <PopupController>
-                    {address ? _catch_(<Sidebar selectedDarknode={darknodeID} />) : null}
-                    <div className="app--body">
-                        <Switch>
-                            <Route path="/" exact component={DarknodeMapProvider} />
-                            <Route path="/all" exact component={this.withAccount(Home)} />
-                            <Route path="/darknode/:darknodeID" exact component={Darknode} />
-                            <Route component={NotFound} />
-                        </Switch>
-                    </div>
-                </PopupController>
+                <Connect>
+                    <PopupController>
+                        {address ? _catch_(<Sidebar selectedDarknode={darknodeID} />) : null}
+                        <div className="app--body">
+                            <Switch>
+                                {/* tslint:disable-next-line: react-this-binding-issue jsx-no-lambda */}
+
+                                <Route path="/" exact component={DarknodeMap} />
+                                <Route path="/all" exact component={this.withAccount(Home)} />
+                                <Route path="/darknode/:darknodeID" exact component={Darknode} />
+                                <Route component={NotFound} />
+                            </Switch>
+                        </div>
+                    </PopupController>
+                </Connect>
                 {_catch_(<Header />)}
             </div>
         </div>;

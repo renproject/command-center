@@ -1,15 +1,20 @@
 .header {
-    padding: 10px 0;
+    padding: 0 !important;
     margin-bottom: 20px;
     z-index: 6;
-}
+    border-bottom: 1px solid #1A2E46;
 
-.header .container {
     display: flex;
     justify-content: space-between;
 
+    padding-left: 80px !important;
+
+    @media(max-width: $max-sm) {
+        padding-left: 0 !important;
+    }
+
     flex-direction: row;
-    height: 80px;
+    height: 48px !important;
 }
 
 .header .container>a {
@@ -18,18 +23,15 @@
 }
 
 .header--logo {
-    background-image: url('images/logo.svg');
+    border-right: 1px solid #1A2E46 !important;
+    border-radius: 0 !important;
+
+    background: url('images/logo.svg') center;
+    background-size: 30px 30px;
     background-repeat: no-repeat;
-    height: 48px;
+    height: 48px !important;
     width: 48px;
-}
-
-.header--counter-weight {
-    width: 200px;
-
-    @media(min-width: $min-md) {
-        width: 500px;
-    }
+    padding: 9px 40px !important;
 }
 
 .header--menu {
@@ -95,7 +97,7 @@
 }
 
 .header .blocky {
-    height: 50px;
+    height: 30px;
     border-radius: 25px;
 
     vertical-align: middle;
@@ -217,6 +219,15 @@
 
 .header--dropdown--accounts {
     width: 200px;
+}
+
+.header--group>div {
+    height: 48px !important;
+    border-left: 1px solid #1A2E46 !important;
+    border-right: 1px solid #1A2E46 !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    padding: 0 25px !important;
 }
 
 .header--group:not(.header--group--account) {

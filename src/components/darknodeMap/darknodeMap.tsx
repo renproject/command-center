@@ -7,18 +7,25 @@ import {
 import { MapContainer } from "./mapContainer";
 import MapJSON from "./world-50m.json";
 
-const DarknodeMap = () => {
-    const counter = MapContainer.useContainer();
+export const DarknodeMap = () => {
+    const container = MapContainer.useContainer();
 
-    // useEffect replaces `componentDidMount` and `componentDidUpdate`.
-    // To limit it to running once, we use the initialized hook.
-    const [initialized, setInitialized] = React.useState(false);
     React.useEffect(() => {
-        if (!initialized) {
-            setInitialized(true);
-            counter.fetchDarknodes().catch(console.error);
+        const fetchIPs = () => {
+            container.fetchDarknodes().catch(console.error);
+        };
+
+        // Every two minutes
+        const interval = setInterval(fetchIPs, 120 * 1000);
+        if (container.darknodes.length === 0) {
+            fetchIPs();
         }
-    }, [initialized, counter]);
+
+        return () => {
+            clearInterval(interval);
+        };
+        // tslint:disable-next-line:react-hooks/exhaustive-dep
+    }, []);
 
     return (
         <div className="map container">
@@ -69,7 +76,7 @@ const DarknodeMap = () => {
                                     ))}
                         </Geographies>
                         <Markers>
-                            {counter.darknodes.map((darknode, i) => <Marker key={i} marker={darknode}>
+                            {container.darknodes.map((darknode, i) => <Marker key={i} marker={darknode}>
                                 <Link to={`/darknode/${darknode.darknodeID}`}>
                                     <circle
                                         cx={0}
@@ -85,7 +92,3 @@ const DarknodeMap = () => {
         </div>
     );
 };
-
-export const DarknodeMapProvider = () => <MapContainer.Provider>
-    <DarknodeMap />
-</MapContainer.Provider>;

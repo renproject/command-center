@@ -85,23 +85,19 @@ class HeaderClass extends React.Component<Props> {
 
         return (
             <div className="header">
-                <div className="container">
-                    <div className="header--counter-weight">
-                        {address ? <div role="button" className="header--mobile-menu--button">
-                            <button onClick={this.props.actions.showMobileMenu}>
-                                <FontAwesomeIcon icon={faBars} />
-                            </button>
-                        </div> : <></>}
-                    </div>
-                    <Link className="no-underline" to="/">
-                        <div className="header--logo" />
-                    </Link>
-                    <div className="header--menu">
-                        {languageDropdownNode}
-                        {currencyDropdownNode}
-                        {networkDropdownNode}
-                        <AccountDropdown />
-                    </div>
+                {address ? <div role="button" className="header--mobile-menu--button">
+                    <button onClick={this.props.actions.showMobileMenu}>
+                        <FontAwesomeIcon icon={faBars} />
+                    </button>
+                </div> : <></>}
+                <Link className="no-underline" to="/">
+                    <div className="header--logo" />
+                </Link>
+                <div className="header--menu">
+                    {languageDropdownNode}
+                    {currencyDropdownNode}
+                    {networkDropdownNode}
+                    <AccountDropdown />
                 </div>
             </div>
         );

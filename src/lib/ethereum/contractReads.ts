@@ -12,6 +12,10 @@ import { _captureBackgroundException_, _noCapture_ } from "../react/errors";
 import { getDarknodePayment, getDarknodePaymentStore, getDarknodeRegistry } from "./contract";
 import { NewTokenDetails, OldToken, OldTokenDetails, Token, TokenPrices } from "./tokens";
 
+////////////////////////////////////////////////////////////////////////////////
+// Darknode Registry contract //////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 /**
  * Fetches the minimum bond from the Darknode Registry contract.
  *
@@ -54,14 +58,14 @@ const getDarknodeOperator = async (web3: Web3, renNetwork: RenNetworkDetails, da
     return owner;
 };
 
-// export const getDarknodeCount = async (web3: Web3, renNetwork: RenNetworkDetails): Promise<BigNumber> => {
-//     const darknodeRegistry = getDarknodeRegistry(web3, renNetwork);
-//     const darknodeCount = await darknodeRegistry.methods.numDarknodes().call();
-//     if (darknodeCount === null) {
-//         throw _noCapture_(new Error("Unable to retrieve darknode count"));
-//     }
-//     return new BigNumber(darknodeCount.toString());
-// };
+export const getDarknodeCount = async (web3: Web3, renNetwork: RenNetworkDetails): Promise<BigNumber> => {
+    const darknodeRegistry = getDarknodeRegistry(web3, renNetwork);
+    const darknodeCount = await darknodeRegistry.methods.numDarknodes().call();
+    if (darknodeCount === null) {
+        throw _noCapture_(new Error("Unable to retrieve darknode count"));
+    }
+    return new BigNumber(darknodeCount.toString());
+};
 
 export enum RegistrationStatus {
     Unknown = "",
@@ -114,254 +118,6 @@ export const getDarknodeStatus = async (web3: Web3, renNetwork: RenNetworkDetail
     } else {
         return RegistrationStatus.Deregistered;
     }
-};
-
-/**
- * Retrieves the balances from the old DarknodeRewardVault contract, which is
- * only deployed on mainnet.
- *
- * @param web3 A Web3 instance.
- * @param renNetwork A Ren network object.
- * @param darknodeID The ID of the darknode as a hex string.
- * @returns Returns a promise to an immutable map from token codes to balances
- *          as BigNumbers.
- */
-export const getOldBalances = async (
-    web3: Web3,
-    renNetwork: typeof mainnet,
-    darknodeID: string,
-): Promise<OrderedMap<OldToken, BigNumber>> => {
-
-    const contract = new (web3.eth.Contract)(
-        renNetwork.addresses.ren.DarknodeRewardVault.abi,
-        renNetwork.addresses.ren.DarknodeRewardVault.address,
-    );
-
-    let feesEarned = OrderedMap<OldToken, BigNumber>();
-
-    const balances = OldTokenDetails.map(async (_tokenDetails, token) => {
-
-        const balance = new BigNumber(await contract.methods.darknodeBalances(darknodeID, renNetwork.addresses.oldTokens[token].address).call());
-
-        return {
-            balance,
-            token,
-        };
-    }).valueSeq();
-    // TODO: Don't use Promise.all
-    const res = await Promise.all(balances);
-
-    for (const { balance, token } of res) {
-        feesEarned = feesEarned.set(token, balance);
-    }
-
-    return feesEarned;
-};
-
-/**
- * Retrieves the balances from the DarknodePayment contract.
- *
- * @param web3 A Web3 instance.
- * @param renNetwork A Ren network object.
- * @param darknodeID The ID of the darknode as a hex string.
- * @returns Returns a promise to an immutable map from token codes to balances
- *          as BigNumbers.
- */
-const getBalances = async (
-    web3: Web3,
-    renNetwork: RenNetworkDetails,
-    darknodeID: string,
-): Promise<OrderedMap<Token, BigNumber>> => {
-    const darknodePayment = getDarknodePayment(web3, renNetwork);
-
-    let feesEarned = OrderedMap<Token, BigNumber>();
-
-    // const address = (await web3.eth.getAccounts())[0];
-
-    const balances = await safePromiseAllList(
-        NewTokenDetails.map(async (_tokenDetails, token) => {
-            let balance1;
-            try {
-                const balance1Call = await darknodePayment.methods.darknodeBalances(darknodeID, renNetwork.addresses.tokens[token]).call();
-                balance1 = new BigNumber((balance1Call || "0").toString());
-            } catch (error) {
-                balance1 = new BigNumber(0);
-            }
-            // const balance2 = tokenDetails.wrapped ? await new (web3.eth.Contract)(
-            //     contracts.WarpGateToken.abi,
-            //     tokenDetails.address,
-            // ).methods.balanceOf(address).call() : new BigNumber(0);
-
-            return {
-                balance: balance1, // .plus(balance2),
-                token: token as Token | null,
-            };
-        }).valueSeq().toList(),
-        {
-            balance: new BigNumber(0),
-            token: null,
-        }
-    );
-
-    for (const { balance, token } of balances.toArray()) {
-        if (token) {
-            feesEarned = feesEarned.set(token, balance);
-        }
-    }
-
-    return feesEarned;
-};
-
-// Sum up fees into the total ETH value (in wei).
-const sumUpFeeMap = (
-    feesEarned: OrderedMap<Token | OldToken, BigNumber>,
-    tokenPrices: TokenPrices,
-): BigNumber => {
-
-    let totalEth = new BigNumber(0);
-
-    NewTokenDetails.map((tokenDetails, token) => {
-        const price = tokenPrices.get(token, undefined);
-        const decimals = tokenDetails ? new BigNumber(tokenDetails.decimals.toString()).toNumber() : 0;
-        const inEth = feesEarned.get(token, new BigNumber(0))
-            .div(Math.pow(10, decimals))
-            .multipliedBy(price ? price.get(Currency.ETH, 0) : 0);
-        totalEth = totalEth.plus(inEth);
-        return null;
-    });
-
-    // Convert to wei
-    return totalEth.multipliedBy(new BigNumber(10).pow(18));
-};
-
-export enum DarknodeFeeStatus {
-    BLACKLISTED = "BLACKLISTED",
-    CLAIMED = "CLAIMED",
-    NOT_CLAIMED = "NOT_CLAIMED",
-    NOT_WHITELISTED = "NOT_WHITELISTED",
-}
-
-/**
- * Fetches various pieces of information about a darknode, including:
- *  1. publicKey,
- *  2. balances and fees
- *  3. its status
- *  4. its gas usage information
- *  5. its network information (NOTE: not implemented yet)
- *
- * @param web3 A Web3 instance.
- * @param renNetwork A Ren network object.
- * @param darknodeID The ID of the darknode as a hex string.
- * @param tokenPrices
- * @returns A promise to the darknode state record.
- */
-export const fetchDarknodeDetails = async (
-    web3: Web3,
-    renNetwork: RenNetworkDetails,
-    darknodeID: string,
-    tokenPrices: TokenPrices | null,
-): Promise<DarknodesState> => {
-    darknodeID = toChecksumAddress(darknodeID.toLowerCase());
-
-    // Get eth Balance
-    const ethBalanceBN = await web3.eth.getBalance(darknodeID);
-
-    let ethBalance = new BigNumber(0);
-    if (ethBalanceBN) {
-        ethBalance = new BigNumber(ethBalanceBN.toString());
-    }
-
-    // Get earned fees
-    const feesEarned = await getBalances(web3, renNetwork, darknodeID);
-    let oldFeesEarned = OrderedMap<OldToken, BigNumber>();
-    if (renNetwork.name === "mainnet") {
-        oldFeesEarned = await getOldBalances(web3, renNetwork as typeof mainnet, darknodeID);
-    }
-    let feesEarnedTotalEth = new BigNumber(0);
-    if (tokenPrices) {
-        feesEarnedTotalEth = sumUpFeeMap(feesEarned, tokenPrices).plus(sumUpFeeMap(oldFeesEarned, tokenPrices));
-    }
-
-    // Get darknode operator and public key
-    const operator = await getDarknodeOperator(web3, renNetwork, darknodeID);
-    const publicKey = await getDarknodePublicKey(web3, renNetwork, darknodeID);
-
-    // Get registration status
-    let registrationStatus = RegistrationStatus.Unknown;
-    try {
-        registrationStatus = await getDarknodeStatus(web3, renNetwork, darknodeID);
-    } catch (error) {
-        _captureBackgroundException_(error, {
-            description: "Unknown darknode registration status",
-        });
-    }
-
-    // Cycle status ////////////////////////////////////////////////////////////
-
-    const darknodePayment = getDarknodePayment(web3, renNetwork);
-    const darknodePaymentStore = getDarknodePaymentStore(web3, renNetwork);
-
-    const currentCycleBN = await darknodePayment.methods.currentCycle().call();
-    const previousCycleBN = await darknodePayment.methods.previousCycle().call();
-    const blacklisted = await darknodePaymentStore.methods.isBlacklisted(darknodeID).call();
-    let currentStatus;
-    let previousStatus;
-    if (blacklisted) {
-        currentStatus = DarknodeFeeStatus.BLACKLISTED;
-        previousStatus = DarknodeFeeStatus.BLACKLISTED;
-    } else {
-        const whitelistedTimeCall = await darknodePaymentStore.methods.darknodeWhitelist(darknodeID).call();
-        const whitelistedTime = whitelistedTimeCall === null ? new BigNumber(0) : new BigNumber(whitelistedTimeCall.toString());
-        if (whitelistedTime.isZero()) {
-            currentStatus = DarknodeFeeStatus.NOT_WHITELISTED;
-            previousStatus = DarknodeFeeStatus.NOT_WHITELISTED;
-        } else {
-            currentStatus = DarknodeFeeStatus.NOT_CLAIMED;
-            const cycleStartTimeBN = await darknodePayment.methods.cycleStartTime().call();
-            if (!cycleStartTimeBN || whitelistedTime.gte(cycleStartTimeBN.toString())) {
-                previousStatus = DarknodeFeeStatus.NOT_WHITELISTED;
-            } else {
-                if (previousCycleBN === null) {
-                    previousStatus = DarknodeFeeStatus.CLAIMED;
-                } else {
-                    const claimed = await darknodePayment.methods.rewardClaimed(darknodeID, previousCycleBN.toString()).call();
-                    if (claimed) {
-                        previousStatus = DarknodeFeeStatus.CLAIMED;
-                    } else {
-                        previousStatus = DarknodeFeeStatus.NOT_CLAIMED;
-                    }
-                }
-            }
-        }
-    }
-
-    let cycleStatus = OrderedMap<string, DarknodeFeeStatus>();
-    if (currentCycleBN !== null) {
-        cycleStatus = cycleStatus.set(currentCycleBN.toString(), currentStatus);
-    }
-    if (previousCycleBN !== null) {
-        cycleStatus = cycleStatus.set(previousCycleBN.toString(), previousStatus);
-    }
-
-    // Store details ///////////////////////////////////////////////////////////
-
-    return new DarknodesState({
-        ID: darknodeID,
-        multiAddress: "" as string,
-        publicKey,
-        ethBalance,
-        feesEarned,
-        oldFeesEarned,
-        feesEarnedTotalEth,
-
-        cycleStatus,
-        averageGasUsage: 0,
-        lastTopUp: null,
-        expectedExhaustion: null,
-        peers: 0,
-        registrationStatus,
-        operator,
-    });
 };
 
 /**
@@ -464,103 +220,6 @@ export const fetchDarknodeBalanceHistory = async (
     balanceHistory = balanceHistory.sortBy((_: BigNumber, value: number) => value);
 
     return balanceHistory;
-};
-
-/**
- * Retrieves information about the pending rewards in the Darknode Payment
- * contract.
- *
- * @param web3 A Web3 instance.
- * @param renNetwork A Ren network object.
- * @param tokenPrices A TokenPrices map to convert the total in ETH.
- * @returns {
- *     pendingRewards: For each cycle, a map from tokens to rewards
- *     currentCycle: The current cycle (as a block number)
- *     previousCycle: The previous cycle (as a block number)
- *     cycleTimeout: The earliest the current cycle could end (as a block number)
- *     pendingTotalInEth: For each cycle, The pending rewards added up as ETH
- * }
- */
-export const fetchCycleAndPendingRewards = async (
-    web3: Web3,
-    renNetwork: RenNetworkDetails,
-    tokenPrices: TokenPrices | null,
-) => {
-    const darknodePayment = getDarknodePayment(web3, renNetwork);
-
-    let pendingRewards = OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber>>();
-
-    const currentCycle = await darknodePayment.methods.currentCycle().call();
-    const previousCycle = await darknodePayment.methods.previousCycle().call();
-
-    const previous = await safePromiseAllMap(
-        NewTokenDetails.map(async (_tokenDetails, token) => {
-            try {
-                const previousCycleRewardShareBN = await darknodePayment.methods.previousCycleRewardShare((token)).call();
-                if (previousCycleRewardShareBN === null) {
-                    return new BigNumber(0);
-                }
-                return new BigNumber(previousCycleRewardShareBN.toString());
-            } catch (error) {
-                return new BigNumber(0);
-            }
-        }).toOrderedMap(),
-        new BigNumber(0),
-    );
-    if (previousCycle !== null) {
-        pendingRewards = pendingRewards.set(previousCycle.toString(), previous);
-    }
-
-    const currentShareCountBN = await darknodePayment.methods.shareCount().call();
-    const current = await safePromiseAllMap(
-        NewTokenDetails.map(async (_tokenDetails, token) => {
-            if (currentShareCountBN === null) {
-                return new BigNumber(0);
-            }
-            const currentShareCount = new BigNumber(currentShareCountBN.toString());
-            try {
-                if (currentShareCount.isZero()) {
-                    return new BigNumber(0);
-                }
-                const currentCycleRewardPool = await darknodePayment.methods.currentCycleRewardPool(renNetwork.addresses.tokens[token]).call();
-                if (currentCycleRewardPool === null) {
-                    return new BigNumber(0);
-                }
-                return new BigNumber((currentCycleRewardPool).toString()).div(currentShareCount);
-            } catch (error) {
-                return new BigNumber(0);
-            }
-        }
-        ).toOrderedMap(),
-        new BigNumber(0),
-    );
-    if (currentCycle !== null) {
-        pendingRewards = pendingRewards.set(currentCycle.toString(), current);
-    }
-
-    const cycleTimeoutBN = await darknodePayment.methods.cycleTimeout().call();
-    const cycleTimeout = cycleTimeoutBN ? new BigNumber(cycleTimeoutBN.toString()) : null;
-
-    let pendingTotalInEth = null;
-    if (tokenPrices) {
-        const previousTotal = sumUpFeeMap(previous, tokenPrices);
-        const currentTotal = sumUpFeeMap(current, tokenPrices);
-        pendingTotalInEth = OrderedMap<string /* cycle */, BigNumber>();
-        if (previousCycle !== null) {
-            pendingTotalInEth = pendingTotalInEth.set(previousCycle.toString(), previousTotal);
-        }
-        if (currentCycle !== null) {
-            pendingTotalInEth = pendingTotalInEth.set(currentCycle.toString(), currentTotal);
-        }
-    }
-
-    return {
-        pendingRewards,
-        currentCycle,
-        previousCycle,
-        cycleTimeout,
-        pendingTotalInEth,
-    };
 };
 
 /**
@@ -720,4 +379,357 @@ export const getOperatorDarknodes = async (
     }
 
     return operatorDarknodes;
+};
+
+////////////////////////////////////////////////////////////////////////////////
+// Darknode Reward Vault contract //////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+// Sum up fees into the total ETH value (in wei).
+const sumUpFeeMap = (
+    feesEarned: OrderedMap<Token | OldToken, BigNumber>,
+    tokenPrices: TokenPrices,
+): BigNumber => {
+
+    let totalEth = new BigNumber(0);
+
+    NewTokenDetails.map((tokenDetails, token) => {
+        const price = tokenPrices.get(token, undefined);
+        const decimals = tokenDetails ? new BigNumber(tokenDetails.decimals.toString()).toNumber() : 0;
+        const inEth = feesEarned.get(token, new BigNumber(0))
+            .div(Math.pow(10, decimals))
+            .multipliedBy(price ? price.get(Currency.ETH, 0) : 0);
+        totalEth = totalEth.plus(inEth);
+        return null;
+    });
+
+    // Convert to wei
+    return totalEth.multipliedBy(new BigNumber(10).pow(18));
+};
+
+/**
+ * Retrieves information about the pending rewards in the Darknode Payment
+ * contract.
+ *
+ * @param web3 A Web3 instance.
+ * @param renNetwork A Ren network object.
+ * @param tokenPrices A TokenPrices map to convert the total in ETH.
+ * @returns `{
+ *     pendingRewards: For each cycle, a map from tokens to rewards
+ *     currentCycle: The current cycle (as a block number)
+ *     previousCycle: The previous cycle (as a block number)
+ *     cycleTimeout: The earliest the current cycle could end (as a block number)
+ *     pendingTotalInEth: For each cycle, The pending rewards added up as ETH
+ * }`
+ */
+export const fetchCycleAndPendingRewards = async (
+    web3: Web3,
+    renNetwork: RenNetworkDetails,
+    tokenPrices: TokenPrices | null,
+) => {
+    const darknodePayment = getDarknodePayment(web3, renNetwork);
+
+    let pendingRewards = OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber>>();
+
+    const currentCycle = await darknodePayment.methods.currentCycle().call();
+    const previousCycle = await darknodePayment.methods.previousCycle().call();
+
+    const previous = await safePromiseAllMap(
+        NewTokenDetails.map(async (_tokenDetails, token) => {
+            try {
+                const previousCycleRewardShareBN = await darknodePayment.methods.previousCycleRewardShare((token)).call();
+                if (previousCycleRewardShareBN === null) {
+                    return new BigNumber(0);
+                }
+                return new BigNumber(previousCycleRewardShareBN.toString());
+            } catch (error) {
+                return new BigNumber(0);
+            }
+        }).toOrderedMap(),
+        new BigNumber(0),
+    );
+    if (previousCycle !== null) {
+        pendingRewards = pendingRewards.set(previousCycle.toString(), previous);
+    }
+
+    const currentShareCountBN = await darknodePayment.methods.shareCount().call();
+    const current = await safePromiseAllMap(
+        NewTokenDetails.map(async (_tokenDetails, token) => {
+            if (currentShareCountBN === null) {
+                return new BigNumber(0);
+            }
+            const currentShareCount = new BigNumber(currentShareCountBN.toString());
+            try {
+                if (currentShareCount.isZero()) {
+                    return new BigNumber(0);
+                }
+                const currentCycleRewardPool = await darknodePayment.methods.currentCycleRewardPool(renNetwork.addresses.tokens[token]).call();
+                if (currentCycleRewardPool === null) {
+                    return new BigNumber(0);
+                }
+                return new BigNumber((currentCycleRewardPool).toString()).div(currentShareCount);
+            } catch (error) {
+                return new BigNumber(0);
+            }
+        }
+        ).toOrderedMap(),
+        new BigNumber(0),
+    );
+    if (currentCycle !== null) {
+        pendingRewards = pendingRewards.set(currentCycle.toString(), current);
+    }
+
+    const cycleTimeoutBN = await darknodePayment.methods.cycleTimeout().call();
+    const cycleTimeout = cycleTimeoutBN ? new BigNumber(cycleTimeoutBN.toString()) : null;
+
+    let pendingTotalInEth = null;
+    if (tokenPrices) {
+        const previousTotal = sumUpFeeMap(previous, tokenPrices);
+        const currentTotal = sumUpFeeMap(current, tokenPrices);
+        pendingTotalInEth = OrderedMap<string /* cycle */, BigNumber>();
+        if (previousCycle !== null) {
+            pendingTotalInEth = pendingTotalInEth.set(previousCycle.toString(), previousTotal);
+        }
+        if (currentCycle !== null) {
+            pendingTotalInEth = pendingTotalInEth.set(currentCycle.toString(), currentTotal);
+        }
+    }
+
+    return {
+        pendingRewards,
+        currentCycle,
+        previousCycle,
+        cycleTimeout,
+        pendingTotalInEth,
+    };
+};
+
+/**
+ * Retrieves the balances from the old DarknodeRewardVault contract, which is
+ * only deployed on mainnet.
+ *
+ * @param web3 A Web3 instance.
+ * @param renNetwork A Ren network object.
+ * @param darknodeID The ID of the darknode as a hex string.
+ * @returns Returns a promise to an immutable map from token codes to balances
+ *          as BigNumbers.
+ */
+export const getOldBalances = async (
+    web3: Web3,
+    renNetwork: typeof mainnet,
+    darknodeID: string,
+): Promise<OrderedMap<OldToken, BigNumber>> => {
+
+    const contract = new (web3.eth.Contract)(
+        renNetwork.addresses.ren.DarknodeRewardVault.abi,
+        renNetwork.addresses.ren.DarknodeRewardVault.address,
+    );
+
+    let feesEarned = OrderedMap<OldToken, BigNumber>();
+
+    const balances = OldTokenDetails.map(async (_tokenDetails, token) => {
+
+        const balance = new BigNumber(await contract.methods.darknodeBalances(darknodeID, renNetwork.addresses.oldTokens[token].address).call());
+
+        return {
+            balance,
+            token,
+        };
+    }).valueSeq();
+    // TODO: Don't use Promise.all
+    const res = await Promise.all(balances);
+
+    for (const { balance, token } of res) {
+        feesEarned = feesEarned.set(token, balance);
+    }
+
+    return feesEarned;
+};
+
+////////////////////////////////////////////////////////////////////////////////
+// Darknode Payment contract ///////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Retrieves the balances from the DarknodePayment contract.
+ *
+ * @param web3 A Web3 instance.
+ * @param renNetwork A Ren network object.
+ * @param darknodeID The ID of the darknode as a hex string.
+ * @returns Returns a promise to an immutable map from token codes to balances
+ *          as BigNumbers.
+ */
+const getBalances = async (
+    web3: Web3,
+    renNetwork: RenNetworkDetails,
+    darknodeID: string,
+): Promise<OrderedMap<Token, BigNumber>> => {
+    const darknodePayment = getDarknodePayment(web3, renNetwork);
+
+    let feesEarned = OrderedMap<Token, BigNumber>();
+
+    // const address = (await web3.eth.getAccounts())[0];
+
+    const balances = await safePromiseAllList(
+        NewTokenDetails.map(async (_tokenDetails, token) => {
+            let balance1;
+            try {
+                const balance1Call = await darknodePayment.methods.darknodeBalances(darknodeID, renNetwork.addresses.tokens[token]).call();
+                balance1 = new BigNumber((balance1Call || "0").toString());
+            } catch (error) {
+                balance1 = new BigNumber(0);
+            }
+            // const balance2 = tokenDetails.wrapped ? await new (web3.eth.Contract)(
+            //     contracts.WarpGateToken.abi,
+            //     tokenDetails.address,
+            // ).methods.balanceOf(address).call() : new BigNumber(0);
+
+            return {
+                balance: balance1, // .plus(balance2),
+                token: token as Token | null,
+            };
+        }).valueSeq().toList(),
+        {
+            balance: new BigNumber(0),
+            token: null,
+        }
+    );
+
+    for (const { balance, token } of balances.toArray()) {
+        if (token) {
+            feesEarned = feesEarned.set(token, balance);
+        }
+    }
+
+    return feesEarned;
+};
+
+export enum DarknodeFeeStatus {
+    BLACKLISTED = "BLACKLISTED",
+    CLAIMED = "CLAIMED",
+    NOT_CLAIMED = "NOT_CLAIMED",
+    NOT_WHITELISTED = "NOT_WHITELISTED",
+}
+
+/**
+ * Fetches various pieces of information about a darknode, including:
+ *  1. publicKey,
+ *  2. balances and fees
+ *  3. its status
+ *  4. its gas usage information
+ *  5. its network information (NOTE: not implemented yet)
+ *
+ * @param web3 A Web3 instance.
+ * @param renNetwork A Ren network object.
+ * @param darknodeID The ID of the darknode as a hex string.
+ * @param tokenPrices
+ * @returns A promise to the darknode state record.
+ */
+export const fetchDarknodeDetails = async (
+    web3: Web3,
+    renNetwork: RenNetworkDetails,
+    darknodeID: string,
+    tokenPrices: TokenPrices | null,
+): Promise<DarknodesState> => {
+    darknodeID = toChecksumAddress(darknodeID.toLowerCase());
+
+    // Get eth Balance
+    const ethBalanceBN = await web3.eth.getBalance(darknodeID);
+
+    let ethBalance = new BigNumber(0);
+    if (ethBalanceBN) {
+        ethBalance = new BigNumber(ethBalanceBN.toString());
+    }
+
+    // Get earned fees
+    const feesEarned = await getBalances(web3, renNetwork, darknodeID);
+    let oldFeesEarned = OrderedMap<OldToken, BigNumber>();
+    if (renNetwork.name === "mainnet") {
+        oldFeesEarned = await getOldBalances(web3, renNetwork as typeof mainnet, darknodeID);
+    }
+    let feesEarnedTotalEth = new BigNumber(0);
+    if (tokenPrices) {
+        feesEarnedTotalEth = sumUpFeeMap(feesEarned, tokenPrices).plus(sumUpFeeMap(oldFeesEarned, tokenPrices));
+    }
+
+    // Get darknode operator and public key
+    const operator = await getDarknodeOperator(web3, renNetwork, darknodeID);
+    const publicKey = await getDarknodePublicKey(web3, renNetwork, darknodeID);
+
+    // Get registration status
+    let registrationStatus = RegistrationStatus.Unknown;
+    try {
+        registrationStatus = await getDarknodeStatus(web3, renNetwork, darknodeID);
+    } catch (error) {
+        _captureBackgroundException_(error, {
+            description: "Unknown darknode registration status",
+        });
+    }
+
+    // Cycle status ////////////////////////////////////////////////////////////
+
+    const darknodePayment = getDarknodePayment(web3, renNetwork);
+    const darknodePaymentStore = getDarknodePaymentStore(web3, renNetwork);
+
+    const currentCycleBN = await darknodePayment.methods.currentCycle().call();
+    const previousCycleBN = await darknodePayment.methods.previousCycle().call();
+    const blacklisted = await darknodePaymentStore.methods.isBlacklisted(darknodeID).call();
+    let currentStatus;
+    let previousStatus;
+    if (blacklisted) {
+        currentStatus = DarknodeFeeStatus.BLACKLISTED;
+        previousStatus = DarknodeFeeStatus.BLACKLISTED;
+    } else {
+        const whitelistedTimeCall = await darknodePaymentStore.methods.darknodeWhitelist(darknodeID).call();
+        const whitelistedTime = whitelistedTimeCall === null ? new BigNumber(0) : new BigNumber(whitelistedTimeCall.toString());
+        if (whitelistedTime.isZero()) {
+            currentStatus = DarknodeFeeStatus.NOT_WHITELISTED;
+            previousStatus = DarknodeFeeStatus.NOT_WHITELISTED;
+        } else {
+            currentStatus = DarknodeFeeStatus.NOT_CLAIMED;
+            const cycleStartTimeBN = await darknodePayment.methods.cycleStartTime().call();
+            if (!cycleStartTimeBN || whitelistedTime.gte(cycleStartTimeBN.toString())) {
+                previousStatus = DarknodeFeeStatus.NOT_WHITELISTED;
+            } else {
+                if (previousCycleBN === null) {
+                    previousStatus = DarknodeFeeStatus.CLAIMED;
+                } else {
+                    const claimed = await darknodePayment.methods.rewardClaimed(darknodeID, previousCycleBN.toString()).call();
+                    if (claimed) {
+                        previousStatus = DarknodeFeeStatus.CLAIMED;
+                    } else {
+                        previousStatus = DarknodeFeeStatus.NOT_CLAIMED;
+                    }
+                }
+            }
+        }
+    }
+
+    let cycleStatus = OrderedMap<string, DarknodeFeeStatus>();
+    if (currentCycleBN !== null) {
+        cycleStatus = cycleStatus.set(currentCycleBN.toString(), currentStatus);
+    }
+    if (previousCycleBN !== null) {
+        cycleStatus = cycleStatus.set(previousCycleBN.toString(), previousStatus);
+    }
+
+    // Store details ///////////////////////////////////////////////////////////
+
+    return new DarknodesState({
+        ID: darknodeID,
+        multiAddress: "" as string,
+        publicKey,
+        ethBalance,
+        feesEarned,
+        oldFeesEarned,
+        feesEarnedTotalEth,
+
+        cycleStatus,
+        averageGasUsage: 0,
+        lastTopUp: null,
+        expectedExhaustion: null,
+        peers: 0,
+        registrationStatus,
+        operator,
+    });
 };

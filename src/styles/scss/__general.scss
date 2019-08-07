@@ -187,6 +187,7 @@ table th {
     width: 100%;
     max-width: 1400px + $spacing * 2;
     margin: 0 auto;
+    $spacing: 80px;
     padding: 0 $spacing;
 
     @media(max-width: $max-sm) {
