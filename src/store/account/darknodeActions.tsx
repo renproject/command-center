@@ -3,7 +3,7 @@ import * as React from "react";
 import { RenNetworkDetails } from "@renproject/contracts";
 import Web3 from "web3";
 
-import { WithdrawPopup } from "../../components/popups/WithdrawPopup";
+import { WithdrawPopup } from "../../components/common/popups/WithdrawPopup";
 import { withdrawOldToken, withdrawToken } from "../../lib/ethereum/contractWrites";
 import { AllTokenDetails, OldToken, Token } from "../../lib/ethereum/tokens";
 import { WaitForTX } from "../../lib/ethereum/waitForTX";

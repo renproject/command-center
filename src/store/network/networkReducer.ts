@@ -45,7 +45,7 @@ export const networkReducer = (
 
         case getType(operatorActions.removeDarknode):
             try {
-                let operatorList = state.darknodeList.get(action.payload.operator);
+                let operatorList = state.darknodeList.getIn([action.payload.operator, action.payload.network], null) as List<string> | null;
                 if (!operatorList) {
                     return state;
                 }
@@ -62,7 +62,7 @@ export const networkReducer = (
             }
 
         case getType(operatorActions.addDarknode):
-            let newList = state.darknodeList.get(action.payload.address) || List();
+            let newList = state.darknodeList.getIn([action.payload.address, action.payload.network], List()) as List<string>;
             let newNames = state.darknodeNames;
 
             // Add to list if it's not already in there
@@ -84,6 +84,10 @@ export const networkReducer = (
                 .set("darknodeList", state.darknodeList.set(action.payload.address, newList))
                 .set("darknodeNames", newNames)
                 .set("darknodeRegisteringList", darknodeRegisteringList);
+
+        case getType(operatorActions.setEmptyDarknodeList):
+            return state
+                .set("darknodeList", state.darknodeList.set(action.payload.address, List()));
 
         case getType(operatorActions.storeQuoteCurrency):
             return state.set("quoteCurrency", action.payload.quoteCurrency);
@@ -129,6 +133,9 @@ export const networkReducer = (
                 details.ID,
                 action.payload.darknodeDetails,
             ));
+
+        case getType(operatorActions.storeRegistrySync):
+            return state.set("registrySync", action.payload);
 
         case getType(operatorActions.addTransaction):
             return state.set("transactions", state.transactions.set(action.payload.txHash, action.payload.tx));

@@ -30,14 +30,23 @@ export const removeRegisteringDarknode = createStandardAction("REMOVE_REGISTERIN
 export const removeDarknode = createStandardAction("REMOVE_DARKNODE")<{
     darknodeID: string;
     operator: string;
+    network: string;
 }>();
 
 export const addDarknode = createStandardAction("ADD_DARKNODE")<{
     darknodeID: string;
     address: string;
+    network: string;
+}>();
+
+export const setEmptyDarknodeList = createStandardAction("SET_EMPTY_DARKNODE_LIST")<{
+    address: string;
+    network: string;
 }>();
 
 export const storeQuoteCurrency = createStandardAction("STORE_QUOTE_CURRENCY")<{ quoteCurrency: Currency }>();
+
+export const storeRegistrySync = createStandardAction("STORE_REGISTRY_SYNC")<{ progress: number, target: number }>();
 
 export const storeSecondsPerBlock = createStandardAction("STORE_SECONDS_PER_BLOCK")<{ secondsPerBlock: number }>();
 
@@ -118,7 +127,11 @@ export const updateOperatorDarknodes = (
     let darknodeList = previousDarknodeList || List<string>();
 
     const currentDarknodes = await getOperatorDarknodes(web3, renNetwork, address, (darknodeID) => {
-        dispatch(addDarknode({ darknodeID, address }));
+        dispatch(addDarknode({ darknodeID, address, network: renNetwork.name }));
+    }, (progress, target) => {
+        if (previousDarknodeList === null) {
+            dispatch(storeRegistrySync({ progress, target }));
+        }
     });
 
     // The lists are merged in the reducer as well, but we combine them again
@@ -133,6 +146,10 @@ export const updateOperatorDarknodes = (
     await Promise.all(darknodeList.toList().map(async (darknodeID: string) => {
         return dispatch(updateDarknodeDetails(web3, renNetwork, darknodeID, tokenPrices));
     }).toArray());
+
+    if (darknodeList.size === 0) {
+        dispatch(setEmptyDarknodeList({ address, network: renNetwork.name }));
+    }
 };
 
 export const updateDarknodeBalanceHistory = (

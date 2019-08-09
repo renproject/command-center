@@ -6,8 +6,8 @@ import { Currency, CurrencyIcon } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import Web3 from "web3";
 
-import { MultiStepPopup } from "../../components/popups/MultiStepPopup";
-import { TokenBalance } from "../../components/TokenBalance";
+import { MultiStepPopup } from "../../components/common/popups/MultiStepPopup";
+import { TokenBalance } from "../../components/common/TokenBalance";
 import { getMinimumBond } from "../../lib/ethereum/contractReads";
 import {
     approveNode, changeCycle, claimForNode, deregisterNode, fundNode, refundNode, registerNode,

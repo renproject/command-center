@@ -124,6 +124,7 @@
 
 .header--dropdown--option {
     min-width: 100%;
+    max-width: 100%;
 }
 
 .header--dropdown .header--dropdown--highlight {
@@ -174,6 +175,10 @@
     background-color: #3CBC98;
 }
 
+.header--dropdown::after, .header--dropdown::before {
+    bottom: calc(100% - 1px) !important;
+}
+
 .header--account--type {
     display: flex;
     flex-flow: row;
@@ -184,11 +189,15 @@
 .header--selected {
     color: white !important;
     border: 0 !important;
+    font-weight: 500 !important;
+    border-left: 1px solid #1A2E46 !important;
+    border-right: 1px solid #1A2E46 !important;
 
     svg {
         opacity: 1 !important;
 
         path {
+        opacity: 1 !important;
             fill: white !important;
             stroke: white !important;
         }
@@ -223,8 +232,6 @@
 
 .header--group>div {
     height: 48px !important;
-    border-left: 1px solid #1A2E46 !important;
-    border-right: 1px solid #1A2E46 !important;
     border-radius: 0 !important;
     margin: 0 !important;
     padding: 0 25px !important;

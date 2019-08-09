@@ -77,25 +77,31 @@ export class NetworkState extends Record({
     darknodeCount: null as BigNumber | null,
     orderCount: null as BigNumber | null,
 
+    registrySync: { progress: 0, target: 0 },
+
     darknodeDetails: Map<string, DarknodesState>(),
 
     balanceHistories: Map<string, OrderedMap<number, BigNumber>>(),
 
-    darknodeNames: Map<string, string>(),
-    darknodeRegisteringList: Map<string, string>(),
-    darknodeList: Map<string, List<string>>(),
-
     // tslint:disable-next-line: no-any
     transactions: OrderedMap<string, PromiEvent<any>>(),
     confirmations: OrderedMap<string, number>(),
-
-    withdrawAddresses: Map<Token, List<string>>(),
 
     currentCycle: "",
     previousCycle: "",
     pendingRewards: OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber>>(),
     pendingTotalInEth: OrderedMap<string /* cycle */, BigNumber>(),
     cycleTimeout: new BigNumber(0),
+
+    ///////////////////////////////////////////////////////
+    // If these change, localstorage migration is needed //
+    ///////////////////////////////////////////////////////
+    darknodeNames: Map<string, string>(),
+    darknodeRegisteringList: Map<string, string>(),
+    // Map from operator-address to list of darknodes.
+    darknodeList: Map<string, List<string>>(),
+    withdrawAddresses: Map<Token, List<string>>(),
+    ///////////////////////////////////////////////////////
 }) implements Serializable<NetworkState> {
     public serialize(): string {
         const js = this.toJS();

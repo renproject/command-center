@@ -1,0 +1,75 @@
+.map {
+    // display: flex;
+
+    hr {
+        color: white;
+        margin-bottom: 10px;
+        border-width: 0.5px;
+    }
+
+    .map--world--outer {
+        display: flex;
+    }
+
+    .map--world {
+        width: 100%;
+        max-width: 980px;
+        margin: 0 auto;
+    }
+
+    circle {
+        fill: #87C0FF;
+        filter: drop-shadow(0px 0px 5px rgba(135, 192, 255, 0.9));
+    }
+
+    h2 {
+        font-family: Ubuntu;
+        font-style: normal;
+        font-weight: bold;
+        font-size: 14px;
+        line-height: 16px;
+
+        /* identical to box height */
+        letter-spacing: 1.75px;
+        text-transform: uppercase;
+
+        color: #FFFFFF;
+
+    }
+
+    tr {
+        animation: highlight 1s;
+    }
+
+    @keyframes highlight {
+      0% {
+        background: rgba(255, 255, 255, 0.05);;
+      }
+      100% {
+        background: none;
+      }
+    }
+
+    a {
+        color: white;
+        text-decoration: none;
+    }
+
+    .fade-enter {
+  opacity: 0.01;
+}
+
+.fade-enter.fade-enter-active {
+  opacity: 1;
+  transition: opacity 0.6s ease-in-out;
+}
+
+.fade-leave {
+  opacity: 1;
+}
+
+.fade-leave.fade-leave-active {
+  opacity: 0.01;
+  transition: opacity 0.3s ease-in-out;
+}
+}

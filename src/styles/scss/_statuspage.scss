@@ -440,6 +440,25 @@
     }
 }
 
+.blocky--loading {
+    >div {
+    @extend .lds-dual-ring;
+    &:after {
+        content:" ";
+    position: relative;
+        top: 0;
+        left: 0;
+        border-color: #002247 #001B3A #002247 #001B3A;
+        border-width: 10px;
+        animation: lds-dual-ring 2s linear infinite;
+        width: 80px;
+        height: 80px;
+        margin-top : -105px;
+        line-height: 0;
+    }
+}
+}
+
 .darknode-id {
     max-width: 300px;
     white-space: nowrap;

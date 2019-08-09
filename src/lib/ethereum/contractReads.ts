@@ -337,6 +337,7 @@ export const getOperatorDarknodes = async (
     renNetwork: RenNetworkDetails,
     operatorAddress: string,
     onDarknode?: (darknodeID: string) => void,
+    reportProgress?: (progress: number, total: number) => void,
 ): Promise<OrderedSet<string>> => {
 
     // Skip calling getAllDarknodes - they will all be in the logs as well.
@@ -364,19 +365,22 @@ export const getOperatorDarknodes = async (
 
     const operatorPromises = darknodes.map(async (darknodeID: string) => {
         return [darknodeID, await darknodeRegistry.methods.getDarknodeOwner(darknodeID).call()] as [string, string];
-    });
+    }).toArray();
 
     let operatorDarknodes = OrderedSet<string>();
 
     operatorAddress = toChecksumAddress(operatorAddress);
 
-    for (const operatorPromise of operatorPromises.toArray()) {
-        const [darknodeID, operator] = await operatorPromise;
+    for (let i = 0; i < operatorPromises.length; i++) {
+        if (reportProgress) { reportProgress(i, operatorPromises.length); }
+        const [darknodeID, operator] = await operatorPromises[i];
         if (operator === operatorAddress && !operatorDarknodes.contains(operatorAddress)) {
             operatorDarknodes = operatorDarknodes.add(darknodeID);
             if (onDarknode) { onDarknode(darknodeID); }
         }
     }
+
+    if (reportProgress) { reportProgress(operatorPromises.length, operatorPromises.length); }
 
     return operatorDarknodes;
 };

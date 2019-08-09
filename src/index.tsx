@@ -8,7 +8,7 @@ import { Route, Router, Switch } from "react-router-dom";
 import { PersistGate } from "redux-persist/integration/react";
 
 import { App } from "./components/App";
-import { _catch_ } from "./components/ErrorBoundary";
+import { _catch_ } from "./components/common/ErrorBoundary";
 import { NODE_ENV } from "./lib/react/environmentVariables";
 import { history } from "./lib/react/history";
 import { onLoad } from "./lib/react/onLoad";

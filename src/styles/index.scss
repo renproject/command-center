@@ -24,7 +24,8 @@
 @import 'scss/view';
 
 // Styles in src/components
-@import '../components/darknodeMap/darknodeMap';
+@import '../components/overviewPage/darknodeMap/darknodeMap';
+@import '../components/hyperdrivePage/hyperdrive';
 
 // Styles for html, body, anchors etc. should go in _general
 @import 'scss/_general';

@@ -183,15 +183,14 @@ table th {
 }
 
 .container {
-    $spacing: 80px;
+    $spacing: 90px;
     width: 100%;
     max-width: 1400px + $spacing * 2;
     margin: 0 auto;
-    $spacing: 80px;
     padding: 0 $spacing;
 
     @media(max-width: $max-sm) {
-        padding: 0;
+        padding: 0 10px;
     }
 }
 

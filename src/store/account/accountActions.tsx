@@ -7,8 +7,8 @@ import Web3 from "web3";
 import { provider } from "web3-providers";
 import { toChecksumAddress } from "web3-utils";
 
-import { LoggedOut } from "../../components/popups/LoggedOut";
-import { NoWeb3Popup } from "../../components/popups/NoWeb3Popup";
+import { LoggedOut } from "../../components/common/popups/LoggedOut";
+import { NoWeb3Popup } from "../../components/common/popups/NoWeb3Popup";
 import { Language } from "../../languages/language";
 import { getInjectedWeb3Provider } from "../../lib/ethereum/getWeb3";
 import { history } from "../../lib/react/history";

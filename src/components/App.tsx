@@ -7,17 +7,18 @@ import { bindActionCreators } from "redux";
 import { DEFAULT_REN_NETWORK } from "../lib/react/environmentVariables";
 import { ApplicationState } from "../store/applicationState";
 import { AppDispatch } from "../store/rootReducer";
-import { BackgroundTasks } from "./BackgroundTasks";
-import { Connect } from "./Connect";
-import { DarknodeMap } from "./darknodeMap/darknodeMap";
-import { _catch_ } from "./ErrorBoundary";
-import { Header } from "./Header";
-import { Darknode, getDarknodeParam } from "./pages/Darknode";
-import { Home } from "./pages/Home";
-import { LoggingIn } from "./pages/LoggingIn";
-import { NotFound } from "./pages/NotFound";
-import { PopupController } from "./popups/PopupController";
-import { Sidebar } from "./sidebar/Sidebar";
+import { NotFound } from "./404";
+import { AllDarknodes } from "./allDarknodesPage/AllDarknodes";
+import { BackgroundTasks } from "./common/BackgroundTasks";
+import { Connect } from "./common/Connect";
+import { _catch_ } from "./common/ErrorBoundary";
+import { Header } from "./common/Header";
+import { PopupController } from "./common/popups/PopupController";
+import { Sidebar } from "./common/sidebar/Sidebar";
+import { Darknode, getDarknodeParam } from "./darknodePage/Darknode";
+import { Hyperdrive } from "./hyperdrivePage/Hyperdrive";
+import { LoggingIn } from "./LoggingIn";
+import { DarknodeMap } from "./overviewPage/darknodeMap/DarknodeMap";
 
 // Scroll restoration based on https://reacttraining.com/react-router/web/guides/scroll-restoration
 const ScrollToTop = withRouter(
@@ -50,8 +51,8 @@ class AppClass extends React.Component<Props> {
         const darknodeID = getDarknodeParam(params);
         const showNetworkBanner = renNetwork.name !== DEFAULT_REN_NETWORK;
 
-        return <div key={`${address || undefined} ${renNetwork}`} className="app">
-            <BackgroundTasks />
+        return <div className="app">
+            <BackgroundTasks key={`${address || undefined} ${renNetwork.name}`} />
             <ScrollToTop />
             {/*
               * We set the key to be the address so that any sub-component state is reset after changing accounts
@@ -71,7 +72,9 @@ class AppClass extends React.Component<Props> {
                                 {/* tslint:disable-next-line: react-this-binding-issue jsx-no-lambda */}
 
                                 <Route path="/" exact component={DarknodeMap} />
-                                <Route path="/all" exact component={this.withAccount(Home)} />
+                                <Route path="/all" exact component={this.withAccount(AllDarknodes)} />
+                                <Route path="/hyperdrive" exact component={Hyperdrive} />
+                                <Route path="/hyperdrive/:blockNumber" exact component={Hyperdrive} />
                                 <Route path="/darknode/:darknodeID" exact component={Darknode} />
                                 <Route component={NotFound} />
                             </Switch>

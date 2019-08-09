@@ -194,6 +194,11 @@ $darknode-card-margin: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
+    >p {
+        margin-top: 20px;
+        opacity: 0.5;
+    }
 }
 
 .card--hide {
