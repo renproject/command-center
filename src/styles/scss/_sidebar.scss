@@ -48,14 +48,17 @@ $mobile-full-width: 100vw;
     font-size: 20px;
 }
 
+$max-sidebar: $max-md;
+$min-header: $min-lg;
+
 .sidebar.sidebar--mobile--active {
-    @media(max-width: $max-sm) {
+    @media(max-width: $max-sidebar) {
         width: $mobile-full-width;
     }
 }
 
 .sidebar:hover {
-    @media(min-width: $min-md) {
+    @media(min-width: $min-header) {
         width: $full-width;
         overflow-x: visible;
     }
@@ -83,7 +86,7 @@ $mobile-full-width: 100vw;
     position: fixed;
     background-color: $blue-darker;
     border-right: 2px solid transparentize(#58585B, 1 - 0.2);
-    padding: 30px 0;
+    padding: 0;
     top: 0;
     bottom: 0;
     left: 0;
@@ -93,11 +96,11 @@ $mobile-full-width: 100vw;
     height: 100vh;
     width: $collapsed-width;
 
-    @media(max-width: $max-sm) {
+    @media(max-width: $max-sidebar) {
         width: 0px;
     }
 
-    @media(max-width: $max-sm) {
+    @media(max-width: $max-sidebar) {
         // This sets the faTimes symbol to be aligned with the faBars symbol
         padding-top: 17px;
     }
@@ -116,14 +119,14 @@ $mobile-full-width: 100vw;
 }
 
 .sidebar>ul {
-    margin: 7px 0;
+    margin: 0;
 }
 
 .sidebar li {
     position: relative;
     width: $full-width - 2px;
 
-    @media(max-width: $max-sm) {
+    @media(max-width: $max-sidebar) {
         // $mobile-full-width
         width: calc(100vw - 2px);
     }
@@ -148,7 +151,7 @@ $mobile-full-width: 100vw;
 .sidebar .sidebar--text {
     width: $full-width - $collapsed-width;
 
-    @media(max-width: $max-sm) {
+    @media(max-width: $max-sidebar) {
         // $mobile-full-width - $collapsed-width
         width: calc(100vw - 80px);
     }

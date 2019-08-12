@@ -4,6 +4,7 @@ import { withRouter } from "react-router";
 import { CSSTransitionGroup } from "react-transition-group";
 
 import { Token } from "../../lib/ethereum/tokens";
+import { Stat, Stats } from "../common/Stat";
 import { TokenBalance } from "../common/TokenBalance";
 import { Block, HyperdriveContainer, Tx } from "./hyperdriveContainer";
 
@@ -73,19 +74,18 @@ export const Hyperdrive = withRouter(({ match: { params }, history }) => {
             clearInterval(interval);
         }
         interval = setInterval(syncBlocks, 10 * 1000);
-        if (!container.blocks || container.blocks.size === 0) {
-            syncBlocks();
-        }
+        // if (!container.blocks || container.blocks.size === 0) {
+        syncBlocks();
+        // }
 
         initialized = true;
         setInitialized(initialized);
 
-        // return () => {
-        //     console.log(`No more syncing!`);
-        //     clearInterval(interval);
-        // };
+        return () => {
+            clearInterval(interval);
+        };
         // tslint:disable-next-line:react-hooks/exhaustive-dep
-    }, [initialized, blockNumber]);
+    }, []);
 
     const blockTr = (block: Block) => {
         const trOnClick = () => {
@@ -112,12 +112,6 @@ export const Hyperdrive = withRouter(({ match: { params }, history }) => {
         );
     };
 
-    const stat = (title: string, content: React.ReactNode) => <div>
-        <hr />
-        <h2>{title}</h2>
-        <span className="hyperdrive--stat">{content}</span>
-    </div>;
-
     const firstBlock = container.blocks ? container.blocks.first<Block | null>(null) : null;
 
     if (firstBlock && getTimeMagnitude(firstBlock.timestamp, true)) {
@@ -131,10 +125,10 @@ export const Hyperdrive = withRouter(({ match: { params }, history }) => {
             className="hyperdrive container"
             key={blockNumber === null ? undefined : blockNumber}
         >
-            <div className="hyperdrive--row">
-                {stat("Number of shards", 1)}
-                {stat("Block height", firstBlock ? firstBlock.height : 0)}
-                {stat("Locked BTC", <>
+            <Stats>
+                <Stat message="Number of shards">1</Stat>
+                <Stat message="Block height">{firstBlock ? firstBlock.height : 0}</Stat>
+                <Stat message="Locked BTC">
                     <TokenBalance
                         token={Token.BTC}
                         amount={String(
@@ -143,8 +137,8 @@ export const Hyperdrive = withRouter(({ match: { params }, history }) => {
                         digits={4}
                     />{" "}
                     BTC
-                </>)}
-                {stat("Locked ZEC", <>
+                </Stat>
+                <Stat message="Locked ZEC">
                     <TokenBalance
                         token={Token.ZEC}
                         amount={String(
@@ -153,8 +147,8 @@ export const Hyperdrive = withRouter(({ match: { params }, history }) => {
                         digits={4}
                     />{" "}
                     ZEC
-                </>)}
-            </div>
+                </Stat>
+            </Stats>
             {blockNumber ? (
                 <>
                     <hr />
@@ -202,21 +196,21 @@ export const Hyperdrive = withRouter(({ match: { params }, history }) => {
             ) : (
                     <></>
                 )}
-            <hr />
-            <h2>Latest Blocks</h2>
-            <table className="">
-                <thead>
-                    <th>Block Number</th>
-                    <th>Timestamp</th>
-                    <th className="hyperdrive--table--txs">Transactions</th>
-                </thead>
-                {container.blocks ?
-                    <CSSTransitionGroup transitionName="fade" component="tbody">
-                        {container.blocks.map(blockTr)}
-                    </CSSTransitionGroup> :
-                    <tbody><tr><td colSpan={3}><Loading /></td></tr></tbody>
-                }
-            </table>
+            <Stat message="Latest blocks">
+                <table className="">
+                    <thead>
+                        <th>Block Number</th>
+                        <th>Timestamp</th>
+                        <th className="hyperdrive--table--txs">Transactions</th>
+                    </thead>
+                    {container.blocks ?
+                        <CSSTransitionGroup transitionName="fade" component="tbody">
+                            {container.blocks.map(blockTr)}
+                        </CSSTransitionGroup> :
+                        <tbody><tr><td colSpan={3}><Loading /></td></tr></tbody>
+                    }
+                </table>
+            </Stat>
         </div>
     );
 });

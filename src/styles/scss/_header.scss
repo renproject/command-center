@@ -8,7 +8,7 @@
     justify-content: space-between;
     padding-left: 80px !important;
 
-    @media (max-width: $max-sm) {
+    @media (max-width: $max-md) {
         padding-left: 0 !important;
     }
 
@@ -16,13 +16,12 @@
     height: 48px !important;
 }
 
-.header .container > a {
+.header .container>a {
     align-self: center;
     text-decoration: none;
 }
 
 .header--logo {
-    border-right: 1px solid #1a2e46 !important;
     border-radius: 0 !important;
     background: url("images/logo.svg") center;
     background-size: 30px 30px;
@@ -30,6 +29,10 @@
     height: 48px !important;
     width: 48px;
     padding: 9px 40px !important;
+
+    @media (min-width: $min-lg) {
+        border-right: 1px solid #1a2e46 !important;
+    }
 }
 
 .header--menu {
@@ -38,9 +41,9 @@
     margin: 20px 0 0;
     padding: 0;
     justify-content: flex-end;
-    width: 200px;
+    width: 0 !important;
 
-    @media (min-width: $min-md) {
+    @media (min-width: $min-lg) {
         width: 500px;
     }
 
@@ -51,11 +54,11 @@
     @media (min-width: $min-sm) {}
 }
 
-.header--menu > li a {
+.header--menu>li a {
     color: white;
 }
 
-.header--menu > li {
+.header--menu>li {
     display: flex;
     position: relative;
     text-align: center;
@@ -185,7 +188,7 @@
     border-left: 1px solid #1a2e46 !important;
     border-right: 1px solid #1a2e46 !important;
 
-    svg {
+    :last-child {
         opacity: 1 !important;
 
         path {
@@ -196,9 +199,14 @@
     }
 }
 
+.header--selected--icon {
+    margin-right: 8px;
+}
+
 .header--mobile-menu--button {
     @extend .mobile-only;
 
+    width: 0px;
     height: 100%;
     display: flex;
     align-items: center;
@@ -223,7 +231,7 @@
     width: 200px;
 }
 
-.header--group > div {
+.header--group>div {
     height: 48px !important;
     border-radius: 0 !important;
     margin: 0 !important;
@@ -232,6 +240,10 @@
 
 .header--group:not(.header--group--account) {
     @extend .no-mobile;
+}
+
+.header--group--active {
+    border-bottom: 3px solid $blue-bright !important;
 }
 
 .transaction {
@@ -248,7 +260,7 @@
         margin-right: 10px;
     }
 
-    > .lds-dual-ring::after {
+    >.lds-dual-ring::after {
         border-width: 1px;
     }
 
@@ -257,7 +269,7 @@
     }
 }
 
-.transaction + .transaction {
+.transaction+.transaction {
     margin-top: 0;
 }
 

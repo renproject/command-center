@@ -13,13 +13,15 @@ import { ApplicationState } from "../../store/applicationState";
 import { storeQuoteCurrency } from "../../store/network/operatorActions";
 import { AppDispatch } from "../../store/rootReducer";
 import { showMobileMenu } from "../../store/ui/uiActions";
-import { ReactComponent as English } from "../../styles/images/rp-flag-uk.svg";
+import { ReactComponent as HyperdriveIcon } from "../../styles/images/Icon-HyperDrive.svg";
+import { ReactComponent as OverviewIcon } from "../../styles/images/Icon-Overview.svg";
+// import { ReactComponent as English } from "../../styles/images/rp-flag-uk.svg";
 import { AccountDropdown } from "./AccountDropdown";
 
-const languageOptions = new Map()
-    .set("EN",
-        <><English /> English</>
-    );
+// const languageOptions = new Map()
+//     .set("EN",
+//         <><English /> English</>
+//     );
 
 const networkOptions = new Map()
     .set(RenNetwork.Mainnet, <>Mainnet</>)
@@ -48,17 +50,18 @@ const currencyOptions = getCurrencyOptions();
  */
 class HeaderClass extends React.Component<Props> {
     public render = (): JSX.Element => {
+        const { location } = this.props;
         const { address, quoteCurrency, renNetwork } = this.props.store;
 
-        const languageDropdownNode = <Dropdown
-            key="languageDropdown"
-            selected={{
-                value: "EN",
-                render: "English",
-            }}
-            options={languageOptions}
-            setValue={this.setLanguage}
-        />;
+        // const languageDropdownNode = <Dropdown
+        //     key="languageDropdown"
+        //     selected={{
+        //         value: "EN",
+        //         render: "English",
+        //     }}
+        //     options={languageOptions}
+        //     setValue={this.setLanguage}
+        // />;
 
         const networkDropdownNode = <Dropdown
             key="networkDropdown"
@@ -94,7 +97,21 @@ class HeaderClass extends React.Component<Props> {
                     <div className="header--logo" />
                 </Link>
                 <div className="header--menu">
-                    {languageDropdownNode}
+                    <Link className="no-underline" to="/">
+                        <li className={["header--group", location.pathname === "/" ? "header--group--active" : ""].join(" ")}>
+                            <div className="header--selected">
+                                <OverviewIcon className="header--selected--icon" /> <div>Overview</div>
+                            </div>
+                        </li>
+                    </Link>
+                    <Link className="no-underline" to="/hyperdrive">
+                        <li className={["header--group", location.pathname.match("/hyperdrive") ? "header--group--active" : ""].join(" ")}>
+                            <div className="header--selected">
+                                <HyperdriveIcon className="header--selected--icon" /> <div>Hyperdrive</div>
+                            </div>
+                        </li>
+                    </Link>
+                    {/* {languageDropdownNode} */}
                     {currencyDropdownNode}
                     {networkDropdownNode}
                     <AccountDropdown />
@@ -118,9 +135,9 @@ class HeaderClass extends React.Component<Props> {
         }, 100);
     }
 
-    private readonly setLanguage = (language: string): void => {
-        // NOT IMPLEMENTED
-    }
+    // private readonly setLanguage = (language: string): void => {
+    //     // NOT IMPLEMENTED
+    // }
 }
 
 const mapStateToProps = (state: ApplicationState) => ({

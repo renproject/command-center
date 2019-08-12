@@ -6,7 +6,7 @@ import { List } from "immutable";
 import { useState } from "react";
 import { createContainer } from "unstated-next";
 
-import { getLightnode } from "../overviewPage/darknodeMap/mapContainer";
+import { getLightnode } from "../overviewPage/mapContainer";
 
 type Addr = string;
 type B = string;

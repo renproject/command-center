@@ -4,7 +4,7 @@ import { connect } from "react-redux"; // Custom typings
 
 import { ApplicationState } from "../../store/applicationState";
 import { HyperdriveContainer } from "../hyperdrivePage/hyperdriveContainer";
-import { MapContainer } from "../overviewPage/darknodeMap/mapContainer";
+import { MapContainer } from "../overviewPage/mapContainer";
 
 class ConnectClass extends React.Component<Props> {
     public render = (): JSX.Element => {

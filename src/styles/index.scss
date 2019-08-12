@@ -20,12 +20,14 @@
 @import 'scss/popup';
 @import 'scss/section';
 @import 'scss/sidebar';
+@import 'scss/stat';
 @import 'scss/statuspage';
 @import 'scss/view';
 
 // Styles in src/components
 @import '../components/overviewPage/darknodeMap/darknodeMap';
 @import '../components/hyperdrivePage/hyperdrive';
+@import '../components/overviewPage/overview';
 
 // Styles for html, body, anchors etc. should go in _general
 @import 'scss/_general';

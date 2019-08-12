@@ -221,7 +221,7 @@ class FeesBlockClass extends React.Component<Props, State> {
                                             </button>
                                 : <></>
                             }
-                            <div className="block--advanced--bottom scrollable">
+                            <div className="block--advanced--bottom">
                                 <table className="fees-block--table">
                                     <tbody>
                                         {

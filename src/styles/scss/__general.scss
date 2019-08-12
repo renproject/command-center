@@ -18,7 +18,6 @@ html {
         overflow: hidden;
     }
 
-    min-width: 100vw;
     min-height: 100vh;
     background: linear-gradient(180deg, #00162f 0%, #001b39 100%);
 }
@@ -316,13 +315,13 @@ label {
 }
 
 .mobile-only {
-    @media (min-width: $min-md) {
+    @media (min-width: $min-lg) {
         display: none !important;
     }
 }
 
 .no-mobile {
-    @media (max-width: $max-sm) {
+    @media (max-width: $max-md) {
         display: none !important;
     }
 }
@@ -337,10 +336,4 @@ label {
     @media (min-width: $min-xl) {
         display: none !important;
     }
-}
-
-hr {
-    color: #1A2E46;
-    margin-bottom: 10px;
-    border-width: 1px;
 }

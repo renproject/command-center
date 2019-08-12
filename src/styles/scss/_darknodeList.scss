@@ -24,7 +24,8 @@ $darknode-card-margin: 10px;
     width: $card-height;
     background-color: $blue-dark;
 
-    box-shadow: 2px 2px 14px rgba(0, 0, 0, 0.1);
+    // box-shadow: 2px 2px 14px rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
     border-radius: 4px;
 
     text-align: center;
@@ -195,6 +196,7 @@ $darknode-card-margin: 10px;
     justify-content: center;
     align-items: center;
     flex-direction: column;
+
     >p {
         margin-top: 20px;
         opacity: 0.5;

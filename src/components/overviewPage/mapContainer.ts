@@ -130,6 +130,8 @@ const readCache = async (ip: string) => {
 const useMapContainer = (initialState = testnet as RenNetworkDetails) => {
     // tslint:disable-next-line: prefer-const
     let [darknodes, setDarknodes] = useState(sampleDarknodes);
+    // tslint:disable-next-line: prefer-const
+    let [darknodeCount, setDarknodeCount] = useState<number | null>(null);
     // tslint:disable-next-line: whitespace
     const [network,] = useState(initialState);
     const getLocation = async (ip: string): Promise<Location> => {
@@ -162,13 +164,15 @@ const useMapContainer = (initialState = testnet as RenNetworkDetails) => {
     const fetchDarknodes = async () => {
         try {
             const darknodeIDs = await getAllDarknodes(network);
+            darknodeCount = darknodeIDs.length;
+            setDarknodeCount(darknodeCount);
             const updateDarknodes = darknodeIDs.map((darknodeID: string) => (() => addDarknodeID(darknodeID)));
             await parallelLimit(updateDarknodes, 4);
         } catch (error) {
             console.error(error);
         }
     };
-    return { fetchDarknodes, darknodes };
+    return { fetchDarknodes, darknodes, darknodeCount };
 };
 
 export const MapContainer = createContainer(useMapContainer);

@@ -52,7 +52,7 @@ export const Sidebar = connect(mapStateToProps, mapDispatchToProps)(withRouter(
                             <div className="sidebar--text">Close</div>
                         </li>
 
-                        <Link className="no-underline" to="/">
+                        <Link className="mobile-only no-underline" to="/" onClick={actions.hideMobileMenu}>
                             <li className={location.pathname === "/" ? "sidebar--active" : ""}>
                                 <div className="sidebar--nav--icon sidebar--icon">
                                     <FontAwesomeIcon icon={faGlobeAmericas} className="darknode-card--bottom--icon" />
@@ -61,8 +61,8 @@ export const Sidebar = connect(mapStateToProps, mapDispatchToProps)(withRouter(
                             </li>
                         </Link>
 
-                        <Link className="no-underline" to="/hyperdrive">
-                            <li className={location.pathname === "/hyperdrive" ? "sidebar--active" : ""}>
+                        <Link className="mobile-only no-underline" to="/hyperdrive" onClick={actions.hideMobileMenu}>
+                            <li className={location.pathname.match("/hyperdrive") ? "sidebar--active" : ""}>
                                 <div className="sidebar--nav--icon sidebar--icon">
                                     <HyperdriveIcon className="darknode-card--bottom--icon" />
                                 </div>

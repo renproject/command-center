@@ -18,7 +18,7 @@ import { Sidebar } from "./common/sidebar/Sidebar";
 import { Darknode, getDarknodeParam } from "./darknodePage/Darknode";
 import { Hyperdrive } from "./hyperdrivePage/Hyperdrive";
 import { LoggingIn } from "./LoggingIn";
-import { DarknodeMap } from "./overviewPage/darknodeMap/DarknodeMap";
+import { Overview } from "./overviewPage/Overview";
 
 // Scroll restoration based on https://reacttraining.com/react-router/web/guides/scroll-restoration
 const ScrollToTop = withRouter(
@@ -71,7 +71,7 @@ class AppClass extends React.Component<Props> {
                             <Switch>
                                 {/* tslint:disable-next-line: react-this-binding-issue jsx-no-lambda */}
 
-                                <Route path="/" exact component={DarknodeMap} />
+                                <Route path="/" exact component={Overview} />
                                 <Route path="/all" exact component={this.withAccount(AllDarknodes)} />
                                 <Route path="/hyperdrive" exact component={Hyperdrive} />
                                 <Route path="/hyperdrive/:blockNumber" exact component={Hyperdrive} />
