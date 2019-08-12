@@ -17,16 +17,19 @@ html {
         width: 100%;
         overflow: hidden;
     }
+
+    min-width: 100vw;
+    min-height: 100vh;
+    background: linear-gradient(180deg, #00162f 0%, #001b39 100%);
 }
 
 * {
-    font-family: 'PingFang SC', Helvetica, Arial, sans-serif;
+    font-family: "PingFang SC", Helvetica, Arial, sans-serif;
 }
 
 body {
     font-size: 12px;
     margin: 0;
-    background: $blue-darker;
     color: white;
 }
 
@@ -57,9 +60,9 @@ label {
     display: block;
 }
 
-input[type=number],
-input[type=text],
-input[type=password] {
+input[type="number"],
+input[type="text"],
+input[type="password"] {
     border: 1px solid $light-grey;
     height: 35px;
     padding: 0 8px;
@@ -73,7 +76,7 @@ input[type=password] {
     }
 }
 
-input[type=checkbox] {
+input[type="checkbox"] {
     margin: 0 5px 0 0;
     vertical-align: middle;
 }
@@ -184,12 +187,13 @@ table th {
 
 .container {
     $spacing: 90px;
+
     width: 100%;
     max-width: 1400px + $spacing * 2;
     margin: 0 auto;
     padding: 0 $spacing;
 
-    @media(max-width: $max-sm) {
+    @media (max-width: $max-sm) {
         padding: 0 10px;
     }
 }
@@ -207,7 +211,7 @@ table th {
 }
 
 .monospace {
-    font-family: 'Courier New', Courier, monospace;
+    font-family: "Courier New", Courier, monospace;
     letter-spacing: 0.5px;
 }
 
@@ -230,7 +234,7 @@ label {
     text-overflow: ellipsis;
     max-width: 250px;
 
-    @media(min-width: $min-sm) {
+    @media (min-width: $min-sm) {
         max-width: none;
     }
 }
@@ -267,7 +271,6 @@ label {
     text-decoration: none;
 }
 
-
 .checkbox {
     appearance: initial;
     width: 20px;
@@ -282,7 +285,6 @@ label {
 .checkbox:checked:after {
     content: "✔";
     color: $green;
-
     position: absolute;
     left: 50%;
     top: 50%;
@@ -314,25 +316,31 @@ label {
 }
 
 .mobile-only {
-    @media(min-width: $min-md) {
+    @media (min-width: $min-md) {
         display: none !important;
     }
 }
 
 .no-mobile {
-    @media(max-width: $max-sm) {
+    @media (max-width: $max-sm) {
         display: none !important;
     }
 }
 
 .large-only {
-    @media(max-width: $max-lg) {
+    @media (max-width: $max-lg) {
         display: none !important;
     }
 }
 
 .no-large {
-    @media(min-width: $min-xl) {
+    @media (min-width: $min-xl) {
         display: none !important;
     }
+}
+
+hr {
+    color: #1A2E46;
+    margin-bottom: 10px;
+    border-width: 1px;
 }

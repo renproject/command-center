@@ -1,12 +1,6 @@
 .map {
     // display: flex;
 
-    hr {
-        color: white;
-        margin-bottom: 10px;
-        border-width: 0.5px;
-    }
-
     .map--world--outer {
         display: flex;
     }
@@ -32,8 +26,6 @@
         /* identical to box height */
         letter-spacing: 1.75px;
         text-transform: uppercase;
-
         color: #FFFFFF;
-
     }
 }

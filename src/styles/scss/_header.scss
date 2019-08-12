@@ -1,15 +1,14 @@
 .header {
+    background: $blue-darker;
     padding: 0 !important;
     margin-bottom: 20px;
     z-index: 6;
-    border-bottom: 1px solid #1A2E46;
-
+    border-bottom: 1px solid #1a2e46;
     display: flex;
     justify-content: space-between;
-
     padding-left: 80px !important;
 
-    @media(max-width: $max-sm) {
+    @media (max-width: $max-sm) {
         padding-left: 0 !important;
     }
 
@@ -17,16 +16,15 @@
     height: 48px !important;
 }
 
-.header .container>a {
+.header .container > a {
     align-self: center;
     text-decoration: none;
 }
 
 .header--logo {
-    border-right: 1px solid #1A2E46 !important;
+    border-right: 1px solid #1a2e46 !important;
     border-radius: 0 !important;
-
-    background: url('images/logo.svg') center;
+    background: url("images/logo.svg") center;
     background-size: 30px 30px;
     background-repeat: no-repeat;
     height: 48px !important;
@@ -39,12 +37,10 @@
     list-style: none;
     margin: 20px 0 0;
     padding: 0;
-
     justify-content: flex-end;
-
     width: 200px;
 
-    @media(min-width: $min-md) {
+    @media (min-width: $min-md) {
         width: 500px;
     }
 
@@ -52,38 +48,36 @@
 }
 
 .header--menu li:hover {
-    @media(min-width: $min-sm) {}
+    @media (min-width: $min-sm) {}
 }
 
-.header--menu>li a {
+.header--menu > li a {
     color: white;
 }
 
-.header--menu>li {
+.header--menu > li {
     display: flex;
     position: relative;
     text-align: center;
     color: white;
-
     display: flex;
     align-items: center;
     margin: 0 20px;
-
     font-size: 16px;
     font-weight: 500;
 
-    @media(min-width: $min-sm) {
+    @media (min-width: $min-sm) {
         padding: 0 22px;
         margin: 0;
     }
 }
 
 .header--menu li {
-    @media(min-width: $min-sm) {}
+    @media (min-width: $min-sm) {}
 }
 
 .header--menu li:last-child {
-    @media(min-width: $min-sm) {}
+    @media (min-width: $min-sm) {}
 }
 
 .header--menu a {
@@ -91,7 +85,7 @@
 }
 
 .header--menu .header--logout {
-    @media(min-width: $min-sm) {
+    @media (min-width: $min-sm) {
         display: none;
     }
 }
@@ -99,9 +93,7 @@
 .header .blocky {
     height: 30px;
     border-radius: 25px;
-
     vertical-align: middle;
-
     margin-right: 15px;
 }
 
@@ -115,11 +107,10 @@
 .header--dropdown--alt li {
     padding: 9px 20px;
     cursor: pointer;
-
     font-weight: 500;
     line-height: normal;
     font-size: 12px;
-    color: #58585B;
+    color: #58585b;
 }
 
 .header--dropdown--option {
@@ -159,7 +150,7 @@
 }
 
 .header--account--type::before {
-    content: '';
+    content: "";
     display: inline-block;
     width: 7px;
     height: 7px;
@@ -167,15 +158,16 @@
     -moz-border-radius: 3.5px;
     -webkit-border-radius: 3.5px;
     border-radius: 3.5px;
-    background-color: #F45532;
+    background-color: #f45532;
     margin-top: 5px;
 }
 
 .header--account--connected .header--account--type::before {
-    background-color: #3CBC98;
+    background-color: #3cbc98;
 }
 
-.header--dropdown::after, .header--dropdown::before {
+.header--dropdown::after,
+.header--dropdown::before {
     bottom: calc(100% - 1px) !important;
 }
 
@@ -190,14 +182,14 @@
     color: white !important;
     border: 0 !important;
     font-weight: 500 !important;
-    border-left: 1px solid #1A2E46 !important;
-    border-right: 1px solid #1A2E46 !important;
+    border-left: 1px solid #1a2e46 !important;
+    border-right: 1px solid #1a2e46 !important;
 
     svg {
         opacity: 1 !important;
 
         path {
-        opacity: 1 !important;
+            opacity: 1 !important;
             fill: white !important;
             stroke: white !important;
         }
@@ -206,6 +198,7 @@
 
 .header--mobile-menu--button {
     @extend .mobile-only;
+
     height: 100%;
     display: flex;
     align-items: center;
@@ -218,9 +211,9 @@
         min-width: 0;
 
         // Based on measurements for right side of menu
-        margin-left: 22px+15px;
+        margin-left: 22px + 15px;
 
-        @media(max-width: $max-xs) {
+        @media (max-width: $max-xs) {
             margin-left: 22px;
         }
     }
@@ -230,7 +223,7 @@
     width: 200px;
 }
 
-.header--group>div {
+.header--group > div {
     height: 48px !important;
     border-radius: 0 !important;
     margin: 0 !important;
@@ -244,7 +237,6 @@
 .transaction {
     margin-top: 10px;
     margin-bottom: 10px;
-
     font-weight: 100;
     font-size: 14px;
     display: flex;
@@ -256,17 +248,16 @@
         margin-right: 10px;
     }
 
-    >.lds-dual-ring::after {
+    > .lds-dual-ring::after {
         border-width: 1px;
     }
 
     a.transaction--hash {
         color: $blue-bright;
     }
-
 }
 
-.transaction+.transaction {
+.transaction + .transaction {
     margin-top: 0;
 }
 

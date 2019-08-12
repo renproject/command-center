@@ -1,26 +1,5 @@
-.map {
+.hyperdrive {
     // display: flex;
-
-    hr {
-        color: white;
-        margin-bottom: 10px;
-        border-width: 0.5px;
-    }
-
-    .map--world--outer {
-        display: flex;
-    }
-
-    .map--world {
-        width: 100%;
-        max-width: 980px;
-        margin: 0 auto;
-    }
-
-    circle {
-        fill: #87C0FF;
-        filter: drop-shadow(0px 0px 5px rgba(135, 192, 255, 0.9));
-    }
 
     h2 {
         font-family: Ubuntu;
@@ -32,9 +11,7 @@
         /* identical to box height */
         letter-spacing: 1.75px;
         text-transform: uppercase;
-
-        color: #FFFFFF;
-
+        color: #ffffff;
     }
 
     tr {
@@ -42,12 +19,13 @@
     }
 
     @keyframes highlight {
-      0% {
-        background: rgba(255, 255, 255, 0.05);;
-      }
-      100% {
-        background: none;
-      }
+        0% {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        100% {
+            background: none;
+        }
     }
 
     a {
@@ -56,20 +34,117 @@
     }
 
     .fade-enter {
-  opacity: 0.01;
-}
+        opacity: 0.01;
+    }
 
-.fade-enter.fade-enter-active {
-  opacity: 1;
-  transition: opacity 0.6s ease-in-out;
-}
+    .fade-enter.fade-enter-active {
+        opacity: 1;
+        transition: opacity 0.6s ease-in-out;
+    }
 
-.fade-leave {
-  opacity: 1;
-}
+    .fade-leave {
+        opacity: 1;
+    }
 
-.fade-leave.fade-leave-active {
-  opacity: 0.01;
-  transition: opacity 0.3s ease-in-out;
-}
+    .fade-leave.fade-leave-active {
+        opacity: 0.01;
+        transition: opacity 0.3s ease-in-out;
+    }
+
+    table {
+        font-size: 13px;
+
+        thead>th {
+            text-transform: uppercase;
+            font-weight: bold;
+            font-size: 13px;
+            line-height: 15px;
+            color: #f9f9f9;
+            width: auto;
+
+            min-width: 200px;
+        }
+
+        .hyperdrive--table--txs {
+            width: 100%;
+        }
+
+        tbody>tr {
+            cursor: pointer;
+            height: 40px;
+            border: none;
+            background-color: #00000000 !important;
+
+            &:hover:nth-child(odd)>td,
+            &:hover>td {
+                background: rgba(255, 255, 255, 0.05);
+            }
+
+            &:nth-child(odd)>td {
+                background: $blue-darker;
+            }
+        }
+    }
+
+    .hyperdrive--row {
+        display: flex;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+
+        >div {
+            flex-grow: 1;
+            min-width: 250px;
+
+            &:not(:last-child) {
+                margin-right: 20px;
+            }
+        }
+
+        .hyperdrive--stat {
+            font-size: 32px;
+            line-height: 37px;
+            color: #F9F9F9;
+        }
+    }
+
+    .block--txs--td {
+        overflow: hidden;
+        max-width: 300px;
+    }
+
+    .block--txs {
+        @extend .no-scrollbar;
+        display: flex;
+        overflow-y: scroll;
+
+        &>div {
+            border-radius: 10px;
+            border: 1px solid white;
+            padding: 3px 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            &:not(:last-child) {
+                margin-right: 5px;
+            }
+        }
+
+        .token--icon {
+            margin: 0 3px;
+
+            &:last-child {
+                margin-right: 0;
+            }
+        }
+
+        .token--icon>path {
+            width: 10px;
+            height: 10px;
+        }
+    }
+
+    .block--txs--none {
+        opacity: 0.3;
+    }
 }

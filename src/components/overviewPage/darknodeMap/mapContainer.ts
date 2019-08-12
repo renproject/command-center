@@ -1,10 +1,9 @@
 // tslint:disable: no-unused-variable
 
-import localforage from "localforage";
 import { RenNetworkDetails, testnet } from "@renproject/contracts";
 import { sleep } from "@renproject/react-components";
 import Axios from "axios";
-import { Map } from "immutable";
+import localforage from "localforage";
 import { useState } from "react";
 import { MarkerType } from "react-simple-maps";
 import { createContainer } from "unstated-next";
