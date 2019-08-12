@@ -1,12 +1,27 @@
-import { Loading, TokenIcon } from "@renproject/react-components";
-import React, { useState } from "react";
+import { getTimeMagnitude, Loading, naturalTime, TokenIcon } from "@renproject/react-components";
+import React, { useCallback, useState } from "react";
 import { withRouter } from "react-router";
 import { CSSTransitionGroup } from "react-transition-group";
 
 import { Token } from "../../lib/ethereum/tokens";
-import { naturalTime } from "../../lib/general/conversion";
 import { TokenBalance } from "../common/TokenBalance";
 import { Block, HyperdriveContainer, Tx } from "./hyperdriveContainer";
+
+// Returning a new object reference guarantees that a before-and-after
+//   equivalence check will always be false, resulting in a re-render, even
+//   when multiple calls to forceUpdate are batched.
+
+const useForceUpdate = () => {
+    const [, dispatch] = useState<{}>(Object.create(null));
+
+    // Turn dispatch(required_parameter) into dispatch().
+    return useCallback(
+        (): void => {
+            dispatch(Object.create(null));
+        },
+        [dispatch],
+    );
+};
 
 let interval: NodeJS.Timeout;
 
@@ -37,6 +52,8 @@ export const Hyperdrive = withRouter(({ match: { params }, history }) => {
         ? parseInt(params.blockNumber, 10)
         : null;
 
+    const forceUpdate = useForceUpdate();
+
     // tslint:disable-next-line: prefer-const
     let [initialized, setInitialized] = useState(false);
     React.useEffect(() => {
@@ -56,7 +73,7 @@ export const Hyperdrive = withRouter(({ match: { params }, history }) => {
             clearInterval(interval);
         }
         interval = setInterval(syncBlocks, 10 * 1000);
-        if (container.blocks.size === 0) {
+        if (!container.blocks || container.blocks.size === 0) {
             syncBlocks();
         }
 
@@ -101,7 +118,13 @@ export const Hyperdrive = withRouter(({ match: { params }, history }) => {
         <span className="hyperdrive--stat">{content}</span>
     </div>;
 
-    const firstBlock = container.blocks.first<Block>();
+    const firstBlock = container.blocks ? container.blocks.first<Block | null>(null) : null;
+
+    if (firstBlock && getTimeMagnitude(firstBlock.timestamp, true)) {
+        setTimeout(() => {
+            forceUpdate();
+        }, 1 * 1000);
+    }
 
     return (
         <div
@@ -142,13 +165,12 @@ export const Hyperdrive = withRouter(({ match: { params }, history }) => {
                             <th>Timestamp</th>
                             <th className="hyperdrive--table--txs">Transactions</th>
                         </thead>
-                        <tbody>
-                            {container.currentBlock && container.currentBlockNumber === blockNumber ? (
-                                blockTr(container.currentBlock)
-                            ) : (
-                                    <Loading />
-                                )}
-                        </tbody>
+                        {container.currentBlock && container.currentBlockNumber === blockNumber ?
+                            <CSSTransitionGroup transitionName="fade" component="tbody">
+                                {blockTr(container.currentBlock)}
+                            </CSSTransitionGroup> :
+                            <tbody><tr><td colSpan={3}><Loading /></td></tr></tbody>
+                        }
                     </table>
                     {/* <table className="">
                         <thead>
@@ -188,9 +210,12 @@ export const Hyperdrive = withRouter(({ match: { params }, history }) => {
                     <th>Timestamp</th>
                     <th className="hyperdrive--table--txs">Transactions</th>
                 </thead>
-                <CSSTransitionGroup transitionName="fade" component="tbody">
-                    {container.blocks.map(blockTr)}
-                </CSSTransitionGroup>
+                {container.blocks ?
+                    <CSSTransitionGroup transitionName="fade" component="tbody">
+                        {container.blocks.map(blockTr)}
+                    </CSSTransitionGroup> :
+                    <tbody><tr><td colSpan={3}><Loading /></td></tr></tbody>
+                }
             </table>
         </div>
     );

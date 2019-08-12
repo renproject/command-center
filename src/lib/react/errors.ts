@@ -3,8 +3,8 @@
 import * as Sentry from "@sentry/browser";
 
 import { RenNetwork } from "@renproject/contracts";
+import { naturalTime } from "@renproject/react-components";
 
-import { naturalTime } from "../general/conversion";
 import { DEFAULT_REN_NETWORK, NODE_ENV } from "./environmentVariables";
 
 interface Details {

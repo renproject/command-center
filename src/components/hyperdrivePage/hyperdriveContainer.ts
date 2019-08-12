@@ -93,7 +93,7 @@ const getBlocks = async (network: RenNetworkDetails, previousBlocks: List<Block>
     if (!lightnode) {
         throw new Error(`No lightnode to fetch darknode locations.`);
     }
-    const firstBlock = previousBlocks.first<Block>();
+    const firstBlock = previousBlocks.first<Block | null>(null);
     let previousHeight = null;
     if (firstBlock) {
         previousHeight = firstBlock.height;
@@ -128,14 +128,14 @@ const useHyperdriveContainer = (initialState = testnet as RenNetworkDetails) => 
     // tslint:disable-next-line: whitespace
     const [network,] = useState(initialState);
     // tslint:disable-next-line: prefer-const
-    let [blocks, setBlocks] = useState(List<Block>());
+    let [blocks, setBlocks] = useState<List<Block> | null>(null);
     // tslint:disable-next-line: prefer-const
     let [currentBlock, setCurrentBlock] = useState<null | Block>(null);
     // tslint:disable-next-line: prefer-const
     let [currentBlockNumber, setCurrentBlockNumber] = useState<null | number>(null);
 
     const updateBlocks = async () => {
-        blocks = await getBlocks(network, blocks);
+        blocks = await getBlocks(network, blocks || List<Block>());
         setBlocks(blocks);
     };
 
@@ -144,17 +144,19 @@ const useHyperdriveContainer = (initialState = testnet as RenNetworkDetails) => 
         if (!lightnode) {
             return;
         }
-        const first = blocks.first<Block | null>(null);
-        const last = blocks.last<Block | null>(null);
-
         let newCurrentBlock;
 
-        // Check if we already have the block in the list of recent blocks.
-        if (first && last && first.height >= blockNumber && last.height <= blockNumber) {
-            for (const block of blocks.toArray()) {
-                if (block.height === blockNumber) {
-                    newCurrentBlock = block;
-                    break;
+        if (blocks) {
+            const first = blocks.first<Block | null>(null);
+            const last = blocks.last<Block | null>(null);
+
+            // Check if we already have the block in the list of recent blocks.
+            if (first && last && first.height >= blockNumber && last.height <= blockNumber) {
+                for (const block of blocks.toArray()) {
+                    if (block.height === blockNumber) {
+                        newCurrentBlock = block;
+                        break;
+                    }
                 }
             }
         }
