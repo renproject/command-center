@@ -1,10 +1,10 @@
 import * as qs from "query-string";
 import * as React from "react";
 
+import { List } from "immutable";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { bindActionCreators } from "redux";
-import { List } from "immutable";
 
 import { _captureBackgroundException_ } from "../../lib/react/errors";
 import { lookForLogout, promptLogin } from "../../store/account/accountActions";

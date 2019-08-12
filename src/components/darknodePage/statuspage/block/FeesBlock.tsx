@@ -3,7 +3,9 @@ import * as React from "react";
 import { faStar } from "@fortawesome/free-regular-svg-icons";
 import { faChevronRight, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { CurrencyIcon, Loading, TokenIcon } from "@renproject/react-components";
+import {
+    alreadyPast, CurrencyIcon, Loading, naturalTime, TokenIcon,
+} from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
@@ -11,7 +13,6 @@ import { bindActionCreators } from "redux";
 
 import { DarknodeFeeStatus, RegistrationStatus } from "../../../../lib/ethereum/contractReads";
 import { OldToken, Token } from "../../../../lib/ethereum/tokens";
-import { alreadyPast, naturalTime } from "../../../../lib/general/conversion";
 import { showClaimPopup } from "../../../../store/account/operatorPopupActions";
 import { ApplicationState, DarknodesState } from "../../../../store/applicationState";
 import {

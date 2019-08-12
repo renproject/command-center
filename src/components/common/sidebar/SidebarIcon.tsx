@@ -8,8 +8,8 @@ import BigNumber from "bignumber.js";
 import { Link } from "react-router-dom";
 
 import { Token } from "../../../lib/ethereum/tokens";
-import { DarknodeID } from "../DarknodeID";
 import { darknodeIDHexToBase58 } from "../../darknodePage/Darknode";
+import { DarknodeID } from "../DarknodeID";
 import { TokenBalance } from "../TokenBalance";
 
 interface Props {
