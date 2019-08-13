@@ -73,13 +73,13 @@ class RegistrationClass extends React.Component<Props, typeof defaultState> {
                 {isOperator ? <>
                     {registrationStatus === RegistrationStatus.Unregistered ?
                         <button disabled={registrationDisabled} className="status--button" onClick={this.handleRegister}>
-                            {active ? <>Registering <Loading className="status--button--spinner" alt={true} /></> : `Register darknode${registrationDisabled && !publicKey ? " (public key required)" : ""}`}
+                            {active ? <>Registering <Loading className="status--button--spinner" alt /></> : `Register darknode${registrationDisabled && !publicKey ? " (public key required)" : ""}`}
                         </button> :
                         null
                     }
                     {registrationStatus === RegistrationStatus.Registered ?
                         <button disabled={disabled} className="status--button" onClick={this.handleDeregister}>
-                            {active ? <>Deregistering <Loading className="status--button--spinner" alt={true} /></> : "Deregister"}
+                            {active ? <>Deregistering <Loading className="status--button--spinner" alt /></> : "Deregister"}
                         </button> :
                         null
                     }
@@ -89,7 +89,7 @@ class RegistrationClass extends React.Component<Props, typeof defaultState> {
                             className="status--button status--button--focus"
                             onClick={this.handleRefund}
                         >
-                            {active ? <>Refunding <Loading className="status--button--spinner" alt={true} /></> : "Refund"}
+                            {active ? <>Refunding <Loading className="status--button--spinner" alt /></> : "Refund"}
                         </button> :
                         null
                     }

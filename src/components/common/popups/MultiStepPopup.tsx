@@ -103,7 +103,7 @@ class MultiStepPopupClass extends React.Component<Props, typeof defaultState> {
                                     id="slideThree"
                                     name="check"
                                     checked={checked}
-                                    readOnly={true}
+                                    readOnly
                                 />
                                 <span className={index === currentStep ? "active" : ""}>
                                     Step {index + 1}: {step.name}
@@ -123,7 +123,7 @@ class MultiStepPopupClass extends React.Component<Props, typeof defaultState> {
             <div className="multi-step--buttons" >
                 {running ?
                     // Show spinning icon while running through steps
-                    <button className="button button--white" disabled={true}><Loading /></button> :
+                    <button className="button button--white" disabled><Loading /></button> :
                     complete ?
                         // Get user to click Close instead of automatically closing popup
                         <>

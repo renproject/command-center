@@ -26,7 +26,7 @@ export const DarknodeList: React.StatelessComponent<Props> = ({
 }) => {
     return <div className={`darknode-list`}>
         {darknodeList === null ? <div className="darknode-list--loading">
-            <Loading alt={true} />
+            <Loading alt />
             <p>Syncing Darknode Registry {registrySync.target !== 0 ? <>({registrySync.progress}/{registrySync.target})</> : <></>}</p>
         </div> : <>
                 {darknodeList && darknodeList.map((darknodeID: string) => {

@@ -1,5 +1,6 @@
 import * as React from "react";
 
+import { ScrollToTop } from "@renproject/react-components";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { Route, RouteComponentProps, Switch, withRouter } from "react-router-dom";
 import { bindActionCreators } from "redux";
@@ -20,22 +21,7 @@ import { Hyperdrive } from "./hyperdrivePage/Hyperdrive";
 import { LoggingIn } from "./LoggingIn";
 import { Overview } from "./overviewPage/Overview";
 
-// Scroll restoration based on https://reacttraining.com/react-router/web/guides/scroll-restoration
-const ScrollToTop = withRouter(
-    // tslint:disable-next-line:no-any
-    class ScrollToTopWithoutRouter extends React.Component<RouteComponentProps<any>> {
-        // tslint:disable-next-line:no-any
-        public componentDidUpdate(prevProps: Readonly<RouteComponentProps<any>>): void {
-            if (this.props.location !== prevProps.location) {
-                window.scrollTo(0, 0);
-            }
-        }
-
-        public render(): JSX.Element | null {
-            return null;
-        }
-    }
-);
+const ScrollToTopWithRouter = withRouter(ScrollToTop);
 
 /**
  * App is the main visual component responsible for displaying different routes
@@ -53,7 +39,7 @@ class AppClass extends React.Component<Props> {
 
         return <div className="app">
             <BackgroundTasks key={`${address || undefined} ${renNetwork.name}`} />
-            <ScrollToTop />
+            <ScrollToTopWithRouter />
             {/*
               * We set the key to be the address so that any sub-component state is reset after changing accounts
               * (e.g. if in

@@ -54,15 +54,21 @@
     table {
         font-size: 13px;
 
-        thead>th {
-            text-transform: uppercase;
-            font-weight: bold;
-            font-size: 13px;
-            line-height: 15px;
-            color: #f9f9f9;
-            width: auto;
+        thead {
+            tr {
+                border: none;
+            }
 
-            min-width: 200px;
+            th {
+                text-transform: uppercase;
+                font-weight: bold;
+                font-size: 13px;
+                line-height: 15px;
+                color: #f9f9f9;
+                width: auto;
+
+                min-width: 200px;
+            }
         }
 
         .hyperdrive--table--txs {

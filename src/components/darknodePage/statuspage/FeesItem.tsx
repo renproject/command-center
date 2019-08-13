@@ -43,7 +43,7 @@ const FeesItemClass = ({ darknodeID, token, amount, disabled, actions, store }: 
             disabled={isDisabled}
             onClick={isDisabled ? undefined : handleWithdraw}
         >
-            {loading ? <Loading alt={true} /> : <FontAwesomeIcon icon={faChevronRight} pull="left" />}
+            {loading ? <Loading alt /> : <FontAwesomeIcon icon={faChevronRight} pull="left" />}
         </button>
     );
 };

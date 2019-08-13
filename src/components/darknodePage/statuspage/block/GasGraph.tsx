@@ -257,7 +257,7 @@ class GasGraphClass extends React.Component<Props, State> {
                                 name="historyPeriod"
                                 onClick={this.handleSelectTime}
                             >
-                                {nextHistoryPeriod === period && loadingHistory ? <Loading alt={true} /> : periodString}
+                                {nextHistoryPeriod === period && loadingHistory ? <Loading alt /> : periodString}
                             </button>;
                         })}
                     </div>

@@ -189,8 +189,8 @@ class FeesBlockClass extends React.Component<Props, State> {
                                 <span className="fees-block--advanced--unit">{quoteCurrency.toUpperCase()}</span>
                             </div>
                             {isOperator && darknodeDetails.registrationStatus === RegistrationStatus.Registered ?
-                                cycleTimeout.isZero() || claiming || disableClaim ? <button className="button--white block--advanced--claim" disabled={true}>
-                                    <Loading alt={true} />
+                                cycleTimeout.isZero() || claiming || disableClaim ? <button className="button--white block--advanced--claim" disabled>
+                                    <Loading alt />
                                 </button> :
                                     (showPreviousPending || showWhitelist) ?
                                         <button className="button--white block--advanced--claim" onClick={this.onClaimBeforeCycle}>
@@ -211,7 +211,7 @@ class FeesBlockClass extends React.Component<Props, State> {
                                                     Claim pending rewards now
                                             </>}
                                             </button> :
-                                            <button className="button--white block--advanced--claim" disabled={true}>
+                                            <button className="button--white block--advanced--claim" disabled>
                                                 {naturalTime(cycleTimeout.toNumber() + 5, {
                                                     message: "Refresh page to claim pending rewards",
                                                     prefix: "Claim again in",

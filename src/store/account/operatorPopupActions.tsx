@@ -71,8 +71,8 @@ Are you sure you want to continue?`;
                 steps={steps}
                 onCancel={onCancel}
                 title={title}
-                confirm={true}
                 warning={warning}
+                confirm
             />,
             onCancel,
             dismissible: false,
@@ -124,9 +124,9 @@ export const showDeregisterPopup = (
                 steps={steps}
                 onCancel={onCancel}
                 title={title}
-                confirm={true}
                 ignoreWarning={ignoreWarning}
                 warning={warning}
+                confirm
             />,
             onCancel,
             dismissible: false,

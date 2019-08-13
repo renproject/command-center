@@ -52,7 +52,7 @@ export const promptLogin = (
     if (options.showPopup && options.immediatePopup) {
         dispatch(setPopup(
             {
-                popup: <NoWeb3Popup onConnect={onClick} onCancel={onCancel} disabled={true} message={promptMessage} />,
+                popup: <NoWeb3Popup onConnect={onClick} onCancel={onCancel} message={promptMessage} disabled />,
                 onCancel,
                 overlay: true,
             },

@@ -13,16 +13,16 @@ export const Overview = () => {
             <Stats>
                 <Stat message="Darknodes online">
                     <Stats>
-                        <Stat message="Online">{container.darknodeCount === null ? <Loading alt={true} /> : container.darknodeCount}</Stat>
-                        <Stat message="Changes next epoch">?</Stat>
-                        <Stat message="% Ren Registered">?%</Stat>
+                        <Stat message="Online" big>{container.darknodeCount === null ? <Loading alt /> : container.darknodeCount}</Stat>
+                        <Stat message="Change next epoch" big>?</Stat>
+                        <Stat message="% Ren Registered" big>?%</Stat>
                     </Stats>
                 </Stat>
                 <Stat message="Darknode rewards">
                     <Stats>
-                        <Stat message="All time total">$?</Stat>
-                        <Stat message="24h total">$?</Stat>
-                        <Stat highlight={true} message="Average monthly rewards / darknodes">$?</Stat>
+                        <Stat message="All time total" big>$?</Stat>
+                        <Stat message="24h total" big>$?</Stat>
+                        <Stat message="Average monthly rewards / darknodes" highlight big>$?</Stat>
                     </Stats>
                 </Stat>
             </Stats>

@@ -91,7 +91,7 @@ class StatusPageClass extends React.Component<Props, State> {
 
                         {action === DarknodeAction.Register ?
                             <Registration
-                                isOperator={true}
+                                isOperator
                                 registrationStatus={darknodeDetails ?
                                     darknodeDetails.registrationStatus :
                                     RegistrationStatus.Unknown}

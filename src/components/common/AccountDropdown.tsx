@@ -73,7 +73,7 @@ class AccountDropdownClass extends React.Component<Props, typeof defaultState> {
                         "header--account--disconnected"}`}
                 >
                     <div className="header--account--type">
-                        {web3BrowserName} {pendingTXs ? <Loading alt={true} className="header--account--spinner" /> : <></>}
+                        {web3BrowserName} {pendingTXs ? <Loading alt className="header--account--spinner" /> : <></>}
                     </div>
                     {address ?
                         <div className="header--account--address">

@@ -61,11 +61,11 @@ export const OldFees = connect(mapStateToProps, mapDispatchToProps)(
                     </td>
                     {isOperator ? <td>
                         <FeesItem
-                            disabled={true}
                             key={token}
                             token={token}
                             amount={balance}
                             darknodeID={darknodeDetails.ID}
+                            disabled
                         />
                     </td> : <></>}
                 </tr>);
