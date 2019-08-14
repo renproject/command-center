@@ -8,14 +8,14 @@ import { _noCapture_ } from "../react/errors";
 export const ErrorCanceledByUser = "User denied transaction signature.";
 
 const ErrorNoWeb3 = Language.wallet.mustInstallMetaMask;
-const ErrorNoAccounts = Language.wallet.noAccounts;
+// const ErrorNoAccounts = Language.wallet.noAccounts;
 const ErrorAccountAccessRejected = Language.wallet.mustConnect;
 
 export const getReadOnlyWeb3 = (): Web3 => {
     return new Web3(PUBLIC_NODE);
 };
 
-export const getInjectedWeb3Provider = async (onAnyProvider: (provider: provider) => void): Promise<provider> => {
+export const getInjectedWeb3Provider = async (onAnyProvider?: (provider: provider) => void): Promise<provider> => {
     let injectedProvider;
 
     if (window.ethereum) {
@@ -31,13 +31,13 @@ export const getInjectedWeb3Provider = async (onAnyProvider: (provider: provider
         throw _noCapture_(new Error(ErrorNoWeb3));
     }
 
-    onAnyProvider(injectedProvider);
+    if (onAnyProvider) { onAnyProvider(injectedProvider); }
 
-    const web3 = new Web3(injectedProvider);
+    // const web3 = new Web3(injectedProvider);
 
-    if ((await web3.eth.getAccounts()).length === 0) {
-        throw new Error(ErrorNoAccounts);
-    }
+    // if ((await web3.eth.getAccounts()).length === 0) {
+    //     throw new Error(ErrorNoAccounts);
+    // }
 
     return injectedProvider;
 };
