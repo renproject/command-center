@@ -26,11 +26,11 @@ interface Props {
 }
 
 export const CardView = ({ darknodeID, darknodeDetails, name, quoteCurrency, url, faded, hidable, confirmedRemove, removeDarknode, continuable }: Props) => {
-    const handleRemoveDarknode = (e: React.MouseEvent<HTMLDivElement>): void => {
+    const handleRemoveDarknode = React.useCallback((e: React.MouseEvent<HTMLDivElement>): void => {
         e.stopPropagation();
         e.preventDefault();
         removeDarknode();
-    };
+    }, [removeDarknode]);
 
     return <Link className="no-underline" to={url}>
         <div className={`darknode-card ${faded ? "darknode-card--faded" : ""}`}>

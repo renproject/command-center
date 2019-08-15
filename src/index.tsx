@@ -13,6 +13,7 @@ import { NODE_ENV } from "./lib/react/environmentVariables";
 import { history } from "./lib/react/history";
 import { onLoad } from "./lib/react/onLoad";
 import { persistor, store } from "./store/configureStore";
+import { DrizzleContainer } from "./store/drizzle";
 
 // Redirect to https if we aren't serving locally
 if (NODE_ENV !== "development") {
@@ -27,17 +28,21 @@ if (NODE_ENV !== "development") {
 onLoad("Command Center");
 
 ReactDOM.render(
-    _catch_(<Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-            <Router history={history}>
-                <Switch>
-                    {/* We add the routes here as well as in App so that App has access to the URL parameters */}
-                    <Route path="/darknode/:darknodeID" exact component={App} />
-                    <Route component={App} />
-                    {/* Don't add extra routes here - add them in App */}
-                </Switch>
-            </Router>
-        </PersistGate>
-    </Provider>),
+    _catch_(
+        <Provider store={store}>
+            <PersistGate loading={null} persistor={persistor}>
+                <DrizzleContainer>
+                    <Router history={history}>
+                        <Switch>
+                            {/* We add the routes here as well as in App so that App has access to the URL parameters */}
+                            <Route path="/darknode/:darknodeID" exact component={App} />
+                            <Route component={App} />
+                            {/* Don't add extra routes here - add them in App */}
+                        </Switch>
+                    </Router>
+                </DrizzleContainer>
+            </PersistGate>
+        </Provider>
+    ),
     document.getElementById("root") as HTMLElement
 );

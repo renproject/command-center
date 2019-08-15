@@ -61,5 +61,5 @@ export const onLoad = (title: string) => {
     document.title = title; // Also set in index.html
 
     // tslint:disable-next-line: no-console
-    console.log(`${title} version hash: ${SOURCE_VERSION}`);
+    console.debug(`${title} version hash: ${SOURCE_VERSION}`);
 };

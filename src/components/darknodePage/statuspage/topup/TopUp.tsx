@@ -16,9 +16,9 @@ interface Props {
 export const TopUp = (props: Props) => {
     const { value, resultMessage, pending, disabled, handleChange, handleBlur, sendFunds } = props;
 
-    const handleChangeEvent = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChangeEvent = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         handleChange(event.target.value);
-    };
+    }, [handleChange]);
 
     return <div className="topup">
         <label>

@@ -107,8 +107,7 @@ export const promptLogin = (
         return;
     }
 
-    // tslint:disable-next-line: no-any
-    const network = (await (newWeb3.eth.net as any).getNetworkType());
+    const network = (await newWeb3.eth.net.getNetworkType());
 
     if (network !== renNetwork.chain) {
         if (options.showPopup && !cancelled) {

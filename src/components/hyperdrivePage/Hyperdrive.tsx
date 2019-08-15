@@ -12,7 +12,7 @@ import { Block, HyperdriveContainer, Tx } from "./hyperdriveContainer";
 //   equivalence check will always be false, resulting in a re-render, even
 //   when multiple calls to forceUpdate are batched.
 
-const useForceUpdate = () => {
+export const useForceUpdate = () => {
     const [, dispatch] = useState<{}>(Object.create(null));
 
     // Turn dispatch(required_parameter) into dispatch().
