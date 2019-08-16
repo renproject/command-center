@@ -1,10 +1,13 @@
 .map {
+    flex: 1 1 600px;
     display: flex;
 
     .map--world {
-        width: 100%;
-        max-width: 800px;
-        margin: 0 auto;
+        // width: 100%;
+        // min-width: 500px;
+        // max-width: 60%;
+        flex: 1 1 60%;
+        min-width: 60%;
     }
 
     circle {

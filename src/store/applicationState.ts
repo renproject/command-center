@@ -91,6 +91,7 @@ export class NetworkState extends Record({
     previousCycle: "",
     pendingRewards: OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber>>(),
     pendingTotalInEth: OrderedMap<string /* cycle */, BigNumber>(),
+    pendingRewardsInEth: OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber>>(),
     cycleTimeout: new BigNumber(0),
 
     ///////////////////////////////////////////////////////

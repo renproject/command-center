@@ -2,6 +2,18 @@
   "name": "command-center",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "lint:unused-exports": "ts-unused-exports ./tsconfig.json",
+    "lint:outdated-imports": "ncu",
+    "lint:ts": "tslint --project ./ -t stylish --quiet",
+    "lint:extra": "$npm_execpath run --silent lint:unused-exports; $npm_execpath run --silent lint:outdated-imports",
+    "lint:all": "$npm_execpath run --silent lint:ts && $npm_execpath run --silent lint:extra",
+    "lint": "$npm_execpath run --silent lint:ts",
+    "test": "react-scripts test",
+    "start": "./.env || true; react-scripts start",
+    "build": "REACT_APP_SOURCE_VERSION=$SOURCE_VERSION react-scripts build",
+    "eject": "react-scripts eject"
+  },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.21",
     "@fortawesome/free-brands-svg-icons": "^5.10.1",
@@ -51,12 +63,12 @@
     "typescript": "^3.5.3",
     "unstated-next": "^1.1.0",
     "wallet-address-validator": "^0.2.4",
-    "web3": "^2.0.0-alpha",
-    "web3-core": "^2.0.0-alpha",
-    "web3-eth-contract": "^2.0.0-alpha",
+    "web3": "2.0.0-alpha.1",
+    "web3-core": "2.0.0-alpha.1",
+    "web3-eth-contract": "2.0.0-alpha.1",
     "web3-provider-engine": "^15.0.0",
-    "web3-providers": "^2.0.0-alpha",
-    "web3-utils": "^2.0.0-alpha"
+    "web3-providers": "2.0.0-alpha.1",
+    "web3-utils": "2.0.0-alpha.1"
   },
   "devDependencies": {
     "@types/chai": "^4.2.0",
@@ -71,17 +83,8 @@
     "tslint-react": "^4.0.0",
     "underscore": "^1.9.1"
   },
-  "scripts": {
-    "lint:unused-exports": "ts-unused-exports ./tsconfig.json",
-    "lint:outdated-imports": "ncu",
-    "lint:ts": "tslint --project ./ -t stylish --quiet",
-    "lint:extra": "$npm_execpath run --silent lint:unused-exports; $npm_execpath run --silent lint:outdated-imports",
-    "lint:all": "$npm_execpath run --silent lint:ts && $npm_execpath run --silent lint:extra",
-    "lint": "$npm_execpath run --silent lint:ts",
-    "test": "react-scripts test",
-    "start": "./.env || true; react-scripts start",
-    "build": "REACT_APP_SOURCE_VERSION=$SOURCE_VERSION react-scripts build",
-    "eject": "react-scripts eject"
+  "resolutions": {
+    "scrypt": "https://github.com/ren-forks/node-scrypt"
   },
   "browserslist": [
     ">0.2%",

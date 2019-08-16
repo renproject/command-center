@@ -393,22 +393,22 @@ export const getOperatorDarknodes = async (
 const sumUpFeeMap = (
     feesEarned: OrderedMap<Token | OldToken, BigNumber>,
     tokenPrices: TokenPrices,
-): BigNumber => {
+): [BigNumber, OrderedMap<Token, BigNumber>] => {
 
     let totalEth = new BigNumber(0);
 
-    NewTokenDetails.map((tokenDetails, token) => {
+    const feesEarnedInEth = NewTokenDetails.map((tokenDetails, token) => {
         const price = tokenPrices.get(token, undefined);
         const decimals = tokenDetails ? new BigNumber(tokenDetails.decimals.toString()).toNumber() : 0;
         const inEth = feesEarned.get(token, new BigNumber(0))
             .div(Math.pow(10, decimals))
             .multipliedBy(price ? price.get(Currency.ETH, 0) : 0);
         totalEth = totalEth.plus(inEth);
-        return null;
+        return inEth;
     });
 
     // Convert to wei
-    return totalEth.multipliedBy(new BigNumber(10).pow(18));
+    return [totalEth.multipliedBy(new BigNumber(10).pow(18)), feesEarnedInEth];
 };
 
 /**
@@ -441,12 +441,14 @@ export const fetchCycleAndPendingRewards = async (
     const previous = await safePromiseAllMap(
         NewTokenDetails.map(async (_tokenDetails, token) => {
             try {
-                const previousCycleRewardShareBN = await darknodePayment.methods.previousCycleRewardShare((token)).call();
+                const address = token === Token.ETH ? "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" : renNetwork.addresses.tokens[token].address;
+                const previousCycleRewardShareBN = await darknodePayment.methods.previousCycleRewardShare(address).call();
                 if (previousCycleRewardShareBN === null) {
                     return new BigNumber(0);
                 }
                 return new BigNumber(previousCycleRewardShareBN.toString());
             } catch (error) {
+                console.error(error);
                 return new BigNumber(0);
             }
         }).toOrderedMap(),
@@ -467,12 +469,14 @@ export const fetchCycleAndPendingRewards = async (
                 if (currentShareCount.isZero()) {
                     return new BigNumber(0);
                 }
-                const currentCycleRewardPool = await darknodePayment.methods.currentCycleRewardPool(renNetwork.addresses.tokens[token]).call();
+                const address = token === Token.ETH ? "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" : renNetwork.addresses.tokens[token].address;
+                const currentCycleRewardPool = await darknodePayment.methods.currentCycleRewardPool(address).call();
                 if (currentCycleRewardPool === null) {
                     return new BigNumber(0);
                 }
                 return new BigNumber((currentCycleRewardPool).toString()).div(currentShareCount);
             } catch (error) {
+                console.error(error);
                 return new BigNumber(0);
             }
         }
@@ -487,15 +491,19 @@ export const fetchCycleAndPendingRewards = async (
     const cycleTimeout = cycleTimeoutBN ? new BigNumber(cycleTimeoutBN.toString()) : null;
 
     let pendingTotalInEth = null;
+    let pendingRewardsInEth = null;
     if (tokenPrices) {
-        const previousTotal = sumUpFeeMap(previous, tokenPrices);
-        const currentTotal = sumUpFeeMap(current, tokenPrices);
+        const [previousTotal, previousInEth] = sumUpFeeMap(previous, tokenPrices);
+        const [currentTotal, currentInEth] = sumUpFeeMap(current, tokenPrices);
         pendingTotalInEth = OrderedMap<string /* cycle */, BigNumber>();
+        pendingRewardsInEth = OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber>>();
         if (previousCycle !== null) {
             pendingTotalInEth = pendingTotalInEth.set(previousCycle.toString(), previousTotal);
+            pendingRewardsInEth = pendingRewardsInEth.set(previousCycle.toString(), previousInEth);
         }
         if (currentCycle !== null) {
             pendingTotalInEth = pendingTotalInEth.set(currentCycle.toString(), currentTotal);
+            pendingRewardsInEth = pendingRewardsInEth.set(currentCycle.toString(), currentInEth);
         }
     }
 
@@ -505,6 +513,7 @@ export const fetchCycleAndPendingRewards = async (
         previousCycle,
         cycleTimeout,
         pendingTotalInEth,
+        pendingRewardsInEth,
     };
 };
 
@@ -653,7 +662,12 @@ export const fetchDarknodeDetails = async (
     }
     let feesEarnedTotalEth = new BigNumber(0);
     if (tokenPrices) {
-        feesEarnedTotalEth = sumUpFeeMap(feesEarned, tokenPrices).plus(sumUpFeeMap(oldFeesEarned, tokenPrices));
+        //
+        // tslint:disable-next-line: whitespace
+        const [oldFeesInEth,] = sumUpFeeMap(oldFeesEarned, tokenPrices);
+        // tslint:disable-next-line: whitespace
+        const [newFeesInEth,] = sumUpFeeMap(feesEarned, tokenPrices);
+        feesEarnedTotalEth = newFeesInEth.plus(oldFeesInEth);
     }
 
     // Get darknode operator and public key

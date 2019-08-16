@@ -14,6 +14,7 @@ export const updatePreviousCycle = createStandardAction("UPDATE_PREVIOUS_CYCLE")
 
 export const updatePendingRewards = createStandardAction("UPDATE_PENDING_REWARDS")<OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber>>>();
 export const updatePendingTotalInEth = createStandardAction("UPDATE_PENDING_TOTAL_IN_ETH")<OrderedMap<string /* cycle */, BigNumber>>();
+export const updatePendingRewardsInEth = createStandardAction("UPDATE_PENDING_REWARDS_IN_ETH")<OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber>>>();
 export const updateCycleTimeout = createStandardAction("UPDATE_CYCLE_TIMEOUT")<BigNumber>();
 
 export const updateTokenPrices = () => async (dispatch: AppDispatch) => {

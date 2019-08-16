@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { EmptyDarknodeList } from "./allDarknodesPage/darknodeList/EmptyDarknodeList";
+import { EmptyDarknodeList } from "../allDarknodesPage/darknodeList/EmptyDarknodeList";
 
 /**
  * LoggingIn is a page whose principal components are wallet selection to allow users

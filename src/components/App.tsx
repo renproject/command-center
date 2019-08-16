@@ -9,17 +9,17 @@ import { bindActionCreators } from "redux";
 import { DEFAULT_REN_NETWORK } from "../lib/react/environmentVariables";
 import { ApplicationState } from "../store/applicationState";
 import { AppDispatch } from "../store/rootReducer";
-import { NotFound } from "./404";
 import { AllDarknodes } from "./allDarknodesPage/AllDarknodes";
+import { NotFound } from "./common/404";
 import { BackgroundTasks } from "./common/BackgroundTasks";
 import { Connect } from "./common/Connect";
 import { _catch_ } from "./common/ErrorBoundary";
 import { Header } from "./common/Header";
+import { LoggingIn } from "./common/LoggingIn";
 import { PopupController } from "./common/popups/PopupController";
 import { Sidebar } from "./common/sidebar/Sidebar";
 import { Darknode, getDarknodeParam } from "./darknodePage/Darknode";
 import { Hyperdrive, useForceUpdate } from "./hyperdrivePage/Hyperdrive";
-import { LoggingIn } from "./LoggingIn";
 import { Overview } from "./overviewPage/Overview";
 
 const ScrollToTopWithRouter = withRouter(ScrollToTop);
@@ -90,6 +90,7 @@ const mapStateToProps = (state: ApplicationState) => ({
         address: state.account.address,
         web3: state.account.web3,
         renNetwork: state.account.renNetwork,
+        tokenPrices: state.network.tokenPrices,
     },
 });
 

@@ -11,7 +11,7 @@ import { lookForLogout, promptLogin } from "../../store/account/accountActions";
 import { ApplicationState } from "../../store/applicationState";
 import { updateTokenPrices } from "../../store/network/networkActions";
 import {
-    updateDarknodeDetails, updateOperatorDarknodes,
+    updateCycleAndPendingRewards, updateDarknodeDetails, updateOperatorDarknodes,
 } from "../../store/network/operatorActions";
 import { AppDispatch } from "../../store/rootReducer";
 import { getDarknodeParam } from "../darknodePage/Darknode";
@@ -22,6 +22,7 @@ import { getDarknodeParam } from "../darknodePage/Darknode";
  */
 class BackgroundTasksClass extends React.Component<Props> {
     private callUpdatePricesTimeout: NodeJS.Timer | undefined;
+    private callUpdateRewardsTimeout: NodeJS.Timer | undefined;
     private callLookForLogoutInterval: NodeJS.Timer | undefined;
     private callUpdateOperatorDarknodesTimeout: NodeJS.Timer | undefined;
     private callUpdateSelectedDarknodeTimeout: NodeJS.Timer | undefined;
@@ -83,6 +84,7 @@ class BackgroundTasksClass extends React.Component<Props> {
     public componentWillUnmount(): void {
         // Clear timeouts
         if (this.callUpdatePricesTimeout) { clearTimeout(this.callUpdatePricesTimeout); }
+        if (this.callUpdateRewardsTimeout) { clearTimeout(this.callUpdateRewardsTimeout); }
         if (this.callLookForLogoutInterval) { clearTimeout(this.callLookForLogoutInterval); }
         if (this.callUpdateOperatorDarknodesTimeout) { clearTimeout(this.callUpdateOperatorDarknodesTimeout); }
         if (this.callUpdateSelectedDarknodeTimeout) { clearTimeout(this.callUpdateSelectedDarknodeTimeout); }
@@ -102,6 +104,26 @@ class BackgroundTasksClass extends React.Component<Props> {
         }
         if (this.callUpdatePricesTimeout) { clearTimeout(this.callUpdatePricesTimeout); }
         this.callUpdatePricesTimeout = setTimeout(this.callUpdatePrices, 60 * 1000) as unknown as NodeJS.Timer;
+    }
+
+    // Update rewards every 120 seconds
+    private readonly callUpdateRewards = async (): Promise<void> => {
+        const { web3, renNetwork, tokenPrices } = this.props.store;
+        let retry = 60;
+        if (tokenPrices) {
+            try {
+                // tslint:disable-next-line: await-promise
+                await this.props.actions.updateCycleAndPendingRewards(web3, renNetwork, tokenPrices);
+            } catch (error) {
+                _captureBackgroundException_(error, {
+                    description: "Error thrown in callUpdateRewards background task",
+                });
+            }
+        } else {
+            retry = 1;
+        }
+        if (this.callUpdateRewardsTimeout) { clearTimeout(this.callUpdateRewardsTimeout); }
+        this.callUpdateRewardsTimeout = setTimeout(this.callUpdateRewards, retry * 1000) as unknown as NodeJS.Timer;
     }
 
     // See if the user has logged out every 5 seconds
@@ -188,6 +210,11 @@ class BackgroundTasksClass extends React.Component<Props> {
                 description: "Error in callUpdatePrices in BackgroundTasks",
             });
         });
+        this.callUpdateRewards().catch(error => {
+            _captureBackgroundException_(error, {
+                description: "Error in callUpdateRewards in BackgroundTasks",
+            });
+        });
         this.callUpdateSelectedDarknode().catch(error => {
             _captureBackgroundException_(error, {
                 description: "Error in callUpdateSelectedDarknode in BackgroundTasks",
@@ -225,6 +252,7 @@ const mapDispatchToProps = (dispatch: AppDispatch) => ({
         updateTokenPrices,
         updateOperatorDarknodes,
         updateDarknodeDetails,
+        updateCycleAndPendingRewards,
     }, dispatch),
 });
 

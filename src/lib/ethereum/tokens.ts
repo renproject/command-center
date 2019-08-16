@@ -10,12 +10,12 @@ export enum Token {
 }
 
 export enum OldToken {
-    ETH = "ETH",
-    DGX = "DGX",
-    TUSD = "TUSD",
-    REN = "REN",
-    ZRX = "ZRX",
-    OMG = "OMG",
+    ETH = "Old_ETH",
+    DGX = "Old_DGX",
+    TUSD = "TOld_USD",
+    REN = "Old_REN",
+    ZRX = "Old_ZRX",
+    OMG = "Old_OMG",
 }
 
 interface TokenDetail<T extends Token | OldToken> {

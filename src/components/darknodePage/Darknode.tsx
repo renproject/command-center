@@ -11,7 +11,7 @@ import { EncodedData, Encodings } from "../../lib/general/encodedData";
 import { ApplicationState } from "../../store/applicationState";
 import { addRegisteringDarknode, setDarknodeName } from "../../store/network/operatorActions";
 import { AppDispatch } from "../../store/rootReducer";
-import { NotFound } from "../404";
+import { NotFound } from "../common/404";
 import { _catch_ } from "../common/ErrorBoundary";
 import { StatusPage } from "./statuspage/StatusPage";
 

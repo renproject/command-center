@@ -1,1 +1,66 @@
-.overview {}
+.overview {
+    .overview--bottom {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+
+        >* {
+            flex-grow: 1;
+        }
+
+        >canvas {
+            width: 200px !important;
+            height: 200px !important;
+        }
+
+        .overview--chart {
+
+            background: linear-gradient(-180deg, #00457F -1080.14%, #002148 85.91%);
+            border-radius: 4px;
+            height: 400px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            flex: 1 1 0px;
+            min-width: 500px;
+            // width: 100%;
+            // max-width: 40%;
+
+            .overview--chart--legend--table {
+                width: 200px;
+                margin-left: 30px;
+
+                font-weight: 300;
+                font-size: 12px;
+                line-height: 27px;
+
+                letter-spacing: 1.5px;
+
+
+                >div {
+                    >:first-child {
+                        display: flex;
+                        align-items: center;
+                        font-weight: 900;
+
+                        svg {
+                            margin-right: 5px;
+                        }
+                    }
+
+                    &:not(:last-child) {
+                        border-bottom: 1px solid #ffffff20;
+                    }
+
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 10px 0;
+                }
+
+            }
+        }
+    }
+}

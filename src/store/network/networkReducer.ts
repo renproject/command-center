@@ -26,6 +26,9 @@ export const networkReducer = (
         case getType(networkActions.updatePendingTotalInEth):
             return state.set("pendingTotalInEth", action.payload);
 
+        case getType(networkActions.updatePendingRewardsInEth):
+            return state.set("pendingRewardsInEth", action.payload);
+
         case getType(networkActions.updateCycleTimeout):
             return state.set("cycleTimeout", action.payload);
 

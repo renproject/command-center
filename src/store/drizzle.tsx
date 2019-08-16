@@ -40,7 +40,7 @@ export const DrizzleContainerClass = ({ store: { renNetwork }, children }: Props
                 contracts: [renNetwork.addresses.ren.DarknodeRegistry.artifact, renNetwork.addresses.ren.DarknodePayment.artifact],
                 networkWhitelist: [renNetwork.networkID],
                 web3: {
-                    // customProvider: provider,
+                    // customProvider: new Web3.providers.WebsocketProvider(fallBackURL),
                     fallback: {
                         type: "ws",
                         url: fallBackURL,
