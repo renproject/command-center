@@ -120,7 +120,7 @@ export const Overview = connect(mapStateToProps)(({
             <div className="overview--bottom">
                 <DarknodeMap />
                 <div className="overview--chart">
-                    <div className="overview--chart--canvas">
+                    {currentSplit ? <><div className="overview--chart--canvas">
                         <Doughnut
                             height={200}
                             width={200}
@@ -138,25 +138,26 @@ export const Overview = connect(mapStateToProps)(({
                             }}
                         />
                     </div>
-                    <div className="overview--chart--legend">
-                        <div className="overview--chart--legend--table">
-                            {currentSplit ? currentSplit.toArray().map(([token, value], i) => {
-                                return <div key={token} style={{ color: colors[i] }}>
-                                    <div>
-                                        <TokenIcon token={token} /><span>{token}</span>
-                                    </div>
-                                    <div>
-                                        <CurrencyIcon currency={quoteCurrency} />
-                                        <TokenBalance
-                                            token={Token.ETH}
-                                            amount={value.multipliedBy(new BigNumber(10).pow(18))}
-                                            convertTo={quoteCurrency}
-                                        />
-                                    </div>
-                                </div>;
-                            }) : <></>}
+                        <div className="overview--chart--legend">
+                            <div className="overview--chart--legend--table">
+                                {currentSplit ? currentSplit.toArray().map(([token, value], i) => {
+                                    return <div key={token} style={{ color: colors[i] }}>
+                                        <div>
+                                            <TokenIcon token={token} /><span>{token}</span>
+                                        </div>
+                                        <div>
+                                            <CurrencyIcon currency={quoteCurrency} />
+                                            <TokenBalance
+                                                token={Token.ETH}
+                                                amount={value.multipliedBy(new BigNumber(10).pow(18))}
+                                                convertTo={quoteCurrency}
+                                            />
+                                        </div>
+                                    </div>;
+                                }) : <></>}
+                            </div>
                         </div>
-                    </div>
+                    </> : <Loading alt />}
                 </div>
             </div>
         </div>
