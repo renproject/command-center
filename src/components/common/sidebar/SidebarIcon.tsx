@@ -7,8 +7,8 @@ import { Blocky, Currency, CurrencyIcon } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import { Link } from "react-router-dom";
 
+import { darknodeIDHexToBase58 } from "../../../lib/darknode/darknodeID";
 import { Token } from "../../../lib/ethereum/tokens";
-import { darknodeIDHexToBase58 } from "../../darknodePage/Darknode";
 import { DarknodeID } from "../DarknodeID";
 import { TokenBalance } from "../TokenBalance";
 

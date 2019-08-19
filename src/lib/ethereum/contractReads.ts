@@ -6,7 +6,10 @@ import Web3 from "web3";
 import { Block } from "web3-eth";
 import { sha3, toChecksumAddress } from "web3-utils";
 
+import { getLightnode } from "../../components/overviewPage/mapContainer";
 import { DarknodesState } from "../../store/applicationState";
+import { darknodeIDHexToBase58 } from "../darknode/darknodeID";
+import { queryStat } from "../darknode/jsonrpc";
 import { safePromiseAllList, safePromiseAllMap } from "../general/promiseAll";
 import { _captureBackgroundException_, _noCapture_ } from "../react/errors";
 import { getDarknodePayment, getDarknodePaymentStore, getDarknodeRegistry } from "./contract";
@@ -731,6 +734,14 @@ export const fetchDarknodeDetails = async (
         cycleStatus = cycleStatus.set(previousCycleBN.toString(), previousStatus);
     }
 
+    // Call queryStats
+    let nodeStatistics = null;
+    try {
+        nodeStatistics = await queryStat(getLightnode(renNetwork), darknodeIDHexToBase58(darknodeID));
+    } catch (error) {
+        console.error(error);
+    }
+
     // Store details ///////////////////////////////////////////////////////////
 
     return new DarknodesState({
@@ -749,5 +760,7 @@ export const fetchDarknodeDetails = async (
         peers: 0,
         registrationStatus,
         operator,
+
+        nodeStatistics,
     });
 };

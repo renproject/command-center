@@ -72,7 +72,7 @@ export interface Block {
 
 type Blocks = Block[];
 
-interface RPCResponse<T> {
+export interface RPCResponse<T> {
     jsonrpc: "2.0";
     id: number;
     result: T;

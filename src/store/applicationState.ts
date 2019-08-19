@@ -6,6 +6,7 @@ import BigNumber from "bignumber.js";
 import { List, Map, OrderedMap } from "immutable";
 import { PromiEvent } from "web3-core";
 
+import { NodeStatistics } from "../lib/darknode/jsonrpc";
 import { Web3Browser } from "../lib/ethereum/browsers";
 import { DarknodeFeeStatus, RegistrationStatus } from "../lib/ethereum/contractReads";
 import { getReadOnlyWeb3 } from "../lib/ethereum/getWeb3";
@@ -72,7 +73,6 @@ export class NetworkState extends Record({
     secondsPerBlock: null as number | null,
 
     tokenPrices: null as TokenPrices | null,
-    quoteCurrency: Currency.USD,
 
     darknodeCount: null as BigNumber | null,
     orderCount: null as BigNumber | null,
@@ -94,9 +94,10 @@ export class NetworkState extends Record({
     pendingRewardsInEth: OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber>>(),
     cycleTimeout: new BigNumber(0),
 
-    ///////////////////////////////////////////////////////
-    // If these change, localstorage migration is needed //
-    ///////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////
+    // If these change, localstorage migration may be needed //
+    ///////////////////////////////////////////////////////////
+    quoteCurrency: Currency.USD,
     darknodeNames: Map<string, string>(),
     darknodeRegisteringList: Map<string, string>(),
     // Map from operator-address to list of darknodes.
@@ -107,6 +108,7 @@ export class NetworkState extends Record({
     public serialize(): string {
         const js = this.toJS();
         return JSON.stringify({
+            quoteCurrency: js.quoteCurrency,
             darknodeList: js.darknodeList,
             darknodeNames: js.darknodeNames,
             darknodeRegisteringList: js.darknodeRegisteringList,
@@ -119,6 +121,7 @@ export class NetworkState extends Record({
         try {
             const data = JSON.parse(str);
             return new NetworkState({
+                quoteCurrency: data.quoteCurrency,
                 darknodeList: data.darknodeList,
                 darknodeNames: data.darknodeNames,
                 darknodeRegisteringList: data.darknodeRegisteringList,
@@ -151,4 +154,6 @@ export class DarknodesState extends Record({
     peers: 0,
     registrationStatus: "" as RegistrationStatus,
     operator: "",
+
+    nodeStatistics: null as NodeStatistics | null,
 }) { }

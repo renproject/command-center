@@ -76,7 +76,7 @@ export const Hyperdrive = withRouter(({ match: { params }, history }) => {
         return () => {
             clearInterval(interval);
         };
-        // tslint:disable-next-line:react-hooks/exhaustive-dep
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const blockTr = (block: Block) => {

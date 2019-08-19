@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { darknodeIDHexToBase58 } from "../darknodePage/Darknode";
+import { darknodeIDHexToBase58 } from "../../lib/darknode/darknodeID";
 
 export const DarknodeID = (props: Props): JSX.Element => {
     const { darknodeID } = props;

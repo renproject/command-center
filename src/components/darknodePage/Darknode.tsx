@@ -4,10 +4,9 @@ import * as React from "react";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { RouteComponentProps, withRouter } from "react-router";
 import { bindActionCreators } from "redux";
-import { toChecksumAddress } from "web3-utils";
 
+import { darknodeIDBase58ToHex } from "../../lib/darknode/darknodeID";
 import { RegistrationStatus } from "../../lib/ethereum/contractReads";
-import { EncodedData, Encodings } from "../../lib/general/encodedData";
 import { ApplicationState } from "../../store/applicationState";
 import { addRegisteringDarknode, setDarknodeName } from "../../store/network/operatorActions";
 import { AppDispatch } from "../../store/rootReducer";
@@ -20,14 +19,6 @@ export enum DarknodeAction {
     Register = "register",
     Deregister = "deregister",
 }
-
-export const darknodeIDBase58ToHex = (darknodeID: string): string =>
-    toChecksumAddress(
-        (`0x${new EncodedData(darknodeID, Encodings.BASE58).toHex("").slice(4)}`).toLowerCase()
-    );
-
-export const darknodeIDHexToBase58 = (darknodeID: string): string =>
-    new EncodedData(`0x1B14${darknodeID.slice(2)}`, Encodings.HEX).toBase58();
 
 export const getDarknodeParam = (params: unknown): string | undefined => {
     const { darknodeID: darknodeID58 } = params as { darknodeID: string | undefined };
