@@ -15,10 +15,6 @@ export const NetworkBlock = (props: Props): JSX.Element => {
     return (
 
         <Block className="network-block">
-            {/* {showAdvanced ? <div className="block--basic--hide" onClick={this.toggleAdvanced}>
-                <FontAwesomeIcon icon={faTimes} pull="left" />
-            </div> : null} */}
-
             <BlockTitle>
                 <h3>
                     <FontAwesomeIcon icon={faServer} pull="left" />

@@ -234,10 +234,6 @@ class GasGraphClass extends React.Component<Props, State> {
         return (
 
             <Block className="gas-graph">
-                {/* {showAdvanced ? <div className="block--basic--hide" onClick={this.toggleAdvanced}>
-                <FontAwesomeIcon icon={faTimes} pull="left" />
-            </div> : null} */}
-
                 <BlockTitle>
                     <h3>
                         <FontAwesomeIcon icon={faFire} pull="left" />

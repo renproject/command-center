@@ -1,20 +1,23 @@
+import { Currency, CurrencyIcon } from "@renproject/react-components";
 import { BigNumber } from "bignumber.js";
-import { Component, createElement } from "react";
+import React, { Component } from "react";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators } from "redux";
 
+import { Token } from "../../../../lib/ethereum/tokens";
 import { _captureBackgroundException_ } from "../../../../lib/react/errors";
 import { showFundPopup } from "../../../../store/account/operatorPopupActions";
 import { ApplicationState } from "../../../../store/applicationState";
 import { updateDarknodeDetails } from "../../../../store/network/operatorActions";
 import { AppDispatch } from "../../../../store/rootReducer";
+import { TokenBalance } from "../../../common/TokenBalance";
 import { TopUp } from "./TopUp";
 
 export const CONFIRMATION_MESSAGE = "Transaction confirmed.";
 
 const defaultState = { // Entries must be immutable
-    value: "0.1",
-    resultMessage: "",
+    value: "",
+    resultMessage: null as React.ReactNode,
     pending: false,
     disabled: false,
     accountBalance: new BigNumber(0),
@@ -41,16 +44,16 @@ class TopUpControllerClass extends Component<Props, typeof defaultState> {
         this._isMounted = false;
     }
 
-    public render = (): JSX.Element => createElement(TopUp, {
-        darknodeID: this.props.darknodeID,
-        value: this.state.value,
-        resultMessage: this.state.resultMessage,
-        pending: this.state.pending,
-        disabled: this.state.disabled,
-        handleChange: this.handleChange,
-        handleBlur: this.handleBlur,
-        sendFunds: this.sendFunds,
-    })
+    public render = (): JSX.Element => <TopUp
+        darknodeID={this.props.darknodeID}
+        value={this.state.value}
+        resultMessage={this.state.resultMessage}
+        pending={this.state.pending}
+        disabled={this.state.disabled}
+        handleChange={this.handleChange}
+        handleBlur={this.handleBlur}
+        sendFunds={this.sendFunds}
+    />
 
     private readonly handleChange = (value: string): void => {
         this.setState({ value });
@@ -58,14 +61,14 @@ class TopUpControllerClass extends Component<Props, typeof defaultState> {
         const { accountBalance: traderBalance, resultMessage, disabled } = this.state;
         // If input is invalid, show an error.
         if (isNaN(parseFloat(value)) || parseFloat(value) <= 0) {
-            this.setState({ disabled: true });
+            this.setState({ disabled: true, resultMessage: null });
         } else if (traderBalance.isLessThan(value)) {
             this.setState({
-                resultMessage: `Insufficient balance. Maximum deposit: ${traderBalance.toFixed()}`,
+                resultMessage: <>Insufficient balance. Maximum deposit: <CurrencyIcon currency={Currency.ETH} /><TokenBalance token={Token.ETH} amount={traderBalance.times(new BigNumber(10).pow(18))} digits={3} /></>,
                 disabled: true,
             });
         } else if (resultMessage || disabled) {
-            this.setState({ resultMessage: "", disabled: false });
+            this.setState({ resultMessage: null, disabled: false });
         }
     }
 

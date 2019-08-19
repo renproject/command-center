@@ -21,6 +21,12 @@ const mapStateToProps = (state: ApplicationState) => ({
 });
 
 const colors = [
+    // Token colours
+    // "#d9a547",
+    // "#F09242",
+    // "#f4b728",
+    // "#627eea",
+    // Old colours
     "#B8DCFF",
     "#02BBFF",
     "#006FE8",

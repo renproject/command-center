@@ -120,9 +120,11 @@ class StatusPageClass extends React.Component<Props, State> {
                 </div>
                 <div className="statuspage--bottom">
                     <FeesBlock isOperator={isOperator} darknodeDetails={darknodeDetails} />
-                    <GasBlock darknodeDetails={darknodeDetails} />
-                    <div className="block statuspage--graphs">
+                    <div className="block block--column">
+                        <GasBlock darknodeDetails={darknodeDetails} />
                         <GasGraph darknodeDetails={darknodeDetails} />
+                    </div>
+                    <div className="block block--column">
                         <NetworkBlock darknodeDetails={darknodeDetails} />
                     </div>
                 </div>

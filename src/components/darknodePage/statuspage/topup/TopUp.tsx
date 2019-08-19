@@ -1,11 +1,13 @@
 import * as React from "react";
 
+import { Tabs } from "../../../common/Tabs";
+import { BlockBody } from "../block/Block";
 import { CONFIRMATION_MESSAGE } from "./TopUpController";
 
 interface Props {
     darknodeID: string;
     value: string;
-    resultMessage: string | null;
+    resultMessage: React.ReactNode;
     pending: boolean;
     disabled: boolean;
     handleChange: (value: string) => void;
@@ -21,33 +23,41 @@ export const TopUp = (props: Props) => {
     }, [handleChange]);
 
     return <div className="topup">
-        <label>
-            <div className="topup--title">Enter the amount of Ether you would like to deposit</div>
-            <p className="topup--withdraw">Funds can be withdrawn through the Darknode CLI.</p>
-            <span className="topup--input">
-                <input
-                    disabled={pending}
-                    type="number"
-                    value={value}
-                    min={0}
-                    onChange={handleChangeEvent}
-                    onBlur={handleBlur}
-                />
-                {pending ?
-                    <button disabled>Depositing...</button> :
-                    <button className="hover green" onClick={sendFunds} disabled={disabled}>
-                        <span>Deposit</span>
-                    </button>
-                }
-            </span>
-        </label>
-        {resultMessage &&
-            <p
-                className={`${resultMessage === CONFIRMATION_MESSAGE ? "topup--input--success success" :
-                    "topup--input--warning warning"}`}
-            >
-                {resultMessage}
-            </p>
-        }
+        <Tabs
+            tabs={{
+                Add: <BlockBody>
+                    <label>
+                        {resultMessage ?
+                            <p
+                                className={`${resultMessage === CONFIRMATION_MESSAGE ? "topup--input--success success" :
+                                    "topup--input--warning warning"}`}
+                            >
+                                {resultMessage}
+                            </p> :
+                            <p className="topup--title">Enter the amount of Ether you would like to deposit.</p>
+                        }
+                        <span className="topup--input">
+                            <input
+                                disabled={pending}
+                                type="number"
+                                value={value}
+                                min={0}
+                                onChange={handleChangeEvent}
+                                onBlur={handleBlur}
+                            />
+                            {pending ?
+                                <button disabled>Depositing...</button> :
+                                <button className="hover green" onClick={sendFunds} disabled={disabled}>
+                                    <span>Deposit</span>
+                                </button>
+                            }
+                        </span>
+                    </label>
+                </BlockBody>,
+                Withdraw: <BlockBody><label>
+                    <div className="topup--title">Funds can be withdrawn through the Darknode CLI.</div>
+                </label></BlockBody>,
+            }}
+        />
     </div>;
 };

@@ -1,7 +1,6 @@
 import * as React from "react";
 
 import { faStar } from "@fortawesome/free-regular-svg-icons";
-import { faChevronRight, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
     alreadyPast, CurrencyIcon, Loading, naturalTime, TokenIcon,
@@ -19,6 +18,7 @@ import {
     updateCycleAndPendingRewards, updateDarknodeDetails,
 } from "../../../../store/network/operatorActions";
 import { AppDispatch } from "../../../../store/rootReducer";
+import { Tabs } from "../../../common/Tabs";
 import { TokenBalance } from "../../../common/TokenBalance";
 import { FeesItem } from "../FeesItem";
 import { OldFees } from "../OldFees";
@@ -39,7 +39,6 @@ const mergeFees = (left: OrderedMap<Token | OldToken, BigNumber>, right: Ordered
 };
 
 const defaultState = { // Entries must be immutable
-    showAdvanced: false,
     tab: Tab.Withdrawable,
     claiming: false,
     disableClaim: false,
@@ -80,7 +79,7 @@ class FeesBlockClass extends React.Component<Props, State> {
             pendingTotalInEth,
             cycleTimeout,
         } = store;
-        const { showAdvanced, tab, disableClaim, claiming } = this.state;
+        const { tab, disableClaim, claiming } = this.state;
 
         const showWhitelist = darknodeDetails && darknodeDetails.cycleStatus.get(currentCycle) === DarknodeFeeStatus.NOT_WHITELISTED;
         const showPreviousPending = darknodeDetails && darknodeDetails.cycleStatus.get(previousCycle) === DarknodeFeeStatus.NOT_CLAIMED;
@@ -116,14 +115,8 @@ class FeesBlockClass extends React.Component<Props, State> {
 
         return (
             <Block
-                className={`fees-block ${showAdvanced ? "" : "basic"}`}
-                onClick={showAdvanced ? undefined : this.toggleAdvanced}
+                className="fees-block"
             >
-
-                {showAdvanced ? <div role="button" className="block--basic--hide" onClick={this.toggleAdvanced}>
-                    <FontAwesomeIcon icon={faTimes} pull="left" />
-                </div> : null}
-
                 <BlockTitle>
                     <h3>
                         <FontAwesomeIcon icon={faStar} pull="left" />
@@ -132,45 +125,15 @@ class FeesBlockClass extends React.Component<Props, State> {
                 </BlockTitle>
 
                 {darknodeDetails ? <BlockBody>
-                    {!showAdvanced ?
-                        <div className="block--basic">
-                            <div className="block--basic--top">
-                                <span className="fees-block--basic--sign">
-                                    <CurrencyIcon currency={quoteCurrency} />
-                                </span>
-                                <span className="fees-block--basic--value">
-                                    <TokenBalance
-                                        token={Token.ETH}
-                                        convertTo={quoteCurrency}
-                                        amount={darknodeDetails.feesEarnedTotalEth}
-                                    />
-                                </span>
-                                <span className="fees-block--basic--unit">{quoteCurrency.toUpperCase()}</span>
-                            </div>
-                            <div className="block--basic--pending">
-                                <span className="fees-block--basic--sign">
-                                    <CurrencyIcon currency={quoteCurrency} />
-                                </span>
-                                <span className="fees-block--basic--value">
-                                    <TokenBalance
-                                        token={Token.ETH}
-                                        convertTo={quoteCurrency}
-                                        amount={pendingTotal}
-                                    />
-                                </span>
-                                <span className="fees-block--basic--unit">{quoteCurrency.toUpperCase()}</span>
-                            </div>
-                            <div role="button" className="block--basic--show" onClick={this.toggleAdvanced}>
-                                <FontAwesomeIcon icon={faChevronRight} pull="left" />
-                            </div>
-                        </div> :
+                    <Tabs
+                        tabs={{
+                            Withdrawable: <></>,
+                            Pending: <></>,
+                            Total: <></>,
+                        }}
+                        onTab={this.setTab}
+                    >
                         <div className="block--advanced">
-                            <div className="block--advanced--tabs">
-                                <input onClick={this.handleInput} name="tab" className={`block--advanced--tab ${tab === "Withdrawable" ? "selected" : ""}`} type="button" value="Withdrawable" />
-                                <input onClick={this.handleInput} name="tab" className={`block--advanced--tab ${tab === "Pending" ? "selected" : ""}`} type="button" value="Pending" />
-                                <input onClick={this.handleInput} name="tab" className={`block--advanced--tab ${tab === "Total" ? "selected" : ""}`} type="button" value="Total" />
-                            </div>
-
                             <div className="block--advanced--top">
                                 <span className="fees-block--advanced--sign">
                                     <CurrencyIcon currency={quoteCurrency} />
@@ -203,13 +166,13 @@ class FeesBlockClass extends React.Component<Props, State> {
                                                         summedClaimable
                                                     }
                                                 />{" "}{quoteCurrency.toUpperCase()}{" "}now
-                                        </>}
+                                            </>}
                                         </button> :
                                         alreadyPast(cycleTimeout.toNumber() + 5) ?
                                             <button className="button--white block--advanced--claim" onClick={this.onClaimAfterCycle}>
                                                 {showWhitelist ? "Whitelist now" : <>
                                                     Claim pending rewards now
-                                            </>}
+                                                </>}
                                             </button> :
                                             <button className="button--white block--advanced--claim" disabled>
                                                 {naturalTime(cycleTimeout.toNumber() + 5, {
@@ -266,20 +229,14 @@ class FeesBlockClass extends React.Component<Props, State> {
                                 </table>
                             </div>
                         </div>
-                    }
-
+                    </Tabs>
                 </BlockBody> : null}
             </Block>
         );
     }
 
-    private readonly handleInput = (event: React.FormEvent<HTMLInputElement>): void => {
-        const element = (event.target as HTMLInputElement);
-        this.setState((current: State) => ({ ...current, [element.name]: element.value }));
-    }
-
-    private readonly toggleAdvanced = (): void => {
-        this.setState({ showAdvanced: !this.state.showAdvanced });
+    private readonly setTab = (tab: string): void => {
+        this.setState({ tab: tab as Tab });
     }
 
     private readonly onClaimAfterCycle = async () => {

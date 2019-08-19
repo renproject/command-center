@@ -23,7 +23,7 @@ html {
 }
 
 * {
-    font-family: "PingFang SC", Helvetica, Arial, sans-serif;
+    font-family: "SuisseIntl", Helvetica, Arial, sans-serif;
 }
 
 body {
@@ -335,5 +335,17 @@ label {
 .no-large {
     @media (min-width: $min-xl) {
         display: none !important;
+    }
+}
+
+.no-spin-button {
+    -moz-appearance: textfield;
+
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        margin: 0;
     }
 }
