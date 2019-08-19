@@ -110,6 +110,7 @@
             display: flex;
         }
 
+        min-height: 600px;
         color: white;
         margin-top: 16px;
 
@@ -510,5 +511,40 @@
         margin-left: 10px;
         height: 16px;
         margin-top: -2px;
+    }
+}
+
+.network-block {
+    flex-grow: 2 !important;
+}
+
+.resources--chart {
+    width: 100px;
+}
+
+.resources--block--charts {
+    display: flex;
+    padding: 0 22px;
+    justify-content: center;
+
+    >*+* {
+        margin-left: 40px;
+    }
+}
+
+.resources--chart--and--label {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+
+    >canvas {
+        height: 150px;
+        width: 150px;
+    }
+
+    >p {
+        margin-top: 8px;
+        font-weight: 900;
+        text-transform: uppercase;
     }
 }

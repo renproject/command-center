@@ -14,6 +14,7 @@ import { FeesBlock } from "./block/FeesBlock";
 import { GasBlock } from "./block/GasBlock";
 import { GasGraph } from "./block/GasGraph";
 import { NetworkBlock } from "./block/NetworkBlock";
+import { ResourcesBlock } from "./block/ResourcesBlock";
 import { Notifications } from "./Notifications";
 import { Registration } from "./Registration";
 
@@ -126,6 +127,7 @@ class StatusPageClass extends React.Component<Props, State> {
                     </div>
                     <div className="block block--column">
                         <NetworkBlock darknodeDetails={darknodeDetails} />
+                        <ResourcesBlock darknodeDetails={darknodeDetails} />
                     </div>
                 </div>
             </div>
