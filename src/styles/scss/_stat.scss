@@ -78,27 +78,30 @@
     }
 
     .stat--children--diff {
+        @extend .change-indicator;
         font-style: normal;
         font-weight: 500;
         font-size: 16.2px;
         line-height: 19px;
         margin-left: 10px;
+    }
+}
 
-        &.green {
-            color: #3CBC98;
+.change-indicator {
+    &.positive {
+        color: #3CBC98;
 
-            &::after {
-                content: "\25b2";
-            }
+        &::after {
+            content: "\25b2";
         }
+    }
 
-        &.red {
-            color: #FF4545;
+    &.negative {
+        color: #FF4545;
 
-            &::after {
-                content: "\25bc";
-                ;
-            }
+        &::after {
+            content: "\25bc";
+            ;
         }
     }
 }

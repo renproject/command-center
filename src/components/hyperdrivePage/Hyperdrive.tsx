@@ -85,7 +85,7 @@ export const Hyperdrive = withRouter(({ match: { params }, history }) => {
             history.push(`/hyperdrive/${block.height}`);
         };
         return (
-            <tr key={block.height} onClick={trOnClick}>
+            <tr key={block.height} onClick={trOnClick} className="block--row">
                 <td>{block.height}</td>
                 <td>
                     {naturalTime(block.timestamp, {

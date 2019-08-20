@@ -14,13 +14,13 @@
         color: #ffffff;
     }
 
-    tr {
+    .block--row {
         animation: highlight 1s;
     }
 
     @keyframes highlight {
         0% {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.05) !important;
         }
 
         100% {

@@ -190,9 +190,14 @@ table th {
     width: 100%;
     max-width: 1400px + $spacing * 2;
     margin: 0 auto;
-    padding: 0 $spacing;
+    padding: 0 $spacing+10px;
 
-    @media (max-width: $max-sm) {
+    @media (max-width: $max-xl) {
+        padding-right: 10px;
+        padding-left: $spacing + 10px;
+    }
+
+    @media (max-width: $max-md) {
         padding: 0 10px;
     }
 }
