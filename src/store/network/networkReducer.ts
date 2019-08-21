@@ -32,6 +32,9 @@ export const networkReducer = (
         case getType(networkActions.updateCycleTimeout):
             return state.set("cycleTimeout", action.payload);
 
+        case getType(networkActions.updateCurrentShareCount):
+            return state.set("currentShareCount", action.payload);
+
         case getType(networkActions.storeTokenPrices):
             return state.set("tokenPrices", action.payload);
 

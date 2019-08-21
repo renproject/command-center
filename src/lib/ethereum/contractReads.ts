@@ -462,16 +462,13 @@ export const fetchCycleAndPendingRewards = async (
     }
 
     const currentShareCountBN = await darknodePayment.methods.shareCount().call();
+    const currentShareCount = currentShareCountBN === null ? null : new BigNumber(currentShareCountBN.toString());
     const current = await safePromiseAllMap(
         NewTokenDetails.map(async (_tokenDetails, token) => {
-            if (currentShareCountBN === null) {
+            if (currentShareCount === null || currentShareCount.isZero()) {
                 return new BigNumber(0);
             }
-            const currentShareCount = new BigNumber(currentShareCountBN.toString());
             try {
-                if (currentShareCount.isZero()) {
-                    return new BigNumber(0);
-                }
                 const address = token === Token.ETH ? "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" : renNetwork.addresses.tokens[token].address;
                 const currentCycleRewardPool = await darknodePayment.methods.currentCycleRewardPool(address).call();
                 if (currentCycleRewardPool === null) {
@@ -517,6 +514,7 @@ export const fetchCycleAndPendingRewards = async (
         cycleTimeout,
         pendingTotalInEth,
         pendingRewardsInEth,
+        currentShareCount,
     };
 };
 

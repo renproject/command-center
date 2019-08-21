@@ -93,6 +93,7 @@ export class NetworkState extends Record({
     pendingTotalInEth: OrderedMap<string /* cycle */, BigNumber>(),
     pendingRewardsInEth: OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber>>(),
     cycleTimeout: new BigNumber(0),
+    currentShareCount: new BigNumber(1),
 
     ///////////////////////////////////////////////////////////
     // If these change, localstorage migration may be needed //

@@ -24,7 +24,7 @@ import { AccountDropdown } from "./AccountDropdown";
 //     );
 
 const networkOptions = new Map()
-    .set(RenNetwork.Mainnet, <>Mainnet</>)
+    // .set(RenNetwork.Mainnet, <>Mainnet</>)
     .set(RenNetwork.Testnet, <>Testnet</>)
     .set(RenNetwork.Devnet, <>Devnet</>)
     .set(RenNetwork.Localnet, <>Localnet</>)
@@ -131,6 +131,7 @@ class HeaderClass extends React.Component<Props> {
             // history.push("/loading");
             // Reload to clear all stores and cancel timeouts
             // (e.g. deposit/withdrawal confirmations)
+            console.log(`Reloading page (${currentLocation})`);
             window.location.replace(currentLocation);
         }, 100);
     }

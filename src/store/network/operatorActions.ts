@@ -14,8 +14,8 @@ import { Token, TokenPrices } from "../../lib/ethereum/tokens";
 import { DarknodesState } from "../applicationState";
 import { AppDispatch } from "../rootReducer";
 import {
-    updateCurrentCycle, updateCycleTimeout, updatePendingRewards, updatePendingRewardsInEth,
-    updatePendingTotalInEth, updatePreviousCycle,
+    updateCurrentCycle, updateCurrentShareCount, updateCycleTimeout, updatePendingRewards,
+    updatePendingRewardsInEth, updatePendingTotalInEth, updatePreviousCycle,
 } from "./networkActions";
 
 export const addRegisteringDarknode = createStandardAction("ADD_REGISTERING_DARKNODE")<{
@@ -89,6 +89,7 @@ export const updateCycleAndPendingRewards = (
         cycleTimeout,
         pendingTotalInEth,
         pendingRewardsInEth,
+        currentShareCount,
     } = await fetchCycleAndPendingRewards(web3, renNetwork, tokenPrices);
 
     if (pendingRewardsInEth !== null) {
@@ -106,6 +107,9 @@ export const updateCycleAndPendingRewards = (
     dispatch(updatePendingRewards(pendingRewards));
     if (cycleTimeout !== null) {
         dispatch(updateCycleTimeout(cycleTimeout));
+    }
+    if (currentShareCount !== null) {
+        dispatch(updateCurrentShareCount(currentShareCount));
     }
 };
 

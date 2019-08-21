@@ -12,6 +12,7 @@ const mapStateToProps = (state: ApplicationState) => ({
     previousCycle: state.network.previousCycle,
     quoteCurrency: state.network.quoteCurrency,
     pendingRewardsInEth: state.network.pendingRewardsInEth,
+    currentShareCount: state.network.currentShareCount,
 });
 
 const colors = [
@@ -29,12 +30,12 @@ const colors = [
 ];
 
 export const RewardChart = connect(mapStateToProps)(({
-    previousCycle, quoteCurrency, pendingRewardsInEth
+    previousCycle, quoteCurrency, pendingRewardsInEth, currentShareCount,
 }: ReturnType<typeof mapStateToProps>) => {
     const currentSplit = pendingRewardsInEth.get(previousCycle);
 
     const keys = React.useMemo(() => currentSplit ? currentSplit.keySeq().toArray() : [], [currentSplit]);
-    const values = React.useMemo(() => currentSplit ? currentSplit.valueSeq().map(bn => bn.toNumber()).toArray() : [], [currentSplit]);
+    const values = React.useMemo(() => currentSplit ? currentSplit.valueSeq().map(bn => bn.multipliedBy(currentShareCount).toNumber()).toArray() : [], [currentSplit]);
     const empty = React.useMemo(() => !!currentSplit && values.reduce((sum, value) => sum + value, 0) === 0, [currentSplit, values]);
 
     return <div className="overview--chart">
@@ -67,7 +68,7 @@ export const RewardChart = connect(mapStateToProps)(({
                                 <CurrencyIcon currency={quoteCurrency} />
                                 <TokenBalance
                                     token={Token.ETH}
-                                    amount={value.multipliedBy(new BigNumber(10).pow(18))}
+                                    amount={value.multipliedBy(currentShareCount).multipliedBy(new BigNumber(10).pow(18))}
                                     convertTo={quoteCurrency}
                                 />
                             </div>

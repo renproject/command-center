@@ -17,10 +17,11 @@ const mapStateToProps = (state: ApplicationState) => ({
     previousCycle: state.network.previousCycle,
     pendingTotalInEth: state.network.pendingTotalInEth,
     quoteCurrency: state.network.quoteCurrency,
+    currentShareCount: state.network.currentShareCount,
 });
 
 export const Overview = connect(mapStateToProps)(({
-    currentCycle, previousCycle, pendingTotalInEth, quoteCurrency
+    currentCycle, previousCycle, pendingTotalInEth, quoteCurrency, currentShareCount
 }: ReturnType<typeof mapStateToProps>) => {
     const container = MapContainer.useContainer();
     const { useCacheCall } = drizzleReactHooks.useDrizzle();
@@ -29,6 +30,8 @@ export const Overview = connect(mapStateToProps)(({
     // const shareCount = useCacheCall("DarknodePayment", "shareCount") || 0;
     const current = pendingTotalInEth.get(currentCycle, undefined);
     const previous = pendingTotalInEth.get(previousCycle, undefined);
+    const currentSummed = current ? current.times(currentShareCount) : undefined;
+    const previousSummed = previous ? previous.times(currentShareCount) : undefined;
 
     return (
         <div className="overview container">
@@ -48,22 +51,22 @@ export const Overview = connect(mapStateToProps)(({
                         <Stat message="% Ren Registered" big>{100 * numDarknodes / 10000}%</Stat>
                     </Stats>
                 </Stat>
-                <Stat message="Darknode rewards per Darknode">
+                <Stat message="Total network rewards">
                     <Stats>
                         {/* <Stat message="All time total" big>$?</Stat> */}
                         <Stat message="Current cycle" big>
-                            {current ? <>
+                            {currentSummed ? <>
                                 <CurrencyIcon currency={quoteCurrency} />
                                 <TokenBalance
                                     token={Token.ETH}
                                     convertTo={quoteCurrency}
-                                    amount={current}
+                                    amount={currentSummed}
                                 /></> : <Loading alt />}</Stat>
                         <Stat message="Last cycle" highlight big>
-                            {previous ? <><CurrencyIcon currency={quoteCurrency} /><TokenBalance
+                            {previousSummed ? <><CurrencyIcon currency={quoteCurrency} /><TokenBalance
                                 token={Token.ETH}
                                 convertTo={quoteCurrency}
-                                amount={previous}
+                                amount={previousSummed}
                             /></> : <Loading alt />}
                         </Stat>
                     </Stats>
