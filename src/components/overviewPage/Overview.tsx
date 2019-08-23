@@ -1,5 +1,4 @@
 import { CurrencyIcon, Loading } from "@renproject/react-components";
-import { drizzleReactHooks } from "drizzle-react";
 import React from "react";
 import { connect } from "react-redux";
 
@@ -24,10 +23,8 @@ export const Overview = connect(mapStateToProps)(({
     currentCycle, previousCycle, pendingTotalInEth, quoteCurrency, currentShareCount
 }: ReturnType<typeof mapStateToProps>) => {
     const container = MapContainer.useContainer();
-    const { useCacheCall } = drizzleReactHooks.useDrizzle();
-    const numDarknodesNextEpoch = useCacheCall("DarknodeRegistry", "numDarknodesNextEpoch") || 0;
-    const numDarknodes = useCacheCall("DarknodeRegistry", "numDarknodes") || 0;
-    // const shareCount = useCacheCall("DarknodePayment", "shareCount") || 0;
+    const numDarknodesNextEpoch = 0;
+    const numDarknodes = 0;
     const current = pendingTotalInEth.get(currentCycle, undefined);
     const previous = pendingTotalInEth.get(previousCycle, undefined);
     const currentSummed = current ? current.times(currentShareCount) : undefined;

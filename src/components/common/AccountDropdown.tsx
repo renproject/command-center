@@ -65,7 +65,7 @@ class AccountDropdownClass extends React.Component<Props, typeof defaultState> {
             className="header--group header--group--account"
             ref={this.setRef}
         >
-            <div className="header--account header--selected header--selected" role="menuitem" onClick={this.toggle}>
+            <div className="header--account header--selected header--selected" role="menuitem" onClick={address ? this.toggle : this.handleLogin}>
                 {address && <Blocky address={address} />}
                 <div
                     className={`header--account--right ${address ?
@@ -134,12 +134,14 @@ class AccountDropdownClass extends React.Component<Props, typeof defaultState> {
 
     private readonly handleLogin = async (): Promise<void> => {
         const { address, renNetwork } = this.props.store;
+        this.setState({ shown: false });
         if (!address) {
             await this.props.actions.login(renNetwork, { redirect: false, showPopup: true, immediatePopup: true });
         }
     }
 
     private readonly handleLogout = async (): Promise<void> => {
+        this.setState({ shown: false });
         this.props.actions.logout();
     }
 

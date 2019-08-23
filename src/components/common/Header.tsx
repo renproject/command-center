@@ -87,7 +87,7 @@ class HeaderClass extends React.Component<Props> {
         />;
 
         return (
-            <div className="header">
+            <div className={["header"].join(" ")}>
                 {address ? <div role="button" className="header--mobile-menu--button">
                     <button onClick={this.props.actions.showMobileMenu}>
                         <FontAwesomeIcon icon={faBars} />

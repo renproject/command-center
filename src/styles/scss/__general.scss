@@ -18,8 +18,9 @@ html {
         overflow: hidden;
     }
 
-    min-height: 100vh;
+    min-height: 100%;
     background: linear-gradient(180deg, #00162f 0%, #001b39 100%);
+    background-attachment: fixed;
 }
 
 * {
@@ -184,9 +185,9 @@ table th {
     text-align: right;
 }
 
-.container {
-    $spacing: 90px;
+$spacing: 90px;
 
+.container {
     width: 100%;
     max-width: 1400px + $spacing * 2;
     margin: 0 auto;
@@ -195,6 +196,18 @@ table th {
     @media (max-width: $max-xl) {
         padding-right: 10px;
         padding-left: $spacing + 10px;
+    }
+
+    @media (max-width: $max-md) {
+        padding: 0 10px;
+    }
+}
+
+.without-account .container {
+    padding: 0 $spacing+10px;
+
+    @media (max-width: $max-xl) {
+        padding-right: 0 $spacing+10px;
     }
 
     @media (max-width: $max-md) {

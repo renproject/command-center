@@ -2,7 +2,6 @@
     // display: flex;
 
     h2 {
-        font-family: Ubuntu;
         font-style: normal;
         font-weight: bold;
         font-size: 14px;
@@ -79,7 +78,7 @@
             cursor: pointer;
             height: 40px;
             border: none;
-            background-color: #00000000 !important;
+            background-color: #00000000 !important; // transparent
 
             &:hover:nth-child(odd)>td,
             &:hover>td {
@@ -87,7 +86,7 @@
             }
 
             &:nth-child(odd)>td {
-                background: $blue-darker;
+                background: rgba(100, 100, 255, 0.025);
             }
         }
     }
@@ -122,18 +121,18 @@
         @extend .no-scrollbar;
         display: flex;
         overflow-y: scroll;
+    }
 
-        &>div {
-            border-radius: 10px;
-            border: 1px solid white;
-            padding: 3px 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+    .block--tx {
+        border-radius: 10px;
+        border: 1px solid white;
+        padding: 3px 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
 
-            &:not(:last-child) {
-                margin-right: 5px;
-            }
+        &:not(:last-child) {
+            margin-right: 5px;
         }
 
         .token--icon {
@@ -153,4 +152,35 @@
     .block--txs--none {
         opacity: 0.3;
     }
+
+    .selected-block {
+        background: #043D7D;
+        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
+        border-radius: 6px;
+        padding: 10px 20px;
+        margin-right: 0 !important;
+        margin-bottom: 30px;
+        position: relative;
+
+        .no-transactions {
+            margin-top: 20px;
+        }
+    }
+}
+
+.popup--x {
+    position: absolute;
+    right: ((40px - 12px) / 2);
+    top: ((40px - 12px) / 2);
+    height: 12px;
+    width: 12px;
+    margin-top: 0;
+    background: url('../../styles/images/exit-black.svg');
+    background-size: 100%;
+    cursor: pointer;
+}
+
+.popup--x.popup--x--white {
+    margin-top: 0px;
+    background: url('../../styles/images/exit.svg');
 }

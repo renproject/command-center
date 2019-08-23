@@ -16,6 +16,10 @@
     height: 48px !important;
 }
 
+.without-account .header {
+    padding-left: 0 !important;
+}
+
 .header .container>a {
     align-self: center;
     text-decoration: none;

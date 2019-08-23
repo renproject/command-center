@@ -1,4 +1,4 @@
-import * as qs from "query-string";
+// import * as qs from "query-string";
 import * as React from "react";
 
 import { List } from "immutable";
@@ -28,31 +28,33 @@ class BackgroundTasksClass extends React.Component<Props> {
     private callUpdateSelectedDarknodeTimeout: NodeJS.Timer | undefined;
 
     public componentDidMount = async (): Promise<void> => {
-        const { match: { params }, store: { renNetwork } } = this.props;
+        // const { match: { params }, store: { renNetwork } } = this.props;
 
-        const darknodeID = getDarknodeParam(params);
+        // const darknodeID = getDarknodeParam(params);
 
-        const queryParams = qs.parse(this.props.location.search);
-        const action = typeof queryParams.action === "string" ? queryParams.action : undefined;
+        // const queryParams = qs.parse(this.props.location.search);
+        // const action = typeof queryParams.action === "string" ? queryParams.action : undefined;
 
         // Sometimes, logging in seems to freeze, to we start loops that don't
         // rely on being logged in before attempting to log in
         this.setupLoops();
 
-        try {
-            await this.props.actions.login(
-                renNetwork,
-                {
-                    redirect: false,
-                    showPopup: darknodeID === undefined || action !== undefined,
-                    immediatePopup: false,
-                }
-            );
-        } catch (error) {
-            _captureBackgroundException_(error, {
-                description: "Error logging in on load",
-            });
-        }
+        // TODO: Detect if web3 is already connected
+
+        // try {
+        //     await this.props.actions.login(
+        //         renNetwork,
+        //         {
+        //             redirect: false,
+        //             showPopup: darknodeID === undefined || action !== undefined,
+        //             immediatePopup: false,
+        //         }
+        //     );
+        // } catch (error) {
+        //     _captureBackgroundException_(error, {
+        //         description: "Error logging in on load",
+        //     });
+        // }
 
         this.setupLoopsWithAccount();
     }

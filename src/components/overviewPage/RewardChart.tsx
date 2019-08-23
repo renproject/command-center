@@ -62,7 +62,7 @@ export const RewardChart = connect(mapStateToProps)(({
                     {currentSplit ? currentSplit.toArray().map(([token, value], i) => {
                         return <div key={token} style={{ color: colors[i] }}>
                             <div>
-                                <TokenIcon token={token} /><span>{token}</span>
+                                <TokenIcon token={token} white={true} /><span>{token}</span>
                             </div>
                             <div>
                                 <CurrencyIcon currency={quoteCurrency} />

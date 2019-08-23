@@ -64,7 +64,6 @@ class FeesBlockClass extends React.Component<Props, State> {
         // If the darknode's cycles have been updated
         if (this.state.disableClaim && nextProps.darknodeDetails && this.props.darknodeDetails &&
             nextProps.darknodeDetails.cycleStatus.keySeq().first() !== this.props.darknodeDetails.cycleStatus.keySeq().first()) {
-            // console.log(`Status for ${nextProps.store.previousCycle}: ${nextProps.darknodeDetails.cycleStatus.get(nextProps.store.previousCycle)}`);
             this.setState({ disableClaim: false });
         }
     }

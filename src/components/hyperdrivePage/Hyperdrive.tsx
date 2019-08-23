@@ -29,17 +29,17 @@ let interval: NodeJS.Timeout;
 export const renderTransaction = (tx: Tx): React.ReactNode => {
     // BTC
     if (tx.to === "BTC0Btc2Eth") {
-        return <>Shift {tx.args[1].value / 10 ** 8} <TokenIcon token={Token.BTC} /> to <TokenIcon token={Token.ETH} /></>;
+        return <>Shift {tx.args[1].value / 10 ** 8} <TokenIcon white={true} token={Token.BTC} /> to <TokenIcon white={true} token={Token.ETH} /></>;
     }
     if (tx.to === "BTC0Eth2Btc") {
-        return <>Shift {tx.args[2].value / 10 ** 8} <TokenIcon token={Token.BTC} /> from <TokenIcon token={Token.ETH} /></>;
+        return <>Shift {tx.args[2].value / 10 ** 8} <TokenIcon white={true} token={Token.BTC} /> from <TokenIcon white={true} token={Token.ETH} /></>;
     }
     // ZEC
     if (tx.to === "ZEC0Zec2Eth") {
-        return <>Shift {tx.args[1].value / 10 ** 8} <TokenIcon token={Token.ZEC} /> to <TokenIcon token={Token.ETH} /></>;
+        return <>Shift {tx.args[1].value / 10 ** 8} <TokenIcon white={true} token={Token.ZEC} /> to <TokenIcon white={true} token={Token.ETH} /></>;
     }
     if (tx.to === "ZEC0Eth2Zec") {
-        return <>Shift {tx.args[2].value / 10 ** 8} <TokenIcon token={Token.ZEC} /> from <TokenIcon token={Token.ETH} /></>;
+        return <>Shift {tx.args[2].value / 10 ** 8} <TokenIcon white={true} token={Token.ZEC} /> from <TokenIcon white={true} token={Token.ETH} /></>;
     }
     return <>
         {tx.to} {tx.args.length} {tx.out ? tx.out.length : 0}
@@ -79,11 +79,17 @@ export const Hyperdrive = withRouter(({ match: { params }, history }) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    const onClick = useCallback((block: Block) => {
+        container.getBlock(block.height).catch(console.error);
+        history.push(`/hyperdrive/${block.height}`);
+    }, [container, history]);
+
+    const onClose = useCallback(() => {
+        history.push(`/hyperdrive/`);
+    }, [container, history]);
+
     const blockTr = (block: Block) => {
-        const trOnClick = () => {
-            container.getBlock(block.height).catch(console.error);
-            history.push(`/hyperdrive/${block.height}`);
-        };
+        const trOnClick = () => { onClick(block); };
         return (
             <tr key={block.height} onClick={trOnClick} className="block--row">
                 <td>{block.height}</td>
@@ -141,8 +147,10 @@ export const Hyperdrive = withRouter(({ match: { params }, history }) => {
                     ZEC
                 </Stat>
             </Stats>
-            {blockNumber ? (
-                <Stat message={`Block ${blockNumber}`}>
+            {blockNumber ? <>
+                <div className="selected-block">
+                    <div role="button" className={`popup--x popup--x--white`} onClick={onClose} />
+                    <h3>Block {blockNumber}</h3>
                     <table>
                         <thead>
                             <tr>
@@ -155,39 +163,45 @@ export const Hyperdrive = withRouter(({ match: { params }, history }) => {
                             <CSSTransitionGroup transitionEnterTimeout={1000} transitionLeaveTimeout={1000} transitionName="fade" component="tbody">
                                 {blockTr(container.currentBlock)}
                             </CSSTransitionGroup> :
-                            <tbody><tr><td colSpan={3}><Loading /></td></tr></tbody>
+                            <tbody><tr><td colSpan={3}><Loading alt={true} /></td></tr></tbody>
                         }
                     </table>
-                    {/* <table>
+                    <h4>Transactions</h4>
+                    <table>
                         <thead>
                             <tr>
+                                <th>TX</th>
                                 <th>Hash</th>
-                                <th>To</th>
+                                <th>Contract</th>
                                 <th>Args</th>
-                                <th>Out</th>
+                                <th>Outputs</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {container.currentBlock ? (
-                                container.currentBlock.txs.map(tx => {
-                                    return (
-                                        <tr key={tx.hash}>
-                                            <td>{tx.hash}</td>
-                                            <td>{tx.to}</td>
-                                            <td>{tx.args.length}</td>
-                                            <td>{tx.out ? tx.out.length : 0}</td>
-                                        </tr>
-                                    );
-                                })
-                            ) : (
-                                    <></>
-                                )}
+                            {container.currentBlock && container.currentBlockNumber === blockNumber ?
+                                container.currentBlock.txs && container.currentBlock.txs.length > 0 ?
+                                    container.currentBlock.txs.map(tx => {
+                                        return (
+                                            <tr key={tx.hash}>
+                                                <td className="block--tx" key={tx.hash}>
+                                                    {renderTransaction(tx)}
+                                                </td>
+                                                <td className="monospace">{tx.hash}</td>
+                                                <td className="monospace">{tx.to}</td>
+                                                <td>{tx.args.length}</td>
+                                                <td>{tx.out ? tx.out.length : 0}</td>
+                                            </tr>
+                                        );
+                                    }) :
+                                    <>
+                                        <tr><td colSpan={5}>No transactions</td></tr>
+                                    </> :
+                                <tr><td colSpan={5}><Loading alt={true} /></td></tr>
+                            }
                         </tbody>
-                    </table> */}
-                    <br />
-                    <br />
-                </Stat>
-            ) : (
+                    </table>
+                </div>
+            </> : (
                     <></>
                 )}
             <Stat message="Latest blocks">
@@ -203,7 +217,7 @@ export const Hyperdrive = withRouter(({ match: { params }, history }) => {
                         <CSSTransitionGroup transitionEnterTimeout={1000} transitionLeaveTimeout={1000} transitionName="fade" component="tbody">
                             {container.blocks.map(blockTr)}
                         </CSSTransitionGroup> :
-                        <tbody><tr><td colSpan={3}><Loading /></td></tr></tbody>
+                        <tbody><tr><td colSpan={3}><Loading alt={true} /></td></tr></tbody>
                     }
                 </table>
             </Stat>

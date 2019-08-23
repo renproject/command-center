@@ -1,7 +1,6 @@
 import * as React from "react";
 
-import { Loading, ScrollToTop } from "@renproject/react-components";
-import { drizzleReactHooks } from "drizzle-react";
+import { ScrollToTop } from "@renproject/react-components";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { Route, RouteComponentProps, Switch, withRouter } from "react-router-dom";
 import { bindActionCreators } from "redux";
@@ -19,7 +18,7 @@ import { LoggingIn } from "./common/LoggingIn";
 import { PopupController } from "./common/popups/PopupController";
 import { Sidebar } from "./common/sidebar/Sidebar";
 import { Darknode, getDarknodeParam } from "./darknodePage/Darknode";
-import { Hyperdrive, useForceUpdate } from "./hyperdrivePage/Hyperdrive";
+import { Hyperdrive } from "./hyperdrivePage/Hyperdrive";
 import { Overview } from "./overviewPage/Overview";
 
 const ScrollToTopWithRouter = withRouter(ScrollToTop);
@@ -35,19 +34,6 @@ const AppClass = ({ match: { params }, store: { address, renNetwork } }: Props) 
         [address],
     );
 
-    const forceUpdate = useForceUpdate();
-
-    const { drizzle } = drizzleReactHooks.useDrizzle();
-    const drizzleState = drizzle.store.getState();
-
-    // React.useEffect(() => {}, [drizzleState.drizzleStatus.initialized])
-
-    if (!drizzleState.drizzleStatus.initialized) {
-        // tslint:disable-next-line: no-string-based-set-timeout
-        setTimeout(forceUpdate, 0.1 * 1000);
-        return <Loading className="not-found" alt />;
-    }
-
     const darknodeID = getDarknodeParam(params);
     const showNetworkBanner = renNetwork.name !== DEFAULT_REN_NETWORK;
 
@@ -59,7 +45,7 @@ const AppClass = ({ match: { params }, store: { address, renNetwork } }: Props) 
             * (e.g. if in
             * the middle of a transaction, etc.)
             */}
-        <div className={showNetworkBanner ? `with-banner with-banner--${renNetwork.chain}` : ""}>
+        <div className={[address ? "with-account" : "without-account", showNetworkBanner ? `with-banner with-banner--${renNetwork.chain}` : ""].join(" ")}>
             {showNetworkBanner ?
                 <div className="network--banner">Using <span className="banner--bold">{renNetwork.label}</span> RenVM network, <span className="banner--bold">{renNetwork.chainLabel}</span> Ethereum network</div> :
                 <></>
