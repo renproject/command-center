@@ -8,14 +8,14 @@ import { PromiEvent } from "web3-core";
 
 import {
     calculateSecondsPerBlock, fetchCycleAndPendingRewards, fetchDarknodeBalanceHistory,
-    fetchDarknodeDetails, getOperatorDarknodes, HistoryPeriod,
+    fetchDarknodeDetails, getDarknodeCounts, getOperatorDarknodes, HistoryPeriod,
 } from "../../lib/ethereum/contractReads";
 import { Token, TokenPrices } from "../../lib/ethereum/tokens";
 import { DarknodesState } from "../applicationState";
 import { AppDispatch } from "../rootReducer";
 import {
-    updateCurrentCycle, updateCurrentShareCount, updateCycleTimeout, updatePendingRewards,
-    updatePendingRewardsInEth, updatePendingTotalInEth, updatePreviousCycle,
+    updateCurrentCycle, updateCurrentShareCount, updateCycleTimeout, updateDarknodeCounts,
+    updatePendingRewards, updatePendingRewardsInEth, updatePendingTotalInEth, updatePreviousCycle,
 } from "./networkActions";
 
 export const addRegisteringDarknode = createStandardAction("ADD_REGISTERING_DARKNODE")<{
@@ -82,6 +82,16 @@ export const updateCycleAndPendingRewards = (
     renNetwork: RenNetworkDetails,
     tokenPrices: TokenPrices | null,
 ) => async (dispatch: AppDispatch) => {
+    const getDarknodeCountsPromise = getDarknodeCounts(web3, renNetwork);
+    const fetchCycleAndPendingRewardsPromise = fetchCycleAndPendingRewards(web3, renNetwork, tokenPrices);
+
+    try {
+        const darknodeCounts = await getDarknodeCountsPromise;
+        dispatch(updateDarknodeCounts(darknodeCounts));
+    } catch (error) {
+        // Ignore error
+    }
+
     const {
         pendingRewards,
         currentCycle,
@@ -90,7 +100,7 @@ export const updateCycleAndPendingRewards = (
         pendingTotalInEth,
         pendingRewardsInEth,
         currentShareCount,
-    } = await fetchCycleAndPendingRewards(web3, renNetwork, tokenPrices);
+    } = await fetchCycleAndPendingRewardsPromise;
 
     if (pendingRewardsInEth !== null) {
         dispatch(updatePendingRewardsInEth(pendingRewardsInEth));

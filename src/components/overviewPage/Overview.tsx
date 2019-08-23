@@ -17,14 +17,17 @@ const mapStateToProps = (state: ApplicationState) => ({
     pendingTotalInEth: state.network.pendingTotalInEth,
     quoteCurrency: state.network.quoteCurrency,
     currentShareCount: state.network.currentShareCount,
+    currentDarknodeCount: state.network.currentDarknodeCount,
+    previousDarknodeCount: state.network.previousDarknodeCount,
+    nextDarknodeCount: state.network.nextDarknodeCount,
 });
 
 export const Overview = connect(mapStateToProps)(({
-    currentCycle, previousCycle, pendingTotalInEth, quoteCurrency, currentShareCount
+    currentCycle, previousCycle, pendingTotalInEth, quoteCurrency,
+    currentShareCount, currentDarknodeCount, previousDarknodeCount,
+    nextDarknodeCount,
 }: ReturnType<typeof mapStateToProps>) => {
     const container = MapContainer.useContainer();
-    const numDarknodesNextEpoch = 0;
-    const numDarknodes = 0;
     const current = pendingTotalInEth.get(currentCycle, undefined);
     const previous = pendingTotalInEth.get(previousCycle, undefined);
     const currentSummed = current ? current.times(currentShareCount) : undefined;
@@ -35,17 +38,22 @@ export const Overview = connect(mapStateToProps)(({
             <Stats>
                 <Stat message="Darknodes online">
                     <Stats>
-                        <Stat message="Registered" big>{numDarknodes}</Stat>
+                        <Stat message="Registered" big>{currentDarknodeCount === null ? <Loading alt={true} /> : <>
+                            {currentDarknodeCount}
+                            {previousDarknodeCount !== null ? <Change className="stat--children--diff" change={currentDarknodeCount - previousDarknodeCount} /> : <></>}
+                        </>}</Stat>
                         <Stat message="Online" big>
                             {container.darknodeCount === null ? <Loading alt /> : <>
                                 {container.darknodeCount}
-                                <Change className="stat--children--diff" change={container.darknodeCount - numDarknodes} />
+
                             </>}
                         </Stat>
-                        <Stat message="Change next epoch" big>
-                            <Change change={numDarknodesNextEpoch - numDarknodes} />
-                        </Stat>
-                        <Stat message="% Ren Registered" big>{100 * numDarknodes / 10000}%</Stat>
+                        <Stat message="Change next epoch" big>{nextDarknodeCount === null || currentDarknodeCount === null ? <Loading alt={true} /> : <>
+                            <Change change={nextDarknodeCount - currentDarknodeCount} />
+                        </>}</Stat>
+                        <Stat message="% Ren Registered" big>{currentDarknodeCount === null ? <Loading alt={true} /> : <>
+                            {100 * currentDarknodeCount / 10000}%
+                        </>}</Stat>
                     </Stats>
                 </Stat>
                 <Stat message="Total network rewards">

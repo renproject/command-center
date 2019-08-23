@@ -4,6 +4,7 @@ import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
 import { createStandardAction } from "typesafe-actions";
 
+import { DarknodeCounts } from "../../lib/ethereum/contractReads";
 import { getPrices, Token, TokenPrices } from "../../lib/ethereum/tokens";
 import { AppDispatch } from "../rootReducer";
 
@@ -17,6 +18,7 @@ export const updatePendingTotalInEth = createStandardAction("UPDATE_PENDING_TOTA
 export const updatePendingRewardsInEth = createStandardAction("UPDATE_PENDING_REWARDS_IN_ETH")<OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber>>>();
 export const updateCycleTimeout = createStandardAction("UPDATE_CYCLE_TIMEOUT")<BigNumber>();
 export const updateCurrentShareCount = createStandardAction("UPDATE_CURRENT_SHARE_COUNT")<BigNumber>();
+export const updateDarknodeCounts = createStandardAction("UPDATE_DARKNODE_COUNTS")<DarknodeCounts>();
 
 export const updateTokenPrices = () => async (dispatch: AppDispatch) => {
     const tokenPrices = await getPrices();

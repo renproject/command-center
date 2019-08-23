@@ -61,13 +61,25 @@ const getDarknodeOperator = async (web3: Web3, renNetwork: RenNetworkDetails, da
     return owner;
 };
 
-export const getDarknodeCount = async (web3: Web3, renNetwork: RenNetworkDetails): Promise<BigNumber> => {
+export interface DarknodeCounts {
+    currentDarknodeCount: number;
+    previousDarknodeCount: number;
+    nextDarknodeCount: number;
+}
+
+export const getDarknodeCounts = async (web3: Web3, renNetwork: RenNetworkDetails): Promise<DarknodeCounts> => {
     const darknodeRegistry = getDarknodeRegistry(web3, renNetwork);
-    const darknodeCount = await darknodeRegistry.methods.numDarknodes().call();
-    if (darknodeCount === null) {
-        throw _noCapture_(new Error("Unable to retrieve darknode count"));
-    }
-    return new BigNumber(darknodeCount.toString());
+    const currentEpoch = await darknodeRegistry.methods.numDarknodes().call();
+    if (currentEpoch === null) { throw _noCapture_(new Error("Unable to retrieve darknode count")); }
+    const previousEpoch = await darknodeRegistry.methods.numDarknodesPreviousEpoch().call();
+    if (previousEpoch === null) { throw _noCapture_(new Error("Unable to retrieve darknode count")); }
+    const nextEpoch = await darknodeRegistry.methods.numDarknodesNextEpoch().call();
+    if (nextEpoch === null) { throw _noCapture_(new Error("Unable to retrieve darknode count")); }
+    return {
+        currentDarknodeCount: new BigNumber(currentEpoch.toString()).toNumber(),
+        previousDarknodeCount: new BigNumber(previousEpoch.toString()).toNumber(),
+        nextDarknodeCount: new BigNumber(nextEpoch.toString()).toNumber(),
+    };
 };
 
 export enum RegistrationStatus {

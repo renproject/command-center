@@ -95,6 +95,10 @@ export class NetworkState extends Record({
     cycleTimeout: new BigNumber(0),
     currentShareCount: new BigNumber(1),
 
+    currentDarknodeCount: null as number | null,
+    previousDarknodeCount: null as number | null,
+    nextDarknodeCount: null as number | null,
+
     ///////////////////////////////////////////////////////////
     // If these change, localstorage migration may be needed //
     ///////////////////////////////////////////////////////////

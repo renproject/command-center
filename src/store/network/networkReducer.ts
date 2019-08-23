@@ -35,6 +35,12 @@ export const networkReducer = (
         case getType(networkActions.updateCurrentShareCount):
             return state.set("currentShareCount", action.payload);
 
+        case getType(networkActions.updateDarknodeCounts):
+            return state
+                .set("currentDarknodeCount", action.payload.currentDarknodeCount)
+                .set("previousDarknodeCount", action.payload.previousDarknodeCount)
+                .set("nextDarknodeCount", action.payload.nextDarknodeCount);
+
         case getType(networkActions.storeTokenPrices):
             return state.set("tokenPrices", action.payload);
 
