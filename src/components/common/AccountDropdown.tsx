@@ -34,97 +34,68 @@ class AccountDropdownClass extends React.Component<Props, typeof defaultState> {
 
         const { shown } = this.state;
 
-        // const x = <div
-        //     className="header--group"
-        //     ref={this.setRef}
-        // >
-        //     <div className="header--selected" role="menuitem" onClick={this.toggle}>
-        //         <span>{selected.render}</span><Chevron style={{ opacity: 0.6 }} />
-        //     </div>
-        //     {shown ?
-        //         <div className="header--dropdown--spacing header--dropdown--options">
-        //             <ul className="header--dropdown">
-        //                 {
-        //                     OrderedMap(options).map((render, value) => <li
-        //                         key={value}
-        //                         role="button"
-        //                         data-id={value}
-        //                         className={`${value === selected.value ?
-        //                             "header--dropdown--selected" :
-        //                             ""} header--dropdown--option`}
-        //                         onClick={this.onClick}
-        //                     >
-        //                         {render}
-        //                     </li>).valueSeq().toArray()}
-        //             </ul>
-        //         </div> : null
-        //     }
-        // </div>;
-
         return <div
             className="header--group header--group--account"
             ref={this.setRef}
         >
             <div className="header--account header--selected header--selected" role="menuitem" onClick={address ? this.toggle : this.handleLogin}>
-                {address && <Blocky address={address} />}
-                <div
-                    className={`header--account--right ${address ?
-                        "header--account--connected" :
-                        "header--account--disconnected"}`}
-                >
-                    <div className="header--account--type">
-                        {web3BrowserName} {pendingTXs ? <Loading alt className="header--account--spinner" /> : <></>}
-                    </div>
-                    {address ?
-                        <div className="header--account--address">
-                            {address.substring(0, 8)}...{address.slice(-5)}
-                        </div> :
-                        <div className="header--account--address">Not connected</div>
-                    }
-                </div>
+                {address ?
+                    <>
+                        <Blocky address={address} />
+                        <div className="header--account--right header--account--connected">
+                            <div className="header--account--type">
+                                {web3BrowserName} {pendingTXs ? <Loading alt className="header--account--spinner" /> : <></>}
+                            </div>
+                            <div className="header--account--address">
+                                {address.substring(0, 8)}...{address.slice(-5)}
+                            </div>
+                        </div>
+                    </> :
+                    <>
+                        <div className="wallet-icon">
+                            <div className="wallet-icon--inner" />
+                        </div>
+                        <div className="header--account--right header--account--disconnected">
+                            <div className="header--account--type">
+                                Connect {web3BrowserName}
+                            </div>
+                            <div className="header--account--address">Manage your Darknode</div>
+                        </div>
+                    </>
+                }
             </div>
 
-            {shown ?
+            {address && shown ?
                 <div className="header--dropdown--spacing header--dropdown--options header--dropdown--accounts">
                     <ul className={`header--dropdown ${!address ? "header--dropdown--login" : ""}`}>
-                        {address ? <>
-                            <li role="button" onClick={this.copyToClipboard} className="header--dropdown--option">
-                                <span data-addr={address}>
-                                    {copied ?
-                                        <span>Copied</span>
-                                        :
-                                        <span>Copy to clipboard</span>
-                                    }
-                                </span>
-                            </li>
-                            <li
-                                role="button"
-                                onClick={this.handleLogout}
-                                className="header--dropdown--option"
-                            >
-                                Log out
-                            </li>
-                            {transactions.size > 0 ?
-                                <>
-                                    {transactions.map((_tx, txHash) => {
-                                        const confs = confirmations.get(txHash, 0);
-                                        return <li key={txHash} className="transaction">
-                                            {confs === 0 ? <Loading /> : <></>}
-                                            {confs === -1 ? <span className="red">(ERR) {" "}</span> : <></>}
-                                            <a className="transaction--hash" target="_blank" rel="noopener noreferrer" href={`${renNetwork.etherscan}/tx/${txHash}`}>{txHash.substring(0, 12)}...</a>
-                                            {confs > 0 ? <>{" "}({confs} conf.)</> : ""}
-                                        </li>;
-                                    }).valueSeq().toArray()}
-                                </> : <></>
-                            }
-                        </> :
-                            <li
-                                role="button"
-                                onClick={this.handleLogin}
-                                className="header--dropdown--option header--dropdown--highlight"
-                            >
-                                Connect {web3BrowserName}
-                            </li>
+                        <li role="button" onClick={this.copyToClipboard} className="header--dropdown--option">
+                            <span data-addr={address}>
+                                {copied ?
+                                    <span>Copied</span>
+                                    :
+                                    <span>Copy to clipboard</span>
+                                }
+                            </span>
+                        </li>
+                        <li
+                            role="button"
+                            onClick={this.handleLogout}
+                            className="header--dropdown--option"
+                        >
+                            Log out
+                        </li>
+                        {transactions.size > 0 ?
+                            <>
+                                {transactions.map((_tx, txHash) => {
+                                    const confs = confirmations.get(txHash, 0);
+                                    return <li key={txHash} className="transaction">
+                                        {confs === 0 ? <Loading /> : <></>}
+                                        {confs === -1 ? <span className="red">(ERR) {" "}</span> : <></>}
+                                        <a className="transaction--hash" target="_blank" rel="noopener noreferrer" href={`${renNetwork.etherscan}/tx/${txHash}`}>{txHash.substring(0, 12)}...</a>
+                                        {confs > 0 ? <>{" "}({confs} conf.)</> : ""}
+                                    </li>;
+                                }).valueSeq().toArray()}
+                            </> : <></>
                         }
                     </ul>
                 </div> : <></>

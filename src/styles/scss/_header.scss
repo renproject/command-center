@@ -137,12 +137,12 @@
 .header--account {
     display: flex;
     flex-direction: row;
+    padding-left: 0 !important;
 }
 
 .header--account--right {
     display: flex;
     flex-direction: column;
-    text-align: left;
     justify-content: center;
     font-size: 12px;
     line-height: 20px;
@@ -152,30 +152,17 @@
     }
 }
 
-.header--account--address {
-    color: $light-grey;
-}
-
 .header--account--type::before {
-    content: "";
-    display: inline-block;
-    width: 7px;
-    height: 7px;
-    margin-right: 10px;
-    -moz-border-radius: 3.5px;
-    -webkit-border-radius: 3.5px;
-    border-radius: 3.5px;
-    background-color: #f45532;
-    margin-top: 5px;
+    content: none !important;
 }
 
-.header--account--connected .header--account--type::before {
-    background-color: #3cbc98;
-}
+.header--account.header--selected .header--account--address {
+    font-weight: normal;
+    font-size: 10px;
+    line-height: 11px;
 
-.header--dropdown::after,
-.header--dropdown::before {
-    bottom: calc(100% - 1px) !important;
+    color: #FFFFFF;
+    opacity: 0.6 !important;
 }
 
 .header--account--type {
@@ -236,10 +223,10 @@
 }
 
 .header--group>div {
-    height: 48px !important;
-    border-radius: 0 !important;
-    margin: 0 !important;
-    padding: 0 25px !important;
+    height: 48px;
+    border-radius: 0;
+    margin: 0;
+    padding: 0 25px;
 }
 
 .header--group:not(.header--group--account) {
@@ -318,5 +305,24 @@
     .sidebar {
         top: 15px;
         height: calc(100vh - 15px);
+    }
+}
+
+.wallet-icon {
+    width: 45px;
+    height: 48px;
+    background: #006FE8;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    margin-right: 10px;
+
+    .wallet-icon--inner {
+        background: url('../../styles/images/wallet.svg');
+        height: 18px;
+        width: 21px;
+        margin-right: -2px;
     }
 }
