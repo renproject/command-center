@@ -13,6 +13,7 @@ import { NotFound } from "./common/404";
 import { BackgroundTasks } from "./common/BackgroundTasks";
 import { Connect } from "./common/Connect";
 import { _catch_ } from "./common/ErrorBoundary";
+import { Footer } from "./common/Footer";
 import { Header } from "./common/Header";
 import { LoggingIn } from "./common/LoggingIn";
 import { PopupController } from "./common/popups/PopupController";
@@ -52,7 +53,7 @@ const AppClass = ({ match: { params }, store: { address, renNetwork } }: Props) 
             }
             <Connect>
                 <PopupController>
-                    {address ? _catch_(<Sidebar selectedDarknode={darknodeID} />) : null}
+                    {_catch_(<Sidebar selectedDarknode={darknodeID} />)}
                     <div className="app--body">
                         <Switch>
                             {/* tslint:disable-next-line: react-this-binding-issue jsx-no-lambda */}
@@ -64,6 +65,7 @@ const AppClass = ({ match: { params }, store: { address, renNetwork } }: Props) 
                             <Route component={NotFound} />
                         </Switch>
                     </div>
+                    {_catch_(<Footer />)}
                 </PopupController>
             </Connect>
             {_catch_(<Header />)}

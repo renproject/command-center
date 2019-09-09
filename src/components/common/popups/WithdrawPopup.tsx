@@ -9,6 +9,7 @@ import { bindActionCreators } from "redux";
 import { validate } from "wallet-address-validator";
 
 import { Token } from "../../../lib/ethereum/tokens";
+import { className } from "../../../lib/react/className";
 import { ApplicationState } from "../../../store/applicationState";
 import {
     addToWithdrawAddresses, removeFromWithdrawAddresses,
@@ -47,7 +48,7 @@ class WithdrawPopupClass extends React.Component<Props, State> {
             <h2>Select {token} withdraw address</h2>
             <div className="withdraw--addresses">
                 {withdrawAddresses.get(token, List<string>()).map((withdrawAddress: string) => {
-                    return <div key={withdrawAddress} className={`withdraw--address--outer ${selectedAddress === withdrawAddress ? `withdraw--selected` : ""}`}>
+                    return <div key={withdrawAddress} className={className("withdraw--address--outer", selectedAddress === withdrawAddress ? `withdraw--selected` : "")}>
                         <button
                             name="selectedAddress"
                             onClick={this.handleInput}

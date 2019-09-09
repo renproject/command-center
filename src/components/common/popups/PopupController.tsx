@@ -3,6 +3,7 @@ import * as React from "react";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators } from "redux";
 
+import { className } from "../../../lib/react/className";
 import { ApplicationState } from "../../../store/applicationState";
 import { AppDispatch } from "../../../store/rootReducer";
 import { _catch_ } from "../ErrorBoundary";
@@ -16,7 +17,7 @@ class PopupControllerClass extends React.Component<Props> {
         const { popup, overlay, onCancel } = this.props.store.popup;
 
         return (<>
-            <div className={`popup--container ${popup && overlay ? "popup--blur" : ""}`}>
+            <div className={className("popup--container", popup && overlay ? "popup--blur" : "")}>
                 {this.props.children}
             </div>
             {popup ? <div className="popup--outer">

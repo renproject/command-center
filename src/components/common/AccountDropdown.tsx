@@ -67,7 +67,7 @@ class AccountDropdownClass extends React.Component<Props, typeof defaultState> {
 
             {address && shown ?
                 <div className="header--dropdown--spacing header--dropdown--options header--dropdown--accounts">
-                    <ul className={`header--dropdown ${!address ? "header--dropdown--login" : ""}`}>
+                    <ul className={["header--dropdown", !address ? "header--dropdown--login" : ""].join(" ")}>
                         <li role="button" onClick={this.copyToClipboard} className="header--dropdown--option">
                             <span data-addr={address}>
                                 {copied ?

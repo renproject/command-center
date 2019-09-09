@@ -31,6 +31,7 @@ body {
     font-size: 12px;
     margin: 0;
     color: white;
+    margin-bottom: 60px !important;
 }
 
 h1 {
@@ -191,7 +192,7 @@ $spacing: 90px;
     width: 100%;
     max-width: 1400px + $spacing * 2;
     margin: 0 auto;
-    padding: 0 $spacing+10px;
+    padding: 0 $spacing;
 
     @media (max-width: $max-xl) {
         padding-right: 10px;
@@ -203,17 +204,17 @@ $spacing: 90px;
     }
 }
 
-.without-account .container {
-    padding: 0 $spacing+10px;
+// .without-account .container {
+//     padding: 0 $spacing+10px;
 
-    @media (max-width: $max-xl) {
-        padding-right: 0 $spacing+10px;
-    }
+//     @media (max-width: $max-xl) {
+//         padding-right: 0 $spacing+10px;
+//     }
 
-    @media (max-width: $max-md) {
-        padding: 0 10px;
-    }
-}
+//     @media (max-width: $max-md) {
+//         padding: 0 10px;
+//     }
+// }
 
 .section {
     padding: 60px 0;
@@ -330,6 +331,7 @@ label {
 
 .app--body {
     margin-top: 100px;
+    margin-bottom: 60px;
 }
 
 .mobile-only {

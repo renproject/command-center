@@ -33,7 +33,7 @@ export const CardView = ({ darknodeID, darknodeDetails, name, quoteCurrency, url
     }, [removeDarknode]);
 
     return <Link className="no-underline" to={url}>
-        <div className={`darknode-card ${faded ? "darknode-card--faded" : ""}`}>
+        <div className={["darknode-card", faded ? "darknode-card--faded" : ""].join(" ")}>
             <div className="darknode-card--top">
                 {hidable ? <div role="button" className="card--hide" onClick={handleRemoveDarknode}>
                     {confirmedRemove ? "Are you sure?" : <FontAwesomeIcon icon={faTimes} pull="left" />}

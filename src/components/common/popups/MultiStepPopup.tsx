@@ -6,6 +6,7 @@ import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators } from "redux";
 
 import { ErrorCanceledByUser } from "../../../lib/ethereum/getWeb3";
+import { className } from "../../../lib/react/className";
 import {
     _captureBackgroundException_, _captureInteractionException_,
 } from "../../../lib/react/errors";
@@ -74,7 +75,7 @@ class MultiStepPopupClass extends React.Component<Props, typeof defaultState> {
                 <div className="multi-step--buttons" >
                     <button className="button button--white" onClick={this.onCancel}>Cancel</button>
                     {!ignoreWarning ?
-                        <button className={`button ${warning ? "button--red" : ""}`} onClick={this.run}>
+                        <button className={className("button", warning ? "button--red" : "")} onClick={this.run}>
                             Confirm
                         </button> :
                         null
@@ -97,7 +98,7 @@ class MultiStepPopupClass extends React.Component<Props, typeof defaultState> {
                             const checked = (currentStep > index) || (currentStep === index && !!error);
                             return <li key={index}>
                                 <input
-                                    className={`checkbox ${currentStep === index && error ? "checkbox--error" : ""}`}
+                                    className={className("checkbox", currentStep === index && error ? "checkbox--error" : "")}
                                     type="checkbox"
                                     value="None"
                                     id="slideThree"
@@ -147,7 +148,7 @@ class MultiStepPopupClass extends React.Component<Props, typeof defaultState> {
                                     Cancel
                                 </button>
                                 <button
-                                    className={`button ${warning ? "button--red" : ""}`}
+                                    className={className("button", warning ? "button--red" : "")}
                                     onClick={this.run}
                                 >
                                     Confirm

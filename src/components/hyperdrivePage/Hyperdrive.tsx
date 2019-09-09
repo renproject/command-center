@@ -149,7 +149,7 @@ export const Hyperdrive = withRouter(({ match: { params }, history }) => {
             </Stats>
             {blockNumber ? <>
                 <div className="selected-block">
-                    <div role="button" className={`popup--x popup--x--white`} onClick={onClose} />
+                    <div role="button" className="popup--x popup--x--white" onClick={onClose} />
                     <h3>Block {blockNumber}</h3>
                     <table>
                         <thead>
