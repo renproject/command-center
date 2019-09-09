@@ -137,7 +137,10 @@
 .header--account {
     display: flex;
     flex-direction: row;
-    padding-left: 0 !important;
+
+    &.header--account--logged-out {
+        padding-left: 0 !important;
+    }
 }
 
 .header--account--right {

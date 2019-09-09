@@ -8,6 +8,7 @@ import { bindActionCreators } from "redux";
 
 import { darknodeIDHexToBase58 } from "../../../lib/darknode/darknodeID";
 import { RegistrationStatus } from "../../../lib/ethereum/contractReads";
+import { promptLogin } from "../../../store/account/accountActions";
 import { ApplicationState } from "../../../store/applicationState";
 import { AppDispatch } from "../../../store/rootReducer";
 import { hideMobileMenu } from "../../../store/ui/uiActions";
@@ -24,12 +25,15 @@ const mapStateToProps = (state: ApplicationState) => ({
         darknodeNames: state.network.darknodeNames,
         quoteCurrency: state.network.quoteCurrency,
         mobileMenuActive: state.ui.mobileMenuActive,
+        web3BrowserName: state.account.web3BrowserName,
+        renNetwork: state.account.renNetwork,
     },
 });
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({
         hideMobileMenu,
+        promptLogin,
     }, dispatch),
 });
 
@@ -42,7 +46,7 @@ interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<
  */
 export const Sidebar = connect(mapStateToProps, mapDispatchToProps)(withRouter(
     ({ selectedDarknode, store, actions, location }: Props) => {
-        const { address, darknodeList, darknodeDetails, darknodeNames, quoteCurrency, mobileMenuActive } = store;
+        const { address, darknodeList, darknodeDetails, darknodeNames, quoteCurrency, renNetwork, mobileMenuActive, web3BrowserName } = store;
 
         const [searchFilter, setSearchFilter] = React.useState("");
 
@@ -51,8 +55,12 @@ export const Sidebar = connect(mapStateToProps, mapDispatchToProps)(withRouter(
             setSearchFilter(String(element.value).toLowerCase());
         };
 
-        return (
-            <nav className={["sidebar", mobileMenuActive ? "sidebar--mobile--active" : ""].join(" ")}>
+        const handleLogin = async () => {
+            await actions.promptLogin(renNetwork, { redirect: false, showPopup: true, immediatePopup: true });
+        };
+
+        return <>
+            <nav className={["sidebar", address ? "sidebar--logged-in" : "", mobileMenuActive ? "sidebar--mobile--active" : ""].join(" ")}>
 
                 <div className="sidebar--darknodes">
 
@@ -137,6 +145,10 @@ export const Sidebar = connect(mapStateToProps, mapDispatchToProps)(withRouter(
                     <input disabled={!address || !darknodeList} type="text" className="sidebar--search--input" onChange={handleInput} value={searchFilter} placeholder="Search" />
                 </div>
             </nav>
-        );
+            {!address ? <div className="sidebar--connect" onClick={handleLogin} role="button">
+                <div className="wallet-icon--inner" />
+                Connect {web3BrowserName}
+            </div> : <></>}
+        </>;
     }
 ));

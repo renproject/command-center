@@ -74,7 +74,7 @@ $min-header: $min-lg;
     }
 }
 
-.sidebar:hover {
+.sidebar--logged-in:hover {
     @media(min-width: $min-header) {
         width: $full-width;
         overflow-x: visible;
@@ -286,5 +286,40 @@ input[type="text"].sidebar--search--input {
         .search--filter--feedback {
             visibility: initial;
         }
+    }
+}
+
+.sidebar--connect {
+    background: #006FE8;
+    box-shadow: 2px 2px 4px #000000;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+    transform: rotate(-90deg);
+    position: absolute;
+    top: 50vh;
+    width: 200px;
+    height: 28px;
+    left: -5px;
+
+    cursor: pointer;
+
+    font-size: 14px;
+    line-height: 16px;
+    color: #F9F9F9;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .wallet-icon--inner {
+        background: url('../../styles/images/wallet.svg') no-repeat;
+        background-size: 12px 14px;
+        height: 14px;
+        width: 12px;
+        margin-right: 6px;
+    }
+
+    @media(max-width: $max-sidebar) {
+        display: none;
     }
 }
