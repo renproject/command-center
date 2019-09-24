@@ -101,7 +101,7 @@ export const Hyperdrive = withRouter(({ match: { params }, history }) => {
                         showingSeconds: true
                     })}
                 </td>
-                <td className="block--txs--td">{block.txs.length ? <div className="block--txs">{block.txs.map((tx, index) => {
+                <td className="block--txs--td">{block.txs && block.txs.length ? <div className="block--txs">{block.txs.map((tx, index) => {
                     return <div className="block--tx" key={tx.hash}>
                         {renderTransaction(tx)}
                     </div>;
@@ -130,7 +130,7 @@ export const Hyperdrive = withRouter(({ match: { params }, history }) => {
                     <TokenBalance
                         token={Token.BTC}
                         amount={String(
-                            firstBlock ? firstBlock.utxosForBtc.reduce((sum, utxo) => sum + utxo.amount, 0) : 0
+                            firstBlock && firstBlock.utxosForBtc ? firstBlock.utxosForBtc.reduce((sum, utxo) => sum + utxo.amount, 0) : 0
                         )}
                         digits={4}
                     />{" "}
@@ -140,7 +140,7 @@ export const Hyperdrive = withRouter(({ match: { params }, history }) => {
                     <TokenBalance
                         token={Token.ZEC}
                         amount={String(
-                            firstBlock ? firstBlock.utxosForZec.reduce((sum, utxo) => sum + utxo.amount, 0) : 0
+                            firstBlock && firstBlock.utxosForZec ? firstBlock.utxosForZec.reduce((sum, utxo) => sum + utxo.amount, 0) : 0
                         )}
                         digits={4}
                     />{" "}

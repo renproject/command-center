@@ -1,5 +1,6 @@
 import { Action, applyMiddleware, createStore, Middleware, Reducer } from "redux";
-import { PersistConfig, PersistPartial, persistReducer, persistStore } from "redux-persist";
+import { PersistConfig, persistReducer, persistStore } from "redux-persist";
+import { PersistPartial } from "redux-persist/lib/persistReducer";
 import thunk from "redux-thunk";
 
 import { NODE_ENV } from "../lib/react/environmentVariables";
@@ -16,7 +17,7 @@ if (NODE_ENV === "development") {
 }
 
 // Workaround createStore not liking type of persistReducer
-const typedPersistReducer = <S, A extends Action>(config: PersistConfig, reducer: Reducer<S, A>):
+const typedPersistReducer = <S, A extends Action>(config: PersistConfig<S>, reducer: Reducer<S, A>):
     Reducer<S & PersistPartial, A> => {
     return persistReducer<S, A>(
         config,

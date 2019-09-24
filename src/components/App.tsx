@@ -55,7 +55,7 @@ const AppClass = ({ match: { params }, store: { address, renNetwork } }: Props) 
                 <PopupController>
                     {_catch_(<Sidebar selectedDarknode={darknodeID} />)}
                     <div className="app--body">
-                        <Switch>
+                        {_catch_(<Switch>
                             {/* tslint:disable-next-line: react-this-binding-issue jsx-no-lambda */}
                             <Route path="/" exact component={Overview} />
                             <Route path="/all" exact component={withAccount(AllDarknodes)} />
@@ -63,7 +63,7 @@ const AppClass = ({ match: { params }, store: { address, renNetwork } }: Props) 
                             <Route path="/hyperdrive/:blockNumber" exact component={Hyperdrive} />
                             <Route path="/darknode/:darknodeID" exact component={Darknode} />
                             <Route component={NotFound} />
-                        </Switch>
+                        </Switch>, { popup: true })}
                     </div>
                     {_catch_(<Footer />)}
                 </PopupController>

@@ -9,21 +9,21 @@ import { AccountState, ApplicationState, NetworkState } from "./applicationState
 // Local Storage:
 
 const accountTransform = createTransform<AccountState, string>(
-    (inboundState: AccountState, key: string): string => {
+    (inboundState: AccountState, key: string | number | symbol): string => {
         try {
             return inboundState.serialize();
         } catch (error) {
-            console.error(`Error serializing ${key} in AccountState (${JSON.stringify(inboundState)}): ${error}`);
+            console.error(`Error serializing ${String(key)} in AccountState (${JSON.stringify(inboundState)}): ${error}`);
             // Don't send storage because it may contain sensitive data.
             _captureBackgroundException_(error, { description: "Error serializing account storage" });
             throw error;
         }
     },
-    (outboundState: string, key: string): AccountState => {
+    (outboundState: string, key: string | number | symbol): AccountState => {
         try {
             return new AccountState().deserialize(outboundState);
         } catch (error) {
-            console.error(`Error deserializing ${key} in AccountState (${JSON.stringify(outboundState)}): ${error}`);
+            console.error(`Error deserializing ${String(key)} in AccountState (${JSON.stringify(outboundState)}): ${error}`);
             // Don't send storage because it may contain sensitive data.
             _captureBackgroundException_(error, { description: "Error deserializing account storage" });
             throw error;
@@ -33,21 +33,21 @@ const accountTransform = createTransform<AccountState, string>(
 );
 
 const networkTransform = createTransform<NetworkState, string>(
-    (inboundState: NetworkState, key: string): string => {
+    (inboundState: NetworkState, key: string | number | symbol): string => {
         try {
             return inboundState.serialize();
         } catch (error) {
-            console.error(`Error serializing ${key} in NetworkState (${JSON.stringify(inboundState)}): ${error}`);
+            console.error(`Error serializing ${String(key)} in NetworkState (${JSON.stringify(inboundState)}): ${error}`);
             // Don't send storage because it may contain sensitive data.
             _captureBackgroundException_(error, { description: "Error serializing network storage" });
             throw error;
         }
     },
-    (outboundState: string, key: string): NetworkState => {
+    (outboundState: string, key: string | number | symbol): NetworkState => {
         try {
             return new NetworkState().deserialize(outboundState);
         } catch (error) {
-            console.error(`Error deserializing ${key} in NetworkState (${JSON.stringify(outboundState)}): ${error}`);
+            console.error(`Error deserializing ${String(key)} in NetworkState (${JSON.stringify(outboundState)}): ${error}`);
             // Don't send storage because it may contain sensitive data.
             _captureBackgroundException_(error, { description: "Error deserializing network storage" });
             throw error;
@@ -56,7 +56,7 @@ const networkTransform = createTransform<NetworkState, string>(
     { whitelist: ["network"] as Array<keyof ApplicationState>, },
 );
 
-export const persistConfig: PersistConfig = {
+export const persistConfig: PersistConfig<ApplicationState> = {
     storage,
     key: "root",
     whitelist: ["account", "network"] as Array<keyof ApplicationState>,

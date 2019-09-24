@@ -8,7 +8,7 @@ const defaultState = { // Entries must be immutable
     errorInfo: null as null | React.ErrorInfo,
 };
 
-class ErrorBoundary extends React.Component<Props, typeof defaultState> {
+export class ErrorBoundary extends React.Component<Props, typeof defaultState> {
 
     constructor(props: Props) {
         super(props);
