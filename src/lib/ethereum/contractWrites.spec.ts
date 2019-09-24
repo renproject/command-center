@@ -3,11 +3,12 @@ import Web3 from "web3";
 
 import { createWeb3, Provider } from "../../test/globalSetup";
 import { darknodeIDBase58ToHex } from "../darknode/darknodeID";
+import { getDarknodeRegistry } from "./contract";
 import {
     getDarknodeStatus, getMinimumBond, getOperatorDarknodes, RegistrationStatus,
 } from "./contractReads";
 import { approveNode, callEpoch, deregisterNode, refundNode, registerNode } from "./contractWrites";
-import { simpleWaitForTX } from "./waitForTX";
+import { simpleWaitForTX, waitForTX } from "./waitForTX";
 
 let web3: Web3, network: RenNetworkDetails, provider: Provider, address: string;
 beforeAll(async () => { ({ web3, network, provider, address } = await createWeb3()); });
@@ -44,6 +45,15 @@ test("registering darknode", async () => {
 
 });
 
+const triggerBlock = async () => {
+    // tslint:disable-next-line: await-promise
+    await waitForTX(
+        // tslint:disable-next-line: no-any
+        (getDarknodeRegistry(web3, network).methods.minimumBond() as any)
+            .send({ from: address })
+    );
+};
+
 test("deregistering darknode", async () => {
     // Deregister
     await new Promise((resolve) => deregisterNode(web3, network, address, darknodeID, () => null, resolve, simpleWaitForTX));
@@ -52,8 +62,8 @@ test("deregistering darknode", async () => {
         .should.equal(RegistrationStatus.DeregistrationPending);
 
     await callEpoch(web3, network, address, simpleWaitForTX);
-    try { await callEpoch(web3, network, address, simpleWaitForTX); } catch (error) { /* ignore */ }
-    await callEpoch(web3, network, address, simpleWaitForTX, { nonce: (await web3.eth.getTransactionCount(address)) });
+    await triggerBlock();
+    await callEpoch(web3, network, address, simpleWaitForTX);
 
     (await getDarknodeStatus(web3, network, darknodeID))
         .should.equal(RegistrationStatus.Refundable);
