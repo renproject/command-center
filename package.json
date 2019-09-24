@@ -22,7 +22,7 @@
     "@fortawesome/react-fontawesome": "^0.1.4",
     "@renproject/contracts": "0.3.18",
     "@renproject/fonts": "^1.0.1",
-    "@renproject/react-components": "1.0.31",
+    "@renproject/react-components": "1.0.32",
     "@sentry/browser": "^5.6.3",
     "@sentry/core": "^5.6.2",
     "@types/bs58": "^4.0.0",

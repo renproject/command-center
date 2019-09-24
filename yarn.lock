@@ -1397,10 +1397,10 @@
   resolved "https://registry.yarnpkg.com/@renproject/fonts/-/fonts-1.0.1.tgz#5eb052638eec862760044b4367f062f8a890c5b8"
   integrity sha512-OWk811Ay63UdPxY5nEg4N99Goz6K9HLaeGfUN2q0uehhQ70hJDqDQq/vYl5rtE07mv7MYX7GYTpj5POlPbZNRg==
 
-"@renproject/react-components@1.0.31":
-  version "1.0.31"
-  resolved "https://registry.yarnpkg.com/@renproject/react-components/-/react-components-1.0.31.tgz#21e6928d9e4ff5577392d294c1dee15b7b00d7be"
-  integrity sha512-wEasyu86Z913UKdbK4nbKL7wzPFlwhd1C10fh4aSpO6kM1q9bwZq/Ljcd1ThAPtPj1eJsTKRiGITlH6chOR1HA==
+"@renproject/react-components@1.0.32":
+  version "1.0.32"
+  resolved "https://registry.yarnpkg.com/@renproject/react-components/-/react-components-1.0.32.tgz#4a6f1911e79a25eac80af4c868085e31f985d5c5"
+  integrity sha512-Lop1Io+PN5kEJG3FAYuoEFNE8HBVC6CeTjM/KWYek9b7Fof83OkyD8hRrxOt+3TxZJbgfsEaHl+IEXX7rtuGdQ==
   dependencies:
     "@fortawesome/fontawesome-svg-core" "^1.2.21"
     "@fortawesome/free-brands-svg-icons" "^5.10.1"
