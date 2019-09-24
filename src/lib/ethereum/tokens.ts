@@ -7,6 +7,7 @@ export enum Token {
     ETH = "ETH",
     BTC = "BTC",
     ZEC = "ZEC",
+    BCH = "BCH",
 }
 
 export enum OldToken {
@@ -71,6 +72,16 @@ export const AllTokenDetails = Map<Token | OldToken, TokenDetail<Token | OldToke
             coinGeckoID: "zcash",
             old: false,
             blockchain: Token.ZEC
+        })
+    .set(Token.BCH,
+        {
+            symbol: Token.BCH,
+            name: "Bitcoin Cash",
+            decimals: 8,
+            wrapped: true,
+            coinGeckoID: "bitcoin-cash",
+            old: false,
+            blockchain: Token.BCH
         })
     .set(OldToken.ETH,
         {

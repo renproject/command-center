@@ -6,7 +6,7 @@ import { CSSTransitionGroup } from "react-transition-group";
 import { Token } from "../../lib/ethereum/tokens";
 import { Stat, Stats } from "../common/Stat";
 import { TokenBalance } from "../common/TokenBalance";
-import { Block, HyperdriveContainer, Tx } from "./hyperdriveContainer";
+import { Block, HyperdriveContainer, Tx, Type } from "./hyperdriveContainer";
 
 // Returning a new object reference guarantees that a before-and-after
 //   equivalence check will always be false, resulting in a re-render, even
@@ -27,19 +27,17 @@ export const useForceUpdate = () => {
 let interval: NodeJS.Timeout;
 
 export const renderTransaction = (tx: Tx): React.ReactNode => {
-    // BTC
-    if (tx.to === "BTC0Btc2Eth") {
-        return <>Shift {tx.args[1].value / 10 ** 8} <TokenIcon white={true} token={Token.BTC} /> to <TokenIcon white={true} token={Token.ETH} /></>;
-    }
-    if (tx.to === "BTC0Eth2Btc") {
-        return <>Shift {tx.args[2].value / 10 ** 8} <TokenIcon white={true} token={Token.BTC} /> from <TokenIcon white={true} token={Token.ETH} /></>;
-    }
-    // ZEC
-    if (tx.to === "ZEC0Zec2Eth") {
-        return <>Shift {tx.args[1].value / 10 ** 8} <TokenIcon white={true} token={Token.ZEC} /> to <TokenIcon white={true} token={Token.ETH} /></>;
-    }
-    if (tx.to === "ZEC0Eth2Zec") {
-        return <>Shift {tx.args[2].value / 10 ** 8} <TokenIcon white={true} token={Token.ZEC} /> from <TokenIcon white={true} token={Token.ETH} /></>;
+    const [match, _chain, _left, _right] = tx.to.match(/([A-Z0-9]*)0([A-Za-z0-0]*)2([A-Za-z0-0]*)/) || [];
+
+    if (match) {
+        const [chain, left, right] = [_chain.toUpperCase() as Token, _left.toUpperCase() as Token, _right.toUpperCase() as Token];
+
+        if (chain === left) {
+            return <>Shift {tx.args[1].value / 10 ** 8} <TokenIcon white={true} token={left} /> to <TokenIcon white={true} token={right} /></>;
+        } else if (chain === right) {
+            return <>Shift {tx.args[2].value / 10 ** 8} <TokenIcon white={true} token={right} /> from <TokenIcon white={true} token={left} /></>;
+        }
+        return <>Shift {tx.args[1].value / 10 ** 8} <TokenIcon white={true} token={left} /> to <TokenIcon white={true} token={right} /> on <TokenIcon white={true} token={chain} /></>;
     }
     return <>
         {tx.to} {tx.args.length} {tx.out ? tx.out.length : 0}
@@ -68,7 +66,7 @@ export const Hyperdrive = withRouter(({ match: { params }, history }) => {
         if (interval) {
             clearInterval(interval);
         }
-        interval = setInterval(syncBlocks, 10 * 1000);
+        interval = setInterval(syncBlocks, 5 * 1000);
         // if (!container.blocks || container.blocks.size === 0) {
         syncBlocks();
         // }
@@ -80,8 +78,8 @@ export const Hyperdrive = withRouter(({ match: { params }, history }) => {
     }, []);
 
     const onClick = useCallback((block: Block) => {
-        container.getBlock(block.height).catch(console.error);
-        history.push(`/hyperdrive/${block.height}`);
+        container.getBlock(block.header.height).catch(console.error);
+        history.push(`/hyperdrive/${block.header.height}`);
     }, [container, history]);
 
     const onClose = useCallback(() => {
@@ -91,17 +89,17 @@ export const Hyperdrive = withRouter(({ match: { params }, history }) => {
     const blockTr = (block: Block) => {
         const trOnClick = () => { onClick(block); };
         return (
-            <tr key={block.height} onClick={trOnClick} className="block--row">
-                <td>{block.height}</td>
+            <tr key={block.header.height} onClick={trOnClick} className="block--row">
+                <td>{block.header.height}</td>
                 <td>
-                    {naturalTime(block.timestamp, {
+                    {naturalTime(block.header.timestamp, {
                         message: "Just now",
                         suffix: "ago",
                         countDown: false,
                         showingSeconds: true
                     })}
                 </td>
-                <td className="block--txs--td">{block.txs && block.txs.length ? <div className="block--txs">{block.txs.map((tx, index) => {
+                <td className="block--txs--td">{block.data && block.data.length && block.data.map ? <div className="block--txs">{block.data.map((tx, index) => {
                     return <div className="block--tx" key={tx.hash}>
                         {renderTransaction(tx)}
                     </div>;
@@ -112,7 +110,7 @@ export const Hyperdrive = withRouter(({ match: { params }, history }) => {
 
     const firstBlock = container.blocks ? container.blocks.first<Block | null>(null) : null;
 
-    if (firstBlock && getTimeMagnitude(firstBlock.timestamp, true)) {
+    if (firstBlock && getTimeMagnitude(firstBlock.header.timestamp, true)) {
         setTimeout(() => {
             forceUpdate();
         }, 1 * 1000);
@@ -125,27 +123,27 @@ export const Hyperdrive = withRouter(({ match: { params }, history }) => {
         >
             <Stats>
                 <Stat message="Number of shards" big>1</Stat>
-                <Stat message="Block height" big>{firstBlock ? firstBlock.height : 0}</Stat>
-                <Stat message="Locked BTC" big>
-                    <TokenBalance
-                        token={Token.BTC}
-                        amount={String(
-                            firstBlock && firstBlock.utxosForBtc ? firstBlock.utxosForBtc.reduce((sum, utxo) => sum + utxo.amount, 0) : 0
-                        )}
-                        digits={4}
-                    />{" "}
-                    BTC
-                </Stat>
-                <Stat message="Locked ZEC" big>
-                    <TokenBalance
-                        token={Token.ZEC}
-                        amount={String(
-                            firstBlock && firstBlock.utxosForZec ? firstBlock.utxosForZec.reduce((sum, utxo) => sum + utxo.amount, 0) : 0
-                        )}
-                        digits={4}
-                    />{" "}
-                    ZEC
-                </Stat>
+                <Stat message="Block height" big>{firstBlock ? firstBlock.header.height : 0}</Stat>
+                {firstBlock && firstBlock.prevState && firstBlock.prevState.map ?
+                    firstBlock.prevState.map((state) => {
+                        if (state.type === Type.BTCCompatUTXOs && state.name.match(/.*UTXOs/)) {
+                            const token = state.name.replace("UTXOs", "").toUpperCase();
+                            return <Stat message={`Locked ${token}`} big>
+                                <TokenBalance
+                                    token={token as Token}
+                                    amount={String(
+                                        state && state.value ? state.value.reduce((sum, utxo) => sum + utxo.amount, 0) : 0
+                                    )}
+                                    digits={4}
+                                />{" "}
+                                BTC
+                            </Stat>;
+                        } else {
+                            return <></>;
+                        }
+                    })
+                    : <></>
+                }
             </Stats>
             {blockNumber ? <>
                 <div className="selected-block">
@@ -179,8 +177,8 @@ export const Hyperdrive = withRouter(({ match: { params }, history }) => {
                         </thead>
                         <tbody>
                             {container.currentBlock && container.currentBlockNumber === blockNumber ?
-                                container.currentBlock.txs && container.currentBlock.txs.length > 0 ?
-                                    container.currentBlock.txs.map(tx => {
+                                container.currentBlock.data && container.currentBlock.data.length > 0 && container.currentBlock.data.map ?
+                                    container.currentBlock.data.map(tx => {
                                         return (
                                             <tr key={tx.hash}>
                                                 <td className="block--tx" key={tx.hash}>

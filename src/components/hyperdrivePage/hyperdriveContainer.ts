@@ -16,7 +16,7 @@ type U64 = number;
 // tslint:disable-next-line: no-any
 type Value = any;
 
-enum Type {
+export enum Type {
     Addr = "addr",
     Str = "str",
     B20 = "b20",
@@ -30,6 +30,7 @@ enum Type {
     U16 = "u16",
     U32 = "u32",
     U64 = "u64",
+    BTCCompatUTXOs = "ext_btcCompatUTXOs",
 }
 
 interface Arg {
@@ -60,14 +61,34 @@ interface ExtBtcCompatUTXO {
 type ExtBtcCompatUTXOs = ExtBtcCompatUTXO[];
 
 export interface Block {
-    header: B32;
-    parentHeader: B32;
-    height: U64;
-    timestamp: U64;
-    txHeader: B32;
-    txs: Txs;
-    utxosForBtc: ExtBtcCompatUTXOs;
-    utxosForZec: ExtBtcCompatUTXOs;
+    hash: B32;
+    header: {
+        kind: 1;
+        parentHash: B32;
+        baseHash: B32;
+        height: U64;
+        round: U64;
+        timestamp: U64;
+        signatories: null;
+    };
+    data: Txs;
+    prevState: [
+        {
+            name: "bchUTXOs";
+            type: "ext_btcCompatUTXOs";
+            value: ExtBtcCompatUTXOs;
+        },
+        {
+            name: "btcUTXOs";
+            type: "ext_btcCompatUTXOs";
+            value: ExtBtcCompatUTXOs;
+        },
+        {
+            name: "zecUTXOs";
+            type: "ext_btcCompatUTXOs";
+            value: ExtBtcCompatUTXOs;
+        }
+    ];
 }
 
 type Blocks = Block[];
@@ -96,12 +117,12 @@ const getBlocks = async (network: RenNetworkDetails, previousBlocks: List<Block>
     const firstBlock = previousBlocks.first<Block | null>(null);
     let previousHeight = null;
     if (firstBlock) {
-        previousHeight = firstBlock.height;
+        previousHeight = firstBlock.header.height;
     }
     if (previousHeight === null) {
         const request = { jsonrpc: "2.0", method: "ren_queryBlocks", params: { n: N }, id: 67 };
         const response = (await Axios.post<RPCResponse<ResponseQueryBlocks>>(lightnode, request)).data.result;
-        return List(response.blocks);
+        return List(response.blocks).sort((a, b) => b.header.height - a.header.height);
     } else {
         let currentHeight = null as number | null;
         let syncedHeight = null as number | null;
@@ -113,11 +134,11 @@ const getBlocks = async (network: RenNetworkDetails, previousBlocks: List<Block>
             const request = { jsonrpc: "2.0", method: "ren_queryBlock", params: { blockHeight: syncedHeight && syncedHeight - 1 }, id: 67 };
             const response = (await Axios.post<RPCResponse<ResponseQueryBlock>>(lightnode, request)).data.result;
             const latestBlock = response.block;
-            if (latestBlock.height === previousHeight) {
+            if (latestBlock.header.height === previousHeight) {
                 break;
             }
-            currentHeight = currentHeight || latestBlock.height;
-            syncedHeight = latestBlock.height;
+            currentHeight = currentHeight || latestBlock.header.height;
+            syncedHeight = latestBlock.header.height;
             newBlocks = newBlocks.push(latestBlock);
         }
         return newBlocks.concat(previousBlocks).slice(0, N).toList();
@@ -151,9 +172,9 @@ const useHyperdriveContainer = (initialState = testnet as RenNetworkDetails) => 
             const last = blocks.last<Block | null>(null);
 
             // Check if we already have the block in the list of recent blocks.
-            if (first && last && first.height >= blockNumber && last.height <= blockNumber) {
+            if (first && last && first.header.height >= blockNumber && last.header.height <= blockNumber) {
                 for (const block of blocks.toArray()) {
-                    if (block.height === blockNumber) {
+                    if (block.header.height === blockNumber) {
                         newCurrentBlock = block;
                         break;
                     }
@@ -170,7 +191,7 @@ const useHyperdriveContainer = (initialState = testnet as RenNetworkDetails) => 
 
         currentBlock = newCurrentBlock;
         setCurrentBlock(currentBlock);
-        currentBlockNumber = currentBlock.height;
+        currentBlockNumber = currentBlock.header.height;
         setCurrentBlockNumber(currentBlockNumber);
     };
 
