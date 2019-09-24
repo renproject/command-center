@@ -23,10 +23,19 @@ $mobile-full-width: 100vw;
     }
 }
 
-.sidebar--darknodes {
+.sidebar--top {
     @extend .no-scrollbar;
     overflow-y: scroll;
     height: 100%;
+    flex: 1;
+    display: flex;
+    flex-flow: column;
+}
+
+.sidebar--darknodes {
+    background: url('../../styles/images/sidebar-empty.svg') repeat-y;
+    background-position-x: 19px;
+    background-position-y: 27px;
     flex: 1;
 }
 
@@ -291,7 +300,7 @@ input[type="text"].sidebar--search--input {
 
 .sidebar--connect {
     background: #006FE8;
-    box-shadow: 2px 2px 4px #000000;
+    box-shadow: -2px 2px 4px #000000;
     border-bottom-left-radius: 12px;
     border-bottom-right-radius: 12px;
     transform: rotate(-90deg);

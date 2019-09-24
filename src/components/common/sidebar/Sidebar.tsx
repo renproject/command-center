@@ -14,7 +14,6 @@ import { AppDispatch } from "../../../store/rootReducer";
 import { hideMobileMenu } from "../../../store/ui/uiActions";
 import { ReactComponent as HyperdriveIcon } from "../../../styles/images/Icon-HyperDrive.svg";
 import { ReactComponent as Search } from "../../../styles/images/search.svg";
-import { EmptySidebarIcon } from "./EmptySidebarIcon";
 import { SidebarIcon } from "./SidebarIcon";
 
 const mapStateToProps = (state: ApplicationState) => ({
@@ -62,7 +61,7 @@ export const Sidebar = connect(mapStateToProps, mapDispatchToProps)(withRouter(
         return <>
             <nav className={["sidebar", address ? "sidebar--logged-in" : "", mobileMenuActive ? "sidebar--mobile--active" : ""].join(" ")}>
 
-                <div className="sidebar--darknodes">
+                <div className="sidebar--top">
 
                     <div className="sidebar--row mobile-only" role="menuitem" onClick={actions.hideMobileMenu}>
                         <div className="sidebar--nav--icon sidebar--icon">
@@ -102,39 +101,33 @@ export const Sidebar = connect(mapStateToProps, mapDispatchToProps)(withRouter(
                         {searchFilter ? <>Showing results for "{searchFilter}"</> : <>{" "}</>}
                     </div>
 
-                    {address && darknodeList ? darknodeList
-                        .filter((darknodeID: string) => {
-                            if (!searchFilter) {
-                                return true;
-                            }
-                            const name = (darknodeNames.get(darknodeID) || "").toLowerCase();
-                            return name.indexOf(searchFilter.toLowerCase()) !== -1 ||
-                                darknodeIDHexToBase58(darknodeID).toLowerCase().indexOf(searchFilter) === 0;
-                        })
-                        .map((darknodeID: string) => {
-                            const details = darknodeDetails.get(darknodeID);
-                            return <SidebarIcon
-                                key={darknodeID}
-                                darknodeID={darknodeID}
-                                storedName={darknodeNames.get(darknodeID)}
-                                active={darknodeID === selectedDarknode}
-                                faded={(details && details.registrationStatus === RegistrationStatus.Unregistered) || false}
-                                feesEarnedTotalEth={details && details.feesEarnedTotalEth}
-                                ethBalance={details && details.ethBalance}
-                                quoteCurrency={quoteCurrency}
-                                hideMobileMenu={hideMobileMenu}
-                            />;
-                        }).toArray() : <>
-                            <EmptySidebarIcon />
-                            <EmptySidebarIcon />
-                            <EmptySidebarIcon />
-                            <EmptySidebarIcon />
-                            <EmptySidebarIcon />
-                            <EmptySidebarIcon />
-                            <EmptySidebarIcon />
-                            <EmptySidebarIcon />
-                            <EmptySidebarIcon />
-                        </>}
+                    <div className="sidebar--darknodes">
+
+                        {address && darknodeList ? darknodeList
+                            .filter((darknodeID: string) => {
+                                if (!searchFilter) {
+                                    return true;
+                                }
+                                const name = (darknodeNames.get(darknodeID) || "").toLowerCase();
+                                return name.indexOf(searchFilter.toLowerCase()) !== -1 ||
+                                    darknodeIDHexToBase58(darknodeID).toLowerCase().indexOf(searchFilter) === 0;
+                            })
+                            .map((darknodeID: string) => {
+                                const details = darknodeDetails.get(darknodeID);
+                                return <SidebarIcon
+                                    key={darknodeID}
+                                    darknodeID={darknodeID}
+                                    storedName={darknodeNames.get(darknodeID)}
+                                    active={darknodeID === selectedDarknode}
+                                    faded={(details && details.registrationStatus === RegistrationStatus.Unregistered) || false}
+                                    feesEarnedTotalEth={details && details.feesEarnedTotalEth}
+                                    ethBalance={details && details.ethBalance}
+                                    quoteCurrency={quoteCurrency}
+                                    hideMobileMenu={hideMobileMenu}
+                                />;
+                            }).toArray() : <>
+                            </>}
+                    </div>
                 </div>
                 <div className="sidebar--search sidebar--row">
                     <div className="sidebar--nav--icon sidebar--icon">

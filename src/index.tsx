@@ -40,7 +40,8 @@ ReactDOM.render(
                     </Switch>
                 </Router>
             </PersistGate>
-        </Provider>
+        </Provider>,
+        { popup: true },
     ),
     document.getElementById("root") as HTMLElement
 );
