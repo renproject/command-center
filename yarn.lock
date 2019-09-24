@@ -1385,12 +1385,12 @@
   resolved "https://registry.yarnpkg.com/@nodelib/fs.stat/-/fs.stat-1.1.3.tgz#2b5a3ab3f918cca48a8c754c08168e3f03eba61b"
   integrity sha512-shAmDyaQC4H92APFoIaVDHCx5bStIocgvbwQyxPRrbUY20V1EYTbSDchWbuwlMG3V17cprZhA6+78JfB+3DTPw==
 
-"@renproject/contracts@0.3.16":
-  version "0.3.16"
-  resolved "https://registry.yarnpkg.com/@renproject/contracts/-/contracts-0.3.16.tgz#8ed095941ce35567a9a301fd5165249c6e200959"
-  integrity sha512-72O8pFCe6BxfI9MKr82IOxLYKUrvOa6XYZdE71ezSUDWhl1rlsZkAaS4fiLdmxa/f+syEfdMohyyrVEUvi3f0w==
+"@renproject/contracts@0.3.18":
+  version "0.3.18"
+  resolved "https://registry.yarnpkg.com/@renproject/contracts/-/contracts-0.3.18.tgz#a8fe77e0a2142ab7ea78ce4ec4d7aa3040c7d87d"
+  integrity sha512-41/LRvbw0zQksyD56o14fx4TN+XZVR+u1cTZTOXfp/d8G7I051NSKW9GpdEOvk32PA3dPRM0z6B754FNzvIJCg==
   dependencies:
-    darknode-sol "https://github.com/renproject/darknode-sol#be15db5d3720b8050a3a379c37260d87026e3626"
+    darknode-sol "https://github.com/renproject/darknode-sol#f60d23ffa59203ae13a3d99688f12fdf704eb095"
 
 "@renproject/fonts@^1.0.1":
   version "1.0.1"
@@ -4225,12 +4225,6 @@ damerau-levenshtein@^1.0.4:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/damerau-levenshtein/-/damerau-levenshtein-1.0.5.tgz#780cf7144eb2e8dbd1c3bb83ae31100ccc31a414"
   integrity sha512-CBCRqFnpu715iPmw1KrdOrzRqbdFwQTwAWyyyYS42+iAgHCuXZ+/TdMgQkUENPomxEz9z1BEzuQU2Xw0kUuAgA==
-
-"darknode-sol@git+https://github.com/renproject/darknode-sol.git#be15db5d3720b8050a3a379c37260d87026e3626":
-  version "0.0.3"
-  resolved "git+https://github.com/renproject/darknode-sol.git#be15db5d3720b8050a3a379c37260d87026e3626"
-  dependencies:
-    openzeppelin-solidity "2.3.0"
 
 "darknode-sol@https://github.com/renproject/darknode-sol#f60d23ffa59203ae13a3d99688f12fdf704eb095":
   version "0.0.3"

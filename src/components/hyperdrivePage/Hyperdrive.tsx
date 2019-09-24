@@ -66,7 +66,7 @@ export const Hyperdrive = withRouter(({ match: { params }, history }) => {
         if (interval) {
             clearInterval(interval);
         }
-        interval = setInterval(syncBlocks, 5 * 1000);
+        interval = setInterval(syncBlocks, 7.5 * 1000); // Half the cache time
         // if (!container.blocks || container.blocks.size === 0) {
         syncBlocks();
         // }
@@ -116,6 +116,30 @@ export const Hyperdrive = withRouter(({ match: { params }, history }) => {
         }, 1 * 1000);
     }
 
+    // For each locked token, create a <Stat> element
+    // tslint:disable-next-line: no-any
+    const lockedBalances: any = {};
+    if (firstBlock && firstBlock.prevState && firstBlock.prevState.map) {
+        firstBlock.prevState.map((state) => {
+            if (state.type === Type.BTCCompatUTXOs && state.name.match(/.*UTXOs/)) {
+                const token = state.name.replace("UTXOs", "").toUpperCase();
+                lockedBalances[token] = <Stat message={`Locked ${token}`} big>
+                    <TokenBalance
+                        token={token as Token}
+                        amount={String(
+                            state && state.value ? state.value.reduce((sum, utxo) => sum + utxo.amount, 0) : 0
+                        )}
+                        digits={4}
+                    />{" "}
+                    {token}
+                </Stat>;
+            }
+        });
+    }
+
+    // Override the order of the tokens (returned back in alphabetical order)
+    const { [Token.BTC]: lockedBTC, [Token.ZEC]: lockedZEC, ...remainingLockedBalances } = lockedBalances;
+
     return (
         <div
             className="hyperdrive container"
@@ -124,26 +148,9 @@ export const Hyperdrive = withRouter(({ match: { params }, history }) => {
             <Stats>
                 <Stat message="Number of shards" big>1</Stat>
                 <Stat message="Block height" big>{firstBlock ? firstBlock.header.height : 0}</Stat>
-                {firstBlock && firstBlock.prevState && firstBlock.prevState.map ?
-                    firstBlock.prevState.map((state) => {
-                        if (state.type === Type.BTCCompatUTXOs && state.name.match(/.*UTXOs/)) {
-                            const token = state.name.replace("UTXOs", "").toUpperCase();
-                            return <Stat message={`Locked ${token}`} big>
-                                <TokenBalance
-                                    token={token as Token}
-                                    amount={String(
-                                        state && state.value ? state.value.reduce((sum, utxo) => sum + utxo.amount, 0) : 0
-                                    )}
-                                    digits={4}
-                                />{" "}
-                                BTC
-                            </Stat>;
-                        } else {
-                            return <></>;
-                        }
-                    })
-                    : <></>
-                }
+                {lockedBTC}
+                {lockedZEC}
+                {remainingLockedBalances ? Object.values(remainingLockedBalances) : <></>}
             </Stats>
             {blockNumber ? <>
                 <div className="selected-block">

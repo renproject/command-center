@@ -463,7 +463,7 @@ export const fetchCycleAndPendingRewards = async (
                 }
                 return new BigNumber(previousCycleRewardShareBN.toString());
             } catch (error) {
-                console.error(error);
+                console.error(`Error fetching rewards for ${token}`, error);
                 return new BigNumber(0);
             }
         }).toOrderedMap(),
@@ -488,7 +488,7 @@ export const fetchCycleAndPendingRewards = async (
                 }
                 return new BigNumber((currentCycleRewardPool).toString()).div(currentShareCount);
             } catch (error) {
-                console.error(error);
+                console.error(`Error fetching rewards for ${token}`, error);
                 return new BigNumber(0);
             }
         }
