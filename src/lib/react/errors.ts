@@ -143,7 +143,6 @@ const _captureException_ = <X extends Details>(error: any, details: X) => {
         }
 
         Sentry.captureException(error);
-
     });
 };
 

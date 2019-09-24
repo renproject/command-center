@@ -3967,9 +3967,9 @@ damerau-levenshtein@^1.0.4:
   dependencies:
     openzeppelin-solidity "2.3.0"
 
-"darknode-sol@https://github.com/renproject/darknode-sol#c1ac293144c0bcb7bd12abd562116e21b8d944cb":
+"darknode-sol@https://github.com/renproject/darknode-sol#f60d23ffa59203ae13a3d99688f12fdf704eb095":
   version "0.0.3"
-  resolved "https://github.com/renproject/darknode-sol#c1ac293144c0bcb7bd12abd562116e21b8d944cb"
+  resolved "https://github.com/renproject/darknode-sol#f60d23ffa59203ae13a3d99688f12fdf704eb095"
   dependencies:
     openzeppelin-solidity "2.3.0"
 

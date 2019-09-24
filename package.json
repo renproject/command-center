@@ -74,7 +74,7 @@
     "@types/chai": "^4.2.0",
     "any-promise": "^1.3.0",
     "chai": "^4.2.0",
-    "darknode-sol": "https://github.com/renproject/darknode-sol#c1ac293144c0bcb7bd12abd562116e21b8d944cb",
+    "darknode-sol": "https://github.com/renproject/darknode-sol#f60d23ffa59203ae13a3d99688f12fdf704eb095",
     "npm-check-updates": "^3.1.21",
     "truffle-hdwallet-provider": "^1.0.17",
     "ts-unused-exports": "^2.0.11",
