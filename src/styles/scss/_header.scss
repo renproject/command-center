@@ -297,17 +297,19 @@
 }
 
 .with-banner {
+    $top: 22px;
+
     .header {
-        margin-top: 15px;
+        margin-top: $top;
     }
 
     .popup--container {
-        top: 15px;
+        top: $top;
     }
 
     .sidebar {
-        top: 15px;
-        height: calc(100vh - 15px);
+        top: $top;
+        height: calc(100vh - #{$top});
     }
 }
 

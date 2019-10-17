@@ -1,6 +1,6 @@
 import { getTimeMagnitude, Loading, naturalTime, TokenIcon } from "@renproject/react-components";
 import React, { useCallback, useState } from "react";
-import { withRouter } from "react-router";
+import { withRouter } from "react-router-dom";
 import { CSSTransitionGroup } from "react-transition-group";
 
 import { Token } from "../../lib/ethereum/tokens";

@@ -74,6 +74,17 @@ $mobile-full-width: 100vw;
     align-items: center;
 }
 
+.sidebar--plus {
+    background: none;
+    margin-top: -5px;
+}
+
+.external-link {
+    opacity: 0.2;
+    margin-left: 5px;
+    margin-bottom: -1px;
+}
+
 $max-sidebar: $max-md;
 $min-header: $min-lg;
 

@@ -1,6 +1,8 @@
 import * as React from "react";
 
-import { faGlobeAmericas, faThLarge, faTimes } from "@fortawesome/free-solid-svg-icons";
+import {
+    faExternalLinkAlt, faGlobeAmericas, faPlus, faThLarge, faTimes,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
@@ -102,7 +104,6 @@ export const Sidebar = connect(mapStateToProps, mapDispatchToProps)(withRouter(
                     </div>
 
                     <div className="sidebar--darknodes">
-
                         {address && darknodeList ? darknodeList
                             .filter((darknodeID: string) => {
                                 if (!searchFilter) {
@@ -127,6 +128,17 @@ export const Sidebar = connect(mapStateToProps, mapDispatchToProps)(withRouter(
                                 />;
                             }).toArray() : <>
                             </>}
+
+                        {address ? <a target="_blank" rel="noopener noreferrer" href="https://docs.renproject.io/darknodes/"><div className="sidebar--row">
+                            <div className="sidebar--nav--icon sidebar--icon">
+                                <div className="sidebar--nav--icon--circle sidebar--plus">
+                                    <FontAwesomeIcon icon={faPlus} className="darknode-card--bottom--icon" />
+                                </div>
+                            </div>
+                            <div className="sidebar--text">
+                                <div className="sidebar--name">Create new Darknode <FontAwesomeIcon icon={faExternalLinkAlt} className="external-link" /></div>
+                            </div>
+                        </div></a> : null}
                     </div>
                 </div>
                 <div className="sidebar--search sidebar--row">

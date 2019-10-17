@@ -29,18 +29,18 @@ onLoad("Command Center");
 
 ReactDOM.render(
     _catch_(
-        <Provider store={store}>
-            <PersistGate loading={null} persistor={persistor}>
-                <Router history={history}>
+        <Router history={history}>
+            <Provider store={store}>
+                <PersistGate loading={null} persistor={persistor}>
                     <Switch>
                         {/* We add the routes here as well as in App so that App has access to the URL parameters */}
                         <Route path="/darknode/:darknodeID" exact component={App} />
                         <Route component={App} />
                         {/* Don't add extra routes here - add them in App */}
                     </Switch>
-                </Router>
-            </PersistGate>
-        </Provider>,
+                </PersistGate>
+            </Provider>
+        </Router>,
         { popup: true },
     ),
     document.getElementById("root") as HTMLElement

@@ -68,8 +68,14 @@ export interface DarknodeCounts {
 }
 
 export const getDarknodeCounts = async (web3: Web3, renNetwork: RenNetworkDetails): Promise<DarknodeCounts> => {
+    console.log(`\nGetting darknode count...`);
+    console.log(renNetwork);
     const darknodeRegistry = getDarknodeRegistry(web3, renNetwork);
+    console.log(darknodeRegistry.address);
+    console.log(darknodeRegistry);
+    console.log(`\n`);
     const currentEpoch = await darknodeRegistry.methods.numDarknodes().call();
+    console.log(`currentEpoch`, currentEpoch);
     if (currentEpoch === null) { throw _noCapture_(new Error("Unable to retrieve darknode count")); }
     const previousEpoch = await darknodeRegistry.methods.numDarknodesPreviousEpoch().call();
     if (previousEpoch === null) { throw _noCapture_(new Error("Unable to retrieve darknode count")); }

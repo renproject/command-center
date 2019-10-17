@@ -2,7 +2,7 @@ import * as qs from "query-string";
 import * as React from "react";
 
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
-import { RouteComponentProps, withRouter } from "react-router";
+import { RouteComponentProps, withRouter } from "react-router-dom";
 import { bindActionCreators } from "redux";
 
 import { darknodeIDBase58ToHex } from "../../lib/darknode/darknodeID";

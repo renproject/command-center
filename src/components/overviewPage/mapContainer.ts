@@ -51,6 +51,7 @@ const parallelLimit = <T>(promiseFactories: Array<() => Promise<T>>, limit: numb
 export const getLightnode = (network: RenNetworkDetails): string => {
     switch (network.name) {
         case "mainnet": return "";
+        case "chaosnet": return "https://lightnode-chaosnet.herokuapp.com";
         case "testnet": return "https://lightnode-testnet.herokuapp.com";
         case "devnet": return "https://lightnode-devnet.herokuapp.com";
         case "localnet": return "";
