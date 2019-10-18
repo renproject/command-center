@@ -1,1 +1,1 @@
-declare module "truffle-hdwallet-provider";
+declare module "@truffle/hdwallet-provider";

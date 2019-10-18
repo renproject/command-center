@@ -11,7 +11,7 @@ import { Web3Browser } from "../lib/ethereum/browsers";
 import { DarknodeFeeStatus, RegistrationStatus } from "../lib/ethereum/contractReads";
 import { getReadOnlyWeb3 } from "../lib/ethereum/getWeb3";
 import { OldToken, Token, TokenPrices } from "../lib/ethereum/tokens";
-import { DEFAULT_REN_NETWORK } from "../lib/react/environmentVariables";
+import { DEFAULT_REN_NETWORK, INFURA_KEY } from "../lib/react/environmentVariables";
 import { _captureBackgroundException_ } from "../lib/react/errors";
 import { Serializable } from "../lib/react/serializable";
 
@@ -22,7 +22,7 @@ export interface ApplicationState {
     ui: UIState;
 }
 
-export const readOnlyWeb3 = getReadOnlyWeb3();
+export const readOnlyWeb3 = getReadOnlyWeb3(`${(RenNetworks[DEFAULT_REN_NETWORK || RenNetwork.Testnet] as RenNetworkDetails).infura}/${INFURA_KEY}`);
 
 export class AccountState extends Record({
     // Login data

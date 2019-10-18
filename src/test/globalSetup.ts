@@ -1,7 +1,7 @@
 import { ganache, RenNetworkDetails } from "@renproject/contracts";
+import HDWalletProvider from "@truffle/hdwallet-provider";
 import { should } from "chai";
 import { join } from "path";
-import HDWalletProvider from "truffle-hdwallet-provider";
 import Web3 from "web3";
 
 should();
