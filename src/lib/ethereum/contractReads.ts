@@ -728,21 +728,13 @@ export const fetchDarknodeDetails = async (
     const currentCycleBN = await darknodePayment.methods.currentCycle().call();
     const previousCycleBN = await darknodePayment.methods.previousCycle().call();
     // const blacklisted = await darknodePaymentStore.methods.isBlacklisted(darknodeID).call();
+    const darknodeRegistry = getDarknodeRegistry(web3, renNetwork);
     let currentStatus;
     let previousStatus;
-    // if (blacklisted) {
-    //     currentStatus = DarknodeFeeStatus.BLACKLISTED;
-    //     previousStatus = DarknodeFeeStatus.BLACKLISTED;
-    // } else {
-    // const whitelistedTimeCall = await darknodePaymentStore.methods.darknodeWhitelist(darknodeID).call();
-    // const whitelistedTime = whitelistedTimeCall === null ? new BigNumber(0) : new BigNumber(whitelistedTimeCall.toString());
-    // if (whitelistedTime.isZero()) {
-    //     currentStatus = DarknodeFeeStatus.NOT_WHITELISTED;
-    //     previousStatus = DarknodeFeeStatus.NOT_WHITELISTED;
-    // } else {
-    currentStatus = DarknodeFeeStatus.NOT_CLAIMED;
+    const isRegisteredInPreviousEpoch = await darknodeRegistry.methods.isRegisteredInPreviousEpoch(darknodeID).call();
+    currentStatus = registrationStatus === RegistrationStatus.Registered ? DarknodeFeeStatus.NOT_CLAIMED : DarknodeFeeStatus.NOT_WHITELISTED;
     const cycleStartTimeBN = await darknodePayment.methods.cycleStartTime().call();
-    if (!cycleStartTimeBN) { // || whitelistedTime.gte(cycleStartTimeBN.toString())) {
+    if (!cycleStartTimeBN || !isRegisteredInPreviousEpoch) { // || whitelistedTime.gte(cycleStartTimeBN.toString())) {
         previousStatus = DarknodeFeeStatus.NOT_WHITELISTED;
     } else {
         if (previousCycleBN === null) {
@@ -756,7 +748,6 @@ export const fetchDarknodeDetails = async (
             }
         }
     }
-    // }
     // }
 
     let cycleStatus = OrderedMap<string, DarknodeFeeStatus>();
