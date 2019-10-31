@@ -231,39 +231,41 @@ export const changeCycle = async (
     onDone: () => void,
     waitForTX: WaitForTX,
 ): Promise<string> => {
-    // Convert eth to wei
+    return "";
 
-    const darknodePayment = getDarknodePayment(web3, renNetwork);
+    // // Convert eth to wei
 
-    let resolved = false;
+    // const darknodePayment = getDarknodePayment(web3, renNetwork);
 
-    // Try to call `changeCycle` as a read function to see if it reverts
-    const cycleTimeoutCall = await darknodePayment.methods.cycleTimeout().call({ from: address });
-    if (!cycleTimeoutCall) {
-        throw _noCapture_(new Error("Unable to change timeout - please try again"));
-    }
-    const canCall = new BigNumber(cycleTimeoutCall.toString());
-    if (canCall.isEqualTo(0) || !alreadyPast(canCall.toNumber())) {
-        return "";
-    }
+    // let resolved = false;
 
-    const call = () => darknodePayment.methods.changeCycle().send({ from: address });
+    // // Try to call `changeCycle` as a read function to see if it reverts
+    // const cycleTimeoutCall = await darknodePayment.methods.cycleTimeout().call({ from: address });
+    // if (!cycleTimeoutCall) {
+    //     throw _noCapture_(new Error("Unable to change timeout - please try again"));
+    // }
+    // const canCall = new BigNumber(cycleTimeoutCall.toString());
+    // if (canCall.isEqualTo(0) || !alreadyPast(canCall.toNumber())) {
+    //     return "";
+    // }
 
-    try {
-        const res = await waitForTX(
-            call(),
-            onDone,
-        );
-        resolved = true;
-        return res;
-    } catch (error) {
-        if (ignoreError) {
-            resolved = true;
-            return "";
-        }
-        if (resolved) { onCancel(); }
-        throw error;
-    }
+    // const call = () => darknodePayment.methods.changeCycle().send({ from: address });
+
+    // try {
+    //     const res = await waitForTX(
+    //         call(),
+    //         onDone,
+    //     );
+    //     resolved = true;
+    //     return res;
+    // } catch (error) {
+    //     if (ignoreError) {
+    //         resolved = true;
+    //         return "";
+    //     }
+    //     if (resolved) { onCancel(); }
+    //     throw error;
+    // }
 };
 
 export const withdrawOldToken = async (

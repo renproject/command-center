@@ -465,6 +465,7 @@ export const fetchCycleAndPendingRewards = async (
     tokenPrices: TokenPrices | null,
 ) => {
     const darknodePayment = getDarknodePayment(web3, renNetwork);
+    const darknodeRegistry = getDarknodeRegistry(web3, renNetwork);
 
     let pendingRewards = OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber>>();
 
@@ -491,7 +492,7 @@ export const fetchCycleAndPendingRewards = async (
         pendingRewards = pendingRewards.set(previousCycle.toString(), previous);
     }
 
-    const currentShareCountBN = await darknodePayment.methods.shareCount().call();
+    const currentShareCountBN = await darknodeRegistry.methods.numDarknodesPreviousEpoch().call();
     const currentShareCount = currentShareCountBN === null ? null : new BigNumber(currentShareCountBN.toString());
     const current = await safePromiseAllMap(
         NewTokenDetails.map(async (_tokenDetails, token) => {
@@ -517,8 +518,12 @@ export const fetchCycleAndPendingRewards = async (
         pendingRewards = pendingRewards.set(currentCycle.toString(), current);
     }
 
-    const cycleTimeoutBN = await darknodePayment.methods.cycleTimeout().call();
-    const cycleTimeout = cycleTimeoutBN ? new BigNumber(cycleTimeoutBN.toString()) : null;
+    const epoch = await darknodeRegistry.methods.currentEpoch().call();
+    const minimumEpochInterval = await darknodeRegistry.methods.minimumEpochInterval().call();
+    const cycleTimeout = !epoch ? new BigNumber(0) : new BigNumber(epoch.blocktime).plus(new BigNumber(minimumEpochInterval || 0));
+
+    // const cycleTimeoutBN = await darknodePayment.methods.cycleTimeout().call();
+    // const cycleTimeout = cycleTimeoutBN ? new BigNumber(cycleTimeoutBN.toString()) : null;
 
     let pendingTotalInEth = null;
     let pendingRewardsInEth = null;
@@ -722,37 +727,37 @@ export const fetchDarknodeDetails = async (
 
     const currentCycleBN = await darknodePayment.methods.currentCycle().call();
     const previousCycleBN = await darknodePayment.methods.previousCycle().call();
-    const blacklisted = await darknodePaymentStore.methods.isBlacklisted(darknodeID).call();
+    // const blacklisted = await darknodePaymentStore.methods.isBlacklisted(darknodeID).call();
     let currentStatus;
     let previousStatus;
-    if (blacklisted) {
-        currentStatus = DarknodeFeeStatus.BLACKLISTED;
-        previousStatus = DarknodeFeeStatus.BLACKLISTED;
+    // if (blacklisted) {
+    //     currentStatus = DarknodeFeeStatus.BLACKLISTED;
+    //     previousStatus = DarknodeFeeStatus.BLACKLISTED;
+    // } else {
+    // const whitelistedTimeCall = await darknodePaymentStore.methods.darknodeWhitelist(darknodeID).call();
+    // const whitelistedTime = whitelistedTimeCall === null ? new BigNumber(0) : new BigNumber(whitelistedTimeCall.toString());
+    // if (whitelistedTime.isZero()) {
+    //     currentStatus = DarknodeFeeStatus.NOT_WHITELISTED;
+    //     previousStatus = DarknodeFeeStatus.NOT_WHITELISTED;
+    // } else {
+    currentStatus = DarknodeFeeStatus.NOT_CLAIMED;
+    const cycleStartTimeBN = await darknodePayment.methods.cycleStartTime().call();
+    if (!cycleStartTimeBN) { // || whitelistedTime.gte(cycleStartTimeBN.toString())) {
+        previousStatus = DarknodeFeeStatus.NOT_WHITELISTED;
     } else {
-        const whitelistedTimeCall = await darknodePaymentStore.methods.darknodeWhitelist(darknodeID).call();
-        const whitelistedTime = whitelistedTimeCall === null ? new BigNumber(0) : new BigNumber(whitelistedTimeCall.toString());
-        if (whitelistedTime.isZero()) {
-            currentStatus = DarknodeFeeStatus.NOT_WHITELISTED;
-            previousStatus = DarknodeFeeStatus.NOT_WHITELISTED;
+        if (previousCycleBN === null) {
+            previousStatus = DarknodeFeeStatus.CLAIMED;
         } else {
-            currentStatus = DarknodeFeeStatus.NOT_CLAIMED;
-            const cycleStartTimeBN = await darknodePayment.methods.cycleStartTime().call();
-            if (!cycleStartTimeBN || whitelistedTime.gte(cycleStartTimeBN.toString())) {
-                previousStatus = DarknodeFeeStatus.NOT_WHITELISTED;
+            const claimed = await darknodePayment.methods.rewardClaimed(darknodeID, previousCycleBN.toString()).call();
+            if (claimed) {
+                previousStatus = DarknodeFeeStatus.CLAIMED;
             } else {
-                if (previousCycleBN === null) {
-                    previousStatus = DarknodeFeeStatus.CLAIMED;
-                } else {
-                    const claimed = await darknodePayment.methods.rewardClaimed(darknodeID, previousCycleBN.toString()).call();
-                    if (claimed) {
-                        previousStatus = DarknodeFeeStatus.CLAIMED;
-                    } else {
-                        previousStatus = DarknodeFeeStatus.NOT_CLAIMED;
-                    }
-                }
+                previousStatus = DarknodeFeeStatus.NOT_CLAIMED;
             }
         }
     }
+    // }
+    // }
 
     let cycleStatus = OrderedMap<string, DarknodeFeeStatus>();
     if (currentCycleBN !== null) {
