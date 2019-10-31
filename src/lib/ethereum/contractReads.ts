@@ -15,6 +15,15 @@ import { _captureBackgroundException_, _noCapture_ } from "../react/errors";
 import { getDarknodePayment, getDarknodePaymentStore, getDarknodeRegistry } from "./contract";
 import { NewTokenDetails, OldToken, OldTokenDetails, Token, TokenPrices } from "./tokens";
 
+// Remove 0x prefix from a hex string
+export const strip0x = (hex: string) => hex.substring(0, 2) === "0x" ? hex.slice(2) : hex;
+
+// Add a 0x prefix to a hex value, converting to a string first
+export const Ox = (hex: string | Buffer) => {
+    const hexString = typeof hex === "string" ? hex : hex.toString("hex");
+    return hexString.substring(0, 2) === "0x" ? hexString : `0x${hexString}`;
+};
+
 ////////////////////////////////////////////////////////////////////////////////
 // Darknode Registry contract //////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -278,7 +287,7 @@ export const getAllDarknodes = async (web3: Web3, renNetwork: RenNetworkDetails)
  * @param fromBlock The starting block to look at logs for.
  * @returns An immutable set of darknode IDs (as hex strings).
  */
-const retrieveDarknodesInLogs = async (web3: Web3, renNetwork: RenNetworkDetails, fromBlock: string | number) => {
+const retrieveDarknodesInLogs = async (web3: Web3, renNetwork: RenNetworkDetails, fromBlock: string | number, operatorAddress: string) => {
     let darknodes = OrderedSet();
 
     /**
@@ -310,6 +319,15 @@ const retrieveDarknodesInLogs = async (web3: Web3, renNetwork: RenNetworkDetails
         // address.slice(2), null, null] as any,
         topics: [sha3("LogDarknodeRegistered(address,uint256)")],
     });
+    const recentRegistrationEvents2 = await web3.eth.getPastLogs({
+        address: renNetwork.addresses.ren.DarknodeRegistry.address,
+        fromBlock,
+        toBlock: "latest",
+        // topics: [sha3("LogDarknodeRegistered(address,uint256)"), "0x000000000000000000000000" +
+        // address.slice(2), null, null] as any,
+        topics: [sha3("LogDarknodeRegistered(address,address,uint256)"), "0x000000000000000000000000" + strip0x(operatorAddress)],
+    });
+    recentRegistrationEvents.concat(recentRegistrationEvents2);
     for (const event of recentRegistrationEvents) {
         // The log data returns back like this:
         // 0x000000000000000000000000945458e071eca54bb534d8ac7c8cd1a3eb318d92000000000000000000000000000000000000000000\
@@ -380,17 +398,17 @@ export const getOperatorDarknodes = async (
     // const epoch = await darknodeRegistry.methods.currentEpoch().call();
     // const fromBlock = epoch ? `0x${new BigNumber(epoch.blocknumber.toString()).toString(16)}` : renNetwork.addresses.ren.DarknodeRegistry.block || "0x00";
 
+    operatorAddress = toChecksumAddress(operatorAddress);
+
     const fromBlock = renNetwork.addresses.ren.DarknodeRegistry.block || "0x00";
 
-    darknodes = darknodes.concat(await retrieveDarknodesInLogs(web3, renNetwork, fromBlock));
+    darknodes = darknodes.concat(await retrieveDarknodesInLogs(web3, renNetwork, fromBlock, operatorAddress));
 
     const operatorPromises = darknodes.map(async (darknodeID: string) => {
         return [darknodeID, await darknodeRegistry.methods.getDarknodeOwner(darknodeID).call()] as [string, string];
     }).toArray();
 
     let operatorDarknodes = OrderedSet<string>();
-
-    operatorAddress = toChecksumAddress(operatorAddress);
 
     for (let i = 0; i < operatorPromises.length; i++) {
         if (reportProgress) { reportProgress(i, operatorPromises.length); }
