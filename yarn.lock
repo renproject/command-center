@@ -1392,13 +1392,13 @@
   resolved "https://registry.yarnpkg.com/@nodelib/fs.stat/-/fs.stat-1.1.3.tgz#2b5a3ab3f918cca48a8c754c08168e3f03eba61b"
   integrity sha512-shAmDyaQC4H92APFoIaVDHCx5bStIocgvbwQyxPRrbUY20V1EYTbSDchWbuwlMG3V17cprZhA6+78JfB+3DTPw==
 
-"@renproject/contracts@0.3.23":
-  version "0.3.23"
-  resolved "https://registry.yarnpkg.com/@renproject/contracts/-/contracts-0.3.23.tgz#2e8d983ba7b5837d769f7146c1c0066b91c4598f"
-  integrity sha512-vXlzbgC/hOJrM6qxCfjqJ6CJi9w/bUbj2CNuIK+wXcgju/eaOqBHXtdPa39J7WxX1vNcuf0Q/ukDaaVRzCs39g==
+"@renproject/contracts@0.3.24":
+  version "0.3.24"
+  resolved "https://registry.yarnpkg.com/@renproject/contracts/-/contracts-0.3.24.tgz#b76906d627fd63199bb5bae57d9f3b19105167e6"
+  integrity sha512-vhfcmHgbZj3jQpLlD4Bpvt3QtwUgE9y2G2HKhD2dY+WOrWyIyrypvv9JkXLpp22JbWQ1tkTRpBDLCY7p0UHDSg==
   dependencies:
-    darknode-sol "https://github.com/renproject/darknode-sol#7ff6489776ded39019873d1db6bfe66bfc47c648"
-    node-sass "^4.12.0"
+    darknode-sol "https://github.com/renproject/darknode-sol#42f1a180938ee3a81eb84291281a68675f2ef164"
+    node-sass "^4.13.0"
 
 "@renproject/fonts@^1.0.1":
   version "1.0.1"
@@ -4852,11 +4852,11 @@ damerau-levenshtein@^1.0.4:
   resolved "https://registry.yarnpkg.com/damerau-levenshtein/-/damerau-levenshtein-1.0.5.tgz#780cf7144eb2e8dbd1c3bb83ae31100ccc31a414"
   integrity sha512-CBCRqFnpu715iPmw1KrdOrzRqbdFwQTwAWyyyYS42+iAgHCuXZ+/TdMgQkUENPomxEz9z1BEzuQU2Xw0kUuAgA==
 
-"darknode-sol@https://github.com/renproject/darknode-sol#7ff6489776ded39019873d1db6bfe66bfc47c648":
+"darknode-sol@https://github.com/renproject/darknode-sol#42f1a180938ee3a81eb84291281a68675f2ef164":
   version "0.0.3"
-  resolved "https://github.com/renproject/darknode-sol#7ff6489776ded39019873d1db6bfe66bfc47c648"
+  resolved "https://github.com/renproject/darknode-sol#42f1a180938ee3a81eb84291281a68675f2ef164"
   dependencies:
-    openzeppelin-solidity "2.3.0"
+    openzeppelin-solidity "2.4.0"
 
 "darknode-sol@https://github.com/renproject/darknode-sol#f60d23ffa59203ae13a3d99688f12fdf704eb095":
   version "0.0.3"
@@ -10077,6 +10077,29 @@ node-sass@^4.12.0:
     stdout-stream "^1.4.0"
     "true-case-path" "^1.0.2"
 
+node-sass@^4.13.0:
+  version "4.13.0"
+  resolved "https://registry.yarnpkg.com/node-sass/-/node-sass-4.13.0.tgz#b647288babdd6a1cb726de4545516b31f90da066"
+  integrity sha512-W1XBrvoJ1dy7VsvTAS5q1V45lREbTlZQqFbiHb3R3OTTCma0XBtuG6xZ6Z4506nR4lmHPTqVRwxT6KgtWC97CA==
+  dependencies:
+    async-foreach "^0.1.3"
+    chalk "^1.1.1"
+    cross-spawn "^3.0.0"
+    gaze "^1.0.0"
+    get-stdin "^4.0.1"
+    glob "^7.0.3"
+    in-publish "^2.0.0"
+    lodash "^4.17.15"
+    meow "^3.7.0"
+    mkdirp "^0.5.1"
+    nan "^2.13.2"
+    node-gyp "^3.8.0"
+    npmlog "^4.0.0"
+    request "^2.88.0"
+    sass-graph "^2.2.4"
+    stdout-stream "^1.4.0"
+    "true-case-path" "^1.0.2"
+
 "nopt@2 || 3":
   version "3.0.6"
   resolved "https://registry.yarnpkg.com/nopt/-/nopt-3.0.6.tgz#c6465dbf08abcd4db359317f79ac68a646b28ff9"
@@ -10451,6 +10474,11 @@ openzeppelin-solidity@2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/openzeppelin-solidity/-/openzeppelin-solidity-2.3.0.tgz#1ab7b4cc3782a5472ed61eb740c56a8bfdd74119"
   integrity sha512-QYeiPLvB1oSbDt6lDQvvpx7k8ODczvE474hb2kLXZBPKMsxKT1WxTCHBYrCU7kS7hfAku4DcJ0jqOyL+jvjwQw==
+
+openzeppelin-solidity@2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/openzeppelin-solidity/-/openzeppelin-solidity-2.4.0.tgz#5f0a7b30571c45493449166e57b947203415349d"
+  integrity sha512-533gc5jkspxW5YT0qJo02Za5q1LHwXK9CJCc48jNj/22ncNM/3M/3JfWLqfpB90uqLwOKOovpl0JfaMQTR+gXQ==
 
 opn@^5.1.0:
   version "5.5.0"
@@ -15255,9 +15283,9 @@ web3-net@2.0.0-alpha.1:
     web3-providers "2.0.0-alpha.1"
     web3-utils "2.0.0-alpha.1"
 
-"web3-provider-engine@git+https://github.com/trufflesuite/provider-engine.git#web3-one":
+"web3-provider-engine@https://github.com/trufflesuite/provider-engine#web3-one":
   version "14.0.6"
-  resolved "git+https://github.com/trufflesuite/provider-engine.git#3538c60bc4836b73ccae1ac3f64c8fed8ef19c1a"
+  resolved "https://github.com/trufflesuite/provider-engine#3538c60bc4836b73ccae1ac3f64c8fed8ef19c1a"
   dependencies:
     async "^2.5.0"
     backoff "^2.5.0"

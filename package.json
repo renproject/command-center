@@ -20,7 +20,7 @@
     "@fortawesome/free-regular-svg-icons": "^5.11.2",
     "@fortawesome/free-solid-svg-icons": "^5.11.2",
     "@fortawesome/react-fontawesome": "^0.1.6",
-    "@renproject/contracts": "0.3.23",
+    "@renproject/contracts": "0.3.24",
     "@renproject/fonts": "^1.0.1",
     "@renproject/react-components": "1.0.32",
     "@sentry/browser": "^5.7.1",
