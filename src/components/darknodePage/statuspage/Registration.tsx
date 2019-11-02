@@ -4,7 +4,7 @@ import { Loading } from "@renproject/react-components";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators } from "redux";
 
-import { RegistrationStatus } from "../../../lib/ethereum/contractReads";
+import { NULL, RegistrationStatus } from "../../../lib/ethereum/contractReads";
 import { _captureInteractionException_ } from "../../../lib/react/errors";
 import {
     showDeregisterPopup, showRefundPopup, showRegisterPopup,
@@ -64,7 +64,7 @@ class RegistrationClass extends React.Component<Props, typeof defaultState> {
             (isOperator && registrationStatus === RegistrationStatus.Refundable);
 
         const noOperator = (registrationStatus === RegistrationStatus.Unregistered) && this.props.darknodeDetails &&
-            this.props.darknodeDetails.operator === "0x0000000000000000000000000000000000000000";
+            this.props.darknodeDetails.operator === NULL;
 
         return (
             <div className="status">

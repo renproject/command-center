@@ -15,6 +15,8 @@ import { _captureBackgroundException_, _noCapture_ } from "../react/errors";
 import { getDarknodePayment, getDarknodePaymentStore, getDarknodeRegistry } from "./contract";
 import { NewTokenDetails, OldToken, OldTokenDetails, Token, TokenPrices } from "./tokens";
 
+export const NULL = "0x0000000000000000000000000000000000000000";
+
 // Remove 0x prefix from a hex string
 export const strip0x = (hex: string) => hex.substring(0, 2) === "0x" ? hex.slice(2) : hex;
 
@@ -65,7 +67,8 @@ const getDarknodePublicKey = async (web3: Web3, renNetwork: RenNetworkDetails, d
 const getDarknodeOperator = async (web3: Web3, renNetwork: RenNetworkDetails, darknodeID: string): Promise<string> => {
     const owner = await getDarknodeRegistry(web3, renNetwork).methods.getDarknodeOwner(darknodeID).call();
     if (owner === null) {
-        throw _noCapture_(new Error("Unable to retrieve darknode owner"));
+        _captureBackgroundException_(_noCapture_(new Error("Unable to retrieve darknode owner")));
+        return NULL;
     }
     return owner;
 };
@@ -255,7 +258,6 @@ export const fetchDarknodeBalanceHistory = async (
  */
 export const getAllDarknodes = async (web3: Web3, renNetwork: RenNetworkDetails): Promise<string[]> => {
     const batchSize = 10;
-    const NULL = "0x0000000000000000000000000000000000000000";
 
     const allDarknodes = [];
     let lastDarknode = NULL;
@@ -305,7 +307,7 @@ const retrieveDarknodesInLogs = async (web3: Web3, renNetwork: RenNetworkDetails
      * ```
      */
 
-    const recentRegistrationEvents = await web3.eth.getPastLogs({
+    let recentRegistrationEvents = await web3.eth.getPastLogs({
         address: renNetwork.addresses.ren.DarknodeRegistry.address,
         fromBlock,
         toBlock: "latest",
@@ -319,9 +321,9 @@ const retrieveDarknodesInLogs = async (web3: Web3, renNetwork: RenNetworkDetails
         toBlock: "latest",
         // topics: [sha3("LogDarknodeRegistered(address,uint256)"), "0x000000000000000000000000" +
         // address.slice(2), null, null] as any,
-        topics: [sha3("LogDarknodeRegistered(address,address,uint256)"), "0x000000000000000000000000" + strip0x(operatorAddress)],
+        topics: [sha3("LogDarknodeRegistered(address,address,uint256)")], // "0x000000000000000000000000" + strip0x(operatorAddress)],
     });
-    recentRegistrationEvents.concat(recentRegistrationEvents2);
+    recentRegistrationEvents = recentRegistrationEvents.concat(recentRegistrationEvents2);
     for (const event of recentRegistrationEvents) {
         // The log data returns back like this:
         // 0x000000000000000000000000945458e071eca54bb534d8ac7c8cd1a3eb318d92000000000000000000000000000000000000000000\

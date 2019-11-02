@@ -21,6 +21,9 @@ export const fundNode = async (
     // Convert eth to wei
     const ethAmount = new BigNumber(ethAmountStr);
     const weiAmount = ethAmount.times(new BigNumber(10).exponentiatedBy(18)).decimalPlaces(0);
+    if (weiAmount.isNaN()) {
+        throw new Error(`Invalid ETH amount ${ethAmountStr} - please try again`);
+    }
 
     let resolved = false;
 
