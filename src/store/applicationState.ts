@@ -30,12 +30,15 @@ export class AccountState extends Record({
     web3BrowserName: Web3Browser.MetaMask,
     web3: readOnlyWeb3,
 
+    loggedInBefore: false,
+
     renNetwork: RenNetworks[DEFAULT_REN_NETWORK || RenNetwork.Testnet] as RenNetworkDetails,
 }) implements Serializable<AccountState> {
     public serialize(): string {
         // const js = this.toJS();
         return JSON.stringify({
             renNetwork: this.renNetwork.name,
+            loggedInBefore: this.loggedInBefore,
         });
     }
 
@@ -47,6 +50,9 @@ export class AccountState extends Record({
             let accountData = new AccountState();
             if (data.renNetwork) {
                 accountData = accountData.set("renNetwork", RenNetworks[data.renNetwork]);
+            }
+            if (data.loggedInBefore) {
+                accountData = accountData.set("loggedInBefore", data.loggedInBefore === "true" || data.loggedInBefore);
             }
             return accountData;
         } catch (error) {

@@ -8,10 +8,11 @@ import { PromiEvent } from "web3-core";
 
 import {
     calculateSecondsPerBlock, fetchCycleAndPendingRewards, fetchDarknodeBalanceHistory,
-    fetchDarknodeDetails, getDarknodeCounts, getOperatorDarknodes, HistoryPeriod,
+    fetchDarknodeDetails, getDarknodeCounts, getOperatorDarknodes, HistoryPeriod, NULL,
+    RegistrationStatus,
 } from "../../lib/ethereum/contractReads";
 import { Token, TokenPrices } from "../../lib/ethereum/tokens";
-import { DarknodesState } from "../applicationState";
+import { ApplicationState, DarknodesState } from "../applicationState";
 import { AppDispatch } from "../rootReducer";
 import {
     updateCurrentCycle, updateCurrentShareCount, updateCycleTimeout, updateDarknodeCounts,
@@ -139,7 +140,7 @@ export const updateOperatorDarknodes = (
     address: string,
     tokenPrices: TokenPrices | null,
     previousDarknodeList: List<string> | null,
-) => async (dispatch: AppDispatch) => {
+) => async (dispatch: AppDispatch, getState: () => ApplicationState) => {
     // await dispatch(updateCycleAndPendingRewards(web3, renNetwork, tokenPrices));
 
     let darknodeList = previousDarknodeList || List<string>();
@@ -162,7 +163,20 @@ export const updateOperatorDarknodes = (
     });
 
     await Promise.all(darknodeList.toList().map(async (darknodeID: string) => {
+        console.log(`Updating ${darknodeID}`);
         return dispatch(updateDarknodeDetails(web3, renNetwork, darknodeID, tokenPrices));
+    }).toArray());
+
+    const { darknodeDetails } = getState().network;
+
+    await Promise.all(darknodeList.toList().map(async (darknodeID: string) => {
+        const details = darknodeDetails.get(darknodeID);
+        if (details && details.registrationStatus === RegistrationStatus.Registered && details.operator.toLowerCase() !== NULL.toLowerCase() && details.operator.toLowerCase() !== address.toLowerCase()) {
+            console.log(`Removing darknode ${darknodeID}`);
+            return dispatch(removeRegisteringDarknode({ darknodeID }));
+        }
+        console.log(`Not removing darknode ${darknodeID}`);
+        return;
     }).toArray());
 
     if (darknodeList.size === 0) {

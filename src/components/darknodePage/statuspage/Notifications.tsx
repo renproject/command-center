@@ -4,6 +4,7 @@ import {
     faExclamationTriangle, faInfoCircle, faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { RenNetworkDetails } from "@renproject/contracts";
 import BigNumber from "bignumber.js";
 
 import { RegistrationStatus } from "../../../lib/ethereum/contractReads";
@@ -24,7 +25,7 @@ const notificationType = {
 };
 
 export const Notifications: React.StatelessComponent<Props> = (props) => {
-    const { isOperator, darknodeDetails } = props;
+    const { isOperator, darknodeDetails, renNetwork } = props;
 
     let notification;
     if (
@@ -34,7 +35,7 @@ export const Notifications: React.StatelessComponent<Props> = (props) => {
     ) {
         notification = {
             title: "Registration in progress!",
-            detail: "Your darknode will be registered within 24 hours.",
+            detail: `Your darknode will be registered within ${renNetwork.name === "chaosnet" ? "8 days" : "24 hours"}.`,
             type: NotificationType.Information,
         };
     } else if (
@@ -44,7 +45,7 @@ export const Notifications: React.StatelessComponent<Props> = (props) => {
     ) {
         notification = {
             title: "Deregistration in progress.",
-            detail: "Your darknode will be deregistered within 24 hours.",
+            detail: `Your darknode will be deregistered within ${renNetwork.name === "chaosnet" ? "8 days" : "24 hours"}.`,
             type: NotificationType.Information,
         };
     } else if (
@@ -54,7 +55,7 @@ export const Notifications: React.StatelessComponent<Props> = (props) => {
     ) {
         notification = {
             title: "Darknode deregistered.",
-            detail: "You will be able to withdraw your REN within 24 hours.",
+            detail: `You will be able to withdraw your REN within ${renNetwork.name === "chaosnet" ? "8 days" : "24 hours"}.`,
             type: NotificationType.Information,
         };
     } else if (
@@ -86,4 +87,5 @@ export const Notifications: React.StatelessComponent<Props> = (props) => {
 interface Props {
     isOperator: boolean;
     darknodeDetails: DarknodesState | null;
+    renNetwork: RenNetworkDetails;
 }

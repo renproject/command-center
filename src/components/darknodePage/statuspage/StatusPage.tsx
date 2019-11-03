@@ -38,7 +38,7 @@ class StatusPageClass extends React.Component<Props, State> {
     }
 
     public render = (): JSX.Element => {
-        const { darknodeDetails, darknodeID, name, isOperator, action, publicKey } = this.props;
+        const { darknodeDetails, darknodeID, name, isOperator, action, publicKey, store: { renNetwork } } = this.props;
         const { renaming, newName } = this.state;
 
         let noDarknode;
@@ -55,7 +55,7 @@ class StatusPageClass extends React.Component<Props, State> {
         const renamingCLass = renaming ? "statuspage--renaming" : "";
         const noDarknodeClass = noDarknode || !darknodeDetails ? "statuspage--no-darknode" : "";
 
-        const notifications = <Notifications isOperator={isOperator} darknodeDetails={darknodeDetails} />;
+        const notifications = <Notifications isOperator={isOperator} darknodeDetails={darknodeDetails} renNetwork={renNetwork} />;
 
         return (
             <div className={`statuspage ${focusedClass} ${renamingCLass} ${noDarknodeClass}`}>
@@ -173,6 +173,7 @@ class StatusPageClass extends React.Component<Props, State> {
 const mapStateToProps = (state: ApplicationState) => ({
     store: {
         tokenPrices: state.network.tokenPrices,
+        renNetwork: state.account.renNetwork,
     },
 });
 

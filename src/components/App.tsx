@@ -6,6 +6,8 @@ import { Route, RouteComponentProps, Switch, withRouter } from "react-router-dom
 import { bindActionCreators } from "redux";
 
 import { DEFAULT_REN_NETWORK } from "../lib/react/environmentVariables";
+import { _captureBackgroundException_ } from "../lib/react/errors";
+import { promptLogin } from "../store/account/accountActions";
 import { ApplicationState } from "../store/applicationState";
 import { AppDispatch } from "../store/rootReducer";
 import { AllDarknodes } from "./allDarknodesPage/AllDarknodes";
@@ -28,7 +30,15 @@ const ScrollToTopWithRouter = withRouter(ScrollToTop);
  * App is the main visual component responsible for displaying different routes
  * and running background app loops
  */
-const AppClass = ({ match: { params }, store: { address, renNetwork } }: Props) => {
+const AppClass = ({ match: { params }, store: { address, loggedInBefore, renNetwork }, actions }: Props) => {
+
+    React.useEffect(() => {
+        if (loggedInBefore) {
+            actions.login(renNetwork, { redirect: false, showPopup: false, immediatePopup: false })
+                .catch(_captureBackgroundException_);
+        }
+    }, []);
+
     const withAccount = React.useCallback(<T extends React.ComponentClass>(component: T):
         React.ComponentClass | React.StatelessComponent =>
         address ? component : LoggingIn,
@@ -76,14 +86,14 @@ const AppClass = ({ match: { params }, store: { address, renNetwork } }: Props) 
 const mapStateToProps = (state: ApplicationState) => ({
     store: {
         address: state.account.address,
-        web3: state.account.web3,
+        loggedInBefore: state.account.loggedInBefore,
         renNetwork: state.account.renNetwork,
-        tokenPrices: state.network.tokenPrices,
     },
 });
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({
+        login: promptLogin,
     }, dispatch),
 });
 

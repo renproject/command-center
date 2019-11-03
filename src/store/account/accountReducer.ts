@@ -16,7 +16,8 @@ export const accountReducer = (state: AccountState = new AccountState(), action:
         case getType(accountActions.login):
             return state
                 .set("address", action.payload.address)
-                .set("web3", action.payload.web3);
+                .set("web3", action.payload.web3)
+                .set("loggedInBefore", true);
 
         case getType(accountActions.storeWeb3BrowserName):
             const web3BrowserName = getWeb3BrowserName(action.payload);

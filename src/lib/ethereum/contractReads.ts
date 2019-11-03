@@ -52,7 +52,8 @@ export const getMinimumBond = async (web3: Web3, renNetwork: RenNetworkDetails):
 const getDarknodePublicKey = async (web3: Web3, renNetwork: RenNetworkDetails, darknodeID: string): Promise<string> => {
     const publicKey = await getDarknodeRegistry(web3, renNetwork).methods.getDarknodePublicKey(darknodeID).call();
     if (publicKey === null) {
-        throw _noCapture_(new Error("Unable to retrieve darknode public key"));
+        _captureBackgroundException_(new Error("Unable to retrieve darknode public key"));
+        return NULL;
     }
     return publicKey;
 };
