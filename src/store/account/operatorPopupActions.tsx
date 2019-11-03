@@ -58,7 +58,7 @@ export const showRegisterPopup = (
         };
 
         const steps = [
-            { call: step1, name: "Approve 100'000 REN" },
+            { call: step1, name: `Approve ${renNetwork.name === "chaosnet" ? "10K" : "100K"} REN` },
             { call: step2, name: "Register darknode" },
         ];
 

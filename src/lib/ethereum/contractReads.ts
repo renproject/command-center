@@ -12,7 +12,7 @@ import { darknodeIDHexToBase58 } from "../darknode/darknodeID";
 import { queryStat } from "../darknode/jsonrpc";
 import { safePromiseAllList, safePromiseAllMap } from "../general/promiseAll";
 import { _captureBackgroundException_, _noCapture_ } from "../react/errors";
-import { getDarknodePayment, getDarknodePaymentStore, getDarknodeRegistry } from "./contract";
+import { getDarknodePayment, getDarknodeRegistry } from "./contract";
 import { NewTokenDetails, OldToken, OldTokenDetails, Token, TokenPrices } from "./tokens";
 
 export const NULL = "0x0000000000000000000000000000000000000000";
@@ -38,7 +38,7 @@ export const Ox = (hex: string | Buffer) => {
  * @returns A promise to the minimum bond as a BigNumber.
  */
 export const getMinimumBond = async (web3: Web3, renNetwork: RenNetworkDetails): Promise<BigNumber> => {
-    const minimumBond = (await getDarknodeRegistry(web3, renNetwork).methods.minimumBond().call()) || "100000000000000000000000";
+    const minimumBond = (await getDarknodeRegistry(web3, renNetwork).methods.minimumBond().call()) || (renNetwork.name === "chaosnet" ? "10000000000000000000000" : "100000000000000000000000");
     return new BigNumber((minimumBond).toString());
 };
 
@@ -725,7 +725,6 @@ export const fetchDarknodeDetails = async (
     // Cycle status ////////////////////////////////////////////////////////////
 
     const darknodePayment = getDarknodePayment(web3, renNetwork);
-    const darknodePaymentStore = getDarknodePaymentStore(web3, renNetwork);
 
     const currentCycleBN = await darknodePayment.methods.currentCycle().call();
     const previousCycleBN = await darknodePayment.methods.previousCycle().call();

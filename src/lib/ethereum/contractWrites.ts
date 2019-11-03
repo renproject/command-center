@@ -1,5 +1,4 @@
 import { mainnet, RenNetworkDetails } from "@renproject/contracts";
-import { alreadyPast } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import Web3 from "web3";
 import { TransactionConfig } from "web3-core";
