@@ -10,7 +10,7 @@ import { bindActionCreators } from "redux";
 
 import { DarknodeFeeStatus } from "../../../../lib/ethereum/contractReads";
 import { OldToken, Token } from "../../../../lib/ethereum/tokens";
-import { showClaimPopup } from "../../../../store/account/operatorPopupActions";
+// import { showClaimPopup } from "../../../../store/account/operatorPopupActions";
 import { ApplicationState, DarknodesState } from "../../../../store/applicationState";
 import {
     updateCycleAndPendingRewards, updateDarknodeDetails,
@@ -297,7 +297,7 @@ const mapStateToProps = (state: ApplicationState) => ({
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({
-        showClaimPopup,
+        // showClaimPopup,
         updateDarknodeDetails,
         updateCycleAndPendingRewards,
     }, dispatch),

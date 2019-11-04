@@ -10,7 +10,7 @@ import { MultiStepPopup } from "../../components/common/popups/MultiStepPopup";
 import { TokenBalance } from "../../components/common/TokenBalance";
 import { getMinimumBond } from "../../lib/ethereum/contractReads";
 import {
-    approveNode, changeCycle, claimForNode, deregisterNode, fundNode, refundNode, registerNode,
+    approveNode, claimForNode, deregisterNode, fundNode, refundNode, registerNode,
 } from "../../lib/ethereum/contractWrites";
 import { Token, TokenPrices } from "../../lib/ethereum/tokens";
 import { connectWaitForTX } from "../../lib/ethereum/waitForTX";
@@ -203,50 +203,50 @@ export const showFundPopup = (
     ));
 };
 
-export const showClaimPopup = (
-    web3: Web3,
-    renNetwork: RenNetworkDetails,
-    claimBeforeCycle: boolean,
-    address: string,
-    darknodeID: string,
-    title: string,
-    onCancel: () => void,
-    onDone: () => void,
-) => async (dispatch: AppDispatch) => {
+// export const showClaimPopup = (
+//     web3: Web3,
+//     renNetwork: RenNetworkDetails,
+//     claimBeforeCycle: boolean,
+//     address: string,
+//     darknodeID: string,
+//     title: string,
+//     onCancel: () => void,
+//     onDone: () => void,
+// ) => async (dispatch: AppDispatch) => {
 
-    const useFixedGasLimit = !claimBeforeCycle;
+//     const useFixedGasLimit = !claimBeforeCycle;
 
-    const claimStep = {
-        call: async () => {
-            await claimForNode(web3, renNetwork, useFixedGasLimit, address, darknodeID, onCancel, onDone, connectWaitForTX(dispatch));
-        },
-        name: "Claim rewards",
-    };
+//     const claimStep = {
+//         call: async () => {
+//             await claimForNode(web3, renNetwork, useFixedGasLimit, address, darknodeID, onCancel, onDone, connectWaitForTX(dispatch));
+//         },
+//         name: "Claim rewards",
+//     };
 
-    const ignoreError = claimBeforeCycle;
-    const changeCycleStep = {
-        call: async () => {
-            await changeCycle(web3, renNetwork, ignoreError, address, onCancel, onDone, connectWaitForTX(dispatch));
-        },
-        name: `Change cycle${claimBeforeCycle ? " (optional)" : ""}`,
-    };
+//     const ignoreError = claimBeforeCycle;
+//     const changeCycleStep = {
+//         call: async () => {
+//             await changeCycle(web3, renNetwork, ignoreError, address, onCancel, onDone, connectWaitForTX(dispatch));
+//         },
+//         name: `Change cycle${claimBeforeCycle ? " (optional)" : ""}`,
+//     };
 
-    const step1 = claimBeforeCycle ? claimStep : changeCycleStep;
-    const step2 = claimBeforeCycle ? changeCycleStep : claimStep;
+//     const step1 = claimBeforeCycle ? claimStep : changeCycleStep;
+//     const step2 = claimBeforeCycle ? changeCycleStep : claimStep;
 
-    const steps = [step1, step2];
+//     const steps = [step1, step2];
 
-    dispatch(setPopup(
-        {
-            popup: <MultiStepPopup
-                steps={steps}
-                onCancel={onCancel}
-                title={title}
-                confirm={false}
-            />,
-            onCancel,
-            dismissible: false,
-            overlay: true,
-        },
-    ));
-};
+//     dispatch(setPopup(
+//         {
+//             popup: <MultiStepPopup
+//                 steps={steps}
+//                 onCancel={onCancel}
+//                 title={title}
+//                 confirm={false}
+//             />,
+//             onCancel,
+//             dismissible: false,
+//             overlay: true,
+//         },
+//     ));
+// };
