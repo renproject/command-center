@@ -152,20 +152,22 @@ export const NewTokenDetails = AllTokenDetails.filter((details) => !details.old)
 
 const coinGeckoURL = `https://api.coingecko.com/api/v3`;
 const coinGeckoParams = `localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`;
-export const getPrices = async (): Promise<TokenPrices> => {
-
-    let prices: TokenPrices = Map();
-
-    for (const [token, tokenDetails] of AllTokenDetails.toArray()) {
-        const response = await Axios.get(
-            `${coinGeckoURL}/coins/${tokenDetails.coinGeckoID}?${coinGeckoParams}`
-        );
-        const price = Map<Currency, number>(response.data.market_data.current_price);
-
-        prices = prices.set(token, price);
-    }
-
-    return prices;
-};
+export const getPrices = (): Promise<TokenPrices> =>
+    AllTokenDetails.toArray().map(([token, tokenDetails]) =>
+        ({
+            token, responsePromise: Axios.get(
+                `${coinGeckoURL}/coins/${tokenDetails.coinGeckoID}?${coinGeckoParams}`
+            )
+        }))
+        .reduce(async (pricesPromise, { token, responsePromise }) => {
+            let prices = await pricesPromise;
+            try {
+                const price = Map<Currency, number>((await responsePromise).data.market_data.current_price);
+                prices = prices.set(token, price);
+            } catch (error) {
+                console.error(error);
+            }
+            return prices;
+        }, Promise.resolve(Map<Token | OldToken, Map<Currency, number>>()));
 
 export type TokenPrices = Map<Token | OldToken, Map<Currency, number>>;

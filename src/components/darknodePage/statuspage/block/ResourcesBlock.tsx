@@ -52,10 +52,23 @@ export const ResourcesBlock = (props: Props): JSX.Element => {
                                 legend={{ display: false }}
                                 data={{
                                     maintainAspectRation: true,
-                                    labels: [darknodeDetails.nodeStatistics ? `Free: ${filesize(darknodeDetails.nodeStatistics.diskFree)} -` : "Free: Unknown -", darknodeDetails.nodeStatistics ? `Used: ${filesize(darknodeDetails.nodeStatistics.diskUsed)} -` : "Used: Unknown -"],
+                                    labels: [
+                                        darknodeDetails.nodeStatistics ? `Used: ${filesize(darknodeDetails.nodeStatistics.diskUsed)} -` : "Used: Unknown -",
+                                        darknodeDetails.nodeStatistics ? `Free: ${filesize(darknodeDetails.nodeStatistics.diskFree)} -` : "Free: Unknown -",
+                                    ],
                                     datasets: [{
-                                        data: darknodeDetails.nodeStatistics ? [darknodeDetails.nodeStatistics.diskFree, darknodeDetails.nodeStatistics.diskUsed] : [100, 0],
-                                        backgroundColor: ["#00000000", "rgba(0, 111, 232, 0.28)"],
+                                        data: darknodeDetails.nodeStatistics ?
+                                            [
+                                                darknodeDetails.nodeStatistics.diskUsed,
+                                                darknodeDetails.nodeStatistics.diskFree,
+                                            ] : [
+                                                0,
+                                                100,
+                                            ],
+                                        backgroundColor: [
+                                            "rgba(0, 111, 232, 0.28)",
+                                            "#00000000",
+                                        ],
                                         borderColor: "#001A38",
                                         maintainAspectRation: true,
                                         // hoverBackgroundColor: [],
