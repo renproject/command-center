@@ -224,51 +224,51 @@ export const claimForNode = async (
     }
 };
 
-export const changeCycle = async (
-    web3: Web3,
-    renNetwork: RenNetworkDetails,
-    ignoreError: boolean,
-    address: string,
-    onCancel: () => void,
-    onDone: () => void,
-    waitForTX: WaitForTX,
-): Promise<string> => {
-    return "";
+// export const changeCycle = async (
+//     web3: Web3,
+//     renNetwork: RenNetworkDetails,
+//     ignoreError: boolean,
+//     address: string,
+//     onCancel: () => void,
+//     onDone: () => void,
+//     waitForTX: WaitForTX,
+// ): Promise<string> => {
+//     return "";
 
-    // // Convert eth to wei
+//     // // Convert eth to wei
 
-    // const darknodePayment = getDarknodePayment(web3, renNetwork);
+//     // const darknodePayment = getDarknodePayment(web3, renNetwork);
 
-    // let resolved = false;
+//     // let resolved = false;
 
-    // // Try to call `changeCycle` as a read function to see if it reverts
-    // const cycleTimeoutCall = await darknodePayment.methods.cycleTimeout().call({ from: address });
-    // if (!cycleTimeoutCall) {
-    //     throw _noCapture_(new Error("Unable to change timeout - please try again"));
-    // }
-    // const canCall = new BigNumber(cycleTimeoutCall.toString());
-    // if (canCall.isEqualTo(0) || !alreadyPast(canCall.toNumber())) {
-    //     return "";
-    // }
+//     // // Try to call `changeCycle` as a read function to see if it reverts
+//     // const cycleTimeoutCall = await darknodePayment.methods.cycleTimeout().call({ from: address });
+//     // if (!cycleTimeoutCall) {
+//     //     throw _noCapture_(new Error("Unable to change timeout - please try again"));
+//     // }
+//     // const canCall = new BigNumber(cycleTimeoutCall.toString());
+//     // if (canCall.isEqualTo(0) || !alreadyPast(canCall.toNumber())) {
+//     //     return "";
+//     // }
 
-    // const call = () => darknodePayment.methods.changeCycle().send({ from: address });
+//     // const call = () => darknodePayment.methods.changeCycle().send({ from: address });
 
-    // try {
-    //     const res = await waitForTX(
-    //         call(),
-    //         onDone,
-    //     );
-    //     resolved = true;
-    //     return res;
-    // } catch (error) {
-    //     if (ignoreError) {
-    //         resolved = true;
-    //         return "";
-    //     }
-    //     if (resolved) { onCancel(); }
-    //     throw error;
-    // }
-};
+//     // try {
+//     //     const res = await waitForTX(
+//     //         call(),
+//     //         onDone,
+//     //     );
+//     //     resolved = true;
+//     //     return res;
+//     // } catch (error) {
+//     //     if (ignoreError) {
+//     //         resolved = true;
+//     //         return "";
+//     //     }
+//     //     if (resolved) { onCancel(); }
+//     //     throw error;
+//     // }
+// };
 
 export const withdrawOldToken = async (
     web3: Web3,

@@ -2,15 +2,13 @@ import * as React from "react";
 
 import { faStar } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-    alreadyPast, CurrencyIcon, Loading, naturalTime, TokenIcon,
-} from "@renproject/react-components";
+import { CurrencyIcon, TokenIcon } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators } from "redux";
 
-import { DarknodeFeeStatus, RegistrationStatus } from "../../../../lib/ethereum/contractReads";
+import { DarknodeFeeStatus } from "../../../../lib/ethereum/contractReads";
 import { OldToken, Token } from "../../../../lib/ethereum/tokens";
 import { showClaimPopup } from "../../../../store/account/operatorPopupActions";
 import { ApplicationState, DarknodesState } from "../../../../store/applicationState";
@@ -76,11 +74,12 @@ class FeesBlockClass extends React.Component<Props, State> {
             previousCycle,
             pendingRewards,
             pendingTotalInEth,
-            cycleTimeout,
+            // cycleTimeout,
         } = store;
-        const { tab, disableClaim, claiming } = this.state;
+        // const { tab, disableClaim, claiming } = this.state;
+        const { tab } = this.state;
 
-        const showWhitelist = darknodeDetails && darknodeDetails.cycleStatus.get(currentCycle) === DarknodeFeeStatus.NOT_WHITELISTED;
+        // const showWhitelist = darknodeDetails && darknodeDetails.cycleStatus.get(currentCycle) === DarknodeFeeStatus.NOT_WHITELISTED;
         const showPreviousPending = darknodeDetails && darknodeDetails.cycleStatus.get(previousCycle) === DarknodeFeeStatus.NOT_CLAIMED;
         const showCurrentPending = darknodeDetails && darknodeDetails.cycleStatus.get(currentCycle) === DarknodeFeeStatus.NOT_CLAIMED;
         let pendingTotal = new BigNumber(0);
@@ -150,7 +149,7 @@ class FeesBlockClass extends React.Component<Props, State> {
                                 </span>
                                 <span className="fees-block--advanced--unit">{quoteCurrency.toUpperCase()}</span>
                             </div>
-                            {isOperator && darknodeDetails.registrationStatus === RegistrationStatus.Registered ?
+                            {/* {isOperator && darknodeDetails.registrationStatus === RegistrationStatus.Registered ?
                                 cycleTimeout.isZero() || claiming || disableClaim ? <button className="button--white block--advanced--claim" disabled>
                                     <Loading alt />
                                 </button> :
@@ -182,7 +181,7 @@ class FeesBlockClass extends React.Component<Props, State> {
                                                 })}
                                             </button>
                                 : <></>
-                            }
+                            } */}
                             <div className="block--advanced--bottom">
                                 <table className="fees-block--table">
                                     <tbody>
@@ -238,48 +237,47 @@ class FeesBlockClass extends React.Component<Props, State> {
         this.setState({ tab: tab as Tab });
     }
 
-    private readonly onClaimAfterCycle = async () => {
-        await this.onClaim(false);
-    }
+    // private readonly onClaimAfterCycle = async () => {
+    //     await this.onClaim(false);
+    // }
 
-    private readonly onClaimBeforeCycle = async () => {
-        await this.onClaim(true);
-    }
+    // private readonly onClaimBeforeCycle = async () => {
+    //     await this.onClaim(true);
+    // }
 
-    private readonly onClaim = async (claimBeforeCycle: boolean) => {
-        const { darknodeDetails, store: { web3, address, tokenPrices, renNetwork } } = this.props;
+    // private readonly onClaim = async (claimBeforeCycle: boolean) => {
+    //     const { darknodeDetails, store: { web3, address, tokenPrices, renNetwork } } = this.props;
 
-        if (!address || !darknodeDetails) {
-            this.setState({ claiming: false });
-            return;
-        }
+    //     if (!address || !darknodeDetails) {
+    //         this.setState({ claiming: false });
+    //         return;
+    //     }
 
-        const darknodeID = darknodeDetails.ID;
+    //     const darknodeID = darknodeDetails.ID;
 
-        const onCancel = () => {
-            if (this._isMounted) {
-                this.setState({ claiming: false, disableClaim: false });
-            }
-        };
+    //     const onCancel = () => {
+    //         if (this._isMounted) {
+    //             this.setState({ claiming: false, disableClaim: false });
+    //         }
+    //     };
 
-        const onDone = async () => {
-            try {
-                await this.props.actions.updateCycleAndPendingRewards(web3, renNetwork, tokenPrices);
-                await this.props.actions.updateDarknodeDetails(web3, renNetwork, darknodeID, tokenPrices);
-            } catch (error) {
-                // Ignore error
-            }
+    //     const onDone = async () => {
+    //         try {
+    //             await this.props.actions.updateCycleAndPendingRewards(web3, renNetwork, tokenPrices);
+    //             await this.props.actions.updateDarknodeDetails(web3, renNetwork, darknodeID, tokenPrices);
+    //         } catch (error) {
+    //             // Ignore error
+    //         }
 
-            if (this._isMounted) {
-                this.setState({ claiming: false });
-            }
-        };
+    //         if (this._isMounted) {
+    //             this.setState({ claiming: false });
+    //         }
+    //     };
 
-        const title = `Claim rewards`;
-        this.setState({ disableClaim: true });
-        await this.props.actions.showClaimPopup(web3, renNetwork, claimBeforeCycle, address, darknodeID, title, onCancel, onDone);
-    }
-
+    //     const title = `Claim rewards`;
+    //     this.setState({ disableClaim: true });
+    //     await this.props.actions.showClaimPopup(web3, renNetwork, claimBeforeCycle, address, darknodeID, title, onCancel, onDone);
+    // }
 }
 
 const mapStateToProps = (state: ApplicationState) => ({
