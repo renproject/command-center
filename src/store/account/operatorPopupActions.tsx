@@ -1,5 +1,4 @@
 import * as React from "react";
-import {} from "redux";
 
 import { RenNetworkDetails } from "@renproject/contracts";
 import { Currency, CurrencyIcon } from "@renproject/react-components";
@@ -10,7 +9,7 @@ import { MultiStepPopup } from "../../components/common/popups/MultiStepPopup";
 import { TokenBalance } from "../../components/common/TokenBalance";
 import { getMinimumBond } from "../../lib/ethereum/contractReads";
 import {
-    approveNode, claimForNode, deregisterNode, fundNode, refundNode, registerNode,
+    approveNode, deregisterNode, fundNode, refundNode, registerNode,
 } from "../../lib/ethereum/contractWrites";
 import { Token, TokenPrices } from "../../lib/ethereum/tokens";
 import { connectWaitForTX } from "../../lib/ethereum/waitForTX";

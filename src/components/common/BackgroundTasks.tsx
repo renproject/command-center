@@ -145,7 +145,7 @@ class BackgroundTasksClass extends React.Component<Props> {
 
         const { web3, address, tokenPrices, darknodeList, darknodeRegisteringList, renNetwork } = props.store;
         let timeout = 1; // Retry in a second, unless the call succeeds
-        if (address && tokenPrices) {
+        if (address) {
             try {
                 let list = null;
                 if (darknodeRegisteringList.size > 0) {

@@ -284,7 +284,12 @@ export const getAllDarknodes = async (web3: Web3, renNetwork: RenNetworkDetails)
  * @param fromBlock The starting block to look at logs for.
  * @returns An immutable set of darknode IDs (as hex strings).
  */
-const retrieveDarknodesInLogs = async (web3: Web3, renNetwork: RenNetworkDetails, fromBlock: string | number, operatorAddress: string) => {
+const retrieveDarknodesInLogs = async (
+    web3: Web3,
+    renNetwork: RenNetworkDetails,
+    fromBlock: string | number,
+    operatorAddress: string,
+) => {
     let darknodes = OrderedSet();
 
     /**
@@ -322,7 +327,7 @@ const retrieveDarknodesInLogs = async (web3: Web3, renNetwork: RenNetworkDetails
         toBlock: "latest",
         // topics: [sha3("LogDarknodeRegistered(address,uint256)"), "0x000000000000000000000000" +
         // address.slice(2), null, null] as any,
-        topics: [sha3("LogDarknodeRegistered(address,address,uint256)")], // "0x000000000000000000000000" + strip0x(operatorAddress)],
+        topics: [sha3("LogDarknodeRegistered(address,address,uint256)"), "0x000000000000000000000000" + strip0x(operatorAddress)],
     });
     recentRegistrationEvents = recentRegistrationEvents.concat(recentRegistrationEvents2);
     for (const event of recentRegistrationEvents) {
@@ -331,12 +336,14 @@ const retrieveDarknodesInLogs = async (web3: Web3, renNetwork: RenNetworkDetails
         // 00152d02c7e14af6800000
         // and we want to extract this: 0x945458e071eca54bb534d8ac7c8cd1a3eb318d92 (20 bytes, 40 characters long)
         let darknodeID;
-        if (event.topics.length === 2) {
-            darknodeID = toChecksumAddress(`0x${(event.topics[1] as string).substr(26, 40)}`);
+        let operator;
+        if (event.topics.length === 3) {
+            darknodeID = toChecksumAddress(`0x${(event.topics[2] as string).substr(26, 40)}`);
+            operator = toChecksumAddress(`0x${(event.topics[1] as string).substr(26, 40)}`);
         } else {
             darknodeID = toChecksumAddress(`0x${event.data.substr(26, 40)}`);
         }
-        darknodes = darknodes.add(darknodeID);
+        darknodes = darknodes.add({ darknodeID, operator });
     }
 
     // Note: Deregistration events are not included because we are unable to retrieve the operator
@@ -401,8 +408,12 @@ export const getOperatorDarknodes = async (
 
     darknodes = darknodes.concat(await retrieveDarknodesInLogs(web3, renNetwork, fromBlock, operatorAddress));
 
-    const operatorPromises = darknodes.map(async (darknodeID: string) => {
-        return [darknodeID, await darknodeRegistry.methods.getDarknodeOwner(darknodeID).call()] as [string, string];
+    const operatorPromises = darknodes.map(async ({ operator, darknodeID }: { operator: string, darknodeID: string }) => {
+        if (operator) {
+            return [darknodeID, operator];
+        } else {
+            return [darknodeID, await darknodeRegistry.methods.getDarknodeOwner(darknodeID).call()] as [string, string];
+        }
     }).toArray();
 
     let operatorDarknodes = OrderedSet<string>();
@@ -410,7 +421,7 @@ export const getOperatorDarknodes = async (
     for (let i = 0; i < operatorPromises.length; i++) {
         if (reportProgress) { reportProgress(i, operatorPromises.length); }
         const [darknodeID, operator] = await operatorPromises[i];
-        if (operator === operatorAddress && !operatorDarknodes.contains(operatorAddress)) {
+        if (operator.toLowerCase() === operatorAddress.toLowerCase() && !operatorDarknodes.contains(operatorAddress)) {
             operatorDarknodes = operatorDarknodes.add(darknodeID);
             if (onDarknode) { onDarknode(darknodeID); }
         }

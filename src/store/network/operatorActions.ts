@@ -163,7 +163,6 @@ export const updateOperatorDarknodes = (
     });
 
     await Promise.all(darknodeList.toList().map(async (darknodeID: string) => {
-        console.log(`Updating ${darknodeID}`);
         return dispatch(updateDarknodeDetails(web3, renNetwork, darknodeID, tokenPrices));
     }).toArray());
 
@@ -171,11 +170,13 @@ export const updateOperatorDarknodes = (
 
     await Promise.all(darknodeList.toList().map(async (darknodeID: string) => {
         const details = darknodeDetails.get(darknodeID);
-        if (details && details.registrationStatus === RegistrationStatus.Registered && details.operator.toLowerCase() !== NULL.toLowerCase() && details.operator.toLowerCase() !== address.toLowerCase()) {
-            console.log(`Removing darknode ${darknodeID}`);
-            return dispatch(removeRegisteringDarknode({ darknodeID }));
+        if (details && details.registrationStatus === RegistrationStatus.Registered && details.operator.toLowerCase() !== NULL.toLowerCase()) {
+            if (details.operator.toLowerCase() === address.toLowerCase()) {
+                // return dispatch(addDarknode({ darknodeID, address, network: renNetwork.name }));
+            } else {
+                return dispatch(removeRegisteringDarknode({ darknodeID }));
+            }
         }
-        console.log(`Not removing darknode ${darknodeID}`);
         return;
     }).toArray());
 
