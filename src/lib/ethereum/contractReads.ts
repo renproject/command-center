@@ -1,6 +1,7 @@
 import { mainnet, RenNetworkDetails } from "@renproject/contracts";
 import { Currency } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
+import BN from "bn.js";
 import { OrderedMap, OrderedSet } from "immutable";
 import Web3 from "web3";
 import { Block } from "web3-eth";
@@ -10,7 +11,7 @@ import { getLightnode } from "../../components/overviewPage/mapContainer";
 import { DarknodesState } from "../../store/applicationState";
 import { darknodeIDHexToBase58 } from "../darknode/darknodeID";
 import { queryStat } from "../darknode/jsonrpc";
-import { safePromiseAllList, safePromiseAllMap } from "../general/promiseAll";
+import { awaitOr, safePromiseAllList, safePromiseAllMap } from "../general/promiseAll";
 import { _captureBackgroundException_, _noCapture_ } from "../react/errors";
 import { getDarknodePayment, getDarknodeRegistry } from "./contract";
 import { NewTokenDetails, OldToken, OldTokenDetails, Token, TokenPrices } from "./tokens";
@@ -483,10 +484,10 @@ export const fetchCycleAndPendingRewards = async (
 
     let pendingRewards = OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber>>();
 
-    const currentCycle = await darknodePayment.methods.currentCycle().call();
-    const previousCycle = await darknodePayment.methods.previousCycle().call();
+    const πCurrentCycle = darknodePayment.methods.currentCycle().call() as Promise<BN | string | number>;
+    const πPreviousCycle = darknodePayment.methods.previousCycle().call() as Promise<BN | string | number>;
 
-    const previous = await safePromiseAllMap(
+    const πPrevious = safePromiseAllMap(
         NewTokenDetails.map(async (_tokenDetails, token) => {
             try {
                 const address = token === Token.ETH ? "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" : renNetwork.addresses.tokens[token].address;
@@ -502,6 +503,9 @@ export const fetchCycleAndPendingRewards = async (
         }).toOrderedMap(),
         new BigNumber(0),
     );
+
+    const previous = await πPrevious;
+    const previousCycle = await awaitOr(πPreviousCycle, null);
     if (previousCycle !== null) {
         pendingRewards = pendingRewards.set(previousCycle.toString(), previous);
     }
@@ -528,6 +532,7 @@ export const fetchCycleAndPendingRewards = async (
         ).toOrderedMap(),
         new BigNumber(0),
     );
+    const currentCycle = await awaitOr(πCurrentCycle, null);
     if (currentCycle !== null) {
         pendingRewards = pendingRewards.set(currentCycle.toString(), current);
     }
@@ -674,36 +679,12 @@ export enum DarknodeFeeStatus {
     NOT_WHITELISTED = "NOT_WHITELISTED",
 }
 
-/**
- * Fetches various pieces of information about a darknode, including:
- *  1. publicKey,
- *  2. balances and fees
- *  3. its status
- *  4. its gas usage information
- *  5. its network information (NOTE: not implemented yet)
- *
- * @param web3 A Web3 instance.
- * @param renNetwork A Ren network object.
- * @param darknodeID The ID of the darknode as a hex string.
- * @param tokenPrices
- * @returns A promise to the darknode state record.
- */
-export const fetchDarknodeDetails = async (
+export const getDarknodeFees = async (
     web3: Web3,
     renNetwork: RenNetworkDetails,
     darknodeID: string,
     tokenPrices: TokenPrices | null,
-): Promise<DarknodesState> => {
-    darknodeID = toChecksumAddress(darknodeID.toLowerCase());
-
-    // Get eth Balance
-    const ethBalanceBN = await web3.eth.getBalance(darknodeID);
-
-    let ethBalance = new BigNumber(0);
-    if (ethBalanceBN) {
-        ethBalance = new BigNumber(ethBalanceBN.toString());
-    }
-
+) => {
     // Get earned fees
     const feesEarned = await getBalances(web3, renNetwork, darknodeID);
     let oldFeesEarned = OrderedMap<OldToken, BigNumber>();
@@ -720,20 +701,15 @@ export const fetchDarknodeDetails = async (
         feesEarnedTotalEth = newFeesInEth.plus(oldFeesInEth);
     }
 
-    // Get darknode operator and public key
-    const operator = await getDarknodeOperator(web3, renNetwork, darknodeID);
-    const publicKey = await getDarknodePublicKey(web3, renNetwork, darknodeID);
+    return { feesEarned, oldFeesEarned, feesEarnedTotalEth };
+};
 
-    // Get registration status
-    let registrationStatus = RegistrationStatus.Unknown;
-    try {
-        registrationStatus = await getDarknodeStatus(web3, renNetwork, darknodeID);
-    } catch (error) {
-        _captureBackgroundException_(error, {
-            description: "Unknown darknode registration status",
-        });
-    }
-
+export const getDarknodeCycleRewards = async (
+    web3: Web3,
+    renNetwork: RenNetworkDetails,
+    darknodeID: string,
+    registrationStatus: RegistrationStatus,
+) => {
     // Cycle status ////////////////////////////////////////////////////////////
 
     const darknodePayment = getDarknodePayment(web3, renNetwork);
@@ -761,7 +737,6 @@ export const fetchDarknodeDetails = async (
             }
         }
     }
-    // }
 
     let cycleStatus = OrderedMap<string, DarknodeFeeStatus>();
     if (currentCycleBN !== null) {
@@ -771,33 +746,76 @@ export const fetchDarknodeDetails = async (
         cycleStatus = cycleStatus.set(previousCycleBN.toString(), previousStatus);
     }
 
-    // Call queryStats
-    let nodeStatistics = null;
-    try {
-        nodeStatistics = await queryStat(getLightnode(renNetwork), darknodeIDHexToBase58(darknodeID));
-    } catch (error) {
-        console.error(error);
-    }
+    return cycleStatus;
+};
 
-    // Store details ///////////////////////////////////////////////////////////
+/**
+ * Fetches various pieces of information about a darknode, including:
+ *  1. publicKey,
+ *  2. balances and fees
+ *  3. its status
+ *  4. its gas usage information
+ *  5. its network information (NOTE: not implemented yet)
+ *
+ * @param web3 A Web3 instance.
+ * @param renNetwork A Ren network object.
+ * @param darknodeID The ID of the darknode as a hex string.
+ * @param tokenPrices
+ * @returns A promise to the darknode state record.
+ */
+export const fetchDarknodeDetails = async (
+    web3: Web3,
+    renNetwork: RenNetworkDetails,
+    darknodeID: string,
+    tokenPrices: TokenPrices | null,
+): Promise<DarknodesState> => {
+    darknodeID = toChecksumAddress(darknodeID.toLowerCase());
+
+    // Get eth Balance
+    const πEthBalance = web3.eth.getBalance(darknodeID)
+        .then((ethBalanceBN) => ethBalanceBN ? new BigNumber(ethBalanceBN.toString()) : new BigNumber(0))
+        .catch(() => new BigNumber(0));
+
+    const πFees = getDarknodeFees(web3, renNetwork, darknodeID, tokenPrices);
+
+    // Get darknode operator and public key
+    const πOperator = getDarknodeOperator(web3, renNetwork, darknodeID);
+    const πPublicKey = getDarknodePublicKey(web3, renNetwork, darknodeID);
+
+    // Call queryStats
+    const πNodeStatistics = queryStat(getLightnode(renNetwork), darknodeIDHexToBase58(darknodeID))
+        .catch((error) => { _captureBackgroundException_(error); return null; });
+
+    // Get registration status
+    const registrationStatus = await getDarknodeStatus(web3, renNetwork, darknodeID)
+        .catch(error => {
+            _captureBackgroundException_(error, {
+                description: "Unknown darknode registration status",
+            });
+            return RegistrationStatus.Unknown;
+        });
+
+    const πCycleRewards = getDarknodeCycleRewards(web3, renNetwork, darknodeID, registrationStatus);
+
+    const { feesEarned, oldFeesEarned, feesEarnedTotalEth } = await πFees;
 
     return new DarknodesState({
         ID: darknodeID,
         multiAddress: "" as string,
-        publicKey,
-        ethBalance,
+        publicKey: await πPublicKey,
+        ethBalance: await πEthBalance,
         feesEarned,
         oldFeesEarned,
         feesEarnedTotalEth,
 
-        cycleStatus,
+        cycleStatus: await πCycleRewards,
         averageGasUsage: 0,
         lastTopUp: null,
         expectedExhaustion: null,
         peers: 0,
         registrationStatus,
-        operator,
+        operator: await πOperator,
 
-        nodeStatistics,
+        nodeStatistics: await πNodeStatistics,
     });
 };

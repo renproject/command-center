@@ -111,7 +111,7 @@ class BackgroundTasksClass extends React.Component<Props> {
     // Update rewards every 120 seconds
     private readonly callUpdateRewards = async (): Promise<void> => {
         const { web3, renNetwork, tokenPrices } = this.props.store;
-        let retry = 60;
+        let retry = 120;
         if (tokenPrices) {
             try {
                 // tslint:disable-next-line: await-promise

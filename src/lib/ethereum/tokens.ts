@@ -1,6 +1,6 @@
 import { Currency } from "@renproject/react-components";
 import Axios from "axios";
-import { Map } from "immutable";
+import { Map, OrderedMap } from "immutable";
 
 export enum Token {
     DAI = "DAI",
@@ -32,27 +32,7 @@ interface TokenDetail<T extends Token | OldToken> {
 }
 
 // TODO: Switch on network
-export const AllTokenDetails = Map<Token | OldToken, TokenDetail<Token | OldToken>>()
-    .set(Token.DAI,
-        {
-            symbol: Token.DAI,
-            name: "Dai",
-            decimals: 18,
-            wrapped: false,
-            coinGeckoID: "dai",
-            old: false,
-            blockchain: Token.ETH
-        })
-    .set(Token.ETH,
-        {
-            symbol: Token.ETH,
-            name: "Ethereum",
-            decimals: 18,
-            wrapped: false,
-            coinGeckoID: "ethereum",
-            old: false,
-            blockchain: Token.ETH
-        })
+export const AllTokenDetails = OrderedMap<Token | OldToken, TokenDetail<Token | OldToken>>()
     .set(Token.BTC,
         {
             symbol: Token.BTC,
@@ -83,6 +63,27 @@ export const AllTokenDetails = Map<Token | OldToken, TokenDetail<Token | OldToke
             old: false,
             blockchain: Token.BCH
         })
+    .set(Token.DAI,
+        {
+            symbol: Token.DAI,
+            name: "Dai",
+            decimals: 18,
+            wrapped: false,
+            coinGeckoID: "dai",
+            old: false,
+            blockchain: Token.ETH
+        })
+    .set(Token.ETH,
+        {
+            symbol: Token.ETH,
+            name: "Ethereum",
+            decimals: 18,
+            wrapped: false,
+            coinGeckoID: "ethereum",
+            old: false,
+            blockchain: Token.ETH
+        })
+    // Old tokens
     .set(OldToken.ETH,
         {
             symbol: OldToken.ETH,
@@ -146,9 +147,9 @@ export const AllTokenDetails = Map<Token | OldToken, TokenDetail<Token | OldToke
     ;
 
 // tslint:disable-next-line:  no-unnecessary-type-assertion
-export const OldTokenDetails = AllTokenDetails.filter((details) => details.old) as Map<OldToken, TokenDetail<OldToken>>;
+export const OldTokenDetails = AllTokenDetails.filter((details) => details.old) as OrderedMap<OldToken, TokenDetail<OldToken>>;
 // tslint:disable-next-line:  no-unnecessary-type-assertion
-export const NewTokenDetails = AllTokenDetails.filter((details) => !details.old) as Map<Token, TokenDetail<Token>>;
+export const NewTokenDetails = AllTokenDetails.filter((details) => !details.old) as OrderedMap<Token, TokenDetail<Token>>;
 
 const coinGeckoURL = `https://api.coingecko.com/api/v3`;
 const coinGeckoParams = `localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`;
@@ -168,6 +169,6 @@ export const getPrices = (): Promise<TokenPrices> =>
                 console.error(error);
             }
             return prices;
-        }, Promise.resolve(Map<Token | OldToken, Map<Currency, number>>()));
+        }, Promise.resolve(OrderedMap<Token | OldToken, Map<Currency, number>>()));
 
-export type TokenPrices = Map<Token | OldToken, Map<Currency, number>>;
+export type TokenPrices = OrderedMap<Token | OldToken, Map<Currency, number>>;
