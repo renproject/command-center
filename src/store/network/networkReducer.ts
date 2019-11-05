@@ -129,7 +129,7 @@ export const networkReducer = (
         case getType(operatorActions.removeFromWithdrawAddresses):
             const list = state.withdrawAddresses.get(action.payload.token);
             if (!list) { return state; }
-            const foundIndex = list.findIndex((address) => address === action.payload.address);
+            const foundIndex = list.findIndex((addr) => addr === action.payload.address);
             if (foundIndex === -1) { return state; }
             return state.set(
                 "withdrawAddresses",

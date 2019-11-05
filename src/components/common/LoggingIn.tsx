@@ -15,11 +15,11 @@ import { EmptyDarknodeList } from "../allDarknodesPage/darknodeList/EmptyDarknod
  */
 const LoggingInClass = (props: Props) => {
 
-    const { address, renNetwork } = props.store;
+    const { address } = props.store;
 
     const handleLogin = React.useCallback(async (): Promise<void> => {
         if (!address) {
-            await props.actions.login(renNetwork, { redirect: false, showPopup: true, immediatePopup: false });
+            await props.actions.promptLogin({ manual: false, redirect: false, showPopup: true, immediatePopup: false });
         }
     }, [address]);
 
@@ -46,7 +46,7 @@ const mapStateToProps = (state: ApplicationState) => ({
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({
-        login: promptLogin,
+        promptLogin,
     }, dispatch),
 });
 

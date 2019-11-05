@@ -22,7 +22,7 @@ export interface ApplicationState {
     ui: UIState;
 }
 
-export const readOnlyWeb3 = getReadOnlyWeb3(`${(RenNetworks[DEFAULT_REN_NETWORK || RenNetwork.Testnet] as RenNetworkDetails).infura}/${INFURA_KEY}`);
+export const readOnlyWeb3 = getReadOnlyWeb3(`${(RenNetworks[DEFAULT_REN_NETWORK || RenNetwork.Testnet] as RenNetworkDetails).infura}/v3/${INFURA_KEY}`);
 
 export class AccountState extends Record({
     // Login data
@@ -30,7 +30,11 @@ export class AccountState extends Record({
     web3BrowserName: Web3Browser.MetaMask,
     web3: readOnlyWeb3,
 
+    // The following are almost opposites - except that they are both
+    // initialized as false. LoggedInBefore means that we try to re-login again
+    // when the page is loaded. Logged out means that we don't try to re-login.
     loggedInBefore: false,
+    loggedOut: false,
 
     renNetwork: RenNetworks[DEFAULT_REN_NETWORK || RenNetwork.Testnet] as RenNetworkDetails,
 }) implements Serializable<AccountState> {

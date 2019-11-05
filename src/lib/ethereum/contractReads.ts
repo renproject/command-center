@@ -484,8 +484,8 @@ export const fetchCycleAndPendingRewards = async (
 
     let pendingRewards = OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber>>();
 
-    const πCurrentCycle = darknodePayment.methods.currentCycle().call() as Promise<BN | string | number>;
-    const πPreviousCycle = darknodePayment.methods.previousCycle().call() as Promise<BN | string | number>;
+    const πCurrentCycle = darknodePayment.methods.currentCycle().call() as Promise<BN | string | number | undefined | null>;
+    const πPreviousCycle = darknodePayment.methods.previousCycle().call() as Promise<BN | string | number | undefined | null>;
 
     const πEpoch = darknodeRegistry.methods.currentEpoch().call();
     const πEpochInterval = darknodeRegistry.methods.minimumEpochInterval().call();
@@ -532,13 +532,13 @@ export const fetchCycleAndPendingRewards = async (
 
     const previous = await πPrevious;
     const previousCycle = await awaitOr(πPreviousCycle, null);
-    if (previousCycle !== null) {
+    if (previousCycle !== null && previousCycle !== undefined) {
         pendingRewards = pendingRewards.set(previousCycle.toString(), previous);
     }
 
     const current = await πCurrent;
     const currentCycle = await awaitOr(πCurrentCycle, null);
-    if (currentCycle !== null) {
+    if (currentCycle !== null && currentCycle !== undefined) {
         pendingRewards = pendingRewards.set(currentCycle.toString(), current);
     }
 
@@ -556,11 +556,11 @@ export const fetchCycleAndPendingRewards = async (
         const [currentTotal, currentInEth] = sumUpFeeMap(current, tokenPrices);
         pendingTotalInEth = OrderedMap<string /* cycle */, BigNumber>();
         pendingRewardsInEth = OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber>>();
-        if (previousCycle !== null) {
+        if (previousCycle !== null && previousCycle !== undefined) {
             pendingTotalInEth = pendingTotalInEth.set(previousCycle.toString(), previousTotal);
             pendingRewardsInEth = pendingRewardsInEth.set(previousCycle.toString(), previousInEth);
         }
-        if (currentCycle !== null) {
+        if (currentCycle !== null && currentCycle !== undefined) {
             pendingTotalInEth = pendingTotalInEth.set(currentCycle.toString(), currentTotal);
             pendingRewardsInEth = pendingRewardsInEth.set(currentCycle.toString(), currentInEth);
         }
@@ -800,7 +800,7 @@ export const fetchDarknodeDetails = async (
             return RegistrationStatus.Unknown;
         });
 
-    const πCycleRewards = getDarknodeCycleRewards(web3, renNetwork, darknodeID, registrationStatus);
+    const πCycleStatuses = getDarknodeCycleRewards(web3, renNetwork, darknodeID, registrationStatus);
 
     const { feesEarned, oldFeesEarned, feesEarnedTotalEth } = await πFees;
 
@@ -813,7 +813,7 @@ export const fetchDarknodeDetails = async (
         oldFeesEarned,
         feesEarnedTotalEth,
 
-        cycleStatus: await πCycleRewards,
+        cycleStatus: await πCycleStatuses,
         averageGasUsage: 0,
         lastTopUp: null,
         expectedExhaustion: null,

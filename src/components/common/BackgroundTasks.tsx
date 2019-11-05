@@ -1,7 +1,7 @@
 // import * as qs from "query-string";
 import * as React from "react";
 
-import { List, OrderedSet } from "immutable";
+import { OrderedSet } from "immutable";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { bindActionCreators } from "redux";
@@ -249,7 +249,7 @@ const mapStateToProps = (state: ApplicationState) => ({
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({
-        login: promptLogin,
+        promptLogin,
         lookForLogout,
         updateTokenPrices,
         updateOperatorDarknodes,

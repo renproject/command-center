@@ -109,10 +109,10 @@ class AccountDropdownClass extends React.Component<Props, typeof defaultState> {
     }
 
     private readonly handleLogin = async (): Promise<void> => {
-        const { address, renNetwork } = this.props.store;
+        const { address } = this.props.store;
         this.setState({ shown: false });
         if (!address) {
-            await this.props.actions.login(renNetwork, { redirect: false, showPopup: true, immediatePopup: true });
+            await this.props.actions.promptLogin({ manual: true, redirect: false, showPopup: true, immediatePopup: true });
         }
     }
 
@@ -175,7 +175,7 @@ const mapStateToProps = (state: ApplicationState) => ({
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({
-        login: promptLogin,
+        promptLogin,
         logout,
     }, dispatch),
 });

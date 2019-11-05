@@ -6,6 +6,7 @@ import { List } from "immutable";
 import { useState } from "react";
 import { createContainer } from "unstated-next";
 
+import { extractError } from "../../lib/react/errors";
 import { getLightnode } from "../overviewPage/mapContainer";
 
 type Addr = string;
@@ -109,6 +110,30 @@ interface ResponseQueryBlocks {
 
 const N = 8;
 
+export const retryNTimes = async <T>(fnCall: () => Promise<T>, retries: number) => {
+    let returnError;
+    // tslint:disable-next-line: no-constant-condition
+    for (let i = 0; i < retries; i++) {
+        // if (i > 0) {
+        //     console.debug(`Retrying...`);
+        // }
+        try {
+            return await fnCall();
+        } catch (error) {
+            if (String(error).match(/timeout of .* exceeded/)) {
+                returnError = error;
+            } else {
+                const errorMessage = extractError(error);
+                if (errorMessage) {
+                    error.message += ` (${errorMessage})`;
+                }
+                throw error;
+            }
+        }
+    }
+    throw returnError;
+};
+
 const getBlocks = async (network: RenNetworkDetails, previousBlocks: List<Block>): Promise<List<Block>> => {
     const lightnode = getLightnode(network);
     if (!lightnode) {
@@ -132,7 +157,7 @@ const getBlocks = async (network: RenNetworkDetails, previousBlocks: List<Block>
             (syncedHeight > previousHeight + 1 && syncedHeight + N - 1 > currentHeight && syncedHeight > 0)
         ) {
             const request = { jsonrpc: "2.0", method: "ren_queryBlock", params: { blockHeight: syncedHeight && syncedHeight - 1 }, id: 67 };
-            const response = (await Axios.post<RPCResponse<ResponseQueryBlock>>(lightnode, request)).data.result;
+            const response = (await retryNTimes(() => Axios.post<RPCResponse<ResponseQueryBlock>>(lightnode, request), 4)).data.result;
             const latestBlock = response.block;
             if (latestBlock.header.height === previousHeight) {
                 break;

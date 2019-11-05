@@ -1,7 +1,7 @@
 import { RenNetworkDetails } from "@renproject/contracts";
 import { Currency } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
-import { List, OrderedMap, OrderedSet } from "immutable";
+import { OrderedMap, OrderedSet } from "immutable";
 import { createStandardAction } from "typesafe-actions";
 import Web3 from "web3";
 import { PromiEvent } from "web3-core";
@@ -109,10 +109,10 @@ export const updateCycleAndPendingRewards = (
     if (pendingTotalInEth !== null) {
         dispatch(updatePendingTotalInEth(pendingTotalInEth));
     }
-    if (currentCycle !== null) {
+    if (currentCycle !== null && currentCycle !== undefined) {
         dispatch(updateCurrentCycle(currentCycle.toString()));
     }
-    if (previousCycle !== null) {
+    if (previousCycle !== null && previousCycle !== undefined) {
         dispatch(updatePreviousCycle(previousCycle.toString()));
     }
     dispatch(updatePendingRewards(pendingRewards));

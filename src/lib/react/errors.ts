@@ -166,3 +166,20 @@ export const _noCapture_ = (error: Error): Error => {
     (error as any)._noCapture_ = true;
     return error;
 };
+
+// tslint:disable-next-line: no-any
+export const extractError = (error: any): string => {
+    if (typeof error === "object") {
+        if (error.response) { return extractError(error.response); }
+        if (error.data) { return extractError(error.data); }
+        if (error.error) { return extractError(error.error); }
+        if (error.message) { return extractError(error.message); }
+        if (error.statusText) { return extractError(error.statusText); }
+        try {
+            return JSON.stringify(error);
+        } catch (error) {
+            // Ignore JSON error
+        }
+    }
+    return String(error);
+};

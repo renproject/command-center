@@ -34,7 +34,7 @@ const AppClass = ({ match: { params }, store: { address, loggedInBefore, renNetw
 
     React.useEffect(() => {
         if (loggedInBefore) {
-            actions.login(renNetwork, { redirect: false, showPopup: false, immediatePopup: false })
+            actions.promptLogin({ manual: false, redirect: false, showPopup: false, immediatePopup: false })
                 .catch(_captureBackgroundException_);
         }
     }, []);
@@ -93,7 +93,7 @@ const mapStateToProps = (state: ApplicationState) => ({
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({
-        login: promptLogin,
+        promptLogin,
     }, dispatch),
 });
 

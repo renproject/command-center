@@ -1,6 +1,5 @@
 import * as React from "react";
 
-import { List } from "immutable";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators } from "redux";
 

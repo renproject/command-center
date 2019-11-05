@@ -27,7 +27,6 @@ const mapStateToProps = (state: ApplicationState) => ({
         quoteCurrency: state.network.quoteCurrency,
         mobileMenuActive: state.ui.mobileMenuActive,
         web3BrowserName: state.account.web3BrowserName,
-        renNetwork: state.account.renNetwork,
     },
 });
 
@@ -47,7 +46,7 @@ interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<
  */
 export const Sidebar = connect(mapStateToProps, mapDispatchToProps)(withRouter(
     ({ selectedDarknode, store, actions, location }: Props) => {
-        const { address, darknodeList, darknodeDetails, darknodeNames, quoteCurrency, renNetwork, mobileMenuActive, web3BrowserName } = store;
+        const { address, darknodeList, darknodeDetails, darknodeNames, quoteCurrency, mobileMenuActive, web3BrowserName } = store;
 
         const [searchFilter, setSearchFilter] = React.useState("");
 
@@ -57,7 +56,7 @@ export const Sidebar = connect(mapStateToProps, mapDispatchToProps)(withRouter(
         };
 
         const handleLogin = async () => {
-            await actions.promptLogin(renNetwork, { redirect: false, showPopup: true, immediatePopup: true });
+            await actions.promptLogin({ manual: true, redirect: false, showPopup: true, immediatePopup: true });
         };
 
         return <>

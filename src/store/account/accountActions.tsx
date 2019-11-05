@@ -23,12 +23,17 @@ export const storeRenNetwork = createStandardAction("STORE_REN_NETWORK")<RenNetw
 export const storeWeb3BrowserName = createStandardAction("STORE_WEB3_BROWSER_NAME")<provider>();
 
 export const promptLogin = (
-    renNetwork: RenNetworkDetails,
-    options: { redirect: boolean; showPopup: boolean; immediatePopup: boolean },
-) => async (dispatch: AppDispatch) => {
+    options: { manual: boolean, redirect: boolean; showPopup: boolean; immediatePopup: boolean },
+) => async (dispatch: AppDispatch, getState: () => ApplicationState) => {
     let cancelled = false;
 
-    const onClick = async () => (dispatch(promptLogin(renNetwork, { redirect: false, showPopup: true, immediatePopup: true })));
+    const { renNetwork, loggedOut } = getState().account;
+
+    if (loggedOut && !options.manual) {
+        return;
+    }
+
+    const onClick = async () => (dispatch(promptLogin({ manual: true, redirect: false, showPopup: true, immediatePopup: true })));
     const onCancel = () => {
         dispatch(clearPopup());
         cancelled = true;
@@ -41,7 +46,7 @@ export const promptLogin = (
         if (ethereum && ethereum._metamask) {
             if (ethereum._metamask.isUnlocked && !(await ethereum._metamask.isUnlocked())) {
                 promptMessage = Language.wallet.mustUnlock;
-            } else if (ethereum._metamask.isApproved && !(await ethereum._metamask.isApproved())) {
+            } else if ((ethereum._metamask.isApproved && !(await ethereum._metamask.isApproved()))) {
                 promptMessage = Language.wallet.mustConnect;
             }
         }
@@ -154,7 +159,7 @@ export const promptLogin = (
 // lookForLogout detects if 1) the user has changed or logged out of their Web3
 // wallet
 export const lookForLogout = () => async (dispatch: AppDispatch, getState: () => ApplicationState) => {
-    const { renNetwork, address, web3 } = getState().account;
+    const { address, web3 } = getState().account;
 
     if (!address) {
         return;
@@ -166,7 +171,7 @@ export const lookForLogout = () => async (dispatch: AppDispatch, getState: () =>
     if (!accounts.includes(address.toLowerCase())) {
         const onClick = async () => {
             dispatch(logout());
-            await dispatch(promptLogin(renNetwork, { redirect: false, showPopup: true, immediatePopup: false }));
+            await dispatch(promptLogin({ manual: true, redirect: false, showPopup: true, immediatePopup: false }));
         };
         const onCancel = async () => {
             dispatch(logout());

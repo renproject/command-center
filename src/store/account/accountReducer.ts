@@ -11,7 +11,9 @@ export const accountReducer = (state: AccountState = new AccountState(), action:
         case getType(accountActions.logout):
             return state
                 .set("web3", readOnlyWeb3)
-                .set("address", null);
+                .set("address", null)
+                .set("loggedOut", true)
+                .set("loggedInBefore", false);
 
         case getType(accountActions.login):
             return state
