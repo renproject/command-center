@@ -1,7 +1,7 @@
 // import * as qs from "query-string";
 import * as React from "react";
 
-import { List } from "immutable";
+import { List, OrderedSet } from "immutable";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { bindActionCreators } from "redux";
@@ -149,10 +149,10 @@ class BackgroundTasksClass extends React.Component<Props> {
             try {
                 let list = null;
                 if (darknodeRegisteringList.size > 0) {
-                    list = darknodeRegisteringList.keySeq().toList();
+                    list = darknodeRegisteringList.keySeq().toOrderedSet();
                 }
                 if (darknodeList) {
-                    list = (list || List()).concat(darknodeList);
+                    list = (list || OrderedSet()).merge(darknodeList);
                 }
                 // tslint:disable-next-line: await-promise
                 await props.actions.updateOperatorDarknodes(web3, renNetwork, address, tokenPrices, list);

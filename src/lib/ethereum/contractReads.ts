@@ -380,8 +380,8 @@ export const getOperatorDarknodes = async (
     web3: Web3,
     renNetwork: RenNetworkDetails,
     operatorAddress: string,
-    onDarknode?: (darknodeID: string) => void,
     reportProgress?: (progress: number, total: number) => void,
+    onDarknode?: (darknodeID: string) => void,
 ): Promise<OrderedSet<string>> => {
 
     // Skip calling getAllDarknodes - they will all be in the logs as well.
@@ -487,6 +487,9 @@ export const fetchCycleAndPendingRewards = async (
     const πCurrentCycle = darknodePayment.methods.currentCycle().call() as Promise<BN | string | number>;
     const πPreviousCycle = darknodePayment.methods.previousCycle().call() as Promise<BN | string | number>;
 
+    const πEpoch = darknodeRegistry.methods.currentEpoch().call();
+    const πEpochInterval = darknodeRegistry.methods.minimumEpochInterval().call();
+
     const πPrevious = safePromiseAllMap(
         NewTokenDetails.map(async (_tokenDetails, token) => {
             try {
@@ -504,15 +507,9 @@ export const fetchCycleAndPendingRewards = async (
         new BigNumber(0),
     );
 
-    const previous = await πPrevious;
-    const previousCycle = await awaitOr(πPreviousCycle, null);
-    if (previousCycle !== null) {
-        pendingRewards = pendingRewards.set(previousCycle.toString(), previous);
-    }
-
-    const currentShareCountBN = await darknodeRegistry.methods.numDarknodesPreviousEpoch().call();
-    const currentShareCount = currentShareCountBN === null ? null : new BigNumber(currentShareCountBN.toString());
-    const current = await safePromiseAllMap(
+    const currentShareCount = await darknodeRegistry.methods.numDarknodesPreviousEpoch().call()
+        .then((bn: (BN | number | string | null)) => bn === null ? null : new BigNumber(bn.toString()));
+    const πCurrent = safePromiseAllMap(
         NewTokenDetails.map(async (_tokenDetails, token) => {
             if (currentShareCount === null || currentShareCount.isZero()) {
                 return new BigNumber(0);
@@ -532,13 +529,21 @@ export const fetchCycleAndPendingRewards = async (
         ).toOrderedMap(),
         new BigNumber(0),
     );
+
+    const previous = await πPrevious;
+    const previousCycle = await awaitOr(πPreviousCycle, null);
+    if (previousCycle !== null) {
+        pendingRewards = pendingRewards.set(previousCycle.toString(), previous);
+    }
+
+    const current = await πCurrent;
     const currentCycle = await awaitOr(πCurrentCycle, null);
     if (currentCycle !== null) {
         pendingRewards = pendingRewards.set(currentCycle.toString(), current);
     }
 
-    const epoch = await darknodeRegistry.methods.currentEpoch().call();
-    const minimumEpochInterval = await darknodeRegistry.methods.minimumEpochInterval().call();
+    const epoch = await πEpoch;
+    const minimumEpochInterval = await πEpochInterval;
     const cycleTimeout = !epoch ? new BigNumber(0) : new BigNumber(epoch.blocktime).plus(new BigNumber(minimumEpochInterval || 0));
 
     // const cycleTimeoutBN = await darknodePayment.methods.cycleTimeout().call();

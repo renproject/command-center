@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import { Loading } from "@renproject/react-components";
-import { List, Map } from "immutable";
+import { Map, OrderedSet } from "immutable";
 
 import { DarknodesState } from "../../../store/applicationState";
 import { _catch_ } from "../../common/ErrorBoundary";
@@ -10,7 +10,7 @@ import { EmptyDarknodeCard } from "./EmptyDarknodeCard";
 import { EmptyDarknodeList } from "./EmptyDarknodeList";
 
 interface Props {
-    darknodeList: List<string> | null;
+    darknodeList: OrderedSet<string> | null;
     darknodeDetails: Map<string, DarknodesState>;
     darknodeNames: Map<string, string>;
     darknodeRegisteringList: Map<string, string>;

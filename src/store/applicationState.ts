@@ -3,7 +3,7 @@
 import { RenNetwork, RenNetworkDetails, RenNetworks } from "@renproject/contracts";
 import { Currency, Record } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
-import { List, Map, OrderedMap } from "immutable";
+import { List, Map, OrderedMap, OrderedSet } from "immutable";
 import { PromiEvent } from "web3-core";
 
 import { NodeStatistics } from "../lib/darknode/jsonrpc";
@@ -112,7 +112,7 @@ export class NetworkState extends Record({
     darknodeNames: Map<string, string>(),
     darknodeRegisteringList: Map<string, string>(),
     // Map from operator-address to list of darknodes.
-    darknodeList: Map<string, List<string>>(),
+    darknodeList: Map<string, OrderedSet<string>>(),
     withdrawAddresses: Map<Token, List<string>>(),
     ///////////////////////////////////////////////////////
 }) implements Serializable<NetworkState> {

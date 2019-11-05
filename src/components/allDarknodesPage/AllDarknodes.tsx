@@ -9,19 +9,13 @@ import { AppDispatch } from "../../store/rootReducer";
 import { _catch_ } from "../common/ErrorBoundary";
 import { DarknodeList } from "./darknodeList/DarknodeList";
 
-const defaultState = { // Entries must be immutable
-    checkingVerification: false,
-    darknodeList: null as List<string> | null,
-};
-
 /**
  * Home is a page whose principal components are wallet selection to allow users
  * to log-in, and the hidden orderbook
  */
-class AllDarknodesClass extends React.Component<Props, typeof defaultState> {
+class AllDarknodesClass extends React.Component<Props> {
     public constructor(props: Props, context: object) {
         super(props, context);
-        this.state = defaultState;
     }
 
     public render = (): JSX.Element => {
@@ -35,7 +29,7 @@ class AllDarknodesClass extends React.Component<Props, typeof defaultState> {
                         {_catch_(<DarknodeList
                             darknodeDetails={darknodeDetails}
                             darknodeNames={darknodeNames}
-                            darknodeList={darknodeRegisteringList.keySeq().toList()}
+                            darknodeList={darknodeRegisteringList.keySeq().toOrderedSet()}
                             darknodeRegisteringList={darknodeRegisteringList}
                             registrySync={registrySync}
                         />)}

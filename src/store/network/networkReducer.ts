@@ -1,4 +1,4 @@
-import { List } from "immutable";
+import { List, OrderedSet } from "immutable";
 import { ActionType, getType } from "typesafe-actions";
 
 import { _captureInteractionException_ } from "../../lib/react/errors";
@@ -57,7 +57,7 @@ export const networkReducer = (
 
         case getType(operatorActions.removeDarknode):
             try {
-                let operatorList = state.darknodeList.getIn([action.payload.operator, action.payload.network], null) as List<string> | null;
+                let operatorList = state.darknodeList.getIn([action.payload.operator, action.payload.network], null) as OrderedSet<string> | null;
                 if (!operatorList) {
                     return state;
                 }
@@ -73,18 +73,18 @@ export const networkReducer = (
                 return state;
             }
 
-        case getType(operatorActions.addDarknode):
-            let newList = state.darknodeList.getIn([action.payload.address, action.payload.network], List()) as List<string>;
+        case getType(operatorActions.addDarknodes):
+            const { address, network, darknodes } = action.payload;
+
+            let newList = state.darknodeList.getIn([address, network], OrderedSet()) as OrderedSet<string>;
             let newNames = state.darknodeNames;
 
             // Add to list if it's not already in there
-            if (!newList.contains(action.payload.darknodeID)) {
-                newList = newList.push(action.payload.darknodeID);
-            }
+            newList = darknodes.merge(darknodes);
 
             newList.map((darknodeID: string) => {
                 if (!newNames.has(darknodeID)) {
-                    newNames = newNames.set(darknodeID, `Darknode ${newList.indexOf(darknodeID) + 1}`);
+                    newNames = newNames.set(darknodeID, `Darknode ${newList.toList().indexOf(darknodeID) + 1}`);
                 }
                 return null;
             });
@@ -93,13 +93,13 @@ export const networkReducer = (
                 .filter((_: string, darknodeID: string) => !newList.contains(darknodeID));
 
             return state
-                .set("darknodeList", state.darknodeList.set(action.payload.address, newList))
+                .set("darknodeList", state.darknodeList.set(address, newList))
                 .set("darknodeNames", newNames)
                 .set("darknodeRegisteringList", darknodeRegisteringList);
 
         case getType(operatorActions.setEmptyDarknodeList):
             return state
-                .set("darknodeList", state.darknodeList.set(action.payload.address, List()));
+                .set("darknodeList", state.darknodeList.set(action.payload.address, OrderedSet()));
 
         case getType(operatorActions.storeQuoteCurrency):
             return state.set("quoteCurrency", action.payload.quoteCurrency);

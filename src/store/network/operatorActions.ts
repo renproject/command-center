@@ -1,7 +1,7 @@
 import { RenNetworkDetails } from "@renproject/contracts";
 import { Currency } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
-import { List, OrderedMap } from "immutable";
+import { List, OrderedMap, OrderedSet } from "immutable";
 import { createStandardAction } from "typesafe-actions";
 import Web3 from "web3";
 import { PromiEvent } from "web3-core";
@@ -34,8 +34,8 @@ export const removeDarknode = createStandardAction("REMOVE_DARKNODE")<{
     network: string;
 }>();
 
-export const addDarknode = createStandardAction("ADD_DARKNODE")<{
-    darknodeID: string;
+export const addDarknodes = createStandardAction("ADD_DARKNODE")<{
+    darknodes: OrderedSet<string>;
     address: string;
     network: string;
 }>();
@@ -139,25 +139,27 @@ export const updateOperatorDarknodes = (
     renNetwork: RenNetworkDetails,
     address: string,
     tokenPrices: TokenPrices | null,
-    previousDarknodeList: List<string> | null,
+    previousDarknodeList: OrderedSet<string> | null,
 ) => async (dispatch: AppDispatch, getState: () => ApplicationState) => {
     // await dispatch(updateCycleAndPendingRewards(web3, renNetwork, tokenPrices));
 
-    let darknodeList = previousDarknodeList || List<string>();
+    let darknodeList = previousDarknodeList || OrderedSet<string>();
 
-    const currentDarknodes = await getOperatorDarknodes(web3, renNetwork, address, (darknodeID) => {
-        dispatch(addDarknode({ darknodeID, address, network: renNetwork.name }));
-    }, (progress, target) => {
+    const currentDarknodes = await getOperatorDarknodes(web3, renNetwork, address, (progress, target) => {
         if (previousDarknodeList === null) {
             dispatch(storeRegistrySync({ progress, target }));
         }
-    });
+    }); /* , (darknodeID) => {
+        dispatch(addDarknode({ darknodeID, address, network: renNetwork.name }));
+    }, ); */
+
+    dispatch(addDarknodes({ darknodes: currentDarknodes, address, network: renNetwork.name }));
 
     // The lists are merged in the reducer as well, but we combine them again
     // before passing into `updateDarknodeDetails`
     currentDarknodes.map((darknodeID: string) => {
         if (!darknodeList.contains(darknodeID)) {
-            darknodeList = darknodeList.push(darknodeID);
+            darknodeList = darknodeList.add(darknodeID);
         }
         return null;
     });
