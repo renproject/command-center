@@ -105,7 +105,7 @@ interface ResponseQueryBlock {
 }
 
 interface ResponseQueryBlocks {
-    blocks: Blocks;
+    blocks: Blocks | null;
 }
 
 const N = 8;
@@ -146,8 +146,13 @@ const getBlocks = async (network: RenNetworkDetails, previousBlocks: List<Block>
     }
     if (previousHeight === null) {
         const request = { jsonrpc: "2.0", method: "ren_queryBlocks", params: { n: N }, id: 67 };
-        const response = (await Axios.post<RPCResponse<ResponseQueryBlocks>>(lightnode, request)).data.result;
-        return List(response.blocks).sort((a, b) => b.header.height - a.header.height);
+        let response;
+        let i = 0;
+        do {
+            response = (await Axios.post<RPCResponse<ResponseQueryBlocks>>(lightnode, request)).data.result;
+            i++;
+        } while ((response.blocks === null || response.blocks.length === 0) && i < 5);
+        return response.blocks ? List(response.blocks).sort((a, b) => b.header.height - a.header.height) : List();
     } else {
         let currentHeight = null as number | null;
         let syncedHeight = null as number | null;

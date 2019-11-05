@@ -59,6 +59,13 @@ export const Overview = connect(mapStateToProps)(({
                 <Stat message="Total network rewards">
                     <Stats>
                         {/* <Stat message="All time total" big>$?</Stat> */}
+                        <Stat message="Last cycle" highlight big>
+                            {previousSummed ? <><CurrencyIcon currency={quoteCurrency} /><TokenBalance
+                                token={Token.ETH}
+                                convertTo={quoteCurrency}
+                                amount={previousSummed}
+                            /></> : <Loading alt />}
+                        </Stat>
                         <Stat message="Current cycle" big>
                             {currentSummed ? <>
                                 <CurrencyIcon currency={quoteCurrency} />
@@ -67,13 +74,6 @@ export const Overview = connect(mapStateToProps)(({
                                     convertTo={quoteCurrency}
                                     amount={currentSummed}
                                 /></> : <Loading alt />}</Stat>
-                        <Stat message="Last cycle" highlight big>
-                            {previousSummed ? <><CurrencyIcon currency={quoteCurrency} /><TokenBalance
-                                token={Token.ETH}
-                                convertTo={quoteCurrency}
-                                amount={previousSummed}
-                            /></> : <Loading alt />}
-                        </Stat>
                     </Stats>
                 </Stat>
             </Stats>
