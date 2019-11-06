@@ -52,7 +52,7 @@ export const Overview = connect(mapStateToProps)(({
                             <Change change={nextDarknodeCount - currentDarknodeCount} />
                         </>}</Stat>
                         <Stat message="% Ren Registered" big>{currentDarknodeCount === null ? <Loading alt={true} /> : <>
-                            {100 * currentDarknodeCount / 10000}%
+                            {100 * currentDarknodeCount / 100000}%
                         </>}</Stat>
                     </Stats>
                 </Stat>
