@@ -2,7 +2,7 @@ import { RenNetworkDetails } from "@renproject/contracts";
 import { Currency } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import { OrderedMap, OrderedSet } from "immutable";
-import { createStandardAction } from "typesafe-actions";
+import { createAction } from "typesafe-actions";
 import Web3 from "web3";
 import { PromiEvent } from "web3-core";
 
@@ -19,55 +19,55 @@ import {
     updatePendingRewards, updatePendingRewardsInEth, updatePendingTotalInEth, updatePreviousCycle,
 } from "./networkActions";
 
-export const addRegisteringDarknode = createStandardAction("ADD_REGISTERING_DARKNODE")<{
+export const addRegisteringDarknode = createAction("ADD_REGISTERING_DARKNODE")<{
     darknodeID: string;
     publicKey: string;
 }>();
 
-export const removeRegisteringDarknode = createStandardAction("REMOVE_REGISTERING_DARKNODE")<{
+export const removeRegisteringDarknode = createAction("REMOVE_REGISTERING_DARKNODE")<{
     darknodeID: string;
 }>();
 
-export const removeDarknode = createStandardAction("REMOVE_DARKNODE")<{
+export const removeDarknode = createAction("REMOVE_DARKNODE")<{
     darknodeID: string;
     operator: string;
     network: string;
 }>();
 
-export const addDarknodes = createStandardAction("ADD_DARKNODE")<{
+export const addDarknodes = createAction("ADD_DARKNODE")<{
     darknodes: OrderedSet<string>;
     address: string;
     network: string;
 }>();
 
-export const setEmptyDarknodeList = createStandardAction("SET_EMPTY_DARKNODE_LIST")<{
+export const setEmptyDarknodeList = createAction("SET_EMPTY_DARKNODE_LIST")<{
     address: string;
     network: string;
 }>();
 
-export const storeQuoteCurrency = createStandardAction("STORE_QUOTE_CURRENCY")<{ quoteCurrency: Currency }>();
+export const storeQuoteCurrency = createAction("STORE_QUOTE_CURRENCY")<{ quoteCurrency: Currency }>();
 
-export const storeRegistrySync = createStandardAction("STORE_REGISTRY_SYNC")<{ progress: number, target: number }>();
+export const storeRegistrySync = createAction("STORE_REGISTRY_SYNC")<{ progress: number, target: number }>();
 
-export const storeSecondsPerBlock = createStandardAction("STORE_SECONDS_PER_BLOCK")<{ secondsPerBlock: number }>();
+export const storeSecondsPerBlock = createAction("STORE_SECONDS_PER_BLOCK")<{ secondsPerBlock: number }>();
 
-export const addToWithdrawAddresses = createStandardAction("ADD_TO_WITHDRAW_ADDRESSES")<{ token: Token, address: string }>();
-export const removeFromWithdrawAddresses = createStandardAction("REMOVE_FROM_WITHDRAW_ADDRESSES")<{ token: Token, address: string }>();
+export const addToWithdrawAddresses = createAction("ADD_TO_WITHDRAW_ADDRESSES")<{ token: Token, address: string }>();
+export const removeFromWithdrawAddresses = createAction("REMOVE_FROM_WITHDRAW_ADDRESSES")<{ token: Token, address: string }>();
 
-export const setDarknodeDetails = createStandardAction("SET_DARKNODE_DETAILS")<{
+export const setDarknodeDetails = createAction("SET_DARKNODE_DETAILS")<{
     darknodeDetails: DarknodesState;
 }>();
 
-export const updateDarknodeHistory = createStandardAction("UPDATE_DARKNODE_HISTORY")<{
+export const updateDarknodeHistory = createAction("UPDATE_DARKNODE_HISTORY")<{
     darknodeID: string;
     balanceHistory: OrderedMap<number, BigNumber>;
 }>();
 
-export const setDarknodeName = createStandardAction("SET_DARKNODE_NAME")<{ darknodeID: string; name: string }>();
+export const setDarknodeName = createAction("SET_DARKNODE_NAME")<{ darknodeID: string; name: string }>();
 
 // tslint:disable-next-line: no-any
-export const addTransaction = createStandardAction("ADD_TRANSACTION")<{ txHash: string; tx: PromiEvent<any> }>();
-export const setTxConfirmations = createStandardAction("SET_TX_CONFIRMATIONS")<{ txHash: string; confirmations: number }>();
+export const addTransaction = createAction("ADD_TRANSACTION")<{ txHash: string; tx: PromiEvent<any> }>();
+export const setTxConfirmations = createAction("SET_TX_CONFIRMATIONS")<{ txHash: string; confirmations: number }>();
 
 export const updateSecondsPerBlock = (
     web3: Web3,

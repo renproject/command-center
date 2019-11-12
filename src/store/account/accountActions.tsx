@@ -2,7 +2,7 @@ import * as Sentry from "@sentry/browser";
 import * as React from "react";
 
 import { RenNetworkDetails } from "@renproject/contracts";
-import { createStandardAction } from "typesafe-actions";
+import { createAction } from "typesafe-actions";
 import Web3 from "web3";
 import { provider } from "web3-providers";
 import { toChecksumAddress } from "web3-utils";
@@ -16,11 +16,11 @@ import { ApplicationState } from "../applicationState";
 import { clearPopup, setPopup } from "../popup/popupActions";
 import { AppDispatch } from "../rootReducer";
 
-export const logout = createStandardAction("LOGOUT")();
-export const login = createStandardAction("LOGIN")<{ web3: Web3, address: string }>();
-export const storeRenNetwork = createStandardAction("STORE_REN_NETWORK")<RenNetworkDetails>();
+export const logout = createAction("LOGOUT")();
+export const login = createAction("LOGIN")<{ web3: Web3, address: string }>();
+export const storeRenNetwork = createAction("STORE_REN_NETWORK")<RenNetworkDetails>();
 
-export const storeWeb3BrowserName = createStandardAction("STORE_WEB3_BROWSER_NAME")<provider>();
+export const storeWeb3BrowserName = createAction("STORE_WEB3_BROWSER_NAME")<provider>();
 
 export const promptLogin = (
     options: { manual: boolean, redirect: boolean; showPopup: boolean; immediatePopup: boolean },

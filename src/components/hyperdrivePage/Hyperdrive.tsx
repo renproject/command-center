@@ -1,7 +1,7 @@
 import { getTimeMagnitude, Loading, naturalTime, TokenIcon } from "@renproject/react-components";
 import React, { useCallback, useState } from "react";
 import { withRouter } from "react-router-dom";
-import { CSSTransitionGroup } from "react-transition-group";
+import { CSSTransition, TransitionGroup } from "react-transition-group";
 
 import { Token } from "../../lib/ethereum/tokens";
 import { Stat, Stats } from "../common/Stat";
@@ -88,7 +88,11 @@ export const Hyperdrive = withRouter(({ match: { params }, history }) => {
 
     const blockTr = (block: Block) => {
         const trOnClick = () => { onClick(block); };
-        return (
+        return <CSSTransition
+            key={block.header.height}
+            classNames="fade"
+            timeout={{ enter: 1000, exit: 1000 }}
+        >
             <tr key={block.header.height} onClick={trOnClick} className="block--row">
                 <td>{block.header.height}</td>
                 <td>
@@ -105,7 +109,7 @@ export const Hyperdrive = withRouter(({ match: { params }, history }) => {
                     </div>;
                 })}</div> : <span className="block--txs--none">No TXs</span>}</td>
             </tr>
-        );
+        </CSSTransition>;
     };
 
     const firstBlock = container.blocks ? container.blocks.first<Block | null>(null) : null;
@@ -165,9 +169,9 @@ export const Hyperdrive = withRouter(({ match: { params }, history }) => {
                             </tr>
                         </thead>
                         {container.currentBlock && container.currentBlockNumber === blockNumber ?
-                            <CSSTransitionGroup transitionEnterTimeout={1000} transitionLeaveTimeout={1000} transitionName="fade" component="tbody">
+                            <TransitionGroup component="tbody">
                                 {blockTr(container.currentBlock)}
-                            </CSSTransitionGroup> :
+                            </TransitionGroup> :
                             <tbody><tr><td colSpan={3}><Loading alt={true} /></td></tr></tbody>
                         }
                     </table>
@@ -219,9 +223,9 @@ export const Hyperdrive = withRouter(({ match: { params }, history }) => {
                         </tr>
                     </thead>
                     {container.blocks ?
-                        <CSSTransitionGroup transitionEnterTimeout={1000} transitionLeaveTimeout={1000} transitionName="fade" component="tbody">
-                            {container.blocks.map(blockTr)}
-                        </CSSTransitionGroup> :
+                        <TransitionGroup component="tbody">
+                            {container.blocks.map(blockTr).toArray()}
+                        </TransitionGroup> :
                         <tbody><tr><td colSpan={3}><Loading alt={true} /></td></tr></tbody>
                     }
                 </table>

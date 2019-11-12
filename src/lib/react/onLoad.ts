@@ -1,5 +1,6 @@
 import * as Sentry from "@sentry/browser";
 
+import { ExtraErrorData } from "@sentry/integrations";
 import Web3 from "web3";
 import { HttpProvider } from "web3-providers";
 
@@ -44,6 +45,8 @@ export const onLoad = (title: string) => {
             /.*localhost.*/i,
             /.*(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).*/
         ],
+
+        integrations: [new ExtraErrorData()],
     });
 
     Sentry.configureScope((scope) => {

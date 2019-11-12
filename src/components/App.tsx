@@ -1,8 +1,7 @@
 import * as React from "react";
 
-import { ScrollToTop } from "@renproject/react-components";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
-import { Route, RouteComponentProps, Switch, withRouter } from "react-router-dom";
+import { Route, RouteComponentProps, Switch, useLocation, withRouter } from "react-router-dom";
 import { bindActionCreators } from "redux";
 
 import { DEFAULT_REN_NETWORK } from "../lib/react/environmentVariables";
@@ -24,7 +23,31 @@ import { Darknode, getDarknodeParam } from "./darknodePage/Darknode";
 import { Hyperdrive } from "./hyperdrivePage/Hyperdrive";
 import { Overview } from "./overviewPage/Overview";
 
-const ScrollToTopWithRouter = withRouter(ScrollToTop);
+// Component that attaches scroll to top hanler on router change
+// renders nothing, just attaches side effects
+export const ScrollToTopWithRouter = withRouter(() => {
+    // this assumes that current router state is accessed via hook
+    // but it does not matter, pathname and search (or that ever) may come from props, context, etc.
+    const location = useLocation();
+
+    // just run the effect on pathname and/or search change
+    React.useEffect(() => {
+        try {
+            // trying to use new API - https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollTo
+            window.scroll({
+                top: 0,
+                left: 0,
+                behavior: "smooth",
+            });
+        } catch (error) {
+            // just a fallback for older browsers
+            window.scrollTo(0, 0);
+        }
+    }, [location]);
+
+    // renders nothing, since nothing is needed
+    return null;
+});
 
 /**
  * App is the main visual component responsible for displaying different routes
