@@ -188,7 +188,7 @@ class FeesBlockClass extends React.Component<Props, State> {
                                         {
                                             fees.map((balance: BigNumber, token: Token | OldToken) => {
                                                 return <tr key={token}>
-                                                    <td>
+                                                    <td className="fees-block--table--token">
                                                         <TokenIcon className="fees-block--table--icon" token={token} />
                                                         {" "}
                                                         <span>{token}</span>

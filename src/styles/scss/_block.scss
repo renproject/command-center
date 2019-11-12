@@ -164,10 +164,19 @@
 
     td {
         color: white;
-        font-size: 18px;
+        font-size: 14px;
         font-weight: 400;
         padding-top: 5px;
         padding-bottom: 5px;
+    }
+
+    .fees-block--table--token {
+        display: flex;
+        align-items: center;
+
+        span {
+            margin-top: 3px;
+        }
     }
 
     .tr {
