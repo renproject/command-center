@@ -87,7 +87,7 @@ export const Hyperdrive = withRouter(({ match: { params }, history }) => {
     }, [container, history]);
 
     const blockTr = (block: Block) => {
-        const trOnClick = () => { onClick(block); };
+        const trOnClick = () => onClick(block);
         return <CSSTransition
             key={block.header.height}
             classNames="fade"

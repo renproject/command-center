@@ -5,7 +5,7 @@ import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators } from "redux";
 
 import { NULL, RegistrationStatus } from "../../../lib/ethereum/contractReads";
-import { _captureInteractionException_ } from "../../../lib/react/errors";
+import { _catchInteractionException_ } from "../../../lib/react/errors";
 import {
     showDeregisterPopup, showRefundPopup, showRegisterPopup,
 } from "../../../store/account/operatorPopupActions";
@@ -160,10 +160,7 @@ class RegistrationClass extends React.Component<Props, typeof defaultState> {
                 web3, renNetwork, address, darknodeID, publicKey, tokenPrices, this.onCancel, this.onDoneRegister
             );
         } catch (error) {
-            _captureInteractionException_(error, {
-                description: "Error thrown from showRegisterPopup",
-                shownToUser: "No",
-            });
+            _catchInteractionException_(error, "Error in Registration > handleRegister > showRegisterPopup");
             this.onCancel();
         }
     }

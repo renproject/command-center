@@ -3,7 +3,7 @@
 import { createTransform, PersistConfig } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 
-import { _captureBackgroundException_ } from "../lib/react/errors";
+import { _catchBackgroundException_ } from "../lib/react/errors";
 import { AccountState, ApplicationState, NetworkState } from "./applicationState";
 
 // Local Storage:
@@ -15,7 +15,7 @@ const accountTransform = createTransform<AccountState, string>(
         } catch (error) {
             console.error(`Error serializing ${String(key)} in AccountState (${JSON.stringify(inboundState)}): ${error}`);
             // Don't send storage because it may contain sensitive data.
-            _captureBackgroundException_(error, { description: "Error serializing account storage" });
+            _catchBackgroundException_(error, "Error in persistConfig > serializing account storage");
             throw error;
         }
     },
@@ -25,7 +25,7 @@ const accountTransform = createTransform<AccountState, string>(
         } catch (error) {
             console.error(`Error deserializing ${String(key)} in AccountState (${JSON.stringify(outboundState)}): ${error}`);
             // Don't send storage because it may contain sensitive data.
-            _captureBackgroundException_(error, { description: "Error deserializing account storage" });
+            _catchBackgroundException_(error, "Error in persistConfig > deserializing account storage");
             throw error;
         }
     },
@@ -39,7 +39,7 @@ const networkTransform = createTransform<NetworkState, string>(
         } catch (error) {
             console.error(`Error serializing ${String(key)} in NetworkState (${JSON.stringify(inboundState)}): ${error}`);
             // Don't send storage because it may contain sensitive data.
-            _captureBackgroundException_(error, { description: "Error serializing network storage" });
+            _catchBackgroundException_(error, "Error in persistConfig > serializing network storage");
             throw error;
         }
     },
@@ -49,7 +49,7 @@ const networkTransform = createTransform<NetworkState, string>(
         } catch (error) {
             console.error(`Error deserializing ${String(key)} in NetworkState (${JSON.stringify(outboundState)}): ${error}`);
             // Don't send storage because it may contain sensitive data.
-            _captureBackgroundException_(error, { description: "Error deserializing network storage" });
+            _catchBackgroundException_(error, "Error in persistConfig > deserializing network storage");
             throw error;
         }
     },

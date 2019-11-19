@@ -8,7 +8,7 @@ import { naturalTime } from "@renproject/react-components";
 import { DEFAULT_REN_NETWORK, NODE_ENV } from "./environmentVariables";
 
 interface Details {
-    description?: string;
+    description: string;
     category?: string;
     level?: Sentry.Severity;
     ignoreNetwork?: boolean;
@@ -19,7 +19,7 @@ interface Described {
 }
 
 interface ShownToUser {
-    shownToUser: string;
+    shownToUser?: string;
 }
 
 let pageLoaded: Date;
@@ -87,7 +87,7 @@ const rawError = (errorObject: Error) => {
     return rawErrorJSON;
 };
 
-const _captureException_ = <X extends Details>(error: any, details: X) => {
+const _catchException_ = <X extends Details>(error: any, details: X) => {
     if (error._noCapture_) {
         console.error(error);
         return;
@@ -147,18 +147,18 @@ const _captureException_ = <X extends Details>(error: any, details: X) => {
 };
 
 // Background exceptions are thrown in background loops and actions
-export const _captureBackgroundException_ = <X extends Details & Described>(error: any, details?: X) => {
-    _captureException_(error, { ignoreNetwork: true, ...details, category: "background_exception" });
+export const _catchBackgroundException_ = <X extends Details & Described>(error: any, details: X | string) => {
+    _catchException_(error, { ignoreNetwork: true, ...(typeof details === "string" ? { description: details } : details), category: "background_exception" });
 };
 
 // Interaction exceptions are thrown as a direct result of a user interaction
-export const _captureInteractionException_ = <X extends Details & Described & ShownToUser>(error: any, details?: X) => {
-    _captureException_(error, { ...details, category: "interaction_exception" });
+export const _catchInteractionException_ = <X extends Details & Described & ShownToUser>(error: any, details: X | string) => {
+    _catchException_(error, { ...(typeof details === "string" ? { description: details } : details), category: "interaction_exception" });
 };
 
 // Component exceptions are thrown from an ErrorBoundary
-export const _captureComponentException_ = (error: any, errorInfo: React.ErrorInfo) => {
-    _captureException_(error, { ...errorInfo, description: "Error caught in Error Boundary. See Component stack trace.", category: "component_exception" });
+export const _catchComponentException_ = (error: any, errorInfo: React.ErrorInfo) => {
+    _catchException_(error, { ...errorInfo, description: "Error caught in Error Boundary. See Component stack trace.", category: "component_exception" });
 };
 
 // _noCapture_ is to mark errors that should not be reported to Sentry.

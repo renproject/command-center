@@ -13,7 +13,7 @@ import {
 } from "../../lib/ethereum/contractWrites";
 import { Token, TokenPrices } from "../../lib/ethereum/tokens";
 import { connectWaitForTX } from "../../lib/ethereum/waitForTX";
-import { _captureBackgroundException_ } from "../../lib/react/errors";
+import { _catchBackgroundException_ } from "../../lib/react/errors";
 import { updateDarknodeDetails } from "../network/operatorActions";
 import { setPopup } from "../popup/popupActions";
 import { AppDispatch } from "../rootReducer";
@@ -49,9 +49,7 @@ export const showRegisterPopup = (
                 try {
                     await dispatch(updateDarknodeDetails(web3, renNetwork, darknodeID, tokenPrices));
                 } catch (error) {
-                    _captureBackgroundException_(error, {
-                        description: "Error thrown in updateDarknodeDetails in showRegisterPopup",
-                    });
+                    _catchBackgroundException_(error, "Error in operatorPopupActions > showRegisterPopup > updateDarknodeDetails");
                 }
             }
         };

@@ -1,7 +1,7 @@
 import { List, OrderedSet } from "immutable";
 import { ActionType, getType } from "typesafe-actions";
 
-import { _captureInteractionException_ } from "../../lib/react/errors";
+import { _catchInteractionException_ } from "../../lib/react/errors";
 import { NetworkState } from "../applicationState";
 import * as networkActions from "./networkActions";
 import * as operatorActions from "./operatorActions";
@@ -66,10 +66,7 @@ export const networkReducer = (
 
                 return state.set("darknodeList", state.darknodeList.set(action.payload.operator, operatorList));
             } catch (error) {
-                _captureInteractionException_(error, {
-                    description: "Error throw in removeDarknode reducer",
-                    shownToUser: "No",
-                });
+                _catchInteractionException_(error, "Error in networkReducer > removeDarknode");
                 return state;
             }
 

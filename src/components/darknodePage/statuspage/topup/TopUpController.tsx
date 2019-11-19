@@ -5,7 +5,7 @@ import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators } from "redux";
 
 import { Token } from "../../../../lib/ethereum/tokens";
-import { _captureBackgroundException_ } from "../../../../lib/react/errors";
+import { _catchBackgroundException_ } from "../../../../lib/react/errors";
 import { showFundPopup } from "../../../../store/account/operatorPopupActions";
 import { ApplicationState } from "../../../../store/applicationState";
 import { updateDarknodeDetails } from "../../../../store/network/operatorActions";
@@ -34,9 +34,7 @@ class TopUpControllerClass extends Component<Props, typeof defaultState> {
     public componentDidMount = async () => {
         this._isMounted = true;
         this.updateTraderBalance().catch((error) => {
-            _captureBackgroundException_(error, {
-                description: "Error in updateTraderBalance in TopUp",
-            });
+            _catchBackgroundException_(error, "Error in TopUpController > updateTraderBalance");
         });
     }
 
@@ -95,9 +93,7 @@ class TopUpControllerClass extends Component<Props, typeof defaultState> {
                 this.setState({ value: traderBalance.toFixed(), disabled: true });
             }
         } catch (error) {
-            _captureBackgroundException_(error, {
-                description: "Error in handleBlur in TopUp",
-            });
+            _catchBackgroundException_(error, "Error in TopUpController > handleBlur");
         }
     }
 

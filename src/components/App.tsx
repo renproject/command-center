@@ -5,7 +5,7 @@ import { Route, RouteComponentProps, Switch, useLocation, withRouter } from "rea
 import { bindActionCreators } from "redux";
 
 import { DEFAULT_REN_NETWORK } from "../lib/react/environmentVariables";
-import { _captureBackgroundException_ } from "../lib/react/errors";
+import { _catchBackgroundException_ } from "../lib/react/errors";
 import { promptLogin } from "../store/account/accountActions";
 import { ApplicationState } from "../store/applicationState";
 import { AppDispatch } from "../store/rootReducer";
@@ -58,7 +58,7 @@ const AppClass = ({ match: { params }, store: { address, loggedInBefore, renNetw
     React.useEffect(() => {
         if (loggedInBefore) {
             actions.promptLogin({ manual: false, redirect: false, showPopup: false, immediatePopup: false })
-                .catch(_captureBackgroundException_);
+                .catch((error) => _catchBackgroundException_(error, "Error in App > promptLogin"));
         }
     }, []);
 

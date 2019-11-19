@@ -12,7 +12,7 @@ import { DarknodesState } from "../../store/applicationState";
 import { darknodeIDHexToBase58 } from "../darknode/darknodeID";
 import { queryStat } from "../darknode/jsonrpc";
 import { awaitOr, safePromiseAllList, safePromiseAllMap } from "../general/promiseAll";
-import { _captureBackgroundException_, _noCapture_ } from "../react/errors";
+import { _catchBackgroundException_, _noCapture_ } from "../react/errors";
 import { getDarknodePayment, getDarknodeRegistry } from "./contract";
 import { NewTokenDetails, OldToken, OldTokenDetails, Token, TokenPrices } from "./tokens";
 
@@ -53,7 +53,7 @@ export const getMinimumBond = async (web3: Web3, renNetwork: RenNetworkDetails):
 const getDarknodePublicKey = async (web3: Web3, renNetwork: RenNetworkDetails, darknodeID: string): Promise<string> => {
     const publicKey = await getDarknodeRegistry(web3, renNetwork).methods.getDarknodePublicKey(darknodeID).call();
     if (publicKey === null) {
-        _captureBackgroundException_(new Error("Unable to retrieve darknode public key"));
+        _catchBackgroundException_(new Error("Unable to retrieve darknode public key"), "Error in contractReads > getDarknodePublicKey, getDarknodeRegistry");
         return NULL;
     }
     return publicKey;
@@ -69,7 +69,7 @@ const getDarknodePublicKey = async (web3: Web3, renNetwork: RenNetworkDetails, d
 const getDarknodeOperator = async (web3: Web3, renNetwork: RenNetworkDetails, darknodeID: string): Promise<string> => {
     const owner = await getDarknodeRegistry(web3, renNetwork).methods.getDarknodeOwner(darknodeID).call();
     if (owner === null) {
-        _captureBackgroundException_(_noCapture_(new Error("Unable to retrieve darknode owner")));
+        _catchBackgroundException_(_noCapture_(new Error("Unable to retrieve darknode owner")), "Error in contractReads > getDarknodeOperator, getDarknodeRegistry");
         return NULL;
     }
     return owner;
@@ -647,9 +647,10 @@ const getBalances = async (
         NewTokenDetails.map(async (_tokenDetails, token) => {
             let balance1;
             try {
-                const balance1Call = await darknodePayment.methods.darknodeBalances(darknodeID, renNetwork.addresses.tokens[token]).call();
+                const balance1Call = await darknodePayment.methods.darknodeBalances(darknodeID, renNetwork.addresses.tokens[token].address).call();
                 balance1 = new BigNumber((balance1Call || "0").toString());
             } catch (error) {
+                _catchBackgroundException_(error, "Error in contractReads > darknodeBalances");
                 balance1 = new BigNumber(0);
             }
             // const balance2 = tokenDetails.wrapped ? await new (web3.eth.Contract)(
@@ -789,14 +790,12 @@ export const fetchDarknodeDetails = async (
 
     // Call queryStats
     const πNodeStatistics = queryStat(getLightnode(renNetwork), darknodeIDHexToBase58(darknodeID))
-        .catch((error) => { _captureBackgroundException_(error); return null; });
+        .catch((error) => { _catchBackgroundException_(error, "Error in contractReads > queryStat"); return null; });
 
     // Get registration status
     const registrationStatus = await getDarknodeStatus(web3, renNetwork, darknodeID)
         .catch(error => {
-            _captureBackgroundException_(error, {
-                description: "Unknown darknode registration status",
-            });
+            _catchBackgroundException_(error, "Error in contractReads > getDarknodeStatus");
             return RegistrationStatus.Unknown;
         });
 

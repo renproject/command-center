@@ -7,9 +7,7 @@ import { bindActionCreators } from "redux";
 
 import { ErrorCanceledByUser } from "../../../lib/ethereum/getWeb3";
 import { className } from "../../../lib/react/className";
-import {
-    _captureBackgroundException_, _captureInteractionException_,
-} from "../../../lib/react/errors";
+import { _catchBackgroundException_, _catchInteractionException_ } from "../../../lib/react/errors";
 import { ApplicationState } from "../../../store/applicationState";
 import { clearPopup } from "../../../store/popup/popupActions";
 import { AppDispatch } from "../../../store/rootReducer";
@@ -40,9 +38,7 @@ class MultiStepPopupClass extends React.Component<Props, typeof defaultState> {
         if (!this.props.confirm) {
             this.run()
                 .catch((error) => {
-                    _captureBackgroundException_(error, {
-                        description: "Error in getAtomicBalances action",
-                    });
+                    _catchBackgroundException_(error, "Error in MultiStepPopup > running steps");
                 });
         }
     }
@@ -169,9 +165,7 @@ class MultiStepPopupClass extends React.Component<Props, typeof defaultState> {
             const promiseOrVoid = onCancel();
             if (promiseOrVoid) {
                 promiseOrVoid.catch((error) => {
-                    _captureBackgroundException_(error, {
-                        description: "Error in onCancel in MultiStepPopup"
-                    });
+                    _catchBackgroundException_(error, "Error in MultiStepPopup > onCancel");
                 });
             }
         }
@@ -200,8 +194,8 @@ class MultiStepPopupClass extends React.Component<Props, typeof defaultState> {
             } catch (error) {
                 const rejected = (error.message || "").match(ErrorCanceledByUser);
                 if (!rejected) {
-                    _captureInteractionException_(error, {
-                        description: "Error throw in MultiStepPopup",
+                    _catchInteractionException_(error, {
+                        description: "Error in MultiStepPopup > step.call",
                         shownToUser: "As message box in MultiStepPopup",
                     });
                 }

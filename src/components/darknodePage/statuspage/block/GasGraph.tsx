@@ -10,7 +10,7 @@ import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators } from "redux";
 
 import { HistoryIterations, HistoryPeriod } from "../../../../lib/ethereum/contractReads";
-import { _captureBackgroundException_ } from "../../../../lib/react/errors";
+import { _catchBackgroundException_ } from "../../../../lib/react/errors";
 import { ApplicationState, DarknodesState } from "../../../../store/applicationState";
 import {
     updateDarknodeBalanceHistory, updateSecondsPerBlock,
@@ -85,9 +85,7 @@ class GasGraphClass extends React.Component<Props, State> {
         if (secondsPerBlock === null) {
             this.props.actions.updateSecondsPerBlock(web3)
                 .catch((error) => {
-                    _captureBackgroundException_(error, {
-                        description: "Error in componentDidMount in GasGraph",
-                    });
+                    _catchBackgroundException_(error, "Error in GasGraph > updateSecondsPerBlock");
                 });
         }
 
@@ -103,9 +101,7 @@ class GasGraphClass extends React.Component<Props, State> {
 
         if (changedBalance || (this.updateHistoryStarted === false && nextProps.darknodeDetails)) {
             this.updateHistory(nextProps).catch((error => {
-                _captureBackgroundException_(error, {
-                    description: "Error in componentWillReceiveProps in GasGraph",
-                });
+                _catchBackgroundException_(error, "Error in GasGraph > componentWillReceiveProps");
             }));
         }
     }
@@ -148,9 +144,7 @@ class GasGraphClass extends React.Component<Props, State> {
                     secondsPerBlock
                 );
             } catch (error) {
-                _captureBackgroundException_(error, {
-                    description: "Error in updateHistory in GasGraph",
-                });
+                _catchBackgroundException_(error, "Error in GasGraph > updateHistory > fetchDarknodeBalanceHistory");
             }
         }
 
@@ -276,9 +270,7 @@ class GasGraphClass extends React.Component<Props, State> {
                 this.setState((current: State) => ({ ...current, historyPeriod }));
             }
         } catch (error) {
-            _captureBackgroundException_(error, {
-                description: "Error in handleSelectTime in GasGraph",
-            });
+            _catchBackgroundException_(error, "Error in GasGraph > handleSelectTime");
         }
     }
 }

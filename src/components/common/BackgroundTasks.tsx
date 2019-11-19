@@ -6,7 +6,7 @@ import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { bindActionCreators } from "redux";
 
-import { _captureBackgroundException_ } from "../../lib/react/errors";
+import { _catchBackgroundException_ } from "../../lib/react/errors";
 import { lookForLogout, promptLogin } from "../../store/account/accountActions";
 import { ApplicationState } from "../../store/applicationState";
 import { updateTokenPrices } from "../../store/network/networkActions";
@@ -51,7 +51,7 @@ class BackgroundTasksClass extends React.Component<Props> {
         //         }
         //     );
         // } catch (error) {
-        //     _captureBackgroundException_(error, {
+        //     _catchBackgroundException_(error, {
         //         description: "Error logging in on load",
         //     });
         // }
@@ -62,9 +62,7 @@ class BackgroundTasksClass extends React.Component<Props> {
     public componentWillReceiveProps = (nextProps: Props): void => {
         if (this.props.store.address !== nextProps.store.address) {
             this.callUpdateOperatorDarknodes(nextProps).catch(error => {
-                _captureBackgroundException_(error, {
-                    description: "Error in callUpdateOperatorDarknodes in BackgroundTasks",
-                });
+                _catchBackgroundException_(error, "Error in BackgroundTasks > callUpdateOperatorDarknodes ");
             });
         }
 
@@ -76,9 +74,7 @@ class BackgroundTasksClass extends React.Component<Props> {
 
         if (darknodeID !== nextDarknodeID) {
             this.callUpdateSelectedDarknode(nextProps).catch(error => {
-                _captureBackgroundException_(error, {
-                    description: "Error in callUpdateSelectedDarknode in BackgroundTasks",
-                });
+                _catchBackgroundException_(error, "Error in BackgroundTasks > callUpdateSelectedDarknode");
             });
         }
     }
@@ -100,9 +96,7 @@ class BackgroundTasksClass extends React.Component<Props> {
             // tslint:disable-next-line: await-promise
             await this.props.actions.updateTokenPrices();
         } catch (error) {
-            _captureBackgroundException_(error, {
-                description: "Error thrown in callUpdatePrices background task",
-            });
+            _catchBackgroundException_(error, "Error in BackgroundTasks > callUpdatePrices");
         }
         if (this.callUpdatePricesTimeout) { clearTimeout(this.callUpdatePricesTimeout); }
         this.callUpdatePricesTimeout = setTimeout(this.callUpdatePrices, 60 * 1000) as unknown as NodeJS.Timer;
@@ -117,9 +111,7 @@ class BackgroundTasksClass extends React.Component<Props> {
                 // tslint:disable-next-line: await-promise
                 await this.props.actions.updateCycleAndPendingRewards(web3, renNetwork, tokenPrices);
             } catch (error) {
-                _captureBackgroundException_(error, {
-                    description: "Error thrown in callUpdateRewards background task",
-                });
+                _catchBackgroundException_(error, "Error in BackgroundTasks > callUpdateRewards");
             }
         } else {
             retry = 1;
@@ -132,9 +124,7 @@ class BackgroundTasksClass extends React.Component<Props> {
     private readonly callLookForLogout = async (): Promise<void> => {
         if (this.props.store.address) {
             await (this.props.actions.lookForLogout() as unknown as Promise<void>).catch((error) => {
-                _captureBackgroundException_(error, {
-                    description: "Error thrown in callLookForLogout background task",
-                });
+                _catchBackgroundException_(error, "Error in BackgroundTasks > callLookForLogout");
             });
         }
     }
@@ -158,9 +148,7 @@ class BackgroundTasksClass extends React.Component<Props> {
                 await props.actions.updateOperatorDarknodes(web3, renNetwork, address, tokenPrices, list);
                 timeout = 120;
             } catch (error) {
-                _captureBackgroundException_(error, {
-                    description: "Error thrown in callUpdateOperatorDarknodes background task",
-                });
+                _catchBackgroundException_(error, "Error in BackgroundTasks > callUpdateOperatorDarknodes");
                 timeout = 10;
             }
         }
@@ -192,9 +180,7 @@ class BackgroundTasksClass extends React.Component<Props> {
                 );
                 timeout = 30;
             } catch (error) {
-                _captureBackgroundException_(error, {
-                    description: "Error thrown in callUpdateSelectedDarknode background task",
-                });
+                _catchBackgroundException_(error, "Error in BackgroundTasks > callUpdateSelectedDarknode");
                 timeout = 15; // try again in half the time
             }
         }
@@ -208,19 +194,13 @@ class BackgroundTasksClass extends React.Component<Props> {
     // tslint:disable-next-line:member-ordering
     public setupLoops(): void {
         this.callUpdatePrices().catch(error => {
-            _captureBackgroundException_(error, {
-                description: "Error in callUpdatePrices in BackgroundTasks",
-            });
+            _catchBackgroundException_(error, "Error in BackgroundTasks > callUpdatePrices");
         });
         this.callUpdateRewards().catch(error => {
-            _captureBackgroundException_(error, {
-                description: "Error in callUpdateRewards in BackgroundTasks",
-            });
+            _catchBackgroundException_(error, "Error in BackgroundTasks > callUpdateRewards");
         });
         this.callUpdateSelectedDarknode().catch(error => {
-            _captureBackgroundException_(error, {
-                description: "Error in callUpdateSelectedDarknode in BackgroundTasks",
-            });
+            _catchBackgroundException_(error, "Error in BackgroundTasks > callUpdateSelectedDarknode");
         });
     }
 
@@ -228,9 +208,7 @@ class BackgroundTasksClass extends React.Component<Props> {
     public setupLoopsWithAccount(): void {
         this.callLookForLogoutInterval = setInterval(this.callLookForLogout, 5000);
         this.callUpdateOperatorDarknodes().catch(error => {
-            _captureBackgroundException_(error, {
-                description: "Error in callUpdateOperatorDarknodes in BackgroundTasks",
-            });
+            _catchBackgroundException_(error, "Error in BackgroundTasks > callUpdateOperatorDarknodes");
         });
     }
 

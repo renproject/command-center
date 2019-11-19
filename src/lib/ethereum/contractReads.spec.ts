@@ -6,8 +6,8 @@ import { darknodeIDBase58ToHex } from "../darknode/darknodeID";
 import { getDarknodeStatus, RegistrationStatus } from "./contractReads";
 
 let web3: Web3, network: RenNetworkDetails, provider: Provider;
-beforeAll(async () => { ({ web3, network, provider } = await createWeb3()); });
-afterAll(() => { provider.engine.stop(); });
+beforeAll(async () => ({ web3, network, provider } = await createWeb3()));
+afterAll(() => provider.engine.stop());
 
 test("getDarknodeStatus", async () => {
     const darknodeID = darknodeIDBase58ToHex("8MJpA1rXYMPTeJoYjsFBHJcuYBe7zP");

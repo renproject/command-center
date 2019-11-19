@@ -46,8 +46,8 @@ export const RewardChart = connect(mapStateToProps)(({
     const values = React.useMemo(() => currentSplit ? currentSplit.valueSeq().map(bn => bn.multipliedBy(currentShareCount).decimalPlaces(6).toNumber()).toArray() : [], [currentSplit]);
     const empty = React.useMemo(() => !!currentSplit && values.reduce((sum, value) => sum + value, 0) === 0, [currentSplit, values]);
 
-    const selectCurrent = React.useCallback(() => { setTab(Tab.Current); }, []);
-    const selectPrevious = React.useCallback(() => { setTab(Tab.Previous); }, []);
+    const selectCurrent = React.useCallback(() => setTab(Tab.Current), []);
+    const selectPrevious = React.useCallback(() => setTab(Tab.Previous), []);
 
     return <div className="overview--chart--outer">
         <div className="chart--tabs">

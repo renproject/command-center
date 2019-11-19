@@ -3,7 +3,7 @@ import * as React from "react";
 import { connect, ConnectedReturnType } from "react-redux";
 import { bindActionCreators } from "redux";
 
-import { _captureBackgroundException_ } from "../../lib/react/errors";
+import { _catchBackgroundException_ } from "../../lib/react/errors";
 import { promptLogin } from "../../store/account/accountActions";
 import { ApplicationState } from "../../store/applicationState";
 import { AppDispatch } from "../../store/rootReducer";
@@ -24,7 +24,7 @@ const LoggingInClass = (props: Props) => {
     }, [address]);
 
     React.useEffect(() => {
-        handleLogin().catch(_captureBackgroundException_);
+        handleLogin().catch((error) => _catchBackgroundException_(error, "Error in LoggingIn > handleLogin"));
     }, []);
 
     return <div className="logging-in">

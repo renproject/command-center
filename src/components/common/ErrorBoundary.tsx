@@ -1,7 +1,7 @@
 import * as Sentry from "@sentry/browser";
 import * as React from "react";
 
-import { _captureComponentException_ } from "../../lib/react/errors";
+import { _catchComponentException_ } from "../../lib/react/errors";
 
 const defaultState = { // Entries must be immutable
     error: null as null | Error,
@@ -20,7 +20,7 @@ export class ErrorBoundary extends React.Component<Props, typeof defaultState> {
             error,
             errorInfo,
         });
-        _captureComponentException_(error, errorInfo);
+        _catchComponentException_(error, errorInfo);
     }
 
     public onClose = () => {

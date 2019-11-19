@@ -12,7 +12,7 @@ import { DarknodeFeeStatus, RegistrationStatus } from "../lib/ethereum/contractR
 import { getReadOnlyWeb3 } from "../lib/ethereum/getWeb3";
 import { OldToken, Token, TokenPrices } from "../lib/ethereum/tokens";
 import { DEFAULT_REN_NETWORK, INFURA_KEY } from "../lib/react/environmentVariables";
-import { _captureBackgroundException_ } from "../lib/react/errors";
+import { _catchBackgroundException_ } from "../lib/react/errors";
 import { Serializable } from "../lib/react/serializable";
 
 export interface ApplicationState {
@@ -60,9 +60,7 @@ export class AccountState extends Record({
             }
             return accountData;
         } catch (error) {
-            _captureBackgroundException_(error, {
-                description: "Cannot deserialize local storage",
-            });
+            _catchBackgroundException_(error, "Error in applicationState > AccountState > deserialize");
             return this;
         }
     }
@@ -143,9 +141,7 @@ export class NetworkState extends Record({
                 withdrawAddresses: data.withdrawAddresses,
             });
         } catch (error) {
-            _captureBackgroundException_(error, {
-                description: "Cannot deserialize local storage",
-            });
+            _catchBackgroundException_(error, "Error in applicationState > NetworkState > deserialize");
             return this;
         }
     }

@@ -4,7 +4,7 @@ import { Blocky, Loading } from "@renproject/react-components";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators } from "redux";
 
-import { _captureBackgroundException_ } from "../../../lib/react/errors";
+import { _catchBackgroundException_ } from "../../../lib/react/errors";
 import { ApplicationState } from "../../../store/applicationState";
 import { AppDispatch } from "../../../store/rootReducer";
 
@@ -85,7 +85,7 @@ class SelectWeb3AccountClass extends React.Component<Props, typeof defaultState>
 
         if (isNaN(selectedAccountIndex) || accounts === null || accounts.length < selectedAccountIndex) {
             const description = "No account selected in onSelectAccount";
-            _captureBackgroundException_(new Error(description), {
+            _catchBackgroundException_(new Error(description), {
                 description,
             });
             return;
