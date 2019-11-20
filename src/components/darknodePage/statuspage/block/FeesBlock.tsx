@@ -9,7 +9,7 @@ import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators } from "redux";
 
 import { DarknodeFeeStatus } from "../../../../lib/ethereum/contractReads";
-import { OldToken, Token } from "../../../../lib/ethereum/tokens";
+import { AllTokenDetails, OldToken, Token } from "../../../../lib/ethereum/tokens";
 // import { showClaimPopup } from "../../../../store/account/operatorPopupActions";
 import { ApplicationState, DarknodesState } from "../../../../store/applicationState";
 import {
@@ -187,6 +187,7 @@ class FeesBlockClass extends React.Component<Props, State> {
                                     <tbody>
                                         {
                                             fees.map((balance: BigNumber, token: Token | OldToken) => {
+                                                const tokenDetails = AllTokenDetails.get(token);
                                                 return <tr key={token}>
                                                     <td className="fees-block--table--token">
                                                         <TokenIcon className="fees-block--table--icon" token={token} />
@@ -208,7 +209,7 @@ class FeesBlockClass extends React.Component<Props, State> {
                                                             {quoteCurrency.toUpperCase()}
                                                         </span>
                                                     </td>
-                                                    {isOperator ? <td>
+                                                    {isOperator && tokenDetails && !tokenDetails.wrapped ? <td>
                                                         <FeesItem
                                                             disabled={tab === Tab.Withdrawable}
                                                             key={token}

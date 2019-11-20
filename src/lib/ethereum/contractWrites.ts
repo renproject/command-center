@@ -1,4 +1,5 @@
 import { mainnet, RenNetworkDetails } from "@renproject/contracts";
+import RenSDK from "@renproject/ren";
 import BigNumber from "bignumber.js";
 import Web3 from "web3";
 import { TransactionConfig } from "web3-core";
@@ -311,32 +312,42 @@ export const withdrawOldToken = async (
 // export const btcAddressToHex = (address: string) => `0x${decode58(address).toString("hex")}`;
 // export const zecAddressToHex = (address: string) => `0x${decode58(address).toString("hex")}`;
 
-// const burn = (
-//     web3: Web3,
-//     renNetwork: RenNetworkDetails,
-//     address: string,
-//     currency: Token,
-//     to: string,
-//     waitForTX: WaitForTX,
-// ) => {
-//     const contract = currency === Token.BTC ? bridgedToken(web3, renNetwork, addressOf[Token.BTC]) :
-//         currency === Token.ZEC ? bridgedToken(web3, renNetwork, addressOf[Token.ZEC]) :
-//             undefined;
+const burn = async (
+    web3: Web3,
+    renNetwork: RenNetworkDetails,
+    address: string,
+    token: Token,
+    amount: BigNumber,
+    recipient: string,
+    waitForTX: WaitForTX,
+) => {
+    const contract = new (web3.eth.Contract)(renNetwork.addresses.erc.ERC20.abi, renNetwork.addresses.tokens[token].address);
 
-//     if (contract === undefined) {
-//         throw new Error("Something went wrong, please reload and try again");
-//     }
+    const sdk = new RenSDK(renNetwork.name);
 
-//     const toHex = currency === Token.BTC ? btcAddressToHex(to) :
-//         currency === Token.ZEC ? zecAddressToHex(to) :
-//             to;
+    const txHash = await waitForTX(contract.methods.burn(
+        sdk.Tokens[token].addressToHex(recipient), // _to
+        amount.decimalPlaces(0).toFixed(), // _amount in Satoshis
+    ).send({ from: address })
+    );
 
-//     const amount = new BigNumber((await contract.methods.balanceOf(address).call({ from: address })).toString());
+    const shiftOut = await sdk.shiftOut({
+        // Send BTC from the Ethereum blockchain to the Bitcoin blockchain.
+        // This is the reverse of shitIn.
+        sendToken: token === Token.BCH ? RenSDK.Tokens.BCH.Eth2Bch :
+            Token.ZEC ? RenSDK.Tokens.ZEC.Eth2Zec :
+                RenSDK.Tokens.BTC.Eth2Btc,
 
-//     await waitForTX(
-//         contract.methods.burn(toHex, amount.toString() /* new BigNumber(amount).multipliedBy(10 ** 8).toFixed() */).send({ from: address })
-//     );
-// };
+        // The web3 provider to talk to Ethereum
+        web3Provider: web3.currentProvider,
+
+        // The transaction hash of our contract call
+        txHash,
+    }).readFromEthereum();
+
+    const promiEvent = shiftOut.submitToRenVM();
+    await promiEvent;
+};
 
 export const withdrawToken = (
     web3: Web3,
@@ -362,15 +373,19 @@ export const withdrawToken = (
         throw new Error("Unknown token");
     }
 
-    await new Promise((resolve) => waitForTX(
-        darknodePayment.methods.withdraw(darknodeID, renNetwork.addresses.tokens[token]).send({ from: address }),
-        resolve,
-    ));
+    await waitForTX(darknodePayment.methods.withdraw(darknodeID, renNetwork.addresses.tokens[token].address).send({ from: address }));
+
+    // let recentRegistrationEvents = await web3.eth.getPastLogs({
+    //     address: renNetwork.addresses.tokens[token].address,
+    //     fromBlock: txHash,
+    //     toBlock: txHash,
+    //     topics: [sha3("Transfer(address,address,uint256)"),],
+    // });
 
     // if (tokenDetails.wrapped) {
     //     if (!withdrawAddress) {
     //         throw new Error("Invalid withdraw address");
     //     }
-    //     await burn(web3, renNetwork, address, token as Token, withdrawAddress)(dispatch);
+    //     await burn(web3, renNetwork, address, token as Token, new BigNumber(0), withdrawAddress, waitForTX);
     // }
 };

@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Loading } from "@renproject/react-components";
+import { Loading, TokenIcon } from "@renproject/react-components";
 import { List } from "immutable";
 import { connect, ConnectedReturnType } from "react-redux";
 import { bindActionCreators } from "redux";
@@ -45,7 +45,7 @@ class WithdrawPopupClass extends React.Component<Props, State> {
         const { store: { withdrawAddresses }, token } = this.props;
 
         return <div className="popup withdraw">
-            <h2>Select {token} withdraw address</h2>
+            <h2>Select <TokenIcon token={token} /> {token} withdraw address</h2>
             <div className="withdraw--addresses">
                 {withdrawAddresses.get(token, List<string>()).map((withdrawAddress: string) => {
                     return <div key={withdrawAddress} className={className("withdraw--address--outer", selectedAddress === withdrawAddress ? `withdraw--selected` : "")}>
@@ -73,7 +73,7 @@ class WithdrawPopupClass extends React.Component<Props, State> {
                         className="new-address"
                         onChange={this.handleAddressInput}
                     />
-                    <button type="submit" className="new-address--plus">
+                    <button type="submit" title={newAddressValid ? "Add address" : `Invalid ${token} address`} disabled={!newAddressValid} className="new-address--plus">
                         <FontAwesomeIcon icon={faPlus} pull="right" />
                     </button>
                 </div>
@@ -106,7 +106,9 @@ class WithdrawPopupClass extends React.Component<Props, State> {
 
     private readonly handleAddressInput = (event: React.FormEvent<HTMLInputElement | HTMLButtonElement>) => {
         const address = this.handleInput(event);
+        console.log(address);
         const newAddressValid = validate(address, this.props.token, "prod") || validate(address, this.props.token, "testnet");
+        console.log("newAddressValid", newAddressValid);
         this.setState({ newAddressValid });
     }
 
@@ -131,7 +133,7 @@ class WithdrawPopupClass extends React.Component<Props, State> {
                 </div>;
             case Stage.Error:
                 return <>
-                    {error ? <p className="red">{error}</p> : null}
+                    {error ? <p className="red popup--error">{error}</p> : null}
                     <div className="popup--buttons">
                         <button className="sign--button button--white" onClick={onCancel}>Cancel</button>
                         <button className="sign--button button--white" disabled={selectedAddress === null} onClick={this.callWithdraw}>Retry</button>
@@ -157,11 +159,10 @@ class WithdrawPopupClass extends React.Component<Props, State> {
 
         try {
             await withdraw(selectedAddress);
+            this.setState({ stage: Stage.Done });
         } catch (error) {
             this.setState({ stage: Stage.Error, error: error.message || error });
-            return;
         }
-        this.setState({ stage: Stage.Done });
     }
 }
 

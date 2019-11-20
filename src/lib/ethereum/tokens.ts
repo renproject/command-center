@@ -1,6 +1,8 @@
 import { Currency } from "@renproject/react-components";
 import Axios from "axios";
+import { isMainnetAddress, isTestnetAddress } from "bchaddrjs";
 import { Map, OrderedMap } from "immutable";
+import { validate } from "wallet-address-validator";
 
 export enum Token {
     DAI = "DAI",
@@ -29,7 +31,19 @@ interface TokenDetail<T extends Token | OldToken> {
     old: boolean;
 
     blockchain: Token; // Used for address validation
+    validator: (address: string, isTestnet: boolean) => boolean;
 }
+
+const btcValidator = (address: string, isTestnet: boolean) => validate(address, "btc", isTestnet ? "testnet" : "prod");
+const zecValidator = (address: string, isTestnet: boolean) => validate(address, "zec", isTestnet ? "testnet" : "prod");
+const bchValidator = (address: string, isTestnet: boolean) => {
+    try {
+        return isTestnet ? isTestnetAddress(address) : isMainnetAddress(address);
+    } catch (error) {
+        return false;
+    }
+};
+const ethValidator = (address: string, isTestnet: boolean) => validate(address, "eth", isTestnet ? "testnet" : "prod");
 
 // TODO: Switch on network
 export const AllTokenDetails = OrderedMap<Token | OldToken, TokenDetail<Token | OldToken>>()
@@ -41,7 +55,9 @@ export const AllTokenDetails = OrderedMap<Token | OldToken, TokenDetail<Token | 
             wrapped: true,
             coinGeckoID: "bitcoin",
             old: false,
-            blockchain: Token.BTC
+            blockchain: Token.BTC,
+            validator: btcValidator,
+
         })
     .set(Token.ZEC,
         {
@@ -51,7 +67,8 @@ export const AllTokenDetails = OrderedMap<Token | OldToken, TokenDetail<Token | 
             wrapped: true,
             coinGeckoID: "zcash",
             old: false,
-            blockchain: Token.ZEC
+            blockchain: Token.ZEC,
+            validator: zecValidator,
         })
     .set(Token.BCH,
         {
@@ -61,7 +78,8 @@ export const AllTokenDetails = OrderedMap<Token | OldToken, TokenDetail<Token | 
             wrapped: true,
             coinGeckoID: "bitcoin-cash",
             old: false,
-            blockchain: Token.BCH
+            blockchain: Token.BCH,
+            validator: bchValidator,
         })
     .set(Token.DAI,
         {
@@ -71,7 +89,8 @@ export const AllTokenDetails = OrderedMap<Token | OldToken, TokenDetail<Token | 
             wrapped: false,
             coinGeckoID: "dai",
             old: false,
-            blockchain: Token.ETH
+            blockchain: Token.ETH,
+            validator: ethValidator,
         })
     .set(Token.ETH,
         {
@@ -81,7 +100,8 @@ export const AllTokenDetails = OrderedMap<Token | OldToken, TokenDetail<Token | 
             wrapped: false,
             coinGeckoID: "ethereum",
             old: false,
-            blockchain: Token.ETH
+            blockchain: Token.ETH,
+            validator: ethValidator,
         })
     // Old tokens
     .set(OldToken.ETH,
@@ -92,7 +112,8 @@ export const AllTokenDetails = OrderedMap<Token | OldToken, TokenDetail<Token | 
             wrapped: false,
             coinGeckoID: "ethereum",
             old: true,
-            blockchain: Token.ETH
+            blockchain: Token.ETH,
+            validator: ethValidator,
         })
     .set(OldToken.DGX,
         {
@@ -102,7 +123,8 @@ export const AllTokenDetails = OrderedMap<Token | OldToken, TokenDetail<Token | 
             wrapped: false,
             coinGeckoID: "digix-gold",
             old: true,
-            blockchain: Token.ETH
+            blockchain: Token.ETH,
+            validator: ethValidator,
         })
     .set(OldToken.REN,
         {
@@ -112,7 +134,8 @@ export const AllTokenDetails = OrderedMap<Token | OldToken, TokenDetail<Token | 
             wrapped: false,
             coinGeckoID: "republic-protocol",
             old: true,
-            blockchain: Token.ETH
+            blockchain: Token.ETH,
+            validator: ethValidator,
         })
     .set(OldToken.TUSD,
         {
@@ -122,7 +145,8 @@ export const AllTokenDetails = OrderedMap<Token | OldToken, TokenDetail<Token | 
             wrapped: false,
             coinGeckoID: "true-usd",
             old: true,
-            blockchain: Token.ETH
+            blockchain: Token.ETH,
+            validator: ethValidator,
         })
     .set(OldToken.OMG,
         {
@@ -132,7 +156,8 @@ export const AllTokenDetails = OrderedMap<Token | OldToken, TokenDetail<Token | 
             wrapped: false,
             coinGeckoID: "omisego",
             old: true,
-            blockchain: Token.ETH
+            blockchain: Token.ETH,
+            validator: ethValidator,
         })
     .set(OldToken.ZRX,
         {
@@ -142,7 +167,8 @@ export const AllTokenDetails = OrderedMap<Token | OldToken, TokenDetail<Token | 
             wrapped: false,
             coinGeckoID: "0x",
             old: true,
-            blockchain: Token.ETH
+            blockchain: Token.ETH,
+            validator: ethValidator,
         })
     ;
 

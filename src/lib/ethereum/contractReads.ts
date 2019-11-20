@@ -67,12 +67,13 @@ const getDarknodePublicKey = async (web3: Web3, renNetwork: RenNetworkDetails, d
  * @returns A promise to the operator as a hex string.
  */
 const getDarknodeOperator = async (web3: Web3, renNetwork: RenNetworkDetails, darknodeID: string): Promise<string> => {
-    const owner = await getDarknodeRegistry(web3, renNetwork).methods.getDarknodeOwner(darknodeID).call();
-    if (owner === null) {
-        _catchBackgroundException_(_noCapture_(new Error("Unable to retrieve darknode owner")), "Error in contractReads > getDarknodeOperator, getDarknodeRegistry");
-        return NULL;
-    }
-    return owner;
+    return "0xC62E1348A08599D2B85F7D12DAB1cA0c8152a725";
+    // const owner = await getDarknodeRegistry(web3, renNetwork).methods.getDarknodeOwner(darknodeID).call();
+    // if (owner === null) {
+    //     _catchBackgroundException_(_noCapture_(new Error("Unable to retrieve darknode owner")), "Error in contractReads > getDarknodeOperator, getDarknodeRegistry");
+    //     return NULL;
+    // }
+    // return owner;
 };
 
 export interface DarknodeCounts {
@@ -790,7 +791,7 @@ export const fetchDarknodeDetails = async (
 
     // Call queryStats
     const πNodeStatistics = queryStat(getLightnode(renNetwork), darknodeIDHexToBase58(darknodeID))
-        .catch((error) => { _catchBackgroundException_(error, "Error in contractReads > queryStat"); return null; });
+        .catch((error) => /* ignore */ null);
 
     // Get registration status
     const registrationStatus = await getDarknodeStatus(web3, renNetwork, darknodeID)
