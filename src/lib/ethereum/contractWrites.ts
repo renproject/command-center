@@ -414,7 +414,6 @@ export const withdrawToken = (
             throw new Error("Invalid withdraw address");
         }
 
-
         let receipt: TransactionReceipt | undefined;
 
         while (!receipt || !receipt.logs) {

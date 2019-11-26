@@ -7,15 +7,21 @@ import BigNumber from "bignumber.js";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators } from "redux";
 
-import { OldToken, Token } from "../../../lib/ethereum/tokens";
+import { AllTokenDetails, OldToken, Token } from "../../../lib/ethereum/tokens";
 import { waitForTX } from "../../../lib/ethereum/waitForTX";
 import { withdrawReward } from "../../../store/account/darknodeActions";
 import { ApplicationState } from "../../../store/applicationState";
 import { updateDarknodeDetails } from "../../../store/network/operatorActions";
 import { AppDispatch } from "../../../store/rootReducer";
 
+const minimumShiftedAmount = 0.00016;
+
 const FeesItemClass = ({ darknodeID, token, amount, disabled, actions, store }: Props) => {
     const [loading, setLoading] = React.useState(false);
+
+    const tokenDetails = AllTokenDetails.get(token);
+    const wrapped = tokenDetails ? tokenDetails.wrapped : false;
+    const decimals = tokenDetails ? tokenDetails.decimals : 8;
 
     const handleWithdraw = React.useCallback(async (): Promise<void> => {
         const { web3, tokenPrices, address, renNetwork } = store;
@@ -36,10 +42,23 @@ const FeesItemClass = ({ darknodeID, token, amount, disabled, actions, store }: 
         setLoading(false);
     }, [actions, darknodeID, store, token]);
 
-    const isDisabled = (new BigNumber(amount)).lte(0) || !disabled;
+    let isDisabled = false;
+    let title = "";
+    if (disabled) {
+        isDisabled = true;
+        title = "Must be operator to withdraw";
+    } else if ((new BigNumber(amount)).lte(0)) {
+        isDisabled = true;
+        title = "No fees to withdraw";
+    } else if (wrapped && new BigNumber(amount).lte(new BigNumber(minimumShiftedAmount).times(new BigNumber(10).exponentiatedBy(decimals)))) {
+        isDisabled = true;
+        title = `Must have at least ${minimumShiftedAmount} ${token} to withdraw`;
+    }
+
     return (
         <button
-            className="withdraw-fees"
+            title={title}
+            className={["withdraw-fees", isDisabled ? "withdraw-fees-disabled" : ""].join(" ")}
             disabled={isDisabled}
             onClick={isDisabled ? undefined : handleWithdraw}
         >

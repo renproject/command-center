@@ -387,3 +387,18 @@
         }
     }
 }
+
+.withdraw-fees-disabled {
+    &:hover:after {
+        position: absolute;
+        top: 5px;
+        left: -300px;
+        width: 300px;
+        content: attr(title);
+        padding: 2px;
+        background-color: transparentize($color: white, $amount: 0);
+        line-height: 1.4em;
+        color: $red;
+        border: 1px solid $red;
+    }
+}
