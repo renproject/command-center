@@ -3,12 +3,12 @@ import * as React from "react";
 import { faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Loading, TokenIcon } from "@renproject/react-components";
+import { TxStatus } from "@renproject/ren";
 import { List } from "immutable";
 import { connect, ConnectedReturnType } from "react-redux";
 import { bindActionCreators } from "redux";
-import { validate } from "wallet-address-validator";
 
-import { Token } from "../../../lib/ethereum/tokens";
+import { AllTokenDetails, Token } from "../../../lib/ethereum/tokens";
 import { className } from "../../../lib/react/className";
 import { ApplicationState } from "../../../store/applicationState";
 import {
@@ -31,6 +31,25 @@ const defaultState = { // Entries must be immutable
     newAddressValid: false,
 };
 
+const renderTxStatus = (status: TxStatus | null) => {
+    switch (status) {
+        case null:
+            return "Submitting";
+        case TxStatus.TxStatusNil:
+            return "Submitting";
+        case TxStatus.TxStatusConfirming:
+            return "Waiting for confirmations";
+        case TxStatus.TxStatusPending:
+            return "Executing";
+        case TxStatus.TxStatusExecuting:
+            return "Executing";
+        case TxStatus.TxStatusDone:
+            return "Done";
+        case TxStatus.TxStatusReverted:
+            return "Reverted";
+    }
+};
+
 class WithdrawPopupClass extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
@@ -41,43 +60,51 @@ class WithdrawPopupClass extends React.Component<Props, State> {
     // }
 
     public render = (): JSX.Element => {
-        const { selectedAddress, newAddress, newAddressValid } = this.state;
-        const { store: { withdrawAddresses }, token } = this.props;
+        const { stage, selectedAddress, newAddress, newAddressValid } = this.state;
+        const { status, store: { withdrawAddresses }, token } = this.props;
 
         return <div className="popup withdraw">
             <h2>Select <TokenIcon token={token} /> {token} withdraw address</h2>
-            <div className="withdraw--addresses">
-                {withdrawAddresses.get(token, List<string>()).map((withdrawAddress: string) => {
-                    return <div key={withdrawAddress} className={className("withdraw--address--outer", selectedAddress === withdrawAddress ? `withdraw--selected` : "")}>
-                        <button
-                            name="selectedAddress"
-                            onClick={this.handleInput}
-                            value={withdrawAddress}
-                            className={`monospace withdraw--address`}
-                        >
-                            {withdrawAddress}
-                        </button>
-                        <button value={withdrawAddress} onClick={this.removeAddress} className="withdraw--address--remove">
-                            <FontAwesomeIcon icon={faTimes} pull="right" />
-                        </button>
-                    </div>;
-                }).toArray()}
-            </div>
-            <form onSubmit={this.addNewAddress}>
-                <div className={`new-address--outer ${newAddressValid ? "input--valid" : ""}`}>
-                    <input
-                        type="text"
-                        placeholder="New address"
-                        value={newAddress || ""}
-                        name="newAddress"
-                        className="new-address"
-                        onChange={this.handleAddressInput}
-                    />
-                    <button type="submit" title={newAddressValid ? "Add address" : `Invalid ${token} address`} disabled={!newAddressValid} className="new-address--plus">
-                        <FontAwesomeIcon icon={faPlus} pull="right" />
-                    </button>
-                </div>
-            </form>
+            {stage === Stage.Pending || stage === Stage.Error ?
+                <>
+                    <div className="withdraw--addresses">
+                        {withdrawAddresses.get(token, List<string>()).map((withdrawAddress: string) => {
+                            return <div key={withdrawAddress} className={className("withdraw--address--outer", selectedAddress === withdrawAddress ? `withdraw--selected` : "")}>
+                                <button
+                                    name="selectedAddress"
+                                    onClick={this.handleInput}
+                                    value={withdrawAddress}
+                                    className={`monospace withdraw--address`}
+                                >
+                                    {withdrawAddress}
+                                </button>
+                                <button value={withdrawAddress} onClick={this.removeAddress} className="withdraw--address--remove">
+                                    <FontAwesomeIcon icon={faTimes} pull="right" />
+                                </button>
+                            </div>;
+                        }).toArray()}
+                    </div>
+                    <form onSubmit={this.addNewAddress}>
+                        <div className={`new-address--outer ${newAddressValid ? "input--valid" : ""}`}>
+                            <input
+                                type="text"
+                                placeholder="New address"
+                                value={newAddress || ""}
+                                name="newAddress"
+                                className="new-address"
+                                onChange={this.handleAddressInput}
+                            />
+                            <button type="submit" title={newAddressValid ? "Add address" : `Invalid ${token} address`} disabled={!newAddressValid} className={["new-address--plus", newAddressValid ? "new-address--plus--green" : "new-address--plus--red"].join(" ")}>
+                                <FontAwesomeIcon icon={faPlus} pull="right" />
+                            </button>
+                        </div>
+                    </form>
+                </> : <>
+                    {status === TxStatus.TxStatusConfirming || status === TxStatus.TxStatusExecuting || status === TxStatus.TxStatusPending || status === TxStatus.TxStatusDone ? <>
+                        The withdrawal has been submitted to RenVM. Your funds will be available shortly.<br />
+                        Status: {renderTxStatus(status)}
+                    </> : <></>}
+                </>}
             {this.renderButtons()}
         </div>;
     }
@@ -106,9 +133,11 @@ class WithdrawPopupClass extends React.Component<Props, State> {
 
     private readonly handleAddressInput = (event: React.FormEvent<HTMLInputElement | HTMLButtonElement>) => {
         const address = this.handleInput(event);
-        console.log(address);
-        const newAddressValid = validate(address, this.props.token, "prod") || validate(address, this.props.token, "testnet");
-        console.log("newAddressValid", newAddressValid);
+        const tokenDetails = AllTokenDetails.get(this.props.token);
+        if (!tokenDetails) {
+            return;
+        }
+        const newAddressValid = tokenDetails.validator(address, this.props.store.renNetwork.networkID !== 1);
         this.setState({ newAddressValid });
     }
 
@@ -168,6 +197,7 @@ class WithdrawPopupClass extends React.Component<Props, State> {
 
 const mapStateToProps = (state: ApplicationState) => ({
     store: {
+        renNetwork: state.account.renNetwork,
         withdrawAddresses: state.network.withdrawAddresses,
     },
 });
@@ -181,6 +211,7 @@ const mapDispatchToProps = (dispatch: AppDispatch) => ({
 
 interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps> {
     token: Token;
+    status: TxStatus;
     withdraw(address: string): Promise<void>;
     onDone(): void;
     onCancel(): void;

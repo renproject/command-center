@@ -1,8 +1,10 @@
 import { mainnet, RenNetworkDetails } from "@renproject/contracts";
-import RenSDK from "@renproject/ren";
+import { sleep } from "@renproject/react-components";
+import RenSDK, { TxStatus } from "@renproject/ren";
 import BigNumber from "bignumber.js";
 import Web3 from "web3";
-import { TransactionConfig } from "web3-core";
+import { TransactionConfig, TransactionReceipt } from "web3-core";
+import { sha3, toChecksumAddress } from "web3-utils";
 
 import { _noCapture_ } from "../react/errors";
 import { getDarknodePayment, getDarknodeRegistry } from "./contract";
@@ -320,12 +322,19 @@ const burn = async (
     amount: BigNumber,
     recipient: string,
     waitForTX: WaitForTX,
+    onStatus: (status: TxStatus) => void,
 ) => {
-    const contract = new (web3.eth.Contract)(renNetwork.addresses.erc.ERC20.abi, renNetwork.addresses.tokens[token].address);
+    const contractDetails = token === Token.BTC ? renNetwork.addresses.shifter.BTCShifter :
+        token === Token.ZEC ? renNetwork.addresses.shifter.ZECShifter :
+            token === Token.BCH ? renNetwork.addresses.shifter.BCHShifter : undefined;
+    if (!contractDetails) {
+        throw new Error(`Unable to shift out token ${token}`);
+    }
+    const contract = new (web3.eth.Contract)(contractDetails.abi, contractDetails._address);
 
     const sdk = new RenSDK(renNetwork.name);
 
-    const txHash = await waitForTX(contract.methods.burn(
+    const txHash = await waitForTX(contract.methods.shiftOut(
         sdk.Tokens[token].addressToHex(recipient), // _to
         amount.decimalPlaces(0).toFixed(), // _amount in Satoshis
     ).send({ from: address })
@@ -346,8 +355,25 @@ const burn = async (
     }).readFromEthereum();
 
     const promiEvent = shiftOut.submitToRenVM();
+    promiEvent.on("status", onStatus);
     await promiEvent;
 };
+
+const TransferEventABI = [
+    {
+        indexed: true,
+        name: "from",
+        type: "address"
+    }, {
+        indexed: true,
+        name: "to",
+        type: "address"
+    }, {
+        indexed: false,
+        name: "value",
+        type: "uint256"
+    }
+];
 
 export const withdrawToken = (
     web3: Web3,
@@ -356,7 +382,8 @@ export const withdrawToken = (
     darknodeID: string,
     token: Token | OldToken,
     waitForTX: WaitForTX,
-) => async (_withdrawAddress?: string) => {
+    onStatus: (status: TxStatus) => void,
+) => async (withdrawAddress?: string) => {
 
     const tokenDetails = AllTokenDetails.get(token);
     if (tokenDetails === undefined) {
@@ -373,19 +400,44 @@ export const withdrawToken = (
         throw new Error("Unknown token");
     }
 
-    await waitForTX(darknodePayment.methods.withdraw(darknodeID, renNetwork.addresses.tokens[token].address).send({ from: address }));
+    const tx = await waitForTX(darknodePayment.methods.withdraw(darknodeID, renNetwork.addresses.tokens[token].address).send({ from: address }));
 
     // let recentRegistrationEvents = await web3.eth.getPastLogs({
     //     address: renNetwork.addresses.tokens[token].address,
     //     fromBlock: txHash,
     //     toBlock: txHash,
-    //     topics: [sha3("Transfer(address,address,uint256)"),],
+    //     topics: [,],
     // });
 
-    // if (tokenDetails.wrapped) {
-    //     if (!withdrawAddress) {
-    //         throw new Error("Invalid withdraw address");
-    //     }
-    //     await burn(web3, renNetwork, address, token as Token, new BigNumber(0), withdrawAddress, waitForTX);
-    // }
+    if (tokenDetails.wrapped) {
+        if (!withdrawAddress) {
+            throw new Error("Invalid withdraw address");
+        }
+
+
+        let receipt: TransactionReceipt | undefined;
+
+        while (!receipt || !receipt.logs) {
+            try {
+                receipt = await web3.eth.getTransactionReceipt(tx);
+            } catch (error) {
+                // Ignore error
+            }
+            if (!receipt) {
+                await sleep(1000);
+            }
+        }
+
+        let value = new BigNumber(0);
+        for (const log of receipt.logs) {
+            if (log.topics[0] = sha3("Transfer(address,address,uint256)")) {
+                const event = web3.eth.abi.decodeLog(TransferEventABI, log.data, (log.topics as string[]).slice(1));
+                if (toChecksumAddress(event.from) === toChecksumAddress(renNetwork.addresses.ren.DarknodePaymentStore.address) && toChecksumAddress(event.to) === toChecksumAddress(address)) {
+                    value = value.plus(event.value);
+                }
+            }
+        }
+
+        await burn(web3, renNetwork, address, token as Token, value, withdrawAddress, waitForTX, onStatus);
+    }
 };

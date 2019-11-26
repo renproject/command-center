@@ -209,9 +209,17 @@
         content: attr(title);
         padding: 2px;
         background-color: transparentize($color: white, $amount: 0.2);
-        color: $red;
         line-height: 1.4em;
+        color: $red;
         border: 1px solid $red;
+    }
+
+    &.new-address--plus--green {
+        &:hover:after {
+            top: -20px;
+            color: $green;
+            border: 1px solid $green;
+        }
     }
 }
 

@@ -383,7 +383,6 @@ export const getOperatorDarknodes = async (
     reportProgress?: (progress: number, total: number) => void,
     onDarknode?: (darknodeID: string) => void,
 ): Promise<OrderedSet<string>> => {
-
     // Skip calling getAllDarknodes - they will all be in the logs as well.
     let darknodes = OrderedSet(
         // Retrieve currently registered darknodes.

@@ -209,7 +209,7 @@ class FeesBlockClass extends React.Component<Props, State> {
                                                             {quoteCurrency.toUpperCase()}
                                                         </span>
                                                     </td>
-                                                    {isOperator && tokenDetails && !tokenDetails.wrapped ? <td>
+                                                    {isOperator ? <td>
                                                         <FeesItem
                                                             disabled={tab === Tab.Withdrawable}
                                                             key={token}

@@ -2,6 +2,7 @@ import * as React from "react";
 
 import { RenNetworkDetails } from "@renproject/contracts";
 import Web3 from "web3";
+import { TxStatus } from "@renproject/ren";
 
 import { WithdrawPopup } from "../../components/common/popups/WithdrawPopup";
 import { withdrawOldToken, withdrawToken } from "../../lib/ethereum/contractWrites";
@@ -33,6 +34,12 @@ export const showWithdrawToken = async (
         throw new Error(`Unable to retrieve account address.`);
     }
 
+    let shiftStatus = TxStatus.TxStatusNil;
+
+    const onStatus = (status: TxStatus) => {
+        shiftStatus = status;
+    };
+
     const withdraw = withdrawToken(
         web3,
         renNetwork,
@@ -40,6 +47,7 @@ export const showWithdrawToken = async (
         darknodeID,
         token,
         waitForTX,
+        onStatus,
     );
     const onCancel = () => {
         callClearPopup();
@@ -56,12 +64,14 @@ export const showWithdrawToken = async (
                 withdraw={withdraw}
                 onDone={onDone}
                 onCancel={onCancel}
+                status={shiftStatus}
             />,
             onCancel,
         );
     } else {
         try {
             await withdraw();
+            resolve();
         } catch (error) {
             onCancel();
         }
