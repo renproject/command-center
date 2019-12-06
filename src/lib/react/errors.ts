@@ -49,7 +49,8 @@ const isNetworkError = (error: Error | any): boolean => {
         message.match(/Request failed or timed out/i) ||
         message.match(/Returned values aren't valid, did it run Out of Gas\?/i) ||
         message.match(/Invalid JSON RPC response/i) ||
-        message.match(/timeout of 0ms exceeded/i)
+        message.match(/timeout of 0ms exceeded/i) ||
+        message.match(/header not found/i)
     ) {
         return true;
     }
@@ -89,6 +90,7 @@ const rawError = (errorObject: Error) => {
 
 const _catchException_ = <X extends Details>(error: any, details: X) => {
     if (error._noCapture_) {
+        // tslint:disable-next-line: no-console
         console.error(error);
         return;
     }
