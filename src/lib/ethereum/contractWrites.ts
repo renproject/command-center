@@ -6,7 +6,8 @@ import Web3 from "web3";
 import { TransactionConfig, TransactionReceipt } from "web3-core";
 import { sha3, toChecksumAddress } from "web3-utils";
 
-import { _noCapture_ } from "../react/errors";
+import { retryNTimes } from "../../components/hyperdrivePage/hyperdriveContainer";
+import { _catchInteractionException_, _noCapture_ } from "../react/errors.ts > ";
 import { getDarknodePayment, getDarknodeRegistry } from "./contract";
 import { AllTokenDetails, OldToken, Token } from "./tokens";
 import { WaitForTX } from "./waitForTX";
@@ -75,18 +76,32 @@ export const approveNode = async (
 ) => {
     // tslint:disable-next-line:no-non-null-assertion
     const ercContract = new (web3.eth.Contract)(renNetwork.addresses.erc.ERC20.abi, renNetwork.addresses.tokens.REN.address);
-    const ercBalance = new BigNumber(await ercContract.methods.balanceOf(address).call());
-    const ercAllowance = new BigNumber(
-        await ercContract.methods.allowance(address, renNetwork.addresses.ren.DarknodeRegistry.address).call(),
-    );
 
+    // Check that the user has sufficient REN for bond
+    let ercBalance;
+    try {
+        ercBalance = new BigNumber(await retryNTimes(async () => await ercContract.methods.balanceOf(address).call(), 5));
+    } catch (error) {
+        ercBalance = bond;
+        _catchInteractionException_(error, "Error in contractWrites.ts: approveNode > balanceOf");
+    }
+    if (ercBalance.lt(bond)) {
+        throw _noCapture_(new Error("You have insufficient REN to register a darknode."));
+    }
+
+    // Check if they've already approved REN
+    let ercAllowance;
+    try {
+        ercAllowance = new BigNumber(
+            await retryNTimes(async () => await ercContract.methods.allowance(address, renNetwork.addresses.ren.DarknodeRegistry.address).call(), 5),
+        );
+    } catch (error) {
+        _catchInteractionException_(error, "Error in contractWrites.ts: approveNode > allowance");
+        ercAllowance = new BigNumber(0);
+    }
     if (ercAllowance.gte(bond)) {
         // Already approved
         return;
-    }
-
-    if (ercBalance.lt(bond)) {
-        throw _noCapture_(new Error("You have insufficient REN to register a darknode."));
     }
 
     return waitForTX(
@@ -110,9 +125,15 @@ export const registerNode = async (
     // tslint:disable-next-line:no-non-null-assertion
     const ercContract = new (web3.eth.Contract)(renNetwork.addresses.erc.ERC20.abi, renNetwork.addresses.tokens.REN.address);
 
-    const ercAllowance = new BigNumber(
-        await ercContract.methods.allowance(address, renNetwork.addresses.ren.DarknodeRegistry.address).call()
-    );
+    let ercAllowance;
+    try {
+        ercAllowance = new BigNumber(
+            await retryNTimes(async () => await ercContract.methods.allowance(address, renNetwork.addresses.ren.DarknodeRegistry.address).call(), 5)
+        );
+    } catch (error) {
+        ercAllowance = new BigNumber(0);
+        _catchInteractionException_(error, "Error in contractWrites.ts: registerNode > allowance");
+    }
 
     let gas: number | undefined = hardCodedGas;
     if (ercAllowance.gte(bond)) {
@@ -429,7 +450,7 @@ export const withdrawToken = (
 
         let value = new BigNumber(0);
         for (const log of receipt.logs) {
-            if (log.topics[0] = sha3("Transfer(address,address,uint256)")) {
+            if (log.topics[0] === sha3("Transfer(address,address,uint256)")) {
                 const event = web3.eth.abi.decodeLog(TransferEventABI, log.data, (log.topics as string[]).slice(1));
                 if (toChecksumAddress(event.from) === toChecksumAddress(renNetwork.addresses.ren.DarknodePaymentStore.address) && toChecksumAddress(event.to) === toChecksumAddress(address)) {
                     value = value.plus(event.value);

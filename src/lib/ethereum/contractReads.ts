@@ -7,6 +7,7 @@ import Web3 from "web3";
 import { Block } from "web3-eth";
 import { sha3, toChecksumAddress } from "web3-utils";
 
+import { retryNTimes } from "../../components/hyperdrivePage/hyperdriveContainer";
 import { getLightnode } from "../../components/overviewPage/mapContainer";
 import { DarknodesState } from "../../store/applicationState";
 import { darknodeIDHexToBase58 } from "../darknode/darknodeID";
@@ -39,8 +40,15 @@ export const Ox = (hex: string | Buffer) => {
  * @returns A promise to the minimum bond as a BigNumber.
  */
 export const getMinimumBond = async (web3: Web3, renNetwork: RenNetworkDetails): Promise<BigNumber> => {
-    const minimumBond = (await getDarknodeRegistry(web3, renNetwork).methods.minimumBond().call()) || (renNetwork.name === "chaosnet" ? "10000000000000000000000" : "100000000000000000000000");
-    return new BigNumber((minimumBond).toString());
+    try {
+        return await retryNTimes(async () => {
+            const minimumBond = (await getDarknodeRegistry(web3, renNetwork).methods.minimumBond().call());
+            return new BigNumber((minimumBond).toString());
+        }, 5);
+    } catch (error) {
+        _catchBackgroundException_(new Error(`Unable to retrieve minimum bond${error && error.message ? `: ${error.message}` : ``}`), "Error in contractReads > getMinimumBond");
+        return new BigNumber(renNetwork.name === "chaosnet" ? "10000000000000000000000" : "100000000000000000000000");
+    }
 };
 
 /**
@@ -51,12 +59,18 @@ export const getMinimumBond = async (web3: Web3, renNetwork: RenNetworkDetails):
  * @returns A promise to the public key as a hex string.
  */
 const getDarknodePublicKey = async (web3: Web3, renNetwork: RenNetworkDetails, darknodeID: string): Promise<string> => {
-    const publicKey = await getDarknodeRegistry(web3, renNetwork).methods.getDarknodePublicKey(darknodeID).call();
-    if (publicKey === null) {
-        _catchBackgroundException_(new Error("Unable to retrieve darknode public key"), "Error in contractReads > getDarknodePublicKey, getDarknodeRegistry");
+    try {
+        return await retryNTimes(async () => {
+            const publicKey = await getDarknodeRegistry(web3, renNetwork).methods.getDarknodePublicKey(darknodeID).call();
+            if (publicKey === null) {
+                throw new Error("Public key is NULL");
+            }
+            return publicKey;
+        }, 5);
+    } catch (error) {
+        _catchBackgroundException_(new Error(`Unable to retrieve darknode public key${error && error.message ? `: ${error.message}` : ``}`), "Error in contractReads > getDarknodePublicKey, getDarknodeRegistry");
         return NULL;
     }
-    return publicKey;
 };
 
 /**
@@ -67,7 +81,7 @@ const getDarknodePublicKey = async (web3: Web3, renNetwork: RenNetworkDetails, d
  * @returns A promise to the operator as a hex string.
  */
 const getDarknodeOperator = async (web3: Web3, renNetwork: RenNetworkDetails, darknodeID: string): Promise<string> => {
-    const owner = await getDarknodeRegistry(web3, renNetwork).methods.getDarknodeOwner(darknodeID).call();
+    const owner = await retryNTimes(async () => await getDarknodeRegistry(web3, renNetwork).methods.getDarknodeOwner(darknodeID).call(), 5);
     if (owner === null) {
         _catchBackgroundException_(_noCapture_(new Error("Unable to retrieve darknode owner")), "Error in contractReads > getDarknodeOperator, getDarknodeRegistry");
         return NULL;
@@ -83,11 +97,11 @@ export interface DarknodeCounts {
 
 export const getDarknodeCounts = async (web3: Web3, renNetwork: RenNetworkDetails): Promise<DarknodeCounts> => {
     const darknodeRegistry = getDarknodeRegistry(web3, renNetwork);
-    const currentEpoch = await darknodeRegistry.methods.numDarknodes().call();
+    const currentEpoch = await retryNTimes(async () => await darknodeRegistry.methods.numDarknodes().call(), 5);
     if (currentEpoch === null) { throw _noCapture_(new Error("Unable to retrieve darknode count")); }
-    const previousEpoch = await darknodeRegistry.methods.numDarknodesPreviousEpoch().call();
+    const previousEpoch = await retryNTimes(async () => await darknodeRegistry.methods.numDarknodesPreviousEpoch().call(), 5);
     if (previousEpoch === null) { throw _noCapture_(new Error("Unable to retrieve darknode count")); }
-    const nextEpoch = await darknodeRegistry.methods.numDarknodesNextEpoch().call();
+    const nextEpoch = await retryNTimes(async () => await darknodeRegistry.methods.numDarknodesNextEpoch().call(), 5);
     if (nextEpoch === null) { throw _noCapture_(new Error("Unable to retrieve darknode count")); }
     return {
         currentDarknodeCount: new BigNumber(currentEpoch.toString()).toNumber(),
@@ -127,11 +141,11 @@ export const getDarknodeStatus = async (web3: Web3, renNetwork: RenNetworkDetail
         isRefunded,
         isRefundable,
     ] = await Promise.all([
-        darknodeRegistry.methods.isPendingRegistration(darknodeID).call(),
-        darknodeRegistry.methods.isPendingDeregistration(darknodeID).call(),
-        darknodeRegistry.methods.isDeregisterable(darknodeID).call(),
-        darknodeRegistry.methods.isRefunded(darknodeID).call(),
-        darknodeRegistry.methods.isRefundable(darknodeID).call(),
+        retryNTimes(async () => darknodeRegistry.methods.isPendingRegistration(darknodeID).call(), 5),
+        retryNTimes(async () => darknodeRegistry.methods.isPendingDeregistration(darknodeID).call(), 5),
+        retryNTimes(async () => darknodeRegistry.methods.isDeregisterable(darknodeID).call(), 5),
+        retryNTimes(async () => darknodeRegistry.methods.isRefunded(darknodeID).call(), 5),
+        retryNTimes(async () => darknodeRegistry.methods.isRefundable(darknodeID).call(), 5),
     ]);
 
     if (isRefunded) {
@@ -266,7 +280,7 @@ export const getAllDarknodes = async (web3: Web3, renNetwork: RenNetworkDetails)
     const filter = (address: string) => address !== NULL && address !== lastDarknode;
     do {
         const darknodeRegistry = getDarknodeRegistry(web3, renNetwork);
-        const darknodes = (await darknodeRegistry.methods.getDarknodes(lastDarknode, batchSize.toString()).call());
+        const darknodes = await retryNTimes(async () => await darknodeRegistry.methods.getDarknodes(lastDarknode, batchSize.toString()).call(), 5);
         if (darknodes === null) {
             throw _noCapture_(new Error("Error calling 'darknodeRegistry.methods.getDarknodes'"));
         }
@@ -412,7 +426,7 @@ export const getOperatorDarknodes = async (
         if (operator) {
             return [darknodeID, operator];
         } else {
-            return [darknodeID, await darknodeRegistry.methods.getDarknodeOwner(darknodeID).call()] as [string, string];
+            return [darknodeID, await retryNTimes(async () => await darknodeRegistry.methods.getDarknodeOwner(darknodeID).call(), 5)] as [string, string];
         }
     }).toArray();
 
@@ -483,17 +497,17 @@ export const fetchCycleAndPendingRewards = async (
 
     let pendingRewards = OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber>>();
 
-    const πCurrentCycle = darknodePayment.methods.currentCycle().call() as Promise<BN | string | number | undefined | null>;
-    const πPreviousCycle = darknodePayment.methods.previousCycle().call() as Promise<BN | string | number | undefined | null>;
+    const πCurrentCycle = retryNTimes(async () => await darknodePayment.methods.currentCycle().call(), 5) as Promise<BN | string | number | undefined | null>;
+    const πPreviousCycle = retryNTimes(async () => await darknodePayment.methods.previousCycle().call(), 5) as Promise<BN | string | number | undefined | null>;
 
-    const πEpoch = darknodeRegistry.methods.currentEpoch().call();
-    const πEpochInterval = darknodeRegistry.methods.minimumEpochInterval().call();
+    const πEpoch = retryNTimes(async () => await darknodeRegistry.methods.currentEpoch().call(), 5);
+    const πEpochInterval = retryNTimes(async () => await darknodeRegistry.methods.minimumEpochInterval().call(), 5);
 
     const πPrevious = safePromiseAllMap(
         NewTokenDetails.map(async (_tokenDetails, token) => {
             try {
                 const address = token === Token.ETH ? "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" : renNetwork.addresses.tokens[token].address;
-                const previousCycleRewardShareBN = await darknodePayment.methods.previousCycleRewardShare(address).call();
+                const previousCycleRewardShareBN = await retryNTimes(async () => await darknodePayment.methods.previousCycleRewardShare(address).call(), 5);
                 if (previousCycleRewardShareBN === null) {
                     return new BigNumber(0);
                 }
@@ -506,7 +520,7 @@ export const fetchCycleAndPendingRewards = async (
         new BigNumber(0),
     );
 
-    const currentShareCount = await darknodeRegistry.methods.numDarknodesPreviousEpoch().call()
+    const currentShareCount = await retryNTimes(async () => await darknodeRegistry.methods.numDarknodesPreviousEpoch().call(), 5)
         .then((bn: (BN | number | string | null)) => bn === null ? null : new BigNumber(bn.toString()));
     const πCurrent = safePromiseAllMap(
         NewTokenDetails.map(async (_tokenDetails, token) => {
@@ -515,7 +529,7 @@ export const fetchCycleAndPendingRewards = async (
             }
             try {
                 const address = token === Token.ETH ? "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" : renNetwork.addresses.tokens[token].address;
-                const currentCycleRewardPool = await darknodePayment.methods.currentCycleRewardPool(address).call();
+                const currentCycleRewardPool = await retryNTimes(async () => await darknodePayment.methods.currentCycleRewardPool(address).call(), 5);
                 if (currentCycleRewardPool === null) {
                     return new BigNumber(0);
                 }
@@ -601,7 +615,7 @@ export const getOldBalances = async (
 
     const balances = OldTokenDetails.map(async (_tokenDetails, token) => {
 
-        const balance = new BigNumber(await contract.methods.darknodeBalances(darknodeID, renNetwork.addresses.oldTokens[token].address).call());
+        const balance = new BigNumber(await retryNTimes(async () => await contract.methods.darknodeBalances(darknodeID, renNetwork.addresses.oldTokens[token].address).call(), 5));
 
         return {
             balance,
@@ -646,7 +660,7 @@ const getBalances = async (
         NewTokenDetails.map(async (_tokenDetails, token) => {
             let balance1;
             try {
-                const balance1Call = await darknodePayment.methods.darknodeBalances(darknodeID, renNetwork.addresses.tokens[token].address).call();
+                const balance1Call = await retryNTimes(async () => await darknodePayment.methods.darknodeBalances(darknodeID, renNetwork.addresses.tokens[token].address).call(), 5);
                 balance1 = new BigNumber((balance1Call || "0").toString());
             } catch (error) {
                 _catchBackgroundException_(error, "Error in contractReads > darknodeBalances");
@@ -719,22 +733,22 @@ export const getDarknodeCycleRewards = async (
 
     const darknodePayment = getDarknodePayment(web3, renNetwork);
 
-    const currentCycleBN = await darknodePayment.methods.currentCycle().call();
-    const previousCycleBN = await darknodePayment.methods.previousCycle().call();
+    const currentCycleBN = await retryNTimes(async () => await darknodePayment.methods.currentCycle().call(), 5);
+    const previousCycleBN = await retryNTimes(async () => await darknodePayment.methods.previousCycle().call(), 5);
     // const blacklisted = await darknodePaymentStore.methods.isBlacklisted(darknodeID).call();
     const darknodeRegistry = getDarknodeRegistry(web3, renNetwork);
     let currentStatus;
     let previousStatus;
-    const isRegisteredInPreviousEpoch = await darknodeRegistry.methods.isRegisteredInPreviousEpoch(darknodeID).call();
+    const isRegisteredInPreviousEpoch = await retryNTimes(async () => await darknodeRegistry.methods.isRegisteredInPreviousEpoch(darknodeID).call(), 5);
     currentStatus = registrationStatus === RegistrationStatus.Registered ? DarknodeFeeStatus.NOT_CLAIMED : DarknodeFeeStatus.NOT_WHITELISTED;
-    const cycleStartTimeBN = await darknodePayment.methods.cycleStartTime().call();
+    const cycleStartTimeBN = await retryNTimes(async () => await darknodePayment.methods.cycleStartTime().call(), 5);
     if (!cycleStartTimeBN || !isRegisteredInPreviousEpoch) { // || whitelistedTime.gte(cycleStartTimeBN.toString())) {
         previousStatus = DarknodeFeeStatus.NOT_WHITELISTED;
     } else {
         if (previousCycleBN === null) {
             previousStatus = DarknodeFeeStatus.CLAIMED;
         } else {
-            const claimed = await darknodePayment.methods.rewardClaimed(darknodeID, previousCycleBN.toString()).call();
+            const claimed = await retryNTimes(async () => await darknodePayment.methods.rewardClaimed(darknodeID, previousCycleBN.toString()).call(), 5);
             if (claimed) {
                 previousStatus = DarknodeFeeStatus.CLAIMED;
             } else {

@@ -8,6 +8,8 @@ import { useState } from "react";
 import { MarkerType } from "react-simple-maps";
 import { createContainer } from "unstated-next";
 
+import { retryNTimes } from "../hyperdrivePage/hyperdriveContainer";
+
 interface City extends MarkerType {
     darknodeID: string;
 }
@@ -104,7 +106,7 @@ const getAllDarknodes = async (network: RenNetworkDetails) => {
         throw new Error(`No lightnode to fetch darknode locations.`);
     }
     const request = { jsonrpc: "2.0", method: "ren_queryPeers", params: {}, id: 67 };
-    const response = (await Axios.post<QueryResponse>(lightnode, request)).data;
+    const response = (await retryNTimes(async () => await Axios.post<QueryResponse>(lightnode, request), 5)).data;
     return response.result.peers;
     // return darknodeIDs.map(parseMultiAddress);
 };

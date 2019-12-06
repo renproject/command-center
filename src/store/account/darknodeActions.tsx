@@ -1,8 +1,8 @@
 import * as React from "react";
 
 import { RenNetworkDetails } from "@renproject/contracts";
-import Web3 from "web3";
 import { TxStatus } from "@renproject/ren";
+import Web3 from "web3";
 
 import { WithdrawPopup } from "../../components/common/popups/WithdrawPopup";
 import { withdrawOldToken, withdrawToken } from "../../lib/ethereum/contractWrites";

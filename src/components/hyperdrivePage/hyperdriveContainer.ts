@@ -1,6 +1,7 @@
 // tslint:disable: no-unused-variable
 
 import { RenNetworkDetails, testnet } from "@renproject/contracts";
+import { sleep } from "@renproject/react-components";
 import Axios from "axios";
 import { List } from "immutable";
 import { useState } from "react";
@@ -130,6 +131,7 @@ export const retryNTimes = async <T>(fnCall: () => Promise<T>, retries: number) 
                 throw error;
             }
         }
+        await sleep(100);
     }
     throw returnError;
 };
@@ -149,7 +151,7 @@ const getBlocks = async (network: RenNetworkDetails, previousBlocks: List<Block>
         let response;
         let i = 0;
         do {
-            response = (await Axios.post<RPCResponse<ResponseQueryBlocks>>(lightnode, request)).data.result;
+            response = (await retryNTimes(async () => await Axios.post<RPCResponse<ResponseQueryBlocks>>(lightnode, request), 5)).data.result;
             i++;
         } while ((response.blocks === null || response.blocks.length === 0) && i < 5);
         return response.blocks ? List(response.blocks).sort((a, b) => b.header.height - a.header.height) : List();
@@ -215,7 +217,7 @@ const useHyperdriveContainer = (initialState = testnet as RenNetworkDetails) => 
         // Fetch the block from the lightnode.
         if (!newCurrentBlock) {
             const request = { jsonrpc: "2.0", method: "ren_queryBlock", params: { n: 5, blockHeight: blockNumber }, id: 67 };
-            const response = (await Axios.post<RPCResponse<ResponseQueryBlock>>(lightnode, request)).data.result;
+            const response = (await retryNTimes(async () => await Axios.post<RPCResponse<ResponseQueryBlock>>(lightnode, request), 5)).data.result;
             newCurrentBlock = response.block;
         }
 
