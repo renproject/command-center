@@ -7,7 +7,7 @@ import { TransactionConfig, TransactionReceipt } from "web3-core";
 import { sha3, toChecksumAddress } from "web3-utils";
 
 import { retryNTimes } from "../../components/hyperdrivePage/hyperdriveContainer";
-import { _catchInteractionException_, _noCapture_ } from "../react/errors.ts > ";
+import { _catchInteractionException_, _noCapture_ } from "../react/errors.ts";
 import { getDarknodePayment, getDarknodeRegistry } from "./contract";
 import { AllTokenDetails, OldToken, Token } from "./tokens";
 import { WaitForTX } from "./waitForTX";
