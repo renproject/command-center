@@ -356,7 +356,7 @@ const burn = async (
     const sdk = new RenSDK(renNetwork.name);
 
     const txHash = await waitForTX(contract.methods.shiftOut(
-        sdk.Tokens[token].addressToHex(recipient), // _to
+        (sdk.utils[token].addressToHex || sdk.Tokens[token].addressToHex)(recipient), // _to
         amount.decimalPlaces(0).toFixed(), // _amount in Satoshis
     ).send({ from: address })
     );
