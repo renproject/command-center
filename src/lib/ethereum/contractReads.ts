@@ -7,7 +7,7 @@ import Web3 from "web3";
 import { Block } from "web3-eth";
 import { sha3, toChecksumAddress } from "web3-utils";
 
-import { retryNTimes } from "../../components/hyperdrivePage/hyperdriveContainer";
+import { retryNTimes } from "../../components/renvmPage/renvmContainer";
 import { getLightnode } from "../../components/overviewPage/mapContainer";
 import { DarknodesState } from "../../store/applicationState";
 import { darknodeIDHexToBase58 } from "../darknode/darknodeID";

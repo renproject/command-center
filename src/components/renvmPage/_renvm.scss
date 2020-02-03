@@ -1,4 +1,4 @@
-.hyperdrive {
+.renvm {
     // display: flex;
 
     h2 {
@@ -70,7 +70,7 @@
             }
         }
 
-        .hyperdrive--table--txs {
+        .renvm--table--txs {
             width: 100%;
         }
 
@@ -91,7 +91,7 @@
         }
     }
 
-    .hyperdrive--row {
+    .renvm--row {
         display: flex;
         margin-bottom: 30px;
         flex-wrap: wrap;
@@ -105,7 +105,7 @@
             }
         }
 
-        .hyperdrive--stat {
+        .renvm--stat {
             font-size: 32px;
             line-height: 37px;
             color: #F9F9F9;

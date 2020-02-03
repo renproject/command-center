@@ -331,3 +331,11 @@
         margin-right: -2px;
     }
 }
+
+.header--search--input {
+    @extend .sidebar--search--input;
+
+    background: transparent !important;
+    color: white;
+    width: 300px;
+}

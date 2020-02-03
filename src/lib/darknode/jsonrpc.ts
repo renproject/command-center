@@ -1,7 +1,7 @@
 import { Record } from "@renproject/react-components";
 import Axios from "axios";
 
-import { retryNTimes, RPCResponse } from "../../components/hyperdrivePage/hyperdriveContainer";
+import { retryNTimes, RPCResponse } from "../../components/renvmPage/renvmContainer";
 
 export interface ResponseQueryStat {
     version: string;

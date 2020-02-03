@@ -6,7 +6,7 @@ import Web3 from "web3";
 import { TransactionConfig, TransactionReceipt } from "web3-core";
 import { sha3, toChecksumAddress } from "web3-utils";
 
-import { retryNTimes } from "../../components/hyperdrivePage/hyperdriveContainer";
+import { retryNTimes } from "../../components/renvmPage/renvmContainer";
 import { _catchInteractionException_, _noCapture_ } from "../react/errors";
 import { getDarknodePayment, getDarknodeRegistry } from "./contract";
 import { AllTokenDetails, OldToken, Token } from "./tokens";

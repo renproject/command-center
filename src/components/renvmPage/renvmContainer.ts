@@ -177,7 +177,7 @@ const getBlocks = async (network: RenNetworkDetails, previousBlocks: List<Block>
     }
 };
 
-const useHyperdriveContainer = (initialState = testnet as RenNetworkDetails) => {
+const useRenVMContainer = (initialState = testnet as RenNetworkDetails) => {
     // tslint:disable-next-line: whitespace
     const [network,] = useState(initialState);
     // tslint:disable-next-line: prefer-const
@@ -230,4 +230,4 @@ const useHyperdriveContainer = (initialState = testnet as RenNetworkDetails) => 
     return { blocks, updateBlocks, getBlock, currentBlock, currentBlockNumber };
 };
 
-export const HyperdriveContainer = createContainer(useHyperdriveContainer);
+export const RenVMContainer = createContainer(useRenVMContainer);

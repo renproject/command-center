@@ -6,7 +6,7 @@ import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { Token } from "../../lib/ethereum/tokens";
 import { Stat, Stats } from "../common/Stat";
 import { TokenBalance } from "../common/TokenBalance";
-import { Block, HyperdriveContainer, Tx, Type } from "./hyperdriveContainer";
+import { Block, RenVMContainer, Tx, Type } from "./renvmContainer";
 
 // Returning a new object reference guarantees that a before-and-after
 //   equivalence check will always be false, resulting in a re-render, even
@@ -44,8 +44,8 @@ export const renderTransaction = (tx: Tx): React.ReactNode => {
     </>;
 };
 
-export const Hyperdrive = withRouter(({ match: { params }, history }) => {
-    const container = HyperdriveContainer.useContainer();
+export const RenVM = withRouter(({ match: { params }, history }) => {
+    const container = RenVMContainer.useContainer();
 
     const blockNumber = params.blockNumber
         ? parseInt(params.blockNumber, 10)
@@ -79,11 +79,11 @@ export const Hyperdrive = withRouter(({ match: { params }, history }) => {
 
     const onClick = useCallback((block: Block) => {
         container.getBlock(block.header.height).catch(console.error);
-        history.push(`/hyperdrive/${block.header.height}`);
+        history.push(`/renvm/${block.header.height}`);
     }, [container, history]);
 
     const onClose = useCallback(() => {
-        history.push(`/hyperdrive/`);
+        history.push(`/renvm/`);
     }, [container, history]);
 
     const blockTr = (block: Block) => {
@@ -146,7 +146,7 @@ export const Hyperdrive = withRouter(({ match: { params }, history }) => {
 
     return (
         <div
-            className="hyperdrive container"
+            className="renvm container"
             key={blockNumber === null ? undefined : blockNumber}
         >
             <Stats>
@@ -165,7 +165,7 @@ export const Hyperdrive = withRouter(({ match: { params }, history }) => {
                             <tr>
                                 <th>Block Number</th>
                                 <th>Timestamp</th>
-                                <th className="hyperdrive--table--txs">Transactions</th>
+                                <th className="renvm--table--txs">Transactions</th>
                             </tr>
                         </thead>
                         {container.currentBlock && container.currentBlockNumber === blockNumber ?
@@ -219,7 +219,7 @@ export const Hyperdrive = withRouter(({ match: { params }, history }) => {
                         <tr>
                             <th>Block Number</th>
                             <th>Timestamp</th>
-                            <th className="hyperdrive--table--txs">Transactions</th>
+                            <th className="renvm--table--txs">Transactions</th>
                         </tr>
                     </thead>
                     {container.blocks ?

@@ -20,8 +20,8 @@ import { LoggingIn } from "./common/LoggingIn";
 import { PopupController } from "./common/popups/PopupController";
 import { Sidebar } from "./common/sidebar/Sidebar";
 import { Darknode, getDarknodeParam } from "./darknodePage/Darknode";
-import { Hyperdrive } from "./hyperdrivePage/Hyperdrive";
 import { Overview } from "./overviewPage/Overview";
+import { RenVM } from "./renvmPage/RenVM";
 
 // Component that attaches scroll to top hanler on router change
 // renders nothing, just attaches side effects
@@ -92,8 +92,10 @@ const AppClass = ({ match: { params }, store: { address, loggedInBefore, renNetw
                             {/* tslint:disable-next-line: react-this-binding-issue jsx-no-lambda */}
                             <Route path="/" exact component={Overview} />
                             <Route path="/all" exact component={withAccount(AllDarknodes)} />
-                            <Route path="/hyperdrive" exact component={Hyperdrive} />
-                            <Route path="/hyperdrive/:blockNumber" exact component={Hyperdrive} />
+                            <Route path="/hyperdrive" exact component={RenVM} />
+                            <Route path="/hyperdrive/:blockNumber" exact component={RenVM} />
+                            <Route path="/renvm" exact component={RenVM} />
+                            <Route path="/renvm/:blockNumber" exact component={RenVM} />
                             <Route path="/darknode/:darknodeID" exact component={Darknode} />
                             <Route component={NotFound} />
                         </Switch>, { popup: true })}

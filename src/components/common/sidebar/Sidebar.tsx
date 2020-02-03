@@ -14,7 +14,7 @@ import { promptLogin } from "../../../store/account/accountActions";
 import { ApplicationState } from "../../../store/applicationState";
 import { AppDispatch } from "../../../store/rootReducer";
 import { hideMobileMenu } from "../../../store/ui/uiActions";
-import { ReactComponent as HyperdriveIcon } from "../../../styles/images/Icon-HyperDrive.svg";
+import { ReactComponent as RenVMIcon } from "../../../styles/images/Icon-HyperDrive.svg";
 import { ReactComponent as Search } from "../../../styles/images/search.svg";
 import { SidebarIcon } from "./SidebarIcon";
 
@@ -76,16 +76,16 @@ export const Sidebar = connect(mapStateToProps, mapDispatchToProps)(withRouter(
                             <div className="sidebar--nav--icon sidebar--icon">
                                 <FontAwesomeIcon icon={faGlobeAmericas} className="darknode-card--bottom--icon" />
                             </div>
-                            <div className="sidebar--text">Overview</div>
+                            <div className="sidebar--text">Darknodes</div>
                         </div>
                     </Link>
 
-                    <Link className="mobile-only no-underline" to="/hyperdrive" onClick={actions.hideMobileMenu}>
-                        <div className={["sidebar--row", location.pathname.match("/hyperdrive") ? "sidebar--active" : ""].join(" ")}>
+                    <Link className="mobile-only no-underline" to="/renvm" onClick={actions.hideMobileMenu}>
+                        <div className={["sidebar--row", location.pathname.match("/(renvm|hyperdrive)") ? "sidebar--active" : ""].join(" ")}>
                             <div className="sidebar--nav--icon sidebar--icon">
-                                <HyperdriveIcon className="darknode-card--bottom--icon" />
+                                <RenVMIcon className="darknode-card--bottom--icon" />
                             </div>
-                            <div className="sidebar--text">Hyperdrive</div>
+                            <div className="sidebar--text">RenVM</div>
                         </div>
                     </Link>
 
@@ -94,7 +94,7 @@ export const Sidebar = connect(mapStateToProps, mapDispatchToProps)(withRouter(
                             <div className="sidebar--nav--icon sidebar--icon">
                                 <FontAwesomeIcon icon={faThLarge} className="darknode-card--bottom--icon" />
                             </div>
-                            <div className="sidebar--text">All Darknodes</div>
+                            <div className="sidebar--text">Your Darknodes</div>
                         </div>
                     </Link>
 

@@ -13,7 +13,7 @@ import { ApplicationState } from "../../store/applicationState";
 import { storeQuoteCurrency } from "../../store/network/operatorActions";
 import { AppDispatch } from "../../store/rootReducer";
 import { showMobileMenu } from "../../store/ui/uiActions";
-import { ReactComponent as HyperdriveIcon } from "../../styles/images/Icon-HyperDrive.svg";
+import { ReactComponent as RenVMIcon } from "../../styles/images/Icon-HyperDrive.svg";
 import { ReactComponent as OverviewIcon } from "../../styles/images/Icon-Overview.svg";
 // import { ReactComponent as English } from "../../styles/images/rp-flag-uk.svg";
 import { AccountDropdown } from "./AccountDropdown";
@@ -49,84 +49,14 @@ const currencyOptions = getCurrencyOptions();
 /**
  * Header is a visual component providing page branding and navigation.
  */
-class HeaderClass extends React.Component<Props> {
-    public render = (): JSX.Element => {
-        const { location } = this.props;
-        const { address, quoteCurrency, renNetwork } = this.props.store;
+const HeaderClass = (props: Props) => {
 
-        // const languageDropdownNode = <Dropdown
-        //     key="languageDropdown"
-        //     selected={{
-        //         value: "EN",
-        //         render: "English",
-        //     }}
-        //     options={languageOptions}
-        //     setValue={this.setLanguage}
-        // />;
+    const setCurrency = (currency: string): void => {
+        props.actions.storeQuoteCurrency({ quoteCurrency: currency as Currency });
+    };
 
-        const networkDropdownNode = <Dropdown
-            key="networkDropdown"
-            selected={{
-                value: renNetwork.name,
-                render: networkOptions.get(renNetwork.name),
-            }}
-            options={networkOptions}
-            setValue={this.setNetwork}
-        />;
-
-        const currencyDropdownNode = <Dropdown
-            key="currencyDropdown"
-            selected={{
-                value: quoteCurrency,
-                render: <>
-                    <CurrencyIcon currency={quoteCurrency} />
-                    {" "}{quoteCurrency.toUpperCase()}
-                </>
-            }}
-            options={currencyOptions}
-            setValue={this.setCurrency}
-        />;
-
-        return (
-            <div className={["header"].join(" ")}>
-                {address ? <div role="button" className="header--mobile-menu--button">
-                    <button onClick={this.props.actions.showMobileMenu}>
-                        <FontAwesomeIcon icon={faBars} />
-                    </button>
-                </div> : <></>}
-                <Link className="no-underline" to="/">
-                    <div className="header--logo" />
-                </Link>
-                <div className="header--menu">
-                    <Link className="no-underline" to="/">
-                        <li className={["header--group", location.pathname === "/" ? "header--group--active" : ""].join(" ")}>
-                            <div className="header--selected">
-                                <OverviewIcon className="header--selected--icon" /> <div>Overview</div>
-                            </div>
-                        </li>
-                    </Link>
-                    <Link className="no-underline" to="/hyperdrive">
-                        <li className={["header--group", location.pathname.match("/hyperdrive") ? "header--group--active" : ""].join(" ")}>
-                            <div className="header--selected">
-                                <HyperdriveIcon className="header--selected--icon" /> <div>Hyperdrive</div>
-                            </div>
-                        </li>
-                    </Link>
-                    {/* {languageDropdownNode} */}
-                    {currencyDropdownNode}
-                    {networkDropdownNode}
-                    <AccountDropdown />
-                </div>
-            </div>
-        );
-    }
-
-    private readonly setCurrency = (currency: string): void => {
-        this.props.actions.storeQuoteCurrency({ quoteCurrency: currency as Currency });
-    }
-
-    private readonly setNetwork = (network: string): void => {
-        this.props.actions.storeRenNetwork(RenNetworks[network]);
+    const setNetwork = (network: string): void => {
+        props.actions.storeRenNetwork(RenNetworks[network]);
         setInterval(() => {
             const currentLocation = window.location.pathname;
             // history.push("/loading");
@@ -136,12 +66,91 @@ class HeaderClass extends React.Component<Props> {
             console.log(`Reloading page (${currentLocation})`);
             window.location.replace(currentLocation);
         }, 100);
-    }
+    };
 
-    // private readonly setLanguage = (language: string): void => {
+    // const setLanguage = (language: string): void => {
     //     // NOT IMPLEMENTED
     // }
-}
+
+    const [searchInput, setSearchInput] = React.useState("");
+
+    const handleInput = (event: React.FormEvent<HTMLInputElement>): void => {
+        const element = (event.target as HTMLInputElement);
+        setSearchInput(String(element.value).toLowerCase());
+    };
+
+    const { location } = props;
+    const { address, quoteCurrency, renNetwork } = props.store;
+
+    // const languageDropdownNode = <Dropdown
+    //     key="languageDropdown"
+    //     selected={{
+    //         value: "EN",
+    //         render: "English",
+    //     }}
+    //     options={languageOptions}
+    //     setValue={setLanguage}
+    // />;
+
+    const networkDropdownNode = <Dropdown
+        key="networkDropdown"
+        selected={{
+            value: renNetwork.name,
+            render: networkOptions.get(renNetwork.name),
+        }}
+        options={networkOptions}
+        setValue={setNetwork}
+    />;
+
+    const currencyDropdownNode = <Dropdown
+        key="currencyDropdown"
+        selected={{
+            value: quoteCurrency,
+            render: <>
+                <CurrencyIcon currency={quoteCurrency} />
+                {" "}{quoteCurrency.toUpperCase()}
+            </>
+        }}
+        options={currencyOptions}
+        setValue={setCurrency}
+    />;
+
+    return (
+        <div className={["header"].join(" ")}>
+            {address ? <div role="button" className="header--mobile-menu--button">
+                <button onClick={props.actions.showMobileMenu}>
+                    <FontAwesomeIcon icon={faBars} />
+                </button>
+            </div> : <></>}
+            <Link className="no-underline" to="/">
+                <div className="header--logo" />
+            </Link>
+            <div className="header--menu">
+                {/* <li className={["header--group"].join(" ")}>
+                    <input type="text" className="header--search--input" onChange={handleInput} value={searchInput} placeholder="🔍 Search by Darknode / Transaction" />
+                </li> */}
+                <Link className="no-underline" to="/">
+                    <li className={["header--group", location.pathname === "/" ? "header--group--active" : ""].join(" ")}>
+                        <div className="header--selected">
+                            <OverviewIcon className="header--selected--icon" /> <div>Darknodes</div>
+                        </div>
+                    </li>
+                </Link>
+                <Link className="no-underline" to="/renvm">
+                    <li className={["header--group", location.pathname.match("/(renvm|hyperdrive)") ? "header--group--active" : ""].join(" ")}>
+                        <div className="header--selected">
+                            <RenVMIcon className="header--selected--icon" /> <div>RenVM</div>
+                        </div>
+                    </li>
+                </Link>
+                {/* {languageDropdownNode} */}
+                {currencyDropdownNode}
+                {networkDropdownNode}
+                <AccountDropdown />
+            </div>
+        </div>
+    );
+};
 
 const mapStateToProps = (state: ApplicationState) => ({
     store: {

@@ -8,7 +8,7 @@ import { useState } from "react";
 import { MarkerType } from "react-simple-maps";
 import { createContainer } from "unstated-next";
 
-import { retryNTimes } from "../hyperdrivePage/hyperdriveContainer";
+import { retryNTimes } from "../renvmPage/renvmContainer";
 
 interface City extends MarkerType {
     darknodeID: string;
