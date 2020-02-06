@@ -42,7 +42,7 @@ export const Overview = connect(mapStateToProps)(({
                             {currentDarknodeCount}
                             {previousDarknodeCount !== null ? <Change className="stat--children--diff" change={currentDarknodeCount - previousDarknodeCount} /> : <></>}
                         </>}</Stat>
-                        <Stat message="Subzero Core" big>
+                        <Stat message="Online" big>
                             {container.darknodeCount === null ? <Loading alt /> : <>
                                 {container.darknodeCount}
 
