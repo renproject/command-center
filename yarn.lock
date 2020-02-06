@@ -1263,19 +1263,19 @@
     web3-eth-contract "1.2.2"
     web3-utils "1.2.2"
 
-"@renproject/contracts@0.3.28":
-  version "0.3.28"
-  resolved "https://registry.yarnpkg.com/@renproject/contracts/-/contracts-0.3.28.tgz#baaa6080fb84d38444e1fb96f56c2ed16e478262"
-  integrity sha512-n2g/k711MYTPv9UjNV8JNUvkheBAgigbupVK8szv/Y68J0BUdF/FC2eiL5JNTQgBQuJB9g877ZdR9c+kosmrWw==
-  dependencies:
-    darknode-sol "https://github.com/renproject/darknode-sol#e9e7357e3e8d6e30bbd03a72eaaefdcb9a0e6ad7"
-
 "@renproject/contracts@^0.3.28":
   version "0.3.32"
   resolved "https://registry.yarnpkg.com/@renproject/contracts/-/contracts-0.3.32.tgz#2927f7d27c964ee94ce164f5a81fc90f71b59380"
   integrity sha512-S3/w4XK9vogQflrDFtSO2hGnHNjJ6x1XJuUVjelV8Hr+tk+S1YLmmDRNKq7wC/rQXO8XxIrjq8qb0OjOgrDseQ==
   dependencies:
     darknode-sol "https://github.com/renproject/darknode-sol#ff7d0a442a52ae7990e0ee21a51b037c47450448"
+
+"@renproject/contracts@^0.3.33":
+  version "0.3.33"
+  resolved "https://registry.yarnpkg.com/@renproject/contracts/-/contracts-0.3.33.tgz#bc98848d83981b66df355e8e54c2e6eb0f2533f7"
+  integrity sha512-ygq/178LHvYbuJRn7ApcawVftlatDAJecp0mPvMnGoM4tpk5TdWjFWFaOogvCy4YZjr8+9ytjaHBWfdAKfXlhg==
+  dependencies:
+    darknode-sol "https://github.com/renproject/darknode-sol#58af2b1be7b26e6e53c9a9c90169e30b8f83a3f2"
 
 "@renproject/fonts@^1.0.1":
   version "1.0.1"
@@ -4980,10 +4980,11 @@ damerau-levenshtein@^1.0.4:
   resolved "https://registry.yarnpkg.com/damerau-levenshtein/-/damerau-levenshtein-1.0.6.tgz#143c1641cb3d85c60c32329e26899adea8701791"
   integrity sha512-JVrozIeElnj3QzfUIt8tB8YMluBJom4Vw9qTPpjGYQ9fYlB3D/rb6OordUxf3xeFB35LKWs0xqcO5U6ySvBtug==
 
-"darknode-sol@https://github.com/renproject/darknode-sol#e9e7357e3e8d6e30bbd03a72eaaefdcb9a0e6ad7":
+"darknode-sol@https://github.com/renproject/darknode-sol#58af2b1be7b26e6e53c9a9c90169e30b8f83a3f2":
   version "0.0.3"
-  resolved "https://github.com/renproject/darknode-sol#e9e7357e3e8d6e30bbd03a72eaaefdcb9a0e6ad7"
+  resolved "https://github.com/renproject/darknode-sol#58af2b1be7b26e6e53c9a9c90169e30b8f83a3f2"
   dependencies:
+    "@openzeppelin/upgrades" "^2.6.0"
     openzeppelin-solidity "2.4.0"
 
 "darknode-sol@https://github.com/renproject/darknode-sol#f60d23ffa59203ae13a3d99688f12fdf704eb095":
