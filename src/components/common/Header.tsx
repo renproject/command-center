@@ -72,12 +72,12 @@ const HeaderClass = (props: Props) => {
     //     // NOT IMPLEMENTED
     // }
 
-    const [searchInput, setSearchInput] = React.useState("");
+    // const [searchInput, setSearchInput] = React.useState("");
 
-    const handleInput = (event: React.FormEvent<HTMLInputElement>): void => {
-        const element = (event.target as HTMLInputElement);
-        setSearchInput(String(element.value).toLowerCase());
-    };
+    // const handleInput = (event: React.FormEvent<HTMLInputElement>): void => {
+    //     const element = (event.target as HTMLInputElement);
+    //     setSearchInput(String(element.value).toLowerCase());
+    // };
 
     const { location } = props;
     const { address, quoteCurrency, renNetwork } = props.store;

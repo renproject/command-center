@@ -1,8 +1,8 @@
 import { getTimeMagnitude, Loading, naturalTime, TokenIcon } from "@renproject/react-components";
+import BigNumber from "bignumber.js";
 import React, { useCallback, useState } from "react";
 import { withRouter } from "react-router-dom";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
-import BigNumber from "bignumber.js";
 
 import { Token } from "../../lib/ethereum/tokens";
 import { Stat, Stats } from "../common/Stat";

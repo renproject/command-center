@@ -32,6 +32,9 @@ const ganache = (buildPath: string, networkID: number) => {
     const DarknodePaymentStore = require(join(buildPath, "DarknodePaymentStore.json"));
     const DarknodePayment = require(join(buildPath, "DarknodePayment.json"));
     const BTCShifter = require(join(buildPath, "BTCShifter.json"));
+    const Protocol = require(join(buildPath, "Protocol.json"));
+    const ProtocolLogic = require(join(buildPath, "ProtocolLogic.json"));
+    const BasicAdapter = require(join(buildPath, "BasicAdapter.json"));
     const ERC20 = require("darknode-sol/build/erc/ERC20.json");
     // tslint:enable: non-literal-require
 
@@ -49,6 +52,11 @@ const ganache = (buildPath: string, networkID: number) => {
         },
         addresses: {
             ren: {
+                Protocol: {
+                    address: Protocol.networks[networkID].address,
+                    abi: ProtocolLogic.abi as AbiItem[],
+                    artifact: Protocol,
+                },
                 DarknodeSlasher: {
                     address: DarknodeSlasher.networks[networkID].address,
                     abi: DarknodeSlasher.abi as AbiItem[],
@@ -86,31 +94,42 @@ const ganache = (buildPath: string, networkID: number) => {
                     _address: zBTC.networks[networkID].address,
                     abi: zBTC.abi as AbiItem[],
                     artifact: zBTC,
+                    description: "shifterRegistry.getTokenBySymbol(zBTC)",
                 },
                 BTCShifter: {
                     _address: BTCShifter.networks[networkID].address,
                     abi: BTCShifter.abi as AbiItem[],
                     artifact: BTCShifter,
+                    description: "shifterRegistry.getShifterBySymbol(zBTC)",
                 },
                 zZEC: {
                     _address: zZEC.networks[networkID].address,
                     abi: zZEC.abi as AbiItem[],
                     artifact: zZEC,
+                    description: "shifterRegistry.getTokenBySymbol(zZEC)",
                 },
                 ZECShifter: {
                     _address: ZECShifter.networks[networkID].address,
                     abi: ZECShifter.abi as AbiItem[],
                     artifact: ZECShifter,
+                    description: "shifterRegistry.getShifterBySymbol(zZEC)",
                 },
                 zBCH: {
                     _address: zBCH.networks[networkID].address,
                     abi: zBCH.abi as AbiItem[],
                     artifact: zBCH,
+                    description: "shifterRegistry.getTokenBySymbol(zBCH)",
                 },
                 BCHShifter: {
                     _address: BCHShifter.networks[networkID].address,
                     abi: BCHShifter.abi as AbiItem[],
                     artifact: BCHShifter,
+                    description: "shifterRegistry.getShifterBySymbol(zBCH)",
+                },
+                BasicAdapter: {
+                    address: BasicAdapter.networks[networkID].address,
+                    abi: BasicAdapter.abi as AbiItem[],
+                    artifact: BasicAdapter,
                 },
             },
             tokens: {
