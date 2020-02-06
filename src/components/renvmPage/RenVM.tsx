@@ -2,6 +2,7 @@ import { getTimeMagnitude, Loading, naturalTime, TokenIcon } from "@renproject/r
 import React, { useCallback, useState } from "react";
 import { withRouter } from "react-router-dom";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
+import BigNumber from "bignumber.js";
 
 import { Token } from "../../lib/ethereum/tokens";
 import { Stat, Stats } from "../common/Stat";
@@ -130,9 +131,7 @@ export const RenVM = withRouter(({ match: { params }, history }) => {
                 lockedBalances[token] = <Stat message={`Locked ${token}`} big>
                     <TokenBalance
                         token={token as Token}
-                        amount={String(
-                            state && state.value ? state.value.reduce((sum, utxo) => sum + utxo.amount, 0) : 0
-                        )}
+                        amount={state && state.value ? state.value.reduce((sum, utxo) => sum.plus(utxo.amount), new BigNumber(0)).toFixed() : 0}
                         digits={4}
                     />{" "}
                     {token}

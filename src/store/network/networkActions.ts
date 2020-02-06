@@ -6,6 +6,7 @@ import { createAction } from "typesafe-actions";
 
 import { DarknodeCounts } from "../../lib/ethereum/contractReads";
 import { getPrices, Token, TokenPrices } from "../../lib/ethereum/tokens";
+import { _catchBackgroundException_ } from "../../lib/react/errors";
 import { AppDispatch } from "../rootReducer";
 
 export const storeTokenPrices = createAction("STORE_TOKEN_PRICES")<TokenPrices>();
@@ -21,6 +22,10 @@ export const updateCurrentShareCount = createAction("UPDATE_CURRENT_SHARE_COUNT"
 export const updateDarknodeCounts = createAction("UPDATE_DARKNODE_COUNTS")<DarknodeCounts>();
 
 export const updateTokenPrices = () => async (dispatch: AppDispatch) => {
-    const tokenPrices = await getPrices();
-    dispatch(storeTokenPrices(tokenPrices));
+    try {
+        const tokenPrices = await getPrices();
+        dispatch(storeTokenPrices(tokenPrices));
+    } catch (error) {
+        _catchBackgroundException_(error, "Error in networkActions > updateTokenPrices");
+    }
 };
