@@ -200,8 +200,28 @@
     border: 0;
     padding: 0 10px;
     background: none;
-}
 
+    &:hover:after {
+        position: absolute;
+        top: -40px;
+        left: -32.5px;
+        width: 100px;
+        content: attr(title);
+        padding: 2px;
+        background-color: transparentize($color: white, $amount: 0.2);
+        line-height: 1.4em;
+        color: $red;
+        border: 1px solid $red;
+    }
+
+    &.new-address--plus--green {
+        &:hover:after {
+            top: -20px;
+            color: $green;
+            border: 1px solid $green;
+        }
+    }
+}
 // Open Order
 .popup.open .open--tokens {
     display: flex;

@@ -41,7 +41,8 @@
     "acceptance-tests",
     "webpack",
     "jest",
-    "src/setupTests.ts"
+    "test",
+    "src/test"
   ],
   "include": [
     "src"

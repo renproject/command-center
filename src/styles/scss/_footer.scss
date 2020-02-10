@@ -1,0 +1,60 @@
+.footer {
+    height: 60px;
+    width: calc(100% - 80px);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    margin-left: 80px;
+    padding: 0 30px;
+
+    @media (max-width: $max-md) {
+        width: 100%;
+        margin-left: 0;
+        display: none;
+    }
+
+    border-top: 1px solid #1A2E46;
+    background: #001B3A;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    >div>div {
+        font-weight: bold;
+        font-size: 12px;
+        line-height: 14px;
+
+        /* identical to box height */
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+
+        color: #FFFFFF;
+
+        mix-blend-mode: normal;
+        opacity: 0.4;
+
+        a {
+            color: #FFFFFF;
+            text-decoration: none;
+        }
+    }
+}
+
+.footer--right {
+    display: flex;
+
+    >div+div {
+        margin-left: 40px;
+    }
+
+    >div {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    svg {
+        margin-right: 5px;
+    }
+}

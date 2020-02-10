@@ -17,17 +17,21 @@ html {
         width: 100%;
         overflow: hidden;
     }
+
+    min-height: 100%;
+    background: linear-gradient(180deg, #00162f 0%, #001b39 100%);
+    background-attachment: fixed;
 }
 
 * {
-    font-family: 'PingFang SC', Helvetica, Arial, sans-serif;
+    font-family: "SuisseIntl", Helvetica, Arial, sans-serif;
 }
 
 body {
     font-size: 12px;
     margin: 0;
-    background: $blue-darker;
     color: white;
+    margin-bottom: 60px !important;
 }
 
 h1 {
@@ -57,9 +61,9 @@ label {
     display: block;
 }
 
-input[type=number],
-input[type=text],
-input[type=password] {
+input[type="number"],
+input[type="text"],
+input[type="password"] {
     border: 1px solid $light-grey;
     height: 35px;
     padding: 0 8px;
@@ -73,7 +77,7 @@ input[type=password] {
     }
 }
 
-input[type=checkbox] {
+input[type="checkbox"] {
     margin: 0 5px 0 0;
     vertical-align: middle;
 }
@@ -182,17 +186,35 @@ table th {
     text-align: right;
 }
 
+$spacing: 90px;
+
 .container {
-    $spacing: 80px;
     width: 100%;
     max-width: 1400px + $spacing * 2;
     margin: 0 auto;
     padding: 0 $spacing;
 
-    @media(max-width: $max-sm) {
-        padding: 0;
+    @media (max-width: $max-xl) {
+        padding-right: 10px;
+        padding-left: $spacing + 10px;
+    }
+
+    @media (max-width: $max-md) {
+        padding: 0 10px;
     }
 }
+
+// .without-account .container {
+//     padding: 0 $spacing+10px;
+
+//     @media (max-width: $max-xl) {
+//         padding-right: 0 $spacing+10px;
+//     }
+
+//     @media (max-width: $max-md) {
+//         padding: 0 10px;
+//     }
+// }
 
 .section {
     padding: 60px 0;
@@ -207,7 +229,7 @@ table th {
 }
 
 .monospace {
-    font-family: 'Courier New', Courier, monospace;
+    font-family: "Courier New", Courier, monospace;
     letter-spacing: 0.5px;
 }
 
@@ -230,7 +252,7 @@ label {
     text-overflow: ellipsis;
     max-width: 250px;
 
-    @media(min-width: $min-sm) {
+    @media (min-width: $min-sm) {
         max-width: none;
     }
 }
@@ -267,7 +289,6 @@ label {
     text-decoration: none;
 }
 
-
 .checkbox {
     appearance: initial;
     width: 20px;
@@ -282,7 +303,6 @@ label {
 .checkbox:checked:after {
     content: "✔";
     color: $green;
-
     position: absolute;
     left: 50%;
     top: 50%;
@@ -299,38 +319,53 @@ label {
 
 .no-scrollbar {
     overflow: -moz-scrollbars-none;
+    scrollbar-width: none;
 
     &::-webkit-scrollbar {
         /* remove scrollbar space */
+        display: none;
         width: 0px;
         height: 0px;
     }
 }
 
 .app--body {
-    margin-top: 120px;
+    margin-top: 100px;
+    margin-bottom: 60px;
 }
 
 .mobile-only {
-    @media(min-width: $min-md) {
+    @media (min-width: $min-lg) {
         display: none !important;
     }
 }
 
 .no-mobile {
-    @media(max-width: $max-sm) {
+    @media (max-width: $max-md) {
         display: none !important;
     }
 }
 
 .large-only {
-    @media(max-width: $max-lg) {
+    @media (max-width: $max-lg) {
         display: none !important;
     }
 }
 
 .no-large {
-    @media(min-width: $min-xl) {
+    @media (min-width: $min-xl) {
         display: none !important;
+    }
+}
+
+.no-spin-button {
+    -moz-appearance: textfield;
+
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        margin: 0;
     }
 }

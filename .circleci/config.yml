@@ -1,0 +1,62 @@
+# Javascript Node CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-javascript/ for more details
+#
+version: 2.1
+
+executors:
+  default:
+    docker:
+      - image: circleci/node:10.16
+    working_directory: ~/command-center
+
+commands:
+  install_deps:
+    description: "Install dependencies"
+    steps:
+      # Download and cache dependencies
+      - restore_cache:
+          name: Restore node_modules
+          keys:
+            - v1-dependencies-{{ checksum "yarn.lock" }}
+      - run:
+          name: Install dependencies
+          command: sudo npm install --global yarn && yarn version && yarn cache clean && (yarn install --network-concurrency 1 || yarn install --network-concurrency 1)
+      - run:
+          name: Install darknode-sol dependencies
+          command: cd ./node_modules/darknode-sol && (yarn install --network-concurrency 1 || yarn install --network-concurrency 1)
+      - save_cache:
+          name: Save node_modules
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "yarn.lock" }}
+
+  test_on_local_network:
+    description: "Test on local network"
+    steps:
+      - run:
+          name: Migrate contracts
+          command: cd ./node_modules/darknode-sol && (yarn ganache-cli -d  > /dev/null &) && sleep 5 && yarn truffle migrate && cd ../../ && yarn run test
+
+jobs:
+  build:
+    executor: default
+    steps:
+      - checkout
+      - install_deps
+      - test_on_local_network
+      # - run:
+      #     name: Build
+      #     command: yarn run build
+      - run:
+          name: Lint
+          command: yarn run lint
+      - run:
+          name: Lint with warnings
+          command: yarn run lint:extra || true # FIXME
+
+workflows:
+  build:
+    jobs:
+      - build
+

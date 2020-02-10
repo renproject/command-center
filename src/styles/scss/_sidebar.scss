@@ -10,7 +10,7 @@ $mobile-full-width: 100vw;
     border-radius: 50%;
 }
 
-.sidebar li {
+.sidebar--row {
     height: 100px;
     border-left: 4px solid rgba(0, 0, 0, 0);
     display: flex;
@@ -23,6 +23,22 @@ $mobile-full-width: 100vw;
     }
 }
 
+.sidebar--top {
+    @extend .no-scrollbar;
+    overflow-y: scroll;
+    height: 100%;
+    flex: 1;
+    display: flex;
+    flex-flow: column;
+}
+
+.sidebar--darknodes {
+    background: url('../../styles/images/sidebar-empty.svg') repeat-y;
+    background-position-x: 19px;
+    background-position-y: 27px;
+    flex: 1;
+}
+
 .sidebar .sidebar--nav li {
     height: 50px;
 }
@@ -31,7 +47,7 @@ $mobile-full-width: 100vw;
     margin-bottom: 50px;
 }
 
-.sidebar--nav--icon {
+.sidebar--nav--icon svg {
     color: #FFFFFF;
     mix-blend-mode: normal;
     opacity: 0.4;
@@ -48,24 +64,48 @@ $mobile-full-width: 100vw;
     font-size: 20px;
 }
 
+.sidebar--nav--icon--circle {
+    background: rgba(255, 255, 255, 0.08);
+    width: 30px;
+    height: 30px;
+    border-radius: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.sidebar--plus {
+    background: none;
+    margin-top: -5px;
+}
+
+.external-link {
+    opacity: 0.2;
+    margin-left: 5px;
+    margin-bottom: -1px;
+}
+
+$max-sidebar: $max-md;
+$min-header: $min-lg;
+
 .sidebar.sidebar--mobile--active {
-    @media(max-width: $max-sm) {
+    @media(max-width: $max-sidebar) {
         width: $mobile-full-width;
     }
 }
 
-.sidebar:hover {
-    @media(min-width: $min-md) {
+.sidebar--logged-in:hover {
+    @media(min-width: $min-header) {
         width: $full-width;
         overflow-x: visible;
     }
 }
 
-.sidebar li.sidebar--active {
+.sidebar--row.sidebar--active {
     border-left: 4px solid $blue-bright;
 }
 
-.sidebar li.sidebar--faded {
+.sidebar--row.sidebar--faded {
     >* {
         opacity: 0.4;
     }
@@ -78,12 +118,19 @@ $mobile-full-width: 100vw;
     justify-content: center;
 }
 
+.sidebar--icon--empty {
+    width: 42px;
+    height: 42px;
+    border-radius: 100%;
+    background: rgba(0, 111, 232, 0.2);
+}
+
 .sidebar {
     @extend .no-scrollbar;
     position: fixed;
     background-color: $blue-darker;
     border-right: 2px solid transparentize(#58585B, 1 - 0.2);
-    padding: 30px 0;
+    padding: 0;
     top: 0;
     bottom: 0;
     left: 0;
@@ -92,22 +139,23 @@ $mobile-full-width: 100vw;
     color: #FFFFFF;
     height: 100vh;
     width: $collapsed-width;
+    display: flex;
+    flex-flow: column;
 
-    @media(max-width: $max-sm) {
+    @media(max-width: $max-sidebar) {
         width: 0px;
     }
 
-    @media(max-width: $max-sm) {
+    @media(max-width: $max-sidebar) {
         // This sets the faTimes symbol to be aligned with the faBars symbol
         padding-top: 17px;
     }
 
     overflow-x: hidden;
-    overflow-y: scroll;
     -webkit-transition: width .1s linear;
     transition: width .1s linear;
     -webkit-transform: translateZ(0) scale(1, 1);
-    z-index: 4;
+    z-index: 20;
 }
 
 .sidebar::-webkit-scrollbar {
@@ -115,21 +163,21 @@ $mobile-full-width: 100vw;
     background: transparent;
 }
 
-.sidebar>ul {
-    margin: 7px 0;
+.sidebar--nav {
+    margin: 0;
 }
 
-.sidebar li {
+.sidebar--row {
     position: relative;
     width: $full-width - 2px;
 
-    @media(max-width: $max-sm) {
+    @media(max-width: $max-sidebar) {
         // $mobile-full-width
         width: calc(100vw - 2px);
     }
 }
 
-.sidebar li a {
+.sidebar--row a {
     position: relative;
     display: table;
     border-collapse: collapse;
@@ -148,7 +196,7 @@ $mobile-full-width: 100vw;
 .sidebar .sidebar--text {
     width: $full-width - $collapsed-width;
 
-    @media(max-width: $max-sm) {
+    @media(max-width: $max-sidebar) {
         // $mobile-full-width - $collapsed-width
         width: calc(100vw - 80px);
     }
@@ -218,4 +266,81 @@ nav li {
     outline: 0;
     margin: 0;
     padding: 0;
+}
+
+
+.sidebar--search {
+    // position: fixed !important;
+    // bottom: 0;
+    background: #002247CC;
+}
+
+input[type="text"].sidebar--search--input {
+    background: #F5F5F5;
+    border-radius: 15.5px;
+
+    font-size: 12px;
+    line-height: 14px;
+    padding: 0 15px;
+
+    &::placeholder {
+        font-weight: 600;
+        color: #979797;
+    }
+}
+
+.search--filter--feedback {
+    visibility: hidden;
+    color: #979797;
+    padding: 0 30px;
+    margin-bottom: 5px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    white-space: pre;
+    overflow-x: hidden;
+}
+
+.sidebar:hover {
+    @media(min-width: $min-header) {
+        .search--filter--feedback {
+            visibility: initial;
+        }
+    }
+}
+
+.sidebar--connect {
+    background: #006FE8;
+    box-shadow: -2px 2px 4px #000000;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+    transform: rotate(-90deg);
+    position: absolute;
+    top: 50vh;
+    width: 200px;
+    height: 28px;
+    left: -5px;
+    z-index: 20;
+
+    cursor: pointer;
+
+    font-size: 14px;
+    line-height: 16px;
+    color: #F9F9F9;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .wallet-icon--inner {
+        background: url('../../styles/images/wallet.svg') no-repeat;
+        background-size: 12px 14px;
+        height: 14px;
+        width: 12px;
+        margin-right: 6px;
+    }
+
+    @media(max-width: $max-sidebar) {
+        display: none;
+    }
 }

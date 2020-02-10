@@ -110,8 +110,9 @@
             display: flex;
         }
 
+        min-height: 600px;
         color: white;
-        margin-top: 24px;
+        margin-top: 16px;
 
         >div+div {
             margin-left: 22px;
@@ -242,11 +243,15 @@
     }
 
     .topup--title {
-        margin-bottom: 10px;
-        font-weight: bold;
+        font-weight: normal;
         font-size: 14px;
 
+        /* identical to box height, or 257% */
+
         color: #FFFFFF;
+
+        mix-blend-mode: normal;
+        opacity: 0.6;
     }
 
     .topup--withdraw {
@@ -274,11 +279,10 @@
 
         display: inline-flex;
         align-items: center;
-        vertical-align: top;
 
-        background: #F5F5F5;
-        border-radius: 2px;
-        height: 42px;
+        >* {
+            flex-grow: 1;
+        }
     }
 
     .topup--input:not(.disabled):hover {
@@ -286,11 +290,21 @@
     }
 
     .topup--input>input[type=number] {
-        width: 100%;
+        @extend .no-spin-button;
         border: none;
         height: 42px;
         background: none;
         font-weight: 500;
+        font-size: 16px;
+
+        background: #F5F5F5;
+        border-radius: 4px;
+        height: 32px;
+
+
+        &::placeholder {
+            color: #979797;
+        }
     }
 
     .topup--input>span {
@@ -300,11 +314,28 @@
     }
 
     .topup--input>button {
+        height: 32px;
         background: none;
         border: none;
+        border: 1px solid #FFFFFF;
+        box-sizing: border-box;
+        border-radius: 4px;
+        font-weight: 500;
+        font-size: 12px;
+        line-height: 14px;
+
+        /* identical to box height */
+        text-align: center;
+
+        color: #F9F9F9;
+        transition: opacity 0.2s ease-in-out;
+
+        &:disabled {
+            opacity: 0.6;
+        }
     }
 
-    .statuspage--graphs {
+    .block--column {
         flex-grow: 1;
         flex-basis: 0;
 
@@ -312,6 +343,8 @@
         flex-flow: column;
         justify-content: space-between;
 
+        box-shadow: none;
+        overflow: visible;
         background: none !important;
         padding: 0 !important;
 
@@ -440,10 +473,78 @@
     }
 }
 
+.blocky--loading {
+    >div {
+        @extend .lds-dual-ring;
+
+        &:after {
+            content: " ";
+            position: relative;
+            top: 0;
+            left: 0;
+            border-color: rgba(0, 111, 232, 0.28) #00000000 rgba(0, 111, 232, 0.28) #00000000;
+            border-width: 10px;
+            animation: lds-dual-ring 2s linear infinite;
+            width: 80px;
+            height: 80px;
+            margin-top: -105px;
+            line-height: 0;
+        }
+    }
+}
+
 .darknode-id {
     max-width: 300px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     min-width: 0px;
+}
+
+.statuspage--banner--edit {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    >div {
+        padding: 0;
+        margin-left: 10px;
+        height: 16px;
+        margin-top: -2px;
+    }
+}
+
+.network-block {
+    flex-grow: 2 !important;
+}
+
+.resources--chart {
+    width: 100px;
+}
+
+.resources--block--charts {
+    display: flex;
+    padding: 0 22px;
+    justify-content: center;
+
+    >*+* {
+        margin-left: 40px;
+    }
+}
+
+.resources--chart--and--label {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+
+    >canvas {
+        height: 150px;
+        width: 150px;
+    }
+
+    >p {
+        margin-top: 8px;
+        font-weight: 900;
+        text-transform: uppercase;
+    }
 }

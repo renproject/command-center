@@ -23,6 +23,13 @@ export enum Web3Browser {
 }
 
 export const getWeb3BrowserName = (newProvider: provider): Web3Browser => {
+    /*
+    // Check for mobile
+    const { userAgent: ua } = navigator
+    const isIOS = ua.includes('iPhone') // “iPhone OS”
+    const isAndroid = ua.includes('Android')
+    */
+
     // tslint:disable:no-any
     if ((newProvider as any).isToshi) {
         // Toshi has become Coinbase wallet

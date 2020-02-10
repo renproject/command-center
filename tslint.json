@@ -46,9 +46,12 @@
         "function-name": false,
         "no-return-await": false,
         "interface-over-type-literal": false,
+        "no-void-expression": false,
         // "ter-indent": false,
-
         // Warnings
+        "no-unnecessary-type-assertion": {
+            "severity": "warning"
+        },
         "no-suspicious-comment": {
             "severity": "warning"
         },
@@ -58,7 +61,6 @@
         "strict-type-predicates": {
             "severity": "warning"
         },
-
         // Enabled
         "ordered-imports": true,
         "no-object-literal-type-assertion": true,
@@ -69,19 +71,19 @@
         "typedef": true,
         "no-any": true,
         "no-angle-bracket-type-assertion": true,
-        "no-void-expression": true,
         "no-use-before-declare": true,
         "promise-function-async": true,
         "prefer-readonly": true,
         "await-promise": true,
         "react-this-binding-issue": true,
         "no-string-based-set-timeout": true,
-        "no-unnecessary-type-assertion": true,
-        "no-unused-variable": [true, {
-            "ignore-pattern": "^_"
-        }],
+        "no-unused-variable": [
+            true,
+            {
+                "ignore-pattern": "^_"
+            }
+        ],
         "only-arrow-functions": true,
-
         // Configured
         "quotemark": [
             true,
@@ -114,14 +116,19 @@
                 "esSpecCompliant": true
             }
         ],
-        "increment-decrement": [true, "allow-post"],
+        "increment-decrement": [
+            true,
+            "allow-post"
+        ],
         "align": [
             true,
             "parameters",
             "statements"
         ],
-        "array-type": [true, "array-simple"],
-
+        "array-type": [
+            true,
+            "array-simple"
+        ],
         // Temporarily disabled - some work is required to get the project to
         // abide by these
         "no-unsafe-any": false,

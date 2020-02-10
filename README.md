@@ -1,12 +1,12 @@
 # `🎛️ Command Center`
 
-[![Build Status](https://travis-ci.org/republicprotocol/darknode-command-center.svg?branch=master)](https://travis-ci.org/republicprotocol/darknode-command-center)
+[![Build Status](https://circleci.com/gh/renproject/command-center/tree/master.svg)](https://circleci.com/gh/renproject/command-center/tree/master)
 
-[chaosdex.renproject.io](https://chaosdex.renproject.io)
+[chaosnet.renproject.io](https://chaosnet.renproject.io)
 
 The Darknode Command Center is a front-end UI for registering, funding and monitoring darknodes, and for withdrawing rewards. It should be used along side the [Darknode CLI](https://github.com/renproject/darknode-cli).
 
-For instructions on running a darknode, see [Darknode Rollout: Limited Participation Begins](https://medium.com/republicprotocol/a-sdarknode-rollout-limited-participation-begins-68f51d9bb865).
+For instructions on running a darknode, see [Darknode Rollout: Limited Participation Begins](https://medium.com/renproject/a-sdarknode-rollout-limited-participation-begins-68f51d9bb865).
 
 ## Previews
 
@@ -17,3 +17,34 @@ All-darknodes page
 Darknode page
 
 ![preview 2](./preview-2.png)
+
+## Developer notes
+
+### Project
+
+The project is structured into [`components`](./src/components), [`store`](./src/store) and [`lib`](./src/lib).
+
+The library (`lib`) files of note are:
+
+* [`contractReads.ts`](./src/lib/ethereum/contractReads.ts)
+* [`contractWrites.ts`](./src/lib/ethereum/contractWrites.ts)
+
+### Tests
+
+(see [CircleCI config](./.circleci/config.yml) for more details)
+
+In one terminal, start a local Ethereum node by running:
+
+```bash
+cd ./node_modules/darknode-sol
+yarn install
+(yarn ganache-cli -d  > /dev/null &)
+sleep 5
+yarn truffle migrate 
+```
+
+In another, run:
+
+```bash
+yarn run test
+```

@@ -1,5 +1,4 @@
 import * as redux from "react-redux";
-import { connect, ConnectedComponentClass, GetProps, MapDispatchToPropsNonObject, MapStateToPropsParam, Matching, Omit, Shared } from "react-redux";
 import { ComponentType } from "react";
 
 declare module "react-redux" {
@@ -13,7 +12,7 @@ declare module "react-redux" {
         OUTER extends { actions: infer ACTIONS } ? {
             actions: {
                 [KEY in keyof ACTIONS]:
-            /**/ACTIONS[KEY] extends (...args: infer Args) => (d: any) => Promise<infer X> ?
+            /**/ACTIONS[KEY] extends (...args: infer Args) => (d: any, getState?: any) => Promise<infer X> ?
             /**//**/(...args: Args) => Promise<X> :
             /**//**/ACTIONS[KEY];
             };

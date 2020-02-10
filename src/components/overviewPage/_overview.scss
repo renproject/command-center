@@ -1,0 +1,128 @@
+.overview {
+    .overview--bottom {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+
+        >* {
+            flex-grow: 1;
+        }
+
+        >canvas {
+            width: 200px !important;
+            height: 200px !important;
+        }
+
+        .overview--chart--outer {
+            background: linear-gradient(-180deg, #00457F -1080.14%, #002148 85.91%);
+            border-radius: 4px;
+            height: 400px;
+
+            min-width: 500px;
+
+            flex: 1 1 0px;
+
+            display: flex;
+            flex-flow: column;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chart--tabs {
+            cursor: pointer;
+            width: 100%;
+            // background: #1C2127;
+            // box-sizing: border-box;
+            margin: 0px;
+            margin-bottom: 0;
+            display: flex;
+
+            padding: 0 0px;
+        }
+
+        .chart--tab {
+            background: none;
+            border: none;
+            font-size: 14px;
+            line-height: 16px;
+            text-align: center;
+
+            color: #9195A0;
+
+            >span {
+                opacity: 0.5;
+            }
+
+            width: 50%;
+            transition: all 200ms;
+            // border: 0px solid rgba(145, 149, 160, 0.1);
+            border: 1px solid transparent;
+            padding: 10px;
+            border-bottom: 2px solid #001b39;
+        }
+
+
+        .chart--tab+.chart--tab {
+            border-left: 2px solid #001b39;
+        }
+
+        .chart--tab--selected {
+            border-bottom: 2px solid transparent;
+            box-shadow: none;
+            // background: #282C35;
+            // border: 1px solid $blue-bright;
+            // box-sizing: border-box;
+            // box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+            color: #E0E3EB;
+
+            >span {
+                opacity: 1;
+            }
+        }
+
+        .overview--chart {
+            flex: 1 1 0px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            // width: 100%;
+            // max-width: 40%;
+
+            .overview--chart--legend--table {
+                width: 200px;
+                margin-left: 30px;
+
+                font-weight: 300;
+                font-size: 12px;
+                line-height: 27px;
+
+                letter-spacing: 1.5px;
+
+
+                >div {
+                    >:first-child {
+                        display: flex;
+                        align-items: center;
+                        font-weight: 900;
+
+                        svg {
+                            margin-right: 5px;
+                        }
+                    }
+
+                    &:not(:last-child) {
+                        border-bottom: 1px solid #ffffff20;
+                    }
+
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 10px 0;
+                }
+
+            }
+        }
+    }
+}
