@@ -1,10 +1,12 @@
-# Ren Command Center
+# `🎛️ Command Center`
 
 [![Build Status](https://circleci.com/gh/renproject/command-center/tree/master.svg)](https://circleci.com/gh/renproject/command-center/tree/master)
 
-The Command Center is a dApp for registering, funding and monitoring darknodes, and for withdrawing rewards.
+[chaosnet.renproject.io](https://chaosnet.renproject.io)
 
-For instructions on running a darknode, see [Darknode Rollout: Limited Participation Begins](https://medium.com/republicprotocol/a-sdarknode-rollout-limited-participation-begins-68f51d9bb865).
+The Darknode Command Center is a front-end UI for registering, funding and monitoring darknodes, and for withdrawing rewards. It should be used along side the [Darknode CLI](https://github.com/renproject/darknode-cli).
+
+For instructions on running a darknode, see [Darknode Rollout: Limited Participation Begins](https://medium.com/renproject/a-sdarknode-rollout-limited-participation-begins-68f51d9bb865).
 
 ## Previews
 
