@@ -1,6 +1,7 @@
 import { mainnet, RenNetworkDetails } from "@renproject/contracts";
 import { sleep } from "@renproject/react-components";
-import RenSDK, { TxStatus } from "@renproject/ren";
+import RenSDK from "@renproject/ren";
+import { TxStatus } from "@renproject/ren-js-common";
 import BigNumber from "bignumber.js";
 import Web3 from "web3";
 import { TransactionConfig, TransactionReceipt } from "web3-core";
@@ -356,7 +357,7 @@ const burn = async (
     const sdk = new RenSDK(renNetwork.name);
 
     const txHash = await waitForTX(contract.methods.shiftOut(
-        (sdk.utils[token].addressToHex || sdk.Tokens[token].addressToHex)(recipient), // _to
+        (sdk.utils[token].addressToHex || RenSDK.Tokens[token].addressToHex)(recipient), // _to
         amount.decimalPlaces(0).toFixed(), // _amount in Satoshis
     ).send({ from: address })
     );
@@ -372,7 +373,7 @@ const burn = async (
         web3Provider: web3.currentProvider,
 
         // The transaction hash of our contract call
-        txHash,
+        ethTxHash: txHash,
     }).readFromEthereum();
 
     const promiEvent = shiftOut.submitToRenVM();

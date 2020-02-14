@@ -72,7 +72,7 @@ export const DarknodeMap = () => {
                             ))}
                 </Geographies>
                 <Markers>
-                    {container.darknodes.map((darknode, i) => <Marker key={i} marker={darknode}>
+                    {container.darknodes.map((darknode, i) => <Marker key={i} marker={{ coordinates: darknode.point }}>
                         <Link to={`/darknode/${darknode.darknodeID}`}>
                             <circle
                                 cx={0}

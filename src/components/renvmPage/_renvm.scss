@@ -1,6 +1,7 @@
 .renvm {
     // display: flex;
 
+    h1,
     h2 {
         font-style: normal;
         font-weight: bold;
@@ -183,4 +184,38 @@
 .popup--x.popup--x--white {
     margin-top: 0px;
     background: url('../../styles/images/exit.svg');
+}
+
+.renvm--transaction {
+    table {
+        text-overflow: ellipsis;
+        table-layout: fixed;
+
+        td {
+            cursor: default;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
+
+    a {
+        text-decoration: underline;
+        font-style: italic;
+    }
+
+    .block--tx {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        height: 40px;
+        width: 100%;
+
+        .block--tx--span {
+            @extend .monospace;
+
+            font-weight: 900;
+            margin-left: 5px;
+        }
+    }
 }

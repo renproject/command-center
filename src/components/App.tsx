@@ -92,11 +92,24 @@ const AppClass = ({ match: { params }, store: { address, loggedInBefore, renNetw
                             {/* tslint:disable-next-line: react-this-binding-issue jsx-no-lambda */}
                             <Route path="/" exact component={Overview} />
                             <Route path="/all" exact component={withAccount(AllDarknodes)} />
+                            <Route path="/darknode/:darknodeID" exact component={Darknode} />
+
+                            {/* Old hyperdrive URLs */}
                             <Route path="/hyperdrive" exact component={RenVM} />
                             <Route path="/hyperdrive/:blockNumber" exact component={RenVM} />
+
                             <Route path="/renvm" exact component={RenVM} />
+
+                            {/* RenVM TX */}
+                            <Route path="/tx/:txHash" exact component={RenVM} />
+                            <Route path="/renvm/tx/:txHash" exact component={RenVM} />
+
+                            {/* RenVM Block */}
+                            <Route path="/block/:blockNumber" exact component={RenVM} />
                             <Route path="/renvm/:blockNumber" exact component={RenVM} />
-                            <Route path="/darknode/:darknodeID" exact component={Darknode} />
+                            <Route path="/renvm/block/:blockNumber" exact component={RenVM} />
+
+                            {/* 404 */}
                             <Route component={NotFound} />
                         </Switch>, { popup: true })}
                     </div>

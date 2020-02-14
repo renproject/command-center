@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import { RenNetworkDetails } from "@renproject/contracts";
-import { TxStatus } from "@renproject/ren";
+import { TxStatus } from "@renproject/ren-js-common";
 import Web3 from "web3";
 
 import { WithdrawPopup } from "../../components/common/popups/WithdrawPopup";

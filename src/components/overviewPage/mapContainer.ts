@@ -5,13 +5,14 @@ import { sleep } from "@renproject/react-components";
 import Axios from "axios";
 import localforage from "localforage";
 import { useState } from "react";
-import { MarkerType } from "react-simple-maps";
+import { Point } from "react-simple-maps";
 import { createContainer } from "unstated-next";
 
 import { retryNTimes } from "../renvmPage/renvmContainer";
 
-interface City extends MarkerType {
+interface City {
     darknodeID: string;
+    point: Point;
 }
 
 const sampleDarknodes: City[] = [];
@@ -157,7 +158,7 @@ const useMapContainer = (initialState = testnet as RenNetworkDetails) => {
         const { ip, darknodeID } = parseMultiAddress(multiAddress);
         try {
             const { longitude, latitude } = await getLocation(ip);
-            darknodes = [...darknodes, { darknodeID, coordinates: [longitude, latitude] }];
+            darknodes = [...darknodes, { darknodeID, point: [longitude, latitude] }];
             setDarknodes(darknodes);
         } catch (error) {
             // Ignore errors

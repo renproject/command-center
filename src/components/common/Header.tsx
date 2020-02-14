@@ -17,6 +17,7 @@ import { ReactComponent as RenVMIcon } from "../../styles/images/Icon-HyperDrive
 import { ReactComponent as OverviewIcon } from "../../styles/images/Icon-Overview.svg";
 // import { ReactComponent as English } from "../../styles/images/rp-flag-uk.svg";
 import { AccountDropdown } from "./AccountDropdown";
+import { Search } from "./Search";
 
 // const languageOptions = new Map()
 //     .set("EN",
@@ -72,13 +73,6 @@ const HeaderClass = (props: Props) => {
     //     // NOT IMPLEMENTED
     // }
 
-    // const [searchInput, setSearchInput] = React.useState("");
-
-    // const handleInput = (event: React.FormEvent<HTMLInputElement>): void => {
-    //     const element = (event.target as HTMLInputElement);
-    //     setSearchInput(String(element.value).toLowerCase());
-    // };
-
     const { location } = props;
     const { address, quoteCurrency, renNetwork } = props.store;
 
@@ -125,10 +119,8 @@ const HeaderClass = (props: Props) => {
             <Link className="no-underline" to="/">
                 <div className="header--logo" />
             </Link>
+            <Search />
             <div className="header--menu">
-                {/* <li className={["header--group"].join(" ")}>
-                    <input type="text" className="header--search--input" onChange={handleInput} value={searchInput} placeholder="🔍 Search by Darknode / Transaction" />
-                </li> */}
                 <Link className="no-underline" to="/">
                     <li className={["header--group", location.pathname === "/" ? "header--group--active" : ""].join(" ")}>
                         <div className="header--selected">

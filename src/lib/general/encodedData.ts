@@ -84,6 +84,8 @@ const parse = (param: string | Buffer | typeof DefaultEncodedData, encoding?: En
 };
 
 export class EncodedData extends Record(DefaultEncodedData) {
+    public static Encodings = Encodings;
+
     constructor(param: EncodedData | string | Buffer | typeof DefaultEncodedData, encoding?: Encodings) {
         if (param instanceof EncodedData) {
             param = { value: param.value, encoding: param.encoding };
