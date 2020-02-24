@@ -4,12 +4,15 @@ import { connect } from "react-redux";
 
 import { Token } from "../../lib/ethereum/tokens";
 import { ApplicationState } from "../../store/applicationState";
+import {
+    ReactComponent as IconDarknodesOnline,
+} from "../../styles/icons/icon-darknodes-online.svg";
+import { ReactComponent as IconIncome } from "../../styles/icons/icon-income.svg";
 import { Change } from "../common/Change";
 import { Stat, Stats } from "../common/Stat";
 import { TokenBalance } from "../common/TokenBalance";
 import { DarknodeMap } from "./darknodeMap/DarknodeMap";
 import { MapContainer } from "./mapContainer";
-import { RewardChart } from "./RewardChart";
 
 const mapStateToProps = (state: ApplicationState) => ({
     currentCycle: state.network.currentCycle,
@@ -36,7 +39,7 @@ export const Overview = connect(mapStateToProps)(({
     return (
         <div className="overview container">
             <Stats>
-                <Stat message="Darknodes online">
+                <Stat icon={<IconDarknodesOnline />} message="Darknodes online">
                     <Stats>
                         <Stat message="Registered" big>{currentDarknodeCount === null ? <Loading alt={true} /> : <>
                             {currentDarknodeCount}
@@ -56,7 +59,7 @@ export const Overview = connect(mapStateToProps)(({
                         </>}</Stat>
                     </Stats>
                 </Stat>
-                <Stat message="Total network rewards">
+                <Stat icon={<IconIncome />} message="Darknode rewards">
                     <Stats>
                         {/* <Stat message="All time total" big>$?</Stat> */}
                         <Stat message="Last cycle" highlight big>
@@ -80,7 +83,28 @@ export const Overview = connect(mapStateToProps)(({
 
             <div className="overview--bottom">
                 <DarknodeMap />
-                <RewardChart />
+                <Stats className="overview--bottom--right">
+                    {/* <Stat message="All time total" big>$?</Stat> */}
+                    <Stat message="Last cycle" highlight={true} nested={true}>
+                        {previousSummed ? <><CurrencyIcon currency={quoteCurrency} /><TokenBalance
+                            token={Token.ETH}
+                            convertTo={quoteCurrency}
+                            amount={previousSummed}
+                        /></> : <Loading alt />}
+                    </Stat>
+                    <Stat message="Last cycle" className="darknode-cli" highlight={true} nested={true}>
+                        <div className="darknode-cli--top">
+                            <div>
+                                Latest CLI Version <b>0.1.0</b>
+                            </div>
+                            <div>
+                                Latest CLI Version <b>0.1.0</b>
+                            </div>
+                        </div>
+                        <button className="darknode-cli--button button">Launch a Darknode</button>
+                    </Stat>
+                </Stats>
+                {/* <RewardChart /> */}
             </div>
         </div>
     );

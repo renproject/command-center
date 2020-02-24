@@ -13,6 +13,21 @@
             height: 200px !important;
         }
 
+        .overview--bottom--right {
+            display: flex;
+            flex-flow: column;
+
+            >div {
+                background: #001327;
+                border-radius: 4px;
+                margin: 0;
+
+                &+div {
+                    margin-top: 10px;
+                }
+            }
+        }
+
         .overview--chart--outer {
             background: linear-gradient(-180deg, #00457F -1080.14%, #002148 85.91%);
             border-radius: 4px;

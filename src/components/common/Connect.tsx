@@ -3,7 +3,7 @@ import * as React from "react";
 import { connect } from "react-redux"; // Custom typings
 
 import { ApplicationState } from "../../store/applicationState";
-import { MapContainer } from "../overviewPage/mapContainer";
+import { MapContainer } from "../networkDarknodesPage/mapContainer";
 import { RenVMContainer } from "../renvmPage/renvmContainer";
 
 class ConnectClass extends React.Component<Props> {

@@ -12,7 +12,7 @@ import { createContainer } from "unstated-next";
 
 import { EncodedData, Encodings } from "../../lib/general/encodedData";
 import { extractError } from "../../lib/react/errors";
-import { getLightnode } from "../overviewPage/mapContainer";
+import { getLightnode } from "../networkDarknodesPage/mapContainer";
 
 export type Tx = ResponseQueryTx["tx"];
 

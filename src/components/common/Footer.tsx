@@ -40,7 +40,7 @@ export const Footer = connect(mapStateToProps, mapDispatchToProps)(withRouter(
             </div>
             <div className="footer--right">
                 <div><a target="_blank" rel="noopener noreferrer" href="https://github.com/renproject/command-center"><FontAwesomeIcon icon={faGithub} /><span>Github</span></a></div>
-                <div><a href="/"><span>Privacy</span></a></div>
+                {/* <div><a href="/"><span>Privacy</span></a></div> */}
                 <div><a target="_blank" rel="noopener noreferrer" href="https://docs.renproject.io/ren/"><Help /><span>Help</span></a></div>
             </div>
         </div>;

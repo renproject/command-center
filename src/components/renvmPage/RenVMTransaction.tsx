@@ -9,7 +9,7 @@ import React from "react";
 import { strip0x } from "../../lib/ethereum/contractReads";
 import { Token } from "../../lib/ethereum/tokens";
 import { EncodedData } from "../../lib/general/encodedData";
-import { className } from "../../lib/react/className";
+import { classNames } from "../../lib/react/className";
 import { Tx } from "./renvmContainer";
 
 export const TransactionPreview = ({ tx }: { tx: Tx }) => {
@@ -103,7 +103,7 @@ export const RenVMTransaction = ({ network, txHash, transaction, onClose }: Prop
             {transaction ? <>
                 <div className="block--txs">
                     <div className="block--tx"><TransactionPreview tx={transaction.tx} /></div>
-                    <div className="block--tx">Status: <span className={className("block--tx--span", transaction.txStatus === TxStatus.TxStatusDone ? "green" : "orange")}>{(transaction.txStatus || "").toUpperCase()}</span></div>
+                    <div className="block--tx">Status: <span className={classNames("block--tx--span", transaction.txStatus === TxStatus.TxStatusDone ? "green" : "orange")}>{(transaction.txStatus || "").toUpperCase()}</span></div>
                     <div className="block--tx">Contract: <span className="block--tx--span">{transaction.tx.to}</span></div>
                 </div>
                 <br />
