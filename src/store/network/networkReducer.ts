@@ -55,25 +55,34 @@ export const networkReducer = (
                 action.payload.darknodeID
             ));
 
-        case getType(operatorActions.removeDarknode):
+        case getType(operatorActions.hideDarknode):
             try {
-                let operatorList = state.darknodeList.getIn([action.payload.operator, action.payload.network], null) as OrderedSet<string> | null;
-                if (!operatorList) {
-                    return state;
-                }
+                let operatorHiddenDarknodes = state.hiddenDarknodes.get(action.payload.operator, OrderedSet<string>());
 
-                operatorList = operatorList.filter(id => id !== action.payload.darknodeID);
+                operatorHiddenDarknodes = operatorHiddenDarknodes.add(action.payload.darknodeID);
 
-                return state.set("darknodeList", state.darknodeList.set(action.payload.operator, operatorList));
+                return state.set("hiddenDarknodes", state.hiddenDarknodes.set(action.payload.operator, operatorHiddenDarknodes));
+            } catch (error) {
+                _catchInteractionException_(error, "Error in networkReducer > removeDarknode");
+                return state;
+            }
+
+        case getType(operatorActions.unhideDarknode):
+            try {
+                let operatorHiddenDarknodes = state.hiddenDarknodes.get(action.payload.operator, OrderedSet<string>());
+
+                operatorHiddenDarknodes = operatorHiddenDarknodes.remove(action.payload.darknodeID);
+
+                return state.set("hiddenDarknodes", state.hiddenDarknodes.set(action.payload.operator, operatorHiddenDarknodes));
             } catch (error) {
                 _catchInteractionException_(error, "Error in networkReducer > removeDarknode");
                 return state;
             }
 
         case getType(operatorActions.addDarknodes):
-            const { address, network, darknodes } = action.payload;
+            const { address, darknodes } = action.payload;
 
-            let newList = state.darknodeList.getIn([address, network], OrderedSet()) as OrderedSet<string>;
+            let newList = state.darknodeList.get(address, OrderedSet<string>());
             let newNames = state.darknodeNames;
 
             // Add to list if it's not already in there

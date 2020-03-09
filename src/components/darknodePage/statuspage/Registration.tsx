@@ -11,7 +11,7 @@ import {
 } from "../../../store/account/operatorPopupActions";
 import { ApplicationState, DarknodesState } from "../../../store/applicationState";
 import {
-    updateDarknodeDetails, updateOperatorDarknodes,
+    unhideDarknode, updateDarknodeDetails, updateOperatorDarknodes,
 } from "../../../store/network/operatorActions";
 import { AppDispatch } from "../../../store/rootReducer";
 
@@ -159,6 +159,7 @@ class RegistrationClass extends React.Component<Props, typeof defaultState> {
             await this.props.actions.showRegisterPopup(
                 web3, renNetwork, address, darknodeID, publicKey, tokenPrices, this.onCancel, this.onDoneRegister
             );
+            this.props.actions.unhideDarknode({ darknodeID, operator: address, network: renNetwork.name });
         } catch (error) {
             _catchInteractionException_(error, "Error in Registration > handleRegister > showRegisterPopup");
             this.onCancel();
@@ -216,6 +217,7 @@ const mapDispatchToProps = (dispatch: AppDispatch) => ({
         showRefundPopup,
         updateDarknodeDetails,
         updateOperatorDarknodes,
+        unhideDarknode,
     }, dispatch),
 });
 

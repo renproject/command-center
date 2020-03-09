@@ -28,7 +28,13 @@ export const removeRegisteringDarknode = createAction("REMOVE_REGISTERING_DARKNO
     darknodeID: string;
 }>();
 
-export const removeDarknode = createAction("REMOVE_DARKNODE")<{
+export const hideDarknode = createAction("HIDE_DARKNODE")<{
+    darknodeID: string;
+    operator: string;
+    network: string;
+}>();
+
+export const unhideDarknode = createAction("UNHIDE_DARKNODE")<{
     darknodeID: string;
     operator: string;
     network: string;

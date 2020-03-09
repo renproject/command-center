@@ -115,6 +115,7 @@ export class NetworkState extends Record({
     darknodeRegisteringList: Map<string, string>(),
     // Map from operator-address to list of darknodes.
     darknodeList: Map<string, OrderedSet<string>>(),
+    hiddenDarknodes: Map<string, OrderedSet<string>>(),
     withdrawAddresses: Map<Token, List<string>>(),
     ///////////////////////////////////////////////////////
 }) implements Serializable<NetworkState> {
@@ -123,6 +124,7 @@ export class NetworkState extends Record({
         return JSON.stringify({
             quoteCurrency: js.quoteCurrency,
             darknodeList: js.darknodeList,
+            hiddenDarknodes: js.hiddenDarknodes,
             darknodeNames: js.darknodeNames,
             darknodeRegisteringList: js.darknodeRegisteringList,
             withdrawAddresses: js.withdrawAddresses,
@@ -136,6 +138,7 @@ export class NetworkState extends Record({
             return new NetworkState({
                 quoteCurrency: data.quoteCurrency,
                 darknodeList: data.darknodeList,
+                hiddenDarknodes: data.hiddenDarknodes,
                 darknodeNames: data.darknodeNames,
                 darknodeRegisteringList: data.darknodeRegisteringList,
                 withdrawAddresses: data.withdrawAddresses,

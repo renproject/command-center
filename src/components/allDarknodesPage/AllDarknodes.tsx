@@ -18,7 +18,9 @@ class AllDarknodesClass extends React.Component<Props> {
     }
 
     public render = (): JSX.Element => {
-        const { darknodeList, darknodeNames, darknodeDetails, darknodeRegisteringList, registrySync, address, renNetwork } = this.props.store;
+        const { darknodeList, hiddenDarknodes, darknodeNames, darknodeDetails, darknodeRegisteringList, registrySync, address, renNetwork } = this.props.store;
+
+        const shownDarknodeList = !darknodeList ? darknodeList : darknodeList.filter(d => !hiddenDarknodes || !hiddenDarknodes.contains(d));
 
         return (
             <div className="home" key={`${address || undefined} ${renNetwork.name}`}>
@@ -32,12 +34,12 @@ class AllDarknodesClass extends React.Component<Props> {
                             darknodeRegisteringList={darknodeRegisteringList}
                             registrySync={registrySync}
                         />)}
-                        {(darknodeList && darknodeList.size > 0) ? <h2>Current darknodes</h2> : null}
+                        {(shownDarknodeList && shownDarknodeList.size > 0) ? <h2>Current darknodes</h2> : null}
                     </> : null}
-                    {darknodeRegisteringList.size === 0 || (darknodeList && darknodeList.size > 0) ? _catch_(<DarknodeList
+                    {darknodeRegisteringList.size === 0 || (shownDarknodeList && shownDarknodeList.size > 0) ? _catch_(<DarknodeList
                         darknodeDetails={darknodeDetails}
                         darknodeNames={darknodeNames}
-                        darknodeList={darknodeList}
+                        darknodeList={shownDarknodeList}
                         darknodeRegisteringList={darknodeRegisteringList}
                         registrySync={registrySync}
                     />) : null}
@@ -53,6 +55,7 @@ const mapStateToProps = (state: ApplicationState) => ({
         darknodeDetails: state.network.darknodeDetails,
         darknodeNames: state.network.darknodeNames,
         darknodeList: state.account.address ? state.network.darknodeList.get(state.account.address, null) : null,
+        hiddenDarknodes: state.account.address ? state.network.hiddenDarknodes.get(state.account.address, null) : null,
         darknodeRegisteringList: state.network.darknodeRegisteringList,
         registrySync: state.network.registrySync,
         renNetwork: state.account.renNetwork,

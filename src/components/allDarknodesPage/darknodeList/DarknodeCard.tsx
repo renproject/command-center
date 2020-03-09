@@ -6,7 +6,7 @@ import { bindActionCreators } from "redux";
 import { darknodeIDHexToBase58 } from "../../../lib/darknode/darknodeID";
 import { RegistrationStatus } from "../../../lib/ethereum/contractReads";
 import { ApplicationState, DarknodesState } from "../../../store/applicationState";
-import { removeDarknode, removeRegisteringDarknode } from "../../../store/network/operatorActions";
+import { hideDarknode, removeRegisteringDarknode } from "../../../store/network/operatorActions";
 import { AppDispatch } from "../../../store/rootReducer";
 import { CardView } from "./CardView";
 
@@ -21,7 +21,7 @@ const mapStateToProps = (state: ApplicationState) => ({
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({
         removeRegisteringDarknode,
-        removeDarknode,
+        hideDarknode,
     }, dispatch),
 });
 
@@ -55,7 +55,7 @@ export const DarknodeCard = connect(mapStateToProps, mapDispatchToProps)((props:
         if (continuable) {
             actions.removeRegisteringDarknode({ darknodeID });
         } else if (address) {
-            actions.removeDarknode({ darknodeID, operator: address, network: renNetwork.name });
+            actions.hideDarknode({ darknodeID, operator: address, network: renNetwork.name });
         }
     }, [confirmedRemove, continuable, actions, address, darknodeID, renNetwork.name]);
 
