@@ -10,7 +10,7 @@ import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators } from "redux";
 
 import { HistoryIterations, HistoryPeriod } from "../../../../lib/ethereum/contractReads";
-import { _catchBackgroundException_ } from "../../../../lib/react/errors";
+import { _catchBackgroundException_, _ignoreException_ } from "../../../../lib/react/errors";
 import { ApplicationState, DarknodesState } from "../../../../store/applicationState";
 import {
     updateDarknodeBalanceHistory, updateSecondsPerBlock,
@@ -144,7 +144,11 @@ class GasGraphClass extends React.Component<Props, State> {
                     secondsPerBlock
                 );
             } catch (error) {
-                _catchBackgroundException_(error, "Error in GasGraph > updateHistory > fetchDarknodeBalanceHistory");
+                if (String(error && error.message).match(/project ID does not have access to archive state/)) {
+                    _ignoreException_(error);
+                } else {
+                    _catchBackgroundException_(error, "Error in GasGraph > updateHistory > fetchDarknodeBalanceHistory");
+                }
             }
         }
 

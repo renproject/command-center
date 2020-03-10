@@ -148,6 +148,11 @@ const _catchException_ = <X extends Details>(error: any, details: X) => {
     });
 };
 
+export const _ignoreException_ = <X extends Details & Described>(error: any, details?: X | string) => {
+    // tslint:disable-next-line: no-console
+    console.error(error, details);
+};
+
 // Background exceptions are thrown in background loops and actions
 export const _catchBackgroundException_ = <X extends Details & Described>(error: any, details: X | string) => {
     _catchException_(error, { ignoreNetwork: true, ...(typeof details === "string" ? { description: details } : details), category: "background_exception" });
