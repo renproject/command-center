@@ -57,7 +57,7 @@ export const networkReducer = (
 
         case getType(operatorActions.hideDarknode):
             try {
-                let operatorHiddenDarknodes = state.hiddenDarknodes.get(action.payload.operator, OrderedSet<string>());
+                let operatorHiddenDarknodes = state.hiddenDarknodes.get(action.payload.operator) || OrderedSet<string>();
 
                 operatorHiddenDarknodes = operatorHiddenDarknodes.add(action.payload.darknodeID);
 
@@ -69,7 +69,7 @@ export const networkReducer = (
 
         case getType(operatorActions.unhideDarknode):
             try {
-                let operatorHiddenDarknodes = state.hiddenDarknodes.get(action.payload.operator, OrderedSet<string>());
+                let operatorHiddenDarknodes = state.hiddenDarknodes.get(action.payload.operator) || OrderedSet<string>();
 
                 operatorHiddenDarknodes = operatorHiddenDarknodes.remove(action.payload.darknodeID);
 
@@ -82,7 +82,7 @@ export const networkReducer = (
         case getType(operatorActions.addDarknodes):
             const { address, darknodes } = action.payload;
 
-            let newList = state.darknodeList.get(address, OrderedSet<string>());
+            let newList = state.darknodeList.get(address) || OrderedSet<string>();
             let newNames = state.darknodeNames;
 
             // Add to list if it's not already in there
