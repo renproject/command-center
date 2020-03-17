@@ -24,6 +24,7 @@ const mapStateToProps = (state: ApplicationState) => ({
         darknodeList: state.account.address ? state.network.darknodeList.get(state.account.address, null) : null,
         darknodeDetails: state.network.darknodeDetails,
         darknodeNames: state.network.darknodeNames,
+        hiddenDarknodes: state.account.address ? state.network.hiddenDarknodes.get(state.account.address, null) : null,
         quoteCurrency: state.network.quoteCurrency,
         mobileMenuActive: state.ui.mobileMenuActive,
         web3BrowserName: state.account.web3BrowserName,
@@ -46,7 +47,9 @@ interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<
  */
 export const Sidebar = connect(mapStateToProps, mapDispatchToProps)(withRouter(
     ({ selectedDarknode, store, actions, location }: Props) => {
-        const { address, darknodeList, darknodeDetails, darknodeNames, quoteCurrency, mobileMenuActive, web3BrowserName } = store;
+        const { address, darknodeList, darknodeDetails, darknodeNames, hiddenDarknodes, quoteCurrency, mobileMenuActive, web3BrowserName } = store;
+
+        const shownDarknodeList = !darknodeList ? darknodeList : darknodeList.filter(d => !hiddenDarknodes || !hiddenDarknodes.contains(d));
 
         const [searchFilter, setSearchFilter] = React.useState("");
 
@@ -103,7 +106,7 @@ export const Sidebar = connect(mapStateToProps, mapDispatchToProps)(withRouter(
                     </div>
 
                     <div className="sidebar--darknodes">
-                        {address && darknodeList ? darknodeList
+                        {address && shownDarknodeList ? shownDarknodeList
                             .filter((darknodeID: string) => {
                                 if (!searchFilter) {
                                     return true;
@@ -146,7 +149,7 @@ export const Sidebar = connect(mapStateToProps, mapDispatchToProps)(withRouter(
                             <Search />
                         </div>
                     </div>
-                    <input disabled={!address || !darknodeList} type="text" className="sidebar--search--input" onChange={handleInput} value={searchFilter} placeholder="Search" />
+                    <input disabled={!address || !shownDarknodeList} type="text" className="sidebar--search--input" onChange={handleInput} value={searchFilter} placeholder="Search" />
                 </div>
             </nav>
             {!address ? <div className="sidebar--connect" onClick={handleLogin} role="button">
