@@ -1,5 +1,5 @@
 import Web3 from "web3";
-import { provider } from "web3-providers";
+import { HttpProvider, provider } from "web3-providers";
 
 import { Language } from "../../languages/language";
 import { _noCapture_ } from "../react/errors";
@@ -13,6 +13,17 @@ const ErrorAccountAccessRejected = Language.wallet.mustConnect;
 export const getReadOnlyWeb3 = (publicNode: string): Web3 => {
     return new Web3(publicNode);
 };
+
+interface EthereumProvider extends HttpProvider {
+    enable(): Promise<void>;
+}
+
+declare global {
+    interface Window {
+        web3: Web3 | undefined;
+        ethereum: EthereumProvider | undefined;
+    }
+}
 
 export const getInjectedWeb3Provider = async (onAnyProvider?: (provider: provider) => void): Promise<provider> => {
     let injectedProvider;

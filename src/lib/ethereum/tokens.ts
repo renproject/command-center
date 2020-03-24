@@ -132,7 +132,7 @@ export const AllTokenDetails = OrderedMap<Token | OldToken, TokenDetail<Token | 
             name: "Ren",
             decimals: 18,
             wrapped: false,
-            coinGeckoID: "ren",
+            coinGeckoID: "republic-protocol",
             old: true,
             blockchain: Token.ETH,
             validator: ethValidator,

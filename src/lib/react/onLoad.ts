@@ -1,22 +1,9 @@
 import * as Sentry from "@sentry/browser";
 
 import { ExtraErrorData } from "@sentry/integrations";
-import Web3 from "web3";
-import { HttpProvider } from "web3-providers";
 
 import { DEFAULT_REN_NETWORK, NODE_ENV, SENTRY_DSN, SOURCE_VERSION } from "./environmentVariables";
 import { pageLoadedAt } from "./errors";
-
-interface EthereumProvider extends HttpProvider {
-    enable(): Promise<void>;
-}
-
-declare global {
-    interface Window {
-        web3: Web3 | undefined;
-        ethereum: EthereumProvider | undefined;
-    }
-}
 
 /**
  *  onLoad runs setup tasks when the page is loaded
