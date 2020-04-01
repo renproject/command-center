@@ -4,7 +4,7 @@ import { Blocky, Loading } from "@renproject/react-components";
 import { connect, ConnectedReturnType } from "react-redux";
 import { bindActionCreators } from "redux";
 
-import { className } from "../../lib/react/className";
+import { classNames } from "../../lib/react/className";
 import { logout, promptLogin } from "../../store/account/accountActions";
 import { ApplicationState } from "../../store/applicationState";
 import { AppDispatch } from "../../store/rootReducer";
@@ -40,7 +40,7 @@ class AccountDropdownClass extends React.Component<Props, typeof defaultState> {
             ref={this.setRef}
         >
             <div
-                className={className("header--account", "header--selected", address ? "header--account--logged-in" : "header--account--logged-out")}
+                className={classNames("header--account", "header--selected", address ? "header--account--logged-in" : "header--account--logged-out")}
                 role="menuitem"
                 onClick={address ? this.toggle : this.handleLogin}
             >

@@ -20,8 +20,8 @@ import { LoggingIn } from "./common/LoggingIn";
 import { PopupController } from "./common/popups/PopupController";
 import { Sidebar } from "./common/sidebar/Sidebar";
 import { Darknode, getDarknodeParam } from "./darknodePage/Darknode";
+import { Overview } from "./networkDarknodesPage/Overview";
 import { NetworkStats } from "./networkStatsPage/NetworkStats";
-import { Overview } from "./overviewPage/Overview";
 import { RenVM } from "./renvmPage/RenVM";
 
 // Component that attaches scroll to top hanler on router change

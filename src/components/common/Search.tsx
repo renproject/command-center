@@ -7,7 +7,7 @@ import { bindActionCreators } from "redux";
 import { darknodeIDBase58ToHex, darknodeIDHexToBase58 } from "../../lib/darknode/darknodeID";
 import { Ox } from "../../lib/ethereum/contractReads";
 import { EncodedData } from "../../lib/general/encodedData";
-import { className } from "../../lib/react/className";
+import { classNames } from "../../lib/react/className";
 import { storeRenNetwork } from "../../store/account/accountActions";
 import { ApplicationState } from "../../store/applicationState";
 import { storeQuoteCurrency } from "../../store/network/operatorActions";
@@ -72,7 +72,7 @@ const SearchClass = ({ history }: Props) => {
     return (
         <li className="header--group header--group--search">
             <form onSubmit={loadingSearch ? () => { /* disabled */ } : handleSubmit}>
-                <input disabled={loadingSearch} type="text" className={className("header--search--input", "header--selected", notFound ? "header--search--404" : "")} onChange={handleInput} value={searchInput} placeholder="Search darknodes / transactions" />
+                <input disabled={loadingSearch} type="text" className={classNames("header--search--input", "header--selected", notFound ? "header--search--404" : "")} onChange={handleInput} value={searchInput} placeholder="Search darknodes / transactions" />
             </form>
         </li>
     );

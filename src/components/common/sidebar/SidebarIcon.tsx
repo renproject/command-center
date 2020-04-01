@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
 
 import { darknodeIDHexToBase58 } from "../../../lib/darknode/darknodeID";
 import { Token } from "../../../lib/ethereum/tokens";
-import { className } from "../../../lib/react/className";
+import { classNames } from "../../../lib/react/className";
 import { DarknodeID } from "../DarknodeID";
 import { TokenBalance } from "../TokenBalance";
 
@@ -34,7 +34,7 @@ export const SidebarIcon = ({ darknodeID, storedName, active, faded, quoteCurren
     const darknodeIDBase58 = darknodeIDHexToBase58(darknodeID);
 
     return <Link className="no-underline" to={`/darknode/${darknodeIDBase58}`} onClick={hideMobileMenu}>
-        <div className={className("sidebar--row", active ? "sidebar--active" : "", faded ? "sidebar--faded" : "")}>
+        <div className={classNames("sidebar--row", active ? "sidebar--active" : "", faded ? "sidebar--faded" : "")}>
             <div className="sidebar--icon">
                 <Blocky address={darknodeID} fgColor="#006FE8" bgColor="transparent" />
             </div>

@@ -27,11 +27,10 @@
 @import 'scss/view';
 
 // Styles in src/components
-@import '../components/overviewPage/darknodeMap/darknodeMap';
+@import '../components/networkDarknodesPage/darknodeMap/darknodeMap';
 @import '../components/renvmPage/renvm';
-@import '../components/overviewPage/overview';
+@import '../components/networkDarknodesPage/overview';
 @import '../components/networkStatsPage/networkStats';
-
 
 // Styles for html, body, anchors etc. should go in _general
 @import 'scss/_general';

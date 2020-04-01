@@ -25,7 +25,8 @@
     }
 }
 
-.stat .stat {
+.stat .stat,
+.stat.stat--nested {
     hr {
         border: none;
     }
@@ -51,6 +52,11 @@
     // max-width: 200px;
 
     color: #FFFFFF;
+    display: flex;
+}
+
+.stat--title--icon {
+    margin-right: 10px;
 }
 
 .stat--highlight {
