@@ -124,6 +124,13 @@ const HeaderClass = (props: Props) => {
                 <Link className="no-underline" to="/">
                     <li className={["header--group", location.pathname === "/" ? "header--group--active" : ""].join(" ")}>
                         <div className="header--selected">
+                            <OverviewIcon className="header--selected--icon" /> <div>Network Stats</div>
+                        </div>
+                    </li>
+                </Link>
+                <Link className="no-underline" to="/darknode-stats">
+                    <li className={["header--group", location.pathname === "/darknode-stats" ? "header--group--active" : ""].join(" ")}>
+                        <div className="header--selected">
                             <OverviewIcon className="header--selected--icon" /> <div>Darknodes</div>
                         </div>
                     </li>
