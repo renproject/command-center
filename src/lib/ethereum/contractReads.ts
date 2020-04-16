@@ -15,7 +15,7 @@ import { queryStat } from "../darknode/jsonrpc";
 import { awaitOr, safePromiseAllList, safePromiseAllMap } from "../general/promiseAll";
 import { _catchBackgroundException_, _noCapture_ } from "../react/errors";
 import { getDarknodePayment, getDarknodeRegistry } from "./contract";
-import { NewTokenDetails, OldToken, OldTokenDetails, Token, TokenPrices } from "./tokens";
+import { NewTokenDetails, OldToken, Token, TokenPrices } from "./tokens";
 
 export const NULL = "0x0000000000000000000000000000000000000000";
 
@@ -81,9 +81,6 @@ const getDarknodePublicKey = async (web3: Web3, renNetwork: RenNetworkDetails, d
  * @returns A promise to the operator as a hex string.
  */
 const getDarknodeOperator = async (web3: Web3, renNetwork: RenNetworkDetails, darknodeID: string): Promise<string> => {
-
-    console.log(renNetwork.addresses.ren.DarknodeRegistry.abi.map(x => x.name));
-
     const owner = await retryNTimes(async () => await getDarknodeRegistry(web3, renNetwork).methods.getDarknodeOperator(darknodeID).call(), 5);
     if (owner === null) {
         _catchBackgroundException_(_noCapture_(new Error("Unable to retrieve darknode owner")), "Error in contractReads > getDarknodeOperator, getDarknodeRegistry");

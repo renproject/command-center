@@ -1,17 +1,22 @@
 .statuspage {
     padding: 0 20px 20px 20px;
 
+    &.container {
+        max-width: unset;
+    }
+
     .statuspage--banner {
         display: flex;
         color: white;
+        flex-wrap: wrap;
 
-        >*+* {
-            margin-left: 30px;
+        // >*+* {
+        //     margin-left: 30px;
 
-            @media(max-width: $max-sm) {
-                margin-left: 10px;
-            }
-        }
+        //     @media(max-width: $max-sm) {
+        //         margin-left: 10px;
+        //     }
+        // }
     }
 
     .statuspage--banner .blocky {
@@ -348,16 +353,17 @@
         background: none !important;
         padding: 0 !important;
 
-        >div {
-            flex-grow: 1;
-            background-color: $blue-dark;
-            border-radius: 2px;
-            flex-basis: 0;
-        }
+        &.block {
+            >div {
+                flex-grow: 1;
+                background-color: $blue-dark;
+                border-radius: 4px;
+                flex-basis: 0;
+            }
 
-
-        >:not(:first-child) {
-            margin-top: 20px;
+            >:not(:first-child) {
+                margin-top: 20px;
+            }
         }
     }
 
@@ -512,10 +518,6 @@
         height: 16px;
         margin-top: -2px;
     }
-}
-
-.network-block {
-    flex-grow: 2 !important;
 }
 
 .resources--chart {

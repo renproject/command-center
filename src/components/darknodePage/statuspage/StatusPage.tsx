@@ -15,6 +15,7 @@ import { GasBlock } from "./block/GasBlock";
 import { GasGraph } from "./block/GasGraph";
 import { NetworkBlock } from "./block/NetworkBlock";
 import { ResourcesBlock } from "./block/ResourcesBlock";
+import { VersionBlock } from "./block/VersionBlock";
 import { Notifications } from "./Notifications";
 import { Registration } from "./Registration";
 
@@ -58,38 +59,49 @@ class StatusPageClass extends React.Component<Props, State> {
         const notifications = <Notifications isOperator={isOperator} darknodeDetails={darknodeDetails} renNetwork={renNetwork} />;
 
         return (
-            <div className={`statuspage ${focusedClass} ${renamingCLass} ${noDarknodeClass}`}>
+            <div className={`container statuspage ${focusedClass} ${renamingCLass} ${noDarknodeClass}`}>
                 <div className="statuspage--banner">
-                    <Blocky address={darknodeID} fgColor="#006FE8" bgColor="transparent" className={!darknodeDetails ? "blocky--loading" : ""} />
-                    <div className="statuspage--banner--details">
-                        <div className="statuspage--banner--top">
-                            {renaming ?
-                                <form className="statuspage--rename" onSubmit={this.handleSubmitName}>
-                                    <input
-                                        ref={this.focusInputRef}
-                                        type="text"
-                                        name="newName"
-                                        onChange={this.handleInput}
-                                        value={newName}
-                                    />
-                                    <button type="submit" className="statuspage--rename--save" disabled={!newName}>
-                                        Save
+                    <div className="block--column col-xl-4">
+                        <Blocky address={darknodeID} fgColor="#006FE8" bgColor="transparent" className={!darknodeDetails ? "blocky--loading" : ""} />
+                        <div className="statuspage--banner--details">
+                            <div className="statuspage--banner--top">
+                                {renaming ?
+                                    <form className="statuspage--rename" onSubmit={this.handleSubmitName}>
+                                        <input
+                                            ref={this.focusInputRef}
+                                            type="text"
+                                            name="newName"
+                                            onChange={this.handleInput}
+                                            value={newName}
+                                        />
+                                        <button type="submit" className="statuspage--rename--save" disabled={!newName}>
+                                            Save
                                     </button>
-                                    <button onClick={this.handleCancelRename}>Cancel</button>
-                                </form> :
-                                <>
-                                    <h3 onClick={name ? this.handleRename : undefined}>
-                                        {name ? name : <DarknodeID darknodeID={darknodeID} />}
-                                    </h3>
-                                    <button className="statuspage--banner--edit" onClick={this.handleRename}>
-                                        {name ? "Edit name" : "Set name"}
-                                        {" "}
-                                        <InfoLabel>Darknode names are stored in your browser.</InfoLabel>
-                                    </button>
-                                    {/* {darknodeDetails ? <button>View details</button> : null} */}
-                                </>}
+                                        <button onClick={this.handleCancelRename}>Cancel</button>
+                                    </form> :
+                                    <>
+                                        <h3 onClick={name ? this.handleRename : undefined}>
+                                            {name ? name : <DarknodeID darknodeID={darknodeID} />}
+                                        </h3>
+                                        <button className="statuspage--banner--edit" onClick={this.handleRename}>
+                                            {isOperator ?
+                                                (name ? "Edit name" : "Set name") :
+                                                (name ? "Edit label" : "Set label")
+                                            }
+                                            {" "}
+                                            <InfoLabel>Darknode names are stored in your browser.</InfoLabel>
+                                        </button>
+                                        {/* {darknodeDetails ? <button>View details</button> : null} */}
+                                    </>}
+                            </div>
                         </div>
-
+                    </div>
+                    <div className="block--column col-xl-4">
+                        <div className="statuspage--banner--right large-only">
+                            {notifications}
+                        </div>
+                    </div>
+                    <div className="block--column col-xl-4">
                         {action === DarknodeAction.Register ?
                             <Registration
                                 isOperator
@@ -112,9 +124,6 @@ class StatusPageClass extends React.Component<Props, State> {
                             null
                         }
                     </div>
-                    <div className="statuspage--banner--right large-only">
-                        {notifications}
-                    </div>
                 </div>
                 <div className="statuspage--banner--right no-large">
                     {notifications}
@@ -122,8 +131,9 @@ class StatusPageClass extends React.Component<Props, State> {
                 <div className="statuspage--bottom">
                     <FeesBlock isOperator={isOperator} darknodeDetails={darknodeDetails} />
                     <div className="block block--column">
+                        <VersionBlock darknodeDetails={darknodeDetails} />
                         <GasBlock darknodeDetails={darknodeDetails} />
-                        <GasGraph darknodeDetails={darknodeDetails} />
+                        {/* <GasGraph darknodeDetails={darknodeDetails} /> */}
                     </div>
                     <div className="block block--column">
                         <NetworkBlock darknodeDetails={darknodeDetails} />

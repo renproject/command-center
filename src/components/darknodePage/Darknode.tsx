@@ -95,17 +95,15 @@ class DarknodeClass extends React.Component<Props, typeof defaultState> {
             return <NotFound />;
         }
 
-        return <div className="container">
-            {_catch_(<StatusPage
-                key={darknodeID}
-                action={darknodeAction}
-                publicKey={publicKey}
-                name={name}
-                darknodeID={darknodeID}
-                isOperator={!readOnly}
-                darknodeDetails={details}
-            />)}
-        </div>;
+        return _catch_(<StatusPage
+            key={darknodeID}
+            action={darknodeAction}
+            publicKey={publicKey}
+            name={name}
+            darknodeID={darknodeID}
+            isOperator={!readOnly}
+            darknodeDetails={details}
+        />);
     }
 
     private readonly handleNewProps = (nextProps: Props, firstTime: boolean): void => {

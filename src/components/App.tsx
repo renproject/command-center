@@ -115,7 +115,7 @@ const AppClass = ({ match: { params }, store: { address, loggedInBefore, renNetw
                             <Route component={NotFound} />
                         </Switch>, { popup: true })}
                     </div>
-                    {_catch_(<Footer />)}
+                    {/* {_catch_(<Footer />)} */}
                 </PopupController>
             </Connect>
             {_catch_(<Header />)}

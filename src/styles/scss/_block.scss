@@ -3,7 +3,7 @@
     overflow-y: scroll;
     flex-grow: 1;
     background-color: $blue-dark;
-    border-radius: 2px;
+    border-radius: 4px;
     padding: 0;
     flex-basis: 0;
 
@@ -13,7 +13,7 @@
     flex-direction: column;
 
     // box-shadow: 2px 2px 14px rgba(0, 0, 0, 0.1);
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
+    // box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
 
     &.basic {
         cursor: pointer;
@@ -26,6 +26,12 @@
     font-size: 1.5em
 }
 
+.block--title svg {
+    margin-bottom: -3px;
+    margin-right: 10px;
+    font-size: 1.5em
+}
+
 .block--body {
     flex-grow: 2;
 }
@@ -33,9 +39,7 @@
 .block--title {
     display: flex;
     justify-content: left;
-    margin-bottom: 20px;
-    margin-top: 15px;
-    padding: 0 22px;
+    margin: 18px 20px;
 
     >h3 {
         text-transform: uppercase;
@@ -64,6 +68,7 @@
     flex-grow: 2;
     margin: 10px 0;
 
+    // height: 100%;
     display: flex;
     flex-direction: column;
 }
@@ -82,6 +87,7 @@
 /**** GAS BLOCK *****/
 
 .gas-block {
+    flex-grow: 1 !important;
     // color: $red;
 }
 
@@ -99,10 +105,21 @@
 /**** FEES BLOCK *****/
 
 .fees-block {
-    // color: $green;
+    .block--advanced--bottom {
+        border-top: 2px solid $blue-darker;
+        background: #001F41;
+        height: 100%;
+    }
 
-    .block--title {
-        margin-bottom: 5px;
+    .block--advanced--top {
+        .fees-block--total {
+            margin-bottom: 40px;
+        }
+
+        .button {
+            margin-bottom: 50px;
+            width: 170px;
+        }
     }
 }
 
@@ -150,32 +167,66 @@
 }
 
 .fees-block--table {
-    tr:hover td {
-        background-color: rgba(255, 255, 255, 0.05);
+
+    thead {
+        tr {
+            border: none;
+        }
+
+        tr td:first-child {
+            padding-left: 20px;
+        }
     }
 
-    tr td:first-child {
-        padding-left: 40px;
+    tbody {
+        tr:hover td {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        tr td:first-child {
+            padding-left: 20px;
+        }
+
+        tr td:last-child {
+            padding-right: 40px;
+        }
+
+        td {
+            color: white;
+            font-size: 14px;
+            font-weight: 400;
+            padding: 10px 0;
+            padding-bottom: 14px;
+        }
     }
 
-    tr td:last-child {
-        padding-right: 40px;
-    }
+    .percent-bar {
+        &.BTC {
+            background: #F2A900;
+        }
 
-    td {
-        color: white;
-        font-size: 14px;
-        font-weight: 400;
-        padding-top: 5px;
-        padding-bottom: 5px;
+        &.ZEC {
+            background: #FABB00;
+        }
+
+        &.BCH {
+            background: #44C43E;
+        }
+
+        &.ETH {
+            background: #4A45AD;
+        }
+
+        &.DAI {
+            background: #006FE8;
+        }
     }
 
     .fees-block--table--token {
-        display: flex;
-        align-items: center;
+        align-items: left;
 
-        span {
-            margin-top: 3px;
+        svg {
+            margin-bottom: -6px;
         }
     }
 
@@ -187,7 +238,7 @@
             color: $green;
             color: white;
             font-size: 18px;
-            text-align: center;
+            text-align: left;
         }
 
         &:hover,
@@ -224,7 +275,8 @@
 
     .fees-block--table--usd {
         font-size: 14px;
-        color: $green;
+        text-align: right;
+        // color: $green;
     }
 
     .fees-block--table--usd-symbol {
@@ -238,6 +290,9 @@
 }
 
 .network-block {
+    flex-grow: 2 !important;
+
+
     .network-block--info {
         @extend .no-scrollbar;
 
@@ -277,6 +332,49 @@
         margin-bottom: 5px;
     }
 
+}
+
+.version-block {
+    @extend .network-block;
+
+    flex-grow: 1 !important;
+
+    .block--advanced--bottom {
+        border-top: 2px solid $blue-darker;
+        background: #001F41;
+        height: 100%;
+        padding: 30px 0;
+    }
+
+    .version-block--status {
+        display: flex;
+
+        >span {
+            display: flex;
+            height: 24px;
+            width: 24px;
+            background: rgba(60, 188, 152, 0.5);
+            justify-content: center;
+            align-items: center;
+            border-radius: 100%;
+
+            >span {
+                display: block;
+                height: 18px;
+                width: 18px;
+                background: #3CBC98;
+                border-radius: 100%;
+            }
+
+            margin-right: 10px;
+            margin-top: 4px;
+        }
+
+        padding: 20px;
+
+        font-weight: 500;
+        font-size: 28px;
+    }
 }
 
 .network-block--info {

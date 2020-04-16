@@ -10,22 +10,23 @@ import { bindActionCreators } from "redux";
 
 import { DarknodeFeeStatus } from "../../../../lib/ethereum/contractReads";
 import { OldToken, Token } from "../../../../lib/ethereum/tokens";
+import { classNames } from "../../../../lib/react/className";
 // import { showClaimPopup } from "../../../../store/account/operatorPopupActions";
 import { ApplicationState, DarknodesState } from "../../../../store/applicationState";
 import {
     updateCycleAndPendingRewards, updateDarknodeDetails,
 } from "../../../../store/network/operatorActions";
 import { AppDispatch } from "../../../../store/rootReducer";
+import { ReactComponent as RewardsIcon } from "../../../../styles/images/icon-rewards-white.svg";
+import { ReactComponent as WithdrawIcon } from "../../../../styles/images/icon-withdraw.svg";
 import { Tabs } from "../../../common/Tabs";
 import { TokenBalance } from "../../../common/TokenBalance";
 import { FeesItem } from "../FeesItem";
-import { OldFees } from "../OldFees";
 import { Block, BlockBody, BlockTitle } from "./Block";
 
 enum Tab {
     Withdrawable = "Withdrawable",
     Pending = "Pending",
-    Total = "Total",
 }
 
 const mergeFees = (left: OrderedMap<Token | OldToken, BigNumber>, right: OrderedMap<Token | OldToken, BigNumber>) => {
@@ -74,12 +75,9 @@ class FeesBlockClass extends React.Component<Props, State> {
             previousCycle,
             pendingRewards,
             pendingTotalInEth,
-            // cycleTimeout,
         } = store;
-        // const { tab, disableClaim, claiming } = this.state;
         const { tab } = this.state;
 
-        // const showWhitelist = darknodeDetails && darknodeDetails.cycleStatus.get(currentCycle) === DarknodeFeeStatus.NOT_WHITELISTED;
         const showPreviousPending = darknodeDetails && darknodeDetails.cycleStatus.get(previousCycle) === DarknodeFeeStatus.NOT_CLAIMED;
         const showCurrentPending = darknodeDetails && darknodeDetails.cycleStatus.get(currentCycle) === DarknodeFeeStatus.NOT_CLAIMED;
         let pendingTotal = new BigNumber(0);
@@ -117,7 +115,7 @@ class FeesBlockClass extends React.Component<Props, State> {
             >
                 <BlockTitle>
                     <h3>
-                        <FontAwesomeIcon icon={faStar} pull="left" />
+                        <RewardsIcon />
                         Darknode Income
                     </h3>
                 </BlockTitle>
@@ -127,69 +125,44 @@ class FeesBlockClass extends React.Component<Props, State> {
                         tabs={{
                             Withdrawable: <></>,
                             Pending: <></>,
-                            Total: <></>,
                         }}
                         onTab={this.setTab}
                     >
                         <div className="block--advanced">
                             <div className="block--advanced--top">
-                                <span className="fees-block--advanced--sign">
-                                    <CurrencyIcon currency={quoteCurrency} />
-                                </span>
-                                <span className="fees-block--advanced--value">
-                                    <TokenBalance
-                                        token={Token.ETH}
-                                        convertTo={quoteCurrency}
-                                        amount={
-                                            tab === Tab.Withdrawable ? darknodeDetails.feesEarnedTotalEth :
-                                                tab === Tab.Pending ? pendingTotal :
-                                                    darknodeDetails.feesEarnedTotalEth.plus(pendingTotal)
-                                        }
-                                    />
-                                </span>
-                                <span className="fees-block--advanced--unit">{quoteCurrency.toUpperCase()}</span>
+                                <div className="fees-block--total">
+                                    <span className="fees-block--advanced--sign">
+                                        <CurrencyIcon currency={quoteCurrency} />
+                                    </span>
+                                    <span className="fees-block--advanced--value">
+                                        <TokenBalance
+                                            token={Token.ETH}
+                                            convertTo={quoteCurrency}
+                                            amount={
+                                                tab === Tab.Withdrawable ? darknodeDetails.feesEarnedTotalEth :
+                                                    pendingTotal
+                                            }
+                                        />
+                                    </span>
+                                    <span className="fees-block--advanced--unit">{quoteCurrency.toUpperCase()}</span>
+                                </div>
+                                <button className="button button--dark"><WithdrawIcon className="icon" />Withdraw</button>
                             </div>
-                            {/* {isOperator && darknodeDetails.registrationStatus === RegistrationStatus.Registered ?
-                                cycleTimeout.isZero() || claiming || disableClaim ? <button className="button--white block--advanced--claim" disabled>
-                                    <Loading alt />
-                                </button> :
-                                    (showPreviousPending || showWhitelist) ?
-                                        <button className="button--white block--advanced--claim" onClick={this.onClaimBeforeCycle}>
-                                            {showWhitelist ? "Whitelist now" : <>
-                                                Claim{" "}<CurrencyIcon currency={quoteCurrency} />
-                                                <TokenBalance
-                                                    token={Token.ETH}
-                                                    convertTo={quoteCurrency}
-                                                    amount={
-                                                        summedClaimable
-                                                    }
-                                                />{" "}{quoteCurrency.toUpperCase()}{" "}now
-                                            </>}
-                                        </button> :
-                                        alreadyPast(cycleTimeout.toNumber() + 5) ?
-                                            <button className="button--white block--advanced--claim" onClick={this.onClaimAfterCycle}>
-                                                {showWhitelist ? "Whitelist now" : <>
-                                                    Claim pending rewards now
-                                                </>}
-                                            </button> :
-                                            <button className="button--white block--advanced--claim" disabled>
-                                                {naturalTime(cycleTimeout.toNumber() + 5, {
-                                                    message: "Refresh page to claim pending rewards",
-                                                    prefix: "Claim again in",
-                                                    countDown: true,
-                                                    showingSeconds: true,
-                                                })}
-                                            </button>
-                                : <></>
-                            } */}
                             <div className="block--advanced--bottom">
                                 <table className="fees-block--table">
+                                    <thead>
+                                        <tr>
+                                            <td>Asset</td>
+                                            <td>Amount</td>
+                                            <td style={{ textAlign: "right", paddingRight: 40 }}>Percent</td>
+                                        </tr>
+                                    </thead>
                                     <tbody>
                                         {
-                                            fees.map((balance: BigNumber, token: Token | OldToken) => {
-                                                return <tr key={token}>
+                                            fees.toArray().map(([token, balance]: [Token | OldToken, BigNumber], i) => {
+                                                return <><tr key={token} style={{}}>
                                                     <td className="fees-block--table--token">
-                                                        <TokenIcon className="fees-block--table--icon" token={token} />
+                                                        <TokenIcon className="fees-block--table--icon" white={true} token={token} />
                                                         {" "}
                                                         <span>{token}</span>
                                                     </td>
@@ -217,11 +190,14 @@ class FeesBlockClass extends React.Component<Props, State> {
                                                             darknodeID={darknodeDetails.ID}
                                                         />
                                                     </td> : <></>}
-                                                </tr>;
-                                            }).valueSeq().toArray()
-                                        }
-                                        {
-                                            tab !== Tab.Pending ? <OldFees darknodeDetails={darknodeDetails} isOperator={isOperator} /> : <></>
+                                                </tr>
+                                                    <tr>
+                                                        <td colSpan={3} style={{ padding: 0, margin: 0, height: 4 }}>
+                                                            <div className={classNames("percent-bar", token)} style={{ width: `${Math.max(0, (fees.size - i) / (fees.size) * (40) + Math.sin(3 * i) * 10)}%`, height: 4, marginTop: -6 }} />
+                                                        </td>
+                                                    </tr>
+                                                </>;
+                                            })
                                         }
                                     </tbody>
                                 </table>
@@ -236,48 +212,6 @@ class FeesBlockClass extends React.Component<Props, State> {
     private readonly setTab = (tab: string): void => {
         this.setState({ tab: tab as Tab });
     }
-
-    // private readonly onClaimAfterCycle = async () => {
-    //     await this.onClaim(false);
-    // }
-
-    // private readonly onClaimBeforeCycle = async () => {
-    //     await this.onClaim(true);
-    // }
-
-    // private readonly onClaim = async (claimBeforeCycle: boolean) => {
-    //     const { darknodeDetails, store: { web3, address, tokenPrices, renNetwork } } = this.props;
-
-    //     if (!address || !darknodeDetails) {
-    //         this.setState({ claiming: false });
-    //         return;
-    //     }
-
-    //     const darknodeID = darknodeDetails.ID;
-
-    //     const onCancel = () => {
-    //         if (this._isMounted) {
-    //             this.setState({ claiming: false, disableClaim: false });
-    //         }
-    //     };
-
-    //     const onDone = async () => {
-    //         try {
-    //             await this.props.actions.updateCycleAndPendingRewards(web3, renNetwork, tokenPrices);
-    //             await this.props.actions.updateDarknodeDetails(web3, renNetwork, darknodeID, tokenPrices);
-    //         } catch (error) {
-    //             // Ignore error
-    //         }
-
-    //         if (this._isMounted) {
-    //             this.setState({ claiming: false });
-    //         }
-    //     };
-
-    //     const title = `Claim rewards`;
-    //     this.setState({ disableClaim: true });
-    //     await this.props.actions.showClaimPopup(web3, renNetwork, claimBeforeCycle, address, darknodeID, title, onCancel, onDone);
-    // }
 }
 
 const mapStateToProps = (state: ApplicationState) => ({

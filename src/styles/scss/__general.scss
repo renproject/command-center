@@ -20,6 +20,7 @@ html {
 
     min-height: 100%;
     background: linear-gradient(180deg, #00162f 0%, #001b39 100%);
+    background: $blue-darker;
     background-attachment: fixed;
 }
 
@@ -215,6 +216,17 @@ $spacing: 90px;
 //         padding: 0 10px;
 //     }
 // }
+
+svg.icon {
+    margin-right: 5px;
+}
+
+.button.button--dark {
+    border: 1px solid #007BFF;
+    color: #007BFF;
+    border-radius: 4px;
+    background: none;
+}
 
 .section {
     padding: 60px 0;
