@@ -3,9 +3,9 @@ import Web3 from "web3";
 
 import { DarknodePayment } from "./contracts/bindings/DarknodePayment";
 import { DarknodePaymentStore } from "./contracts/bindings/DarknodePaymentStore";
-import { DarknodeRegistry } from "./contracts/bindings/DarknodeRegistry";
+import { DarknodeRegistryLogicV1 } from "./contracts/bindings/DarknodeRegistryLogic";
 
-export const getDarknodeRegistry = (web3: Web3, renNetwork: RenNetworkDetails): DarknodeRegistry => new (web3.eth.Contract)(
+export const getDarknodeRegistry = (web3: Web3, renNetwork: RenNetworkDetails): DarknodeRegistryLogicV1 => new (web3.eth.Contract)(
     renNetwork.addresses.ren.DarknodeRegistry.abi,
     renNetwork.addresses.ren.DarknodeRegistry.address
 );

@@ -3,8 +3,8 @@
 import { RenNetworkDetails, testnet } from "@renproject/contracts";
 import { sleep } from "@renproject/react-components";
 import RenJS from "@renproject/ren";
-import { RenVMArg, RenVMType } from "@renproject/ren-js-common/build/main";
-import { ResponseQueryTx } from "@renproject/ren/build/main/renVM/jsonRPC";
+import { RenVMArg, RenVMType } from "@renproject/interfaces";
+import { ResponseQueryTx } from "@renproject/rpc";
 import Axios from "axios";
 import { List, OrderedMap } from "immutable";
 import { useState } from "react";

@@ -2,10 +2,10 @@
 /* tslint:disable */
 
 import BN from "bn.js";
-import Contract, { contractOptions } from "web3/eth/contract";
-import { EventLog, Callback, EventEmitter } from "web3/types";
-import { TransactionObject, BlockType } from "web3/eth/types";
-import { ContractEvent } from "./types";
+import { Contract, ContractOptions } from "web3-eth-contract";
+import { EventLog } from "web3-core";
+import { EventEmitter } from "events";
+import { ContractEvent, Callback, TransactionObject, BlockType } from "./types";
 
 interface EventOptions {
   filter?: object;
@@ -17,7 +17,7 @@ export class DarknodePayment extends Contract {
   constructor(
     jsonInterface: any[],
     address?: string,
-    options?: contractOptions
+    options?: ContractOptions
   );
   clone(): DarknodePayment;
   address: string;
@@ -26,31 +26,56 @@ export class DarknodePayment extends Contract {
 
     VERSION(): TransactionObject<string>;
 
+    changeCycle(): TransactionObject<string>;
+
+    claim(_darknode: string): TransactionObject<void>;
+
     claimOwnership(): TransactionObject<void>;
 
-    currentCycle(): TransactionObject<BN>;
+    claimStoreOwnership(): TransactionObject<void>;
 
-    currentCyclePayoutPercent(): TransactionObject<BN>;
+    currentCycle(): TransactionObject<string>;
+
+    currentCyclePayoutPercent(): TransactionObject<string>;
+
+    currentCycleRewardPool(_token: string): TransactionObject<string>;
 
     cycleChanger(): TransactionObject<string>;
 
-    cycleStartTime(): TransactionObject<BN>;
+    cycleStartTime(): TransactionObject<string>;
+
+    darknodeBalances(
+      _darknodeID: string,
+      _token: string
+    ): TransactionObject<string>;
 
     darknodeRegistry(): TransactionObject<string>;
 
+    deposit(_value: number | string, _token: string): TransactionObject<void>;
+
+    deregisterToken(_token: string): TransactionObject<void>;
+
+    forward(_token: string): TransactionObject<void>;
+
+    initialize(_nextOwner: string): TransactionObject<void>;
+
     isOwner(): TransactionObject<boolean>;
 
-    nextCyclePayoutPercent(): TransactionObject<BN>;
+    nextCyclePayoutPercent(): TransactionObject<string>;
 
     owner(): TransactionObject<string>;
 
+    pendingOwner(): TransactionObject<string>;
+
     pendingTokens(arg0: number | string): TransactionObject<string>;
 
-    previousCycle(): TransactionObject<BN>;
+    previousCycle(): TransactionObject<string>;
 
-    previousCycleRewardShare(arg0: string): TransactionObject<BN>;
+    previousCycleRewardShare(arg0: string): TransactionObject<string>;
 
-    registeredTokenIndex(arg0: string): TransactionObject<BN>;
+    registerToken(_token: string): TransactionObject<void>;
+
+    registeredTokenIndex(arg0: string): TransactionObject<string>;
 
     registeredTokens(arg0: number | string): TransactionObject<string>;
 
@@ -63,47 +88,26 @@ export class DarknodePayment extends Contract {
 
     store(): TransactionObject<string>;
 
+    tokenPendingRegistration(_token: string): TransactionObject<boolean>;
+
     transferOwnership(newOwner: string): TransactionObject<void>;
 
-    unclaimedRewards(arg0: string): TransactionObject<BN>;
+    transferStoreOwnership(_newOwner: string): TransactionObject<void>;
+
+    unclaimedRewards(arg0: string): TransactionObject<string>;
+
+    updateCycleChanger(_addr: string): TransactionObject<void>;
 
     updateDarknodeRegistry(_darknodeRegistry: string): TransactionObject<void>;
+
+    updatePayoutPercentage(_percent: number | string): TransactionObject<void>;
 
     withdraw(_darknode: string, _token: string): TransactionObject<void>;
 
     withdrawMultiple(
-      _darknode: string,
-      _tokens: (string)[]
+      _darknodes: string[],
+      _tokens: string[]
     ): TransactionObject<void>;
-
-    currentCycleRewardPool(_token: string): TransactionObject<BN>;
-
-    darknodeBalances(
-      _darknodeID: string,
-      _token: string
-    ): TransactionObject<BN>;
-
-    changeCycle(): TransactionObject<BN>;
-
-    deposit(_value: number | string, _token: string): TransactionObject<void>;
-
-    forward(_token: string): TransactionObject<void>;
-
-    claim(_darknode: string): TransactionObject<void>;
-
-    registerToken(_token: string): TransactionObject<void>;
-
-    tokenPendingRegistration(_token: string): TransactionObject<boolean>;
-
-    deregisterToken(_token: string): TransactionObject<void>;
-
-    updateCycleChanger(_addr: string): TransactionObject<void>;
-
-    updatePayoutPercentage(_percent: number | string): TransactionObject<void>;
-
-    transferStoreOwnership(_newOwner: string): TransactionObject<void>;
-
-    claimStoreOwnership(): TransactionObject<void>;
   };
   events: {
     LogCycleChangerChanged: ContractEvent<{
@@ -114,9 +118,9 @@ export class DarknodePayment extends Contract {
     }>;
     LogDarknodeClaim: ContractEvent<{
       _darknode: string;
-      _cycle: BN;
+      _cycle: string;
       0: string;
-      1: BN;
+      1: string;
     }>;
     LogDarknodeRegistryUpdated: ContractEvent<{
       _previousDarknodeRegistry: string;
@@ -125,26 +129,28 @@ export class DarknodePayment extends Contract {
       1: string;
     }>;
     LogDarknodeWithdrew: ContractEvent<{
-      _payee: string;
-      _value: BN;
+      _darknodeOperator: string;
+      _darknodeID: string;
       _token: string;
+      _value: string;
       0: string;
-      1: BN;
+      1: string;
       2: string;
+      3: string;
     }>;
     LogPaymentReceived: ContractEvent<{
       _payer: string;
-      _amount: BN;
       _token: string;
+      _amount: string;
       0: string;
-      1: BN;
+      1: string;
       2: string;
     }>;
     LogPayoutPercentChanged: ContractEvent<{
-      _newPercent: BN;
-      _oldPercent: BN;
-      0: BN;
-      1: BN;
+      _newPercent: string;
+      _oldPercent: string;
+      0: string;
+      1: string;
     }>;
     LogTokenDeregistered: ContractEvent<string>;
     LogTokenRegistered: ContractEvent<string>;

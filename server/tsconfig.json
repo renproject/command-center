@@ -1,0 +1,20 @@
+{
+    "version": "2.4.2",
+    "compilerOptions": {
+        "outDir": "build",
+        "lib": [
+            "es5",
+            "es6"
+        ],
+        "target": "es6",
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "sourceMap": true,
+        "esModuleInterop": true
+    },
+    "exclude": [
+        "node_modules"
+    ]
+}

@@ -1,5 +1,5 @@
 import { Loading, naturalTime } from "@renproject/react-components";
-import { RenVMType } from "@renproject/ren-js-common";
+import { RenVMType } from "@renproject/interfaces";
 import BigNumber from "bignumber.js";
 import React, { useCallback } from "react";
 import { withRouter } from "react-router-dom";

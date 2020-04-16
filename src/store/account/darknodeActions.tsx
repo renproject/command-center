@@ -1,11 +1,11 @@
 import * as React from "react";
 
 import { RenNetworkDetails } from "@renproject/contracts";
-import { TxStatus } from "@renproject/ren-js-common";
+import { TxStatus } from "@renproject/interfaces";
 import Web3 from "web3";
 
 import { WithdrawPopup } from "../../components/common/popups/WithdrawPopup";
-import { withdrawOldToken, withdrawToken } from "../../lib/ethereum/contractWrites";
+import { withdrawToken } from "../../lib/ethereum/contractWrites";
 import { AllTokenDetails, OldToken, Token } from "../../lib/ethereum/tokens";
 import { WaitForTX } from "../../lib/ethereum/waitForTX";
 import { ApplicationState } from "../applicationState";
@@ -80,7 +80,7 @@ export const showWithdrawToken = async (
 
 export const withdrawReward = (
     darknodeID: string,
-    token: Token | OldToken,
+    token: Token,
     waitForTX: WaitForTX,
 ) => async (dispatch: AppDispatch, getState: () => ApplicationState) => {
     const { web3, address, renNetwork } = getState().account;
@@ -90,14 +90,10 @@ export const withdrawReward = (
         throw new Error("Unknown token");
     }
 
-    if (tokenDetails.old && renNetwork.name === "mainnet") {
-        await withdrawOldToken(web3, renNetwork, address, darknodeID, token, waitForTX);
-    } else {
-        const callClearPopup = () => { dispatch(clearPopup()); };
-        const callSetPopup = (
-            popup: JSX.Element,
-            onCancel: () => void,
-        ) => dispatch(setPopup({ popup, overlay: true, onCancel }));
-        await showWithdrawToken(web3, renNetwork, address, darknodeID, token, waitForTX, callClearPopup, callSetPopup);
-    }
+    const callClearPopup = () => { dispatch(clearPopup()); };
+    const callSetPopup = (
+        popup: JSX.Element,
+        onCancel: () => void,
+    ) => dispatch(setPopup({ popup, overlay: true, onCancel }));
+    await showWithdrawToken(web3, renNetwork, address, darknodeID, token, waitForTX, callClearPopup, callSetPopup);
 };

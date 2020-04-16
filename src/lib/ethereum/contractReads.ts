@@ -81,7 +81,10 @@ const getDarknodePublicKey = async (web3: Web3, renNetwork: RenNetworkDetails, d
  * @returns A promise to the operator as a hex string.
  */
 const getDarknodeOperator = async (web3: Web3, renNetwork: RenNetworkDetails, darknodeID: string): Promise<string> => {
-    const owner = await retryNTimes(async () => await getDarknodeRegistry(web3, renNetwork).methods.getDarknodeOwner(darknodeID).call(), 5);
+
+    console.log(renNetwork.addresses.ren.DarknodeRegistry.abi.map(x => x.name));
+
+    const owner = await retryNTimes(async () => await getDarknodeRegistry(web3, renNetwork).methods.getDarknodeOperator(darknodeID).call(), 5);
     if (owner === null) {
         _catchBackgroundException_(_noCapture_(new Error("Unable to retrieve darknode owner")), "Error in contractReads > getDarknodeOperator, getDarknodeRegistry");
         return NULL;
@@ -426,7 +429,7 @@ export const getOperatorDarknodes = async (
         if (operator) {
             return [darknodeID, operator];
         } else {
-            return [darknodeID, await retryNTimes(async () => await darknodeRegistry.methods.getDarknodeOwner(darknodeID).call(), 5)] as [string, string];
+            return [darknodeID, await retryNTimes(async () => await darknodeRegistry.methods.getDarknodeOperator(darknodeID).call(), 5)] as [string, string];
         }
     }).toArray();
 
@@ -590,48 +593,6 @@ export const fetchCycleAndPendingRewards = async (
     };
 };
 
-/**
- * Retrieves the balances from the old DarknodeRewardVault contract, which is
- * only deployed on mainnet.
- *
- * @param web3 A Web3 instance.
- * @param renNetwork A Ren network object.
- * @param darknodeID The ID of the darknode as a hex string.
- * @returns Returns a promise to an immutable map from token codes to balances
- *          as BigNumbers.
- */
-export const getOldBalances = async (
-    web3: Web3,
-    renNetwork: typeof mainnet,
-    darknodeID: string,
-): Promise<OrderedMap<OldToken, BigNumber>> => {
-
-    const contract = new (web3.eth.Contract)(
-        renNetwork.addresses.ren.DarknodeRewardVault.abi,
-        renNetwork.addresses.ren.DarknodeRewardVault.address,
-    );
-
-    let feesEarned = OrderedMap<OldToken, BigNumber>();
-
-    const balances = OldTokenDetails.map(async (_tokenDetails, token) => {
-
-        const balance = new BigNumber(await retryNTimes(async () => await contract.methods.darknodeBalances(darknodeID, renNetwork.addresses.oldTokens[token].address).call(), 5));
-
-        return {
-            balance,
-            token,
-        };
-    }).valueSeq();
-    // TODO: Don't use Promise.all
-    const res = await Promise.all(balances);
-
-    for (const { balance, token } of res) {
-        feesEarned = feesEarned.set(token, balance);
-    }
-
-    return feesEarned;
-};
-
 ////////////////////////////////////////////////////////////////////////////////
 // Darknode Payment contract ///////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -706,10 +667,7 @@ export const getDarknodeFees = async (
 ) => {
     // Get earned fees
     const feesEarned = await getBalances(web3, renNetwork, darknodeID);
-    let oldFeesEarned = OrderedMap<OldToken, BigNumber>();
-    if (renNetwork.name === "mainnet") {
-        oldFeesEarned = await getOldBalances(web3, renNetwork as typeof mainnet, darknodeID);
-    }
+    const oldFeesEarned = OrderedMap<OldToken, BigNumber>();
     let feesEarnedTotalEth = new BigNumber(0);
     if (tokenPrices) {
         //

@@ -3,7 +3,7 @@ import * as React from "react";
 import { faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Loading, TokenIcon } from "@renproject/react-components";
-import { TxStatus } from "@renproject/ren-js-common";
+import { TxStatus } from "@renproject/interfaces";
 import { List } from "immutable";
 import { connect, ConnectedReturnType } from "react-redux";
 import { bindActionCreators } from "redux";

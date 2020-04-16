@@ -2,10 +2,10 @@
 /* tslint:disable */
 
 import BN from "bn.js";
-import Contract, { contractOptions } from "web3/eth/contract";
-import { EventLog, Callback, EventEmitter } from "web3/types";
-import { TransactionObject, BlockType } from "web3/eth/types";
-import { ContractEvent } from "./types";
+import { Contract, ContractOptions } from "web3-eth-contract";
+import { EventLog } from "web3-core";
+import { EventEmitter } from "events";
+import { ContractEvent, Callback, TransactionObject, BlockType } from "./types";
 
 interface EventOptions {
   filter?: object;
@@ -17,7 +17,7 @@ export class DarknodePaymentStore extends Contract {
   constructor(
     jsonInterface: any[],
     address?: string,
-    options?: contractOptions
+    options?: ContractOptions
   );
   clone(): DarknodePaymentStore;
   address: string;
@@ -26,23 +26,11 @@ export class DarknodePaymentStore extends Contract {
 
     VERSION(): TransactionObject<string>;
 
+    availableBalance(_token: string): TransactionObject<string>;
+
     claimOwnership(): TransactionObject<void>;
 
-    darknodeBalances(arg0: string, arg1: string): TransactionObject<BN>;
-
-    isOwner(): TransactionObject<boolean>;
-
-    lockedBalances(arg0: string): TransactionObject<BN>;
-
-    owner(): TransactionObject<string>;
-
-    renounceOwnership(): TransactionObject<void>;
-
-    transferOwnership(newOwner: string): TransactionObject<void>;
-
-    totalBalance(_token: string): TransactionObject<BN>;
-
-    availableBalance(_token: string): TransactionObject<BN>;
+    darknodeBalances(arg0: string, arg1: string): TransactionObject<string>;
 
     incrementDarknodeBalance(
       _darknode: string,
@@ -50,12 +38,28 @@ export class DarknodePaymentStore extends Contract {
       _amount: number | string
     ): TransactionObject<void>;
 
+    initialize(_nextOwner: string): TransactionObject<void>;
+
+    isOwner(): TransactionObject<boolean>;
+
+    lockedBalances(arg0: string): TransactionObject<string>;
+
+    owner(): TransactionObject<string>;
+
+    pendingOwner(): TransactionObject<string>;
+
+    renounceOwnership(): TransactionObject<void>;
+
+    totalBalance(_token: string): TransactionObject<string>;
+
     transfer(
       _darknode: string,
       _token: string,
       _amount: number | string,
       _recipient: string
     ): TransactionObject<void>;
+
+    transferOwnership(newOwner: string): TransactionObject<void>;
   };
   events: {
     OwnershipTransferred: ContractEvent<{

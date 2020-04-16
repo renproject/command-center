@@ -6,8 +6,8 @@ import { Token } from "../../lib/ethereum/tokens";
 import { ApplicationState } from "../../store/applicationState";
 import {
     ReactComponent as IconDarknodesOnline,
-} from "../../styles/icons/icon-darknodes-online.svg";
-import { ReactComponent as IconIncome } from "../../styles/icons/icon-income.svg";
+} from "../../styles/images/icon-darknodes-online.svg";
+import { ReactComponent as IconIncome } from "../../styles/images/icon-income.svg";
 import { Change } from "../common/Change";
 import { Stat, Stats } from "../common/Stat";
 import { TokenBalance } from "../common/TokenBalance";

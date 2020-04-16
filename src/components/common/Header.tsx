@@ -64,8 +64,7 @@ const HeaderClass = (props: Props) => {
             // Reload to clear all stores and cancel timeouts
             // (e.g. deposit/withdrawal confirmations)
             // tslint:disable-next-line: no-console
-            console.log(`Reloading page (${currentLocation})`);
-            window.location.replace(currentLocation);
+            window.location.reload();
         }, 100);
     };
 

@@ -27,10 +27,10 @@ const FeesItemClass = ({ darknodeID, token, amount, disabled, actions, store }: 
         const { web3, tokenPrices, address, renNetwork } = store;
         setLoading(true);
 
-        if (address) {
+        if (address && tokenDetails && !tokenDetails.old) {
             try {
                 // tslint:disable-next-line: await-promise
-                await actions.withdrawReward(darknodeID, token, actions.waitForTX);
+                await actions.withdrawReward(darknodeID, token as Token, actions.waitForTX);
             } catch (error) {
                 setLoading(false);
                 return;
@@ -59,7 +59,7 @@ const FeesItemClass = ({ darknodeID, token, amount, disabled, actions, store }: 
         <button
             title={title}
             className={["withdraw-fees", isDisabled ? "withdraw-fees-disabled" : ""].join(" ")}
-            disabled={isDisabled}
+            disabled={isDisabled || !tokenDetails || tokenDetails.old}
             onClick={isDisabled ? undefined : handleWithdraw}
         >
             {loading ? <Loading alt /> : <FontAwesomeIcon icon={faChevronRight} pull="left" />}

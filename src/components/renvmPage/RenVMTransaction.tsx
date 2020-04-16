@@ -2,8 +2,8 @@ import { RenNetworkDetails } from "@renproject/contracts";
 import { Loading, TokenIcon } from "@renproject/react-components";
 import {
     Asset, RenContract, RenVMArg, RenVMArgs, RenVMType, TxStatus,
-} from "@renproject/ren-js-common";
-import { ResponseQueryTx } from "@renproject/ren/build/main/renVM/jsonRPC";
+} from "@renproject/interfaces";
+import { ResponseQueryTx } from "@renproject/rpc";
 import React from "react";
 
 import { strip0x } from "../../lib/ethereum/contractReads";
