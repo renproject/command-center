@@ -9,6 +9,7 @@ import { _catchBackgroundException_ } from "../lib/react/errors";
 import { promptLogin } from "../store/account/accountActions";
 import { ApplicationState } from "../store/applicationState";
 import { AppDispatch } from "../store/rootReducer";
+import { Web3Container } from "../store/web3Store";
 import { AllDarknodes } from "./allDarknodesPage/AllDarknodes";
 import { NotFound } from "./common/404";
 import { BackgroundTasks } from "./common/BackgroundTasks";
@@ -54,7 +55,8 @@ export const ScrollToTopWithRouter = withRouter(() => {
  * App is the main visual component responsible for displaying different routes
  * and running background app loops
  */
-const AppClass = ({ match: { params }, store: { address, loggedInBefore, renNetwork }, actions }: Props) => {
+const AppClass = ({ match: { params }, store: { web3, address, loggedInBefore, renNetwork }, actions }: Props) => {
+    const { setWeb3, setNetwork } = Web3Container.useContainer();
 
     React.useEffect(() => {
         if (loggedInBefore) {
@@ -68,6 +70,11 @@ const AppClass = ({ match: { params }, store: { address, loggedInBefore, renNetw
         address ? component : LoggingIn,
         [address],
     );
+
+    React.useEffect(() => {
+        setWeb3(web3);
+        setNetwork(renNetwork);
+    }, [web3]);
 
     const darknodeID = getDarknodeParam(params);
     const showNetworkBanner = renNetwork.name !== DEFAULT_REN_NETWORK;
@@ -85,39 +92,37 @@ const AppClass = ({ match: { params }, store: { address, loggedInBefore, renNetw
                 <div className="network--banner">Using <span className="banner--bold">{renNetwork.label}</span> RenVM network, <span className="banner--bold">{renNetwork.chainLabel}</span> Ethereum network</div> :
                 <></>
             }
-            <Connect>
-                <PopupController>
-                    {_catch_(<Sidebar selectedDarknode={darknodeID} />)}
-                    <div className="app--body">
-                        {_catch_(<Switch>
-                            {/* tslint:disable-next-line: react-this-binding-issue jsx-no-lambda */}
-                            <Route path="/" exact component={NetworkStats} />
-                            <Route path="/darknode-stats" exact component={Overview} />
-                            <Route path="/all" exact component={withAccount(AllDarknodes)} />
-                            <Route path="/darknode/:darknodeID" exact component={Darknode} />
+            <PopupController>
+                {_catch_(<Sidebar selectedDarknode={darknodeID} />)}
+                <div className="app--body">
+                    {_catch_(<Switch>
+                        {/* tslint:disable-next-line: react-this-binding-issue jsx-no-lambda */}
+                        <Route path="/" exact component={NetworkStats} />
+                        <Route path="/darknode-stats" exact component={Overview} />
+                        <Route path="/all" exact component={withAccount(AllDarknodes)} />
+                        <Route path="/darknode/:darknodeID" exact component={Darknode} />
 
-                            {/* Old hyperdrive URLs */}
-                            <Route path="/hyperdrive" exact component={RenVM} />
-                            <Route path="/hyperdrive/:blockNumber" exact component={RenVM} />
+                        {/* Old hyperdrive URLs */}
+                        <Route path="/hyperdrive" exact component={RenVM} />
+                        <Route path="/hyperdrive/:blockNumber" exact component={RenVM} />
 
-                            <Route path="/renvm" exact component={RenVM} />
+                        <Route path="/renvm" exact component={RenVM} />
 
-                            {/* RenVM TX */}
-                            <Route path="/tx/:txHash" exact component={RenVM} />
-                            <Route path="/renvm/tx/:txHash" exact component={RenVM} />
+                        {/* RenVM TX */}
+                        <Route path="/tx/:txHash" exact component={RenVM} />
+                        <Route path="/renvm/tx/:txHash" exact component={RenVM} />
 
-                            {/* RenVM Block */}
-                            <Route path="/block/:blockNumber" exact component={RenVM} />
-                            <Route path="/renvm/:blockNumber" exact component={RenVM} />
-                            <Route path="/renvm/block/:blockNumber" exact component={RenVM} />
+                        {/* RenVM Block */}
+                        <Route path="/block/:blockNumber" exact component={RenVM} />
+                        <Route path="/renvm/:blockNumber" exact component={RenVM} />
+                        <Route path="/renvm/block/:blockNumber" exact component={RenVM} />
 
-                            {/* 404 */}
-                            <Route component={NotFound} />
-                        </Switch>, { popup: true })}
-                    </div>
-                    {/* {_catch_(<Footer />)} */}
-                </PopupController>
-            </Connect>
+                        {/* 404 */}
+                        <Route component={NotFound} />
+                    </Switch>, { popup: true })}
+                </div>
+                {/* {_catch_(<Footer />)} */}
+            </PopupController>
             {_catch_(<Header />)}
         </div>
     </div>;
@@ -128,6 +133,7 @@ const mapStateToProps = (state: ApplicationState) => ({
         address: state.account.address,
         loggedInBefore: state.account.loggedInBefore,
         renNetwork: state.account.renNetwork,
+        web3: state.account.web3,
     },
 });
 

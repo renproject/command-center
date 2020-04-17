@@ -154,7 +154,7 @@ class FeesBlockClass extends React.Component<Props, State> {
                                         <tr>
                                             <td>Asset</td>
                                             <td>Amount</td>
-                                            <td style={{ textAlign: "right", paddingRight: 40 }}>Percent</td>
+                                            <td style={{ textAlign: "right", paddingRight: 40 }}>Value</td>
                                         </tr>
                                     </thead>
                                     <tbody>

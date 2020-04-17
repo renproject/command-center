@@ -57,7 +57,7 @@ export const Collateral = ({ l, r, rRen }: Props) => {
                 </Stat>
             </Stats>
             <Stats>
-                <Stat className="collateral-stat stat--extra-big" message="Mint Fee" icon={<IconBurnFee />} big>
+                <Stat className="collateral-stat stat--extra-big" message="Mint Fee" icon={<IconMintFee />} big>
                     0.1%
                 </Stat>
                 <Stat className="collateral-stat stat--extra-big" message="Burn Fee" icon={<IconBurnFee />} big>

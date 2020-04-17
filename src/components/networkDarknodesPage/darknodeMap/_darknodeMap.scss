@@ -1,6 +1,8 @@
 .map {
-    flex: 1 1 600px;
+    // flex: 1 1 600px;
+    flex: 2 2 600px;
     display: flex;
+    max-height: 600px;
 
     .map--world {
         // width: 100%;

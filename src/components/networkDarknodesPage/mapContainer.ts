@@ -8,6 +8,7 @@ import { useState } from "react";
 import { Point } from "react-simple-maps";
 import { createContainer } from "unstated-next";
 
+import { Web3Container } from "../../store/web3Store";
 import { retryNTimes } from "../renvmPage/renvmContainer";
 
 interface City {
@@ -54,7 +55,7 @@ const parallelLimit = <T>(promiseFactories: Array<() => Promise<T>>, limit: numb
 export const getLightnode = (network: RenNetworkDetails): string => {
     switch (network.name) {
         case "mainnet": return "";
-        case "chaosnet": return "https://lightnode-chaosnet.herokuapp.com";
+        case "chaosnet": return "https://lightnode-chaosnet-new.herokuapp.com";
         case "testnet": return "https://lightnode-testnet.herokuapp.com";
         case "devnet": return "https://lightnode-devnet.herokuapp.com";
         case "localnet": return "";
@@ -131,13 +132,14 @@ const readCache = async (ip: string) => {
     return await configureCache().getItem<Location>(ip);
 };
 
-const useMapContainer = (initialState = testnet as RenNetworkDetails) => {
+const useMapContainer = () => {
+    const { network } = Web3Container.useContainer();
+
     // tslint:disable-next-line: prefer-const
     let [darknodes, setDarknodes] = useState(sampleDarknodes);
     // tslint:disable-next-line: prefer-const
     let [darknodeCount, setDarknodeCount] = useState<number | null>(null);
     // tslint:disable-next-line: whitespace
-    const [network,] = useState(initialState);
     const getLocation = async (ip: string): Promise<Location> => {
         // Check if we've already fetched for this IP
         const previousLocation = await readCache(ip);
@@ -166,14 +168,16 @@ const useMapContainer = (initialState = testnet as RenNetworkDetails) => {
     };
 
     const fetchDarknodes = async () => {
-        try {
-            const darknodeIDs = await getAllDarknodes(network);
-            darknodeCount = darknodeIDs.length;
-            setDarknodeCount(darknodeCount);
-            const updateDarknodes = darknodeIDs.map((darknodeID: string) => (() => addDarknodeID(darknodeID)));
-            await parallelLimit(updateDarknodes, 4);
-        } catch (error) {
-            console.error(error);
+        if (network) {
+            try {
+                const darknodeIDs = await getAllDarknodes(network);
+                darknodeCount = darknodeIDs.length;
+                setDarknodeCount(darknodeCount);
+                const updateDarknodes = darknodeIDs.map((darknodeID: string) => (() => addDarknodeID(darknodeID)));
+                await parallelLimit(updateDarknodes, 4);
+            } catch (error) {
+                console.error(error);
+            }
         }
     };
     return { fetchDarknodes, darknodes, darknodeCount };

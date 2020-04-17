@@ -63,9 +63,9 @@
 }
 
 .stat--highlight {
-    background: #043D7D;
+    background: #001327;
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
-    border-radius: 6px;
+    border-radius: 4px;
     // Left
     padding-left: 20px;
     padding-right: 20px;
@@ -97,7 +97,7 @@
 
 .change-indicator {
     &.positive {
-        color: #3CBC98;
+        color: $green;
 
         &::after {
             content: "\25b2";

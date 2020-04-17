@@ -1,7 +1,7 @@
 import { mainnet, RenNetworkDetails } from "@renproject/contracts";
+import { TxStatus } from "@renproject/interfaces";
 import { sleep } from "@renproject/react-components";
 import RenSDK from "@renproject/ren";
-import { TxStatus } from "@renproject/interfaces";
 import BigNumber from "bignumber.js";
 import Web3 from "web3";
 import { TransactionConfig, TransactionReceipt } from "web3-core";

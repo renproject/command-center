@@ -4,10 +4,12 @@ import {
     ComposableMap, Geographies, Geography, Marker, Markers, ZoomableGroup,
 } from "react-simple-maps";
 
+import { Web3Container } from "../../../store/web3Store";
 import { MapContainer } from "../mapContainer";
 import MapJSON from "./world-50m.json";
 
 export const DarknodeMap = () => {
+    const { network } = Web3Container.useContainer();
     const container = MapContainer.useContainer();
 
     React.useEffect(() => {
@@ -25,7 +27,7 @@ export const DarknodeMap = () => {
             clearInterval(interval);
         };
         // tslint:disable-next-line:react-hooks/exhaustive-dep
-    }, []);
+    }, [network && network.name]);
 
     return <div className="map">
         <ComposableMap

@@ -1,4 +1,8 @@
 .overview {
+    &.container {
+        max-width: 2200px;
+    }
+
     .overview--bottom {
         display: flex;
         align-items: center;
@@ -140,4 +144,15 @@
             }
         }
     }
+}
+
+.darknode-cli {
+    padding: 20px;
+}
+
+.darknode-cli--button {
+    background: #006FE8;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.3);
+    border-radius: 4px !important;
+    width: 216px !important;
 }

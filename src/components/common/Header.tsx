@@ -118,12 +118,15 @@ const HeaderClass = (props: Props) => {
             <Link className="no-underline" to="/">
                 <div className="header--logo" />
             </Link>
-            <Search />
+            <div className="new">
+                <span className="new-new">New</span>
+                <span className="new-blue">Welcome to the RenVM Command Center →</span>
+            </div>
             <div className="header--menu">
                 <Link className="no-underline" to="/">
                     <li className={["header--group", location.pathname === "/" ? "header--group--active" : ""].join(" ")}>
                         <div className="header--selected">
-                            <OverviewIcon className="header--selected--icon" /> <div>Network Stats</div>
+                            <OverviewIcon className="header--selected--icon" /> <div>Network</div>
                         </div>
                     </li>
                 </Link>

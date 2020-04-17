@@ -370,3 +370,27 @@
         color: $red !important;
     }
 }
+
+.new {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+
+    .new-new {
+        border-radius: 4px;
+        padding: 4px 10px;
+        background-color: #fff;
+        color: $blue-dark;
+        text-transform: uppercase;
+        font-weight: 600;
+        margin-left: 20px;
+        margin-right: 20px;
+        font-size: 12px;
+    }
+
+    .new-blue {
+        color: $blue-bright;
+        font-size: 12px;
+    }
+}

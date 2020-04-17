@@ -45,7 +45,7 @@ export const ResourcesBlock = (props: Props): JSX.Element => {
                                                 100,
                                             ],
                                         backgroundColor: [
-                                            "rgba(0, 111, 232, 0.28)",
+                                            "#006FE8",
                                             "#00000000",
                                         ],
                                         borderColor: "#001A38",
@@ -79,7 +79,7 @@ export const ResourcesBlock = (props: Props): JSX.Element => {
                                                 100,
                                             ],
                                         backgroundColor: [
-                                            "rgba(0, 111, 232, 0.28)",
+                                            "#006FE8",
                                             "#00000000",
                                         ],
                                         borderColor: "#001A38",

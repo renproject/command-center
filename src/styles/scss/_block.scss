@@ -289,8 +289,57 @@
     }
 }
 
+.resources-block {
+    margin-top: 0 !important;
+    border: 2px solid #001B3A;
+}
+
+.epoch--block--charts {
+    @extend .resources--block--charts;
+    margin-top: 10px;
+}
+
+.epoch-chart {
+    svg {
+        height: 100px;
+    }
+}
+
+.epoch-chart--small {
+    svg {
+        height: 60px;
+    }
+}
+
+.epoch--block--charts--small {
+    justify-content: flex-start !important;
+    flex: 1 !important;
+    max-width: 600px;
+}
+
+.epoch-right {
+    display: flex;
+    flex-flow: column;
+    align-items: flex-start;
+    justify-content: center;
+
+    p {
+        font-weight: 500;
+        font-size: 18px;
+        line-height: 21px;
+
+        /* identical to box height */
+
+        color: #F9F9F9;
+    }
+
+    p:last-child {
+        font-size: 14px;
+    }
+}
+
 .network-block {
-    flex-grow: 2 !important;
+    flex-grow: 1 !important;
 
 
     .network-block--info {
@@ -350,24 +399,34 @@
         display: flex;
 
         >span {
+            background: transparentize($color: rgb(255, 187, 0), $amount: 0.5);
             display: flex;
             height: 24px;
             width: 24px;
-            background: rgba(60, 188, 152, 0.5);
             justify-content: center;
             align-items: center;
             border-radius: 100%;
 
             >span {
+                background: rgb(255, 187, 0);
                 display: block;
                 height: 18px;
                 width: 18px;
-                background: #3CBC98;
                 border-radius: 100%;
             }
 
             margin-right: 10px;
             margin-top: 4px;
+        }
+
+        &.version-block--status--operational {
+            >span {
+                background: transparentize($color: $green, $amount: 0.5);
+
+                >span {
+                    background: $green;
+                }
+            }
         }
 
         padding: 20px;

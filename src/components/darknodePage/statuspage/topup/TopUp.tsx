@@ -44,6 +44,7 @@ export const TopUp = (props: Props) => {
                                 min={0}
                                 onChange={handleChangeEvent}
                                 onBlur={handleBlur}
+                                placeholder="Amount in ETH"
                             />
                             {pending ?
                                 <button disabled>Depositing...</button> :
@@ -54,7 +55,7 @@ export const TopUp = (props: Props) => {
                         </span>
                     </label>
                 </BlockBody>,
-                Withdraw: <BlockBody><label>
+                "Withdraw (CLI)": <BlockBody><label>
                     <div className="topup--title">Funds can be withdrawn through the Darknode CLI.</div>
                 </label></BlockBody>,
             }}

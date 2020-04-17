@@ -12,6 +12,7 @@ import { createContainer } from "unstated-next";
 
 import { EncodedData, Encodings } from "../../lib/general/encodedData";
 import { extractError } from "../../lib/react/errors";
+import { Web3Container } from "../../store/web3Store";
 import { getLightnode } from "../networkDarknodesPage/mapContainer";
 
 export type Tx = ResponseQueryTx["tx"];
@@ -121,9 +122,9 @@ const getBlocks = async (network: RenNetworkDetails, previousBlocks: List<Block>
     // }
 };
 
-const useRenVMContainer = (initialState = testnet as RenNetworkDetails) => {
-    // tslint:disable-next-line: whitespace
-    const [network,] = useState(initialState);
+const useRenVMContainer = () => {
+    const { network } = Web3Container.useContainer();
+
     // tslint:disable-next-line: prefer-const
     let [blocks, setBlocks] = useState<List<Block> | null>(null);
     // tslint:disable-next-line: prefer-const
@@ -138,11 +139,16 @@ const useRenVMContainer = (initialState = testnet as RenNetworkDetails) => {
     let [transactions, setTransactions] = useState<OrderedMap<string, ResponseQueryTx | null>>(OrderedMap());
 
     const updateBlocks = async () => {
-        blocks = await getBlocks(network, blocks || List<Block>());
-        setBlocks(blocks);
+        if (network) {
+            blocks = await getBlocks(network, blocks || List<Block>());
+            setBlocks(blocks);
+        }
     };
 
     const getBlock = async (blockNumber: number) => {
+        if (!network) {
+            return;
+        }
         const lightnode = getLightnode(network);
         if (!lightnode) {
             return;
@@ -182,10 +188,14 @@ const useRenVMContainer = (initialState = testnet as RenNetworkDetails) => {
             currentTransaction = transactions.get(txHashHex);
         } else {
 
-            try {
-                currentTransaction = await new RenJS(network.name).lightnode.queryTx(new EncodedData(txHashHex, Encodings.HEX).toBase64());
-            } catch (error) {
-                console.error(error);
+            if (network) {
+                try {
+                    currentTransaction = await new RenJS(network.name).lightnode.queryTx(new EncodedData(txHashHex, Encodings.HEX).toBase64());
+                } catch (error) {
+                    console.error(error);
+                    currentTransaction = null;
+                }
+            } else {
                 currentTransaction = null;
             }
 

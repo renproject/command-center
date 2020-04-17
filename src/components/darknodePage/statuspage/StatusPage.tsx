@@ -10,6 +10,7 @@ import { setDarknodeName } from "../../../store/network/operatorActions";
 import { AppDispatch } from "../../../store/rootReducer";
 import { DarknodeID } from "../../common/DarknodeID";
 import { DarknodeAction } from "../Darknode";
+import { EpochBlock } from "./block/EpochBlock";
 import { FeesBlock } from "./block/FeesBlock";
 import { GasBlock } from "./block/GasBlock";
 import { GasGraph } from "./block/GasGraph";
@@ -61,7 +62,7 @@ class StatusPageClass extends React.Component<Props, State> {
         return (
             <div className={`container statuspage ${focusedClass} ${renamingCLass} ${noDarknodeClass}`}>
                 <div className="statuspage--banner">
-                    <div className="block--column col-xl-4">
+                    <div className="block--column col-xl-4 statuspage--banner--name">
                         <Blocky address={darknodeID} fgColor="#006FE8" bgColor="transparent" className={!darknodeDetails ? "blocky--loading" : ""} />
                         <div className="statuspage--banner--details">
                             <div className="statuspage--banner--top">
@@ -138,6 +139,7 @@ class StatusPageClass extends React.Component<Props, State> {
                     <div className="block block--column">
                         <NetworkBlock darknodeDetails={darknodeDetails} />
                         <ResourcesBlock darknodeDetails={darknodeDetails} />
+                        <EpochBlock darknodeDetails={darknodeDetails} />
                     </div>
                 </div>
             </div>

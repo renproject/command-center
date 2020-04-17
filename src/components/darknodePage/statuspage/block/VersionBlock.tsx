@@ -2,16 +2,21 @@ import * as React from "react";
 
 import { faBolt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { naturalTime } from "@renproject/react-components";
 
 import { darknodeIDHexToBase58 } from "../../../../lib/darknode/darknodeID";
+import { classNames } from "../../../../lib/react/className";
 import { DarknodesState } from "../../../../store/applicationState";
+import { GithubAPIContainer } from "../../../../store/githubApiStore";
 import { Block, BlockBody, BlockTitle } from "./Block";
 
-export const VersionBlock = (props: Props): JSX.Element => {
-    const { darknodeDetails } = props;
+const UPDATE_DARKNODE_LINK = "https://docs.renproject.io/darknodes/manage/updating";
+
+export const VersionBlock = ({ darknodeDetails }: Props): JSX.Element => {
+    const { latestDarknodeVersionFull, isDarknodeUpToDate, latestDarknodeVersionDaysAgo } = GithubAPIContainer.useContainer();
 
     const darknodeIDBase58 = darknodeDetails ? darknodeIDHexToBase58(darknodeDetails.ID) : "";
+
+    const upToDate: boolean | null = darknodeDetails && darknodeDetails.nodeStatistics ? isDarknodeUpToDate(darknodeDetails.nodeStatistics.version) : null;
 
     return (
 
@@ -23,8 +28,8 @@ export const VersionBlock = (props: Props): JSX.Element => {
                 </h3>
             </BlockTitle>
 
-            <div className="version-block--status">
-                <span><span /></span> Operational
+            <div className={classNames("version-block--status", darknodeDetails && darknodeDetails.nodeStatistics ? "version-block--status--operational" : "")}>
+                <span><span /></span> {darknodeDetails ? darknodeDetails.nodeStatistics ? "Operational" : "Unable to connect" : "Connecting..."}
             </div>
 
             <div className="block--advanced--bottom">
@@ -33,12 +38,8 @@ export const VersionBlock = (props: Props): JSX.Element => {
                         <table className="darknode-info">
                             <tbody>
                                 <tr><td>Your Software Version</td><td>{darknodeDetails.nodeStatistics ? darknodeDetails.nodeStatistics.version : ""}</td></tr>
-                                <tr><td>Latest Version</td><td>{darknodeDetails.nodeStatistics ? darknodeDetails.nodeStatistics.version : ""}</td></tr>
-                                <tr><td>Date Registered</td><td>{darknodeDetails.nodeStatistics ? naturalTime(Date.now() / 1000 - darknodeDetails.nodeStatistics.systemUptime, {
-                                    message: "Just now",
-                                    countDown: false,
-                                    showingSeconds: false
-                                }) : ""}</td></tr>
+                                <tr><td>Latest Version</td><td>{latestDarknodeVersionFull ? latestDarknodeVersionFull : ""} {upToDate !== null ? upToDate ? <>{" "}- <span className="green">Up to date</span></> : <>{" "}- <a className="blue" target="_blank" rel="noopener noreferrer" href={UPDATE_DARKNODE_LINK}>Update now</a></> : ""}</td></tr>
+                                <tr><td>Version published</td><td>{latestDarknodeVersionDaysAgo}</td></tr>
                             </tbody>
                         </table>
                     </div>
