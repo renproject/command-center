@@ -1,23 +1,17 @@
 import * as React from "react";
 
 import { Blocky, Loading } from "@renproject/react-components";
-import { connect, ConnectedReturnType } from "react-redux";
-import { bindActionCreators } from "redux";
 
 import { classNames } from "../../lib/react/className";
-import { logout, promptLogin } from "../../store/account/accountActions";
 import { NetworkStateContainer } from "../../store/networkStateContainer";
-import { PopupContainer } from "../../store/popupStore";
-import { AppDispatch } from "../../store/rootReducer";
 import { Web3Container } from "../../store/web3Store";
 
 // tslint:disable: react-unused-props-and-state
-const AccountDropdownClass: React.StatelessComponent<Props> = ({ actions }) => {
+export const AccountDropdown: React.StatelessComponent<Props> = ({ }) => {
     const [shown, setShown] = React.useState(false);
     const [copied, setCopied] = React.useState(false);
-    const { setPopup, clearPopup } = PopupContainer.useContainer();
 
-    const { address, web3BrowserName, renNetwork } = Web3Container.useContainer();
+    const { address, web3BrowserName, renNetwork, promptLogin, logout } = Web3Container.useContainer();
     const { transactions, confirmations } = NetworkStateContainer.useContainer();
 
     const ref = React.useRef(null as HTMLDivElement | null);
@@ -25,13 +19,13 @@ const AccountDropdownClass: React.StatelessComponent<Props> = ({ actions }) => {
     const handleLogin = async (): Promise<void> => {
         setShown(false);
         if (!address) {
-            await actions.promptLogin(setPopup, clearPopup, { manual: true, redirect: false, showPopup: true, immediatePopup: true });
+            await promptLogin({ manual: true, redirect: false, showPopup: true, immediatePopup: true });
         }
     };
 
     const handleLogout = async (): Promise<void> => {
         setShown(false);
-        actions.logout();
+        logout();
     };
 
     const copyToClipboard = (e: React.MouseEvent<HTMLElement>): void => {
@@ -152,16 +146,5 @@ const AccountDropdownClass: React.StatelessComponent<Props> = ({ actions }) => {
     </div>;
 };
 
-const mapStateToProps = () => ({});
-
-const mapDispatchToProps = (dispatch: AppDispatch) => ({
-    actions: bindActionCreators({
-        promptLogin,
-        logout,
-    }, dispatch),
-});
-
-interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps> {
+interface Props {
 }
-
-export const AccountDropdown = connect(mapStateToProps, mapDispatchToProps)(AccountDropdownClass);

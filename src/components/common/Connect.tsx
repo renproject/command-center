@@ -12,10 +12,10 @@ import { Web3Container } from "../../store/web3Store";
 import { MapContainer } from "../networkDarknodesPage/mapContainer";
 import { RenVMContainer } from "../renvmPage/renvmContainer";
 
-const ConnectClass: React.StatelessComponent<Props> = ({ children, renNetwork }) => {
-    return <Web3Container.Provider initialState={renNetwork}>
-        <NetworkStateContainer.Provider>
-            <PopupContainer.Provider>
+const ConnectClass: React.StatelessComponent<Props> = ({ children }) => {
+    return <PopupContainer.Provider>
+        <Web3Container.Provider>
+            <NetworkStateContainer.Provider>
                 <UIContainer.Provider>
                     <MapContainer.Provider>
                         <RenVMContainer.Provider>
@@ -27,13 +27,13 @@ const ConnectClass: React.StatelessComponent<Props> = ({ children, renNetwork })
                         </RenVMContainer.Provider>
                     </MapContainer.Provider>
                 </UIContainer.Provider>
-            </PopupContainer.Provider>
-        </NetworkStateContainer.Provider>
-    </Web3Container.Provider>;
+            </NetworkStateContainer.Provider>
+        </Web3Container.Provider>
+    </PopupContainer.Provider>;
 };
 
 const mapStateToProps = (state: ApplicationState) => ({
-    renNetwork: state.account.renNetwork,
+    // renNetwork: state.account.renNetwork,
 });
 
 interface Props extends ReturnType<typeof mapStateToProps> {

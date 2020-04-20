@@ -100,6 +100,7 @@ export const updateCycleAndPendingRewards = (
         dispatch(updatePreviousCycle(previousCycle.toString()));
     }
     dispatch(updatePendingRewards(pendingRewards));
+    // tslint:disable-next-line: strict-type-predicates
     if (cycleTimeout !== null) {
         dispatch(updateCycleTimeout(cycleTimeout));
     }

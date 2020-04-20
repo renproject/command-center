@@ -8,7 +8,7 @@ import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
 import { bindActionCreators } from "redux";
 
-import { storeRenNetwork } from "../../store/account/accountActions";
+// import { storeRenNetwork } from "../../store/account/accountActions";
 import { storeQuoteCurrency } from "../../store/network/operatorActions";
 import { NetworkStateContainer } from "../../store/networkStateContainer";
 import { AppDispatch } from "../../store/rootReducer";
@@ -55,7 +55,7 @@ const currencyOptions = getCurrencyOptions();
 const HeaderClass = (props: Props) => {
 
     const { showMobileMenu } = UIContainer.useContainer();
-    const { address, renNetwork } = Web3Container.useContainer();
+    const { address, renNetwork, setRenNetwork } = Web3Container.useContainer();
     const { quoteCurrency } = NetworkStateContainer.useContainer();
 
     const setCurrency = (currency: string): void => {
@@ -63,7 +63,7 @@ const HeaderClass = (props: Props) => {
     };
 
     const setNetwork = (network: string): void => {
-        props.actions.storeRenNetwork(RenNetworks[network]);
+        setRenNetwork(RenNetworks[network]);
         setInterval(() => {
             window.location.reload();
         }, 100);
@@ -158,7 +158,7 @@ const mapStateToProps = () => ({});
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({
         storeQuoteCurrency,
-        storeRenNetwork,
+        // storeRenNetwork,
     }, dispatch),
 });
 

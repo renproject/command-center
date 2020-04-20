@@ -4,11 +4,9 @@ import { connect } from "react-redux"; // Custom typings
 
 import { ApplicationState } from "../store/applicationState";
 import { NetworkStateContainer } from "../store/networkStateContainer";
-import { Web3Container } from "../store/web3Store";
 
 const mapStateToProps = (state: ApplicationState) => ({
     store: {
-        account: state.account,
         network: state.network,
     }
 });
@@ -16,35 +14,8 @@ const mapStateToProps = (state: ApplicationState) => ({
 interface Props extends ReturnType<typeof mapStateToProps> {
 }
 
-export const ReduxToContainers = connect(mapStateToProps)(({ store: { account, network } }: Props) => {
-    const web3Container = Web3Container.useContainer();
+export const ReduxToContainers = connect(mapStateToProps)(({ store: { network } }: Props) => {
     const networkStateContainer = NetworkStateContainer.useContainer();
-
-    // Update Web3 container
-
-    React.useEffect(() => {
-        web3Container.setRenNetwork(account.renNetwork);
-    }, [web3Container, account.renNetwork]);
-
-    React.useEffect(() => {
-        web3Container.setWeb3(account.web3);
-    }, [web3Container, account.web3]);
-
-    React.useEffect(() => {
-        web3Container.setAddress(account.address);
-    }, [web3Container, account.address]);
-
-    React.useEffect(() => {
-        web3Container.setWeb3BrowserName(account.web3BrowserName);
-    }, [web3Container, account.web3BrowserName]);
-
-    React.useEffect(() => {
-        web3Container.setLoggedInBefore(account.loggedInBefore);
-    }, [web3Container, account.loggedInBefore]);
-
-    React.useEffect(() => {
-        web3Container.setLoggedOut(account.loggedOut);
-    }, [web3Container, account.loggedOut]);
 
     // Update Network container
 

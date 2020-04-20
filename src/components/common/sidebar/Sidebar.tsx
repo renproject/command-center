@@ -4,44 +4,29 @@ import {
     faExternalLinkAlt, faGlobeAmericas, faPlus, faThLarge, faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
-import { bindActionCreators } from "redux";
 
 import { darknodeIDHexToBase58 } from "../../../lib/darknode/darknodeID";
 import { RegistrationStatus } from "../../../lib/ethereum/contractReads";
-import { promptLogin } from "../../../store/account/accountActions";
-import { ApplicationState } from "../../../store/applicationState";
 import { NetworkStateContainer } from "../../../store/networkStateContainer";
-import { PopupContainer } from "../../../store/popupStore";
-import { AppDispatch } from "../../../store/rootReducer";
 import { UIContainer } from "../../../store/uiStore";
 import { Web3Container } from "../../../store/web3Store";
 import { ReactComponent as RenVMIcon } from "../../../styles/images/Icon-HyperDrive.svg";
 import { ReactComponent as Search } from "../../../styles/images/search.svg";
 import { SidebarIcon } from "./SidebarIcon";
 
-const mapStateToProps = (state: ApplicationState) => ({});
-
-const mapDispatchToProps = (dispatch: AppDispatch) => ({
-    actions: bindActionCreators({
-        promptLogin,
-    }, dispatch),
-});
-
-interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps>, RouteComponentProps {
+interface Props extends RouteComponentProps {
     selectedDarknode: string | undefined;
 }
 /**
  * Sidebar displays stats about an operator's darknodes collectively,
  * as well as a breakdown of each darknode
  */
-export const Sidebar = connect(mapStateToProps, mapDispatchToProps)(withRouter(
-    ({ selectedDarknode, actions, location }: Props) => {
+export const Sidebar = withRouter(
+    ({ selectedDarknode, location }: Props) => {
 
         const { darknodeDetails, darknodeNames, quoteCurrency } = NetworkStateContainer.useContainer();
-        const { address, web3BrowserName } = Web3Container.useContainer();
-        const { setPopup, clearPopup } = PopupContainer.useContainer();
+        const { address, web3BrowserName, promptLogin } = Web3Container.useContainer();
         const { mobileMenuActive, hideMobileMenu } = UIContainer.useContainer();
 
         const { darknodeList, hiddenDarknodes } = NetworkStateContainer.useContainer();
@@ -58,7 +43,7 @@ export const Sidebar = connect(mapStateToProps, mapDispatchToProps)(withRouter(
         };
 
         const handleLogin = async () => {
-            await actions.promptLogin(setPopup, clearPopup, { manual: true, redirect: false, showPopup: true, immediatePopup: true });
+            await promptLogin({ manual: true, redirect: false, showPopup: true, immediatePopup: true });
         };
 
         return <>
@@ -157,4 +142,4 @@ export const Sidebar = connect(mapStateToProps, mapDispatchToProps)(withRouter(
             </div> : <></>}
         </>;
     }
-));
+);

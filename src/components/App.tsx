@@ -1,15 +1,9 @@
 import * as React from "react";
 
-import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { Route, RouteComponentProps, Switch, useLocation, withRouter } from "react-router-dom";
-import { bindActionCreators } from "redux";
 
 import { DEFAULT_REN_NETWORK } from "../lib/react/environmentVariables";
 import { _catchBackgroundException_ } from "../lib/react/errors";
-import { promptLogin } from "../store/account/accountActions";
-import { ApplicationState } from "../store/applicationState";
-import { PopupContainer } from "../store/popupStore";
-import { AppDispatch } from "../store/rootReducer";
 import { Web3Container } from "../store/web3Store";
 import { AllDarknodes } from "./allDarknodesPage/AllDarknodes";
 import { NotFound } from "./common/404";
@@ -55,13 +49,12 @@ export const ScrollToTopWithRouter = withRouter(() => {
  * App is the main visual component responsible for displaying different routes
  * and running background app loops
  */
-const AppClass = ({ match: { params }, actions }: Props) => {
-    const { web3, address, loggedInBefore, renNetwork, setWeb3, setRenNetwork: setNetwork } = Web3Container.useContainer();
-    const { setPopup, clearPopup } = PopupContainer.useContainer();
+const AppClass = ({ match: { params } }: Props) => {
+    const { web3, address, loggedInBefore, promptLogin, renNetwork, setWeb3, setRenNetwork: setNetwork } = Web3Container.useContainer();
 
     React.useEffect(() => {
         if (loggedInBefore) {
-            actions.promptLogin(setPopup, clearPopup, { manual: false, redirect: false, showPopup: false, immediatePopup: false })
+            promptLogin({ manual: false, redirect: false, showPopup: false, immediatePopup: false })
                 .catch((error) => _catchBackgroundException_(error, "Error in App > promptLogin"));
         }
     }, []);
@@ -130,21 +123,8 @@ const AppClass = ({ match: { params }, actions }: Props) => {
     </div>;
 };
 
-const mapStateToProps = (state: ApplicationState) => ({
-    store: {
-    },
-});
-
-const mapDispatchToProps = (dispatch: AppDispatch) => ({
-    actions: bindActionCreators({
-        promptLogin,
-    }, dispatch),
-});
-
 interface Props extends
-    ReturnType<typeof mapStateToProps>,
-    ConnectedReturnType<typeof mapDispatchToProps>,
     RouteComponentProps {
 }
 
-export const App = connect(mapStateToProps, mapDispatchToProps)(withRouter(AppClass));
+export const App = withRouter(AppClass);

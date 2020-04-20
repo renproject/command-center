@@ -7,7 +7,6 @@ import { List, Map, OrderedMap, OrderedSet } from "immutable";
 import { PromiEvent } from "web3-core";
 
 import { NodeStatistics } from "../lib/darknode/jsonrpc";
-import { Web3Browser } from "../lib/ethereum/browsers";
 import { DarknodeFeeStatus, RegistrationStatus } from "../lib/ethereum/contractReads";
 import { getReadOnlyWeb3 } from "../lib/ethereum/getWeb3";
 import { OldToken, Token } from "../lib/ethereum/tokens";
@@ -16,53 +15,10 @@ import { _catchBackgroundException_ } from "../lib/react/errors";
 import { Serializable } from "../lib/react/serializable";
 
 export interface ApplicationState {
-    account: PersistentAccountState;
     network: PersistentNetworkState;
 }
 
 export const readOnlyWeb3 = getReadOnlyWeb3(`${(RenNetworks[DEFAULT_REN_NETWORK || RenNetwork.Testnet] as RenNetworkDetails).infura}/v3/${INFURA_KEY}`);
-
-export class PersistentAccountState extends Record({
-    // Login data
-    address: null as string | null,
-    web3BrowserName: Web3Browser.MetaMask,
-    web3: readOnlyWeb3,
-
-    // The following are almost opposites - except that they are both
-    // initialized as false. LoggedInBefore means that we try to re-login again
-    // when the page is loaded. Logged out means that we don't try to re-login.
-    loggedInBefore: false,
-    loggedOut: false,
-
-    renNetwork: RenNetworks[DEFAULT_REN_NETWORK || RenNetwork.Testnet] as RenNetworkDetails,
-}) implements Serializable<PersistentAccountState> {
-    public serialize(): string {
-        // const js = this.toJS();
-        return JSON.stringify({
-            renNetwork: this.renNetwork.name,
-            loggedInBefore: this.loggedInBefore,
-        });
-    }
-
-    public deserialize(str: string): PersistentAccountState {
-        // let next = this;
-        try {
-            const data = JSON.parse(str);
-            // tslint:disable-next-line: no-any
-            let accountData = new PersistentAccountState();
-            if (data.renNetwork) {
-                accountData = accountData.set("renNetwork", RenNetworks[data.renNetwork]);
-            }
-            if (data.loggedInBefore) {
-                accountData = accountData.set("loggedInBefore", data.loggedInBefore === "true" || data.loggedInBefore);
-            }
-            return accountData;
-        } catch (error) {
-            _catchBackgroundException_(error, "Error in applicationState > AccountState > deserialize");
-            return this;
-        }
-    }
-}
 
 export class PersistentNetworkState extends Record({
     darknodeCount: null as BigNumber | null,

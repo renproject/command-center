@@ -6,12 +6,10 @@ import { RouteComponentProps, withRouter } from "react-router-dom";
 import { bindActionCreators } from "redux";
 
 import { _catchBackgroundException_ } from "../../lib/react/errors";
-import { lookForLogout } from "../../store/account/accountActions";
 import {
     updateCycleAndPendingRewards, updateDarknodeDetails, updateOperatorDarknodes,
 } from "../../store/network/operatorActions";
 import { NetworkStateContainer } from "../../store/networkStateContainer";
-import { PopupContainer } from "../../store/popupStore";
 import { AppDispatch } from "../../store/rootReducer";
 import { Web3Container } from "../../store/web3Store";
 import { getDarknodeParam } from "../darknodePage/Darknode";
@@ -35,11 +33,9 @@ export const asyncSetInterval = (fn: () => Promise<number | void>, onErrorRetry:
  * and running background app loops
  */
 const BackgroundTasksClass: React.StatelessComponent<Props> = ({ actions, match }) => {
-    const { address, web3, renNetwork } = Web3Container.useContainer();
-    const { setPopup, clearPopup } = PopupContainer.useContainer();
+    const { address, web3, renNetwork, lookForLogout } = Web3Container.useContainer();
     const { darknodeRegisteringList, darknodeList, tokenPrices, updateTokenPrices } = NetworkStateContainer.useContainer();
     const accountDarknodeList = React.useMemo(() => address ? darknodeList.get(address, null) : null, [darknodeList]);
-
 
     const [callUpdatePricesTimeout, setCallUpdatePricesTimeout] = React.useState<NodeJS.Timer | undefined>(undefined);
     const [callUpdateRewardsTimeout, setCallUpdateRewardsTimeout] = React.useState<NodeJS.Timer | undefined>(undefined);
@@ -74,7 +70,7 @@ const BackgroundTasksClass: React.StatelessComponent<Props> = ({ actions, match 
     // See if the user has logged out every 5 seconds
     const callLookForLogout = async (): Promise<void> => {
         if (address) {
-            await (actions.lookForLogout(setPopup, clearPopup) as unknown as Promise<void>).catch((error) => {
+            await (lookForLogout() as unknown as Promise<void>).catch((error) => {
                 _catchBackgroundException_(error, "Error in BackgroundTasks > callLookForLogout");
             });
         }
@@ -172,7 +168,6 @@ const mapStateToProps = () => ({});
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({
         updateCycleAndPendingRewards,
-        lookForLogout,
         updateOperatorDarknodes,
         updateDarknodeDetails,
     }, dispatch),
