@@ -7,9 +7,8 @@ import Web3 from "web3";
 import { PromiEvent } from "web3-core";
 
 import {
-    calculateSecondsPerBlock, fetchCycleAndPendingRewards, fetchDarknodeBalanceHistory,
-    fetchDarknodeDetails, getDarknodeCounts, getOperatorDarknodes, HistoryPeriod, NULL,
-    RegistrationStatus,
+    fetchCycleAndPendingRewards, fetchDarknodeDetails, getDarknodeCounts, getOperatorDarknodes,
+    NULL, RegistrationStatus,
 } from "../../lib/ethereum/contractReads";
 import { Token, TokenPrices } from "../../lib/ethereum/tokens";
 import { ApplicationState, DarknodesState } from "../applicationState";
@@ -26,18 +25,6 @@ export const addRegisteringDarknode = createAction("ADD_REGISTERING_DARKNODE")<{
 
 export const removeRegisteringDarknode = createAction("REMOVE_REGISTERING_DARKNODE")<{
     darknodeID: string;
-}>();
-
-export const hideDarknode = createAction("HIDE_DARKNODE")<{
-    darknodeID: string;
-    operator: string;
-    network: string;
-}>();
-
-export const unhideDarknode = createAction("UNHIDE_DARKNODE")<{
-    darknodeID: string;
-    operator: string;
-    network: string;
 }>();
 
 export const addDarknodes = createAction("ADD_DARKNODE")<{
@@ -74,15 +61,6 @@ export const setDarknodeName = createAction("SET_DARKNODE_NAME")<{ darknodeID: s
 // tslint:disable-next-line: no-any
 export const addTransaction = createAction("ADD_TRANSACTION")<{ txHash: string; tx: PromiEvent<any> }>();
 export const setTxConfirmations = createAction("SET_TX_CONFIRMATIONS")<{ txHash: string; confirmations: number }>();
-
-export const updateSecondsPerBlock = (
-    web3: Web3,
-) => async (dispatch: AppDispatch) => {
-    const secondsPerBlock = await calculateSecondsPerBlock(web3);
-    if (secondsPerBlock !== null) {
-        dispatch(storeSecondsPerBlock({ secondsPerBlock }));
-    }
-};
 
 export const updateCycleAndPendingRewards = (
     web3: Web3,
@@ -191,15 +169,4 @@ export const updateOperatorDarknodes = (
     if (darknodeList.size === 0) {
         dispatch(setEmptyDarknodeList({ address, network: renNetwork.name }));
     }
-};
-
-export const updateDarknodeBalanceHistory = (
-    web3: Web3,
-    darknodeID: string,
-    previousHistory: OrderedMap<number, BigNumber> | null,
-    historyPeriod: HistoryPeriod,
-    secondsPerBlock: number,
-) => async (dispatch: AppDispatch) => {
-    const balanceHistory = await fetchDarknodeBalanceHistory(web3, darknodeID, previousHistory, historyPeriod, secondsPerBlock);
-    dispatch(updateDarknodeHistory({ darknodeID, balanceHistory }));
 };

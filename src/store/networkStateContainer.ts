@@ -3,10 +3,16 @@ import { Currency } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import { List, Map, OrderedMap, OrderedSet } from "immutable";
 import { useState } from "react";
+import { useStorageState } from "react-storage-hooks";
 import { createContainer } from "unstated-next";
+import Web3 from "web3";
 import { PromiEvent } from "web3-core";
 
-import { Token, TokenPrices } from "../lib/ethereum/tokens";
+import {
+    calculateSecondsPerBlock, fetchDarknodeBalanceHistory, HistoryPeriod,
+} from "../lib/ethereum/contractReads";
+import { getPrices, Token, TokenPrices } from "../lib/ethereum/tokens";
+import { _catchBackgroundException_, _catchInteractionException_ } from "../lib/react/errors";
 import { DarknodesState } from "./applicationState";
 
 const useNetworkStateContainer = () => {
@@ -47,13 +53,67 @@ const useNetworkStateContainer = () => {
     const [darknodeRegisteringList, setDarknodeRegisteringList] = useState(Map<string, string>());
     // Map from operator-address to list of darknodes.
     const [darknodeList, setDarknodeList] = useState(Map<string, OrderedSet<string>>());
-    const [hiddenDarknodes, setHiddenDarknodes] = useState(Map<string, OrderedSet<string>>());
+    const [hiddenDarknodes, setHiddenDarknodes] = useStorageState(localStorage, "hiddenDarknodes", Map<string, OrderedSet<string>>());
     const [withdrawAddresses, setWithdrawAddresses] = useState(Map<Token, List<string>>());
     ///////////////////////////////////////////////////////
 
+    const updateTokenPrices = async () => {
+        try {
+            setTokenPrices(await getPrices());
+        } catch (error) {
+            _catchBackgroundException_(error, "Error in networkActions > updateTokenPrices");
+        }
+    };
+
+    const updateSecondsPerBlock = async (web3: Web3) => {
+        const newSecondsPerBlock = await calculateSecondsPerBlock(web3);
+        if (newSecondsPerBlock !== null) {
+            setSecondsPerBlock(newSecondsPerBlock);
+        }
+    };
+
+    const updateDarknodeBalanceHistory = async (
+        web3: Web3,
+        darknodeID: string,
+        previousHistory: OrderedMap<number, BigNumber> | null,
+        historyPeriod: HistoryPeriod,
+        useSecondsPerBlock: number,
+    ) => {
+        const balanceHistory = await fetchDarknodeBalanceHistory(web3, darknodeID, previousHistory, historyPeriod, useSecondsPerBlock);
+        setBalanceHistories(balanceHistories.set(
+            darknodeID,
+            balanceHistory,
+        ));
+    };
+
+    const hideDarknode = ({ darknodeID, operator }: { darknodeID: string, operator: string, network: string, }) => {
+        try {
+            let operatorHiddenDarknodes = hiddenDarknodes.get(operator) || OrderedSet<string>();
+
+            operatorHiddenDarknodes = operatorHiddenDarknodes.add(darknodeID);
+
+            setHiddenDarknodes(hiddenDarknodes.set(operator, operatorHiddenDarknodes));
+        } catch (error) {
+            _catchInteractionException_(error, "Error in networkReducer > removeDarknode");
+        }
+    };
+
+    const unhideDarknode = ({ darknodeID, operator, network }: { darknodeID: string, operator: string, network: string, }) => {
+        try {
+            let operatorHiddenDarknodes = hiddenDarknodes.get(operator) || OrderedSet<string>();
+
+            operatorHiddenDarknodes = operatorHiddenDarknodes.remove(darknodeID);
+
+            setHiddenDarknodes(hiddenDarknodes.set(operator, operatorHiddenDarknodes));
+        } catch (error) {
+            _catchInteractionException_(error, "Error in networkReducer > removeDarknode");
+        }
+    };
+
+
     return {
-        secondsPerBlock, setSecondsPerBlock,
-        tokenPrices, setTokenPrices,
+        secondsPerBlock,
+        tokenPrices,
         darknodeCount, setDarknodeCount,
         orderCount, setOrderCount,
         registrySync, setRegistrySync,
@@ -76,7 +136,10 @@ const useNetworkStateContainer = () => {
         darknodeRegisteringList, setDarknodeRegisteringList,
         darknodeList, setDarknodeList,
         hiddenDarknodes, setHiddenDarknodes,
-        withdrawAddresses, setWithdrawAddresses
+        withdrawAddresses, setWithdrawAddresses,
+
+        updateTokenPrices, updateSecondsPerBlock, updateDarknodeBalanceHistory,
+        hideDarknode, unhideDarknode,
     };
 };
 

@@ -7,7 +7,6 @@ import { bindActionCreators } from "redux";
 
 import { _catchBackgroundException_ } from "../../lib/react/errors";
 import { lookForLogout } from "../../store/account/accountActions";
-import { updateTokenPrices } from "../../store/network/networkActions";
 import {
     updateCycleAndPendingRewards, updateDarknodeDetails, updateOperatorDarknodes,
 } from "../../store/network/operatorActions";
@@ -38,8 +37,7 @@ export const asyncSetInterval = (fn: () => Promise<number | void>, onErrorRetry:
 const BackgroundTasksClass: React.StatelessComponent<Props> = ({ actions, match }) => {
     const { address, web3, renNetwork } = Web3Container.useContainer();
     const { setPopup, clearPopup } = PopupContainer.useContainer();
-
-    const { darknodeRegisteringList, darknodeList, tokenPrices } = NetworkStateContainer.useContainer();
+    const { darknodeRegisteringList, darknodeList, tokenPrices, updateTokenPrices } = NetworkStateContainer.useContainer();
     const accountDarknodeList = React.useMemo(() => address ? darknodeList.get(address, null) : null, [darknodeList]);
 
 
@@ -53,7 +51,7 @@ const BackgroundTasksClass: React.StatelessComponent<Props> = ({ actions, match 
 
     // Update token prices every 60 seconds
     const callUpdatePrices = async (): Promise<void> => {
-        asyncSetInterval(actions.updateTokenPrices, 60 * 1000, "Error in BackgroundTasks > callUpdatePrices", callUpdatePricesTimeout, setCallUpdatePricesTimeout);
+        asyncSetInterval(updateTokenPrices, 60 * 1000, "Error in BackgroundTasks > callUpdatePrices", callUpdatePricesTimeout, setCallUpdatePricesTimeout);
     };
 
     // Update rewards every 120 seconds
@@ -173,7 +171,6 @@ const mapStateToProps = () => ({});
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({
-        updateTokenPrices,
         updateCycleAndPendingRewards,
         lookForLogout,
         updateOperatorDarknodes,

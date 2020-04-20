@@ -41,9 +41,6 @@ export const networkReducer = (
                 .set("previousDarknodeCount", action.payload.previousDarknodeCount)
                 .set("nextDarknodeCount", action.payload.nextDarknodeCount);
 
-        case getType(networkActions.storeTokenPrices):
-            return state.set("tokenPrices", action.payload);
-
         case getType(operatorActions.addRegisteringDarknode):
             return state.set("darknodeRegisteringList", state.darknodeRegisteringList.set(
                 action.payload.darknodeID,
@@ -54,30 +51,6 @@ export const networkReducer = (
             return state.set("darknodeRegisteringList", state.darknodeRegisteringList.remove(
                 action.payload.darknodeID
             ));
-
-        case getType(operatorActions.hideDarknode):
-            try {
-                let operatorHiddenDarknodes = state.hiddenDarknodes.get(action.payload.operator) || OrderedSet<string>();
-
-                operatorHiddenDarknodes = operatorHiddenDarknodes.add(action.payload.darknodeID);
-
-                return state.set("hiddenDarknodes", state.hiddenDarknodes.set(action.payload.operator, operatorHiddenDarknodes));
-            } catch (error) {
-                _catchInteractionException_(error, "Error in networkReducer > removeDarknode");
-                return state;
-            }
-
-        case getType(operatorActions.unhideDarknode):
-            try {
-                let operatorHiddenDarknodes = state.hiddenDarknodes.get(action.payload.operator) || OrderedSet<string>();
-
-                operatorHiddenDarknodes = operatorHiddenDarknodes.remove(action.payload.darknodeID);
-
-                return state.set("hiddenDarknodes", state.hiddenDarknodes.set(action.payload.operator, operatorHiddenDarknodes));
-            } catch (error) {
-                _catchInteractionException_(error, "Error in networkReducer > removeDarknode");
-                return state;
-            }
 
         case getType(operatorActions.addDarknodes):
             const { address, darknodes } = action.payload;
@@ -109,15 +82,6 @@ export const networkReducer = (
 
         case getType(operatorActions.storeQuoteCurrency):
             return state.set("quoteCurrency", action.payload.quoteCurrency);
-
-        case getType(operatorActions.updateDarknodeHistory):
-            return state.set("balanceHistories", state.balanceHistories.set(
-                action.payload.darknodeID,
-                action.payload.balanceHistory,
-            ));
-
-        case getType(operatorActions.storeSecondsPerBlock):
-            return state.set("secondsPerBlock", action.payload.secondsPerBlock);
 
         case getType(operatorActions.addToWithdrawAddresses):
             const foundList = state.withdrawAddresses.get(action.payload.token, List());

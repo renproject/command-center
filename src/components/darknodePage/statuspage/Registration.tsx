@@ -11,7 +11,7 @@ import {
 } from "../../../store/account/operatorPopupActions";
 import { DarknodesState } from "../../../store/applicationState";
 import {
-    unhideDarknode, updateDarknodeDetails, updateOperatorDarknodes,
+    updateDarknodeDetails, updateOperatorDarknodes,
 } from "../../../store/network/operatorActions";
 import { NetworkStateContainer } from "../../../store/networkStateContainer";
 import { PopupContainer } from "../../../store/popupStore";
@@ -37,7 +37,6 @@ const mapDispatchToProps = (dispatch: AppDispatch) => ({
         showRefundPopup,
         updateDarknodeDetails,
         updateOperatorDarknodes,
-        unhideDarknode,
     }, dispatch),
 });
 
@@ -52,7 +51,7 @@ interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<
 const RegistrationClass: React.StatelessComponent<Props> = ({ darknodeID, darknodeDetails, registrationStatus, isOperator, publicKey, actions }) => {
     const { setPopup } = PopupContainer.useContainer();
     const { web3, address, renNetwork } = Web3Container.useContainer();
-    const { tokenPrices, quoteCurrency } = NetworkStateContainer.useContainer();
+    const { tokenPrices, quoteCurrency, unhideDarknode } = NetworkStateContainer.useContainer();
 
     const { darknodeList } = NetworkStateContainer.useContainer();
     const accountDarknodeList = React.useMemo(() => address ? darknodeList.get(address, null) : null, [darknodeList]);
@@ -104,7 +103,7 @@ const RegistrationClass: React.StatelessComponent<Props> = ({ darknodeID, darkno
             await actions.showRegisterPopup(
                 web3, renNetwork, address, darknodeID, publicKey, tokenPrices, onCancel, onDoneRegister, setPopup,
             );
-            actions.unhideDarknode({ darknodeID, operator: address, network: renNetwork.name });
+            unhideDarknode({ darknodeID, operator: address, network: renNetwork.name });
         } catch (error) {
             _catchInteractionException_(error, "Error in Registration > handleRegister > showRegisterPopup");
             onCancel();

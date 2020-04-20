@@ -8,9 +8,7 @@ import { WithdrawPopup } from "../../components/common/popups/WithdrawPopup";
 import { withdrawToken } from "../../lib/ethereum/contractWrites";
 import { AllTokenDetails, OldToken, Token } from "../../lib/ethereum/tokens";
 import { WaitForTX } from "../../lib/ethereum/waitForTX";
-import { ApplicationState } from "../applicationState";
 import { PopupDetails } from "../popupStore";
-import { AppDispatch } from "../rootReducer";
 
 export const showWithdrawToken = async (
     web3: Web3,
@@ -79,14 +77,15 @@ export const showWithdrawToken = async (
 });
 
 export const withdrawReward = (
+    web3: Web3,
+    address: string,
+    renNetwork: RenNetworkDetails,
     darknodeID: string,
     token: Token,
     waitForTX: WaitForTX,
     setPopup: (details: PopupDetails) => void,
     clearPopup: () => void,
-) => async (dispatch: AppDispatch, getState: () => ApplicationState) => {
-    const { web3, address, renNetwork } = getState().account;
-
+) => async () => {
     const tokenDetails = AllTokenDetails.get(token);
     if (tokenDetails === undefined) {
         throw new Error("Unknown token");

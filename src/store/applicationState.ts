@@ -10,7 +10,7 @@ import { NodeStatistics } from "../lib/darknode/jsonrpc";
 import { Web3Browser } from "../lib/ethereum/browsers";
 import { DarknodeFeeStatus, RegistrationStatus } from "../lib/ethereum/contractReads";
 import { getReadOnlyWeb3 } from "../lib/ethereum/getWeb3";
-import { OldToken, Token, TokenPrices } from "../lib/ethereum/tokens";
+import { OldToken, Token } from "../lib/ethereum/tokens";
 import { DEFAULT_REN_NETWORK, INFURA_KEY } from "../lib/react/environmentVariables";
 import { _catchBackgroundException_ } from "../lib/react/errors";
 import { Serializable } from "../lib/react/serializable";
@@ -65,18 +65,12 @@ export class PersistentAccountState extends Record({
 }
 
 export class PersistentNetworkState extends Record({
-    secondsPerBlock: null as number | null,
-
-    tokenPrices: null as TokenPrices | null,
-
     darknodeCount: null as BigNumber | null,
     orderCount: null as BigNumber | null,
 
     registrySync: { progress: 0, target: 0 },
 
     darknodeDetails: Map<string, DarknodesState>(),
-
-    balanceHistories: Map<string, OrderedMap<number, BigNumber>>(),
 
     // tslint:disable-next-line: no-any
     transactions: OrderedMap<string, PromiEvent<any>>(),
@@ -102,7 +96,6 @@ export class PersistentNetworkState extends Record({
     darknodeRegisteringList: Map<string, string>(),
     // Map from operator-address to list of darknodes.
     darknodeList: Map<string, OrderedSet<string>>(),
-    hiddenDarknodes: Map<string, OrderedSet<string>>(),
     withdrawAddresses: Map<Token, List<string>>(),
     ///////////////////////////////////////////////////////
 }) implements Serializable<PersistentNetworkState> {
@@ -111,7 +104,6 @@ export class PersistentNetworkState extends Record({
         return JSON.stringify({
             quoteCurrency: js.quoteCurrency,
             darknodeList: js.darknodeList,
-            hiddenDarknodes: js.hiddenDarknodes,
             darknodeNames: js.darknodeNames,
             darknodeRegisteringList: js.darknodeRegisteringList,
             withdrawAddresses: js.withdrawAddresses,
@@ -125,7 +117,6 @@ export class PersistentNetworkState extends Record({
             return new PersistentNetworkState({
                 quoteCurrency: data.quoteCurrency,
                 darknodeList: data.darknodeList,
-                hiddenDarknodes: data.hiddenDarknodes,
                 darknodeNames: data.darknodeNames,
                 darknodeRegisteringList: data.darknodeRegisteringList,
                 withdrawAddresses: data.withdrawAddresses,

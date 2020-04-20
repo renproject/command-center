@@ -6,17 +6,11 @@ import { Loading } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
 import { Scatter } from "react-chartjs-2";
-import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
-import { bindActionCreators } from "redux";
 
 import { HistoryIterations, HistoryPeriod } from "../../../../lib/ethereum/contractReads";
 import { _catchBackgroundException_, _ignoreException_ } from "../../../../lib/react/errors";
 import { DarknodesState } from "../../../../store/applicationState";
-import {
-    updateDarknodeBalanceHistory, updateSecondsPerBlock,
-} from "../../../../store/network/operatorActions";
 import { NetworkStateContainer } from "../../../../store/networkStateContainer";
-import { AppDispatch } from "../../../../store/rootReducer";
 import { Web3Container } from "../../../../store/web3Store";
 import { Block, BlockBody, BlockTitle } from "./Block";
 
@@ -60,10 +54,9 @@ const periods: Array<[HistoryPeriod, string]> = [
     [HistoryPeriod.Year, "1Y"],
 ];
 
-
-const GasGraphClass: React.StatelessComponent<Props> = ({ darknodeDetails, actions }) => {
+export const GasGraph: React.StatelessComponent<Props> = ({ darknodeDetails }) => {
     const { web3 } = Web3Container.useContainer();
-    const { balanceHistories, secondsPerBlock } = NetworkStateContainer.useContainer();
+    const { balanceHistories, secondsPerBlock, updateSecondsPerBlock, updateDarknodeBalanceHistory } = NetworkStateContainer.useContainer();
 
     const [historyPeriod, setHistoryPeriod] = React.useState(HistoryPeriod.Week);
     const [nextHistoryPeriod, setNextHistoryPeriod] = React.useState(HistoryPeriod.Week);
@@ -78,7 +71,7 @@ const GasGraphClass: React.StatelessComponent<Props> = ({ darknodeDetails, actio
 
     React.useEffect(() => {
         if (secondsPerBlock === null) {
-            actions.updateSecondsPerBlock(web3)
+            updateSecondsPerBlock(web3)
                 .catch((error) => {
                     _catchBackgroundException_(error, "Error in GasGraph > updateSecondsPerBlock");
                 });
@@ -112,7 +105,7 @@ const GasGraphClass: React.StatelessComponent<Props> = ({ darknodeDetails, actio
             const currentBalanceHistory = balanceHistories.get(darknodeDetails.ID) || OrderedMap<number, BigNumber>();
             try {
                 // tslint:disable-next-line: await-promise
-                await actions.updateDarknodeBalanceHistory(
+                await updateDarknodeBalanceHistory(
                     web3,
                     darknodeDetails.ID,
                     currentBalanceHistory,
@@ -256,17 +249,6 @@ const GasGraphClass: React.StatelessComponent<Props> = ({ darknodeDetails, actio
     );
 };
 
-const mapStateToProps = () => ({});
-
-const mapDispatchToProps = (dispatch: AppDispatch) => ({
-    actions: bindActionCreators({
-        updateDarknodeBalanceHistory,
-        updateSecondsPerBlock,
-    }, dispatch),
-});
-
-interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps> {
+interface Props {
     darknodeDetails: DarknodesState | null;
 }
-
-export const GasGraph = connect(mapStateToProps, mapDispatchToProps)(GasGraphClass);

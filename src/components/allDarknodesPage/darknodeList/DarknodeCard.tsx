@@ -6,7 +6,7 @@ import { bindActionCreators } from "redux";
 import { darknodeIDHexToBase58 } from "../../../lib/darknode/darknodeID";
 import { RegistrationStatus } from "../../../lib/ethereum/contractReads";
 import { ApplicationState, DarknodesState } from "../../../store/applicationState";
-import { hideDarknode, removeRegisteringDarknode } from "../../../store/network/operatorActions";
+import { removeRegisteringDarknode } from "../../../store/network/operatorActions";
 import { NetworkStateContainer } from "../../../store/networkStateContainer";
 import { AppDispatch } from "../../../store/rootReducer";
 import { Web3Container } from "../../../store/web3Store";
@@ -20,7 +20,6 @@ const mapStateToProps = (_state: ApplicationState) => ({
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({
         removeRegisteringDarknode,
-        hideDarknode,
     }, dispatch),
 });
 
@@ -33,7 +32,7 @@ interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<
 
 export const DarknodeCard = connect(mapStateToProps, mapDispatchToProps)(({ actions, darknodeID, darknodeDetails, name, publicKey }: Props) => {
     const { address, renNetwork: renNetwork } = Web3Container.useContainer();
-    const { quoteCurrency } = NetworkStateContainer.useContainer();
+    const { quoteCurrency, hideDarknode } = NetworkStateContainer.useContainer();
 
     const [confirmedRemove, setConfirmedRemove] = React.useState(false);
 
@@ -54,7 +53,7 @@ export const DarknodeCard = connect(mapStateToProps, mapDispatchToProps)(({ acti
         if (continuable) {
             actions.removeRegisteringDarknode({ darknodeID });
         } else if (address) {
-            actions.hideDarknode({ darknodeID, operator: address, network: renNetwork.name });
+            hideDarknode({ darknodeID, operator: address, network: renNetwork.name });
         }
     }, [confirmedRemove, continuable, actions, address, darknodeID, renNetwork.name]);
 

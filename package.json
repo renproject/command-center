@@ -65,6 +65,7 @@
     "react-router-dom": "^5.1.2",
     "react-scripts": "^3.4.1",
     "react-simple-maps": "^0.12.1",
+    "react-storage-hooks": "^4.0.1",
     "react-transition-group": "4.3",
     "redux": "^4.0.5",
     "redux-persist": "^6.0.0",

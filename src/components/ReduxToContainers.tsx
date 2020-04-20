@@ -49,12 +49,6 @@ export const ReduxToContainers = connect(mapStateToProps)(({ store: { account, n
     // Update Network container
 
     React.useEffect(() => {
-        networkStateContainer.setSecondsPerBlock(network.secondsPerBlock);
-    }, [network, network.secondsPerBlock]);
-    React.useEffect(() => {
-        networkStateContainer.setTokenPrices(network.tokenPrices);
-    }, [network, network.tokenPrices]);
-    React.useEffect(() => {
         networkStateContainer.setDarknodeCount(network.darknodeCount);
     }, [network, network.darknodeCount]);
     React.useEffect(() => {
@@ -66,9 +60,6 @@ export const ReduxToContainers = connect(mapStateToProps)(({ store: { account, n
     React.useEffect(() => {
         networkStateContainer.setDarknodeDetails(network.darknodeDetails);
     }, [network, network.darknodeDetails]);
-    React.useEffect(() => {
-        networkStateContainer.setBalanceHistories(network.balanceHistories);
-    }, [network, network.balanceHistories]);
     React.useEffect(() => {
         networkStateContainer.setTransactions(network.transactions);
     }, [network, network.transactions]);
@@ -117,31 +108,11 @@ export const ReduxToContainers = connect(mapStateToProps)(({ store: { account, n
     React.useEffect(() => {
         networkStateContainer.setDarknodeList(network.darknodeList);
     }, [network, network.darknodeList]);
-    React.useEffect(() => {
-        networkStateContainer.setHiddenDarknodes(network.hiddenDarknodes);
-    }, [network, network.hiddenDarknodes]);
-    React.useEffect(() => {
-        networkStateContainer.setWithdrawAddresses(network.withdrawAddresses);
-    }, [network, network.withdrawAddresses]);
-
-    React.useEffect(() => {
-        networkStateContainer.setQuoteCurrency(network.quoteCurrency);
-    }, [network, network.quoteCurrency]);
-    React.useEffect(() => {
-        networkStateContainer.setDarknodeNames(network.darknodeNames);
-    }, [network, network.darknodeNames]);
-    React.useEffect(() => {
-        networkStateContainer.setDarknodeRegisteringList(network.darknodeRegisteringList);
-    }, [network, network.darknodeRegisteringList]);
-    React.useEffect(() => {
-        networkStateContainer.setDarknodeList(network.darknodeList);
-    }, [network, network.darknodeList]);
-    React.useEffect(() => {
-        networkStateContainer.setHiddenDarknodes(network.hiddenDarknodes);
-    }, [network, network.hiddenDarknodes]);
+    // React.useEffect(() => {
+    //     networkStateContainer.setHiddenDarknodes(network.hiddenDarknodes);
+    // }, [network, network.hiddenDarknodes]);
     React.useEffect(() => {
         networkStateContainer.setWithdrawAddresses(network.withdrawAddresses);
     }, [network, network.withdrawAddresses]);
-
     return <></>;
 });

@@ -35,7 +35,7 @@ const FeesItemClass = ({ darknodeID, token, amount, disabled, actions }: Props) 
         if (address && tokenDetails && !tokenDetails.old) {
             try {
                 // tslint:disable-next-line: await-promise
-                await actions.withdrawReward(darknodeID, token as Token, actions.waitForTX, setPopup, clearPopup);
+                await actions.withdrawReward(web3, address, renNetwork, darknodeID, token as Token, actions.waitForTX, setPopup, clearPopup);
             } catch (error) {
                 setLoading(false);
                 return;
