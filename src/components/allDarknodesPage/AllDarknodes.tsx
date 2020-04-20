@@ -1,10 +1,7 @@
 import * as React from "react";
 
-import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
-import { bindActionCreators } from "redux";
-
-import { ApplicationState } from "../../store/applicationState";
-import { AppDispatch } from "../../store/rootReducer";
+import { NetworkStateContainer } from "../../store/networkStateContainer";
+import { Web3Container } from "../../store/web3Store";
 import { _catch_ } from "../common/ErrorBoundary";
 import { DarknodeList } from "./darknodeList/DarknodeList";
 
@@ -12,11 +9,18 @@ import { DarknodeList } from "./darknodeList/DarknodeList";
  * Home is a page whose principal components are wallet selection to allow users
  * to log-in, and the hidden orderbook
  */
-const AllDarknodesClass: React.StatelessComponent<Props> = ({ store: { darknodeList, hiddenDarknodes, darknodeNames, darknodeDetails, darknodeRegisteringList, registrySync, address, renNetwork } }) => {
-    const shownDarknodeList = !darknodeList ? darknodeList : darknodeList.filter(d => !hiddenDarknodes || !hiddenDarknodes.contains(d));
+export const AllDarknodes: React.StatelessComponent<{}> = () => {
+
+    const { address, renNetwork: network } = Web3Container.useContainer();
+    const { darknodeDetails, darknodeNames, darknodeRegisteringList, registrySync, darknodeList, hiddenDarknodes } = NetworkStateContainer.useContainer();
+
+    const accountDarknodeList = React.useMemo(() => address ? darknodeList.get(address, null) : null, [darknodeList]);
+    const accountHiddenDarknodes = React.useMemo(() => address ? hiddenDarknodes.get(address, null) : null, [hiddenDarknodes]);
+
+    const shownDarknodeList = !accountDarknodeList ? accountDarknodeList : accountDarknodeList.filter(d => !accountHiddenDarknodes || !accountHiddenDarknodes.contains(d));
 
     return (
-        <div className="home" key={`${address || undefined} ${renNetwork.name}`}>
+        <div className="home" key={`${address || undefined} ${network.name}`}>
             <div className="container">
                 {darknodeRegisteringList.size > 0 ? <>
                     <h2>Continue registering</h2>
@@ -40,27 +44,3 @@ const AllDarknodesClass: React.StatelessComponent<Props> = ({ store: { darknodeL
         </div>
     );
 };
-
-const mapStateToProps = (state: ApplicationState) => ({
-    store: {
-        address: state.account.address,
-        darknodeDetails: state.network.darknodeDetails,
-        darknodeNames: state.network.darknodeNames,
-        darknodeList: state.account.address ? state.network.darknodeList.get(state.account.address, null) : null,
-        hiddenDarknodes: state.account.address ? state.network.hiddenDarknodes.get(state.account.address, null) : null,
-        darknodeRegisteringList: state.network.darknodeRegisteringList,
-        registrySync: state.network.registrySync,
-        renNetwork: state.account.renNetwork,
-        web3: state.account.web3,
-    },
-});
-
-const mapDispatchToProps = (dispatch: AppDispatch) => ({
-    actions: bindActionCreators({
-    }, dispatch),
-});
-
-interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps> {
-}
-
-export const AllDarknodes = connect(mapStateToProps, mapDispatchToProps)(AllDarknodesClass);

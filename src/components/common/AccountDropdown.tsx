@@ -6,19 +6,21 @@ import { bindActionCreators } from "redux";
 
 import { classNames } from "../../lib/react/className";
 import { logout, promptLogin } from "../../store/account/accountActions";
-import { ApplicationState } from "../../store/applicationState";
+import { NetworkStateContainer } from "../../store/networkStateContainer";
 import { PopupContainer } from "../../store/popupStore";
 import { AppDispatch } from "../../store/rootReducer";
+import { Web3Container } from "../../store/web3Store";
 
 // tslint:disable: react-unused-props-and-state
-const AccountDropdownClass: React.StatelessComponent<Props> = ({ actions, store }) => {
+const AccountDropdownClass: React.StatelessComponent<Props> = ({ actions }) => {
     const [shown, setShown] = React.useState(false);
     const [copied, setCopied] = React.useState(false);
     const { setPopup, clearPopup } = PopupContainer.useContainer();
 
-    const ref = React.useRef(null as HTMLDivElement | null);
+    const { address, web3BrowserName, renNetwork } = Web3Container.useContainer();
+    const { transactions, confirmations } = NetworkStateContainer.useContainer();
 
-    const { address, web3BrowserName, transactions, confirmations, renNetwork } = store;
+    const ref = React.useRef(null as HTMLDivElement | null);
 
     const handleLogin = async (): Promise<void> => {
         setShown(false);
@@ -150,17 +152,7 @@ const AccountDropdownClass: React.StatelessComponent<Props> = ({ actions, store 
     </div>;
 };
 
-const mapStateToProps = (state: ApplicationState) => ({
-    store: {
-        address: state.account.address,
-        web3BrowserName: state.account.web3BrowserName,
-        quoteCurrency: state.network.quoteCurrency,
-        web3: state.account.web3,
-        transactions: state.network.transactions,
-        confirmations: state.network.confirmations,
-        renNetwork: state.account.renNetwork,
-    },
-});
+const mapStateToProps = () => ({});
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({

@@ -9,10 +9,11 @@ import { Link, RouteComponentProps, withRouter } from "react-router-dom";
 import { bindActionCreators } from "redux";
 
 import { storeRenNetwork } from "../../store/account/accountActions";
-import { ApplicationState } from "../../store/applicationState";
 import { storeQuoteCurrency } from "../../store/network/operatorActions";
+import { NetworkStateContainer } from "../../store/networkStateContainer";
 import { AppDispatch } from "../../store/rootReducer";
-import { showMobileMenu } from "../../store/ui/uiActions";
+import { UIContainer } from "../../store/uiStore";
+import { Web3Container } from "../../store/web3Store";
 import { ReactComponent as RenVMIcon } from "../../styles/images/Icon-HyperDrive.svg";
 import { ReactComponent as OverviewIcon } from "../../styles/images/Icon-Overview.svg";
 // import { ReactComponent as English } from "../../styles/images/rp-flag-uk.svg";
@@ -53,6 +54,10 @@ const currencyOptions = getCurrencyOptions();
  */
 const HeaderClass = (props: Props) => {
 
+    const { showMobileMenu } = UIContainer.useContainer();
+    const { address, renNetwork } = Web3Container.useContainer();
+    const { quoteCurrency } = NetworkStateContainer.useContainer();
+
     const setCurrency = (currency: string): void => {
         props.actions.storeQuoteCurrency({ quoteCurrency: currency as Currency });
     };
@@ -69,7 +74,6 @@ const HeaderClass = (props: Props) => {
     // }
 
     const { location } = props;
-    const { address, quoteCurrency, renNetwork } = props.store;
 
     // const languageDropdownNode = <Dropdown
     //     key="languageDropdown"
@@ -107,7 +111,7 @@ const HeaderClass = (props: Props) => {
     return (
         <div className={["header"].join(" ")}>
             {address ? <div role="button" className="header--mobile-menu--button">
-                <button onClick={props.actions.showMobileMenu}>
+                <button onClick={showMobileMenu}>
                     <FontAwesomeIcon icon={faBars} />
                 </button>
             </div> : <></>}
@@ -149,18 +153,11 @@ const HeaderClass = (props: Props) => {
     );
 };
 
-const mapStateToProps = (state: ApplicationState) => ({
-    store: {
-        address: state.account.address,
-        quoteCurrency: state.network.quoteCurrency,
-        renNetwork: state.account.renNetwork,
-    },
-});
+const mapStateToProps = () => ({});
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({
         storeQuoteCurrency,
-        showMobileMenu,
         storeRenNetwork,
     }, dispatch),
 });

@@ -3,10 +3,9 @@ import { CurrencyIcon, Loading } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
 import React from "react";
-import { connect } from "react-redux";
 
 import { AllTokenDetails, OldToken, Token } from "../../lib/ethereum/tokens";
-import { ApplicationState } from "../../store/applicationState";
+import { NetworkStateContainer } from "../../store/networkStateContainer";
 import { ReactComponent as IconValueLocked } from "../../styles/images/icon-value-locked.svg";
 import { ReactComponent as IconVolume } from "../../styles/images/icon-volume.svg";
 import { Stat, Stats } from "../common/Stat";
@@ -17,19 +16,9 @@ import { RewardChart } from "./RewardChart";
 import { StatTabs } from "./StatTabs";
 import { VolumeChart } from "./VolumeChart";
 
-const mapStateToProps = (state: ApplicationState) => ({
-    store: {
-        quoteCurrency: state.network.quoteCurrency,
-        currentDarknodeCount: state.network.currentDarknodeCount,
-        tokenPrices: state.network.tokenPrices,
-    }
-});
+export const NetworkStats = () => {
 
-export const NetworkStats = connect(mapStateToProps)(({ store: {
-    tokenPrices,
-    quoteCurrency,
-    currentDarknodeCount,
-} }: ReturnType<typeof mapStateToProps>) => {
+    const { quoteCurrency, currentDarknodeCount, tokenPrices } = NetworkStateContainer.useContainer();
 
     const container = RenVMContainer.useContainer();
 
@@ -138,4 +127,4 @@ export const NetworkStats = connect(mapStateToProps)(({ store: {
             </div>
         </div>
     );
-});
+};

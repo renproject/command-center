@@ -19,7 +19,7 @@ const everyNSeconds = (loaded: number, now: number, n: number) => Math.floor((no
 const inNSeconds = (loaded: number, now: number, n: number) => (n - ((now - loaded) % n)) * 1000;
 
 const useEpochContainer = () => {
-    const { network, web3 } = Web3Container.useContainer();
+    const { renNetwork: network, web3 } = Web3Container.useContainer();
     const now = time();
 
     const [loaded,] = useState(now);

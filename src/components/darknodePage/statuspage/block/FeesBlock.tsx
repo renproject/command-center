@@ -3,17 +3,12 @@ import * as React from "react";
 import { CurrencyIcon, TokenIcon } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
-import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
-import { bindActionCreators } from "redux";
 
 import { DarknodeFeeStatus } from "../../../../lib/ethereum/contractReads";
 import { OldToken, Token } from "../../../../lib/ethereum/tokens";
 import { classNames } from "../../../../lib/react/className";
-import { ApplicationState, DarknodesState } from "../../../../store/applicationState";
-import {
-    updateCycleAndPendingRewards, updateDarknodeDetails,
-} from "../../../../store/network/operatorActions";
-import { AppDispatch } from "../../../../store/rootReducer";
+import { DarknodesState } from "../../../../store/applicationState";
+import { NetworkStateContainer } from "../../../../store/networkStateContainer";
 import { ReactComponent as RewardsIcon } from "../../../../styles/images/icon-rewards-white.svg";
 import { ReactComponent as WithdrawIcon } from "../../../../styles/images/icon-withdraw.svg";
 import { Tabs } from "../../../common/Tabs";
@@ -34,7 +29,9 @@ const mergeFees = (left: OrderedMap<Token | OldToken, BigNumber>, right: Ordered
     return newFees;
 };
 
-const FeesBlockClass: React.StatelessComponent<Props> = ({ darknodeDetails, store: { quoteCurrency, currentCycle, previousCycle, pendingRewards, pendingTotalInEth }, isOperator }) => {
+export const FeesBlock: React.StatelessComponent<Props> = ({ darknodeDetails, isOperator }) => {
+
+    const { quoteCurrency, currentCycle, previousCycle, pendingRewards, pendingTotalInEth } = NetworkStateContainer.useContainer();
 
     const [tab, setTab] = React.useState(Tab.Withdrawable);
     const [disableClaim, setDisableClaim] = React.useState(false);
@@ -185,32 +182,7 @@ const FeesBlockClass: React.StatelessComponent<Props> = ({ darknodeDetails, stor
     );
 };
 
-const mapStateToProps = (state: ApplicationState) => ({
-    store: {
-        address: state.account.address,
-        web3: state.account.web3,
-        quoteCurrency: state.network.quoteCurrency,
-        currentCycle: state.network.currentCycle,
-        previousCycle: state.network.previousCycle,
-        pendingRewards: state.network.pendingRewards,
-        pendingTotalInEth: state.network.pendingTotalInEth,
-        tokenPrices: state.network.tokenPrices,
-        renNetwork: state.account.renNetwork,
-        cycleTimeout: state.network.cycleTimeout,
-    },
-});
-
-const mapDispatchToProps = (dispatch: AppDispatch) => ({
-    actions: bindActionCreators({
-        // showClaimPopup,
-        updateDarknodeDetails,
-        updateCycleAndPendingRewards,
-    }, dispatch),
-});
-
-interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps> {
+interface Props {
     isOperator: boolean;
     darknodeDetails: DarknodesState | null;
 }
-
-export const FeesBlock = connect(mapStateToProps, mapDispatchToProps)(FeesBlockClass);

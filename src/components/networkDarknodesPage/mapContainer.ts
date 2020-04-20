@@ -133,7 +133,7 @@ const readCache = async (ip: string) => {
 };
 
 const useMapContainer = () => {
-    const { network } = Web3Container.useContainer();
+    const { renNetwork: network } = Web3Container.useContainer();
 
     // tslint:disable-next-line: prefer-const
     let [darknodes, setDarknodes] = useState(sampleDarknodes);

@@ -2,27 +2,20 @@ import * as React from "react";
 
 import { Currency } from "@renproject/react-components";
 import { BigNumber } from "bignumber.js";
-import { connect } from "react-redux"; // Custom typings
 
 import { AllTokenDetails, OldToken, Token } from "../../lib/ethereum/tokens";
-import { ApplicationState } from "../../store/applicationState";
+import { NetworkStateContainer } from "../../store/networkStateContainer";
 
-const mapStateToProps = (state: ApplicationState) => ({
-    store: {
-        tokenPrices: state.network.tokenPrices,
-    },
-});
-
-interface Props extends ReturnType<typeof mapStateToProps> {
+interface Props {
     token: Token | OldToken;
-    amount: string | BigNumber;
+    amount: number | string | BigNumber;
     convertTo?: Currency;
     digits?: number; // Always shows this many digits (e.g. for 3 d.p.: 0.100, 0.111)
 }
 
-export const TokenBalance = connect(mapStateToProps)((props: Props) => {
-    const { token, convertTo, store, digits } = props;
-    const { tokenPrices } = store;
+export const TokenBalance = (props: Props) => {
+    const { token, convertTo, digits } = props;
+    const { tokenPrices } = NetworkStateContainer.useContainer();
 
     const tokenDetails = AllTokenDetails.get(token as Token, undefined);
     const decimals = tokenDetails ? new BigNumber(tokenDetails.decimals.toString()).toNumber() : 0;
@@ -58,4 +51,4 @@ export const TokenBalance = connect(mapStateToProps)((props: Props) => {
     }
     defaultDigits = digits === undefined ? defaultDigits : digits;
     return <>{amount.multipliedBy(price).toFixed(defaultDigits)}</>;
-});
+};

@@ -5,23 +5,22 @@ import { bindActionCreators } from "redux";
 
 import { _catchBackgroundException_ } from "../../lib/react/errors";
 import { promptLogin } from "../../store/account/accountActions";
-import { ApplicationState } from "../../store/applicationState";
 import { PopupContainer } from "../../store/popupStore";
 import { AppDispatch } from "../../store/rootReducer";
+import { Web3Container } from "../../store/web3Store";
 import { EmptyDarknodeList } from "../allDarknodesPage/darknodeList/EmptyDarknodeList";
 
 /**
  * LoggingIn is a page whose principal components are wallet selection to allow users
  * to log-in, and the hidden orderbook
  */
-const LoggingInClass = (props: Props) => {
+const LoggingInClass = ({ actions }: Props) => {
     const { setPopup, clearPopup } = PopupContainer.useContainer();
-
-    const { address } = props.store;
+    const { address } = Web3Container.useContainer();
 
     const handleLogin = React.useCallback(async (): Promise<void> => {
         if (!address) {
-            await props.actions.promptLogin(setPopup, clearPopup, { manual: false, redirect: false, showPopup: true, immediatePopup: false });
+            await actions.promptLogin(setPopup, clearPopup, { manual: false, redirect: false, showPopup: true, immediatePopup: false });
         }
     }, [address]);
 
@@ -34,17 +33,7 @@ const LoggingInClass = (props: Props) => {
     </div>;
 };
 
-const mapStateToProps = (state: ApplicationState) => ({
-    store: {
-        address: state.account.address,
-        web3BrowserName: state.account.web3BrowserName,
-        quoteCurrency: state.network.quoteCurrency,
-        web3: state.account.web3,
-        transactions: state.network.transactions,
-        confirmations: state.network.confirmations,
-        renNetwork: state.account.renNetwork,
-    },
-});
+const mapStateToProps = () => ({});
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({

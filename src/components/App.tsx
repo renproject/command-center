@@ -22,6 +22,7 @@ import { Sidebar } from "./common/sidebar/Sidebar";
 import { Darknode, getDarknodeParam } from "./darknodePage/Darknode";
 import { Overview } from "./networkDarknodesPage/Overview";
 import { NetworkStats } from "./networkStatsPage/NetworkStats";
+import { ReduxToContainers } from "./ReduxToContainers";
 import { RenVM } from "./renvmPage/RenVM";
 
 // Component that attaches scroll to top hanler on router change
@@ -54,8 +55,8 @@ export const ScrollToTopWithRouter = withRouter(() => {
  * App is the main visual component responsible for displaying different routes
  * and running background app loops
  */
-const AppClass = ({ match: { params }, store: { web3, address, loggedInBefore, renNetwork }, actions }: Props) => {
-    const { setWeb3, setNetwork } = Web3Container.useContainer();
+const AppClass = ({ match: { params }, actions }: Props) => {
+    const { web3, address, loggedInBefore, renNetwork, setWeb3, setRenNetwork: setNetwork } = Web3Container.useContainer();
     const { setPopup, clearPopup } = PopupContainer.useContainer();
 
     React.useEffect(() => {
@@ -65,7 +66,7 @@ const AppClass = ({ match: { params }, store: { web3, address, loggedInBefore, r
         }
     }, []);
 
-    const withAccount = React.useCallback(<T extends React.ComponentClass>(component: T):
+    const withAccount = React.useCallback(<T extends React.ComponentClass | React.StatelessComponent>(component: T):
         React.ComponentClass | React.StatelessComponent =>
         address ? component : LoggingIn,
         [address],
@@ -80,6 +81,7 @@ const AppClass = ({ match: { params }, store: { web3, address, loggedInBefore, r
     const showNetworkBanner = renNetwork.name !== DEFAULT_REN_NETWORK;
 
     return <div className="app">
+        <ReduxToContainers />
         <BackgroundTasks key={`${address || undefined} ${renNetwork.name}`} />
         <ScrollToTopWithRouter />
         {/*
@@ -130,10 +132,6 @@ const AppClass = ({ match: { params }, store: { web3, address, loggedInBefore, r
 
 const mapStateToProps = (state: ApplicationState) => ({
     store: {
-        address: state.account.address,
-        loggedInBefore: state.account.loggedInBefore,
-        renNetwork: state.account.renNetwork,
-        web3: state.account.web3,
     },
 });
 

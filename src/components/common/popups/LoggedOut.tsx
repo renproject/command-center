@@ -1,20 +1,22 @@
 import * as React from "react";
 
 import { Blocky } from "@renproject/react-components";
-import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
-import { bindActionCreators } from "redux";
 
 import { getWeb3BrowserIcon } from "../../../lib/ethereum/browsers";
-import { ApplicationState } from "../../../store/applicationState";
-import { AppDispatch } from "../../../store/rootReducer";
+import { Web3Container } from "../../../store/web3Store";
+
+interface Props {
+    newAddress: string | null;
+    onCancel(): void;
+    onConnect(): void;
+}
 
 /**
  * LoggedOut is a popup component for prompting a user to select an
  * Ethereum account
  */
-const LoggedOutClass: React.StatelessComponent<Props> = (props) => {
-    const { newAddress, onCancel, onConnect } = props;
-    const { web3BrowserName } = props.store;
+export const LoggedOut: React.StatelessComponent<Props> = ({ newAddress, onCancel, onConnect }) => {
+    const { web3BrowserName } = Web3Container.useContainer();
     return <div className="popup no-web3 popup--logged-out">
         <img alt="" role="presentation" className="no-web3--logo" src={getWeb3BrowserIcon(web3BrowserName)} />
         {newAddress !== null ?
@@ -39,22 +41,3 @@ const LoggedOutClass: React.StatelessComponent<Props> = (props) => {
         <button className="button" onClick={onConnect}>Connect</button>
     </div>;
 };
-
-const mapStateToProps = (state: ApplicationState) => ({
-    store: {
-        web3BrowserName: state.account.web3BrowserName,
-    },
-});
-
-const mapDispatchToProps = (dispatch: AppDispatch) => ({
-    actions: bindActionCreators({
-    }, dispatch),
-});
-
-interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps> {
-    newAddress: string | null;
-    onCancel(): void;
-    onConnect(): void;
-}
-
-export const LoggedOut = connect(mapStateToProps, mapDispatchToProps)(LoggedOutClass);

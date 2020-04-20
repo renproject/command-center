@@ -5,9 +5,10 @@ import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators } from "redux";
 
 import { NULL, RegistrationStatus } from "../../../lib/ethereum/contractReads";
-import { ApplicationState, DarknodesState } from "../../../store/applicationState";
+import { DarknodesState } from "../../../store/applicationState";
 import { setDarknodeName } from "../../../store/network/operatorActions";
 import { AppDispatch } from "../../../store/rootReducer";
+import { Web3Container } from "../../../store/web3Store";
 import { DarknodeID } from "../../common/DarknodeID";
 import { DarknodeAction } from "../Darknode";
 import { EpochBlock } from "./block/EpochBlock";
@@ -19,12 +20,7 @@ import { VersionBlock } from "./block/VersionBlock";
 import { Notifications } from "./Notifications";
 import { Registration } from "./Registration";
 
-const mapStateToProps = (state: ApplicationState) => ({
-    store: {
-        tokenPrices: state.network.tokenPrices,
-        renNetwork: state.account.renNetwork,
-    },
-});
+const mapStateToProps = () => ({});
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({
@@ -42,7 +38,8 @@ interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<
     publicKey: string | undefined;
 }
 
-const StatusPageClass: React.StatelessComponent<Props> = ({ darknodeDetails, darknodeID, name, isOperator, action, publicKey, store: { renNetwork }, actions }) => {
+const StatusPageClass: React.StatelessComponent<Props> = ({ darknodeDetails, darknodeID, name, isOperator, action, publicKey, actions }) => {
+    const { renNetwork } = Web3Container.useContainer();
 
     const [renaming, setRenaming] = React.useState(false);
     const [newName, setNewName] = React.useState<string | undefined>(name);

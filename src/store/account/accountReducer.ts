@@ -1,12 +1,12 @@
 import { ActionType, getType } from "typesafe-actions";
 
 import { getWeb3BrowserName } from "../../lib/ethereum/browsers";
-import { AccountState, readOnlyWeb3 } from "../applicationState";
+import { PersistentAccountState, readOnlyWeb3 } from "../applicationState";
 import * as accountActions from "./accountActions";
 
 type AccountAction = ActionType<typeof accountActions>;
 
-export const accountReducer = (state: AccountState = new AccountState(), action: AccountAction): AccountState => {
+export const accountReducer = (state: PersistentAccountState = new PersistentAccountState(), action: AccountAction): PersistentAccountState => {
     switch (action.type) {
         case getType(accountActions.logout):
             return state

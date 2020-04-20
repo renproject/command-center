@@ -1,20 +1,11 @@
 import { Loading } from "@renproject/react-components";
 import React from "react";
 import { Bar } from "react-chartjs-2";
-import { connect } from "react-redux";
 
-import { ApplicationState } from "../../store/applicationState";
+import { NetworkStateContainer } from "../../store/networkStateContainer";
 
 const { Chart } = require("react-chartjs-2");
 require("chartjs-plugin-style");
-
-const mapStateToProps = (state: ApplicationState) => ({
-    previousCycle: state.network.previousCycle,
-    currentCycle: state.network.currentCycle,
-    quoteCurrency: state.network.quoteCurrency,
-    pendingRewardsInEth: state.network.pendingRewardsInEth,
-    currentShareCount: state.network.currentShareCount,
-});
 
 /*
 *   Rounded Rectangle Extension for Bar Charts and Horizontal Bar Charts
@@ -195,10 +186,9 @@ Chart.elements.Rectangle.prototype.draw = function () {
     }
 };
 
+export const VolumeChart = () => {
+    const { previousCycle, pendingRewardsInEth, currentShareCount } = NetworkStateContainer.useContainer();
 
-export const VolumeChart = connect(mapStateToProps)(({
-    previousCycle, currentCycle, quoteCurrency, pendingRewardsInEth, currentShareCount,
-}: ReturnType<typeof mapStateToProps>) => {
     const currentSplit = pendingRewardsInEth.get(previousCycle);
 
     const keys = React.useMemo(() => currentSplit ? currentSplit.keySeq().toArray() : [], [currentSplit]);
@@ -266,4 +256,4 @@ export const VolumeChart = connect(mapStateToProps)(({
             </> : <Loading alt />}
         </div>
     </div>;
-});
+};

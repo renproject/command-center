@@ -7,17 +7,20 @@ import { bindActionCreators } from "redux";
 import { Token } from "../../../../lib/ethereum/tokens";
 import { _catchBackgroundException_ } from "../../../../lib/react/errors";
 import { showFundPopup } from "../../../../store/account/operatorPopupActions";
-import { ApplicationState } from "../../../../store/applicationState";
 import { updateDarknodeDetails } from "../../../../store/network/operatorActions";
+import { NetworkStateContainer } from "../../../../store/networkStateContainer";
 import { PopupContainer } from "../../../../store/popupStore";
 import { AppDispatch } from "../../../../store/rootReducer";
+import { Web3Container } from "../../../../store/web3Store";
 import { TokenBalance } from "../../../common/TokenBalance";
 import { TopUp } from "./TopUp";
 
 export const CONFIRMATION_MESSAGE = "Transaction confirmed.";
 
-const TopUpControllerClass: React.StatelessComponent<Props> = ({ darknodeID, store: { address, web3, tokenPrices, renNetwork }, actions }) => {
+const TopUpControllerClass: React.StatelessComponent<Props> = ({ darknodeID, actions }) => {
     const { setPopup } = PopupContainer.useContainer();
+    const { address, web3, renNetwork } = Web3Container.useContainer();
+    const { tokenPrices } = NetworkStateContainer.useContainer();
 
     const [value, setValue] = React.useState("");
     const [resultMessage, setResultMessage] = React.useState<React.ReactNode>(null);
@@ -121,14 +124,7 @@ const TopUpControllerClass: React.StatelessComponent<Props> = ({ darknodeID, sto
 
 };
 
-const mapStateToProps = (state: ApplicationState) => ({
-    store: {
-        address: state.account.address,
-        web3: state.account.web3,
-        tokenPrices: state.network.tokenPrices,
-        renNetwork: state.account.renNetwork,
-    },
-});
+const mapStateToProps = () => ({});
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({

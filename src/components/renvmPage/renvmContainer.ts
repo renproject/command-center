@@ -123,7 +123,7 @@ const getBlocks = async (network: RenNetworkDetails, previousBlocks: List<Block>
 };
 
 const useRenVMContainer = () => {
-    const { network } = Web3Container.useContainer();
+    const { renNetwork: network } = Web3Container.useContainer();
 
     // tslint:disable-next-line: prefer-const
     let [blocks, setBlocks] = useState<List<Block> | null>(null);

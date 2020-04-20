@@ -7,14 +7,13 @@ import { darknodeIDHexToBase58 } from "../../../lib/darknode/darknodeID";
 import { RegistrationStatus } from "../../../lib/ethereum/contractReads";
 import { ApplicationState, DarknodesState } from "../../../store/applicationState";
 import { hideDarknode, removeRegisteringDarknode } from "../../../store/network/operatorActions";
+import { NetworkStateContainer } from "../../../store/networkStateContainer";
 import { AppDispatch } from "../../../store/rootReducer";
+import { Web3Container } from "../../../store/web3Store";
 import { CardView } from "./CardView";
 
-const mapStateToProps = (state: ApplicationState) => ({
+const mapStateToProps = (_state: ApplicationState) => ({
     store: {
-        address: state.account.address,
-        quoteCurrency: state.network.quoteCurrency,
-        renNetwork: state.account.renNetwork,
     },
 });
 
@@ -32,9 +31,9 @@ interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<
     publicKey: string | undefined;
 }
 
-export const DarknodeCard = connect(mapStateToProps, mapDispatchToProps)((props: Props) => {
-    const { actions, darknodeID, darknodeDetails, name, store, publicKey } = props;
-    const { address, quoteCurrency, renNetwork } = store;
+export const DarknodeCard = connect(mapStateToProps, mapDispatchToProps)(({ actions, darknodeID, darknodeDetails, name, publicKey }: Props) => {
+    const { address, renNetwork: renNetwork } = Web3Container.useContainer();
+    const { quoteCurrency } = NetworkStateContainer.useContainer();
 
     const [confirmedRemove, setConfirmedRemove] = React.useState(false);
 

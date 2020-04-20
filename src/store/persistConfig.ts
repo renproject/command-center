@@ -4,12 +4,14 @@ import { createTransform, PersistConfig } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 
 import { _catchBackgroundException_ } from "../lib/react/errors";
-import { AccountState, ApplicationState, NetworkState } from "./applicationState";
+import {
+    ApplicationState, PersistentAccountState, PersistentNetworkState,
+} from "./applicationState";
 
 // Local Storage:
 
-const accountTransform = createTransform<AccountState, string>(
-    (inboundState: AccountState, key: string | number | symbol): string => {
+const accountTransform = createTransform<PersistentAccountState, string>(
+    (inboundState: PersistentAccountState, key: string | number | symbol): string => {
         try {
             return inboundState.serialize();
         } catch (error) {
@@ -19,9 +21,9 @@ const accountTransform = createTransform<AccountState, string>(
             throw error;
         }
     },
-    (outboundState: string, key: string | number | symbol): AccountState => {
+    (outboundState: string, key: string | number | symbol): PersistentAccountState => {
         try {
-            return new AccountState().deserialize(outboundState);
+            return new PersistentAccountState().deserialize(outboundState);
         } catch (error) {
             console.error(`Error deserializing ${String(key)} in AccountState (${JSON.stringify(outboundState)}): ${error}`);
             // Don't send storage because it may contain sensitive data.
@@ -32,8 +34,8 @@ const accountTransform = createTransform<AccountState, string>(
     { whitelist: ["account"] as Array<keyof ApplicationState>, },
 );
 
-const networkTransform = createTransform<NetworkState, string>(
-    (inboundState: NetworkState, key: string | number | symbol): string => {
+const networkTransform = createTransform<PersistentNetworkState, string>(
+    (inboundState: PersistentNetworkState, key: string | number | symbol): string => {
         try {
             return inboundState.serialize();
         } catch (error) {
@@ -43,9 +45,9 @@ const networkTransform = createTransform<NetworkState, string>(
             throw error;
         }
     },
-    (outboundState: string, key: string | number | symbol): NetworkState => {
+    (outboundState: string, key: string | number | symbol): PersistentNetworkState => {
         try {
-            return new NetworkState().deserialize(outboundState);
+            return new PersistentNetworkState().deserialize(outboundState);
         } catch (error) {
             console.error(`Error deserializing ${String(key)} in NetworkState (${JSON.stringify(outboundState)}): ${error}`);
             // Don't send storage because it may contain sensitive data.

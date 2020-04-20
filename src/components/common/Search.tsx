@@ -1,18 +1,11 @@
 import * as React from "react";
 
-import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { RouteComponentProps, withRouter } from "react-router-dom";
-import { bindActionCreators } from "redux";
 
 import { darknodeIDBase58ToHex, darknodeIDHexToBase58 } from "../../lib/darknode/darknodeID";
 import { Ox } from "../../lib/ethereum/contractReads";
 import { EncodedData } from "../../lib/general/encodedData";
 import { classNames } from "../../lib/react/className";
-import { storeRenNetwork } from "../../store/account/accountActions";
-import { ApplicationState } from "../../store/applicationState";
-import { storeQuoteCurrency } from "../../store/network/operatorActions";
-import { AppDispatch } from "../../store/rootReducer";
-import { showMobileMenu } from "../../store/ui/uiActions";
 
 const isDarknodeAddress = (search: string): string | undefined => {
     const regex = new RegExp(/^(0x)?[a-f0-9]{40}$/i);
@@ -38,7 +31,6 @@ const isBlock = (search: string): number | undefined => {
 };
 
 const SearchClass = ({ history }: Props) => {
-
     const [searchInput, setSearchInput] = React.useState("");
     const [loadingSearch, setLoadingSearch] = React.useState(false);
     const [notFound, setNotFound] = React.useState(false);
@@ -78,24 +70,7 @@ const SearchClass = ({ history }: Props) => {
     );
 };
 
-const mapStateToProps = (state: ApplicationState) => ({
-    store: {
-        address: state.account.address,
-        quoteCurrency: state.network.quoteCurrency,
-        renNetwork: state.account.renNetwork,
-    },
-});
-
-const mapDispatchToProps = (dispatch: AppDispatch) => ({
-    actions: bindActionCreators({
-        storeQuoteCurrency,
-        showMobileMenu,
-        storeRenNetwork,
-    }, dispatch),
-});
-
-interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps>,
-    RouteComponentProps {
+interface Props extends RouteComponentProps {
 }
 
-export const Search = connect(mapStateToProps, mapDispatchToProps)(withRouter(SearchClass));
+export const Search = withRouter(SearchClass);

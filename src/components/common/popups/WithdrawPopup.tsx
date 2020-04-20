@@ -10,11 +10,12 @@ import { bindActionCreators } from "redux";
 
 import { AllTokenDetails, Token } from "../../../lib/ethereum/tokens";
 import { classNames } from "../../../lib/react/className";
-import { ApplicationState } from "../../../store/applicationState";
 import {
     addToWithdrawAddresses, removeFromWithdrawAddresses,
 } from "../../../store/network/operatorActions";
+import { NetworkStateContainer } from "../../../store/networkStateContainer";
 import { AppDispatch } from "../../../store/rootReducer";
+import { Web3Container } from "../../../store/web3Store";
 
 enum Stage {
     Pending,
@@ -42,7 +43,9 @@ const renderTxStatus = (status: TxStatus | null) => {
     }
 };
 
-const WithdrawPopupClass: React.StatelessComponent<Props> = ({ token, status, withdraw, onDone, onCancel, store: { renNetwork, withdrawAddresses }, actions }) => {
+const WithdrawPopupClass: React.StatelessComponent<Props> = ({ token, status, withdraw, onDone, onCancel, actions }) => {
+    const { renNetwork } = Web3Container.useContainer();
+    const { withdrawAddresses } = NetworkStateContainer.useContainer();
 
     const [error, setError] = React.useState(null as string | null);
     const [stage, setStage] = React.useState(Stage.Pending);
@@ -178,12 +181,7 @@ const WithdrawPopupClass: React.StatelessComponent<Props> = ({ token, status, wi
     </div>;
 };
 
-const mapStateToProps = (state: ApplicationState) => ({
-    store: {
-        renNetwork: state.account.renNetwork,
-        withdrawAddresses: state.network.withdrawAddresses,
-    },
-});
+const mapStateToProps = () => ({});
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({

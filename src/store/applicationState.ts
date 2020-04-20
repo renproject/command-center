@@ -16,15 +16,13 @@ import { _catchBackgroundException_ } from "../lib/react/errors";
 import { Serializable } from "../lib/react/serializable";
 
 export interface ApplicationState {
-    account: AccountState;
-    // popup: PopupState;
-    network: NetworkState;
-    ui: UIState;
+    account: PersistentAccountState;
+    network: PersistentNetworkState;
 }
 
 export const readOnlyWeb3 = getReadOnlyWeb3(`${(RenNetworks[DEFAULT_REN_NETWORK || RenNetwork.Testnet] as RenNetworkDetails).infura}/v3/${INFURA_KEY}`);
 
-export class AccountState extends Record({
+export class PersistentAccountState extends Record({
     // Login data
     address: null as string | null,
     web3BrowserName: Web3Browser.MetaMask,
@@ -37,7 +35,7 @@ export class AccountState extends Record({
     loggedOut: false,
 
     renNetwork: RenNetworks[DEFAULT_REN_NETWORK || RenNetwork.Testnet] as RenNetworkDetails,
-}) implements Serializable<AccountState> {
+}) implements Serializable<PersistentAccountState> {
     public serialize(): string {
         // const js = this.toJS();
         return JSON.stringify({
@@ -46,12 +44,12 @@ export class AccountState extends Record({
         });
     }
 
-    public deserialize(str: string): AccountState {
+    public deserialize(str: string): PersistentAccountState {
         // let next = this;
         try {
             const data = JSON.parse(str);
             // tslint:disable-next-line: no-any
-            let accountData = new AccountState();
+            let accountData = new PersistentAccountState();
             if (data.renNetwork) {
                 accountData = accountData.set("renNetwork", RenNetworks[data.renNetwork]);
             }
@@ -66,18 +64,7 @@ export class AccountState extends Record({
     }
 }
 
-// export class PopupState extends Record({
-//     dismissible: true,
-//     onCancel: (() => null) as () => void,
-//     popup: null as JSX.Element | null,
-//     overlay: false,
-// }) { }
-
-export class UIState extends Record({
-    mobileMenuActive: false,
-}) { }
-
-export class NetworkState extends Record({
+export class PersistentNetworkState extends Record({
     secondsPerBlock: null as number | null,
 
     tokenPrices: null as TokenPrices | null,
@@ -118,7 +105,7 @@ export class NetworkState extends Record({
     hiddenDarknodes: Map<string, OrderedSet<string>>(),
     withdrawAddresses: Map<Token, List<string>>(),
     ///////////////////////////////////////////////////////
-}) implements Serializable<NetworkState> {
+}) implements Serializable<PersistentNetworkState> {
     public serialize(): string {
         const js = this.toJS();
         return JSON.stringify({
@@ -131,11 +118,11 @@ export class NetworkState extends Record({
         });
     }
 
-    public deserialize(str: string): NetworkState {
+    public deserialize(str: string): PersistentNetworkState {
         // let next = this;
         try {
             const data = JSON.parse(str);
-            return new NetworkState({
+            return new PersistentNetworkState({
                 quoteCurrency: data.quoteCurrency,
                 darknodeList: data.darknodeList,
                 hiddenDarknodes: data.hiddenDarknodes,
@@ -144,7 +131,7 @@ export class NetworkState extends Record({
                 withdrawAddresses: data.withdrawAddresses,
             });
         } catch (error) {
-            _catchBackgroundException_(error, "Error in applicationState > NetworkState > deserialize");
+            _catchBackgroundException_(error, "Error in applicationState > PersistentNetworkState > deserialize");
             return this;
         }
     }

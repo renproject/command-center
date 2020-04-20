@@ -12,29 +12,19 @@ import { darknodeIDHexToBase58 } from "../../../lib/darknode/darknodeID";
 import { RegistrationStatus } from "../../../lib/ethereum/contractReads";
 import { promptLogin } from "../../../store/account/accountActions";
 import { ApplicationState } from "../../../store/applicationState";
+import { NetworkStateContainer } from "../../../store/networkStateContainer";
 import { PopupContainer } from "../../../store/popupStore";
 import { AppDispatch } from "../../../store/rootReducer";
-import { hideMobileMenu } from "../../../store/ui/uiActions";
+import { UIContainer } from "../../../store/uiStore";
+import { Web3Container } from "../../../store/web3Store";
 import { ReactComponent as RenVMIcon } from "../../../styles/images/Icon-HyperDrive.svg";
 import { ReactComponent as Search } from "../../../styles/images/search.svg";
 import { SidebarIcon } from "./SidebarIcon";
 
-const mapStateToProps = (state: ApplicationState) => ({
-    store: {
-        address: state.account.address,
-        darknodeList: state.account.address ? state.network.darknodeList.get(state.account.address, null) : null,
-        darknodeDetails: state.network.darknodeDetails,
-        darknodeNames: state.network.darknodeNames,
-        hiddenDarknodes: state.account.address ? state.network.hiddenDarknodes.get(state.account.address, null) : null,
-        quoteCurrency: state.network.quoteCurrency,
-        mobileMenuActive: state.ui.mobileMenuActive,
-        web3BrowserName: state.account.web3BrowserName,
-    },
-});
+const mapStateToProps = (state: ApplicationState) => ({});
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({
-        hideMobileMenu,
         promptLogin,
     }, dispatch),
 });
@@ -47,13 +37,18 @@ interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<
  * as well as a breakdown of each darknode
  */
 export const Sidebar = connect(mapStateToProps, mapDispatchToProps)(withRouter(
-    ({ selectedDarknode, store, actions, location }: Props) => {
+    ({ selectedDarknode, actions, location }: Props) => {
 
+        const { darknodeDetails, darknodeNames, quoteCurrency } = NetworkStateContainer.useContainer();
+        const { address, web3BrowserName } = Web3Container.useContainer();
         const { setPopup, clearPopup } = PopupContainer.useContainer();
+        const { mobileMenuActive, hideMobileMenu } = UIContainer.useContainer();
 
-        const { address, darknodeList, darknodeDetails, darknodeNames, hiddenDarknodes, quoteCurrency, mobileMenuActive, web3BrowserName } = store;
+        const { darknodeList, hiddenDarknodes } = NetworkStateContainer.useContainer();
+        const accountDarknodeList = React.useMemo(() => address ? darknodeList.get(address, null) : null, [darknodeList]);
+        const accountHiddenDarknodes = React.useMemo(() => address ? hiddenDarknodes.get(address, null) : null, [hiddenDarknodes]);
 
-        const shownDarknodeList = !darknodeList ? darknodeList : darknodeList.filter(d => !hiddenDarknodes || !hiddenDarknodes.contains(d));
+        const shownDarknodeList = !accountDarknodeList ? accountDarknodeList : accountDarknodeList.filter(d => !accountHiddenDarknodes || !accountHiddenDarknodes.contains(d));
 
         const [searchFilter, setSearchFilter] = React.useState("");
 
@@ -71,14 +66,14 @@ export const Sidebar = connect(mapStateToProps, mapDispatchToProps)(withRouter(
 
                 <div className="sidebar--top">
 
-                    <div className="sidebar--row mobile-only" role="menuitem" onClick={actions.hideMobileMenu}>
+                    <div className="sidebar--row mobile-only" role="menuitem" onClick={hideMobileMenu}>
                         <div className="sidebar--nav--icon sidebar--icon">
                             <FontAwesomeIcon icon={faTimes} className="darknode-card--bottom--icon" />
                         </div>
                         <div className="sidebar--text">Close</div>
                     </div>
 
-                    <Link className="mobile-only no-underline" to="/" onClick={actions.hideMobileMenu}>
+                    <Link className="mobile-only no-underline" to="/" onClick={hideMobileMenu}>
                         <div className={["sidebar--row", location.pathname === "/" ? "sidebar--active" : ""].join(" ")}>
                             <div className="sidebar--nav--icon sidebar--icon">
                                 <FontAwesomeIcon icon={faGlobeAmericas} className="darknode-card--bottom--icon" />
@@ -87,7 +82,7 @@ export const Sidebar = connect(mapStateToProps, mapDispatchToProps)(withRouter(
                         </div>
                     </Link>
 
-                    <Link className="mobile-only no-underline" to="/renvm" onClick={actions.hideMobileMenu}>
+                    <Link className="mobile-only no-underline" to="/renvm" onClick={hideMobileMenu}>
                         <div className={["sidebar--row", location.pathname.match("/(renvm|hyperdrive)") ? "sidebar--active" : ""].join(" ")}>
                             <div className="sidebar--nav--icon sidebar--icon">
                                 <RenVMIcon className="darknode-card--bottom--icon" />
@@ -96,7 +91,7 @@ export const Sidebar = connect(mapStateToProps, mapDispatchToProps)(withRouter(
                         </div>
                     </Link>
 
-                    <Link className="no-underline" to="/all" onClick={actions.hideMobileMenu}>
+                    <Link className="no-underline" to="/all" onClick={hideMobileMenu}>
                         <div className={["sidebar--row", location.pathname === "/all" ? "sidebar--active" : ""].join(" ")}>
                             <div className="sidebar--nav--icon sidebar--icon">
                                 <FontAwesomeIcon icon={faThLarge} className="darknode-card--bottom--icon" />

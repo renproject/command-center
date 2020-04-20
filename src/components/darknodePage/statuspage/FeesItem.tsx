@@ -10,15 +10,19 @@ import { bindActionCreators } from "redux";
 import { AllTokenDetails, OldToken, Token } from "../../../lib/ethereum/tokens";
 import { waitForTX } from "../../../lib/ethereum/waitForTX";
 import { withdrawReward } from "../../../store/account/darknodeActions";
-import { ApplicationState } from "../../../store/applicationState";
 import { updateDarknodeDetails } from "../../../store/network/operatorActions";
+import { NetworkStateContainer } from "../../../store/networkStateContainer";
 import { PopupContainer } from "../../../store/popupStore";
 import { AppDispatch } from "../../../store/rootReducer";
+import { Web3Container } from "../../../store/web3Store";
 
 const minimumShiftedAmount = 0.00016;
 
-const FeesItemClass = ({ darknodeID, token, amount, disabled, actions, store }: Props) => {
+const FeesItemClass = ({ darknodeID, token, amount, disabled, actions }: Props) => {
     const { setPopup, clearPopup } = PopupContainer.useContainer();
+    const { tokenPrices } = NetworkStateContainer.useContainer();
+    const { web3, address, renNetwork } = Web3Container.useContainer();
+
     const [loading, setLoading] = React.useState(false);
 
     const tokenDetails = AllTokenDetails.get(token);
@@ -26,7 +30,6 @@ const FeesItemClass = ({ darknodeID, token, amount, disabled, actions, store }: 
     const decimals = tokenDetails ? tokenDetails.decimals : 8;
 
     const handleWithdraw = React.useCallback(async (): Promise<void> => {
-        const { web3, tokenPrices, address, renNetwork } = store;
         setLoading(true);
 
         if (address && tokenDetails && !tokenDetails.old) {
@@ -42,7 +45,7 @@ const FeesItemClass = ({ darknodeID, token, amount, disabled, actions, store }: 
         }
 
         setLoading(false);
-    }, [actions, darknodeID, store, token]);
+    }, [actions, darknodeID, web3, address, renNetwork, token]);
 
     let isDisabled = false;
     let title = "";
@@ -69,15 +72,7 @@ const FeesItemClass = ({ darknodeID, token, amount, disabled, actions, store }: 
     );
 };
 
-const mapStateToProps = (state: ApplicationState) => ({
-    store: {
-        web3: state.account.web3,
-        tokenPrices: state.network.tokenPrices,
-        address: state.account.address,
-        withdrawAddresses: state.network.withdrawAddresses,
-        renNetwork: state.account.renNetwork,
-    },
-});
+const mapStateToProps = () => ({});
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({

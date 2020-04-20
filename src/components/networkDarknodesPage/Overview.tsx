@@ -1,12 +1,11 @@
 import { CurrencyIcon, Loading } from "@renproject/react-components";
 import React from "react";
 import { buildStyles, CircularProgressbar } from "react-circular-progressbar";
-import { connect } from "react-redux";
 
 import { Token } from "../../lib/ethereum/tokens";
-import { ApplicationState } from "../../store/applicationState";
 import { EpochContainer } from "../../store/epochStore";
 import { GithubAPIContainer } from "../../store/githubApiStore";
+import { NetworkStateContainer } from "../../store/networkStateContainer";
 import {
     ReactComponent as IconDarknodesOnline,
 } from "../../styles/images/icon-darknodes-online.svg";
@@ -18,22 +17,8 @@ import { TokenBalance } from "../common/TokenBalance";
 import { DarknodeMap } from "./darknodeMap/DarknodeMap";
 import { MapContainer } from "./mapContainer";
 
-const mapStateToProps = (state: ApplicationState) => ({
-    currentCycle: state.network.currentCycle,
-    previousCycle: state.network.previousCycle,
-    pendingTotalInEth: state.network.pendingTotalInEth,
-    quoteCurrency: state.network.quoteCurrency,
-    currentShareCount: state.network.currentShareCount,
-    currentDarknodeCount: state.network.currentDarknodeCount,
-    previousDarknodeCount: state.network.previousDarknodeCount,
-    nextDarknodeCount: state.network.nextDarknodeCount,
-});
-
-export const Overview = connect(mapStateToProps)(({
-    currentCycle, previousCycle, pendingTotalInEth, quoteCurrency,
-    currentShareCount, currentDarknodeCount, previousDarknodeCount,
-    nextDarknodeCount,
-}: ReturnType<typeof mapStateToProps>) => {
+export const Overview = () => {
+    const { currentCycle, previousCycle, pendingTotalInEth, quoteCurrency, currentShareCount, currentDarknodeCount, nextDarknodeCount } = NetworkStateContainer.useContainer();
     const { timeUntilNextEpoch, timeSinceLastEpoch, epochInterval } = EpochContainer.useContainer();
     const { latestCLIVersion, latestCLIVersionDaysAgo } = GithubAPIContainer.useContainer();
 
@@ -146,4 +131,4 @@ export const Overview = connect(mapStateToProps)(({
             </div>
         </div>
     );
-});
+};

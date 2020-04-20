@@ -7,13 +7,14 @@ import { bindActionCreators } from "redux";
 
 import { _catchBackgroundException_ } from "../../lib/react/errors";
 import { lookForLogout } from "../../store/account/accountActions";
-import { ApplicationState } from "../../store/applicationState";
 import { updateTokenPrices } from "../../store/network/networkActions";
 import {
     updateCycleAndPendingRewards, updateDarknodeDetails, updateOperatorDarknodes,
 } from "../../store/network/operatorActions";
+import { NetworkStateContainer } from "../../store/networkStateContainer";
 import { PopupContainer } from "../../store/popupStore";
 import { AppDispatch } from "../../store/rootReducer";
+import { Web3Container } from "../../store/web3Store";
 import { getDarknodeParam } from "../darknodePage/Darknode";
 
 export const asyncSetInterval = (fn: () => Promise<number | void>, onErrorRetry: number, errorMessage: string, timeout: NodeJS.Timer | undefined, setNewTimeout: (timeout: NodeJS.Timer) => void): void => {
@@ -26,7 +27,7 @@ export const asyncSetInterval = (fn: () => Promise<number | void>, onErrorRetry:
             if (errorMessage) { _catchBackgroundException_(error, errorMessage); }
         }
         if (timeout) { clearTimeout(timeout); }
-        setNewTimeout(setTimeout(asyncSetInterval, retry || onErrorRetry, fn, onErrorRetry, errorMessage, timeout) as unknown as NodeJS.Timer);
+        setNewTimeout(setTimeout(asyncSetInterval, retry || onErrorRetry, fn, onErrorRetry, errorMessage, timeout, setNewTimeout) as unknown as NodeJS.Timer);
     })().catch(error => _catchBackgroundException_(error, "Error in BackgroundTasks: asyncSetInterval"));
 };
 
@@ -34,8 +35,13 @@ export const asyncSetInterval = (fn: () => Promise<number | void>, onErrorRetry:
  * BackgroundTasks is the main visual component responsible for displaying different routes
  * and running background app loops
  */
-const BackgroundTasksClass: React.StatelessComponent<Props> = ({ store: { address, web3, tokenPrices, darknodeList, darknodeRegisteringList, renNetwork }, actions, match }) => {
+const BackgroundTasksClass: React.StatelessComponent<Props> = ({ actions, match }) => {
+    const { address, web3, renNetwork } = Web3Container.useContainer();
     const { setPopup, clearPopup } = PopupContainer.useContainer();
+
+    const { darknodeRegisteringList, darknodeList, tokenPrices } = NetworkStateContainer.useContainer();
+    const accountDarknodeList = React.useMemo(() => address ? darknodeList.get(address, null) : null, [darknodeList]);
+
 
     const [callUpdatePricesTimeout, setCallUpdatePricesTimeout] = React.useState<NodeJS.Timer | undefined>(undefined);
     const [callUpdateRewardsTimeout, setCallUpdateRewardsTimeout] = React.useState<NodeJS.Timer | undefined>(undefined);
@@ -85,8 +91,8 @@ const BackgroundTasksClass: React.StatelessComponent<Props> = ({ store: { addres
                 if (darknodeRegisteringList.size > 0) {
                     list = darknodeRegisteringList.keySeq().toOrderedSet();
                 }
-                if (darknodeList) {
-                    list = (list || OrderedSet()).merge(darknodeList);
+                if (accountDarknodeList) {
+                    list = (list || OrderedSet()).merge(accountDarknodeList);
                 }
                 // tslint:disable-next-line: await-promise
                 await actions.updateOperatorDarknodes(web3, renNetwork, address, tokenPrices, list);
@@ -163,16 +169,7 @@ const BackgroundTasksClass: React.StatelessComponent<Props> = ({ store: { addres
     return <></>;
 };
 
-const mapStateToProps = (state: ApplicationState) => ({
-    store: {
-        address: state.account.address,
-        web3: state.account.web3,
-        tokenPrices: state.network.tokenPrices,
-        darknodeList: state.account.address ? state.network.darknodeList.get(state.account.address, null) : null,
-        darknodeRegisteringList: state.network.darknodeRegisteringList,
-        renNetwork: state.account.renNetwork,
-    },
-});
+const mapStateToProps = () => ({});
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({

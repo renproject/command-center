@@ -2,19 +2,10 @@ import { CurrencyIcon, Loading, TokenIcon } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import React from "react";
 import { Doughnut } from "react-chartjs-2";
-import { connect } from "react-redux";
 
 import { Token } from "../../lib/ethereum/tokens";
-import { ApplicationState } from "../../store/applicationState";
+import { NetworkStateContainer } from "../../store/networkStateContainer";
 import { TokenBalance } from "../common/TokenBalance";
-
-const mapStateToProps = (state: ApplicationState) => ({
-    previousCycle: state.network.previousCycle,
-    currentCycle: state.network.currentCycle,
-    quoteCurrency: state.network.quoteCurrency,
-    pendingRewardsInEth: state.network.pendingRewardsInEth,
-    currentShareCount: state.network.currentShareCount,
-});
 
 const colors = [
     // Token colours
@@ -35,9 +26,9 @@ enum Tab {
     Previous = "previous",
 }
 
-export const RewardChart = connect(mapStateToProps)(({
-    previousCycle, currentCycle, quoteCurrency, pendingRewardsInEth, currentShareCount,
-}: ReturnType<typeof mapStateToProps>) => {
+export const RewardChart = () => {
+    const { previousCycle, currentCycle, quoteCurrency, pendingRewardsInEth, currentShareCount } = NetworkStateContainer.useContainer();
+
     const [tab, setTab] = React.useState(Tab.Previous);
 
     const currentSplit = pendingRewardsInEth.get(tab === Tab.Previous ? previousCycle : currentCycle);
@@ -95,4 +86,4 @@ export const RewardChart = connect(mapStateToProps)(({
             </> : <Loading alt />}
         </div>
     </div>;
-});
+};

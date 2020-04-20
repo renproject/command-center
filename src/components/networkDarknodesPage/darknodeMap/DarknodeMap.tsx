@@ -9,7 +9,7 @@ import { MapContainer } from "../mapContainer";
 import MapJSON from "./world-50m.json";
 
 export const DarknodeMap = () => {
-    const { network } = Web3Container.useContainer();
+    const { renNetwork: network } = Web3Container.useContainer();
     const container = MapContainer.useContainer();
 
     React.useEffect(() => {

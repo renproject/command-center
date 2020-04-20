@@ -11,11 +11,13 @@ import { bindActionCreators } from "redux";
 
 import { HistoryIterations, HistoryPeriod } from "../../../../lib/ethereum/contractReads";
 import { _catchBackgroundException_, _ignoreException_ } from "../../../../lib/react/errors";
-import { ApplicationState, DarknodesState } from "../../../../store/applicationState";
+import { DarknodesState } from "../../../../store/applicationState";
 import {
     updateDarknodeBalanceHistory, updateSecondsPerBlock,
 } from "../../../../store/network/operatorActions";
+import { NetworkStateContainer } from "../../../../store/networkStateContainer";
 import { AppDispatch } from "../../../../store/rootReducer";
+import { Web3Container } from "../../../../store/web3Store";
 import { Block, BlockBody, BlockTitle } from "./Block";
 
 const shift = new BigNumber(10).exponentiatedBy(18);
@@ -59,7 +61,9 @@ const periods: Array<[HistoryPeriod, string]> = [
 ];
 
 
-const GasGraphClass: React.StatelessComponent<Props> = ({ darknodeDetails, store: { secondsPerBlock, web3, balanceHistories }, actions }) => {
+const GasGraphClass: React.StatelessComponent<Props> = ({ darknodeDetails, actions }) => {
+    const { web3 } = Web3Container.useContainer();
+    const { balanceHistories, secondsPerBlock } = NetworkStateContainer.useContainer();
 
     const [historyPeriod, setHistoryPeriod] = React.useState(HistoryPeriod.Week);
     const [nextHistoryPeriod, setNextHistoryPeriod] = React.useState(HistoryPeriod.Week);
@@ -108,7 +112,7 @@ const GasGraphClass: React.StatelessComponent<Props> = ({ darknodeDetails, store
             const currentBalanceHistory = balanceHistories.get(darknodeDetails.ID) || OrderedMap<number, BigNumber>();
             try {
                 // tslint:disable-next-line: await-promise
-                await actions.fetchDarknodeBalanceHistory(
+                await actions.updateDarknodeBalanceHistory(
                     web3,
                     darknodeDetails.ID,
                     currentBalanceHistory,
@@ -119,7 +123,7 @@ const GasGraphClass: React.StatelessComponent<Props> = ({ darknodeDetails, store
                 if (String(error && error.message).match(/project ID does not have access to archive state/)) {
                     _ignoreException_(error);
                 } else {
-                    _catchBackgroundException_(error, "Error in GasGraph > updateHistory > fetchDarknodeBalanceHistory");
+                    _catchBackgroundException_(error, "Error in GasGraph > updateHistory > updateDarknodeBalanceHistory");
                 }
             }
         }
@@ -252,17 +256,11 @@ const GasGraphClass: React.StatelessComponent<Props> = ({ darknodeDetails, store
     );
 };
 
-const mapStateToProps = (state: ApplicationState) => ({
-    store: {
-        web3: state.account.web3,
-        balanceHistories: state.network.balanceHistories,
-        secondsPerBlock: state.network.secondsPerBlock,
-    },
-});
+const mapStateToProps = () => ({});
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({
-        fetchDarknodeBalanceHistory: updateDarknodeBalanceHistory,
+        updateDarknodeBalanceHistory,
         updateSecondsPerBlock,
     }, dispatch),
 });

@@ -1,16 +1,18 @@
 import * as React from "react";
 
-import { connect, ConnectedReturnType } from "react-redux";
-import { bindActionCreators } from "redux";
-
 import { Language } from "../../../languages/language";
 import { getWeb3BrowserIcon } from "../../../lib/ethereum/browsers";
-import { ApplicationState } from "../../../store/applicationState";
-import { AppDispatch } from "../../../store/rootReducer";
+import { Web3Container } from "../../../store/web3Store";
 
-const NoWeb3PopupClass: React.StatelessComponent<Props> = (props) => {
-    const { message, disabled, onCancel, onConnect } = props;
-    const { web3BrowserName } = props.store;
+interface Props {
+    message?: string;
+    disabled?: boolean;
+    onConnect(): void;
+    onCancel(): void;
+}
+
+export const NoWeb3Popup: React.StatelessComponent<Props> = ({ message, disabled, onCancel, onConnect }) => {
+    const { web3BrowserName } = Web3Container.useContainer();
     return <div className="popup no-web3">
         <img
             alt=""
@@ -23,23 +25,3 @@ const NoWeb3PopupClass: React.StatelessComponent<Props> = (props) => {
         <button className="button" disabled={disabled} onClick={onConnect}>Retry</button>
     </div>;
 };
-
-const mapStateToProps = (state: ApplicationState) => ({
-    store: {
-        web3BrowserName: state.account.web3BrowserName,
-    },
-});
-
-const mapDispatchToProps = (dispatch: AppDispatch) => ({
-    actions: bindActionCreators({
-    }, dispatch),
-});
-
-interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps> {
-    message?: string;
-    disabled?: boolean;
-    onConnect(): void;
-    onCancel(): void;
-}
-
-export const NoWeb3Popup = connect(mapStateToProps, mapDispatchToProps)(NoWeb3PopupClass);

@@ -7,9 +7,10 @@ import { bindActionCreators } from "redux";
 
 import { darknodeIDBase58ToHex } from "../../lib/darknode/darknodeID";
 import { RegistrationStatus } from "../../lib/ethereum/contractReads";
-import { ApplicationState } from "../../store/applicationState";
 import { addRegisteringDarknode, setDarknodeName } from "../../store/network/operatorActions";
+import { NetworkStateContainer } from "../../store/networkStateContainer";
 import { AppDispatch } from "../../store/rootReducer";
+import { Web3Container } from "../../store/web3Store";
 import { NotFound } from "../common/404";
 import { _catch_ } from "../common/ErrorBoundary";
 import { StatusPage } from "./statuspage/StatusPage";
@@ -44,7 +45,9 @@ export const getDarknodeParam = (params: unknown): string | undefined => {
  *     1) action: either "register" or "deregister"
  *     2) public_key: only used if action is "register"
  */
-const DarknodeClass: React.StatelessComponent<Props> = ({ store: { darknodeDetails, darknodeNames, address }, match, location, actions }) => {
+const DarknodeClass: React.StatelessComponent<Props> = ({ match, location, actions }) => {
+    const { address } = Web3Container.useContainer();
+    const { darknodeDetails, darknodeNames } = NetworkStateContainer.useContainer();
 
     const [darknodeID, setDarknodeID] = React.useState<string | undefined>(undefined);
     const [action, setAction] = React.useState<string | undefined>(undefined);
@@ -114,13 +117,7 @@ const DarknodeClass: React.StatelessComponent<Props> = ({ store: { darknodeDetai
     />);
 };
 
-const mapStateToProps = (state: ApplicationState) => ({
-    store: {
-        address: state.account.address,
-        darknodeDetails: state.network.darknodeDetails,
-        darknodeNames: state.network.darknodeNames,
-    },
-});
+const mapStateToProps = () => ({});
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({

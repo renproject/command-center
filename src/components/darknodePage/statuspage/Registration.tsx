@@ -9,12 +9,14 @@ import { _catchInteractionException_ } from "../../../lib/react/errors";
 import {
     showDeregisterPopup, showRefundPopup, showRegisterPopup,
 } from "../../../store/account/operatorPopupActions";
-import { ApplicationState, DarknodesState } from "../../../store/applicationState";
+import { DarknodesState } from "../../../store/applicationState";
 import {
     unhideDarknode, updateDarknodeDetails, updateOperatorDarknodes,
 } from "../../../store/network/operatorActions";
+import { NetworkStateContainer } from "../../../store/networkStateContainer";
 import { PopupContainer } from "../../../store/popupStore";
 import { AppDispatch } from "../../../store/rootReducer";
+import { Web3Container } from "../../../store/web3Store";
 
 export const statusText = {
     [RegistrationStatus.Unknown]: "Loading...",
@@ -26,16 +28,7 @@ export const statusText = {
     [RegistrationStatus.Refundable]: "Refundable",
 };
 
-const mapStateToProps = (state: ApplicationState) => ({
-    store: {
-        address: state.account.address,
-        web3: state.account.web3,
-        tokenPrices: state.network.tokenPrices,
-        darknodeList: state.account.address ? state.network.darknodeList.get(state.account.address, null) : null,
-        quoteCurrency: state.network.quoteCurrency,
-        renNetwork: state.account.renNetwork,
-    },
-});
+const mapStateToProps = () => ({});
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
     actions: bindActionCreators({
@@ -56,8 +49,13 @@ interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<
     publicKey?: string;
 }
 
-const RegistrationClass: React.StatelessComponent<Props> = ({ store: { web3, tokenPrices, address, darknodeList, renNetwork, quoteCurrency }, darknodeID, darknodeDetails, registrationStatus, isOperator, publicKey, store, actions }) => {
+const RegistrationClass: React.StatelessComponent<Props> = ({ darknodeID, darknodeDetails, registrationStatus, isOperator, publicKey, actions }) => {
     const { setPopup } = PopupContainer.useContainer();
+    const { web3, address, renNetwork } = Web3Container.useContainer();
+    const { tokenPrices, quoteCurrency } = NetworkStateContainer.useContainer();
+
+    const { darknodeList } = NetworkStateContainer.useContainer();
+    const accountDarknodeList = React.useMemo(() => address ? darknodeList.get(address, null) : null, [darknodeList]);
 
     const [initialRegistrationStatus,] = React.useState(registrationStatus);
     const [active, setActive] = React.useState(false);
@@ -88,7 +86,7 @@ const RegistrationClass: React.StatelessComponent<Props> = ({ store: { web3, tok
         }
 
         try {
-            await actions.updateOperatorDarknodes(web3, renNetwork, address, tokenPrices, darknodeList);
+            await actions.updateOperatorDarknodes(web3, renNetwork, address, tokenPrices, accountDarknodeList);
         } catch (error) {
             // Ignore error
         }
