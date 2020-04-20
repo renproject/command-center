@@ -1,8 +1,8 @@
 import { RenNetworkDetails } from "@renproject/contracts";
-import { Loading, TokenIcon } from "@renproject/react-components";
 import {
     Asset, RenContract, RenVMArg, RenVMArgs, RenVMType, TxStatus,
 } from "@renproject/interfaces";
+import { Loading, TokenIcon } from "@renproject/react-components";
 import { ResponseQueryTx } from "@renproject/rpc";
 import React from "react";
 

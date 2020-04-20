@@ -1,7 +1,7 @@
 import { CurrencyIcon, Loading } from "@renproject/react-components";
 import React from "react";
-import { connect } from "react-redux";
 import { buildStyles, CircularProgressbar } from "react-circular-progressbar";
+import { connect } from "react-redux";
 
 import { Token } from "../../lib/ethereum/tokens";
 import { ApplicationState } from "../../store/applicationState";

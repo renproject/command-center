@@ -3,7 +3,6 @@ import * as React from "react";
 import { faBolt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { darknodeIDHexToBase58 } from "../../../../lib/darknode/darknodeID";
 import { classNames } from "../../../../lib/react/className";
 import { DarknodesState } from "../../../../store/applicationState";
 import { GithubAPIContainer } from "../../../../store/githubApiStore";
@@ -13,8 +12,6 @@ const UPDATE_DARKNODE_LINK = "https://docs.renproject.io/darknodes/manage/updati
 
 export const VersionBlock = ({ darknodeDetails }: Props): JSX.Element => {
     const { latestDarknodeVersionFull, isDarknodeUpToDate, latestDarknodeVersionDaysAgo } = GithubAPIContainer.useContainer();
-
-    const darknodeIDBase58 = darknodeDetails ? darknodeIDHexToBase58(darknodeDetails.ID) : "";
 
     const upToDate: boolean | null = darknodeDetails && darknodeDetails.nodeStatistics ? isDarknodeUpToDate(darknodeDetails.nodeStatistics.version) : null;
 

@@ -1,5 +1,5 @@
-import React from "react";
 import BigNumber from "bignumber.js";
+import React from "react";
 
 import { ReactComponent as IconBurnFee } from "../../styles/images/icon-burn-fee.svg";
 import { ReactComponent as IconCheckCircle } from "../../styles/images/icon-check-circle.svg";

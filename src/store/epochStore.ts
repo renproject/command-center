@@ -1,8 +1,8 @@
 // tslint:disable: no-unused-variable
 
+import BigNumber from "bignumber.js";
 import { useEffect, useState } from "react";
 import { createContainer } from "unstated-next";
-import BigNumber from "bignumber.js";
 
 import { retryNTimes } from "../components/renvmPage/renvmContainer";
 import { getDarknodeRegistry } from "../lib/ethereum/contract";
@@ -30,6 +30,7 @@ const useEpochContainer = () => {
     const [timeUntilNextEpoch, setTimeUntilNextEpoch] = useState(null as number | null);
     const [timeSinceLastEpoch, setTimeSinceLastEpoch] = useState(null as number | null);
 
+    // tslint:disable-next-line: prefer-const
     let [loopTimeout, setLoopTimeout] = useState(200); // Update every 200 seconds
 
     useEffect(() => {

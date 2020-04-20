@@ -1,12 +1,9 @@
-import { CurrencyIcon, Loading, TokenIcon } from "@renproject/react-components";
-import BigNumber from "bignumber.js";
+import { Loading } from "@renproject/react-components";
 import React from "react";
 import { Bar } from "react-chartjs-2";
 import { connect } from "react-redux";
 
-import { Token } from "../../lib/ethereum/tokens";
 import { ApplicationState } from "../../store/applicationState";
-import { TokenBalance } from "../common/TokenBalance";
 
 const { Chart } = require("react-chartjs-2");
 require("chartjs-plugin-style");
@@ -18,20 +15,6 @@ const mapStateToProps = (state: ApplicationState) => ({
     pendingRewardsInEth: state.network.pendingRewardsInEth,
     currentShareCount: state.network.currentShareCount,
 });
-
-const colors = [
-    // Token colours
-    // "#d9a547",
-    // "#F09242",
-    // "#f4b728",
-    // "#627eea",
-    // Old colours
-    "#004CA0",
-    "#005EC4",
-    "#006FE8",
-    "#002A58",
-    "#003B7C",
-];
 
 /*
 *   Rounded Rectangle Extension for Bar Charts and Horizontal Bar Charts
@@ -131,7 +114,7 @@ Chart.elements.Rectangle.prototype.draw = function () {
             nextCornerId = 0;
         }
 
-        const nextCorner = cornerAt(nextCornerId);
+        // const nextCorner = cornerAt(nextCornerId);
 
         const width = corners[2][0] - corners[1][0];
         const height = corners[0][1] - corners[1][1];

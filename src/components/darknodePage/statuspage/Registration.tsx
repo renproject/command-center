@@ -13,6 +13,7 @@ import { ApplicationState, DarknodesState } from "../../../store/applicationStat
 import {
     unhideDarknode, updateDarknodeDetails, updateOperatorDarknodes,
 } from "../../../store/network/operatorActions";
+import { PopupContainer } from "../../../store/popupStore";
 import { AppDispatch } from "../../../store/rootReducer";
 
 export const statusText = {
@@ -24,180 +25,6 @@ export const statusText = {
     [RegistrationStatus.Deregistered]: "Awaiting Refund Period",
     [RegistrationStatus.Refundable]: "Refundable",
 };
-
-const defaultState = { // Entries must be immutable
-    active: false,
-};
-
-class RegistrationClass extends React.Component<Props, typeof defaultState> {
-    private _isMounted = false;
-
-    constructor(props: Props) {
-        super(props);
-        this.state = defaultState;
-    }
-
-    public componentDidMount = () => {
-        this._isMounted = true;
-    }
-
-    public componentWillUnmount = () => {
-        this._isMounted = false;
-    }
-
-    public componentWillReceiveProps = (nextProps: Props) => {
-        if (this.props.registrationStatus !== nextProps.registrationStatus) {
-            this.setState({ active: false });
-        }
-    }
-
-    public render = (): JSX.Element => {
-        const { isOperator, registrationStatus, publicKey } = this.props;
-        const { address, tokenPrices } = this.props.store;
-        const { active } = this.state;
-
-        const disabled = active || !address;
-        const registrationDisabled = disabled || !publicKey || !tokenPrices;
-
-        const noStatus =
-            (registrationStatus === RegistrationStatus.Unregistered) ||
-            (isOperator && registrationStatus === RegistrationStatus.Refundable);
-
-        const noOperator = (registrationStatus === RegistrationStatus.Unregistered) && this.props.darknodeDetails &&
-            this.props.darknodeDetails.operator === NULL;
-
-        return (
-            <div className="status">
-                {!noStatus ?
-                    <span className="status--title">{statusText[this.props.registrationStatus]}</span> : null}
-                {isOperator ? <>
-                    {registrationStatus === RegistrationStatus.Unregistered ?
-                        <button disabled={registrationDisabled} className="status--button" onClick={this.handleRegister}>
-                            {active ? <>Registering <Loading className="status--button--spinner" alt /></> : `Register darknode${registrationDisabled && !publicKey ? " (public key required)" : ""}`}
-                        </button> :
-                        null
-                    }
-                    {registrationStatus === RegistrationStatus.Registered ?
-                        <button disabled={disabled} className="status--button" onClick={this.handleDeregister}>
-                            {active ? <>Deregistering <Loading className="status--button--spinner" alt /></> : "Deregister"}
-                        </button> :
-                        null
-                    }
-                    {registrationStatus === RegistrationStatus.Refundable
-                        ? <button
-                            disabled={disabled}
-                            className="status--button status--button--focus"
-                            onClick={this.handleRefund}
-                        >
-                            {active ? <>Refunding <Loading className="status--button--spinner" alt /></> : "Refund"}
-                        </button> :
-                        null
-                    }
-                </> : noOperator ?
-                        <span className="status--operator">NOT REGISTERED</span> :
-                        (this.props.darknodeDetails ?
-                            <span className="status--operator">
-                                Operator: <span className="monospace">{this.props.darknodeDetails.operator}</span>
-                            </span> :
-                            null
-                        )
-                }
-            </div>
-        );
-    }
-
-    private readonly onCancel = () => {
-        if (this._isMounted) {
-            this.setState({ active: false });
-        }
-    }
-
-    private readonly onDone = async () => {
-        const { darknodeID } = this.props;
-        const { web3, tokenPrices, renNetwork } = this.props.store;
-
-        try {
-            await this.props.actions.updateDarknodeDetails(web3, renNetwork, darknodeID, tokenPrices);
-        } catch (error) {
-            // Ignore error
-        }
-
-        if (this._isMounted) {
-            this.setState({ active: false });
-        }
-
-    }
-
-    private readonly onDoneRegister = async () => {
-        const { web3, address, tokenPrices, darknodeList, renNetwork } = this.props.store;
-
-        if (!address) {
-            return; // FIXME
-        }
-
-        try {
-            await this.props.actions.updateOperatorDarknodes(web3, renNetwork, address, tokenPrices, darknodeList);
-        } catch (error) {
-            // Ignore error
-        }
-
-        if (this._isMounted) {
-            this.setState({ active: false });
-        }
-    }
-
-    private readonly handleRegister = async (): Promise<void> => {
-        const { darknodeID, publicKey } = this.props;
-        const { web3, address, tokenPrices, renNetwork } = this.props.store;
-
-        if (!publicKey || !address || !tokenPrices) {
-            return; // FIXME
-        }
-
-        this.setState({ active: true });
-        try {
-            await this.props.actions.showRegisterPopup(
-                web3, renNetwork, address, darknodeID, publicKey, tokenPrices, this.onCancel, this.onDoneRegister
-            );
-            this.props.actions.unhideDarknode({ darknodeID, operator: address, network: renNetwork.name });
-        } catch (error) {
-            _catchInteractionException_(error, "Error in Registration > handleRegister > showRegisterPopup");
-            this.onCancel();
-        }
-    }
-
-    private readonly handleDeregister = async (): Promise<void> => {
-        const { darknodeID, darknodeDetails } = this.props;
-        const { web3, address, quoteCurrency, renNetwork } = this.props.store;
-
-        if (!address) {
-            return;
-        }
-
-        this.setState({ active: true });
-        await this.props.actions.showDeregisterPopup(
-            web3,
-            renNetwork,
-            address,
-            darknodeID,
-            darknodeDetails && darknodeDetails.feesEarnedTotalEth,
-            quoteCurrency,
-            this.onCancel,
-            this.onDone);
-    }
-
-    private readonly handleRefund = async (): Promise<void> => {
-        const { darknodeID } = this.props;
-        const { web3, address, renNetwork } = this.props.store;
-
-        if (!address) {
-            return;
-        }
-
-        this.setState({ active: true });
-        await this.props.actions.showRefundPopup(web3, renNetwork, address, darknodeID, this.onCancel, this.onDone);
-    }
-}
 
 const mapStateToProps = (state: ApplicationState) => ({
     store: {
@@ -228,5 +55,140 @@ interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<
     darknodeDetails: DarknodesState | null;
     publicKey?: string;
 }
+
+const RegistrationClass: React.StatelessComponent<Props> = ({ store: { web3, tokenPrices, address, darknodeList, renNetwork, quoteCurrency }, darknodeID, darknodeDetails, registrationStatus, isOperator, publicKey, store, actions }) => {
+    const { setPopup } = PopupContainer.useContainer();
+
+    const [initialRegistrationStatus,] = React.useState(registrationStatus);
+    const [active, setActive] = React.useState(false);
+
+    React.useEffect(() => {
+        if (registrationStatus !== initialRegistrationStatus) {
+            setActive(false);
+        }
+    }, [registrationStatus]);
+
+    const onCancel = () => {
+        setActive(false);
+    };
+
+    const onDone = async () => {
+        try {
+            await actions.updateDarknodeDetails(web3, renNetwork, darknodeID, tokenPrices);
+        } catch (error) {
+            // Ignore error
+        }
+
+        setActive(false);
+    };
+
+    const onDoneRegister = async () => {
+        if (!address) {
+            return; // FIXME
+        }
+
+        try {
+            await actions.updateOperatorDarknodes(web3, renNetwork, address, tokenPrices, darknodeList);
+        } catch (error) {
+            // Ignore error
+        }
+
+        setActive(false);
+    };
+
+    const handleRegister = async (): Promise<void> => {
+        if (!publicKey || !address || !tokenPrices) {
+            return; // FIXME
+        }
+
+        setActive(true);
+        try {
+            await actions.showRegisterPopup(
+                web3, renNetwork, address, darknodeID, publicKey, tokenPrices, onCancel, onDoneRegister, setPopup,
+            );
+            actions.unhideDarknode({ darknodeID, operator: address, network: renNetwork.name });
+        } catch (error) {
+            _catchInteractionException_(error, "Error in Registration > handleRegister > showRegisterPopup");
+            onCancel();
+        }
+    };
+
+    const handleDeregister = async (): Promise<void> => {
+        if (!address) {
+            return;
+        }
+
+        setActive(true);
+        await actions.showDeregisterPopup(
+            web3,
+            renNetwork,
+            address,
+            darknodeID,
+            darknodeDetails && darknodeDetails.feesEarnedTotalEth,
+            quoteCurrency,
+            onCancel,
+            onDone,
+            setPopup,
+        );
+    };
+
+    const handleRefund = async (): Promise<void> => {
+        if (!address) {
+            return;
+        }
+
+        setActive(true);
+        await actions.showRefundPopup(setPopup, web3, renNetwork, address, darknodeID, onCancel, onDone);
+    };
+
+    const disabled = active || !address;
+    const registrationDisabled = disabled || !publicKey || !tokenPrices;
+
+    const noStatus =
+        (registrationStatus === RegistrationStatus.Unregistered) ||
+        (isOperator && registrationStatus === RegistrationStatus.Refundable);
+
+    const noOperator = (registrationStatus === RegistrationStatus.Unregistered) && darknodeDetails &&
+        darknodeDetails.operator === NULL;
+
+    return (
+        <div className="status">
+            {!noStatus ?
+                <span className="status--title">{statusText[registrationStatus]}</span> : null}
+            {isOperator ? <>
+                {registrationStatus === RegistrationStatus.Unregistered ?
+                    <button disabled={registrationDisabled} className="status--button" onClick={handleRegister}>
+                        {active ? <>Registering <Loading className="status--button--spinner" alt /></> : `Register darknode${registrationDisabled && !publicKey ? " (public key required)" : ""}`}
+                    </button> :
+                    null
+                }
+                {registrationStatus === RegistrationStatus.Registered ?
+                    <button disabled={disabled} className="status--button" onClick={handleDeregister}>
+                        {active ? <>Deregistering <Loading className="status--button--spinner" alt /></> : "Deregister"}
+                    </button> :
+                    null
+                }
+                {registrationStatus === RegistrationStatus.Refundable
+                    ? <button
+                        disabled={disabled}
+                        className="status--button status--button--focus"
+                        onClick={handleRefund}
+                    >
+                        {active ? <>Refunding <Loading className="status--button--spinner" alt /></> : "Refund"}
+                    </button> :
+                    null
+                }
+            </> : noOperator ?
+                    <span className="status--operator">NOT REGISTERED</span> :
+                    (darknodeDetails ?
+                        <span className="status--operator">
+                            Operator: <span className="monospace">{darknodeDetails.operator}</span>
+                        </span> :
+                        null
+                    )
+            }
+        </div>
+    );
+};
 
 export const Registration = connect(mapStateToProps, mapDispatchToProps)(RegistrationClass);

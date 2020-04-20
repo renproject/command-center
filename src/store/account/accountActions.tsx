@@ -13,7 +13,7 @@ import { Language } from "../../languages/language";
 import { getInjectedWeb3Provider } from "../../lib/ethereum/getWeb3";
 import { history } from "../../lib/react/history";
 import { ApplicationState } from "../applicationState";
-import { clearPopup, setPopup } from "../popup/popupActions";
+import { PopupDetails } from "../popupStore";
 import { AppDispatch } from "../rootReducer";
 
 export const logout = createAction("LOGOUT")();
@@ -23,6 +23,8 @@ export const storeRenNetwork = createAction("STORE_REN_NETWORK")<RenNetworkDetai
 export const storeWeb3BrowserName = createAction("STORE_WEB3_BROWSER_NAME")<provider>();
 
 export const promptLogin = (
+    setPopup: (details: PopupDetails) => void,
+    clearPopup: () => void,
     options: { manual: boolean, redirect: boolean; showPopup: boolean; immediatePopup: boolean },
 ) => async (dispatch: AppDispatch, getState: () => ApplicationState) => {
     let cancelled = false;
@@ -33,9 +35,9 @@ export const promptLogin = (
         return;
     }
 
-    const onClick = async () => (dispatch(promptLogin({ manual: true, redirect: false, showPopup: true, immediatePopup: true })));
+    const onClick = async () => (dispatch(promptLogin(setPopup, clearPopup, { manual: true, redirect: false, showPopup: true, immediatePopup: true })));
     const onCancel = () => {
-        dispatch(clearPopup());
+        clearPopup();
         cancelled = true;
     };
 
@@ -55,26 +57,26 @@ export const promptLogin = (
     }
 
     if (options.showPopup && options.immediatePopup) {
-        dispatch(setPopup(
+        setPopup(
             {
                 popup: <NoWeb3Popup onConnect={onClick} onCancel={onCancel} message={promptMessage} disabled />,
                 onCancel,
                 overlay: true,
             },
-        ));
+        );
     }
 
     // Show popup if getInjectedWeb3Provider doesn't return immediately, since
     // the Web3 browser is probably prompting the user to approve access
     const timeout = setTimeout(() => {
         if (options.showPopup && !cancelled) {
-            dispatch(setPopup(
+            setPopup(
                 {
                     popup: <NoWeb3Popup onConnect={onClick} onCancel={onCancel} message={promptMessage} />,
                     onCancel,
                     overlay: true,
                 },
-            ));
+            );
         }
     }, 5 * 1000);
 
@@ -93,13 +95,13 @@ export const promptLogin = (
     } catch (error) {
         clearTimeout(timeout);
         if (options.showPopup && !cancelled) {
-            dispatch(setPopup(
+            setPopup(
                 {
                     popup: <NoWeb3Popup onConnect={onClick} onCancel={onCancel} message={error.message} />,
                     onCancel,
                     overlay: true,
                 },
-            ));
+            );
         }
         return;
     }
@@ -116,18 +118,18 @@ export const promptLogin = (
 
     if (network !== renNetwork.chain) {
         if (options.showPopup && !cancelled) {
-            dispatch(setPopup(
+            setPopup(
                 {
                     popup: <NoWeb3Popup onConnect={onClick} onCancel={onCancel} message={`Please change your network to ${renNetwork.chainLabel}`} />,
                     onCancel,
                     overlay: true,
                 },
-            ));
+            );
         }
         return;
     }
 
-    dispatch(clearPopup());
+    clearPopup();
 
     // For now we use first account
     // TODO: Add support for selecting other accounts other than first
@@ -158,7 +160,10 @@ export const promptLogin = (
 
 // lookForLogout detects if 1) the user has changed or logged out of their Web3
 // wallet
-export const lookForLogout = () => async (dispatch: AppDispatch, getState: () => ApplicationState) => {
+export const lookForLogout = (
+    setPopup: (details: PopupDetails) => void,
+    clearPopup: () => void,
+) => async (dispatch: AppDispatch, getState: () => ApplicationState) => {
     const { address, web3 } = getState().account;
 
     if (!address) {
@@ -171,26 +176,24 @@ export const lookForLogout = () => async (dispatch: AppDispatch, getState: () =>
     if (!accounts.includes(address.toLowerCase())) {
         const onClick = async () => {
             dispatch(logout());
-            await dispatch(promptLogin({ manual: true, redirect: false, showPopup: true, immediatePopup: false }));
+            await dispatch(promptLogin(setPopup, clearPopup, { manual: true, redirect: false, showPopup: true, immediatePopup: false }));
         };
         const onCancel = async () => {
             dispatch(logout());
-            dispatch(clearPopup());
+            clearPopup();
         };
 
-        dispatch(
-            setPopup(
-                {
-                    popup: <LoggedOut
-                        onConnect={onClick}
-                        onCancel={onCancel}
-                        newAddress={accounts.length > 0 ? accounts[0] : null}
-                    />,
-                    onCancel,
-                    dismissible: false,
-                    overlay: true,
-                },
-            ),
+        setPopup(
+            {
+                popup: <LoggedOut
+                    onConnect={onClick}
+                    onCancel={onCancel}
+                    newAddress={accounts.length > 0 ? accounts[0] : null}
+                />,
+                onCancel,
+                dismissible: false,
+                overlay: true,
+            },
         );
     }
 };

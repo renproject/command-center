@@ -8,14 +8,13 @@ import { DEFAULT_REN_NETWORK } from "../lib/react/environmentVariables";
 import { _catchBackgroundException_ } from "../lib/react/errors";
 import { promptLogin } from "../store/account/accountActions";
 import { ApplicationState } from "../store/applicationState";
+import { PopupContainer } from "../store/popupStore";
 import { AppDispatch } from "../store/rootReducer";
 import { Web3Container } from "../store/web3Store";
 import { AllDarknodes } from "./allDarknodesPage/AllDarknodes";
 import { NotFound } from "./common/404";
 import { BackgroundTasks } from "./common/BackgroundTasks";
-import { Connect } from "./common/Connect";
 import { _catch_ } from "./common/ErrorBoundary";
-import { Footer } from "./common/Footer";
 import { Header } from "./common/Header";
 import { LoggingIn } from "./common/LoggingIn";
 import { PopupController } from "./common/popups/PopupController";
@@ -57,10 +56,11 @@ export const ScrollToTopWithRouter = withRouter(() => {
  */
 const AppClass = ({ match: { params }, store: { web3, address, loggedInBefore, renNetwork }, actions }: Props) => {
     const { setWeb3, setNetwork } = Web3Container.useContainer();
+    const { setPopup, clearPopup } = PopupContainer.useContainer();
 
     React.useEffect(() => {
         if (loggedInBefore) {
-            actions.promptLogin({ manual: false, redirect: false, showPopup: false, immediatePopup: false })
+            actions.promptLogin(setPopup, clearPopup, { manual: false, redirect: false, showPopup: false, immediatePopup: false })
                 .catch((error) => _catchBackgroundException_(error, "Error in App > promptLogin"));
         }
     }, []);

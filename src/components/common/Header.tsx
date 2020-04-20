@@ -17,7 +17,8 @@ import { ReactComponent as RenVMIcon } from "../../styles/images/Icon-HyperDrive
 import { ReactComponent as OverviewIcon } from "../../styles/images/Icon-Overview.svg";
 // import { ReactComponent as English } from "../../styles/images/rp-flag-uk.svg";
 import { AccountDropdown } from "./AccountDropdown";
-import { Search } from "./Search";
+
+// import { Search } from "./Search";
 
 // const languageOptions = new Map()
 //     .set("EN",
@@ -59,11 +60,6 @@ const HeaderClass = (props: Props) => {
     const setNetwork = (network: string): void => {
         props.actions.storeRenNetwork(RenNetworks[network]);
         setInterval(() => {
-            const currentLocation = window.location.pathname;
-            // history.push("/loading");
-            // Reload to clear all stores and cancel timeouts
-            // (e.g. deposit/withdrawal confirmations)
-            // tslint:disable-next-line: no-console
             window.location.reload();
         }, 100);
     };

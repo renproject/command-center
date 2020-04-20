@@ -6,6 +6,7 @@ import { bindActionCreators } from "redux";
 import { _catchBackgroundException_ } from "../../lib/react/errors";
 import { promptLogin } from "../../store/account/accountActions";
 import { ApplicationState } from "../../store/applicationState";
+import { PopupContainer } from "../../store/popupStore";
 import { AppDispatch } from "../../store/rootReducer";
 import { EmptyDarknodeList } from "../allDarknodesPage/darknodeList/EmptyDarknodeList";
 
@@ -14,12 +15,13 @@ import { EmptyDarknodeList } from "../allDarknodesPage/darknodeList/EmptyDarknod
  * to log-in, and the hidden orderbook
  */
 const LoggingInClass = (props: Props) => {
+    const { setPopup, clearPopup } = PopupContainer.useContainer();
 
     const { address } = props.store;
 
     const handleLogin = React.useCallback(async (): Promise<void> => {
         if (!address) {
-            await props.actions.promptLogin({ manual: false, redirect: false, showPopup: true, immediatePopup: false });
+            await props.actions.promptLogin(setPopup, clearPopup, { manual: false, redirect: false, showPopup: true, immediatePopup: false });
         }
     }, [address]);
 

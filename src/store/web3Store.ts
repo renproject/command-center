@@ -3,9 +3,9 @@ import { useState } from "react";
 import { createContainer } from "unstated-next";
 import Web3 from "web3";
 
-const useWeb3Container = () => {
-    const [network, setNetwork] = useState(null as RenNetworkDetails | null);
-    const [web3, setWeb3] = useState(null as Web3 | null);
+const useWeb3Container = (initialState = testnet as RenNetworkDetails) => {
+    const [network, setNetwork] = useState<RenNetworkDetails>(initialState);
+    const [web3, setWeb3] = useState<Web3 | null>(null);
 
     return { network, web3, setWeb3, setNetwork };
 };

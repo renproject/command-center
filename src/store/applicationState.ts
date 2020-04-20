@@ -17,7 +17,7 @@ import { Serializable } from "../lib/react/serializable";
 
 export interface ApplicationState {
     account: AccountState;
-    popup: PopupState;
+    // popup: PopupState;
     network: NetworkState;
     ui: UIState;
 }
@@ -66,12 +66,12 @@ export class AccountState extends Record({
     }
 }
 
-export class PopupState extends Record({
-    dismissible: true,
-    onCancel: (() => null) as () => void,
-    popup: null as JSX.Element | null,
-    overlay: false,
-}) { }
+// export class PopupState extends Record({
+//     dismissible: true,
+//     onCancel: (() => null) as () => void,
+//     popup: null as JSX.Element | null,
+//     overlay: false,
+// }) { }
 
 export class UIState extends Record({
     mobileMenuActive: false,

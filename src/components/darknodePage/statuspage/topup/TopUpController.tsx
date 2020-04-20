@@ -1,6 +1,6 @@
 import { Currency, CurrencyIcon } from "@renproject/react-components";
 import { BigNumber } from "bignumber.js";
-import React, { Component } from "react";
+import React from "react";
 import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { bindActionCreators } from "redux";
 
@@ -9,69 +9,39 @@ import { _catchBackgroundException_ } from "../../../../lib/react/errors";
 import { showFundPopup } from "../../../../store/account/operatorPopupActions";
 import { ApplicationState } from "../../../../store/applicationState";
 import { updateDarknodeDetails } from "../../../../store/network/operatorActions";
+import { PopupContainer } from "../../../../store/popupStore";
 import { AppDispatch } from "../../../../store/rootReducer";
 import { TokenBalance } from "../../../common/TokenBalance";
 import { TopUp } from "./TopUp";
 
 export const CONFIRMATION_MESSAGE = "Transaction confirmed.";
 
-const defaultState = { // Entries must be immutable
-    value: "",
-    resultMessage: null as React.ReactNode,
-    pending: false,
-    disabled: false,
-    accountBalance: new BigNumber(0),
-};
+const TopUpControllerClass: React.StatelessComponent<Props> = ({ darknodeID, store: { address, web3, tokenPrices, renNetwork }, actions }) => {
+    const { setPopup } = PopupContainer.useContainer();
 
-class TopUpControllerClass extends Component<Props, typeof defaultState> {
-    private _isMounted = false;
+    const [value, setValue] = React.useState("");
+    const [resultMessage, setResultMessage] = React.useState<React.ReactNode>(null);
+    const [pending, setPending] = React.useState(false);
+    const [disabled, setDisabled] = React.useState(false);
+    const [accountBalance, setAccountBalance] = React.useState(new BigNumber(0));
 
-    constructor(props: Props) {
-        super(props);
-        this.state = defaultState;
-    }
+    const handleChange = (newValue: string): void => {
+        setValue(newValue);
 
-    public componentDidMount = async () => {
-        this._isMounted = true;
-        this.updateTraderBalance().catch((error) => {
-            _catchBackgroundException_(error, "Error in TopUpController > updateTraderBalance");
-        });
-    }
-
-    public componentWillUnmount = () => {
-        this._isMounted = false;
-    }
-
-    public render = (): JSX.Element => <TopUp
-        darknodeID={this.props.darknodeID}
-        value={this.state.value}
-        resultMessage={this.state.resultMessage}
-        pending={this.state.pending}
-        disabled={this.state.disabled}
-        handleChange={this.handleChange}
-        handleBlur={this.handleBlur}
-        sendFunds={this.sendFunds}
-    />
-
-    private readonly handleChange = (value: string): void => {
-        this.setState({ value });
-
-        const { accountBalance: traderBalance, resultMessage, disabled } = this.state;
         // If input is invalid, show an error.
-        if (isNaN(parseFloat(value)) || parseFloat(value) <= 0) {
-            this.setState({ disabled: true, resultMessage: null });
-        } else if (traderBalance.isLessThan(value)) {
-            this.setState({
-                resultMessage: <>Insufficient balance. Maximum deposit: <CurrencyIcon currency={Currency.ETH} /><TokenBalance token={Token.ETH} amount={traderBalance.times(new BigNumber(10).pow(18))} digits={3} /></>,
-                disabled: true,
-            });
+        if (isNaN(parseFloat(newValue)) || parseFloat(newValue) <= 0) {
+            setDisabled(true);
+            setResultMessage(null);
+        } else if (accountBalance.isLessThan(newValue)) {
+            setResultMessage(<>Insufficient balance. Maximum deposit: <CurrencyIcon currency={Currency.ETH} /><TokenBalance token={Token.ETH} amount={accountBalance.times(new BigNumber(10).pow(18))} digits={3} /></>);
+            setDisabled(true);
         } else if (resultMessage || disabled) {
-            this.setState({ resultMessage: null, disabled: false });
+            setResultMessage(null);
+            setDisabled(false);
         }
-    }
+    };
 
-    private readonly updateTraderBalance = async (): Promise<BigNumber> => {
-        const { store: { address, web3 } } = this.props;
+    const updateTraderBalance = async (): Promise<BigNumber> => {
 
         let traderBalance;
         if (!address) {
@@ -80,61 +50,76 @@ class TopUpControllerClass extends Component<Props, typeof defaultState> {
             traderBalance = new BigNumber((await web3.eth.getBalance(address)).toString())
                 .div(new BigNumber(10).exponentiatedBy(18));
         }
-        this.setState({ accountBalance: traderBalance });
+        setAccountBalance(traderBalance);
         return traderBalance;
-    }
+    };
 
-    private readonly handleBlur = async (): Promise<void> => {
-        const { value } = this.state;
+    const handleBlur = async (): Promise<void> => {
         let traderBalance;
         try {
-            traderBalance = await this.updateTraderBalance();
+            traderBalance = await updateTraderBalance();
             if (traderBalance.isLessThan(value)) {
-                this.setState({ value: traderBalance.toFixed(), disabled: true });
+                setValue(traderBalance.toFixed());
+                setDisabled(true);
             }
         } catch (error) {
             _catchBackgroundException_(error, "Error in TopUpController > handleBlur");
         }
-    }
+    };
 
-    private readonly sendFunds = async (): Promise<void> => {
-        const { darknodeID, store: { address, web3, tokenPrices, renNetwork } } = this.props;
-        const { value } = this.state;
+    const sendFunds = async (): Promise<void> => {
 
-        this.setState({ resultMessage: "", pending: true });
+        setResultMessage("");
+        setPending(true);
 
         if (!address) {
-            this.setState({ resultMessage: `Invalid account.`, pending: false });
+            setResultMessage(`Invalid account.`);
+            setPending(false);
             return;
         }
 
         const onCancel = () => {
-            if (this._isMounted) {
-                this.setState({ pending: false });
-            }
+            setPending(false);
         };
 
         const onDone = async () => {
             try {
-                await this.props.actions.updateDarknodeDetails(web3, renNetwork, darknodeID, tokenPrices);
+                await actions.updateDarknodeDetails(web3, renNetwork, darknodeID, tokenPrices);
             } catch (error) {
                 // Ignore error
             }
 
-            if (this._isMounted) {
-                this.setState({ resultMessage: CONFIRMATION_MESSAGE, pending: false });
+            setResultMessage(CONFIRMATION_MESSAGE);
+            setPending(false);
 
-                // If the user hasn't changed the value, set it to 0.
-                if (this.state.value === value) {
-                    this.setState({ value: "0" });
-                }
+            // If the user hasn't changed the value, set it to 0.
+            if (value === value) {
+                setValue("0");
             }
         };
 
         // tslint:disable-next-line: await-promise
-        await this.props.actions.showFundPopup(web3, address, darknodeID, value, onCancel, onDone);
-    }
-}
+        await actions.showFundPopup(web3, address, darknodeID, value, onCancel, onDone, setPopup);
+    };
+
+    React.useEffect(() => {
+        updateTraderBalance().catch((error) => {
+            _catchBackgroundException_(error, "Error in TopUpController > updateTraderBalance");
+        });
+    }, []);
+
+    return <TopUp
+        darknodeID={darknodeID}
+        value={value}
+        resultMessage={resultMessage}
+        pending={pending}
+        disabled={disabled}
+        handleChange={handleChange}
+        handleBlur={handleBlur}
+        sendFunds={sendFunds}
+    />;
+
+};
 
 const mapStateToProps = (state: ApplicationState) => ({
     store: {

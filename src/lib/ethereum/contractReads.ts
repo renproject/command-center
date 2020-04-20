@@ -1,4 +1,4 @@
-import { mainnet, RenNetworkDetails } from "@renproject/contracts";
+import { RenNetworkDetails } from "@renproject/contracts";
 import { Currency } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import BN from "bn.js";

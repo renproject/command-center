@@ -1,8 +1,8 @@
-import { CurrencyIcon, Loading } from "@renproject/react-components";
 import { RenVMType } from "@renproject/interfaces";
+import { CurrencyIcon, Loading } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
-import React, { useCallback } from "react";
+import React from "react";
 import { connect } from "react-redux";
 
 import { AllTokenDetails, OldToken, Token } from "../../lib/ethereum/tokens";
@@ -10,7 +10,6 @@ import { ApplicationState } from "../../store/applicationState";
 import { ReactComponent as IconValueLocked } from "../../styles/images/icon-value-locked.svg";
 import { ReactComponent as IconVolume } from "../../styles/images/icon-volume.svg";
 import { Stat, Stats } from "../common/Stat";
-import { TokenBalance } from "../common/TokenBalance";
 import { Block, RenVMContainer } from "../renvmPage/renvmContainer";
 import { Collateral } from "./Collateral";
 import { Period, PeriodSelector } from "./PeriodSelector";
@@ -19,23 +18,18 @@ import { StatTabs } from "./StatTabs";
 import { VolumeChart } from "./VolumeChart";
 
 const mapStateToProps = (state: ApplicationState) => ({
-    currentCycle: state.network.currentCycle,
-    previousCycle: state.network.previousCycle,
-    pendingTotalInEth: state.network.pendingTotalInEth,
-    quoteCurrency: state.network.quoteCurrency,
-    currentShareCount: state.network.currentShareCount,
-    currentDarknodeCount: state.network.currentDarknodeCount,
-    previousDarknodeCount: state.network.previousDarknodeCount,
-    nextDarknodeCount: state.network.nextDarknodeCount,
-    tokenPrices: state.network.tokenPrices,
+    store: {
+        quoteCurrency: state.network.quoteCurrency,
+        currentDarknodeCount: state.network.currentDarknodeCount,
+        tokenPrices: state.network.tokenPrices,
+    }
 });
 
-export const NetworkStats = connect(mapStateToProps)(({
+export const NetworkStats = connect(mapStateToProps)(({ store: {
     tokenPrices,
-    currentCycle, previousCycle, pendingTotalInEth, quoteCurrency,
-    currentShareCount, currentDarknodeCount, previousDarknodeCount,
-    nextDarknodeCount,
-}: ReturnType<typeof mapStateToProps>) => {
+    quoteCurrency,
+    currentDarknodeCount,
+} }: ReturnType<typeof mapStateToProps>) => {
 
     const container = RenVMContainer.useContainer();
 

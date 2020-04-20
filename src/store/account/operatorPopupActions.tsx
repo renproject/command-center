@@ -15,7 +15,7 @@ import { Token, TokenPrices } from "../../lib/ethereum/tokens";
 import { connectWaitForTX } from "../../lib/ethereum/waitForTX";
 import { _catchBackgroundException_ } from "../../lib/react/errors";
 import { updateDarknodeDetails } from "../network/operatorActions";
-import { setPopup } from "../popup/popupActions";
+import { PopupDetails } from "../popupStore";
 import { AppDispatch } from "../rootReducer";
 
 export const showRegisterPopup = (
@@ -24,58 +24,60 @@ export const showRegisterPopup = (
     address: string,
     darknodeID: string,
     publicKey: string,
-    tokenPrices: TokenPrices, onCancel: () => void, onDone: () => void) => async (dispatch: AppDispatch) => {
+    tokenPrices: TokenPrices, onCancel: () => void, onDone: () => void,
+    setPopup: (details: PopupDetails) => void,
+) => async (dispatch: AppDispatch) => {
 
-        const minimumBond = await getMinimumBond(web3, renNetwork);
+    const minimumBond = await getMinimumBond(web3, renNetwork);
 
-        const step1 = async () => {
-            await approveNode(web3, renNetwork, address, minimumBond, connectWaitForTX(dispatch));
-        };
-
-        const step2 = async () => {
-            await registerNode(
-                web3,
-                renNetwork,
-                address,
-                darknodeID,
-                publicKey,
-                minimumBond,
-                onCancel,
-                onDone,
-                connectWaitForTX(dispatch),
-            );
-
-            if (tokenPrices) {
-                try {
-                    await dispatch(updateDarknodeDetails(web3, renNetwork, darknodeID, tokenPrices));
-                } catch (error) {
-                    _catchBackgroundException_(error, "Error in operatorPopupActions > showRegisterPopup > updateDarknodeDetails");
-                }
-            }
-        };
-
-        const steps = [
-            { call: step1, name: `Approve ${renNetwork.name === "chaosnet" ? "10K" : "100K"} REN` },
-            { call: step2, name: "Register darknode" },
-        ];
-
-        const warning = `Due to a large number of registrations, estimated Darknode profits are currently negative.\
-Are you sure you want to continue?`;
-        const title = "Register darknode";
-
-        dispatch(setPopup({
-            popup: <MultiStepPopup
-                steps={steps}
-                onCancel={onCancel}
-                title={title}
-                warning={warning}
-                confirm
-            />,
-            onCancel,
-            dismissible: false,
-            overlay: true,
-        }));
+    const step1 = async () => {
+        await approveNode(web3, renNetwork, address, minimumBond, connectWaitForTX(dispatch));
     };
+
+    const step2 = async () => {
+        await registerNode(
+            web3,
+            renNetwork,
+            address,
+            darknodeID,
+            publicKey,
+            minimumBond,
+            onCancel,
+            onDone,
+            connectWaitForTX(dispatch),
+        );
+
+        if (tokenPrices) {
+            try {
+                await dispatch(updateDarknodeDetails(web3, renNetwork, darknodeID, tokenPrices));
+            } catch (error) {
+                _catchBackgroundException_(error, "Error in operatorPopupActions > showRegisterPopup > updateDarknodeDetails");
+            }
+        }
+    };
+
+    const steps = [
+        { call: step1, name: `Approve ${renNetwork.name === "chaosnet" ? "10K" : "100K"} REN` },
+        { call: step2, name: "Register darknode" },
+    ];
+
+    const warning = `Due to a large number of registrations, estimated Darknode profits are currently negative.\
+Are you sure you want to continue?`;
+    const title = "Register darknode";
+
+    setPopup({
+        popup: <MultiStepPopup
+            steps={steps}
+            onCancel={onCancel}
+            title={title}
+            warning={warning}
+            confirm
+        />,
+        onCancel,
+        dismissible: false,
+        overlay: true,
+    });
+};
 
 export const showDeregisterPopup = (
     web3: Web3,
@@ -85,7 +87,8 @@ export const showDeregisterPopup = (
     remainingFees: BigNumber | null,
     quoteCurrency: Currency,
     onCancel: () => void,
-    onDone: () => void
+    onDone: () => void,
+    setPopup: (details: PopupDetails) => void,
 ) => async (dispatch: AppDispatch) => {
 
     const step1 = async () => {
@@ -115,7 +118,7 @@ export const showDeregisterPopup = (
     const ignoreWarning = "Continue away (fees will be lost)";
     const title = "Deregister darknode";
 
-    dispatch(setPopup(
+    setPopup(
         {
             popup: <MultiStepPopup
                 steps={steps}
@@ -129,10 +132,11 @@ export const showDeregisterPopup = (
             dismissible: false,
             overlay: true,
         },
-    ));
+    );
 };
 
 export const showRefundPopup = (
+    setPopup: (details: PopupDetails) => void,
     web3: Web3,
     renNetwork: RenNetworkDetails,
     address: string,
@@ -151,7 +155,7 @@ export const showRefundPopup = (
 
     const title = "Refund REN";
 
-    dispatch(setPopup(
+    setPopup(
         {
             popup: <MultiStepPopup
                 steps={steps}
@@ -163,7 +167,7 @@ export const showRefundPopup = (
             dismissible: false,
             overlay: true,
         },
-    ));
+    );
 };
 
 export const showFundPopup = (
@@ -173,6 +177,7 @@ export const showFundPopup = (
     ethAmountStr: string,
     onCancel: () => void,
     onDone: () => void,
+    setPopup: (details: PopupDetails) => void,
 ) => async (dispatch: AppDispatch) => {
 
     const step1 = async () => {
@@ -185,7 +190,7 @@ export const showFundPopup = (
 
     const title = "Fund darknode";
 
-    dispatch(setPopup(
+    setPopup(
         {
             popup: <MultiStepPopup
                 steps={steps}
@@ -197,7 +202,7 @@ export const showFundPopup = (
             dismissible: false,
             overlay: true,
         },
-    ));
+    );
 };
 
 // export const showClaimPopup = (

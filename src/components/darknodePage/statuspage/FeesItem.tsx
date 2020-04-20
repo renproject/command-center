@@ -12,11 +12,13 @@ import { waitForTX } from "../../../lib/ethereum/waitForTX";
 import { withdrawReward } from "../../../store/account/darknodeActions";
 import { ApplicationState } from "../../../store/applicationState";
 import { updateDarknodeDetails } from "../../../store/network/operatorActions";
+import { PopupContainer } from "../../../store/popupStore";
 import { AppDispatch } from "../../../store/rootReducer";
 
 const minimumShiftedAmount = 0.00016;
 
 const FeesItemClass = ({ darknodeID, token, amount, disabled, actions, store }: Props) => {
+    const { setPopup, clearPopup } = PopupContainer.useContainer();
     const [loading, setLoading] = React.useState(false);
 
     const tokenDetails = AllTokenDetails.get(token);
@@ -30,7 +32,7 @@ const FeesItemClass = ({ darknodeID, token, amount, disabled, actions, store }: 
         if (address && tokenDetails && !tokenDetails.old) {
             try {
                 // tslint:disable-next-line: await-promise
-                await actions.withdrawReward(darknodeID, token as Token, actions.waitForTX);
+                await actions.withdrawReward(darknodeID, token as Token, actions.waitForTX, setPopup, clearPopup);
             } catch (error) {
                 setLoading(false);
                 return;

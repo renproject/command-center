@@ -12,42 +12,34 @@ import { DarknodeList } from "./darknodeList/DarknodeList";
  * Home is a page whose principal components are wallet selection to allow users
  * to log-in, and the hidden orderbook
  */
-class AllDarknodesClass extends React.Component<Props> {
-    public constructor(props: Props, context: object) {
-        super(props, context);
-    }
+const AllDarknodesClass: React.StatelessComponent<Props> = ({ store: { darknodeList, hiddenDarknodes, darknodeNames, darknodeDetails, darknodeRegisteringList, registrySync, address, renNetwork } }) => {
+    const shownDarknodeList = !darknodeList ? darknodeList : darknodeList.filter(d => !hiddenDarknodes || !hiddenDarknodes.contains(d));
 
-    public render = (): JSX.Element => {
-        const { darknodeList, hiddenDarknodes, darknodeNames, darknodeDetails, darknodeRegisteringList, registrySync, address, renNetwork } = this.props.store;
-
-        const shownDarknodeList = !darknodeList ? darknodeList : darknodeList.filter(d => !hiddenDarknodes || !hiddenDarknodes.contains(d));
-
-        return (
-            <div className="home" key={`${address || undefined} ${renNetwork.name}`}>
-                <div className="container">
-                    {darknodeRegisteringList.size > 0 ? <>
-                        <h2>Continue registering</h2>
-                        {_catch_(<DarknodeList
-                            darknodeDetails={darknodeDetails}
-                            darknodeNames={darknodeNames}
-                            darknodeList={darknodeRegisteringList.keySeq().toOrderedSet()}
-                            darknodeRegisteringList={darknodeRegisteringList}
-                            registrySync={registrySync}
-                        />)}
-                        {(shownDarknodeList && shownDarknodeList.size > 0) ? <h2>Current darknodes</h2> : null}
-                    </> : null}
-                    {darknodeRegisteringList.size === 0 || (shownDarknodeList && shownDarknodeList.size > 0) ? _catch_(<DarknodeList
+    return (
+        <div className="home" key={`${address || undefined} ${renNetwork.name}`}>
+            <div className="container">
+                {darknodeRegisteringList.size > 0 ? <>
+                    <h2>Continue registering</h2>
+                    {_catch_(<DarknodeList
                         darknodeDetails={darknodeDetails}
                         darknodeNames={darknodeNames}
-                        darknodeList={shownDarknodeList}
+                        darknodeList={darknodeRegisteringList.keySeq().toOrderedSet()}
                         darknodeRegisteringList={darknodeRegisteringList}
                         registrySync={registrySync}
-                    />) : null}
-                </div>
+                    />)}
+                    {(shownDarknodeList && shownDarknodeList.size > 0) ? <h2>Current darknodes</h2> : null}
+                </> : null}
+                {darknodeRegisteringList.size === 0 || (shownDarknodeList && shownDarknodeList.size > 0) ? _catch_(<DarknodeList
+                    darknodeDetails={darknodeDetails}
+                    darknodeNames={darknodeNames}
+                    darknodeList={shownDarknodeList}
+                    darknodeRegisteringList={darknodeRegisteringList}
+                    registrySync={registrySync}
+                />) : null}
             </div>
-        );
-    }
-}
+        </div>
+    );
+};
 
 const mapStateToProps = (state: ApplicationState) => ({
     store: {

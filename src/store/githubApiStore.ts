@@ -1,11 +1,11 @@
 // tslint:disable: no-unused-variable
 
+import { naturalTime } from "@renproject/react-components";
 import Axios from "axios";
+import moment from "moment";
 import { useCallback, useEffect, useState } from "react";
 import semver from "semver";
 import { createContainer } from "unstated-next";
-import { naturalTime } from "@renproject/react-components";
-import moment from "moment";
 
 import { retryNTimes } from "../components/renvmPage/renvmContainer";
 import { _catchBackgroundException_ } from "../lib/react/errors";
@@ -143,7 +143,7 @@ interface Asset {
     id: number;
     node_id: string;
     name: string;
-    label?: any;
+    label?: unknown;
     uploader: Uploader;
     content_type: string;
     state: string;

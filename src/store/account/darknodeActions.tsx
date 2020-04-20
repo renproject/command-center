@@ -9,7 +9,7 @@ import { withdrawToken } from "../../lib/ethereum/contractWrites";
 import { AllTokenDetails, OldToken, Token } from "../../lib/ethereum/tokens";
 import { WaitForTX } from "../../lib/ethereum/waitForTX";
 import { ApplicationState } from "../applicationState";
-import { clearPopup, setPopup } from "../popup/popupActions";
+import { PopupDetails } from "../popupStore";
 import { AppDispatch } from "../rootReducer";
 
 export const showWithdrawToken = async (
@@ -82,6 +82,8 @@ export const withdrawReward = (
     darknodeID: string,
     token: Token,
     waitForTX: WaitForTX,
+    setPopup: (details: PopupDetails) => void,
+    clearPopup: () => void,
 ) => async (dispatch: AppDispatch, getState: () => ApplicationState) => {
     const { web3, address, renNetwork } = getState().account;
 
@@ -90,10 +92,10 @@ export const withdrawReward = (
         throw new Error("Unknown token");
     }
 
-    const callClearPopup = () => { dispatch(clearPopup()); };
+    const callClearPopup = () => { clearPopup(); };
     const callSetPopup = (
         popup: JSX.Element,
         onCancel: () => void,
-    ) => dispatch(setPopup({ popup, overlay: true, onCancel }));
+    ) => setPopup({ popup, overlay: true, onCancel });
     await showWithdrawToken(web3, renNetwork, address, darknodeID, token, waitForTX, callClearPopup, callSetPopup);
 };

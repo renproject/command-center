@@ -32,16 +32,16 @@ ReactDOM.render(
     _catch_(
         <Router history={history}>
             <Provider store={store}>
-                <Connect>
-                    <PersistGate loading={null} persistor={persistor}>
+                <PersistGate loading={null} persistor={persistor}>
+                    <Connect>
                         <Switch>
                             {/* We add the routes here as well as in App so that App has access to the URL parameters */}
                             <Route path="/darknode/:darknodeID" exact component={App} />
                             <Route component={App} />
                             {/* Don't add extra routes here - add them in App */}
                         </Switch>
-                    </PersistGate>
-                </Connect>
+                    </Connect>
+                </PersistGate>
             </Provider>
         </Router>,
         { popup: true },

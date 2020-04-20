@@ -4,8 +4,6 @@ import * as React from "react";
 
 import { faServer } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import filesize from "filesize";
-import { Doughnut } from "react-chartjs-2";
 import { buildStyles, CircularProgressbar } from "react-circular-progressbar";
 
 import { DarknodesState } from "../../../../store/applicationState";

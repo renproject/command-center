@@ -58,89 +58,61 @@ const periods: Array<[HistoryPeriod, string]> = [
     [HistoryPeriod.Year, "1Y"],
 ];
 
-const defaultState = { // Entries must be immutable
-    historyPeriod: HistoryPeriod.Week,
-    nextHistoryPeriod: HistoryPeriod.Week,
-    loadingHistory: false,
-};
 
-class GasGraphClass extends React.Component<Props, State> {
-    private updateHistoryStarted: boolean = false;
-    private updateHistoryTimeout: NodeJS.Timer | undefined;
-    private localTimeout: NodeJS.Timer | undefined;
-    /**
-     * _isMounted is used to prevent setting state after the component has been
-     * unmounted.
-     */
-    private _isMounted: boolean = false;
+const GasGraphClass: React.StatelessComponent<Props> = ({ darknodeDetails, store: { secondsPerBlock, web3, balanceHistories }, actions }) => {
 
-    constructor(props: Props) {
-        super(props);
-        this.state = defaultState;
-    }
+    const [historyPeriod, setHistoryPeriod] = React.useState(HistoryPeriod.Week);
+    const [nextHistoryPeriod, setNextHistoryPeriod] = React.useState(HistoryPeriod.Week);
+    const [loadingHistory, setLoadingHistory] = React.useState(false);
+    // tslint:disable-next-line: prefer-const
+    let [updateHistoryStarted, setUpdateHistoryStarted] = React.useState(false);
+    const [currentEthBalance, setCurrentEthBalance] = React.useState<string | null>(null);
 
-    public componentDidMount = (): void => {
-        this._isMounted = true;
-        const { store: { secondsPerBlock, web3 } } = this.props;
+    const [updateHistoryTimeout, setUpdateHistoryTimeout] = React.useState<NodeJS.Timer | undefined>(undefined);
+    const [localTimeout, setLocalTimeout] = React.useState<NodeJS.Timer | undefined>(undefined);
+
+
+    React.useEffect(() => {
         if (secondsPerBlock === null) {
-            this.props.actions.updateSecondsPerBlock(web3)
+            actions.updateSecondsPerBlock(web3)
                 .catch((error) => {
                     _catchBackgroundException_(error, "Error in GasGraph > updateSecondsPerBlock");
                 });
         }
 
-        this.componentWillReceiveProps(this.props);
-    }
+        // On unmount:
+        return () => {
+            if (updateHistoryTimeout) { clearTimeout(updateHistoryTimeout); }
+            if (localTimeout) { clearTimeout(localTimeout); }
+        };
+    }, []);
 
-    public componentWillReceiveProps = (nextProps: Props): void => {
-        // Check if the darknode's balances have changed
-        const changedBalance =
-            nextProps.darknodeDetails && nextProps.darknodeDetails.ethBalance &&
-            this.props.darknodeDetails && this.props.darknodeDetails.ethBalance &&
-            !nextProps.darknodeDetails.ethBalance.isEqualTo(this.props.darknodeDetails.ethBalance);
-
-        if (changedBalance || (this.updateHistoryStarted === false && nextProps.darknodeDetails)) {
-            this.updateHistory(nextProps).catch((error => {
-                _catchBackgroundException_(error, "Error in GasGraph > componentWillReceiveProps");
-            }));
-        }
-    }
-
-    public componentWillUnmount = (): void => {
-        this._isMounted = false;
-        if (this.updateHistoryTimeout) { clearTimeout(this.updateHistoryTimeout); }
-        if (this.localTimeout) { clearTimeout(this.localTimeout); }
-    }
-
-    public updateHistory = async (
-        props: Props | undefined,
-        historyPeriod?: HistoryPeriod | undefined
+    const updateHistory = async (
+        selectedHistoryPeriod?: HistoryPeriod | undefined
     ): Promise<void> => {
-        this.updateHistoryStarted = true;
+        setUpdateHistoryStarted(true);
+        updateHistoryStarted = true;
 
-        if (this.localTimeout) { clearTimeout(this.localTimeout); }
-        this.localTimeout = setTimeout(() => {
-            if (this._isMounted) {
-                this.setState({ loadingHistory: true });
-            }
-        }, 100);
+        if (localTimeout) { clearTimeout(localTimeout); }
+        setLocalTimeout(setTimeout(() => {
+            setLoadingHistory(true);
+        }, 100));
 
-        historyPeriod = historyPeriod || this.state.nextHistoryPeriod;
-        const { store: { balanceHistories, web3, secondsPerBlock }, darknodeDetails } = props || this.props;
+        selectedHistoryPeriod = selectedHistoryPeriod || nextHistoryPeriod;
 
         let retry = 1; // Retry in a second, unless the call succeeds.
 
         if (darknodeDetails && secondsPerBlock !== null) {
             retry = 60 * 5; // 5 minutes
 
-            const balanceHistory = balanceHistories.get(darknodeDetails.ID) || OrderedMap<number, BigNumber>();
+            const currentBalanceHistory = balanceHistories.get(darknodeDetails.ID) || OrderedMap<number, BigNumber>();
             try {
                 // tslint:disable-next-line: await-promise
-                await this.props.actions.fetchDarknodeBalanceHistory(
+                await actions.fetchDarknodeBalanceHistory(
                     web3,
                     darknodeDetails.ID,
-                    balanceHistory,
-                    historyPeriod,
+                    currentBalanceHistory,
+                    selectedHistoryPeriod,
                     secondsPerBlock
                 );
             } catch (error) {
@@ -152,132 +124,133 @@ class GasGraphClass extends React.Component<Props, State> {
             }
         }
 
-        if (this.localTimeout) { clearTimeout(this.localTimeout); }
-        if (this._isMounted) {
-            this.setState({ loadingHistory: false });
-        }
+        if (localTimeout) { clearTimeout(localTimeout); }
+        setLoadingHistory(false);
 
         // tslint:disable-next-line: no-any
-        clearTimeout(this.updateHistoryTimeout as any);
-        this.updateHistoryTimeout = setTimeout(this.updateHistory, retry * 1000) as unknown as NodeJS.Timer;
-    }
+        clearTimeout(updateHistoryTimeout as any);
+        setUpdateHistoryTimeout(setTimeout(updateHistory, retry * 1000) as unknown as NodeJS.Timer);
+    };
 
-    public render = (): JSX.Element => {
-        const { historyPeriod, nextHistoryPeriod, loadingHistory } = this.state;
+    // Check if the darknode's balances have changed
+    const ethBalance = React.useMemo(() => darknodeDetails && darknodeDetails.ethBalance && darknodeDetails.ethBalance.toString(), [darknodeDetails]);
 
-        const { darknodeDetails, store: { secondsPerBlock } } = this.props;
+    React.useEffect(() => {
+        setCurrentEthBalance(ethBalance);
 
-        let balanceHistory;
-        if (darknodeDetails) {
-            const { store: { balanceHistories } } = this.props;
-            balanceHistory = balanceHistories.get(darknodeDetails.ID) || OrderedMap<number, BigNumber>();
+        if (ethBalance !== currentEthBalance || (updateHistoryStarted === false && darknodeDetails)) {
+            updateHistory().catch((error => {
+                _catchBackgroundException_(error, "Error in GasGraph > componentWillReceiveProps");
+            }));
         }
+    }, [ethBalance]);
 
-        let chartData;
-        if (balanceHistory && secondsPerBlock) {
-            const xyPoints: Array<{ x: number; y: number }> = [];
-
-            const jump = Math.floor((historyPeriod / secondsPerBlock) / HistoryIterations);
-
-            const currentBlock: number | undefined = balanceHistory.keySeq().max();
-
-            if (currentBlock) {
-
-                let first = currentBlock - (HistoryIterations - 1) * jump;
-                first = first - first % jump;
-
-                balanceHistory.map((y: BigNumber, x: number) => {
-                    if (x >= first) {
-                        xyPoints.push({ x, y: y ? y.div(shift).toNumber() : 0 });
-                    }
-                    return null;
-                });
-
-                // for (let i = 0; i < HistoryIterations; i++) {
-                //     let x = currentBlock - i * jump;
-                //     x = x - x % jump;
-                //     const y = balanceHistory.get(x);
-                //     xyPoints.push({ x, y: y ? y.div(shift).toNumber() : 0 });
-                // }
-
-                chartData = {
-                    // labels: xyPoints.map(({ x, y }) => `Block ${x}`),
-                    datasets: [
-                        {
-                            label: "Gas usage",
-                            fill: false,
-                            lineTension: 0,
-                            backgroundColor: "#F45532",
-                            borderColor: "#F45532",
-                            borderCapStyle: "butt",
-                            borderDash: [],
-                            borderDashOffset: 0,
-                            borderJoinStyle: "miter",
-                            pointBorderColor: "#F45532",
-                            pointBackgroundColor: "#F45532",
-                            pointBorderWidth: 1,
-                            pointHoverRadius: 5,
-                            pointHoverBackgroundColor: "#F45532",
-                            pointHoverBorderColor: "#F45532",
-                            pointHoverBorderWidth: 2,
-                            pointRadius: 1,
-                            pointHitRadius: 10,
-                            data: xyPoints, // .map(({ x, y }) => y),
-                        }
-                    ]
-                };
-            }
-        }
-
-        return (
-
-            <Block className="gas-graph">
-                <BlockTitle>
-                    <h3>
-                        <FontAwesomeIcon icon={faFire} pull="left" />
-                        Gas History
-                    </h3>
-                </BlockTitle>
-
-                <BlockBody>
-                    {chartData ? <Scatter data={chartData} options={options} /> : <div className="graph-placeholder" />}
-                    <div className="gas-graph--times">
-                        {periods.map(([period, periodString]: [HistoryPeriod, string]) => {
-                            return <button
-                                key={period}
-                                className={nextHistoryPeriod === period ? "selected" : ""}
-                                disabled={loadingHistory || nextHistoryPeriod === period}
-                                value={period}
-                                name="historyPeriod"
-                                onClick={this.handleSelectTime}
-                            >
-                                {nextHistoryPeriod === period && loadingHistory ? <Loading alt /> : periodString}
-                            </button>;
-                        })}
-                    </div>
-                </BlockBody>
-            </Block>
-        );
-    }
-
-    private readonly handleSelectTime = async (event: React.FormEvent<HTMLButtonElement>): Promise<void> => {
+    const handleSelectTime = async (event: React.FormEvent<HTMLButtonElement>): Promise<void> => {
         const element = (event.target as HTMLButtonElement);
         try {
-            if (this.updateHistoryTimeout) { clearTimeout(this.updateHistoryTimeout); }
-            const historyPeriod = parseInt(element.value, 10);
+            if (updateHistoryTimeout) { clearTimeout(updateHistoryTimeout); }
+            const selectedHistoryPeriod = parseInt(element.value, 10);
 
-            this.setState((current: State) => ({ ...current, nextHistoryPeriod: historyPeriod }));
-            await this.updateHistory(undefined, historyPeriod);
+            setNextHistoryPeriod(selectedHistoryPeriod);
+            await updateHistory(selectedHistoryPeriod);
 
-            // Component may have unmounted while updating
-            if (this._isMounted) {
-                this.setState((current: State) => ({ ...current, historyPeriod }));
-            }
+            setHistoryPeriod(selectedHistoryPeriod);
         } catch (error) {
             _catchBackgroundException_(error, "Error in GasGraph > handleSelectTime");
         }
+    };
+
+    let balanceHistory;
+    if (darknodeDetails) {
+        balanceHistory = balanceHistories.get(darknodeDetails.ID) || OrderedMap<number, BigNumber>();
     }
-}
+
+    let chartData;
+    if (balanceHistory && secondsPerBlock) {
+        const xyPoints: Array<{ x: number; y: number }> = [];
+
+        const jump = Math.floor((historyPeriod / secondsPerBlock) / HistoryIterations);
+
+        const currentBlock: number | undefined = balanceHistory.keySeq().max();
+
+        if (currentBlock) {
+
+            let first = currentBlock - (HistoryIterations - 1) * jump;
+            first = first - first % jump;
+
+            balanceHistory.map((y: BigNumber, x: number) => {
+                if (x >= first) {
+                    xyPoints.push({ x, y: y ? y.div(shift).toNumber() : 0 });
+                }
+                return null;
+            });
+
+            // for (let i = 0; i < HistoryIterations; i++) {
+            //     let x = currentBlock - i * jump;
+            //     x = x - x % jump;
+            //     const y = balanceHistory.get(x);
+            //     xyPoints.push({ x, y: y ? y.div(shift).toNumber() : 0 });
+            // }
+
+            chartData = {
+                // labels: xyPoints.map(({ x, y }) => `Block ${x}`),
+                datasets: [
+                    {
+                        label: "Gas usage",
+                        fill: false,
+                        lineTension: 0,
+                        backgroundColor: "#F45532",
+                        borderColor: "#F45532",
+                        borderCapStyle: "butt",
+                        borderDash: [],
+                        borderDashOffset: 0,
+                        borderJoinStyle: "miter",
+                        pointBorderColor: "#F45532",
+                        pointBackgroundColor: "#F45532",
+                        pointBorderWidth: 1,
+                        pointHoverRadius: 5,
+                        pointHoverBackgroundColor: "#F45532",
+                        pointHoverBorderColor: "#F45532",
+                        pointHoverBorderWidth: 2,
+                        pointRadius: 1,
+                        pointHitRadius: 10,
+                        data: xyPoints, // .map(({ x, y }) => y),
+                    }
+                ]
+            };
+        }
+    }
+
+    return (
+
+        <Block className="gas-graph">
+            <BlockTitle>
+                <h3>
+                    <FontAwesomeIcon icon={faFire} pull="left" />
+                    Gas History
+                    </h3>
+            </BlockTitle>
+
+            <BlockBody>
+                {chartData ? <Scatter data={chartData} options={options} /> : <div className="graph-placeholder" />}
+                <div className="gas-graph--times">
+                    {periods.map(([period, periodString]: [HistoryPeriod, string]) => {
+                        return <button
+                            key={period}
+                            className={nextHistoryPeriod === period ? "selected" : ""}
+                            disabled={loadingHistory || nextHistoryPeriod === period}
+                            value={period}
+                            name="historyPeriod"
+                            onClick={handleSelectTime}
+                        >
+                            {nextHistoryPeriod === period && loadingHistory ? <Loading alt /> : periodString}
+                        </button>;
+                    })}
+                </div>
+            </BlockBody>
+        </Block>
+    );
+};
 
 const mapStateToProps = (state: ApplicationState) => ({
     store: {
@@ -297,7 +270,5 @@ const mapDispatchToProps = (dispatch: AppDispatch) => ({
 interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps> {
     darknodeDetails: DarknodesState | null;
 }
-
-type State = typeof defaultState;
 
 export const GasGraph = connect(mapStateToProps, mapDispatchToProps)(GasGraphClass);

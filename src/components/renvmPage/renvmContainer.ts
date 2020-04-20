@@ -1,9 +1,9 @@
 // tslint:disable: no-unused-variable
 
 import { RenNetworkDetails, testnet } from "@renproject/contracts";
+import { RenVMArg, RenVMType } from "@renproject/interfaces";
 import { sleep } from "@renproject/react-components";
 import RenJS from "@renproject/ren";
-import { RenVMArg, RenVMType } from "@renproject/interfaces";
 import { ResponseQueryTx } from "@renproject/rpc";
 import Axios from "axios";
 import { List, OrderedMap } from "immutable";

@@ -12,6 +12,7 @@ import { darknodeIDHexToBase58 } from "../../../lib/darknode/darknodeID";
 import { RegistrationStatus } from "../../../lib/ethereum/contractReads";
 import { promptLogin } from "../../../store/account/accountActions";
 import { ApplicationState } from "../../../store/applicationState";
+import { PopupContainer } from "../../../store/popupStore";
 import { AppDispatch } from "../../../store/rootReducer";
 import { hideMobileMenu } from "../../../store/ui/uiActions";
 import { ReactComponent as RenVMIcon } from "../../../styles/images/Icon-HyperDrive.svg";
@@ -47,6 +48,9 @@ interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<
  */
 export const Sidebar = connect(mapStateToProps, mapDispatchToProps)(withRouter(
     ({ selectedDarknode, store, actions, location }: Props) => {
+
+        const { setPopup, clearPopup } = PopupContainer.useContainer();
+
         const { address, darknodeList, darknodeDetails, darknodeNames, hiddenDarknodes, quoteCurrency, mobileMenuActive, web3BrowserName } = store;
 
         const shownDarknodeList = !darknodeList ? darknodeList : darknodeList.filter(d => !hiddenDarknodes || !hiddenDarknodes.contains(d));
@@ -59,7 +63,7 @@ export const Sidebar = connect(mapStateToProps, mapDispatchToProps)(withRouter(
         };
 
         const handleLogin = async () => {
-            await actions.promptLogin({ manual: true, redirect: false, showPopup: true, immediatePopup: true });
+            await actions.promptLogin(setPopup, clearPopup, { manual: true, redirect: false, showPopup: true, immediatePopup: true });
         };
 
         return <>
