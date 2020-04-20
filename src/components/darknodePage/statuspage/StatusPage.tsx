@@ -6,7 +6,7 @@ import { bindActionCreators } from "redux";
 
 import { NULL, RegistrationStatus } from "../../../lib/ethereum/contractReads";
 import { DarknodesState } from "../../../store/applicationState";
-import { setDarknodeName } from "../../../store/network/operatorActions";
+import { setDarknodeName } from "../../../store/network/networkActions";
 import { AppDispatch } from "../../../store/rootReducer";
 import { Web3Container } from "../../../store/web3Store";
 import { DarknodeID } from "../../common/DarknodeID";

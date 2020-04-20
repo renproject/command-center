@@ -6,13 +6,11 @@ import { bindActionCreators } from "redux";
 
 import { NULL, RegistrationStatus } from "../../../lib/ethereum/contractReads";
 import { _catchInteractionException_ } from "../../../lib/react/errors";
-import {
-    showDeregisterPopup, showRefundPopup, showRegisterPopup,
-} from "../../../store/account/operatorPopupActions";
 import { DarknodesState } from "../../../store/applicationState";
 import {
-    updateDarknodeDetails, updateOperatorDarknodes,
-} from "../../../store/network/operatorActions";
+    showDeregisterPopup, showRefundPopup, showRegisterPopup, updateDarknodeDetails,
+    updateOperatorDarknodes,
+} from "../../../store/network/networkActions";
 import { NetworkStateContainer } from "../../../store/networkStateContainer";
 import { PopupContainer } from "../../../store/popupStore";
 import { AppDispatch } from "../../../store/rootReducer";

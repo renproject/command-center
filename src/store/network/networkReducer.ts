@@ -4,14 +4,12 @@ import { ActionType, getType } from "typesafe-actions";
 import { _catchInteractionException_ } from "../../lib/react/errors";
 import { PersistentNetworkState } from "../applicationState";
 import * as networkActions from "./networkActions";
-import * as operatorActions from "./operatorActions";
 
 type NetworkAction = ActionType<typeof networkActions>;
-type OperatorActions = ActionType<typeof operatorActions>;
 
 export const networkReducer = (
     state: PersistentNetworkState = new PersistentNetworkState(),
-    action: NetworkAction | OperatorActions
+    action: NetworkAction
 ): PersistentNetworkState => {
     switch (action.type) {
         case getType(networkActions.updateCurrentCycle):
@@ -41,18 +39,18 @@ export const networkReducer = (
                 .set("previousDarknodeCount", action.payload.previousDarknodeCount)
                 .set("nextDarknodeCount", action.payload.nextDarknodeCount);
 
-        case getType(operatorActions.addRegisteringDarknode):
+        case getType(networkActions.addRegisteringDarknode):
             return state.set("darknodeRegisteringList", state.darknodeRegisteringList.set(
                 action.payload.darknodeID,
                 action.payload.publicKey
             ));
 
-        case getType(operatorActions.removeRegisteringDarknode):
+        case getType(networkActions.removeRegisteringDarknode):
             return state.set("darknodeRegisteringList", state.darknodeRegisteringList.remove(
                 action.payload.darknodeID
             ));
 
-        case getType(operatorActions.addDarknodes):
+        case getType(networkActions.addDarknodes):
             const { address, darknodes } = action.payload;
 
             let newList = state.darknodeList.get(address) || OrderedSet<string>();
@@ -76,14 +74,14 @@ export const networkReducer = (
                 .set("darknodeNames", newNames)
                 .set("darknodeRegisteringList", darknodeRegisteringList);
 
-        case getType(operatorActions.setEmptyDarknodeList):
+        case getType(networkActions.setEmptyDarknodeList):
             return state
                 .set("darknodeList", state.darknodeList.set(action.payload.address, OrderedSet()));
 
-        case getType(operatorActions.storeQuoteCurrency):
+        case getType(networkActions.storeQuoteCurrency):
             return state.set("quoteCurrency", action.payload.quoteCurrency);
 
-        case getType(operatorActions.addToWithdrawAddresses):
+        case getType(networkActions.addToWithdrawAddresses):
             const foundList = state.withdrawAddresses.get(action.payload.token, List());
             if (foundList.contains(action.payload.address)) {
                 return state;
@@ -96,7 +94,7 @@ export const networkReducer = (
                 ),
             );
 
-        case getType(operatorActions.removeFromWithdrawAddresses):
+        case getType(networkActions.removeFromWithdrawAddresses):
             const list = state.withdrawAddresses.get(action.payload.token);
             if (!list) { return state; }
             const foundIndex = list.findIndex((addr) => addr === action.payload.address);
@@ -109,23 +107,23 @@ export const networkReducer = (
                 ),
             );
 
-        case getType(operatorActions.setDarknodeDetails):
+        case getType(networkActions.setDarknodeDetails):
             const details = action.payload.darknodeDetails;
             return state.set("darknodeDetails", state.darknodeDetails.set(
                 details.ID,
                 action.payload.darknodeDetails,
             ));
 
-        case getType(operatorActions.storeRegistrySync):
+        case getType(networkActions.storeRegistrySync):
             return state.set("registrySync", action.payload);
 
-        case getType(operatorActions.addTransaction):
+        case getType(networkActions.addTransaction):
             return state.set("transactions", state.transactions.set(action.payload.txHash, action.payload.tx));
 
-        case getType(operatorActions.setTxConfirmations):
+        case getType(networkActions.setTxConfirmations):
             return state.set("confirmations", state.confirmations.set(action.payload.txHash, action.payload.confirmations));
 
-        case getType(operatorActions.setDarknodeName):
+        case getType(networkActions.setDarknodeName):
             return state.set("darknodeNames", state.darknodeNames.set(action.payload.darknodeID, action.payload.name));
 
         default:

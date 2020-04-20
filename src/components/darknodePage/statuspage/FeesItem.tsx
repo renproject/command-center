@@ -9,8 +9,7 @@ import { bindActionCreators } from "redux";
 
 import { AllTokenDetails, OldToken, Token } from "../../../lib/ethereum/tokens";
 import { waitForTX } from "../../../lib/ethereum/waitForTX";
-import { withdrawReward } from "../../../store/account/darknodeActions";
-import { updateDarknodeDetails } from "../../../store/network/operatorActions";
+import { updateDarknodeDetails, withdrawReward } from "../../../store/network/networkActions";
 import { NetworkStateContainer } from "../../../store/networkStateContainer";
 import { PopupContainer } from "../../../store/popupStore";
 import { AppDispatch } from "../../../store/rootReducer";

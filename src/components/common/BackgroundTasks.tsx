@@ -8,7 +8,7 @@ import { bindActionCreators } from "redux";
 import { _catchBackgroundException_ } from "../../lib/react/errors";
 import {
     updateCycleAndPendingRewards, updateDarknodeDetails, updateOperatorDarknodes,
-} from "../../store/network/operatorActions";
+} from "../../store/network/networkActions";
 import { NetworkStateContainer } from "../../store/networkStateContainer";
 import { AppDispatch } from "../../store/rootReducer";
 import { Web3Container } from "../../store/web3Store";

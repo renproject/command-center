@@ -12,7 +12,7 @@ import { AllTokenDetails, Token } from "../../../lib/ethereum/tokens";
 import { classNames } from "../../../lib/react/className";
 import {
     addToWithdrawAddresses, removeFromWithdrawAddresses,
-} from "../../../store/network/operatorActions";
+} from "../../../store/network/networkActions";
 import { NetworkStateContainer } from "../../../store/networkStateContainer";
 import { AppDispatch } from "../../../store/rootReducer";
 import { Web3Container } from "../../../store/web3Store";

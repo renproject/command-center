@@ -9,7 +9,7 @@ import { Link, RouteComponentProps, withRouter } from "react-router-dom";
 import { bindActionCreators } from "redux";
 
 // import { storeRenNetwork } from "../../store/account/accountActions";
-import { storeQuoteCurrency } from "../../store/network/operatorActions";
+import { storeQuoteCurrency } from "../../store/network/networkActions";
 import { NetworkStateContainer } from "../../store/networkStateContainer";
 import { AppDispatch } from "../../store/rootReducer";
 import { UIContainer } from "../../store/uiStore";

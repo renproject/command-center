@@ -1,6 +1,6 @@
 import { PromiEvent } from "web3-core";
 
-import { addTransaction, setTxConfirmations } from "../../store/network/operatorActions";
+import { addTransaction, setTxConfirmations } from "../../store/network/networkActions";
 import { AppDispatch } from "../../store/rootReducer";
 
 export type WaitForTX = <T>(promiEvent: PromiEvent<T>, onConfirmation?: (confirmations?: number) => void) => Promise<string>;

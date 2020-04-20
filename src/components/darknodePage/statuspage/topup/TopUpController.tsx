@@ -6,8 +6,7 @@ import { bindActionCreators } from "redux";
 
 import { Token } from "../../../../lib/ethereum/tokens";
 import { _catchBackgroundException_ } from "../../../../lib/react/errors";
-import { showFundPopup } from "../../../../store/account/operatorPopupActions";
-import { updateDarknodeDetails } from "../../../../store/network/operatorActions";
+import { showFundPopup, updateDarknodeDetails } from "../../../../store/network/networkActions";
 import { NetworkStateContainer } from "../../../../store/networkStateContainer";
 import { PopupContainer } from "../../../../store/popupStore";
 import { AppDispatch } from "../../../../store/rootReducer";
