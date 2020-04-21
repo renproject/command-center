@@ -3,7 +3,7 @@ import * as React from "react";
 import { Loading } from "@renproject/react-components";
 import { Map, OrderedSet } from "immutable";
 
-import { DarknodesState } from "../../../store/applicationState";
+import { DarknodesState } from "../../../store/networkStateContainer";
 import { _catch_ } from "../../common/ErrorBoundary";
 import { DarknodeCard } from "./DarknodeCard";
 import { EmptyDarknodeCard } from "./EmptyDarknodeCard";

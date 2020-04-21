@@ -5,16 +5,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { TxStatus } from "@renproject/interfaces";
 import { Loading, TokenIcon } from "@renproject/react-components";
 import { List } from "immutable";
-import { connect, ConnectedReturnType } from "react-redux";
-import { bindActionCreators } from "redux";
 
 import { AllTokenDetails, Token } from "../../../lib/ethereum/tokens";
 import { classNames } from "../../../lib/react/className";
-import {
-    addToWithdrawAddresses, removeFromWithdrawAddresses,
-} from "../../../store/network/networkActions";
 import { NetworkStateContainer } from "../../../store/networkStateContainer";
-import { AppDispatch } from "../../../store/rootReducer";
 import { Web3Container } from "../../../store/web3Store";
 
 enum Stage {
@@ -43,9 +37,9 @@ const renderTxStatus = (status: TxStatus | null) => {
     }
 };
 
-const WithdrawPopupClass: React.StatelessComponent<Props> = ({ token, status, withdraw, onDone, onCancel, actions }) => {
+export const WithdrawPopup: React.StatelessComponent<Props> = ({ token, status, withdraw, onDone, onCancel }) => {
     const { renNetwork } = Web3Container.useContainer();
-    const { withdrawAddresses } = NetworkStateContainer.useContainer();
+    const { withdrawAddresses, addToWithdrawAddresses, removeFromWithdrawAddresses } = NetworkStateContainer.useContainer();
 
     const [error, setError] = React.useState(null as string | null);
     const [stage, setStage] = React.useState(Stage.Pending);
@@ -56,7 +50,7 @@ const WithdrawPopupClass: React.StatelessComponent<Props> = ({ token, status, wi
     const addNewAddress = (e: React.FormEvent<HTMLFormElement>): void => {
         e.preventDefault();
         if (newAddress) {
-            actions.addToWithdrawAddresses({ token, address: newAddress });
+            addToWithdrawAddresses(token, newAddress);
             setSelectedAddress(newAddress);
             setNewAddress(null);
             setNewAddressValid(false);
@@ -68,7 +62,7 @@ const WithdrawPopupClass: React.StatelessComponent<Props> = ({ token, status, wi
         if (selectedAddress === element.value) {
             setSelectedAddress(null);
         }
-        actions.removeFromWithdrawAddresses({ token, address: element.value });
+        removeFromWithdrawAddresses(token, element.value);
     };
 
     const handleSelectAddress = (event: React.FormEvent<HTMLInputElement | HTMLButtonElement>): string => {
@@ -181,21 +175,10 @@ const WithdrawPopupClass: React.StatelessComponent<Props> = ({ token, status, wi
     </div>;
 };
 
-const mapStateToProps = () => ({});
-
-const mapDispatchToProps = (dispatch: AppDispatch) => ({
-    actions: bindActionCreators({
-        addToWithdrawAddresses,
-        removeFromWithdrawAddresses,
-    }, dispatch),
-});
-
-interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps> {
+interface Props {
     token: Token;
     status: TxStatus;
     withdraw(address: string): Promise<void>;
     onDone(): void;
     onCancel(): void;
 }
-
-export const WithdrawPopup = connect(mapStateToProps, mapDispatchToProps)(WithdrawPopupClass);

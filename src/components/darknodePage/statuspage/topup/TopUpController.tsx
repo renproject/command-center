@@ -1,25 +1,19 @@
 import { Currency, CurrencyIcon } from "@renproject/react-components";
 import { BigNumber } from "bignumber.js";
 import React from "react";
-import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
-import { bindActionCreators } from "redux";
 
 import { Token } from "../../../../lib/ethereum/tokens";
-import { _catchBackgroundException_ } from "../../../../lib/react/errors";
-import { showFundPopup, updateDarknodeDetails } from "../../../../store/network/networkActions";
+import { catchBackgroundException } from "../../../../lib/react/errors";
 import { NetworkStateContainer } from "../../../../store/networkStateContainer";
-import { PopupContainer } from "../../../../store/popupStore";
-import { AppDispatch } from "../../../../store/rootReducer";
 import { Web3Container } from "../../../../store/web3Store";
 import { TokenBalance } from "../../../common/TokenBalance";
 import { TopUp } from "./TopUp";
 
 export const CONFIRMATION_MESSAGE = "Transaction confirmed.";
 
-const TopUpControllerClass: React.StatelessComponent<Props> = ({ darknodeID, actions }) => {
-    const { setPopup } = PopupContainer.useContainer();
-    const { address, web3, renNetwork } = Web3Container.useContainer();
-    const { tokenPrices } = NetworkStateContainer.useContainer();
+export const TopUpController: React.StatelessComponent<Props> = ({ darknodeID }) => {
+    const { address, web3 } = Web3Container.useContainer();
+    const { updateDarknodeDetails, showFundPopup } = NetworkStateContainer.useContainer();
 
     const [value, setValue] = React.useState("");
     const [resultMessage, setResultMessage] = React.useState<React.ReactNode>(null);
@@ -65,7 +59,7 @@ const TopUpControllerClass: React.StatelessComponent<Props> = ({ darknodeID, act
                 setDisabled(true);
             }
         } catch (error) {
-            _catchBackgroundException_(error, "Error in TopUpController > handleBlur");
+            catchBackgroundException(error, "Error in TopUpController > handleBlur");
         }
     };
 
@@ -86,7 +80,7 @@ const TopUpControllerClass: React.StatelessComponent<Props> = ({ darknodeID, act
 
         const onDone = async () => {
             try {
-                await actions.updateDarknodeDetails(web3, renNetwork, darknodeID, tokenPrices);
+                await updateDarknodeDetails(darknodeID);
             } catch (error) {
                 // Ignore error
             }
@@ -101,12 +95,12 @@ const TopUpControllerClass: React.StatelessComponent<Props> = ({ darknodeID, act
         };
 
         // tslint:disable-next-line: await-promise
-        await actions.showFundPopup(web3, address, darknodeID, value, onCancel, onDone, setPopup);
+        await showFundPopup(darknodeID, value, onCancel, onDone);
     };
 
     React.useEffect(() => {
         updateTraderBalance().catch((error) => {
-            _catchBackgroundException_(error, "Error in TopUpController > updateTraderBalance");
+            catchBackgroundException(error, "Error in TopUpController > updateTraderBalance");
         });
     }, []);
 
@@ -123,17 +117,6 @@ const TopUpControllerClass: React.StatelessComponent<Props> = ({ darknodeID, act
 
 };
 
-const mapStateToProps = () => ({});
-
-const mapDispatchToProps = (dispatch: AppDispatch) => ({
-    actions: bindActionCreators({
-        showFundPopup,
-        updateDarknodeDetails,
-    }, dispatch),
-});
-
-interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps> {
+interface Props {
     darknodeID: string;
 }
-
-export const TopUpController = connect(mapStateToProps, mapDispatchToProps)(TopUpControllerClass);

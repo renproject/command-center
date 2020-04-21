@@ -1,8 +1,5 @@
 import * as React from "react";
 
-import { connect } from "react-redux"; // Custom typings
-
-import { ApplicationState } from "../../store/applicationState";
 import { EpochContainer } from "../../store/epochStore";
 import { GithubAPIContainer } from "../../store/githubApiStore";
 import { NetworkStateContainer } from "../../store/networkStateContainer";
@@ -12,7 +9,7 @@ import { Web3Container } from "../../store/web3Store";
 import { MapContainer } from "../networkDarknodesPage/mapContainer";
 import { RenVMContainer } from "../renvmPage/renvmContainer";
 
-const ConnectClass: React.StatelessComponent<Props> = ({ children }) => {
+export const Connect: React.StatelessComponent<Props> = ({ children }) => {
     return <PopupContainer.Provider>
         <Web3Container.Provider>
             <NetworkStateContainer.Provider>
@@ -32,11 +29,5 @@ const ConnectClass: React.StatelessComponent<Props> = ({ children }) => {
     </PopupContainer.Provider>;
 };
 
-const mapStateToProps = (state: ApplicationState) => ({
-    // renNetwork: state.account.renNetwork,
-});
-
-interface Props extends ReturnType<typeof mapStateToProps> {
+interface Props {
 }
-
-export const Connect = connect(mapStateToProps)(ConnectClass);

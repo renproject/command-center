@@ -1,9 +1,9 @@
 import * as React from "react";
 
-import { Route, RouteComponentProps, Switch, useLocation, withRouter } from "react-router-dom";
+import { Route, RouteComponentProps, Switch, withRouter } from "react-router-dom";
 
 import { DEFAULT_REN_NETWORK } from "../lib/react/environmentVariables";
-import { _catchBackgroundException_ } from "../lib/react/errors";
+import { catchBackgroundException } from "../lib/react/errors";
 import { Web3Container } from "../store/web3Store";
 import { AllDarknodes } from "./allDarknodesPage/AllDarknodes";
 import { NotFound } from "./common/404";
@@ -16,48 +16,19 @@ import { Sidebar } from "./common/sidebar/Sidebar";
 import { Darknode, getDarknodeParam } from "./darknodePage/Darknode";
 import { Overview } from "./networkDarknodesPage/Overview";
 import { NetworkStats } from "./networkStatsPage/NetworkStats";
-import { ReduxToContainers } from "./ReduxToContainers";
 import { RenVM } from "./renvmPage/RenVM";
+import { ScrollToTop } from "./ScrollToTop";
 
-// Component that attaches scroll to top hanler on router change
-// renders nothing, just attaches side effects
-export const ScrollToTopWithRouter = withRouter(() => {
-    // this assumes that current router state is accessed via hook
-    // but it does not matter, pathname and search (or that ever) may come from props, context, etc.
-    const location = useLocation();
-
-    // just run the effect on pathname and/or search change
-    React.useEffect(() => {
-        try {
-            // trying to use new API - https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollTo
-            window.scroll({
-                top: 0,
-                left: 0,
-                behavior: "smooth",
-            });
-        } catch (error) {
-            // just a fallback for older browsers
-            window.scrollTo(0, 0);
-        }
-    }, [location]);
-
-    // renders nothing, since nothing is needed
-    return null;
-});
+interface Props extends
+    RouteComponentProps {
+}
 
 /**
  * App is the main visual component responsible for displaying different routes
  * and running background app loops
  */
-const AppClass = ({ match: { params } }: Props) => {
+export const App = withRouter(({ match: { params } }: Props) => {
     const { web3, address, loggedInBefore, promptLogin, renNetwork, setWeb3, setRenNetwork: setNetwork } = Web3Container.useContainer();
-
-    React.useEffect(() => {
-        if (loggedInBefore) {
-            promptLogin({ manual: false, redirect: false, showPopup: false, immediatePopup: false })
-                .catch((error) => _catchBackgroundException_(error, "Error in App > promptLogin"));
-        }
-    }, []);
 
     const withAccount = React.useCallback(<T extends React.ComponentClass | React.StatelessComponent>(component: T):
         React.ComponentClass | React.StatelessComponent =>
@@ -73,10 +44,16 @@ const AppClass = ({ match: { params } }: Props) => {
     const darknodeID = getDarknodeParam(params);
     const showNetworkBanner = renNetwork.name !== DEFAULT_REN_NETWORK;
 
+    React.useEffect(() => {
+        if (loggedInBefore && darknodeID) {
+            promptLogin({ manual: false, redirect: false, showPopup: false, immediatePopup: false })
+                .catch((error) => catchBackgroundException(error, "Error in App > promptLogin"));
+        }
+    }, []);
+
     return <div className="app">
-        <ReduxToContainers />
-        <BackgroundTasks key={`${address || undefined} ${renNetwork.name}`} />
-        <ScrollToTopWithRouter />
+        <BackgroundTasks />
+        <ScrollToTop />
         {/*
             * We set the key to be the address so that any sub-component state is reset after changing accounts
             * (e.g. if in
@@ -121,10 +98,4 @@ const AppClass = ({ match: { params } }: Props) => {
             {_catch_(<Header />)}
         </div>
     </div>;
-};
-
-interface Props extends
-    RouteComponentProps {
-}
-
-export const App = withRouter(AppClass);
+});

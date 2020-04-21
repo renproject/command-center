@@ -4,7 +4,7 @@ import { Loading } from "@renproject/react-components";
 
 import { ErrorCanceledByUser } from "../../../lib/ethereum/getWeb3";
 import { classNames } from "../../../lib/react/className";
-import { _catchBackgroundException_, _catchInteractionException_ } from "../../../lib/react/errors";
+import { catchBackgroundException, catchInteractionException } from "../../../lib/react/errors";
 import { PopupContainer } from "../../../store/popupStore";
 import Warn from "../../../styles/images/warn.svg";
 
@@ -43,7 +43,7 @@ const MultiStepPopupClass: React.StatelessComponent<Props> = ({ steps,
             const promiseOrVoid = onCancel();
             if (promiseOrVoid) {
                 promiseOrVoid.catch((error) => {
-                    _catchBackgroundException_(error, "Error in MultiStepPopup > onCancel");
+                    catchBackgroundException(error, "Error in MultiStepPopup > onCancel");
                 });
             }
         }
@@ -72,7 +72,7 @@ const MultiStepPopupClass: React.StatelessComponent<Props> = ({ steps,
             } catch (error) {
                 const isRejected = (error.message || "").match(ErrorCanceledByUser);
                 if (!isRejected) {
-                    _catchInteractionException_(error, {
+                    catchInteractionException(error, {
                         description: "Error in MultiStepPopup > step.call",
                         shownToUser: "As message box in MultiStepPopup",
                     });
@@ -95,7 +95,7 @@ const MultiStepPopupClass: React.StatelessComponent<Props> = ({ steps,
         if (!confirm) {
             run()
                 .catch((error) => {
-                    _catchBackgroundException_(error, "Error in MultiStepPopup > running steps");
+                    catchBackgroundException(error, "Error in MultiStepPopup > running steps");
                 });
         }
     }, []);

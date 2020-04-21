@@ -8,7 +8,7 @@ import semver from "semver";
 import { createContainer } from "unstated-next";
 
 import { retryNTimes } from "../components/renvmPage/renvmContainer";
-import { _catchBackgroundException_ } from "../lib/react/errors";
+import { catchBackgroundException } from "../lib/react/errors";
 
 const time = () => Math.floor(new Date().getTime() / 1000);
 const everyNSeconds = (loaded: number, now: number, n: number) => Math.floor((now - loaded) / n);
@@ -48,7 +48,7 @@ const useGithubAPIContainer = () => {
                     showingSeconds: false
                 }));
             } catch (error) {
-                _catchBackgroundException_(error, "Error in GithubAPIContainer: fetchEpoch");
+                catchBackgroundException(error, "Error in GithubAPIContainer: fetchEpoch");
             }
             try {
                 const response = await retryNTimes(() => Axios.get<VersionResponse | VersionError>(DARKNODE_CLI_ENDPOINT), 5);
@@ -64,12 +64,12 @@ const useGithubAPIContainer = () => {
                     showingSeconds: false
                 }));
             } catch (error) {
-                _catchBackgroundException_(error, "Error in GithubAPIContainer: fetchEpoch");
+                catchBackgroundException(error, "Error in GithubAPIContainer: fetchEpoch");
             }
             setTimeout(() => rerender(!r), inNSeconds(loaded, now, interval));
         })().catch(error => {
             setTimeout(() => rerender(!r), inNSeconds(loaded, now, interval));
-            _catchBackgroundException_(error, "Error in epochStore: useEffect > fetchEpoch");
+            catchBackgroundException(error, "Error in epochStore: useEffect > fetchEpoch");
         });
     }, [everyNSeconds(loaded, now, interval)]);
 

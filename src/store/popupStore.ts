@@ -23,7 +23,7 @@ const usePopupContainer = () => {
         setPopupElement(newPopup);
         setOverlay(newOverlay || false);
         setDismissible(newDismissible || false);
-        setOnCancel(newOnCancel);
+        setOnCancel(() => newOnCancel);
     };
 
     const clearPopup = () => {

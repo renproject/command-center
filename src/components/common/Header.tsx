@@ -4,14 +4,9 @@ import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { RenNetwork, RenNetworks } from "@renproject/contracts";
 import { currencies, Currency, CurrencyIcon, Dropdown } from "@renproject/react-components";
-import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
-import { bindActionCreators } from "redux";
 
-// import { storeRenNetwork } from "../../store/account/accountActions";
-import { storeQuoteCurrency } from "../../store/network/networkActions";
 import { NetworkStateContainer } from "../../store/networkStateContainer";
-import { AppDispatch } from "../../store/rootReducer";
 import { UIContainer } from "../../store/uiStore";
 import { Web3Container } from "../../store/web3Store";
 import { ReactComponent as RenVMIcon } from "../../styles/images/Icon-HyperDrive.svg";
@@ -49,17 +44,20 @@ const getCurrencyOptions = () => {
 
 const currencyOptions = getCurrencyOptions();
 
+interface Props extends RouteComponentProps {
+}
+
 /**
  * Header is a visual component providing page branding and navigation.
  */
-const HeaderClass = (props: Props) => {
+export const Header = withRouter(({ location }: Props) => {
 
     const { showMobileMenu } = UIContainer.useContainer();
     const { address, renNetwork, setRenNetwork } = Web3Container.useContainer();
-    const { quoteCurrency } = NetworkStateContainer.useContainer();
+    const { quoteCurrency, setQuoteCurrency } = NetworkStateContainer.useContainer();
 
     const setCurrency = (currency: string): void => {
-        props.actions.storeQuoteCurrency({ quoteCurrency: currency as Currency });
+        setQuoteCurrency(currency as Currency);
     };
 
     const setNetwork = (network: string): void => {
@@ -72,8 +70,6 @@ const HeaderClass = (props: Props) => {
     // const setLanguage = (language: string): void => {
     //     // NOT IMPLEMENTED
     // }
-
-    const { location } = props;
 
     // const languageDropdownNode = <Dropdown
     //     key="languageDropdown"
@@ -151,19 +147,4 @@ const HeaderClass = (props: Props) => {
             </div>
         </div>
     );
-};
-
-const mapStateToProps = () => ({});
-
-const mapDispatchToProps = (dispatch: AppDispatch) => ({
-    actions: bindActionCreators({
-        storeQuoteCurrency,
-        // storeRenNetwork,
-    }, dispatch),
 });
-
-interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps>,
-    RouteComponentProps {
-}
-
-export const Header = connect(mapStateToProps, mapDispatchToProps)(withRouter(HeaderClass));

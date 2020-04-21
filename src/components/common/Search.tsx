@@ -30,7 +30,10 @@ const isBlock = (search: string): number | undefined => {
     return !!search.match(regex) ? parseInt(search, 10) : undefined;
 };
 
-const SearchClass = ({ history }: Props) => {
+interface Props extends RouteComponentProps {
+}
+
+export const Search = withRouter(({ history }: Props) => {
     const [searchInput, setSearchInput] = React.useState("");
     const [loadingSearch, setLoadingSearch] = React.useState(false);
     const [notFound, setNotFound] = React.useState(false);
@@ -68,9 +71,4 @@ const SearchClass = ({ history }: Props) => {
             </form>
         </li>
     );
-};
-
-interface Props extends RouteComponentProps {
-}
-
-export const Search = withRouter(SearchClass);
+});

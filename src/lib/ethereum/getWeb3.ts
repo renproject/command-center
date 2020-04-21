@@ -2,7 +2,7 @@ import Web3 from "web3";
 import { HttpProvider, provider } from "web3-providers";
 
 import { Language } from "../../languages/language";
-import { _noCapture_ } from "../react/errors";
+import { noCapture } from "../react/errors";
 
 export const ErrorCanceledByUser = "User denied transaction signature.";
 
@@ -33,12 +33,12 @@ export const getInjectedWeb3Provider = async (onAnyProvider?: (provider: provide
             await window.ethereum.enable();
             injectedProvider = window.ethereum;
         } catch (error) {
-            throw _noCapture_(new Error(ErrorAccountAccessRejected));
+            throw noCapture(new Error(ErrorAccountAccessRejected));
         }
     } else if (window.web3) {
         injectedProvider = window.web3.currentProvider;
     } else {
-        throw _noCapture_(new Error(ErrorNoWeb3));
+        throw noCapture(new Error(ErrorNoWeb3));
     }
 
     if (onAnyProvider) { onAnyProvider(injectedProvider); }

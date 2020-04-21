@@ -1,13 +1,9 @@
 import * as React from "react";
 
 import { Blocky, InfoLabel } from "@renproject/react-components";
-import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
-import { bindActionCreators } from "redux";
 
 import { NULL, RegistrationStatus } from "../../../lib/ethereum/contractReads";
-import { DarknodesState } from "../../../store/applicationState";
-import { setDarknodeName } from "../../../store/network/networkActions";
-import { AppDispatch } from "../../../store/rootReducer";
+import { DarknodesState, NetworkStateContainer } from "../../../store/networkStateContainer";
 import { Web3Container } from "../../../store/web3Store";
 import { DarknodeID } from "../../common/DarknodeID";
 import { DarknodeAction } from "../Darknode";
@@ -20,15 +16,7 @@ import { VersionBlock } from "./block/VersionBlock";
 import { Notifications } from "./Notifications";
 import { Registration } from "./Registration";
 
-const mapStateToProps = () => ({});
-
-const mapDispatchToProps = (dispatch: AppDispatch) => ({
-    actions: bindActionCreators({
-        setDarknodeName,
-    }, dispatch),
-});
-
-interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps> {
+interface Props {
     action: DarknodeAction;
     isOperator: boolean;
 
@@ -38,8 +26,9 @@ interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<
     publicKey: string | undefined;
 }
 
-const StatusPageClass: React.StatelessComponent<Props> = ({ darknodeDetails, darknodeID, name, isOperator, action, publicKey, actions }) => {
+export const StatusPage: React.StatelessComponent<Props> = ({ darknodeDetails, darknodeID, name, isOperator, action, publicKey }) => {
     const { renNetwork } = Web3Container.useContainer();
+    const { setDarknodeName } = NetworkStateContainer.useContainer();
 
     const [renaming, setRenaming] = React.useState(false);
     const [newName, setNewName] = React.useState<string | undefined>(name);
@@ -75,7 +64,7 @@ const StatusPageClass: React.StatelessComponent<Props> = ({ darknodeDetails, dar
         }
 
         setRenaming(false);
-        actions.setDarknodeName({ darknodeID, name: newName });
+        setDarknodeName(darknodeID, newName);
     };
 
     React.useEffect(() => {
@@ -185,5 +174,3 @@ const StatusPageClass: React.StatelessComponent<Props> = ({ darknodeDetails, dar
         </div>
     );
 };
-
-export const StatusPage = connect(mapStateToProps, mapDispatchToProps)(StatusPageClass);

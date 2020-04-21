@@ -2,7 +2,6 @@ import * as Sentry from "@sentry/browser";
 
 import { RenNetworkDetails, testnet } from "@renproject/contracts";
 import React, { useState } from "react";
-import { useStorageState } from "react-storage-hooks";
 import { createContainer } from "unstated-next";
 import Web3 from "web3";
 import { provider } from "web3-providers";
@@ -12,17 +11,19 @@ import { LoggedOut } from "../components/common/popups/LoggedOut";
 import { NoWeb3Popup } from "../components/common/popups/NoWeb3Popup";
 import { Language } from "../languages/language";
 import { getWeb3BrowserName, Web3Browser } from "../lib/ethereum/browsers";
-import { getInjectedWeb3Provider } from "../lib/ethereum/getWeb3";
+import { getInjectedWeb3Provider, getReadOnlyWeb3 } from "../lib/ethereum/getWeb3";
+import { INFURA_KEY } from "../lib/react/environmentVariables";
 import { history } from "../lib/react/history";
-import { readOnlyWeb3 } from "./applicationState";
 import { PopupContainer } from "./popupStore";
+import useStorageState from "./useStorageState/useStorageState";
 
 const useWeb3Container = (initialState = testnet as RenNetworkDetails) => {
     const { setPopup, clearPopup } = PopupContainer.useContainer();
 
     const [renNetwork, setRenNetwork] = useStorageState<RenNetworkDetails>(localStorage, "renNetwork", initialState);
 
-    const [web3, setWeb3] = useState<Web3>(readOnlyWeb3);
+    const [readonlyWeb3,] = useState<Web3>(getReadOnlyWeb3(`${renNetwork.infura}/v3/${INFURA_KEY}`));
+    const [web3, setWeb3] = useState<Web3>(readonlyWeb3);
 
     // Login data
     const [address, setAddress] = useState<string | null>(null);
@@ -35,7 +36,7 @@ const useWeb3Container = (initialState = testnet as RenNetworkDetails) => {
     const [loggedOut, setLoggedOut] = useState(false);
 
     const logout = () => {
-        setWeb3(readOnlyWeb3);
+        setWeb3(readonlyWeb3);
         setAddress(null);
         setLoggedOut(true);
         setLoggedInBefore(false);

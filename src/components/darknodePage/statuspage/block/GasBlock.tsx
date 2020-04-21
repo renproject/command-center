@@ -4,7 +4,7 @@ import { faFire } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import BigNumber from "bignumber.js";
 
-import { DarknodesState } from "../../../../store/applicationState";
+import { DarknodesState } from "../../../../store/networkStateContainer";
 import { TopUpController } from "../topup/TopUpController";
 import { Block, BlockTitle } from "./Block";
 

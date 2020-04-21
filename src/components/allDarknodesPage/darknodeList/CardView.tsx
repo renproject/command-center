@@ -7,7 +7,7 @@ import { Blocky, Currency, CurrencyIcon } from "@renproject/react-components";
 import { Link } from "react-router-dom";
 
 import { Token } from "../../../lib/ethereum/tokens";
-import { DarknodesState } from "../../../store/applicationState";
+import { DarknodesState } from "../../../store/networkStateContainer";
 import { DarknodeID } from "../../common/DarknodeID";
 import { TokenBalance } from "../../common/TokenBalance";
 import { statusText } from "../../darknodePage/statuspage/Registration";

@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { _catchBackgroundException_ } from "../../lib/react/errors";
+import { catchBackgroundException } from "../../lib/react/errors";
 import { Web3Container } from "../../store/web3Store";
 import { EmptyDarknodeList } from "../allDarknodesPage/darknodeList/EmptyDarknodeList";
 
@@ -18,7 +18,7 @@ export const LoggingIn = ({ }: Props) => {
     }, [address]);
 
     React.useEffect(() => {
-        handleLogin().catch((error) => _catchBackgroundException_(error, "Error in LoggingIn > handleLogin"));
+        handleLogin().catch((error) => catchBackgroundException(error, "Error in LoggingIn > handleLogin"));
     }, []);
 
     return <div className="logging-in">

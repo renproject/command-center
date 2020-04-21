@@ -8,10 +8,10 @@ import { TransactionConfig, TransactionReceipt } from "web3-core";
 import { sha3, toChecksumAddress } from "web3-utils";
 
 import { retryNTimes } from "../../components/renvmPage/renvmContainer";
-import { _catchInteractionException_, _noCapture_ } from "../react/errors";
+import { WaitForTX } from "../../store/networkStateContainer";
+import { catchInteractionException, noCapture } from "../react/errors";
 import { getDarknodePayment, getDarknodeRegistry } from "./contract";
 import { AllTokenDetails, OldToken, Token } from "./tokens";
-import { WaitForTX } from "./waitForTX";
 
 export const fundNode = async (
     web3: Web3,
@@ -84,10 +84,10 @@ export const approveNode = async (
         ercBalance = new BigNumber(await retryNTimes(async () => await ercContract.methods.balanceOf(address).call(), 5));
     } catch (error) {
         ercBalance = bond;
-        _catchInteractionException_(error, "Error in contractWrites.ts: approveNode > balanceOf");
+        catchInteractionException(error, "Error in contractWrites.ts: approveNode > balanceOf");
     }
     if (ercBalance.lt(bond)) {
-        throw _noCapture_(new Error("You have insufficient REN to register a darknode."));
+        throw noCapture(new Error("You have insufficient REN to register a darknode."));
     }
 
     // Check if they've already approved REN
@@ -97,7 +97,7 @@ export const approveNode = async (
             await retryNTimes(async () => await ercContract.methods.allowance(address, renNetwork.addresses.ren.DarknodeRegistry.address).call(), 5),
         );
     } catch (error) {
-        _catchInteractionException_(error, "Error in contractWrites.ts: approveNode > allowance");
+        catchInteractionException(error, "Error in contractWrites.ts: approveNode > allowance");
         ercAllowance = new BigNumber(0);
     }
     if (ercAllowance.gte(bond)) {
@@ -133,7 +133,7 @@ export const registerNode = async (
         );
     } catch (error) {
         ercAllowance = new BigNumber(0);
-        _catchInteractionException_(error, "Error in contractWrites.ts: registerNode > allowance");
+        catchInteractionException(error, "Error in contractWrites.ts: registerNode > allowance");
     }
 
     let gas: number | undefined = hardCodedGas;

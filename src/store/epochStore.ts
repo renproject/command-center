@@ -6,7 +6,7 @@ import { createContainer } from "unstated-next";
 
 import { retryNTimes } from "../components/renvmPage/renvmContainer";
 import { getDarknodeRegistry } from "../lib/ethereum/contract";
-import { _catchBackgroundException_ } from "../lib/react/errors";
+import { catchBackgroundException, LocalError } from "../lib/react/errors";
 import { Web3Container } from "./web3Store";
 
 interface Epoch {
@@ -41,6 +41,9 @@ const useEpochContainer = () => {
                     setLoopTimeout(loopTimeout);
                     const darknodeRegistry = getDarknodeRegistry(web3, network);
                     const newEpoch: Epoch = await retryNTimes(async () => await darknodeRegistry.methods.currentEpoch().call(), 5);
+                    if (!newEpoch) {
+                        throw new LocalError("currentEpoch returned null");
+                    }
                     const newEpochInterval = new BigNumber(await retryNTimes(async () => await darknodeRegistry.methods.minimumEpochInterval().call(), 5)).toNumber();
                     setEpoch(newEpoch);
                     setEpochInterval(newEpochInterval);
@@ -54,7 +57,7 @@ const useEpochContainer = () => {
                 } catch (error) {
                     loopTimeout = 10;
                     setLoopTimeout(loopTimeout);
-                    _catchBackgroundException_(error, "Error in EpochContainer: fetchEpoch");
+                    catchBackgroundException(error, "Error in EpochContainer: fetchEpoch");
                 }
             } else {
                 loopTimeout = 1;
@@ -63,7 +66,7 @@ const useEpochContainer = () => {
             setTimeout(() => rerender(!r), inNSeconds(loaded, now, loopTimeout));
         })().catch(error => {
             setTimeout(() => rerender(!r), inNSeconds(loaded, now, loopTimeout));
-            _catchBackgroundException_(error, "Error in epochStore: useEffect > fetchEpoch");
+            catchBackgroundException(error, "Error in epochStore: useEffect > fetchEpoch");
         });
     }, [web3, everyNSeconds(loaded, now, loopTimeout)]);
 

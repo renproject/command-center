@@ -1,15 +1,11 @@
 import * as qs from "query-string";
 import * as React from "react";
 
-import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { RouteComponentProps, withRouter } from "react-router-dom";
-import { bindActionCreators } from "redux";
 
 import { darknodeIDBase58ToHex } from "../../lib/darknode/darknodeID";
 import { RegistrationStatus } from "../../lib/ethereum/contractReads";
-import { addRegisteringDarknode, setDarknodeName } from "../../store/network/networkActions";
 import { NetworkStateContainer } from "../../store/networkStateContainer";
-import { AppDispatch } from "../../store/rootReducer";
 import { Web3Container } from "../../store/web3Store";
 import { NotFound } from "../common/404";
 import { _catch_ } from "../common/ErrorBoundary";
@@ -45,9 +41,9 @@ export const getDarknodeParam = (params: unknown): string | undefined => {
  *     1) action: either "register" or "deregister"
  *     2) public_key: only used if action is "register"
  */
-const DarknodeClass: React.StatelessComponent<Props> = ({ match, location, actions }) => {
+export const Darknode = withRouter(({ match, location }: Props) => {
     const { address } = Web3Container.useContainer();
-    const { darknodeDetails, darknodeNames } = NetworkStateContainer.useContainer();
+    const { darknodeDetails, darknodeNames, setDarknodeName, addRegisteringDarknode } = NetworkStateContainer.useContainer();
 
     const [darknodeID, setDarknodeID] = React.useState<string | undefined>(undefined);
     const [action, setAction] = React.useState<string | undefined>(undefined);
@@ -62,18 +58,20 @@ const DarknodeClass: React.StatelessComponent<Props> = ({ match, location, actio
         setDarknodeID(urlDarknodeID);
     }, [urlDarknodeID]);
 
+    const darknodeOrURL = darknodeID || urlDarknodeID;
+
     React.useEffect(() => {
         const queryParams = qs.parse(location.search);
         const urlAction = typeof queryParams.action === "string" ? queryParams.action : undefined;
         const urlPublicKey = typeof queryParams.public_key === "string" ? queryParams.public_key : undefined;
         const urlName = typeof queryParams.name === "string" ? queryParams.name : undefined;
 
-        if (darknodeID && urlAction === DarknodeAction.Register && urlName !== undefined) {
-            actions.setDarknodeName({ darknodeID, name: urlName });
+        if (darknodeOrURL && urlAction === DarknodeAction.Register && urlName !== undefined) {
+            setDarknodeName(darknodeOrURL, urlName);
         }
 
-        if (darknodeID && urlAction === DarknodeAction.Register && firstTime && urlPublicKey) {
-            actions.addRegisteringDarknode({ darknodeID, publicKey: urlPublicKey });
+        if (darknodeOrURL && urlAction === DarknodeAction.Register && firstTime && urlPublicKey) {
+            addRegisteringDarknode(darknodeOrURL, urlPublicKey);
             setFirstTime(false);
         }
 
@@ -82,8 +80,8 @@ const DarknodeClass: React.StatelessComponent<Props> = ({ match, location, actio
         // setProvidedName(name);
     }, [location.search]);
 
-    const details = darknodeID ? darknodeDetails.get(darknodeID, null) : null;
-    const name = darknodeID ? darknodeNames.get(darknodeID) : undefined;
+    const details = darknodeOrURL ? darknodeDetails.get(darknodeOrURL, null) : null;
+    const name = darknodeOrURL ? darknodeNames.get(darknodeOrURL) : undefined;
 
     const readOnly = !details || !address || details.operator !== address;
 
@@ -102,34 +100,20 @@ const DarknodeClass: React.StatelessComponent<Props> = ({ match, location, actio
         darknodeAction = action;
     }
 
-    if (!darknodeID) {
+    if (!darknodeOrURL) {
         return <NotFound />;
     }
 
     return _catch_(<StatusPage
-        key={darknodeID}
+        key={darknodeOrURL}
         action={darknodeAction}
         publicKey={publicKey}
         name={name}
-        darknodeID={darknodeID}
+        darknodeID={darknodeOrURL}
         isOperator={!readOnly}
         darknodeDetails={details}
     />);
-};
-
-const mapStateToProps = () => ({});
-
-const mapDispatchToProps = (dispatch: AppDispatch) => ({
-    actions: bindActionCreators({
-        setDarknodeName,
-        addRegisteringDarknode,
-    }, dispatch),
 });
 
-interface Props extends
-    ReturnType<typeof mapStateToProps>,
-    ConnectedReturnType<typeof mapDispatchToProps>,
-    RouteComponentProps {
+interface Props extends RouteComponentProps {
 }
-
-export const Darknode = connect(mapStateToProps, mapDispatchToProps)(withRouter(DarknodeClass));

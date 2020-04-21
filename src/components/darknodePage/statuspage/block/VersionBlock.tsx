@@ -4,8 +4,8 @@ import { faBolt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { classNames } from "../../../../lib/react/className";
-import { DarknodesState } from "../../../../store/applicationState";
 import { GithubAPIContainer } from "../../../../store/githubApiStore";
+import { DarknodesState } from "../../../../store/networkStateContainer";
 import { Block, BlockBody, BlockTitle } from "./Block";
 
 const UPDATE_DARKNODE_LINK = "https://docs.renproject.io/darknodes/manage/updating";

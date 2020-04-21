@@ -9,11 +9,11 @@ import { sha3, toChecksumAddress } from "web3-utils";
 
 import { getLightnode } from "../../components/networkDarknodesPage/mapContainer";
 import { retryNTimes } from "../../components/renvmPage/renvmContainer";
-import { DarknodesState } from "../../store/applicationState";
+import { DarknodesState } from "../../store/networkStateContainer";
 import { darknodeIDHexToBase58 } from "../darknode/darknodeID";
 import { queryStat } from "../darknode/jsonrpc";
 import { awaitOr, safePromiseAllList, safePromiseAllMap } from "../general/promiseAll";
-import { _catchBackgroundException_, _noCapture_ } from "../react/errors";
+import { catchBackgroundException, noCapture } from "../react/errors";
 import { getDarknodePayment, getDarknodeRegistry } from "./contract";
 import { NewTokenDetails, OldToken, Token, TokenPrices } from "./tokens";
 
@@ -46,7 +46,7 @@ export const getMinimumBond = async (web3: Web3, renNetwork: RenNetworkDetails):
             return new BigNumber((minimumBond).toString());
         }, 5);
     } catch (error) {
-        _catchBackgroundException_(new Error(`Unable to retrieve minimum bond${error && error.message ? `: ${error.message}` : ``}`), "Error in contractReads > getMinimumBond");
+        catchBackgroundException(new Error(`Unable to retrieve minimum bond${error && error.message ? `: ${error.message}` : ``}`), "Error in contractReads > getMinimumBond");
         return new BigNumber(renNetwork.name === "chaosnet" ? "10000000000000000000000" : "100000000000000000000000");
     }
 };
@@ -68,7 +68,7 @@ const getDarknodePublicKey = async (web3: Web3, renNetwork: RenNetworkDetails, d
             return publicKey;
         }, 5);
     } catch (error) {
-        _catchBackgroundException_(new Error(`Unable to retrieve darknode public key${error && error.message ? `: ${error.message}` : ``}`), "Error in contractReads > getDarknodePublicKey, getDarknodeRegistry");
+        catchBackgroundException(new Error(`Unable to retrieve darknode public key${error && error.message ? `: ${error.message}` : ``}`), "Error in contractReads > getDarknodePublicKey, getDarknodeRegistry");
         return NULL;
     }
 };
@@ -83,7 +83,7 @@ const getDarknodePublicKey = async (web3: Web3, renNetwork: RenNetworkDetails, d
 const getDarknodeOperator = async (web3: Web3, renNetwork: RenNetworkDetails, darknodeID: string): Promise<string> => {
     const owner = await retryNTimes(async () => await getDarknodeRegistry(web3, renNetwork).methods.getDarknodeOperator(darknodeID).call(), 5);
     if (owner === null) {
-        _catchBackgroundException_(_noCapture_(new Error("Unable to retrieve darknode owner")), "Error in contractReads > getDarknodeOperator, getDarknodeRegistry");
+        catchBackgroundException(noCapture(new Error("Unable to retrieve darknode owner")), "Error in contractReads > getDarknodeOperator, getDarknodeRegistry");
         return NULL;
     }
     return owner;
@@ -98,11 +98,11 @@ export interface DarknodeCounts {
 export const getDarknodeCounts = async (web3: Web3, renNetwork: RenNetworkDetails): Promise<DarknodeCounts> => {
     const darknodeRegistry = getDarknodeRegistry(web3, renNetwork);
     const currentEpoch = await retryNTimes(async () => await darknodeRegistry.methods.numDarknodes().call(), 5);
-    if (currentEpoch === null) { throw _noCapture_(new Error("Unable to retrieve darknode count")); }
+    if (currentEpoch === null) { throw noCapture(new Error("Unable to retrieve darknode count")); }
     const previousEpoch = await retryNTimes(async () => await darknodeRegistry.methods.numDarknodesPreviousEpoch().call(), 5);
-    if (previousEpoch === null) { throw _noCapture_(new Error("Unable to retrieve darknode count")); }
+    if (previousEpoch === null) { throw noCapture(new Error("Unable to retrieve darknode count")); }
     const nextEpoch = await retryNTimes(async () => await darknodeRegistry.methods.numDarknodesNextEpoch().call(), 5);
-    if (nextEpoch === null) { throw _noCapture_(new Error("Unable to retrieve darknode count")); }
+    if (nextEpoch === null) { throw noCapture(new Error("Unable to retrieve darknode count")); }
     return {
         currentDarknodeCount: new BigNumber(currentEpoch.toString()).toNumber(),
         previousDarknodeCount: new BigNumber(previousEpoch.toString()).toNumber(),
@@ -282,7 +282,7 @@ export const getAllDarknodes = async (web3: Web3, renNetwork: RenNetworkDetails)
         const darknodeRegistry = getDarknodeRegistry(web3, renNetwork);
         const darknodes = await retryNTimes(async () => await darknodeRegistry.methods.getDarknodes(lastDarknode, batchSize.toString()).call(), 5);
         if (darknodes === null) {
-            throw _noCapture_(new Error("Error calling 'darknodeRegistry.methods.getDarknodes'"));
+            throw noCapture(new Error("Error calling 'darknodeRegistry.methods.getDarknodes'"));
         }
         allDarknodes.push(...darknodes.filter(filter));
         [lastDarknode] = darknodes.slice(-1);
@@ -621,7 +621,7 @@ const getBalances = async (
                 const balance1Call = await retryNTimes(async () => await darknodePayment.methods.darknodeBalances(darknodeID, renNetwork.addresses.tokens[token].address).call(), 5);
                 balance1 = new BigNumber((balance1Call || "0").toString());
             } catch (error) {
-                _catchBackgroundException_(error, "Error in contractReads > darknodeBalances");
+                catchBackgroundException(error, "Error in contractReads > darknodeBalances");
                 balance1 = new BigNumber(0);
             }
             // const balance2 = tokenDetails.wrapped ? await new (web3.eth.Contract)(
@@ -763,7 +763,7 @@ export const fetchDarknodeDetails = async (
     // Get registration status
     const registrationStatus = await getDarknodeStatus(web3, renNetwork, darknodeID)
         .catch(error => {
-            _catchBackgroundException_(error, "Error in contractReads > getDarknodeStatus");
+            catchBackgroundException(error, "Error in contractReads > getDarknodeStatus");
             return RegistrationStatus.Unknown;
         });
 

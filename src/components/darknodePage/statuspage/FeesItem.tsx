@@ -4,22 +4,15 @@ import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Loading } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
-import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
-import { bindActionCreators } from "redux";
 
 import { AllTokenDetails, OldToken, Token } from "../../../lib/ethereum/tokens";
-import { waitForTX } from "../../../lib/ethereum/waitForTX";
-import { updateDarknodeDetails, withdrawReward } from "../../../store/network/networkActions";
 import { NetworkStateContainer } from "../../../store/networkStateContainer";
-import { PopupContainer } from "../../../store/popupStore";
-import { AppDispatch } from "../../../store/rootReducer";
 import { Web3Container } from "../../../store/web3Store";
 
 const minimumShiftedAmount = 0.00016;
 
-const FeesItemClass = ({ darknodeID, token, amount, disabled, actions }: Props) => {
-    const { setPopup, clearPopup } = PopupContainer.useContainer();
-    const { tokenPrices } = NetworkStateContainer.useContainer();
+export const FeesItem = ({ darknodeID, token, amount, disabled }: Props) => {
+    const { withdrawReward, waitForTX, updateDarknodeDetails } = NetworkStateContainer.useContainer();
     const { web3, address, renNetwork } = Web3Container.useContainer();
 
     const [loading, setLoading] = React.useState(false);
@@ -34,17 +27,17 @@ const FeesItemClass = ({ darknodeID, token, amount, disabled, actions }: Props) 
         if (address && tokenDetails && !tokenDetails.old) {
             try {
                 // tslint:disable-next-line: await-promise
-                await actions.withdrawReward(web3, address, renNetwork, darknodeID, token as Token, actions.waitForTX, setPopup, clearPopup);
+                await withdrawReward(darknodeID, token as Token);
             } catch (error) {
                 setLoading(false);
                 return;
             }
             // tslint:disable-next-line: await-promise
-            await actions.updateDarknodeDetails(web3, renNetwork, darknodeID, tokenPrices);
+            await updateDarknodeDetails(darknodeID);
         }
 
         setLoading(false);
-    }, [actions, darknodeID, web3, address, renNetwork, token]);
+    }, [withdrawReward, waitForTX, updateDarknodeDetails, darknodeID, web3, address, renNetwork, token]);
 
     let isDisabled = false;
     let title = "";
@@ -71,22 +64,10 @@ const FeesItemClass = ({ darknodeID, token, amount, disabled, actions }: Props) 
     );
 };
 
-const mapStateToProps = () => ({});
-
-const mapDispatchToProps = (dispatch: AppDispatch) => ({
-    actions: bindActionCreators({
-        withdrawReward,
-        updateDarknodeDetails,
-        waitForTX,
-    }, dispatch),
-});
-
 // tslint:disable: react-unused-props-and-state
-interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps> {
+interface Props {
     disabled: boolean;
     token: Token | OldToken;
     amount: string | BigNumber;
     darknodeID: string;
 }
-
-export const FeesItem = connect(mapStateToProps, mapDispatchToProps)(FeesItemClass);

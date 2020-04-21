@@ -8,10 +8,8 @@ import { OrderedMap } from "immutable";
 import { Scatter } from "react-chartjs-2";
 
 import { HistoryIterations, HistoryPeriod } from "../../../../lib/ethereum/contractReads";
-import { _catchBackgroundException_, _ignoreException_ } from "../../../../lib/react/errors";
-import { DarknodesState } from "../../../../store/applicationState";
-import { NetworkStateContainer } from "../../../../store/networkStateContainer";
-import { Web3Container } from "../../../../store/web3Store";
+import { catchBackgroundException, ignoreException } from "../../../../lib/react/errors";
+import { DarknodesState, NetworkStateContainer } from "../../../../store/networkStateContainer";
 import { Block, BlockBody, BlockTitle } from "./Block";
 
 const shift = new BigNumber(10).exponentiatedBy(18);
@@ -55,7 +53,6 @@ const periods: Array<[HistoryPeriod, string]> = [
 ];
 
 export const GasGraph: React.StatelessComponent<Props> = ({ darknodeDetails }) => {
-    const { web3 } = Web3Container.useContainer();
     const { balanceHistories, secondsPerBlock, updateSecondsPerBlock, updateDarknodeBalanceHistory } = NetworkStateContainer.useContainer();
 
     const [historyPeriod, setHistoryPeriod] = React.useState(HistoryPeriod.Week);
@@ -71,9 +68,9 @@ export const GasGraph: React.StatelessComponent<Props> = ({ darknodeDetails }) =
 
     React.useEffect(() => {
         if (secondsPerBlock === null) {
-            updateSecondsPerBlock(web3)
+            updateSecondsPerBlock()
                 .catch((error) => {
-                    _catchBackgroundException_(error, "Error in GasGraph > updateSecondsPerBlock");
+                    catchBackgroundException(error, "Error in GasGraph > updateSecondsPerBlock");
                 });
         }
 
@@ -106,7 +103,6 @@ export const GasGraph: React.StatelessComponent<Props> = ({ darknodeDetails }) =
             try {
                 // tslint:disable-next-line: await-promise
                 await updateDarknodeBalanceHistory(
-                    web3,
                     darknodeDetails.ID,
                     currentBalanceHistory,
                     selectedHistoryPeriod,
@@ -114,9 +110,9 @@ export const GasGraph: React.StatelessComponent<Props> = ({ darknodeDetails }) =
                 );
             } catch (error) {
                 if (String(error && error.message).match(/project ID does not have access to archive state/)) {
-                    _ignoreException_(error);
+                    ignoreException(error);
                 } else {
-                    _catchBackgroundException_(error, "Error in GasGraph > updateHistory > updateDarknodeBalanceHistory");
+                    catchBackgroundException(error, "Error in GasGraph > updateHistory > updateDarknodeBalanceHistory");
                 }
             }
         }
@@ -137,7 +133,7 @@ export const GasGraph: React.StatelessComponent<Props> = ({ darknodeDetails }) =
 
         if (ethBalance !== currentEthBalance || (updateHistoryStarted === false && darknodeDetails)) {
             updateHistory().catch((error => {
-                _catchBackgroundException_(error, "Error in GasGraph > componentWillReceiveProps");
+                catchBackgroundException(error, "Error in GasGraph > componentWillReceiveProps");
             }));
         }
     }, [ethBalance]);
@@ -153,7 +149,7 @@ export const GasGraph: React.StatelessComponent<Props> = ({ darknodeDetails }) =
 
             setHistoryPeriod(selectedHistoryPeriod);
         } catch (error) {
-            _catchBackgroundException_(error, "Error in GasGraph > handleSelectTime");
+            catchBackgroundException(error, "Error in GasGraph > handleSelectTime");
         }
     };
 

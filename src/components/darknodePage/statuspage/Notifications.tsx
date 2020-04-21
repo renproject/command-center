@@ -8,7 +8,7 @@ import { RenNetworkDetails } from "@renproject/contracts";
 import BigNumber from "bignumber.js";
 
 import { RegistrationStatus } from "../../../lib/ethereum/contractReads";
-import { DarknodesState } from "../../../store/applicationState";
+import { DarknodesState } from "../../../store/networkStateContainer";
 
 const lowValue = new BigNumber(Math.pow(10, 18)).multipliedBy(0.01);
 

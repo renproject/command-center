@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import filesize from "filesize";
 import { Doughnut } from "react-chartjs-2";
 
-import { DarknodesState } from "../../../../store/applicationState";
+import { DarknodesState } from "../../../../store/networkStateContainer";
 import { Block, BlockBody, BlockTitle } from "./Block";
 
 export const ResourcesBlock = (props: Props): JSX.Element => {

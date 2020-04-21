@@ -1,19 +1,10 @@
 import * as React from "react";
 
 import { Loading } from "@renproject/react-components";
-import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
-import { bindActionCreators } from "redux";
 
 import { NULL, RegistrationStatus } from "../../../lib/ethereum/contractReads";
-import { _catchInteractionException_ } from "../../../lib/react/errors";
-import { DarknodesState } from "../../../store/applicationState";
-import {
-    showDeregisterPopup, showRefundPopup, showRegisterPopup, updateDarknodeDetails,
-    updateOperatorDarknodes,
-} from "../../../store/network/networkActions";
-import { NetworkStateContainer } from "../../../store/networkStateContainer";
-import { PopupContainer } from "../../../store/popupStore";
-import { AppDispatch } from "../../../store/rootReducer";
+import { catchInteractionException } from "../../../lib/react/errors";
+import { DarknodesState, NetworkStateContainer } from "../../../store/networkStateContainer";
 import { Web3Container } from "../../../store/web3Store";
 
 export const statusText = {
@@ -26,19 +17,7 @@ export const statusText = {
     [RegistrationStatus.Refundable]: "Refundable",
 };
 
-const mapStateToProps = () => ({});
-
-const mapDispatchToProps = (dispatch: AppDispatch) => ({
-    actions: bindActionCreators({
-        showRegisterPopup,
-        showDeregisterPopup,
-        showRefundPopup,
-        updateDarknodeDetails,
-        updateOperatorDarknodes,
-    }, dispatch),
-});
-
-interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps> {
+interface Props {
     isOperator: boolean;
     registrationStatus: RegistrationStatus;
     darknodeID: string;
@@ -46,13 +25,9 @@ interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<
     publicKey?: string;
 }
 
-const RegistrationClass: React.StatelessComponent<Props> = ({ darknodeID, darknodeDetails, registrationStatus, isOperator, publicKey, actions }) => {
-    const { setPopup } = PopupContainer.useContainer();
-    const { web3, address, renNetwork } = Web3Container.useContainer();
-    const { tokenPrices, quoteCurrency, unhideDarknode } = NetworkStateContainer.useContainer();
-
-    const { darknodeList } = NetworkStateContainer.useContainer();
-    const accountDarknodeList = React.useMemo(() => address ? darknodeList.get(address, null) : null, [darknodeList]);
+export const Registration: React.StatelessComponent<Props> = ({ darknodeID, darknodeDetails, registrationStatus, isOperator, publicKey }) => {
+    const { address, renNetwork } = Web3Container.useContainer();
+    const { tokenPrices, unhideDarknode, updateDarknodeDetails, updateOperatorDarknodes, showRegisterPopup, showDeregisterPopup, showRefundPopup } = NetworkStateContainer.useContainer();
 
     const [initialRegistrationStatus,] = React.useState(registrationStatus);
     const [active, setActive] = React.useState(false);
@@ -69,7 +44,7 @@ const RegistrationClass: React.StatelessComponent<Props> = ({ darknodeID, darkno
 
     const onDone = async () => {
         try {
-            await actions.updateDarknodeDetails(web3, renNetwork, darknodeID, tokenPrices);
+            await updateDarknodeDetails(darknodeID);
         } catch (error) {
             // Ignore error
         }
@@ -83,7 +58,7 @@ const RegistrationClass: React.StatelessComponent<Props> = ({ darknodeID, darkno
         }
 
         try {
-            await actions.updateOperatorDarknodes(web3, renNetwork, address, tokenPrices, accountDarknodeList);
+            await updateOperatorDarknodes();
         } catch (error) {
             // Ignore error
         }
@@ -98,12 +73,12 @@ const RegistrationClass: React.StatelessComponent<Props> = ({ darknodeID, darkno
 
         setActive(true);
         try {
-            await actions.showRegisterPopup(
-                web3, renNetwork, address, darknodeID, publicKey, tokenPrices, onCancel, onDoneRegister, setPopup,
+            await showRegisterPopup(
+                darknodeID, publicKey, onCancel, onDoneRegister,
             );
-            unhideDarknode({ darknodeID, operator: address, network: renNetwork.name });
+            unhideDarknode(darknodeID, address, renNetwork.name);
         } catch (error) {
-            _catchInteractionException_(error, "Error in Registration > handleRegister > showRegisterPopup");
+            catchInteractionException(error, "Error in Registration > handleRegister > showRegisterPopup");
             onCancel();
         }
     };
@@ -114,16 +89,11 @@ const RegistrationClass: React.StatelessComponent<Props> = ({ darknodeID, darkno
         }
 
         setActive(true);
-        await actions.showDeregisterPopup(
-            web3,
-            renNetwork,
-            address,
+        showDeregisterPopup(
             darknodeID,
             darknodeDetails && darknodeDetails.feesEarnedTotalEth,
-            quoteCurrency,
             onCancel,
             onDone,
-            setPopup,
         );
     };
 
@@ -133,7 +103,7 @@ const RegistrationClass: React.StatelessComponent<Props> = ({ darknodeID, darkno
         }
 
         setActive(true);
-        await actions.showRefundPopup(setPopup, web3, renNetwork, address, darknodeID, onCancel, onDone);
+        showRefundPopup(darknodeID, onCancel, onDone);
     };
 
     const disabled = active || !address;
@@ -185,5 +155,3 @@ const RegistrationClass: React.StatelessComponent<Props> = ({ darknodeID, darkno
         </div>
     );
 };
-
-export const Registration = connect(mapStateToProps, mapDispatchToProps)(RegistrationClass);

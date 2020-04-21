@@ -6,8 +6,8 @@ import { faServer } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { buildStyles, CircularProgressbar } from "react-circular-progressbar";
 
-import { DarknodesState } from "../../../../store/applicationState";
 import { EpochContainer } from "../../../../store/epochStore";
+import { DarknodesState } from "../../../../store/networkStateContainer";
 import { Block, BlockBody, BlockTitle } from "./Block";
 
 export const EpochBlock = ({ darknodeDetails }: Props): JSX.Element => {

@@ -7,7 +7,7 @@ import { OrderedMap } from "immutable";
 import { DarknodeFeeStatus } from "../../../../lib/ethereum/contractReads";
 import { OldToken, Token } from "../../../../lib/ethereum/tokens";
 import { classNames } from "../../../../lib/react/className";
-import { DarknodesState } from "../../../../store/applicationState";
+import { DarknodesState } from "../../../../store/networkStateContainer";
 import { NetworkStateContainer } from "../../../../store/networkStateContainer";
 import { ReactComponent as RewardsIcon } from "../../../../styles/images/icon-rewards-white.svg";
 import { ReactComponent as WithdrawIcon } from "../../../../styles/images/icon-withdraw.svg";
