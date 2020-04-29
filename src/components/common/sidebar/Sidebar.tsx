@@ -13,6 +13,7 @@ import { UIContainer } from "../../../store/uiStore";
 import { Web3Container } from "../../../store/web3Store";
 import { ReactComponent as RenVMIcon } from "../../../styles/images/Icon-HyperDrive.svg";
 import { ReactComponent as Search } from "../../../styles/images/search.svg";
+import { ExternalLink } from "../ExternalLink";
 import { SidebarIcon } from "./SidebarIcon";
 
 interface Props extends RouteComponentProps {
@@ -115,7 +116,7 @@ export const Sidebar = withRouter(
                             }).toArray() : <>
                             </>}
 
-                        {address ? <a target="_blank" rel="noopener noreferrer" href="https://docs.renproject.io/darknodes/"><div className="sidebar--row">
+                        {address ? <ExternalLink href="https://docs.renproject.io/darknodes/"><div className="sidebar--row">
                             <div className="sidebar--nav--icon sidebar--icon">
                                 <div className="sidebar--nav--icon--circle sidebar--plus">
                                     <FontAwesomeIcon icon={faPlus} className="darknode-card--bottom--icon" />
@@ -124,7 +125,7 @@ export const Sidebar = withRouter(
                             <div className="sidebar--text">
                                 <div className="sidebar--name">Create new Darknode <FontAwesomeIcon icon={faExternalLinkAlt} className="external-link" /></div>
                             </div>
-                        </div></a> : null}
+                        </div></ExternalLink> : null}
                     </div>
                 </div>
                 <div className="sidebar--search sidebar--row">
@@ -137,8 +138,10 @@ export const Sidebar = withRouter(
                 </div>
             </nav>
             {!address ? <div className="sidebar--connect" onClick={handleLogin} role="button">
-                <div className="wallet-icon--inner" />
-                Connect {web3BrowserName}
+                <div className="wallet-icon">
+                    <div className="wallet-icon--inner" />
+                </div>
+                <span>Connect {web3BrowserName}</span>
             </div> : <></>}
         </>;
     }

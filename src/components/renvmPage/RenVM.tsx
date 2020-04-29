@@ -7,6 +7,7 @@ import { CSSTransition, TransitionGroup } from "react-transition-group";
 
 import { Token } from "../../lib/ethereum/tokens";
 import { EncodedData } from "../../lib/general/encodedData";
+import { Search } from "../common/Search";
 import { Stat, Stats } from "../common/Stat";
 import { TokenBalance } from "../common/TokenBalance";
 import { RenVMBlock } from "./RenVMBlock";
@@ -115,7 +116,7 @@ export const RenVM = withRouter(({ match: { params }, history }) => {
     const lockedBalances: any = {};
     if (firstBlock && firstBlock.prevState && firstBlock.prevState.map) {
         firstBlock.prevState.map((state) => {
-            if (state.type === RenVMType.ExtTypeBtcCompatUTXOs && state.name.match(/.*UTXOs/)) {
+            if (state.type === RenVMType.ExtTypeBtcCompatUTXOs) {
                 const token = state.name.replace("UTXOs", "").toUpperCase();
                 lockedBalances[token] = <Stat message={`Locked ${token}`} big>
                     <TokenBalance
@@ -144,6 +145,7 @@ export const RenVM = withRouter(({ match: { params }, history }) => {
                 {lockedZEC}
                 {remainingLockedBalances ? Object.values(remainingLockedBalances) : <></>}
             </Stats>
+            <Search />
             {txHash ?
                 <RenVMTransaction network={container.network} txHash={txHash} transaction={container.currentTransactionHash === txHash ? container.currentTransaction : undefined} onClose={onClose} /> :
                 <></>

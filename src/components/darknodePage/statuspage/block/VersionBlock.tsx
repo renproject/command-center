@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { classNames } from "../../../../lib/react/className";
 import { GithubAPIContainer } from "../../../../store/githubApiStore";
 import { DarknodesState } from "../../../../store/networkStateContainer";
+import { ExternalLink } from "../../../common/ExternalLink";
 import { Block, BlockBody, BlockTitle } from "./Block";
 
 const UPDATE_DARKNODE_LINK = "https://docs.renproject.io/darknodes/manage/updating";
@@ -35,7 +36,7 @@ export const VersionBlock = ({ darknodeDetails }: Props): JSX.Element => {
                         <table className="darknode-info">
                             <tbody>
                                 <tr><td>Your Software Version</td><td>{darknodeDetails.nodeStatistics ? darknodeDetails.nodeStatistics.version : ""}</td></tr>
-                                <tr><td>Latest Version</td><td>{latestDarknodeVersionFull ? latestDarknodeVersionFull : ""} {upToDate !== null ? upToDate ? <>{" "}- <span className="green">Up to date</span></> : <>{" "}- <a className="blue" target="_blank" rel="noopener noreferrer" href={UPDATE_DARKNODE_LINK}>Update now</a></> : ""}</td></tr>
+                                <tr><td>Latest Version</td><td>{latestDarknodeVersionFull ? latestDarknodeVersionFull : ""} {upToDate !== null ? upToDate ? <>{" "}- <span className="green">Up to date</span></> : <>{" "}- <ExternalLink className="blue" href={UPDATE_DARKNODE_LINK}>Update now</ExternalLink></> : ""}</td></tr>
                                 <tr><td>Version published</td><td>{latestDarknodeVersionDaysAgo}</td></tr>
                             </tbody>
                         </table>

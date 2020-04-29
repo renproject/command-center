@@ -1,6 +1,7 @@
 import * as React from "react";
 
 import { Route, RouteComponentProps, Switch, withRouter } from "react-router-dom";
+import { FeedbackButton } from "@renproject/react-components";
 
 import { DEFAULT_REN_NETWORK } from "../lib/react/environmentVariables";
 import { catchBackgroundException } from "../lib/react/errors";
@@ -92,6 +93,7 @@ export const App = withRouter(({ match: { params } }: Props) => {
                         {/* 404 */}
                         <Route component={NotFound} />
                     </Switch>, { popup: true })}
+                    <FeedbackButton url={"https://renprotocol.typeform.com/to/YdmFyB"} />
                 </div>
                 {/* {_catch_(<Footer />)} */}
             </PopupController>

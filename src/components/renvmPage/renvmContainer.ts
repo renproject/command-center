@@ -32,9 +32,9 @@ export interface Block {
     };
     data: Txs;
     prevState: [
-        RenVMArg<"bchUTXOs", RenVMType.ExtTypeBtcCompatUTXOs>,
-        RenVMArg<"btcUTXOs", RenVMType.ExtTypeBtcCompatUTXOs>,
-        RenVMArg<"zecUTXOs", RenVMType.ExtTypeBtcCompatUTXOs>,
+        RenVMArg<"bch", RenVMType.ExtTypeBtcCompatUTXOs>,
+        RenVMArg<"btc", RenVMType.ExtTypeBtcCompatUTXOs>,
+        RenVMArg<"zec", RenVMType.ExtTypeBtcCompatUTXOs>,
     ];
 }
 

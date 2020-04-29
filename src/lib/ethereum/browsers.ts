@@ -19,7 +19,7 @@ export enum Web3Browser {
     Trust = "Trust",
     MetaMask = "MetaMask",
     Mist = "Mist",
-    Web3Browser = "Web3 Browser",
+    Web3Browser = "Wallet",
 }
 
 export const getWeb3BrowserName = (newProvider: provider): Web3Browser => {

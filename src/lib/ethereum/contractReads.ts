@@ -506,12 +506,12 @@ export const fetchCycleAndPendingRewards = async (
     const πPrevious = safePromiseAllMap(
         NewTokenDetails.map(async (_tokenDetails, token) => {
             try {
-                const address = token === Token.ETH ? "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" : renNetwork.addresses.tokens[token].address;
-                const previousCycleRewardShareBN = await retryNTimes(async () => await darknodePayment.methods.previousCycleRewardShare(address).call(), 5);
+                const tokenAddress = token === Token.ETH ? "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" : renNetwork.addresses.tokens[token].address;
+                const previousCycleRewardShareBN = await retryNTimes(async () => await darknodePayment.methods.previousCycleRewardShare(tokenAddress).call(), 5);
                 if (previousCycleRewardShareBN === null) {
                     return new BigNumber(0);
                 }
-                return new BigNumber(previousCycleRewardShareBN.toString());
+                return new BigNumber(previousCycleRewardShareBN.toString()).decimalPlaces(0);
             } catch (error) {
                 console.error(`Error fetching rewards for ${token}`, error);
                 return new BigNumber(0);
@@ -528,12 +528,12 @@ export const fetchCycleAndPendingRewards = async (
                 return new BigNumber(0);
             }
             try {
-                const address = token === Token.ETH ? "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" : renNetwork.addresses.tokens[token].address;
-                const currentCycleRewardPool = await retryNTimes(async () => await darknodePayment.methods.currentCycleRewardPool(address).call(), 5);
+                const tokenAddress = token === Token.ETH ? "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" : renNetwork.addresses.tokens[token].address;
+                const currentCycleRewardPool = await retryNTimes(async () => await darknodePayment.methods.currentCycleRewardPool(tokenAddress).call(), 5);
                 if (currentCycleRewardPool === null) {
                     return new BigNumber(0);
                 }
-                return new BigNumber((currentCycleRewardPool).toString()).div(currentShareCount);
+                return new BigNumber((currentCycleRewardPool).toString()).div(currentShareCount).decimalPlaces(0);
             } catch (error) {
                 console.error(`Error fetching rewards for ${token}`, error);
                 return new BigNumber(0);

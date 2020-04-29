@@ -10,6 +10,7 @@ import { strip0x } from "../../lib/ethereum/contractReads";
 import { Token } from "../../lib/ethereum/tokens";
 import { EncodedData } from "../../lib/general/encodedData";
 import { classNames } from "../../lib/react/className";
+import { ExternalLink } from "../common/ExternalLink";
 import { Tx } from "./renvmContainer";
 
 export const TransactionPreview = ({ tx }: { tx: Tx }) => {
@@ -56,7 +57,7 @@ const RenVMArgValue = ({ renContract, arg, network }: { renContract: RenContract
         if (match) {
             const [token, ,] = [_token.toUpperCase() as Asset, _left.toUpperCase() as Token, _right.toUpperCase() as Token];
             const txHashHex = new EncodedData(utxo.txHash, EncodedData.Encodings.BASE64).toHex("");
-            return <>{"{"}"amount": "{utxo.amount}", "txHash": "<a target="_blank" rel="noopener noreferrer" href={txUrl(txHashHex, token, network)}>{utxo.txHash}</a>", "vOut": "0" {"}"}</>;
+            return <>{"{"}"amount": "{utxo.amount}", "txHash": "<ExternalLink href={txUrl(txHashHex, token, network)}>{utxo.txHash}</ExternalLink>", "vOut": "0" {"}"}</>;
         } else {
             return <>{JSON.stringify(utxo, null, " ")}</>;
         }

@@ -5,6 +5,7 @@ import { Blocky, Loading } from "@renproject/react-components";
 import { classNames } from "../../lib/react/className";
 import { NetworkStateContainer } from "../../store/networkStateContainer";
 import { Web3Container } from "../../store/web3Store";
+import { ExternalLink } from "./ExternalLink";
 
 // tslint:disable: react-unused-props-and-state
 export const AccountDropdown: React.StatelessComponent<Props> = ({ }) => {
@@ -134,7 +135,7 @@ export const AccountDropdown: React.StatelessComponent<Props> = ({ }) => {
                                 return <li key={txHash} className="transaction">
                                     {confs === 0 ? <Loading /> : <></>}
                                     {confs === -1 ? <span className="red">(ERR) {" "}</span> : <></>}
-                                    <a className="transaction--hash" target="_blank" rel="noopener noreferrer" href={`${renNetwork.etherscan}/tx/${txHash}`}>{txHash.substring(0, 12)}...</a>
+                                    <ExternalLink className="transaction--hash" href={`${renNetwork.etherscan}/tx/${txHash}`}>{txHash.substring(0, 12)}...</ExternalLink>
                                     {confs > 0 ? <>{" "}({confs} conf.)</> : ""}
                                 </li>;
                             }).valueSeq().toArray()}

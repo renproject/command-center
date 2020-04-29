@@ -310,16 +310,16 @@ input[type="text"].sidebar--search--input {
 }
 
 .sidebar--connect {
-    background: #006FE8;
-    box-shadow: -2px 2px 4px #000000;
+    background: #002B5C;
+    // box-shadow: -2px 2px 4px #000000;
     border-bottom-left-radius: 12px;
     border-bottom-right-radius: 12px;
     transform: rotate(-90deg);
     position: absolute;
     top: 50vh;
-    width: 200px;
-    height: 28px;
-    left: -5px;
+    width: 240px;
+    height: 34px;
+    left: -23px;
     z-index: 20;
 
     cursor: pointer;
@@ -332,12 +332,35 @@ input[type="text"].sidebar--search--input {
     justify-content: center;
     align-items: center;
 
+    padding: 0 20px;
+
+
+    span {
+        font-weight: normal;
+        font-size: 14px;
+        line-height: 16px;
+
+        /* identical to box height */
+
+        color: #F9F9F9;
+    }
+
+    .wallet-icon {
+        width: 34px;
+        height: 34px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 12px;
+    }
+
     .wallet-icon--inner {
         background: url('../../styles/images/wallet.svg') no-repeat;
         background-size: 12px 14px;
+        background-color: $blue-bright;
+        margin: 0;
         height: 14px;
         width: 12px;
-        margin-right: 6px;
     }
 
     @media(max-width: $max-sidebar) {

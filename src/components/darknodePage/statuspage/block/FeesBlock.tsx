@@ -1,14 +1,13 @@
 import * as React from "react";
 
-import { CurrencyIcon, TokenIcon } from "@renproject/react-components";
+import { Currency, CurrencyIcon, TokenIcon } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
 
 import { DarknodeFeeStatus } from "../../../../lib/ethereum/contractReads";
-import { OldToken, Token } from "../../../../lib/ethereum/tokens";
+import { AllTokenDetails, OldToken, Token } from "../../../../lib/ethereum/tokens";
 import { classNames } from "../../../../lib/react/className";
-import { DarknodesState } from "../../../../store/networkStateContainer";
-import { NetworkStateContainer } from "../../../../store/networkStateContainer";
+import { DarknodesState, NetworkStateContainer } from "../../../../store/networkStateContainer";
 import { ReactComponent as RewardsIcon } from "../../../../styles/images/icon-rewards-white.svg";
 import { ReactComponent as WithdrawIcon } from "../../../../styles/images/icon-withdraw.svg";
 import { Tabs } from "../../../common/Tabs";
@@ -31,7 +30,7 @@ const mergeFees = (left: OrderedMap<Token | OldToken, BigNumber>, right: Ordered
 
 export const FeesBlock: React.StatelessComponent<Props> = ({ darknodeDetails, isOperator }) => {
 
-    const { quoteCurrency, currentCycle, previousCycle, pendingRewards, pendingTotalInEth } = NetworkStateContainer.useContainer();
+    const { quoteCurrency, currentCycle, previousCycle, pendingRewards, pendingTotalInEth, tokenPrices } = NetworkStateContainer.useContainer();
 
     const [tab, setTab] = React.useState(Tab.Withdrawable);
     const [disableClaim, setDisableClaim] = React.useState(false);
@@ -132,7 +131,17 @@ export const FeesBlock: React.StatelessComponent<Props> = ({ darknodeDetails, is
                                 </thead>
                                 <tbody>
                                     {
-                                        fees.toArray().map(([token, balance]: [Token | OldToken, BigNumber], i) => {
+                                        fees.map((balance, token) => ({
+                                            // tslint:disable-next-line: no-non-null-assertion
+                                            balance, percent: balance
+                                                .div(new BigNumber(10).exponentiatedBy(AllTokenDetails.get(token)!.decimals))
+                                                .times(tokenPrices?.get(token)?.get(Currency.ETH) || 0)
+                                                .times(new BigNumber(10).exponentiatedBy(18))
+                                                .div(tab === Tab.Withdrawable ? darknodeDetails.feesEarnedTotalEth : pendingTotal)
+                                                .times(100)
+                                                .decimalPlaces(2)
+                                                .toNumber() || 0,
+                                        })).sortBy(item => -item.percent).toArray().map(([token, { balance, percent }]: [Token | OldToken, { balance: BigNumber, percent: number }], i) => {
                                             return <><tr key={token} style={{}}>
                                                 <td className="fees-block--table--token">
                                                     <TokenIcon className="fees-block--table--icon" white={true} token={token} />
@@ -166,7 +175,7 @@ export const FeesBlock: React.StatelessComponent<Props> = ({ darknodeDetails, is
                                             </tr>
                                                 <tr>
                                                     <td colSpan={3} style={{ padding: 0, margin: 0, height: 4 }}>
-                                                        <div className={classNames("percent-bar", token)} style={{ width: `${Math.max(0, (fees.size - i) / (fees.size) * (40) + Math.sin(3 * i) * 10)}%`, height: 4, marginTop: -6 }} />
+                                                        <div className={classNames("percent-bar", token)} style={{ width: `${percent}%`, height: 4, marginTop: -6 }} />
                                                     </td>
                                                 </tr>
                                             </>;

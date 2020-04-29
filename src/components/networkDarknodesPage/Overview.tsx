@@ -44,7 +44,7 @@ export const Overview = () => {
                             </>}
                         </Stat>
                         <Stat message="Change next epoch" big>{nextDarknodeCount === null || currentDarknodeCount === null ? <Loading alt={true} /> : <>
-                            <Change change={nextDarknodeCount - currentDarknodeCount} />
+                            <Change change={nextDarknodeCount - currentDarknodeCount ? nextDarknodeCount - currentDarknodeCount : "-"} />
                         </>}</Stat>
                         <Stat message="% Ren Registered" big>{currentDarknodeCount === null ? <Loading alt={true} /> : <>
                             {100 * currentDarknodeCount / 100000}%
@@ -53,13 +53,13 @@ export const Overview = () => {
                 </Stat>
                 <Stat icon={<IconIncome />} message="Darknode rewards">
                     <Stats>
-                        <Stat message="All time total" big>
+                        {/* <Stat message="All time total" big>
                             {previousSummed ? <><CurrencyIcon currency={quoteCurrency} /><TokenBalance
                                 token={Token.ETH}
                                 convertTo={quoteCurrency}
                                 amount={0}
                             /></> : <Loading alt />}
-                        </Stat>
+                        </Stat> */}
                         <Stat message="Last cycle" big>
                             {previousSummed ? <><CurrencyIcon currency={quoteCurrency} /><TokenBalance
                                 token={Token.ETH}

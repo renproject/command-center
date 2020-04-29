@@ -6,7 +6,8 @@
     }
 
     &.container {
-        max-width: 1900px;
+        // max-width: 1900px;
+        max-width: 2200px;
         display: flex;
         flex-flow: wrap;
     }
@@ -388,6 +389,8 @@
 }
 
 .stat-with-period {
+    flex-grow: 1;
+
     &+.stat-with-period {
         margin-left: 20px;
     }

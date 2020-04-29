@@ -105,6 +105,11 @@
     margin-right: 15px;
 }
 
+.header--dropdown::after,
+.header--dropdown::before {
+    margin-bottom: 10px;
+}
+
 .header--dropdown--alt {
     padding: 0;
     position: absolute;
@@ -121,9 +126,24 @@
     color: #58585b;
 }
 
+.header--dropdown--spacing {
+    // margin-top: -5px !important;
+}
+
+.header--dropdown {
+    border-radius: 2px !important;
+    padding: 0 !important;
+}
+
 .header--dropdown--option {
     min-width: 100%;
     max-width: 100%;
+    width: 200px !important;
+    padding: 12px 20px !important;
+
+    color: #001B3A !important;
+    font-weight: 500 !important;
+    font-size: 12px !important;
 }
 
 .header--dropdown .header--dropdown--highlight {
@@ -231,6 +251,13 @@
     border-radius: 0;
     margin: 0;
     padding: 0 25px;
+}
+
+.header--dropdown--option:hover,
+.header--dropdown--selected {
+    border-color: #fff !important;
+    background: #E8EAEC !important;
+    border-radius: 0px !important;
 }
 
 .header--group:not(.header--group--account) {
@@ -348,25 +375,34 @@
 
     cursor: text !important;
 
-    border-left: 1px solid #1a2e46 !important;
-    border-right: 1px solid #1a2e46 !important;
-    border-radius: 0 !important;
+    // border-left: 1px solid #1a2e46 !important;
+    // border-right: 1px solid #1a2e46 !important;
+    border-radius: 2px !important;
     margin: 0 !important;
+    margin-bottom: 20px !important;
 
     height: 51px !important;
 
-    background: transparent !important;
-    color: white;
+    // background: transparent !important;
+    background: white;
+    color: black !important;
+    font-weight: 900 !important;
+
+    // color: white;
     width: 100%;
     min-width: 0 !important;
 
+    &::placeholder {
+        color: $blue-darker !important;
+    }
+
     &:focus {
-        border-left: 1apx solid $blue-bright !important;
-        border-right: 1px solid $blue-bright !important;
+        // border-left: 1apx solid $blue-bright !important;
+        // border-right: 1px solid $blue-bright !important;
     }
 
     &.header--search--404 {
-        border-color: $red !important;
+        // border-color: $red !important;
         color: $red !important;
     }
 }

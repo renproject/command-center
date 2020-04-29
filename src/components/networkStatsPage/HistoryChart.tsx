@@ -1,8 +1,8 @@
-import { Loading } from "@renproject/react-components";
-import React from "react";
+import { Loading, naturalTime } from "@renproject/react-components";
+import React, { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 
-import { NetworkStateContainer } from "../../store/networkStateContainer";
+import { QuotePeriodData, QuotePeriodResponse } from "../../lib/graphQL/volumes";
 
 const { Chart } = require("react-chartjs-2");
 require("chartjs-plugin-style");
@@ -169,7 +169,14 @@ Chart.elements.Rectangle.prototype.draw = function () {
         } else {
             // Positive Value
             ctx.moveTo(x + radius, y);
-            ctx.lineTo(x + width - radius, y);
+            if (radius === 6) {
+                ctx.lineTo(x + width - radius - 0.1, y);
+                ctx.lineTo(x + width - radius - 0.1, 0);
+                ctx.lineTo(x + width - radius + 0.1, 0);
+                ctx.lineTo(x + width - radius + 0.1, y);
+            } else {
+                ctx.lineTo(x + width - radius, y);
+            }
             ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
             ctx.lineTo(x + width, y + height - radius);
             ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
@@ -186,18 +193,36 @@ Chart.elements.Rectangle.prototype.draw = function () {
     }
 };
 
-export const VolumeChart = () => {
-    const { previousCycle, pendingRewardsInEth, currentShareCount } = NetworkStateContainer.useContainer();
+interface Props {
+    periodSeries: QuotePeriodResponse | null | undefined;
+    graphType: "Volume" | "Locked";
+}
 
-    const currentSplit = pendingRewardsInEth.get(previousCycle);
+export const HistoryChart: React.StatelessComponent<Props> = ({ periodSeries, graphType }) => {
 
-    const keys = React.useMemo(() => currentSplit ? currentSplit.keySeq().toArray() : [], [currentSplit]);
-    const values = React.useMemo(() => currentSplit ? currentSplit.valueSeq().map(bn => bn.multipliedBy(currentShareCount).decimalPlaces(6).toNumber()).toArray() : [], [currentSplit]);
+    const [cachedSeries, setCachedPeriod] = useState<QuotePeriodData[] | null>(null);
+    const [pendingSeries, setPendingPeriod] = useState<QuotePeriodData[] | null>(null);
+    useEffect(() => {
+        setCachedPeriod(pendingSeries); // .slice(periodSeries.historic.length - 7));
+    }, [pendingSeries]);
+    useEffect(() => {
+        if (periodSeries) {
+            setPendingPeriod(periodSeries.historic); // .slice(periodSeries.historic.length - 7));
+            setCachedPeriod([]);
+        }
+    }, [periodSeries]);
+
+    // const { previousCycle, pendingRewardsInEth, currentShareCount } = NetworkStateContainer.useContainer();
+
+    // const currentSplit = pendingRewardsInEth.get(previousCycle);
+
+    // const keys = React.useMemo(() => currentSplit ? currentSplit.keySeq().toArray() : [], [currentSplit]);
+    // const values = React.useMemo(() => currentSplit ? currentSplit.valueSeq().map(bn => bn.multipliedBy(currentShareCount).decimalPlaces(6).toNumber()).toArray() : [], [currentSplit]);
     const empty = false; // React.useMemo(() => !!currentSplit && values.reduce((sum, value) => sum + value, 0) === 0, [currentSplit, values]);
 
     return <div className="overview--chart--outer">
         <div className="volume--chart">
-            {currentSplit ? <><div className="overview--chart--canvas">
+            {cachedSeries ? <><div className="overview--chart--canvas">
                 <Bar
                     height={330}
                     width={500}
@@ -211,9 +236,14 @@ export const VolumeChart = () => {
 
                         return {
                             maintainAspectRation: true,
-                            labels: empty ? ["No rewards for cycle yet"] : [...keys, ...keys].map((x, i) => `${i} days ago`).reverse(),
+                            labels: empty ? ["No rewards for cycle yet"] : cachedSeries.map(item => naturalTime(item.date, {
+                                suffix: "ago",
+                                message: "Current",
+                                countDown: false,
+                                showingSeconds: false
+                            })),
                             datasets: [{
-                                data: empty ? [100] : [...values.map((x, i) => Math.abs(Math.sin((i + 1) * 100))), ...values.map((x, i) => Math.abs(Math.sin(10 * i * 100)))],
+                                data: empty ? [100] : cachedSeries.map(item => item[`quoteTotal${graphType}`]),
                                 fillColor: gradient,
                                 backgroundColor: gradient,
                                 borderColor: "#001A38",
@@ -234,11 +264,17 @@ export const VolumeChart = () => {
                         scales: {
                             yAxes: [{
                                 ticks: {
+                                    beginAtZero: true,
                                     display: false
                                 },
+                                offset: false,
                                 radius: 25,
                             }],
                             xAxes: [{
+                                ticks: {
+                                    fontColor: "#969696",
+                                    fontSize: 9,
+                                },
                                 barThickness: 13
                             }],
                         },
