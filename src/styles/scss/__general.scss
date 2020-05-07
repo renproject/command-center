@@ -354,8 +354,12 @@ label {
 }
 
 .app--body {
-    margin-top: 150px;
-    margin-bottom: 60px;
+    margin-top: 48px;
+
+    @media (min-width: $min-lg) {
+        margin-top: 150px;
+        margin-bottom: 60px;
+    }
 }
 
 .mobile-only {

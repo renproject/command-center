@@ -34,7 +34,7 @@
             border-radius: 4px;
             height: 400px;
 
-            min-width: 500px;
+            // min-width: 200px;
 
             flex: 1 1 0px;
 
@@ -390,6 +390,7 @@
 
 .stat-with-period {
     flex-grow: 1;
+    flex-basis: 0;
 
     &+.stat-with-period {
         margin-left: 20px;
@@ -448,5 +449,14 @@
         border-bottom: 4px solid #006FE8;
         padding-bottom: 8px;
         margin-bottom: -1px;
+    }
+}
+
+.collateral-padding {
+    height: 35px;
+    width: 100%;
+
+    @media (max-width: $max-lg) {
+        display: none;
     }
 }

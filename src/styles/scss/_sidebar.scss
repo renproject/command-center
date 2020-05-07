@@ -45,6 +45,7 @@ $mobile-full-width: 100vw;
 
 .sidebar--nav {
     margin-bottom: 50px;
+    cursor: pointer;
 }
 
 .sidebar--nav--icon svg {
@@ -146,10 +147,10 @@ $min-header: $min-lg;
         width: 0px;
     }
 
-    @media(max-width: $max-sidebar) {
-        // This sets the faTimes symbol to be aligned with the faBars symbol
-        padding-top: 17px;
-    }
+    // @media(max-width: $max-sidebar) {
+    //     // This sets the faTimes symbol to be aligned with the faBars symbol
+    //     padding-top: 17px;
+    // }
 
     overflow-x: hidden;
     -webkit-transition: width .1s linear;
@@ -366,4 +367,15 @@ input[type="text"].sidebar--search--input {
     @media(max-width: $max-sidebar) {
         display: none;
     }
+}
+
+
+.sidebar--close {
+    cursor: pointer;
+    height: 48px;
+    justify-content: flex-end;
+}
+
+.sidebar--nav {
+    height: 48px;
 }

@@ -172,6 +172,7 @@ export const NetworkStats = () => {
                 </Stats>
             </div>
             <div className="col-lg-12 col-xl-4">
+                <div className="collateral-padding" />
                 <Collateral l={total} r={r} rRen={new BigNumber(currentDarknodeCount || 0).times(100000)} />
             </div>
         </div>

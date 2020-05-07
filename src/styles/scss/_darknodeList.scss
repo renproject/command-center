@@ -120,13 +120,17 @@ $darknode-card-margin: 10px;
         font-weight: bold;
     }
 
-    .darknode-card--bottom--icon {
-        font-size: 2em;
+    .sidebar--nav--icon {
 
-        mix-blend-mode: normal;
-        opacity: 0.4;
+        svg,
+        img {
+            font-size: 2em;
 
-        margin-right: 20px;
+            mix-blend-mode: normal;
+            opacity: 0.4;
+
+            margin-right: 20px;
+        }
     }
 }
 

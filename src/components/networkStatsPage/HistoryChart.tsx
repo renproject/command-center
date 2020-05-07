@@ -225,7 +225,7 @@ export const HistoryChart: React.StatelessComponent<Props> = ({ periodSeries, gr
             {cachedSeries ? <><div className="overview--chart--canvas">
                 <Bar
                     height={330}
-                    width={500}
+                    width={400}
                     legend={{ display: false }}
                     // tslint:disable-next-line: react-this-binding-issue jsx-no-lambda no-any
                     data={(canvas: any) => {
