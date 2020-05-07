@@ -3,9 +3,11 @@ import * as React from "react";
 import { Loading } from "@renproject/react-components";
 
 import { NULL, RegistrationStatus } from "../../../lib/ethereum/contractReads";
+import { classNames } from "../../../lib/react/className";
 import { catchInteractionException } from "../../../lib/react/errors";
 import { DarknodesState, NetworkStateContainer } from "../../../store/networkStateContainer";
 import { Web3Container } from "../../../store/web3Store";
+import { StatusDot, StatusDotColor } from "../../common/StatusDot";
 
 export const statusText = {
     [RegistrationStatus.Unknown]: "Loading...",
@@ -119,7 +121,10 @@ export const Registration: React.StatelessComponent<Props> = ({ darknodeID, dark
     return (
         <div className="status">
             {!noStatus ?
-                <span className="status--title">{statusText[registrationStatus]}</span> : null}
+                <span className={classNames("status--title", registrationStatus === RegistrationStatus.Registered ? "status--registered" : "")}>
+                    <StatusDot color={registrationStatus === RegistrationStatus.Registered ? StatusDotColor.Green : StatusDotColor.Yellow} size={16} />
+                    {statusText[registrationStatus]}
+                </span> : null}
             {isOperator ? <>
                 {registrationStatus === RegistrationStatus.Unregistered ?
                     <button disabled={registrationDisabled} className="status--button" onClick={handleRegister}>

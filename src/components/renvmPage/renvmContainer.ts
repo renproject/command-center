@@ -190,7 +190,7 @@ const useRenVMContainer = () => {
 
             if (network) {
                 try {
-                    currentTransaction = await new RenJS(network.name).lightnode.queryTx(new EncodedData(txHashHex, Encodings.HEX).toBase64());
+                    currentTransaction = await new RenJS(network.name).renVM.queryTx(new EncodedData(txHashHex, Encodings.HEX).toBase64());
                 } catch (error) {
                     console.error(error);
                     currentTransaction = null;
@@ -202,7 +202,7 @@ const useRenVMContainer = () => {
             const count = transactions.count();
             transactions = transactions
                 .slice(count - 5, count)
-                .set(txHashHex, currentTransaction);
+                .set(txHashHex, currentTransaction || null);
             setTransactions(transactions);
         }
 

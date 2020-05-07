@@ -7,6 +7,7 @@ import { classNames } from "../../../../lib/react/className";
 import { GithubAPIContainer } from "../../../../store/githubApiStore";
 import { DarknodesState } from "../../../../store/networkStateContainer";
 import { ExternalLink } from "../../../common/ExternalLink";
+import { StatusDot, StatusDotColor } from "../../../common/StatusDot";
 import { Block, BlockBody, BlockTitle } from "./Block";
 
 const UPDATE_DARKNODE_LINK = "https://docs.renproject.io/darknodes/manage/updating";
@@ -27,7 +28,8 @@ export const VersionBlock = ({ darknodeDetails }: Props): JSX.Element => {
             </BlockTitle>
 
             <div className={classNames("version-block--status", darknodeDetails && darknodeDetails.nodeStatistics ? "version-block--status--operational" : "")}>
-                <span><span /></span> {darknodeDetails ? darknodeDetails.nodeStatistics ? "Operational" : "Unable to connect" : "Connecting..."}
+                <StatusDot color={darknodeDetails && darknodeDetails.nodeStatistics ? StatusDotColor.Green : StatusDotColor.Yellow} size={24} />
+                {darknodeDetails ? darknodeDetails.nodeStatistics ? "Operational" : "Unable to connect" : "Connecting..."}
             </div>
 
             <div className="block--advanced--bottom">

@@ -43,58 +43,57 @@ export const RenVMBlock = withRouter(({ history, blockNumber, onClose, onTxClick
 
     return <div className="selected-block">
         <div role="button" className="popup--x popup--x--white" onClick={onClose} />
-        <h1>Block {blockNumber}</h1>
-        <table>
-            <thead>
-                <tr>
-                    <th>Block Number</th>
-                    <th>Timestamp</th>
-                    <th className="renvm--table--txs">Transactions</th>
-                </tr>
-            </thead>
-            {block ?
-                <TransitionGroup component="tbody">
-                    {blockTr(block)}
-                </TransitionGroup> :
-                block === null ?
-                    <tbody><tr><td colSpan={3}>Block not found</td></tr></tbody> :
-                    <tbody><tr><td colSpan={3}><Loading alt={true} /></td></tr></tbody>
-            }
-        </table>
-        <h2>Transactions</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>TX</th>
-                    <th>Hash</th>
-                    <th>Contract</th>
-                    <th>Args</th>
-                    <th>Outputs</th>
-                </tr>
-            </thead>
-            <tbody>
-                {block ?
-                    block.data && block.data.length > 0 && block.data.map ?
-                        block.data.map(tx => {
-                            const bindedOnTxClick = () => onTxClick(tx.hash);
-                            return (
-                                <tr key={tx.hash} onClick={bindedOnTxClick}>
-                                    <td className="block--tx" key={tx.hash}>
-                                        <TransactionPreview tx={tx} />
-                                    </td>
-                                    <td className="monospace">{tx.hash}</td>
-                                    <td className="monospace">{tx.to}</td>
-                                    <td>{tx.in.length}</td>
-                                    <td>{tx.out ? tx.out.length : 0}</td>
-                                </tr>
-                            );
-                        }) :
-                        <>
-                            <tr><td colSpan={5}>No transactions</td></tr>
-                        </> :
-                    <tr><td colSpan={5}><Loading alt={true} /></td></tr>
-                }
-            </tbody>
-        </table>
+
+        <div className="selected-block--top">
+            <h1>Block {blockNumber}</h1>
+            <span>
+                {block && naturalTime(block.header.timestamp, {
+                    message: "Just now",
+                    suffix: "ago",
+                    countDown: false,
+                    showingSeconds: true
+                })}
+            </span>
+            <span>
+                {block && block.data && block.data.length} transactions
+            </span>
+        </div>
+
+        <div className="selected-block--bottom">
+            <table>
+                <thead>
+                    <tr>
+                        <th>TX</th>
+                        <th>Hash</th>
+                        <th>Contract</th>
+                        <th>Args</th>
+                        <th>Outputs</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {block ?
+                        block.data && block.data.length > 0 && block.data.map ?
+                            block.data.map(tx => {
+                                const bindedOnTxClick = () => onTxClick(tx.hash);
+                                return (
+                                    <tr key={tx.hash} onClick={bindedOnTxClick}>
+                                        <td className="block--tx" key={tx.hash}>
+                                            <TransactionPreview tx={tx} />
+                                        </td>
+                                        <td className="monospace">{tx.hash}</td>
+                                        <td className="monospace">{tx.to}</td>
+                                        <td>{tx.in.length}</td>
+                                        <td>{tx.out ? tx.out.length : 0}</td>
+                                    </tr>
+                                );
+                            }) :
+                            <>
+                                <tr><td colSpan={5}>No transactions</td></tr>
+                            </> :
+                        <tr><td colSpan={5}><Loading alt={true} /></td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>;
 });

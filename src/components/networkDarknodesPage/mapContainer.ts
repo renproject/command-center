@@ -79,7 +79,7 @@ const fetchLocationFromAPI = async (ip: string): Promise<Location> => {
                     lon: number;
                     // tslint:disable-next-line: no-http-string
                 }>(`http://ip-api.com/json/${ip}`)).data;
-                return { longitude: apiResponse.lon, latitude: apiResponse.lat };
+                return { longitude: apiResponse.lon || 0, latitude: apiResponse.lat || 0 };
 
                 // Seems to share a rate-limiter with https://ipapi.co.
                 // const apiResponse = (await Axios.get<{

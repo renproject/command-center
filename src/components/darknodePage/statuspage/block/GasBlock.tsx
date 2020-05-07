@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import BigNumber from "bignumber.js";
 
 import { DarknodesState } from "../../../../store/networkStateContainer";
+import { ReactComponent as FlameIcon } from "../../../../styles/images/icon-flame.svg";
 import { TopUpController } from "../topup/TopUpController";
 import { Block, BlockTitle } from "./Block";
 
@@ -27,7 +28,7 @@ export const GasBlock: React.StatelessComponent<Props> = ({ darknodeDetails }) =
         >
             <BlockTitle>
                 <h3>
-                    <FontAwesomeIcon icon={faFire} pull="left" />
+                    <FlameIcon />
                     Gas Balance
                     </h3>
             </BlockTitle>

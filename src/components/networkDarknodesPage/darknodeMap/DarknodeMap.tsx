@@ -1,16 +1,19 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import {
-    ComposableMap, Geographies, Geography, Marker, Markers, ZoomableGroup,
-} from "react-simple-maps";
+import { ComposableMap, Geographies, Geography, Marker, ZoomableGroup } from "react-simple-maps";
+import ReactTooltip from "react-tooltip";
 
 import { Web3Container } from "../../../store/web3Store";
 import { MapContainer } from "../mapContainer";
 import MapJSON from "./world-50m.json";
 
+// tslint:disable-next-line: no-any
+// const GeographyAlt: any = Geography;
+
 export const DarknodeMap = () => {
     const { renNetwork: network } = Web3Container.useContainer();
     const container = MapContainer.useContainer();
+    const [tooltipContent, setTooltipContent] = React.useState("");
 
     React.useEffect(() => {
         const fetchIPs = () => {
@@ -31,8 +34,10 @@ export const DarknodeMap = () => {
 
     return <div className="map">
         <ComposableMap
+            data-tip=""
             className="map--world"
-            projectionConfig={{ scale: 205 }}
+            projection="geoEqualEarth"
+            projectionConfig={{ scale: 215, center: [0, 5] }}
             width={980}
             height={551}
             style={{
@@ -40,51 +45,63 @@ export const DarknodeMap = () => {
                 height: "auto",
             }}
         >
-            <ZoomableGroup center={[0, 20]} disablePanning>
-                <Geographies geography={MapJSON}>
-                    {(geographies, projection) =>
-                        geographies.map((geography, i) =>
-                            // Don't render Antarctica
-                            (geography as { id: string }).id !== "ATA" && (
-                                <Geography
-                                    key={i}
-                                    geography={geography}
-                                    projection={projection}
-                                    style={{
-                                        default: {
-                                            fill: "#00244d",
-                                            stroke: "#00244d",
-                                            strokeWidth: 0,
-                                            outline: "none",
-                                        },
-                                        hover: {
-                                            fill: "#00244d",
-                                            stroke: "#00244d",
-                                            strokeWidth: 0,
-                                            outline: "none",
-                                        },
-                                        pressed: {
-                                            fill: "#00244d",
-                                            stroke: "#00244d",
-                                            strokeWidth: 0,
-                                            outline: "none",
-                                        },
-                                    }}
-                                />
-                            ))}
-                </Geographies>
-                <Markers>
-                    {container.darknodes.map((darknode, i) => <Marker key={i} marker={{ coordinates: darknode.point }}>
-                        <Link to={`/darknode/${darknode.darknodeID}`}>
-                            <circle
-                                cx={0}
-                                cy={0}
-                                r={5}
+            <Geographies geography={MapJSON}>
+                {({ geographies }) =>
+                    geographies.map((geography, i) => {
+                        // Don't render Antarctica
+                        return geography.properties.NAME !== "Antarctica" && (
+                            <Geography
+                                key={i}
+                                geography={geography}
+
+                                style={{
+                                    default: {
+                                        fill: "#00244d",
+                                        stroke: "#00244d",
+                                        strokeWidth: 0,
+                                        outline: "none",
+                                    },
+                                    hover: {
+                                        fill: "#00244d",
+                                        stroke: "#00244d",
+                                        strokeWidth: 0,
+                                        outline: "none",
+                                    },
+                                    pressed: {
+                                        fill: "#00244d",
+                                        stroke: "#00244d",
+                                        strokeWidth: 0,
+                                        outline: "none",
+                                    },
+                                }}
                             />
-                        </Link>
-                    </Marker>)}
-                </Markers>
-            </ZoomableGroup>
+                        );
+                    })
+                }
+            </Geographies>
+            {container.darknodes.map((darknode, i) => {
+                const onMouseEnter = () => {
+                    setTooltipContent(`${darknode.darknodeID}`);
+                };
+                const onMouseLeave = () => {
+                    setTooltipContent("");
+                };
+                return <Marker
+                    key={i}
+                    coordinates={darknode.point}
+                    onMouseEnter={onMouseEnter}
+                    onMouseLeave={onMouseLeave}
+                >
+                    <Link to={`/darknode/${darknode.darknodeID}`}>
+                        <circle
+                            cx={0}
+                            cy={0}
+                            r={5}
+                        />
+                    </Link>
+                </Marker>;
+            })}
         </ComposableMap>
+        <ReactTooltip>{tooltipContent}</ReactTooltip>
     </div>;
 };

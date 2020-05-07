@@ -19,8 +19,7 @@ html {
     }
 
     min-height: 100%;
-    background: linear-gradient(180deg, #00162f 0%, #001b39 100%);
-    background: $blue-darker;
+    background: linear-gradient(189.65deg, #000E1A -20.29%, #002146 142.27%);
     background-attachment: fixed;
 }
 
@@ -402,4 +401,30 @@ label {
     position: fixed;
     right: 30px;
     bottom: 20px;
+}
+
+
+.status-dot {
+    background: transparentize($color: rgb(255, 187, 0), $amount: 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 100%;
+    margin-right: 4px;
+
+    >span {
+        background: rgb(255, 187, 0);
+        display: block;
+        border-radius: 100%;
+        width: calc(100% - 6px);
+        height: calc(100% - 6px);
+    }
+
+    &.status-dot--green {
+        background: transparentize($color: $green, $amount: 0.5);
+
+        >span {
+            background: $green;
+        }
+    }
 }

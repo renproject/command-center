@@ -10,6 +10,15 @@ $mobile-full-width: 100vw;
     border-radius: 50%;
 }
 
+.sidebar .status-dot {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin-right: 10px;
+    width: 0 !important;
+    background: $blue-dark !important;
+}
+
 .sidebar--row {
     height: 100px;
     border-left: 4px solid rgba(0, 0, 0, 0);
@@ -117,6 +126,7 @@ $min-header: $min-lg;
     margin-right: 4px;
     display: flex;
     justify-content: center;
+    position: relative;
 }
 
 .sidebar--icon--empty {
@@ -226,14 +236,22 @@ $min-header: $min-lg;
         >div+div {
             margin-left: 20px;
         }
+
+        svg {
+            width: 15px;
+            height: 15px;
+            opacity: 1;
+            margin-right: 5px;
+        }
     }
 
     .sidebar--text--rewards {
-        color: $green;
+        display: flex;
+        align-items: center;
     }
 
     .sidebar--text--gas {
-        color: $red;
+        @extend .sidebar--text--rewards;
     }
 
     .currency-symbol {

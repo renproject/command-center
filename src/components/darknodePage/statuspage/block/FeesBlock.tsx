@@ -9,7 +9,7 @@ import { AllTokenDetails, OldToken, Token } from "../../../../lib/ethereum/token
 import { classNames } from "../../../../lib/react/className";
 import { DarknodesState, NetworkStateContainer } from "../../../../store/networkStateContainer";
 import { ReactComponent as RewardsIcon } from "../../../../styles/images/icon-rewards-white.svg";
-import { ReactComponent as WithdrawIcon } from "../../../../styles/images/icon-withdraw.svg";
+// import { ReactComponent as WithdrawIcon } from "../../../../styles/images/icon-withdraw.svg";
 import { Tabs } from "../../../common/Tabs";
 import { TokenBalance } from "../../../common/TokenBalance";
 import { FeesItem } from "../FeesItem";
@@ -118,7 +118,7 @@ export const FeesBlock: React.StatelessComponent<Props> = ({ darknodeDetails, is
                                 </span>
                                 <span className="fees-block--advanced--unit">{quoteCurrency.toUpperCase()}</span>
                             </div>
-                            <button className="button button--dark"><WithdrawIcon className="icon" />Withdraw</button>
+                            {/* <button className="button button--dark"><WithdrawIcon className="icon" />Withdraw</button> */}
                         </div>
                         <div className="block--advanced--bottom">
                             <table className="fees-block--table">

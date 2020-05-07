@@ -155,26 +155,62 @@
     }
 
     .selected-block {
-        background: #043D7D;
-        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
+        background: $blue-dark;
+        // box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
         border-radius: 6px;
-        padding: 10px 20px;
         margin-right: 0 !important;
         margin-bottom: 30px;
         position: relative;
+        overflow: hidden;
 
         .no-transactions {
             margin-top: 20px;
+        }
+
+        .selected-block--top {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 2px solid #001B3A;
+            margin-bottom: 2px;
+            padding: 20px 20px;
+            padding-bottom: 0;
+            margin-right: 40px;
+
+            >* {
+                font-size: 16px;
+                line-height: 18px;
+                font-weight: 500;
+                color: #F9F9F9;
+                text-transform: none;
+            }
+        }
+
+        .selected-block--bottom {
+            background: #001F41;
+            padding-top: 10px;
+            padding-bottom: 10px;
+
+            tr,
+            thead,
+            td {
+                background: none;
+            }
+
+            th:first-child,
+            td:first-child {
+                padding-left: 20px;
+            }
         }
     }
 }
 
 .popup--x {
     position: absolute;
-    right: ((40px - 12px) / 2);
-    top: ((40px - 12px) / 2);
-    height: 12px;
-    width: 12px;
+    $size: 12px;
+    right: ((55px - $size) / 2);
+    top: ((55px - $size) / 2);
+    height: $size;
+    width: $size;
     margin-top: 0;
     background: url('../../styles/images/exit-black.svg');
     background-size: 100%;

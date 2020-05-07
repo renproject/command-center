@@ -82,6 +82,7 @@
     @extend .no-scrollbar;
     margin-top: 10px;
     width: 100%;
+    flex-grow: 1;
 }
 
 /**** GAS BLOCK *****/
@@ -108,7 +109,7 @@
     .block--advanced--bottom {
         border-top: 2px solid $blue-darker;
         background: #001F41;
-        height: 100%;
+        // height: 100%;
     }
 
     .block--advanced--top {
@@ -120,6 +121,15 @@
             margin-bottom: 50px;
             width: 170px;
         }
+    }
+
+    .tabs--outer {
+        display: flex;
+        flex-flow: column;
+    }
+
+    .block--advanced {
+        margin: 0;
     }
 }
 
@@ -397,42 +407,15 @@
 
     .version-block--status {
         display: flex;
-
-        >span {
-            background: transparentize($color: rgb(255, 187, 0), $amount: 0.5);
-            display: flex;
-            height: 24px;
-            width: 24px;
-            justify-content: center;
-            align-items: center;
-            border-radius: 100%;
-
-            >span {
-                background: rgb(255, 187, 0);
-                display: block;
-                height: 18px;
-                width: 18px;
-                border-radius: 100%;
-            }
-
-            margin-right: 10px;
-            margin-top: 4px;
-        }
-
-        &.version-block--status--operational {
-            >span {
-                background: transparentize($color: $green, $amount: 0.5);
-
-                >span {
-                    background: $green;
-                }
-            }
-        }
-
         padding: 20px;
+        align-items: center;
 
         font-weight: 500;
         font-size: 28px;
+
+        .status-dot {
+            margin-right: 10px;
+        }
     }
 }
 

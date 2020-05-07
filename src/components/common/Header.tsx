@@ -10,9 +10,13 @@ import { NetworkStateContainer } from "../../store/networkStateContainer";
 import { UIContainer } from "../../store/uiStore";
 import { Web3Container } from "../../store/web3Store";
 import { ReactComponent as RenVMIcon } from "../../styles/images/Icon-HyperDrive.svg";
+import { ReactComponent as IntegratorsIcon } from "../../styles/images/icon-integrators.svg";
+import { ReactComponent as NetworkIcon } from "../../styles/images/icon-network.svg";
 import { ReactComponent as OverviewIcon } from "../../styles/images/Icon-Overview.svg";
 // import { ReactComponent as English } from "../../styles/images/rp-flag-uk.svg";
 import { AccountDropdown } from "./AccountDropdown";
+import { ExternalLink, URLs } from "./ExternalLink";
+import { MoreDropdown } from "./MoreDropdown";
 
 // import { Search } from "./Search";
 
@@ -43,6 +47,15 @@ const getCurrencyOptions = () => {
 };
 
 const currencyOptions = getCurrencyOptions();
+
+const MenuItem: React.FC<{ path: string, title: string, icon: JSX.Element, activePath: string }> = ({ path, title, icon, activePath }) =>
+    <Link className="no-underline" to={path}>
+        <li className={["header--group", activePath === path ? "header--group--active" : ""].join(" ")}>
+            <div className="header--selected">
+                {icon} <div>{title}</div>
+            </div>
+        </li>
+    </Link>;
 
 interface Props extends RouteComponentProps {
 }
@@ -106,44 +119,29 @@ export const Header = withRouter(({ location }: Props) => {
 
     return (
         <div className={["header"].join(" ")}>
-            {address ? <div role="button" className="header--mobile-menu--button">
-                <button onClick={showMobileMenu}>
-                    <FontAwesomeIcon icon={faBars} />
-                </button>
-            </div> : <></>}
             <Link className="no-underline" to="/">
                 <div className="header--logo" />
             </Link>
-            <div className="new">
+            <ExternalLink href={URLs.welcomeToCommandCenter} className="new">
                 <span className="new-new">New</span>
                 <span className="new-blue">Welcome to the RenVM Command Center →</span>
-            </div>
+            </ExternalLink>
             <div className="header--menu">
-                <Link className="no-underline" to="/">
-                    <li className={["header--group", location.pathname === "/" ? "header--group--active" : ""].join(" ")}>
-                        <div className="header--selected">
-                            <OverviewIcon className="header--selected--icon" /> <div>Network</div>
-                        </div>
-                    </li>
-                </Link>
-                <Link className="no-underline" to="/darknode-stats">
-                    <li className={["header--group", location.pathname === "/darknode-stats" ? "header--group--active" : ""].join(" ")}>
-                        <div className="header--selected">
-                            <OverviewIcon className="header--selected--icon" /> <div>Darknodes</div>
-                        </div>
-                    </li>
-                </Link>
-                <Link className="no-underline" to="/renvm">
-                    <li className={["header--group", location.pathname.match("/(renvm|hyperdrive)") ? "header--group--active" : ""].join(" ")}>
-                        <div className="header--selected">
-                            <RenVMIcon className="header--selected--icon" /> <div>RenVM</div>
-                        </div>
-                    </li>
-                </Link>
+                <MenuItem path="/" title="Network" icon={<NetworkIcon />} activePath={location.pathname} />
+                <MenuItem path="/integrators" title="Integrators" icon={<IntegratorsIcon />} activePath={location.pathname} />
+                <MenuItem path="/darknode-stats" title="Darknodes" icon={<OverviewIcon />} activePath={location.pathname} />
+                <MenuItem path="/renvm" title="RenVM" icon={<RenVMIcon />} activePath={location.pathname} />
+
                 {/* {languageDropdownNode} */}
                 {currencyDropdownNode}
-                {networkDropdownNode}
+                {/* {networkDropdownNode} */}
+                <MoreDropdown />
                 <AccountDropdown />
+            </div>
+            <div role="button" className="header--mobile-menu--button">
+                <button onClick={showMobileMenu}>
+                    <FontAwesomeIcon icon={faBars} />
+                </button>
             </div>
         </div>
     );
