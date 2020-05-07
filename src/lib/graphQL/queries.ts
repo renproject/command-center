@@ -82,3 +82,54 @@ query GetPeriodData($type: PeriodType!) {
   }
 }
 `;
+
+
+export interface Integrator {
+  "__typename": "Integrator";
+  id: string; // "0x3973b2acdfac17171315e49ef19a0758b8b6f104";
+  date: number; // 0;
+  contractAddress: string; // "0x3973b2acdfac17171315e49ef19a0758b8b6f104";
+  txCountBTC: string; // "12";
+  lockedBTC: string; // "49469981";
+  volumeBTC: string; // "49469981";
+  txCountZEC: string; // "0";
+  lockedZEC: string; // "0";
+  volumeZEC: string; // "0";
+  txCountBCH: string; // "0";
+  lockedBCH: string; // "0";
+  volumeBCH: string; // "0";
+  integrator24H: Integrator;
+}
+
+export const INTEGRATORS = gql`
+query getIntegrators($offset: Int, $count: Int) {
+    integrators(orderBy: volumeBTC, orderDirection: desc, first: $count, skip: $offset, where: { date: 0 }) {
+    id
+    date
+    contractAddress
+    txCountBTC
+    lockedBTC
+    volumeBTC
+    txCountZEC
+    lockedZEC
+    volumeZEC
+    txCountBCH
+    lockedBCH
+    volumeBCH
+    integrator24H {
+      id
+      date
+      contractAddress
+      txCountBTC
+      lockedBTC
+      volumeBTC
+      txCountZEC
+      lockedZEC
+      volumeZEC
+      txCountBCH
+      lockedBCH
+      volumeBCH
+    }
+  }
+}
+`;

@@ -221,3 +221,10 @@ export const normalizeSeriesVolumes = (periodResponse: PeriodResponse, tokenPric
         average: normalizeVolumes(periodResponse.average, tokenPrices, quoteCurrency),
     };
 };
+
+
+export const getCurrent24HourPeriod = () => {
+    const currentTimestamp = Math.floor(new Date().getTime() / 1000);
+    const periodTimespan = getPeriodTimespan(PeriodType.DAY);
+    return Math.floor(currentTimestamp / periodTimespan) * periodTimespan;
+};

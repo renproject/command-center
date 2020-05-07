@@ -1,0 +1,16 @@
+{
+    "testnet": {
+        "0x3973b2acdfac17171315e49ef19a0758b8b6f104": {
+            "name": "Curve",
+            "logo": "/integrators/curve.svg",
+            "urlHref": "https://curve.fi",
+            "url": "curve.fi"
+        },
+        "0xad81fdc92e2ecb43e6207647b17f6d5075e6a1fd": {
+            "name": "Uniswap",
+            "logo": "/integrators/uniswap.png",
+            "urlHref": "https://uniswap.exchange",
+            "url": "uniswap.exchange"
+        }
+    }
+}
