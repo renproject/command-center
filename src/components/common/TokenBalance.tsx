@@ -3,7 +3,7 @@ import * as React from "react";
 import { Currency } from "@renproject/react-components";
 import { BigNumber } from "bignumber.js";
 
-import { AllTokenDetails, OldToken, Token } from "../../lib/ethereum/tokens";
+import { AllTokenDetails, OldToken, Token, TokenPrices } from "../../lib/ethereum/tokens";
 import { NetworkStateContainer } from "../../store/networkStateContainer";
 
 interface Props {
@@ -12,6 +12,32 @@ interface Props {
     convertTo?: Currency;
     digits?: number; // Always shows this many digits (e.g. for 3 d.p.: 0.100, 0.111)
 }
+
+const defaultDigits = (quoteCurrency: Currency) => {
+    let digits;
+    switch (quoteCurrency) {
+        case Currency.BTC:
+        case Currency.ETH:
+            digits = 3; break;
+        default:
+            digits = 2;
+    }
+    return digits;
+};
+
+export const tokenToQuote = (amount: number | string | BigNumber, token: Token | OldToken, quoteCurrency: Currency, tokenPrices: TokenPrices) => {
+    const tokenDetails = AllTokenDetails.get(token as Token, undefined);
+    const decimals = tokenDetails ? new BigNumber(tokenDetails.decimals.toString()).toNumber() : 0;
+    const prices = tokenPrices.get(token);
+
+    if (prices) {
+        const price = prices.get(quoteCurrency);
+        if (price) {
+            return new BigNumber(amount).div(new BigNumber(10).exponentiatedBy(decimals)).times(price).decimalPlaces(defaultDigits(quoteCurrency)).toNumber();
+        }
+    }
+    return 0;
+};
 
 export const TokenBalance = (props: Props) => {
     const { token, convertTo, digits } = props;
