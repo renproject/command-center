@@ -11,6 +11,49 @@
             "logo": "/integrators/uniswap.png",
             "urlHref": "https://uniswap.exchange",
             "url": "uniswap.exchange"
+        },
+        "0x7ddfa2e5435027f6e13ca8db2f32ebd5551158bb": {
+            "url": "Etherscan - BasicAdapter"
+        },
+        "0x40f41fd6f5fb0dd1bf7e05e3a07a2ac56ac6fe11": {
+            "name": "WBTC Cafe",
+            "logo": "/integrators/wbtc.svg",
+            "urlHref": "https://wbtc.cafe",
+            "url": "wbtc.cafe"
+        },
+        "0x3aa969d343bd6ae66c4027bb61a382dc96e88150": {
+            "url": "Etherscan - Basic"
+        },
+        "0xb9b0442de9bc214a23b434ee2ec7af8a4e1b3eee": {
+            "url": "Etherscan - Basic"
+        },
+        "0x7262337b576cecbf9febb6b8fbb5210b98d43139": {
+            "url": "Etherscan - CurveExchangeAdapter"
+        },
+        "0xc896813996330ab852f2f27f27bf4523abf80b27": {
+            "url": "Etherscan - Vesting"
+        },
+        "0x43f0dc6f2b65260753fd73c429e54be7af920f9d": {
+            "url": "Etherscan - CurveExchangeAdapter"
+        },
+        "0x795a46daab5389d01b45ff6c68029c248b22999a": {
+            "name": "Ren Gateway",
+            "logo": "/integrators/ren.svg",
+            "urlHref": "http://ren-gateway.web.app",
+            "url": "ren-gateway.web.app"
+        }
+    },
+    "devnet": {
+        "0xfabdb1f53ef8b080332621cbc9f820a39e7a1b83": {
+            "url": "Etherscan - BasicAdapter"
+        }
+    },
+    "mainnet": {
+        "0xc633576775ab431ff627746d2c4af6686c4c719c": {
+            "name": "WBTC Cafe",
+            "logo": "/integrators/wbtc.svg",
+            "urlHref": "https://wbtc.cafe",
+            "url": "wbtc.cafe"
         }
     }
 }

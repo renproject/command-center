@@ -50,7 +50,7 @@ const currencyOptions = getCurrencyOptions();
 
 const MenuItem: React.FC<{ path: string, title: string, icon: JSX.Element, activePath: string }> = ({ path, title, icon, activePath }) =>
     <Link className="no-underline" to={path}>
-        <li className={["header--group", activePath === path ? "header--group--active" : ""].join(" ")}>
+        <li className={["header--group", activePath.split("/")[1] === path.split("/")[1] ? "header--group--active" : ""].join(" ")}>
             <div className="header--selected">
                 {icon} <div>{title}</div>
             </div>
@@ -66,7 +66,7 @@ interface Props extends RouteComponentProps {
 export const Header = withRouter(({ location }: Props) => {
 
     const { showMobileMenu } = UIContainer.useContainer();
-    const { address, renNetwork, setRenNetwork } = Web3Container.useContainer();
+    const { renNetwork, setRenNetwork } = Web3Container.useContainer();
     const { quoteCurrency, setQuoteCurrency } = NetworkStateContainer.useContainer();
 
     const setCurrency = (currency: string): void => {
@@ -123,7 +123,7 @@ export const Header = withRouter(({ location }: Props) => {
                 <div className="header--logo" />
             </Link>
             <ExternalLink href={URLs.welcomeToCommandCenter} className="new">
-                <span className="new-new">New</span>
+                <span className="new-new xl-or-larger">New</span>
                 <span className="new-blue">Welcome to the RenVM Command Center →</span>
             </ExternalLink>
             <div className="header--menu">

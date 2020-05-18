@@ -44,7 +44,7 @@ export const DarknodeList: React.StatelessComponent<Props> = ({
                 {darknodeList.size === 0 ? <EmptyDarknodeList /> : <>
                     {darknodeList.size < 2 ? <EmptyDarknodeCard className="second" /> : null}
                     {darknodeList.size < 3 ? <EmptyDarknodeCard className="third" /> : null}
-                    {darknodeList.size < 4 ? <EmptyDarknodeCard className="fourth" /> : null}
+                    {/* {darknodeList.size < 4 ? <EmptyDarknodeCard className="fourth" /> : null} */}
                 </>}
             </>}
     </div>;

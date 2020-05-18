@@ -28,6 +28,56 @@ const mergeFees = (left: OrderedMap<Token | OldToken, BigNumber>, right: Ordered
     return newFees;
 };
 
+interface RowProps {
+    token: Token | OldToken;
+    isOperator: boolean;
+    darknodeDetails: DarknodesState;
+    tab: Tab;
+    percent: number;
+    balance: BigNumber;
+    quoteCurrency: Currency;
+}
+
+export const FeesBlockRow: React.FC<RowProps> = ({ token, quoteCurrency, balance, isOperator, tab, percent, darknodeDetails }) => {
+    return <>
+        <tr style={{}}>
+            <td className="fees-block--table--token">
+                <TokenIcon className="fees-block--table--icon" white={true} token={token} />
+                {" "}
+                <span>{token}</span>
+            </td>
+            <td className="fees-block--table--value">
+                <TokenBalance token={token} amount={balance} />
+            </td>
+            <td className="fees-block--table--usd">
+                <CurrencyIcon currency={quoteCurrency} />
+                <TokenBalance
+                    token={token}
+                    amount={balance}
+                    convertTo={quoteCurrency}
+                />
+                {" "}
+                <span className="fees-block--table--usd-symbol">
+                    {quoteCurrency.toUpperCase()}
+                </span>
+            </td>
+            {isOperator ? <td>
+                <FeesItem
+                    disabled={tab !== Tab.Withdrawable}
+                    token={token}
+                    amount={balance}
+                    darknodeID={darknodeDetails.ID}
+                />
+            </td> : <></>}
+        </tr>
+        <tr>
+            <td colSpan={3} style={{ padding: 0, margin: 0, height: 4 }}>
+                <div className={classNames("percent-bar", token)} style={{ width: `${percent}%`, height: 4, marginTop: -6 }} />
+            </td>
+        </tr>
+    </>;
+}
+
 export const FeesBlock: React.StatelessComponent<Props> = ({ darknodeDetails, isOperator }) => {
 
     const { quoteCurrency, currentCycle, previousCycle, pendingRewards, pendingTotalInEth, tokenPrices } = NetworkStateContainer.useContainer();
@@ -142,43 +192,16 @@ export const FeesBlock: React.StatelessComponent<Props> = ({ darknodeDetails, is
                                                 .decimalPlaces(2)
                                                 .toNumber() || 0,
                                         })).sortBy(item => -item.percent).toArray().map(([token, { balance, percent }]: [Token | OldToken, { balance: BigNumber, percent: number }], i) => {
-                                            return <><tr key={token} style={{}}>
-                                                <td className="fees-block--table--token">
-                                                    <TokenIcon className="fees-block--table--icon" white={true} token={token} />
-                                                    {" "}
-                                                    <span>{token}</span>
-                                                </td>
-                                                <td className="fees-block--table--value">
-                                                    <TokenBalance token={token} amount={balance} />
-                                                </td>
-                                                <td className="fees-block--table--usd">
-                                                    <CurrencyIcon currency={quoteCurrency} />
-                                                    <TokenBalance
-                                                        token={token}
-                                                        amount={balance}
-                                                        convertTo={quoteCurrency}
-                                                    />
-                                                    {" "}
-                                                    <span className="fees-block--table--usd-symbol">
-                                                        {quoteCurrency.toUpperCase()}
-                                                    </span>
-                                                </td>
-                                                {isOperator ? <td>
-                                                    <FeesItem
-                                                        disabled={tab !== Tab.Withdrawable}
-                                                        key={token}
-                                                        token={token}
-                                                        amount={balance}
-                                                        darknodeID={darknodeDetails.ID}
-                                                    />
-                                                </td> : <></>}
-                                            </tr>
-                                                <tr>
-                                                    <td colSpan={3} style={{ padding: 0, margin: 0, height: 4 }}>
-                                                        <div className={classNames("percent-bar", token)} style={{ width: `${percent}%`, height: 4, marginTop: -6 }} />
-                                                    </td>
-                                                </tr>
-                                            </>;
+                                            return <FeesBlockRow
+                                                key={token}
+                                                token={token}
+                                                isOperator={isOperator}
+                                                darknodeDetails={darknodeDetails}
+                                                tab={tab}
+                                                percent={percent}
+                                                balance={balance}
+                                                quoteCurrency={quoteCurrency}
+                                            />;
                                         })
                                     }
                                 </tbody>

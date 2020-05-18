@@ -1,11 +1,11 @@
-.statuspage {
-    padding: 0 20px 20px 20px;
+.darknodepage {
 
     &.container {
+        padding-top: 20px;
         max-width: unset;
     }
 
-    .statuspage--banner {
+    .darknodepage--banner {
         display: flex;
         color: white;
         flex-wrap: wrap;
@@ -28,7 +28,7 @@
         // }
     }
 
-    .statuspage--banner .blocky {
+    .darknodepage--banner .blocky {
         $border: 10px;
         $width: 80px;
         border-radius: 50%;
@@ -36,7 +36,7 @@
         border: $border solid $blue-dark;
     }
 
-    .statuspage--banner--details {
+    .darknodepage--banner--details {
         display: flex;
         flex-direction: column;
         height: 100%;
@@ -56,7 +56,7 @@
         }
     }
 
-    .statuspage--banner--top {
+    .darknodepage--banner--top {
         height: 47.5px;
 
         // >:not(:first-child) {
@@ -89,7 +89,7 @@
         }
     }
 
-    .statuspage--rename {
+    .darknodepage--rename {
         display: flex;
         align-items: center;
 
@@ -108,17 +108,17 @@
             border-bottom: 1px solid white;
         }
 
-        .statuspage--rename--save {
+        .darknodepage--rename--save {
             background: white;
             color: $blue-darker;
         }
 
-        .statuspage--rename--save:disabled {
+        .darknodepage--rename--save:disabled {
             color: $light-grey;
         }
     }
 
-    .statuspage--bottom {
+    .darknodepage--bottom {
 
         @media screen and (min-width: $min-xl) {
             display: flex;
@@ -146,14 +146,18 @@
         display: flex;
         flex-flow: row;
         padding-bottom: 13px;
+
+        @media(max-width: $max-sm) {
+            justify-content: left;
+        }
     }
 
-    .status>span {
+    .status>* {
         background: #19324E;
         border: 1px solid white;
         // display: block;
         padding: 0px 20px;
-        max-width: 200px;
+        // max-width: 200px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -176,7 +180,7 @@
         }
     }
 
-    &.statuspage--focused {
+    &.darknodepage--focused {
         .status *+* {
             margin-left: 10px;
         }
@@ -197,27 +201,27 @@
             margin-bottom: -3px;
         }
 
-        .statuspage--bottom {
+        .darknodepage--bottom {
             mix-blend-mode: normal;
             opacity: 0.3;
             pointer-events: none;
         }
     }
 
-    &.statuspage--no-darknode {
-        .statuspage--bottom {
+    &.darknodepage--no-darknode {
+        .darknodepage--bottom {
             mix-blend-mode: normal;
             opacity: 0.3;
             pointer-events: none;
         }
     }
 
-    &.statuspage--renaming {
+    &.darknodepage--renaming {
 
-        .statuspage--bottom,
+        .darknodepage--bottom,
         .blocky,
         .status,
-        .statuspage--notifications {
+        .darknodepage--notifications {
             mix-blend-mode: normal;
             opacity: 0.3;
             pointer-events: none;
@@ -253,11 +257,12 @@
     .status--button {
         background: none;
         color: transparentize(white, 1 - 0.4);
+        border: 1px solid #ffffff66 !important;
         border: none;
-        height: 30px;
+        height: 32px;
         text-transform: uppercase;
         font-size: 12px;
-        border-radius: 15px;
+        color: #FC4343;
 
         padding: 0 20px;
 
@@ -439,13 +444,13 @@
         text-overflow: ellipsis;
         min-width: 0px;
 
-        @media(max-width: $max-sm) {
-            display: none;
-        }
+        // @media(max-width: $max-sm) {
+        //     display: none;
+        // }
     }
 }
 
-.statuspage--banner--right {
+.darknodepage--banner--right {
     flex-grow: 1;
     display: flex;
     align-items: flex-end;
@@ -456,7 +461,10 @@
 
     @media(max-width: $max-lg) {
         width: 100%;
-        margin-top: 20px;
+
+        >* {
+            margin-top: 20px;
+        }
 
         >div>div {
             width: 100%;
@@ -464,13 +472,13 @@
     }
 }
 
-.statuspage--notifications {
+.darknodepage--notifications {
     display: flex;
     justify-content: flex-end;
     width: 100%;
 }
 
-.statuspage--notification {
+.darknodepage--notification {
     background: transparentize($blue-bright, 1 - 0.28);
     border-top-right-radius: 2px;
     border-bottom-right-radius: 2px;
@@ -512,7 +520,7 @@
         margin-left: 0;
     }
 
-    .statuspage--notification--details {
+    .darknodepage--notification--details {
         display: flex;
         flex-direction: column;
         margin-left: 20px;
@@ -567,7 +575,7 @@
     min-width: 0px;
 }
 
-.statuspage--banner--edit {
+.darknodepage--banner--edit {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -594,13 +602,13 @@
     }
 }
 
-.block--column.statuspage--banner--name {
+.block--column.darknodepage--banner--name {
     display: flex;
     flex-flow: row;
     justify-content: flex-start;
 }
 
-.statuspage--banner--top {
+.darknodepage--banner--top {
     margin-left: 20px;
     flex-flow: column;
     height: 100% !important;

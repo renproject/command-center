@@ -1,6 +1,6 @@
 // tslint:disable: no-unused-variable
 
-import { RenNetworkDetails, testnet } from "@renproject/contracts";
+import { RenNetworkDetails } from "@renproject/contracts";
 import { sleep } from "@renproject/react-components";
 import Axios from "axios";
 import localforage from "localforage";
@@ -54,7 +54,7 @@ const parallelLimit = <T>(promiseFactories: Array<() => Promise<T>>, limit: numb
 
 export const getLightnode = (network: RenNetworkDetails): string => {
     switch (network.name) {
-        case "mainnet": return "";
+        case "mainnet": return "https://lightnode-mainnet.herokuapp.com";
         case "chaosnet": return "https://lightnode-chaosnet-new.herokuapp.com";
         case "testnet": return "https://lightnode-testnet.herokuapp.com";
         case "devnet": return "https://lightnode-devnet.herokuapp.com";

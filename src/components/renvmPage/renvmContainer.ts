@@ -1,6 +1,6 @@
 // tslint:disable: no-unused-variable
 
-import { RenNetworkDetails, testnet } from "@renproject/contracts";
+import { RenNetworkDetails } from "@renproject/contracts";
 import { RenVMArg, RenVMType } from "@renproject/interfaces";
 import { sleep } from "@renproject/react-components";
 import RenJS from "@renproject/ren";

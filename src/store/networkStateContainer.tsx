@@ -115,7 +115,7 @@ const useNetworkStateContainer = () => {
         useSecondsPerBlock: number,
     ) => {
         const balanceHistory = await fetchDarknodeBalanceHistory(web3, darknodeID, previousHistory, historyPeriod, useSecondsPerBlock);
-        setBalanceHistories(balanceHistories.set(
+        setBalanceHistories(latestBalanceHistories => latestBalanceHistories.set(
             darknodeID,
             balanceHistory,
         ));
@@ -127,7 +127,7 @@ const useNetworkStateContainer = () => {
 
             operatorHiddenDarknodes = operatorHiddenDarknodes.add(darknodeID);
 
-            setHiddenDarknodes(hiddenDarknodes.set(operator, operatorHiddenDarknodes));
+            setHiddenDarknodes(latestHiddenDarknodes => (latestHiddenDarknodes || Map()).set(operator, operatorHiddenDarknodes));
         } catch (error) {
             catchInteractionException(error, "Error in networkReducer > removeDarknode");
         }
@@ -139,7 +139,7 @@ const useNetworkStateContainer = () => {
 
             operatorHiddenDarknodes = operatorHiddenDarknodes.remove(darknodeID);
 
-            setHiddenDarknodes(hiddenDarknodes.set(operator, operatorHiddenDarknodes));
+            setHiddenDarknodes(latestHiddenDarknodes => (latestHiddenDarknodes || Map()).set(operator, operatorHiddenDarknodes));
         } catch (error) {
             catchInteractionException(error, "Error in networkReducer > removeDarknode");
         }
@@ -173,25 +173,25 @@ const useNetworkStateContainer = () => {
         const newDarknodeRegisteringList = darknodeRegisteringList
             .filter((_: string, darknodeID: string) => !newList.contains(darknodeID));
 
-        setDarknodeList(darknodeList.set(address, newList));
+        setDarknodeList(latestDarknodeList => (latestDarknodeList || Map()).set(address, newList));
         setDarknodeNames(newNames);
         setDarknodeRegisteringList(newDarknodeRegisteringList);
     };
 
-    const setEmptyDarknodeList = () => {
+    const storeEmptyDarknodeList = () => {
         if (address) {
-            setDarknodeList(darknodeList.set(address, OrderedSet()));
+            setDarknodeList(latestDarknodeList => (latestDarknodeList || Map()).set(address, OrderedSet()));
         }
     };
 
 
     const addRegisteringDarknode = (darknodeID: string, publicKey: string) => {
-        setDarknodeRegisteringList(darknodeRegisteringList.set(darknodeID, publicKey));
+        setDarknodeRegisteringList(latestDarknodeRegisteringList => (latestDarknodeRegisteringList || Map()).set(darknodeID, publicKey));
     };
 
 
     const removeRegisteringDarknode = (darknodeID: string) => {
-        return setDarknodeRegisteringList(darknodeRegisteringList.remove(
+        return setDarknodeRegisteringList(latestDarknodeRegisteringList => (latestDarknodeRegisteringList || Map()).remove(
             darknodeID
         ));
     };
@@ -202,7 +202,7 @@ const useNetworkStateContainer = () => {
             return;
         }
         return setWithdrawAddresses(
-            withdrawAddresses.set(
+            latestWithdrawAddresses => (latestWithdrawAddresses || Map()).set(
                 token,
                 foundList.push(withdrawAddress),
             ),
@@ -215,7 +215,7 @@ const useNetworkStateContainer = () => {
         const foundIndex = list.findIndex((addr) => addr === withdrawAddress);
         if (foundIndex === -1) { return; }
         return setWithdrawAddresses(
-            withdrawAddresses.set(
+            latestWithdrawAddresses => (latestWithdrawAddresses || Map()).set(
                 token,
                 list.remove(foundIndex),
             ),
@@ -223,22 +223,22 @@ const useNetworkStateContainer = () => {
     };
 
     const storeDarknodeDetails = (details: DarknodesState) => {
-        return setDarknodeDetails(darknodeDetails.set(
+        return setDarknodeDetails(latestDarknodeDetails => latestDarknodeDetails.set(
             details.ID,
             details,
         ));
     };
 
-    const setDarknodeName = (darknodeID: string, name: string) => {
-        return setDarknodeNames(darknodeNames.set(darknodeID, name));
+    const storeDarknodeName = (darknodeID: string, name: string) => {
+        return setDarknodeNames(latestDarknodeNames => (latestDarknodeNames || Map()).set(darknodeID, name));
     };
 
     // tslint:disable-next-line: no-any
     const addTransaction = (txHash: string, tx: PromiEvent<any>) => {
-        return setTransactions(transactions.set(txHash, tx));
+        return setTransactions(latestTransactions => latestTransactions.set(txHash, tx));
     };
-    const setTxConfirmations = (txHash: string, numberOfConfirmations: number) => {
-        return setConfirmations(confirmations.set(txHash, numberOfConfirmations));
+    const storeTxConfirmations = (txHash: string, numberOfConfirmations: number) => {
+        return setConfirmations(latestConfirmations => latestConfirmations.set(txHash, numberOfConfirmations));
     };
 
     const waitForTX = async <T extends {}>(promiEvent: PromiEvent<T>, onConfirmation?: (confirmations?: number) => void) => new Promise<string>((resolve, reject) => {
@@ -246,11 +246,11 @@ const useNetworkStateContainer = () => {
             resolve(txHash);
             addTransaction(txHash, promiEvent);
             promiEvent.on("confirmation", (numberOfConfirmations) => {
-                setTxConfirmations(txHash, numberOfConfirmations);
+                storeTxConfirmations(txHash, numberOfConfirmations);
                 if (onConfirmation) { onConfirmation(numberOfConfirmations); }
             });
             promiEvent.on("error", () => {
-                setTxConfirmations(txHash, -1);
+                storeTxConfirmations(txHash, -1);
             });
         }).catch(reject);
     });
@@ -358,7 +358,7 @@ const useNetworkStateContainer = () => {
         }).toArray());
 
         if (newDarknodeList.size === 0) {
-            setEmptyDarknodeList();
+            storeEmptyDarknodeList();
         }
     };
 
@@ -484,8 +484,8 @@ const useNetworkStateContainer = () => {
                 steps={steps}
                 onCancel={onCancel}
                 title={title}
-                warning={warning}
-                confirm
+                // warning={warning}
+                confirm={false}
             />,
             onCancel,
             dismissible: false,
@@ -524,7 +524,7 @@ const useNetworkStateContainer = () => {
                 </span>
                 {" "}
                 in fees. Please withdraw them before continuing.
-                </>;
+            </>;
         }
 
         const ignoreWarning = "Continue away (fees will be lost)";
@@ -622,7 +622,7 @@ const useNetworkStateContainer = () => {
         darknodeCount, setDarknodeCount,
         orderCount, setOrderCount,
         registrySync, setRegistrySync,
-        darknodeDetails, setDarknodeDetails,
+        darknodeDetails,
         balanceHistories, setBalanceHistories,
         transactions, setTransactions,
         confirmations, setConfirmations,
@@ -650,15 +650,14 @@ const useNetworkStateContainer = () => {
         unhideDarknode,
         updateDarknodeCounts,
         addDarknodes,
-        setEmptyDarknodeList,
+        storeEmptyDarknodeList,
         addRegisteringDarknode,
         removeRegisteringDarknode,
         addToWithdrawAddresses,
         removeFromWithdrawAddresses,
-        storeDarknodeDetails,
-        setDarknodeName,
+        storeDarknodeName,
         addTransaction,
-        setTxConfirmations,
+        storeTxConfirmations,
         waitForTX,
         updateCycleAndPendingRewards,
         updateDarknodeDetails,

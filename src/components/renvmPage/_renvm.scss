@@ -67,7 +67,19 @@
                 color: #f9f9f9;
                 width: auto;
 
-                min-width: 200px;
+                // min-width: 100px;
+
+                @media(min-width: $min-sm) {
+                    min-width: 100px;
+                }
+
+                @media(min-width: $min-md) {
+                    min-width: 150px;
+                }
+
+                @media(min-width: $min-lg) {
+                    min-width: 200px;
+                }
             }
         }
 
@@ -154,41 +166,14 @@
         opacity: 0.3;
     }
 
-    .selected-block {
-        background: $blue-dark;
-        // box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
-        border-radius: 6px;
-        margin-right: 0 !important;
+    .titled-block {
         margin-bottom: 30px;
-        position: relative;
-        overflow: hidden;
 
         .no-transactions {
             margin-top: 20px;
         }
 
-        .selected-block--top {
-            display: flex;
-            justify-content: space-between;
-            border-bottom: 2px solid #001B3A;
-            margin-bottom: 2px;
-            padding: 20px 20px;
-            padding-bottom: 0;
-            margin-right: 40px;
-
-            >* {
-                font-size: 16px;
-                line-height: 18px;
-                font-weight: 500;
-                color: #F9F9F9;
-                text-transform: none;
-            }
-        }
-
-        .selected-block--bottom {
-            background: #001F41;
-            padding-top: 10px;
-            padding-bottom: 10px;
+        .titled-block--bottom {
 
             tr,
             thead,
@@ -211,15 +196,22 @@
     top: ((55px - $size) / 2);
     height: $size;
     width: $size;
-    margin-top: 0;
+    // margin-top: 0;
     background: url('../../styles/images/exit-black.svg');
-    background-size: 100%;
+    background-size: 12px 12px;
+    background-repeat: no-repeat;
+    background-position: center center;
+
+    margin-top: -5px;
+    margin-right: -5px;
+    padding: 10px;
+
     cursor: pointer;
 }
 
 .popup--x.popup--x--white {
     margin-top: 0px;
-    background: url('../../styles/images/exit.svg');
+    background-image: url('../../styles/images/exit.svg');
 }
 
 .renvm--transaction {

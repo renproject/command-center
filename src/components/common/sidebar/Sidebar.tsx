@@ -76,7 +76,7 @@ export const Sidebar = withRouter(
 
                 <div className="sidebar--top">
 
-                    <div className="mobile-only">
+                    <div className="medium-only">
                         <MenuItem icon={<FontAwesomeIcon icon={faTimes} />} onClick={hideMobileMenu} className={"sidebar--close"} />
                         <MenuItem path="/" title="Network" icon={<NetworkIcon />} activePath={location.pathname} onClick={hideMobileMenu} />
                         <MenuItem path="/integrators" title="Integrators" icon={<IntegratorsIcon />} activePath={location.pathname} onClick={hideMobileMenu} />

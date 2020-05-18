@@ -539,6 +539,7 @@
         background-color: transparentize($color: white, $amount: 0);
         line-height: 1.4em;
         color: $red;
+        font-weight: 600;
         border: 1px solid $red;
     }
 }

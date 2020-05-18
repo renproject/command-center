@@ -1,6 +1,8 @@
 import * as Sentry from "@sentry/browser";
 
-import { RenNetworkDetails, testnet } from "@renproject/contracts";
+import {
+    chaosnet, devnet, localnet, mainnet, RenNetwork, RenNetworkDetails, testnet,
+} from "@renproject/contracts";
 import React, { useState } from "react";
 import { createContainer } from "unstated-next";
 import Web3 from "web3";
@@ -17,10 +19,21 @@ import { history } from "../lib/react/history";
 import { PopupContainer } from "./popupStore";
 import useStorageState from "./useStorageState/useStorageState";
 
-const useWeb3Container = (initialState = testnet as RenNetworkDetails) => {
+const stringToNetwork = (network: RenNetwork): RenNetworkDetails => {
+    switch (network) {
+        case RenNetwork.Mainnet: return mainnet;
+        case RenNetwork.Chaosnet: return chaosnet;
+        case RenNetwork.Testnet: return testnet;
+        case RenNetwork.Devnet: return devnet;
+        case RenNetwork.Localnet: return localnet;
+    }
+};
+
+const useWeb3Container = (initialState = "testnet" as RenNetwork) => {
     const { setPopup, clearPopup } = PopupContainer.useContainer();
 
-    const [renNetwork, setRenNetwork] = useStorageState<RenNetworkDetails>(localStorage, "renNetwork", initialState);
+    // const [renNetwork, setRenNetwork] = useStorageState<RenNetworkDetails>(localStorage, "renNetwork", stringToNetwork(initialState));
+    const [renNetwork, setRenNetwork] = useState<RenNetworkDetails>(stringToNetwork(initialState));
 
     const [readonlyWeb3,] = useState<Web3>(getReadOnlyWeb3(`${renNetwork.infura}/v3/${INFURA_KEY}`));
     const [web3, setWeb3] = useState<Web3>(readonlyWeb3);

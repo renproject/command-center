@@ -26,9 +26,9 @@ interface Props {
     publicKey: string | undefined;
 }
 
-export const StatusPage: React.StatelessComponent<Props> = ({ darknodeDetails, darknodeID, name, isOperator, action, publicKey }) => {
+export const DarknodePage: React.StatelessComponent<Props> = ({ darknodeDetails, darknodeID, name, isOperator, action, publicKey }) => {
     const { renNetwork } = Web3Container.useContainer();
-    const { setDarknodeName } = NetworkStateContainer.useContainer();
+    const { storeDarknodeName: setDarknodeName } = NetworkStateContainer.useContainer();
 
     const [renaming, setRenaming] = React.useState(false);
     const [newName, setNewName] = React.useState<string | undefined>(name);
@@ -83,28 +83,28 @@ export const StatusPage: React.StatelessComponent<Props> = ({ darknodeDetails, d
         noDarknode = true;
     }
 
-    const focusedClass = action !== DarknodeAction.View ? "statuspage--focused" : "";
-    const renamingCLass = renaming ? "statuspage--renaming" : "";
-    const noDarknodeClass = noDarknode || !darknodeDetails ? "statuspage--no-darknode" : "";
+    const focusedClass = action !== DarknodeAction.View ? "darknodepage--focused" : "";
+    const renamingCLass = renaming ? "darknodepage--renaming" : "";
+    const noDarknodeClass = noDarknode || !darknodeDetails ? "darknodepage--no-darknode" : "";
 
     const notifications = <Notifications isOperator={isOperator} darknodeDetails={darknodeDetails} renNetwork={renNetwork} />;
 
     return (
-        <div className={`container statuspage ${focusedClass} ${renamingCLass} ${noDarknodeClass}`}>
-            <div className="statuspage--banner">
-                <div className="block--column col-xl-4 statuspage--banner--name">
+        <div className={`container darknodepage ${focusedClass} ${renamingCLass} ${noDarknodeClass}`}>
+            <div className="darknodepage--banner">
+                <div className="block--column col-xl-4 col-lg-12 darknodepage--banner--name">
                     <Blocky address={darknodeID} fgColor="#006FE8" bgColor="transparent" className={!darknodeDetails ? "blocky--loading" : ""} />
-                    <div className="statuspage--banner--details">
-                        <div className="statuspage--banner--top">
+                    <div className="darknodepage--banner--details">
+                        <div className="darknodepage--banner--top">
                             {renaming ?
-                                <form className="statuspage--rename" onSubmit={handleSubmitName}>
+                                <form className="darknodepage--rename" onSubmit={handleSubmitName}>
                                     <input
                                         ref={focusInputRef}
                                         type="text"
                                         onChange={handleInput}
                                         value={newName}
                                     />
-                                    <button type="submit" className="statuspage--rename--save" disabled={!newName}>
+                                    <button type="submit" className="darknodepage--rename--save" disabled={!newName}>
                                         Save
                                     </button>
                                     <button onClick={handleCancelRename}>Cancel</button>
@@ -113,7 +113,7 @@ export const StatusPage: React.StatelessComponent<Props> = ({ darknodeDetails, d
                                     <h3 onClick={name ? handleRename : undefined}>
                                         {name ? name : <DarknodeID darknodeID={darknodeID} />}
                                     </h3>
-                                    <button className="statuspage--banner--edit" onClick={handleRename}>
+                                    <button className="darknodepage--banner--edit" onClick={handleRename}>
                                         {isOperator ?
                                             (name ? "Edit name" : "Set name") :
                                             (name ? "Edit label" : "Set label")
@@ -126,12 +126,12 @@ export const StatusPage: React.StatelessComponent<Props> = ({ darknodeDetails, d
                         </div>
                     </div>
                 </div>
-                <div className="block--column col-xl-4">
-                    <div className="statuspage--banner--right large-only">
+                <div className="block--column col-xl-4 col-lg-12">
+                    <div className="darknodepage--banner--right xl-or-larger">
                         {notifications}
                     </div>
                 </div>
-                <div className="block--column col-xl-4">
+                <div className="block--column col-xl-4 col-lg-12">
                     {action === DarknodeAction.Register ?
                         <Registration
                             isOperator
@@ -142,23 +142,21 @@ export const StatusPage: React.StatelessComponent<Props> = ({ darknodeDetails, d
                             publicKey={publicKey}
                             darknodeID={darknodeID}
                         /> :
-                        null
-                    }
-                    {action !== DarknodeAction.Register && darknodeDetails ?
-                        <Registration
-                            isOperator={isOperator}
-                            registrationStatus={darknodeDetails.registrationStatus}
-                            darknodeDetails={darknodeDetails}
-                            darknodeID={darknodeID}
-                        /> :
-                        null
+                        darknodeDetails ?
+                            <Registration
+                                isOperator={isOperator}
+                                registrationStatus={darknodeDetails.registrationStatus}
+                                darknodeDetails={darknodeDetails}
+                                darknodeID={darknodeID}
+                            /> :
+                            null
                     }
                 </div>
             </div>
-            <div className="statuspage--banner--right no-large">
+            <div className="darknodepage--banner--right no-xl-or-larger">
                 {notifications}
             </div>
-            <div className="statuspage--bottom">
+            <div className="darknodepage--bottom">
                 <FeesBlock isOperator={isOperator} darknodeDetails={darknodeDetails} />
                 <div className="block block--column">
                     <VersionBlock darknodeDetails={darknodeDetails} />

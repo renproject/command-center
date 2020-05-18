@@ -37,7 +37,9 @@ export const LoggedOut: React.StatelessComponent<Props> = ({ newAddress, onCance
                 <div className="popup--description">Select an account to access your darknodes.</div>
             </>
         }
-        <button className="button button--white" onClick={onCancel}>Not now</button>
-        <button className="button" onClick={onConnect}>Connect</button>
+        <div className="popup--buttons">
+            <button className="button button--white" onClick={onCancel}>Not now</button>
+            <button className="button button--blue" onClick={onConnect}>Connect</button>
+        </div>
     </div>;
 };

@@ -1,8 +1,8 @@
 .overlay {
     display: block;
-    background-color: rgba(0, 0, 0, 0);
+    background-color: rgba(0, 0, 0, 0.3);
     position: fixed;
-    top: 120px;
+    top: 46px;
     left: 0;
     right: 0;
     bottom: 0;
@@ -26,14 +26,16 @@
 
 .popup {
     max-width: 94vw;
-    color: $dark-grey;
-    background-color: white;
-    border-radius: 2px;
+    // color: $dark-grey;
+    // background-color: white;
+    color: white;
+    background: #00254E;
+    border-radius: 6px;
 
     box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2);
 
     text-align: center;
-    padding: 30px;
+    padding: 20px;
     position: fixed;
     top: 50%;
     left: 50%;
@@ -121,6 +123,36 @@
 
     button {
         width: 100%;
+        height: 40px;
+        border-radius: 4px;
+        font-weight: 500;
+        font-size: 14px;
+        line-height: 18px;
+
+        &:hover:not(:disabled) {
+            color: #e9e9e9;
+            transform: translateY(-1px);
+            box-shadow: 0 7px 14px rgba(0, 0, 0, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08) !important;
+        }
+
+        &:active:not(:disabled) {
+            transform: translateY(0px);
+        }
+
+        &.button--white {
+            border: 1.6px solid white;
+            color: white;
+            background: transparent;
+        }
+
+        &.button--blue {
+            background: linear-gradient(182.92deg, #00A8F5 -172.9%, #006FE8 95.79%);
+            color: white;
+        }
+
+        &+button {
+            margin-left: 20px;
+        }
     }
 }
 
@@ -222,6 +254,7 @@
         }
     }
 }
+
 // Open Order
 .popup.open .open--tokens {
     display: flex;
@@ -262,8 +295,8 @@
     font-weight: 500;
 }
 
-$noWeb3Width: 450px;
-$noWeb3Padding: 30px;
+$noWeb3Width: 454px;
+$noWeb3Padding: 20px;
 
 .no-web3 {
     width: $noWeb3Width;
@@ -278,7 +311,6 @@ $noWeb3Padding: 30px;
 
 .no-web3 button {
     margin-top: 20px;
-    min-width: ($noWeb3Width - $noWeb3Padding * 2) / 2;
     font-size: 18px;
     height: 40px;
 }
@@ -309,13 +341,27 @@ $noWeb3Padding: 30px;
 
 
 
-p.popup--error {
-    margin: 15px auto;
+.popup--error {
+    @extend .red;
+
+    margin: 5px 0;
     border: 1px solid $red;
-    padding: 10px;
-    width: 300px;
+    padding: 16px;
+    padding-top: 20px;
+    font-size: 18px;
     font-weight: 500;
-    word-break: break-all;
+    border-radius: 4px;
+    // word-break: break-all;
+
+    >.popup--error-label {
+        margin-top: -27px;
+        width: 35px;
+        padding: 0 5px;
+        font-size: 12px;
+        background: #00254E;
+        display: block;
+        margin-bottom: 10px;
+    }
 }
 
 .popup--blur {
@@ -336,21 +382,46 @@ p.popup--error {
 .multi-step {
     padding: 0;
     width: 450px;
+    align-items: flex-start;
+    text-align: left;
 
     >* {
-        padding: 30px;
+        padding: 20px;
+
+        &+* {
+            padding-top: 10px;
+        }
+    }
+
+    h3 {
+        font-weight: 500;
+        font-size: 16px;
+        line-height: 18px;
+
+        color: #FFFFFF;
+
+        mix-blend-mode: normal;
+        opacity: 0.8;
+        margin-top: 0;
+    }
+
+    .popup--error {
+        margin-top: 20px;
     }
 }
 
 .multi-step--list {
     list-style: none;
-    width: 200px;
-    margin: 0 auto;
+    // width: 200px;
+    // margin: 0 auto;
     padding: 0;
 }
 
 .multi-step--list li {
     position: relative;
+
+    display: flex;
+    align-items: center;
 }
 
 .multi-step--list li+li {
@@ -364,12 +435,14 @@ p.popup--error {
 .multi-step h2 {
     font-weight: 500;
     font-size: 24px;
+    margin-bottom: -6px;
+    margin-left: 10px;
 
-    color: $dark-grey;
+    // color: $dark-grey;
 }
 
 .multi-step--top {
-    padding: 30px 20px;
+    padding: 20px;
 
     >img {
         margin-bottom: 30px;
@@ -378,27 +451,27 @@ p.popup--error {
 }
 
 
-.multi-step--buttons {
-    background: #F5F5F5;
-    padding: 30px 0;
+// .multi-step--buttons {
+//     background: #F5F5F5;
+//     padding: 30px 0;
 
-    // TODO: Why isn't there already a border radius?
-    border-bottom-left-radius: 2px;
-    border-bottom-right-radius: 2px;
+//     // TODO: Why isn't there already a border radius?
+//     border-bottom-left-radius: 2px;
+//     border-bottom-right-radius: 2px;
 
-    button {
-        border-radius: 2px;
-        font-size: 18px;
-        font-weight: 500;
+//     button {
+//         border-radius: 2px;
+//         font-size: 18px;
+//         font-weight: 500;
 
-        height: 42px;
-        width: 200px;
-    }
-}
+//         height: 42px;
+//         width: 200px;
+//     }
+// }
 
-.popup .multi-step--buttons+p {
-    margin-top: 15px;
-}
+// .popup .multi-step--buttons+p {
+//     margin-top: 15px;
+// }
 
 .popup .multi-step--ignore {
     cursor: pointer;
@@ -406,4 +479,22 @@ p.popup--error {
 
 .popup .multi-step--with-ignore {
     margin-bottom: 20px;
+}
+
+.connect-web3--browsers {
+    display: flex;
+    flex-flow: row;
+    justify-content: center;
+
+    margin-bottom: 20px;
+
+    svg {
+        height: 40px;
+        width: auto;
+        max-width: 40px;
+    }
+
+    a+a {
+        margin-left: 10px;
+    }
 }

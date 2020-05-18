@@ -1,6 +1,7 @@
 import BigNumber from "bignumber.js";
 import React from "react";
 
+import { classNames } from "../../lib/react/className";
 import { ReactComponent as IconBurnFee } from "../../styles/images/icon-burn-fee.svg";
 import { ReactComponent as IconCheckCircle } from "../../styles/images/icon-check-circle.svg";
 import {
@@ -22,26 +23,33 @@ export const Collateral = ({ l, r, rRen }: Props) => {
     const lDivR = r.isEqualTo(0) ? 0 : l.div(r).multipliedBy(100).toNumber();
     const r3 = Math.max(0, 33 - lDivR);
 
+    const overCollateralized = r.isZero() || l.lte(r.div(3));
+
     return (
         <div className="collateral">
             <Stats className="collateral-stats--top">
                 <Stat className="collateral-stat" message="Collateralization" icon={<IconCollateralization />} big>
                     <div className="collateral-status-outer">
                         <div className="collateral-pre-status">RenVM is currently</div>
-                        <div className="collateral-status collateral-status--over">over-collateralized. <IconCheckCircle /></div>
+                        <div className={classNames("collateral-status", overCollateralized ? "collateral-status--over" : "collateral-status--under")}>
+                            {overCollateralized ?
+                                <>over-collateralized. <IconCheckCircle /></> :
+                                <>under-collateralized.</>
+                            }
+                        </div>
                     </div>
 
                     <div className="collateral-chart-section">
                         <div className="collateral-chart">
                             <div className="collateral-chart--bar">
-                                <div style={{ width: `${lDivR}%` }} className="collateral-chart--l"><span className="collateral-chart--label">L</span></div>
-                                <div style={{ width: `${r3}%` }} className="collateral-chart--r3"><span className="collateral-chart--label">R/3</span></div>
+                                <div style={{ width: `${lDivR}%` }} className={classNames("collateral-chart--l", overCollateralized ? "collateral-chart--l--over" : "collateral-chart--l--under")}><span className="collateral-chart--label">L</span></div>
+                                <div style={{ width: `${r3}%` }} className="collateral-chart--r3"><span className="collateral-chart--label">{overCollateralized ? <>R/3</> : null}</span></div>
                                 <div style={{ width: `${100 - lDivR - r3}%` }} className="collateral-chart--r"><span className="collateral-chart--label">R</span></div>
                             </div>
                         </div>
                         <div className="collateral-table">
                             <div className="collateral-table--row">
-                                <div className="collateral-table--row--left row--l"><RowBullet /> Value Locked (L)</div>
+                                <div className={classNames("collateral-table--row--left", "row--l", overCollateralized ? "row--l--over" : "row--l--under")}><RowBullet /> Value Locked (L)</div>
                                 <div className="collateral-table--row--right">${l.toFormat(2)}</div>
                             </div>
                             <div className="collateral-table--row">

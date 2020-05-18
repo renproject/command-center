@@ -10,10 +10,17 @@
 
 .stat {
 
-    hr {
-        color: #1A2E46;
-        margin-bottom: 25px;
+    .hr {
+        border-bottom: 1px solid #1A2E46;
+        height: 1px;
+        width: 100%;
+        border-color: #1A2E46;
+        margin-bottom: 15px;
         border-width: 1px;
+
+        @media(min-width: $min-lg) {
+            margin-bottom: 25px;
+        }
     }
 
     flex-grow: 1;
@@ -27,7 +34,7 @@
 
 .stat .stat,
 .stat.stat--nested {
-    hr {
+    .hr {
         border: none;
     }
 
@@ -43,6 +50,7 @@
 
 .stat--title {
     font-size: 14px;
+
     line-height: 16px;
     font-weight: bold;
 
@@ -80,6 +88,10 @@
     font-size: 32px;
     line-height: 37px;
     color: #F9F9F9;
+
+    @media(max-width: $max-md) {
+        font-size: 28px;
+    }
 
     .loading {
         // float: left;

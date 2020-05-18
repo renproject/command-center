@@ -10,7 +10,7 @@ export const EmptyDarknodeList: React.StatelessComponent<Props> = (props) =>
             <EmptyDarknodeCard />
             <EmptyDarknodeCard />
             <EmptyDarknodeCard />
-            <EmptyDarknodeCard />
+            {/* <EmptyDarknodeCard /> */}
         </div>
         {props.children}
     </div>;

@@ -29,3 +29,9 @@ export const PopupController: React.FunctionComponent = ({ children }) => {
     </>
     );
 };
+
+interface Props extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
+}
+
+export const PopupError: React.FC<Props> = ({ className, children, ...props }) =>
+    <div {...props} className={classNames("popup--error", className)}><span className="popup--error-label">Error</span>{children}</div>;

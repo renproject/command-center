@@ -133,11 +133,14 @@ export const RenVM = withRouter(({ match: { params }, history }) => {
     // Override the order of the tokens (returned back in alphabetical order)
     const { [Token.BTC]: lockedBTC, [Token.ZEC]: lockedZEC, ...remainingLockedBalances } = lockedBalances;
 
+    const search = <Search />;
+
     return (
         <div
             className="renvm container"
             key={blockNumber === null ? undefined : blockNumber}
         >
+            <div className="medium-only">{search}</div>
             <Stats>
                 <Stat message="Number of shards" big>1</Stat>
                 <Stat message="Block height" big>{firstBlock ? firstBlock.header.height : 0}</Stat>
@@ -145,7 +148,7 @@ export const RenVM = withRouter(({ match: { params }, history }) => {
                 {lockedZEC}
                 {remainingLockedBalances ? Object.values(remainingLockedBalances) : <></>}
             </Stats>
-            <Search />
+            <div className="no-medium">{search}</div>
             {txHash ?
                 <RenVMTransaction network={container.network} txHash={txHash} transaction={container.currentTransactionHash === txHash ? container.currentTransaction : undefined} onClose={onClose} /> :
                 <></>
@@ -158,7 +161,7 @@ export const RenVM = withRouter(({ match: { params }, history }) => {
                 <table>
                     <thead>
                         <tr>
-                            <th>Block Number</th>
+                            <th><span className="no-xs">Block Number</span><span className="xs-only">#</span></th>
                             <th>Timestamp</th>
                             <th className="renvm--table--txs">Transactions</th>
                         </tr>

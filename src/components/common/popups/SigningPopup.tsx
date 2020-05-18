@@ -43,7 +43,7 @@ export const SigningPopup: React.StatelessComponent<Props> = ({ data, sign }) =>
         </p>
         {signing ?
             <>
-                <Loading />
+                <Loading alt={true} />
             </> :
             <>
                 {error ? <p className="red">{error}</p> : null}

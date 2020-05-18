@@ -13,19 +13,31 @@ interface Props {
     digits?: number; // Always shows this many digits (e.g. for 3 d.p.: 0.100, 0.111)
 }
 
-const defaultDigits = (quoteCurrency: Currency) => {
+const defaultDigits = (quoteCurrency: Currency | Token | OldToken) => {
     let digits;
     switch (quoteCurrency) {
         case Currency.BTC:
         case Currency.ETH:
+        case Token.BTC:
+        case Token.BCH:
+        case Token.ZEC:
+        case Token.ETH:
             digits = 3; break;
+
         default:
             digits = 2;
     }
     return digits;
 };
 
-export const tokenToQuote = (amount: number | string | BigNumber, token: Token | OldToken, quoteCurrency: Currency, tokenPrices: TokenPrices) => {
+export const tokenToReadable = (amount: number | string | BigNumber, token: Token | OldToken): BigNumber => {
+    const tokenDetails = AllTokenDetails.get(token as Token, undefined);
+    const decimals = tokenDetails ? new BigNumber(tokenDetails.decimals.toString()).toNumber() : 0;
+
+    return new BigNumber(amount).div(new BigNumber(10).exponentiatedBy(decimals)).decimalPlaces(defaultDigits(token));
+};
+
+export const tokenToQuote = (amount: number | string | BigNumber, token: Token | OldToken, quoteCurrency: Currency, tokenPrices: TokenPrices): BigNumber => {
     const tokenDetails = AllTokenDetails.get(token as Token, undefined);
     const decimals = tokenDetails ? new BigNumber(tokenDetails.decimals.toString()).toNumber() : 0;
     const prices = tokenPrices.get(token);
@@ -33,10 +45,10 @@ export const tokenToQuote = (amount: number | string | BigNumber, token: Token |
     if (prices) {
         const price = prices.get(quoteCurrency);
         if (price) {
-            return new BigNumber(amount).div(new BigNumber(10).exponentiatedBy(decimals)).times(price).decimalPlaces(defaultDigits(quoteCurrency)).toNumber();
+            return new BigNumber(amount).div(new BigNumber(10).exponentiatedBy(decimals)).times(price).decimalPlaces(defaultDigits(quoteCurrency));
         }
     }
-    return 0;
+    return new BigNumber(0);
 };
 
 export const TokenBalance = (props: Props) => {

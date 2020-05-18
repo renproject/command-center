@@ -19,7 +19,7 @@ html {
     }
 
     min-height: 100%;
-    background: linear-gradient(189.65deg, #000E1A -20.29%, #002146 142.27%);
+    background: #001325 linear-gradient(189.65deg, #000E1A -20.29%, #002146 142.27%);
     background-attachment: fixed;
 }
 
@@ -326,6 +326,8 @@ label {
 .checkbox:checked:after {
     content: "✔";
     color: $green;
+    font-size: 24px;
+    margin-top: 2px;
     position: absolute;
     left: 50%;
     top: 50%;
@@ -337,6 +339,8 @@ label {
 
 .checkbox--error:checked:after {
     content: "✘";
+    font-size: 24px;
+    margin-top: 2px;
     color: $red;
 }
 
@@ -353,33 +357,62 @@ label {
 }
 
 .app--body {
-    margin-top: 48px;
+
+    min-height: calc(100vh - 5px - 50px - 2vh);
+    margin-top: calc(50px + 2vh);
+    margin-bottom: 5px;
 
     @media (min-width: $min-lg) {
-        margin-top: 150px;
+        min-height: calc(100vh - 60px - 50px - 5vh);
+
+        margin-top: calc(50px + 5vh);
         margin-bottom: 60px;
     }
 }
 
-.mobile-only {
+.xs-only {
+    @media (min-width: $min-sm) {
+        display: none !important;
+    }
+}
+
+.no-xs {
+    @media (max-width: $max-xs) {
+        display: none !important;
+    }
+}
+
+.medium-only {
     @media (min-width: $min-lg) {
         display: none !important;
     }
 }
 
-.no-mobile {
+.no-medium {
     @media (max-width: $max-md) {
         display: none !important;
     }
 }
 
 .large-only {
-    @media (max-width: $max-lg) {
+    @media (min-width: $min-xl) {
         display: none !important;
     }
 }
 
 .no-large {
+    @media (max-width: $max-lg) {
+        display: none !important;
+    }
+}
+
+.xl-or-larger {
+    @media (max-width: $max-lg) {
+        display: none !important;
+    }
+}
+
+.no-xl-or-larger {
     @media (min-width: $min-xl) {
         display: none !important;
     }
@@ -401,6 +434,10 @@ label {
     position: fixed;
     right: 30px;
     bottom: 20px;
+
+    @media (max-width: $max-md) {
+        display: none !important;
+    }
 }
 
 
