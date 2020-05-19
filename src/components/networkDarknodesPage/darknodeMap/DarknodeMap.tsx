@@ -22,7 +22,7 @@ export const DarknodeMap = () => {
 
         // Every two minutes
         const interval = setInterval(fetchIPs, 120 * 1000);
-        if (container.darknodes.length === 0) {
+        if (container.darknodes.size === 0) {
             fetchIPs();
         }
 
@@ -79,7 +79,7 @@ export const DarknodeMap = () => {
                     })
                 }
             </Geographies>
-            {container.darknodes.map((darknode, i) => {
+            {container.darknodes.map((darknode) => {
                 const onMouseEnter = () => {
                     setTooltipContent(`${darknode.darknodeID}`);
                 };
@@ -87,7 +87,7 @@ export const DarknodeMap = () => {
                     setTooltipContent("");
                 };
                 return <Marker
-                    key={i}
+                    key={darknode.darknodeID}
                     coordinates={darknode.point}
                     onMouseEnter={onMouseEnter}
                     onMouseLeave={onMouseLeave}

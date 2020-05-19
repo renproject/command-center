@@ -7,16 +7,17 @@ import localforage from "localforage";
 import { useState } from "react";
 import { Point } from "react-simple-maps";
 import { createContainer } from "unstated-next";
+import { Map } from "immutable";
 
 import { Web3Container } from "../../store/web3Store";
 import { retryNTimes } from "../renvmPage/renvmContainer";
 
-interface City {
+interface DarknodeLocation {
     darknodeID: string;
     point: Point;
 }
 
-const sampleDarknodes: City[] = [];
+const sampleDarknodes: DarknodeLocation[] = [];
 
 interface QueryResponse {
     jsonrpc: "2.0";
@@ -136,7 +137,7 @@ const useMapContainer = () => {
     const { renNetwork: network } = Web3Container.useContainer();
 
     // tslint:disable-next-line: prefer-const
-    let [darknodes, setDarknodes] = useState(sampleDarknodes);
+    let [darknodes, setDarknodes] = useState<Map<string, DarknodeLocation>>(Map());
     // tslint:disable-next-line: prefer-const
     let [darknodeCount, setDarknodeCount] = useState<number | null>(null);
     // tslint:disable-next-line: whitespace
@@ -160,8 +161,19 @@ const useMapContainer = () => {
         const { ip, darknodeID } = parseMultiAddress(multiAddress);
         try {
             const { longitude, latitude } = await getLocation(ip);
-            darknodes = [...darknodes, { darknodeID, point: [longitude, latitude] }];
-            setDarknodes(darknodes);
+
+            // Shift by random amount to avoid markers covering one another.
+            const random = (seedS: string) => {
+                const seed = Array.from(seedS).reduce((r, i) => r + i.charCodeAt(0), 0);
+                const x = Math.sin(seed) * 10000;
+                const xInt = x - Math.floor(x);
+                return xInt * 2 - 1;
+            };
+
+
+            setDarknodes(
+                latestDarknodes => latestDarknodes.set(darknodeID, { darknodeID, point: [longitude + random(darknodeID), latitude + random(darknodeID)] })
+            );
         } catch (error) {
             // Ignore errors
         }
