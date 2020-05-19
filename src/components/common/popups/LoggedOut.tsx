@@ -2,8 +2,8 @@ import * as React from "react";
 
 import { Blocky } from "@renproject/react-components";
 
-import { getWeb3BrowserIcon } from "../../../lib/ethereum/browsers";
 import { Web3Container } from "../../../store/web3Store";
+import { WalletIcons } from "./WalletIcons";
 
 interface Props {
     newAddress: string | null;
@@ -18,7 +18,8 @@ interface Props {
 export const LoggedOut: React.StatelessComponent<Props> = ({ newAddress, onCancel, onConnect }) => {
     const { web3BrowserName } = Web3Container.useContainer();
     return <div className="popup no-web3 popup--logged-out">
-        <img alt="" role="presentation" className="no-web3--logo" src={getWeb3BrowserIcon(web3BrowserName)} />
+        <WalletIcons web3BrowserName={web3BrowserName} />
+
         {newAddress !== null ?
             <>
                 <h2>Your Web3 account has changed.</h2>

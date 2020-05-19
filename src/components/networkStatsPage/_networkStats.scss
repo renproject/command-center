@@ -183,17 +183,32 @@
 
 /* Collateral Status */
 
+.collateral-status {
+    color: transparent;
+    background-clip: text;
+    display: flex;
+    align-items: center;
+
+    span {
+        transition: all 600ms;
+    }
+
+    .loading {
+        height: 15px;
+    }
+}
+
+.collateral-status--loading {
+    opacity: 0;
+}
+
 .collateral-status--over {
     background: linear-gradient(270deg, #4ED487 0%, $green 50.12%, #48E0E0 100%);
-    color: transparent;
-    -webkit-background-clip: text;
     background-clip: text;
 }
 
 .collateral-status--under {
     background: linear-gradient(270deg, #FF4545 0%, #E6499A 49.85%, #C849E6 100%);
-    color: transparent;
-    -webkit-background-clip: text;
     background-clip: text;
 }
 

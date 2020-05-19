@@ -314,19 +314,19 @@ label {
 
 .checkbox {
     appearance: initial;
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
     border: none;
-    background: white;
+    background: transparent;
     position: relative;
-    border: 1px solid #eee;
+    border: 1px solid white;
     float: left;
 }
 
 .checkbox:checked:after {
-    content: "✔";
+    content: "✓";
     color: $green;
-    font-size: 24px;
+    font-size: 26px;
     margin-top: 2px;
     position: absolute;
     left: 50%;
@@ -338,7 +338,7 @@ label {
 }
 
 .checkbox--error:checked:after {
-    content: "✘";
+    content: "✕";
     font-size: 24px;
     margin-top: 2px;
     color: $red;

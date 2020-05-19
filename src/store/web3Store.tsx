@@ -40,7 +40,7 @@ const useWeb3Container = (initialState = "testnet" as RenNetwork) => {
 
     // Login data
     const [address, setAddress] = useState<string | null>(null);
-    const [web3BrowserName, setWeb3BrowserName] = useState(Web3Browser.MetaMask);
+    const [web3BrowserName, setWeb3BrowserName] = useState(Web3Browser.Web3Browser);
 
     // The following are almost opposites - except that they are both
     // initialized as false. LoggedInBefore means that we try to re-login again

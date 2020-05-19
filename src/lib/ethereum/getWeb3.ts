@@ -6,7 +6,7 @@ import { noCapture } from "../react/errors";
 
 export const ErrorCanceledByUser = "User denied transaction signature.";
 
-const ErrorNoWeb3 = Language.wallet.mustInstallMetaMask;
+const ErrorNoWeb3 = Language.wallet.mustInstallWeb3Browser;
 // const ErrorNoAccounts = Language.wallet.noAccounts;
 const ErrorAccountAccessRejected = Language.wallet.mustConnect;
 

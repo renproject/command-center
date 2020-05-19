@@ -9,7 +9,7 @@ import { AllTokenDetails, OldToken, Token } from "../../../lib/ethereum/tokens";
 import { NetworkStateContainer } from "../../../store/networkStateContainer";
 import { Web3Container } from "../../../store/web3Store";
 
-const minimumShiftedAmount = 0.00016;
+const minimumShiftedAmount = 0.00015;
 
 export const FeesItem = ({ darknodeID, token, amount, disabled }: Props) => {
     const { withdrawReward, waitForTX, updateDarknodeDetails } = NetworkStateContainer.useContainer();
@@ -49,7 +49,7 @@ export const FeesItem = ({ darknodeID, token, amount, disabled }: Props) => {
         title = "No fees to withdraw";
     } else if (wrapped && new BigNumber(amount).lte(new BigNumber(minimumShiftedAmount).times(new BigNumber(10).exponentiatedBy(decimals)))) {
         isDisabled = true;
-        title = `Must have at least ${minimumShiftedAmount} ${token} to withdraw`;
+        title = `Minimum withdraw is ${minimumShiftedAmount} ${token}`;
     }
 
     return (

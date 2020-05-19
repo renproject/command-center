@@ -127,7 +127,7 @@ export const IntegratorRow: React.FC<Props> = ({ index, integrator, isActive, se
                         <table>
                             <tr>
                                 <td>Contract address</td>
-                                <td>{integrator.contractAddress}</td>
+                                <td className="monospace"><ExternalLink href={`${renNetwork.etherscan}/address/${integrator.contractAddress}`}>{integrator.contractAddress}</ExternalLink></td>
                             </tr>
                             <tr>
                                 <td>Daily BTC Volume</td>

@@ -1,5 +1,6 @@
 import BigNumber from "bignumber.js";
 import React from "react";
+import { Loading } from "@renproject/react-components";
 
 import { classNames } from "../../lib/react/className";
 import { ReactComponent as IconBurnFee } from "../../styles/images/icon-burn-fee.svg";
@@ -23,6 +24,7 @@ export const Collateral = ({ l, r, rRen }: Props) => {
     const lDivR = r.isEqualTo(0) ? 0 : l.div(r).multipliedBy(100).toNumber();
     const r3 = Math.max(0, 33 - lDivR);
 
+    const loadingCollateralization = r.isZero() || l.isZero();
     const overCollateralized = r.isZero() || l.lte(r.div(3));
 
     return (
@@ -30,12 +32,15 @@ export const Collateral = ({ l, r, rRen }: Props) => {
             <Stats className="collateral-stats--top">
                 <Stat className="collateral-stat" message="Collateralization" icon={<IconCollateralization />} big>
                     <div className="collateral-status-outer">
-                        <div className="collateral-pre-status">RenVM is currently</div>
+                        <div className="collateral-pre-status">RenVM is currently{loadingCollateralization ? <>...</> : null}</div>
                         <div className={classNames("collateral-status", overCollateralized ? "collateral-status--over" : "collateral-status--under")}>
-                            {overCollateralized ?
-                                <>over-collateralized. <IconCheckCircle /></> :
-                                <>under-collateralized.</>
-                            }
+                            {loadingCollateralization ? <Loading /> : null}
+                            <span className={loadingCollateralization ? "collateral-status--loading" : ""}>
+                                {overCollateralized ?
+                                    <>over-collateralized. <IconCheckCircle /></> :
+                                    <>under-collateralized.</>
+                                }
+                            </span>
                         </div>
                     </div>
 

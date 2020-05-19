@@ -140,7 +140,7 @@ export const Sidebar = withRouter(
                     <input disabled={!address || !shownDarknodeList} type="text" className="sidebar--search--input" onChange={handleInput} value={searchFilter} placeholder="Search" />
                 </div>
             </nav>
-            {!address ? <div className="sidebar--connect" onClick={handleLogin} role="button">
+            {!address ? <div className="sidebar--connect xl-or-larger" onClick={handleLogin} role="button">
                 <div className="wallet-icon">
                     <div className="wallet-icon--inner" />
                 </div>

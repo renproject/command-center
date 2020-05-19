@@ -72,6 +72,31 @@
 
     table {
 
+        a {
+            font-weight: normal;
+            font-size: 13px;
+
+            text-decoration: none;
+
+            /* identical to box height */
+
+            color: #F9F9F9;
+
+            mix-blend-mode: normal;
+            opacity: 0.8;
+
+            border: 1px solid transparent;
+
+            border-radius: 4px;
+            padding: 4px;
+            margin-left: -4px;
+
+            &:hover,
+            &:active {
+                border: 1px dashed $blue-bright;
+            }
+        }
+
         .col-0 {
             @media (min-width: $min-lg) {
                 width: 60px;
@@ -220,31 +245,6 @@
 
                 p {
                     margin-top: 4px;
-                }
-
-                a {
-                    font-weight: normal;
-                    font-size: 13px;
-
-                    text-decoration: none;
-
-                    /* identical to box height */
-
-                    color: #F9F9F9;
-
-                    mix-blend-mode: normal;
-                    opacity: 0.8;
-
-                    border: 1px solid transparent;
-
-                    border-radius: 4px;
-                    padding: 4px;
-                    margin-left: -4px;
-
-                    &:hover,
-                    &:active {
-                        border: 1px dashed $blue-bright;
-                    }
                 }
             }
 

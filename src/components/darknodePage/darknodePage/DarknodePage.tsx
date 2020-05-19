@@ -44,13 +44,17 @@ export const DarknodePage: React.StatelessComponent<Props> = ({ darknodeDetails,
         // Use setState callback to set focus to input (otherwise, input will
         // not have been rendered yet)
         setRenaming(true);
-        if (focusInputRef) {
+    };
+
+    React.useEffect(() => {
+        // Focus input field when renaming is set to true
+        if (renaming && focusInputRef) {
             const current = focusInputRef.current;
             if (current) {
                 current.focus();
             }
         }
-    };
+    }, [renaming]);
 
     const handleCancelRename = () => {
         setRenaming(false);
