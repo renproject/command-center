@@ -13,7 +13,7 @@ import { Stat, Stats } from "../common/Stat";
 
 interface Props {
     l: BigNumber;
-    r: BigNumber;
+    r: BigNumber | null;
     rRen: BigNumber;
 }
 
@@ -21,11 +21,11 @@ const RowBullet = () => <div className="collateral-table--bullet"><div className
 
 export const Collateral = ({ l, r, rRen }: Props) => {
 
-    const lDivR = r.isEqualTo(0) ? 0 : l.div(r).multipliedBy(100).toNumber();
+    const lDivR = r === null ? 0 : r.isEqualTo(0) ? 100 : l.div(r).multipliedBy(100).toNumber();
     const r3 = Math.max(0, 33 - lDivR);
 
-    const loadingCollateralization = r.isZero() || l.isZero();
-    const overCollateralized = r.isZero() || l.lte(r.div(3));
+    const loadingCollateralization = r === null || l.isZero();
+    const overCollateralized = r === null || l.lte(r.div(3));
 
     return (
         <div className="collateral">
@@ -59,11 +59,11 @@ export const Collateral = ({ l, r, rRen }: Props) => {
                             </div>
                             <div className="collateral-table--row">
                                 <div className="collateral-table--row--left row--r3"><RowBullet /> Ceiling (R/3)</div>
-                                <div className="collateral-table--row--right">${r.div(3).toFormat(2)}</div>
+                                <div className="collateral-table--row--right">${(r || new BigNumber(0)).div(3).toFormat(2)}</div>
                             </div>
                             <div className="collateral-table--row">
                                 <div className="collateral-table--row--left row--r"><RowBullet /> Ren Bonded (R)</div>
-                                <div className="collateral-table--row--right">{rRen.toFormat(0)} REN <span className="collateral-chart--row--small">(${r.toFormat(2)})</span></div>
+                                <div className="collateral-table--row--right">{rRen.toFormat(0)} REN {r ? <span className="collateral-chart--row--small">(${r.toFormat(2)})</span> : null}</div>
                             </div>
                         </div>
                     </div>

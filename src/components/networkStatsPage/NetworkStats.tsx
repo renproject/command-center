@@ -79,11 +79,10 @@ export const NetworkStats = () => {
 
     lockedBalances = lockedBalances.sortBy((_value, key) => Object.keys(Token).indexOf(key));
 
-    let renPrice = 0;
-    const renTokenPriceMap = tokenPrices && tokenPrices.get(OldToken.REN, undefined);
-    renPrice = (renTokenPriceMap && renTokenPriceMap.get(quoteCurrency, undefined)) || 0;
+    const renTokenPriceMap = tokenPrices && tokenPrices.get(OldToken.REN, null);
+    const renPrice = (renTokenPriceMap && renTokenPriceMap.get(quoteCurrency, null));
 
-    const r = new BigNumber(currentDarknodeCount || 0).times(100000).times(renPrice);
+    const r = currentDarknodeCount !== null && renPrice !== null ? new BigNumber(currentDarknodeCount || 0).times(100000).times(renPrice) : null;
 
     const [volumePeriod, setVolumePeriod] = useState<PeriodType>(PeriodType.ALL);
     const [lockedPeriod, setLockedPeriod] = useState<PeriodType>(PeriodType.ALL);
