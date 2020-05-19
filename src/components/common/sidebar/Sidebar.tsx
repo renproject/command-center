@@ -1,8 +1,6 @@
 import * as React from "react";
 
-import {
-    faExternalLinkAlt, faGlobeAmericas, faPlus, faThLarge, faTimes,
-} from "@fortawesome/free-solid-svg-icons";
+import { faExternalLinkAlt, faPlus, faThLarge, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
 

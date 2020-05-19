@@ -1,7 +1,5 @@
 import * as React from "react";
 
-import { faFire } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import BigNumber from "bignumber.js";
 
 import { DarknodesState } from "../../../../store/networkStateContainer";

@@ -58,17 +58,17 @@ export const Notifications: React.StatelessComponent<Props> = (props) => {
             detail: `You will be able to withdraw your REN within ${renNetwork.name === "chaosnet" ? "8 days" : "24 hours"}.`,
             type: NotificationType.Information,
         };
-        // } else if (
-        //     isOperator &&
-        //     darknodeDetails &&
-        //     darknodeDetails.registrationStatus === RegistrationStatus.Registered &&
-        //     darknodeDetails.ethBalance.lt(lowValue)
-        // ) {
-        //     notification = {
-        //         title: "Low gas balance.",
-        //         detail: "If your darknode runs out of ETH, it won't earn fees.",
-        //         type: NotificationType.Warning,
-        //     };
+    } else if (
+        isOperator &&
+        darknodeDetails &&
+        darknodeDetails.registrationStatus === RegistrationStatus.Registered &&
+        darknodeDetails.ethBalance.lt(lowValue)
+    ) {
+        notification = {
+            title: "Low gas balance.",
+            detail: "If your darknode runs out of ETH, it won't earn fees.",
+            type: NotificationType.Warning,
+        };
     }
 
     return (

@@ -36,7 +36,7 @@ export interface PeriodData {
   __typename: string; // "PeriodData";
 }
 
-export const PERIOD_HISTORY = gql`
+export const QUERY_PERIOD_HISTORY = gql`
 
 # enum PeriodType {
 #     HOUR

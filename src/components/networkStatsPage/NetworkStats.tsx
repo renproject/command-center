@@ -7,8 +7,7 @@ import React, { useEffect, useState } from "react";
 
 import { AllTokenDetails, OldToken, Token } from "../../lib/ethereum/tokens";
 import {
-    getVolumes, normalizeSeriesVolumes, PeriodResponse, PeriodResponses, PeriodType,
-    QuotePeriodData, QuotePeriodResponse,
+    getVolumes, normalizeSeriesVolumes, PeriodResponse, PeriodType, QuotePeriodResponse,
 } from "../../lib/graphQL/volumes";
 import { NetworkStateContainer } from "../../store/networkStateContainer";
 import { ReactComponent as IconValueLocked } from "../../styles/images/icon-value-locked.svg";
@@ -100,7 +99,7 @@ export const NetworkStats = () => {
                     periodSeries = periodSeries.set(period, null);
                     setPeriodSeries(periodSeries);
 
-                    let response = undefined;
+                    let response;
                     try {
                         response = await getVolumes(client, period);
                     } catch (error) {
@@ -114,6 +113,7 @@ export const NetworkStats = () => {
         })().catch(console.error);
     }, [volumePeriod, lockedPeriod]);
 
+    // tslint:disable-next-line: prefer-const
     let [quotePeriodSeries, setQuotePeriodSeries] = useState<Map<PeriodType, QuotePeriodResponse>>(Map<PeriodType, QuotePeriodResponse>());
     useEffect(() => {
         for (const period of [PeriodType.DAY, PeriodType.HOUR, PeriodType.MONTH, PeriodType.WEEK, PeriodType.YEAR, PeriodType.ALL]) {

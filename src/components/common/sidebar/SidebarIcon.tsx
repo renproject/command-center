@@ -1,8 +1,5 @@
 import * as React from "react";
 
-import { faStar } from "@fortawesome/free-regular-svg-icons";
-import { faFire } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Blocky, Currency, CurrencyIcon } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import { Link } from "react-router-dom";

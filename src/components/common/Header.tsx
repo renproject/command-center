@@ -2,13 +2,13 @@ import * as React from "react";
 
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { RenNetwork, RenNetworks } from "@renproject/contracts";
+// import { RenNetwork, RenNetworks } from "@renproject/contracts";
 import { currencies, Currency, CurrencyIcon, Dropdown } from "@renproject/react-components";
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
 
 import { NetworkStateContainer } from "../../store/networkStateContainer";
 import { UIContainer } from "../../store/uiStore";
-import { Web3Container } from "../../store/web3Store";
+// import { Web3Container } from "../../store/web3Store";
 import { ReactComponent as RenVMIcon } from "../../styles/images/Icon-HyperDrive.svg";
 import { ReactComponent as IntegratorsIcon } from "../../styles/images/icon-integrators.svg";
 import { ReactComponent as NetworkIcon } from "../../styles/images/icon-network.svg";
@@ -25,13 +25,13 @@ import { MoreDropdown } from "./MoreDropdown";
 //         <><English /> English</>
 //     );
 
-const networkOptions = new Map()
-    // .set(RenNetwork.Mainnet, <>Mainnet</>)
-    .set(RenNetwork.Chaosnet, <>Chaosnet</>)
-    .set(RenNetwork.Testnet, <>Testnet</>)
-    .set(RenNetwork.Devnet, <>Devnet</>)
-    .set(RenNetwork.Localnet, <>Localnet</>)
-    ;
+// const networkOptions = new Map()
+//     // .set(RenNetwork.Mainnet, <>Mainnet</>)
+//     .set(RenNetwork.Chaosnet, <>Chaosnet</>)
+//     .set(RenNetwork.Testnet, <>Testnet</>)
+//     .set(RenNetwork.Devnet, <>Devnet</>)
+//     .set(RenNetwork.Localnet, <>Localnet</>)
+//     ;
 
 const getCurrencyOptions = () => {
     const options = new Map<string, React.ReactNode>();
@@ -66,19 +66,19 @@ interface Props extends RouteComponentProps {
 export const Header = withRouter(({ location }: Props) => {
 
     const { showMobileMenu } = UIContainer.useContainer();
-    const { renNetwork, setRenNetwork } = Web3Container.useContainer();
+    // const { renNetwork, setRenNetwork } = Web3Container.useContainer();
     const { quoteCurrency, setQuoteCurrency } = NetworkStateContainer.useContainer();
 
     const setCurrency = (currency: string): void => {
         setQuoteCurrency(currency as Currency);
     };
 
-    const setNetwork = (network: string): void => {
-        setRenNetwork(RenNetworks[network]);
-        setInterval(() => {
-            window.location.reload();
-        }, 100);
-    };
+    // const setNetwork = (network: string): void => {
+    //     setRenNetwork(RenNetworks[network]);
+    //     setInterval(() => {
+    //         window.location.reload();
+    //     }, 100);
+    // };
 
     // const setLanguage = (language: string): void => {
     //     // NOT IMPLEMENTED
@@ -94,15 +94,15 @@ export const Header = withRouter(({ location }: Props) => {
     //     setValue={setLanguage}
     // />;
 
-    const networkDropdownNode = <Dropdown
-        key="networkDropdown"
-        selected={{
-            value: renNetwork.name,
-            render: networkOptions.get(renNetwork.name),
-        }}
-        options={networkOptions}
-        setValue={setNetwork}
-    />;
+    // const networkDropdownNode = <Dropdown
+    //     key="networkDropdown"
+    //     selected={{
+    //         value: renNetwork.name,
+    //         render: networkOptions.get(renNetwork.name),
+    //     }}
+    //     options={networkOptions}
+    //     setValue={setNetwork}
+    // />;
 
     const currencyDropdownNode = <Dropdown
         key="currencyDropdown"

@@ -475,8 +475,8 @@ const useNetworkStateContainer = () => {
             { call: step2, name: "Register darknode" },
         ];
 
-        const warning = `Due to a large number of registrations, estimated Darknode profits are currently negative.\
-                Are you sure you want to continue?`;
+        // const warning = `Due to a large number of registrations, estimated Darknode profits are currently negative.\
+        //         Are you sure you want to continue?`;
         const title = "Register darknode";
 
         setPopup({

@@ -1,7 +1,7 @@
 import * as React from "react";
 
-import { Route, RouteComponentProps, Switch, withRouter } from "react-router-dom";
 import { FeedbackButton } from "@renproject/react-components";
+import { Route, RouteComponentProps, Switch, withRouter } from "react-router-dom";
 
 import { DEFAULT_REN_NETWORK } from "../lib/react/environmentVariables";
 import { catchBackgroundException } from "../lib/react/errors";

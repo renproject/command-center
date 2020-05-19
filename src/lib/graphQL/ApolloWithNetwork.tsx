@@ -1,5 +1,5 @@
-import React, { useMemo } from "react";
 import { ApolloProvider } from "@apollo/react-hooks";
+import React, { useMemo } from "react";
 
 import { Web3Container } from "../../store/web3Store";
 import { apolloClient } from "./client";

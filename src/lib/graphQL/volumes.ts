@@ -1,10 +1,10 @@
+import { Currency } from "@renproject/react-components";
 import { ApolloClient } from "apollo-boost";
 import BigNumber from "bignumber.js";
 import { List, Map } from "immutable";
-import { Currency } from "@renproject/react-components";
 
 import { Token, TokenPrices } from "../ethereum/tokens";
-import { PERIOD_HISTORY, PeriodData } from "./queries";
+import { PeriodData, QUERY_PERIOD_HISTORY } from "./queries";
 
 export enum PeriodType {
     HOUR = "HOUR",
@@ -63,7 +63,7 @@ export const getVolumes = async (client: ApolloClient<unknown>, periodType: Peri
     const subperiod = getSubperiodCount(periodType);
     const response = await client
         .query<{ periodDatas: PeriodData[] }>({
-            query: PERIOD_HISTORY,
+            query: QUERY_PERIOD_HISTORY,
             variables: {
                 type: subperiod.type,
                 // amount: ,

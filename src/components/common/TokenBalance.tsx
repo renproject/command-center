@@ -79,14 +79,9 @@ export const TokenBalance = (props: Props) => {
         return <i>ERR</i>;
     }
 
-    let defaultDigits;
-    switch (convertTo) {
-        case Currency.BTC:
-        case Currency.ETH:
-            defaultDigits = 3; break;
-        default:
-            defaultDigits = 2;
-    }
-    defaultDigits = digits === undefined ? defaultDigits : digits;
-    return <>{amount.multipliedBy(price).toFixed(defaultDigits)}</>;
+    return <>{
+        amount
+            .multipliedBy(price)
+            .toFixed(digits === undefined ? defaultDigits(convertTo) : digits)
+    }</>;
 };

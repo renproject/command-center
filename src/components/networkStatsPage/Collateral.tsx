@@ -1,6 +1,6 @@
+import { Loading } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import React from "react";
-import { Loading } from "@renproject/react-components";
 
 import { classNames } from "../../lib/react/className";
 import { ReactComponent as IconBurnFee } from "../../styles/images/icon-burn-fee.svg";
@@ -21,7 +21,7 @@ const RowBullet = () => <div className="collateral-table--bullet"><div className
 
 export const Collateral = ({ l, r, rRen }: Props) => {
 
-    const lDivR = r === null ? 0 : r.isEqualTo(0) ? 100 : l.div(r).multipliedBy(100).toNumber();
+    const lDivR = r === null || l.isZero() ? 0 : r.isEqualTo(0) ? 100 : l.div(r).multipliedBy(100).toNumber();
     const r3 = Math.max(0, 33 - lDivR);
 
     const loadingCollateralization = r === null || l.isZero();

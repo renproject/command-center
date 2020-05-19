@@ -1,25 +1,17 @@
-
-import { useApolloClient } from "@apollo/react-hooks";
 import { RenNetworkDetails } from "@renproject/contracts";
-import { CurrencyIcon, Loading, TokenIcon } from "@renproject/react-components";
-import { OrderedMap } from "immutable";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { withRouter } from "react-router-dom";
+import { CurrencyIcon } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
+import React, { useMemo } from "react";
 
 import { Token } from "../../lib/ethereum/tokens";
-import { Integrator, INTEGRATORS } from "../../lib/graphQL/queries";
+import { Integrator } from "../../lib/graphQL/queries";
 import { getCurrent24HourPeriod } from "../../lib/graphQL/volumes";
 import { classNames } from "../../lib/react/className";
-import { extractError } from "../../lib/react/errors";
 import { NetworkStateContainer } from "../../store/networkStateContainer";
 import { Web3Container } from "../../store/web3Store";
-import { ReactComponent as RemoteBack } from "../../styles/images/remote-back.svg";
-import { ReactComponent as RemoteForward } from "../../styles/images/remote-forward.svg";
-import { ReactComponent as RemoteStart } from "../../styles/images/remote-start.svg";
 import { ExternalLink } from "../common/ExternalLink";
 import { TitledSection } from "../common/TitledSection";
-import { TokenBalance, tokenToQuote, tokenToReadable } from "../common/TokenBalance";
+import { tokenToQuote, tokenToReadable } from "../common/TokenBalance";
 import Integrators from "./integrators.json";
 
 const DefaultLogo = require("../../styles/images/integrators/default.png");

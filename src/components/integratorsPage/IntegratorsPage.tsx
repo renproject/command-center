@@ -1,23 +1,17 @@
 
 import { useApolloClient } from "@apollo/react-hooks";
 import { RenNetworkDetails } from "@renproject/contracts";
-import { CurrencyIcon, Loading } from "@renproject/react-components";
+import { Loading } from "@renproject/react-components";
 import { OrderedMap } from "immutable";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { withRouter } from "react-router-dom";
 
-import { Token } from "../../lib/ethereum/tokens";
 import { Integrator, INTEGRATORS } from "../../lib/graphQL/queries";
-import { getCurrent24HourPeriod } from "../../lib/graphQL/volumes";
-import { classNames } from "../../lib/react/className";
 import { extractError } from "../../lib/react/errors";
-import { NetworkStateContainer } from "../../store/networkStateContainer";
 import { Web3Container } from "../../store/web3Store";
 import { ReactComponent as RemoteBack } from "../../styles/images/remote-back.svg";
 import { ReactComponent as RemoteForward } from "../../styles/images/remote-forward.svg";
 import { ReactComponent as RemoteStart } from "../../styles/images/remote-start.svg";
-import { ExternalLink } from "../common/ExternalLink";
-import { TokenBalance, tokenToQuote } from "../common/TokenBalance";
 import { IntegratorRow } from "./IntegratorRow";
 import Integrators from "./integrators.json";
 
@@ -46,10 +40,9 @@ const ROWS_PER_PAGE = 10;
 
 export const IntegratorsPage = withRouter(({ match: { params }, history }) => {
     const { renNetwork } = Web3Container.useContainer();
-    const { quoteCurrency, tokenPrices } = NetworkStateContainer.useContainer();
-    const currentTime = useMemo(() => getCurrent24HourPeriod(), []);
     const [page, setPage] = useState(0);
-    const [search, setSearch] = useState("");
+    // const [search, setSearch] = useState("");
+    const search: string = "";
 
     // Load page from URL
     useEffect(() => {

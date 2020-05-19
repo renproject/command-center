@@ -3,11 +3,11 @@
 import { RenNetworkDetails } from "@renproject/contracts";
 import { sleep } from "@renproject/react-components";
 import Axios from "axios";
+import { Map } from "immutable";
 import localforage from "localforage";
 import { useState } from "react";
 import { Point } from "react-simple-maps";
 import { createContainer } from "unstated-next";
-import { Map } from "immutable";
 
 import { Web3Container } from "../../store/web3Store";
 import { retryNTimes } from "../renvmPage/renvmContainer";

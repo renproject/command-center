@@ -1,12 +1,8 @@
 import { Currency, CurrencyIcon, Loading, TokenIcon } from "@renproject/react-components";
-import BigNumber from "bignumber.js";
-import { OrderedMap } from "immutable";
 import React from "react";
 import { Doughnut } from "react-chartjs-2";
 
-import { Token } from "../../lib/ethereum/tokens";
 import { QuotePeriodResponse } from "../../lib/graphQL/volumes";
-import { TokenBalance } from "../common/TokenBalance";
 
 const colors = [
     "#004CA0",

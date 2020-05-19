@@ -76,7 +76,7 @@ export const FeesBlockRow: React.FC<RowProps> = ({ token, quoteCurrency, balance
             </td>
         </tr>
     </>;
-}
+};
 
 export const FeesBlock: React.StatelessComponent<Props> = ({ darknodeDetails, isOperator }) => {
 
@@ -184,7 +184,7 @@ export const FeesBlock: React.StatelessComponent<Props> = ({ darknodeDetails, is
                                         fees.map((balance, token) => ({
                                             // tslint:disable-next-line: no-non-null-assertion
                                             balance, percent: balance
-                                                .div(new BigNumber(10).exponentiatedBy(AllTokenDetails.get(token)!.decimals))
+                                                .div(new BigNumber(10).exponentiatedBy(AllTokenDetails.get(token, { decimals: 0 }).decimals))
                                                 .times(tokenPrices?.get(token)?.get(Currency.ETH) || 0)
                                                 .times(new BigNumber(10).exponentiatedBy(18))
                                                 .div(tab === Tab.Withdrawable ? darknodeDetails.feesEarnedTotalEth : pendingTotal)
