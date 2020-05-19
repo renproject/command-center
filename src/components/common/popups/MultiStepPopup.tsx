@@ -7,6 +7,7 @@ import { classNames } from "../../../lib/react/className";
 import { catchBackgroundException, catchInteractionException } from "../../../lib/react/errors";
 import { PopupContainer } from "../../../store/popupStore";
 import Warn from "../../../styles/images/warn.svg";
+import { PopupError } from "./PopupController";
 
 /**
  * MultiStepPopup is a popup component that prompts the user to approve a
@@ -131,9 +132,7 @@ const MultiStepPopupClass: React.StatelessComponent<Props> = ({ steps,
 
     return <div className="popup multi-step">
         <div className="multi-step--top">
-            <h2 className={rejected ? "red" : ""}>
-                {rejected ? `${transactionS} rejected` : complete ? `${transactionS} submitted` : title}
-            </h2>
+            <h3 className={rejected ? "red" : ""}>{rejected ? `${transactionS} rejected` : complete ? `${transactionS} submitted` : title}</h3>
             {!notStarted && steps.length > 1 ? <ul className="multi-step--list">
                 {
                     steps.map((
@@ -151,29 +150,29 @@ const MultiStepPopupClass: React.StatelessComponent<Props> = ({ steps,
                                 checked={checked}
                                 readOnly
                             />
-                            <span className={index === currentStep ? "active" : ""}>
-                                Step {index + 1}: {step.name}
-                            </span>
+                            <h2 className={index === currentStep ? "active" : ""}>
+                                {step.name}
+                            </h2>
                         </li>;
                     })
                 }
             </ul> : null}
 
             {!rejected && runError ?
-                <p className="popup--error red">Unable to complete transaction: {runError.message}</p> :
+                <PopupError>Unable to complete transaction: {runError.message}</PopupError> :
                 null
             }
 
         </div>
 
-        <div className="multi-step--buttons" >
+        <div className="popup--buttons" >
             {running ?
                 // Show spinning icon while running through steps
-                <button className="button button--white" disabled><Loading /></button> :
+                <button className="button button--white" disabled><Loading alt={true} /></button> :
                 complete ?
                     // Get user to click Close instead of automatically closing popup
                     <>
-                        <button className="button" onClick={onDone}>
+                        <button className="button button--blue" onClick={onDone}>
                             Close
                             </button>
                     </> :
@@ -183,7 +182,7 @@ const MultiStepPopupClass: React.StatelessComponent<Props> = ({ steps,
                             <button className="button button--white" onClick={callOnCancel}>
                                 Cancel
                                 </button>
-                            <button className="button button--white" onClick={run}>
+                            <button className="button button--blue" onClick={run}>
                                 Retry
                                 </button>
                         </> :
@@ -193,7 +192,7 @@ const MultiStepPopupClass: React.StatelessComponent<Props> = ({ steps,
                                 Cancel
                                 </button>
                             <button
-                                className={classNames("button", warning ? "button--red" : "")}
+                                className={classNames("button", warning ? "button--red" : "button--blue")}
                                 onClick={run}
                             >
                                 Confirm

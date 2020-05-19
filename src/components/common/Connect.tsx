@@ -1,6 +1,7 @@
 import * as React from "react";
 
 import { ApolloWithNetwork } from "../../lib/graphQL/ApolloWithNetwork";
+import { DEFAULT_REN_NETWORK } from "../../lib/react/environmentVariables";
 import { EpochContainer } from "../../store/epochStore";
 import { GithubAPIContainer } from "../../store/githubApiStore";
 import { NetworkStateContainer } from "../../store/networkStateContainer";
@@ -12,7 +13,7 @@ import { RenVMContainer } from "../renvmPage/renvmContainer";
 
 export const Connect: React.StatelessComponent<Props> = ({ children }) => {
     return <PopupContainer.Provider>
-        <Web3Container.Provider>
+        <Web3Container.Provider initialState={DEFAULT_REN_NETWORK}>
             <ApolloWithNetwork>
                 <NetworkStateContainer.Provider>
                     <UIContainer.Provider>

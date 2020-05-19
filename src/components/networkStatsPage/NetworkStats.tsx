@@ -126,9 +126,15 @@ export const NetworkStats = () => {
         }
     }, [periodSeries, tokenPrices, quoteCurrency]);
 
+    const collateral = <Collateral l={total} r={r} rRen={new BigNumber(currentDarknodeCount || 0).times(100000)} />;
 
     return (
         <div className="network-stats container">
+            <div className="no-xl-or-larger col-lg-12 col-xl-4">
+                <div className="collateral-padding" />
+                {collateral}
+            </div>
+
             <div className="col-lg-12 col-xl-8">
                 <Stats>
                     <div className="stat-with-period">
@@ -171,9 +177,9 @@ export const NetworkStats = () => {
                     </div>
                 </Stats>
             </div>
-            <div className="col-lg-12 col-xl-4">
+            <div className="xl-or-larger col-lg-12 col-xl-4">
                 <div className="collateral-padding" />
-                <Collateral l={total} r={r} rRen={new BigNumber(currentDarknodeCount || 0).times(100000)} />
+                {collateral}
             </div>
         </div>
     );

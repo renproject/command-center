@@ -1,5 +1,9 @@
 .integrators-page {
 
+    &.container {
+        margin-top: 60px;
+    }
+
     >div {
         width: 100%;
         padding: 10px;
@@ -60,28 +64,66 @@
         }
     }
 
+    .integrators-large {
+        @media (max-width: $max-xs) {
+            display: none;
+        }
+    }
+
     table {
 
+        a {
+            font-weight: normal;
+            font-size: 13px;
+
+            text-decoration: none;
+
+            /* identical to box height */
+
+            color: #F9F9F9;
+
+            mix-blend-mode: normal;
+            opacity: 0.8;
+
+            border: 1px solid transparent;
+
+            border-radius: 4px;
+            padding: 4px;
+            margin-left: -4px;
+
+            &:hover,
+            &:active {
+                border: 1px dashed $blue-bright;
+            }
+        }
+
         .col-0 {
-            width: 60px;
+            @media (min-width: $min-lg) {
+                width: 60px;
+            }
+
+            text-align: center;
         }
 
         .col-2 {
             width: 540px;
         }
 
-        background: linear-gradient(3.63deg, #00457F -510.7%, #002148 66.36%);
 
         thead,
         thead>tr,
         thead>tr>th {
             border: none;
-            background: $blue-darker;
             text-transform: uppercase;
             font-weight: bold;
             font-size: 13px;
 
             color: #F9F9F9;
+        }
+
+        tbody {
+            // background: linear-gradient(20deg, #00457f -332%, #002148 58%);
+            border-radius: 4px;
         }
 
         tbody>tr {
@@ -92,13 +134,96 @@
             font-size: 13px;
             line-height: 15px;
 
+            &.integrator {
+                cursor: pointer;
+            }
+
+            &.integrator,
+            &.empty-row {
+                // background: #00000000;
+                background: #002148 !important;
+
+                &:nth-of-type(4n + 1)>td {
+                    background: #002044;
+                }
+
+            }
+
+            &.integrator {
+
+                &:hover:nth-child(odd)>td,
+                &:hover>td {
+                    // background: linear-gradient(3.63deg, #00457F -510.7%, #002148 66.36%);
+                    background: #012450 !important;
+                }
+            }
+
+
             /* identical to box height */
 
             color: #F9F9F9;
 
             background-color: #00000000 !important; // transparent
 
-            border-bottom: 2px solid #000;
+            &:not(:first-child) {
+                border-top: 2px solid #001B3A;
+            }
+
+            &.integrator-extra {
+
+                .titled-block {
+                    margin: 10px 0;
+                }
+
+                td {
+                    transition: height 200ms;
+
+                    @media (max-width: $max-md) {
+                        max-width: 180px;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                    }
+                }
+
+
+                overflow: hidden;
+
+                table {
+                    @media (min-width: $min-md) {
+                        margin: 0 10px;
+                    }
+                }
+
+                table,
+                table tr,
+                table td {
+                    background: transparent;
+                    border: none;
+                }
+
+                table td {
+                    white-space: nowrap;
+                    font-weight: 600;
+
+                    &:last-child {
+                        width: 99%;
+                        font-weight: 500;
+                    }
+                }
+            }
+
+            &.integrator-extra-closed {
+                border-top: 0;
+                height: 0;
+                border-top-width: 0;
+                max-height: 0;
+
+                * {
+                    height: 0;
+                    overflow: hidden;
+                }
+            }
 
             img,
             object {
@@ -107,41 +232,20 @@
             }
 
             .integrator-name {
-                display: flex;
-                flex-flow: column;
-                justify-content: space-between;
+                // display: flex;
+                // flex-flow: column;
+                // justify-content: space-between;
                 height: 35px;
                 margin-top: 3px;
+
 
                 span {
                     font-family: monospace;
                 }
 
-                a {
-                    font-weight: normal;
-                    font-size: 13px;
-                    line-height: 15px;
-
-                    text-decoration: none;
-
-                    /* identical to box height */
-
-                    color: #F9F9F9;
-
-                    mix-blend-mode: normal;
-                    opacity: 0.8;
+                p {
+                    margin-top: 4px;
                 }
-            }
-
-            &:hover:nth-child(odd)>td,
-            &:hover>td {
-                background: linear-gradient(3.63deg, #00457F -510.7%, #002148 66.36%);
-            }
-
-            background: #00000000;
-
-            &:nth-child(odd)>td {
-                background: #002044;
             }
 
             &.empty-row td {
@@ -150,5 +254,36 @@
                 font-weight: 500;
             }
         }
+
+
+        @media (max-width: $max-sm) {
+
+            .integrator-name,
+            .integrator-name p {
+                max-width: 150px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+        }
+
+        @media (max-width: $max-xs) {
+            .col-0 {
+                display: none;
+            }
+
+            .col-1 {
+                max-width: 53px;
+            }
+
+            .integrator-name {
+                max-width: 100px;
+            }
+
+            tbody>tr {
+                border-top-width: 1px;
+            }
+        }
+
     }
 }

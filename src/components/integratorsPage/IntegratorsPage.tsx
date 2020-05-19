@@ -1,3 +1,4 @@
+
 import { useApolloClient } from "@apollo/react-hooks";
 import { RenNetworkDetails } from "@renproject/contracts";
 import { CurrencyIcon, Loading } from "@renproject/react-components";
@@ -8,6 +9,7 @@ import { withRouter } from "react-router-dom";
 import { Token } from "../../lib/ethereum/tokens";
 import { Integrator, INTEGRATORS } from "../../lib/graphQL/queries";
 import { getCurrent24HourPeriod } from "../../lib/graphQL/volumes";
+import { classNames } from "../../lib/react/className";
 import { extractError } from "../../lib/react/errors";
 import { NetworkStateContainer } from "../../store/networkStateContainer";
 import { Web3Container } from "../../store/web3Store";
@@ -16,6 +18,7 @@ import { ReactComponent as RemoteForward } from "../../styles/images/remote-forw
 import { ReactComponent as RemoteStart } from "../../styles/images/remote-start.svg";
 import { ExternalLink } from "../common/ExternalLink";
 import { TokenBalance, tokenToQuote } from "../common/TokenBalance";
+import { IntegratorRow } from "./IntegratorRow";
 import Integrators from "./integrators.json";
 
 const DefaultLogo = require("../../styles/images/integrators/default.png");
@@ -32,9 +35,12 @@ const resolveIntegrator = (networkDetails: RenNetworkDetails, address: string): 
 };
 
 const EmptyRow: React.FunctionComponent<{}> = ({ children }) =>
-    <tr className="empty-row">
-        <td colSpan={5}>{children}</td>
-    </tr>;
+    <>
+        <tr className="empty-row">
+            <td colSpan={5}>{children}</td>
+        </tr>
+        <tr className="integrator-extra integrator-extra-closed" />
+    </>;
 
 const ROWS_PER_PAGE = 10;
 
@@ -111,6 +117,8 @@ export const IntegratorsPage = withRouter(({ match: { params }, history }) => {
         empty.push(i);
     }
 
+    const [activeIntegrator, setActiveIntegrator] = React.useState(null as string | null);
+
     return (
         <div className="integrators-page container">
             <table className="integrators-top">
@@ -119,40 +127,17 @@ export const IntegratorsPage = withRouter(({ match: { params }, history }) => {
                         <th className="col-0">#</th>
                         <th className="col-1">Integrator</th>
                         <th className="col-2" />
-                        <th className="col-3">24 Hr Volume</th>
-                        <th className="col-4">All Time Volume</th>
+                        <th className="col-3">24 Hr <span className="integrators-large">Volume</span></th>
+                        <th className="col-4">All Time <span className="integrators-large">Volume</span></th>
                     </tr>
                 </thead>
                 <tbody>
                     {!filteredPage ? <EmptyRow><Loading alt={true} /></EmptyRow> :
                         typeof filteredPage === "string" ? <EmptyRow>Error loading integrators: {currentPage}</EmptyRow> :
                             filteredPage.length === 0 ? <EmptyRow>No results</EmptyRow> :
-                                filteredPage.map((integrator, i) => {
-                                    const { name, logo, url, urlHref } = resolveIntegrator(renNetwork, integrator.contractAddress);
-                                    return <tr key={integrator.id}>
-                                        <td>{i + 1}</td>
-                                        <td>
-                                            <object role="presentation" data={logo} type="image/png">
-                                                <img role="presentation" alt="" src={DefaultLogo} />
-                                            </object>
-                                        </td>
-                                        <td><div className="integrator-name"><span>{name}</span><ExternalLink href={urlHref}>{url}</ExternalLink></div></td>
-                                        <td>
-                                            <CurrencyIcon currency={quoteCurrency} />{integrator.integrator24H.date === currentTime && tokenPrices ?
-                                                tokenToQuote(integrator.integrator24H.volumeBTC, Token.BTC, quoteCurrency, tokenPrices) +
-                                                tokenToQuote(integrator.integrator24H.volumeZEC, Token.ZEC, quoteCurrency, tokenPrices) +
-                                                tokenToQuote(integrator.integrator24H.volumeBCH, Token.BCH, quoteCurrency, tokenPrices) :
-                                                0} {quoteCurrency.toUpperCase()}
-                                        </td>
-                                        <td>
-                                            <CurrencyIcon currency={quoteCurrency} />{tokenPrices ?
-                                                tokenToQuote(integrator.volumeBTC, Token.BTC, quoteCurrency, tokenPrices) +
-                                                tokenToQuote(integrator.volumeZEC, Token.ZEC, quoteCurrency, tokenPrices) +
-                                                tokenToQuote(integrator.volumeBCH, Token.BCH, quoteCurrency, tokenPrices) :
-                                                0} {quoteCurrency.toUpperCase()}
-                                        </td>
-                                    </tr>;
-                                })}
+                                filteredPage.map((integrator, i) =>
+                                    <IntegratorRow key={integrator.id} index={i + 1} integrator={integrator} isActive={activeIntegrator === integrator.id} setActiveIntegrator={setActiveIntegrator} />
+                                )}
                     {empty.map((i) => {
                         return <EmptyRow key={i} />;
                     })}
@@ -165,7 +150,7 @@ export const IntegratorsPage = withRouter(({ match: { params }, history }) => {
                 <div className="integrators-bottom-right">
                     <button disabled={page === 0} onClick={goToFirstPage}><RemoteStart /></button>
                     <button disabled={page === 0} onClick={goToPreviousPage}><RemoteBack /></button>
-                    <button disabled={Array.isArray(currentPage) && currentPage.length === 0} onClick={goToNextPage}><RemoteForward /></button>
+                    <button disabled={!Array.isArray(currentPage) || currentPage.length < ROWS_PER_PAGE} onClick={goToNextPage}><RemoteForward /></button>
                     {/* <button><RemoteEnd /></button> */}
                 </div>
             </div>

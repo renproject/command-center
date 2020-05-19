@@ -76,7 +76,7 @@ export const Sidebar = withRouter(
 
                 <div className="sidebar--top">
 
-                    <div className="mobile-only">
+                    <div className="medium-only">
                         <MenuItem icon={<FontAwesomeIcon icon={faTimes} />} onClick={hideMobileMenu} className={"sidebar--close"} />
                         <MenuItem path="/" title="Network" icon={<NetworkIcon />} activePath={location.pathname} onClick={hideMobileMenu} />
                         <MenuItem path="/integrators" title="Integrators" icon={<IntegratorsIcon />} activePath={location.pathname} onClick={hideMobileMenu} />
@@ -140,7 +140,7 @@ export const Sidebar = withRouter(
                     <input disabled={!address || !shownDarknodeList} type="text" className="sidebar--search--input" onChange={handleInput} value={searchFilter} placeholder="Search" />
                 </div>
             </nav>
-            {!address ? <div className="sidebar--connect" onClick={handleLogin} role="button">
+            {!address ? <div className="sidebar--connect xl-or-larger" onClick={handleLogin} role="button">
                 <div className="wallet-icon">
                     <div className="wallet-icon--inner" />
                 </div>

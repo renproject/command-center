@@ -58,24 +58,24 @@ export const Notifications: React.StatelessComponent<Props> = (props) => {
             detail: `You will be able to withdraw your REN within ${renNetwork.name === "chaosnet" ? "8 days" : "24 hours"}.`,
             type: NotificationType.Information,
         };
-    } else if (
-        isOperator &&
-        darknodeDetails &&
-        darknodeDetails.registrationStatus === RegistrationStatus.Registered &&
-        darknodeDetails.ethBalance.lt(lowValue)
-    ) {
-        notification = {
-            title: "Low gas balance.",
-            detail: "If your darknode runs out of ETH, it won't earn fees.",
-            type: NotificationType.Warning,
-        };
+        // } else if (
+        //     isOperator &&
+        //     darknodeDetails &&
+        //     darknodeDetails.registrationStatus === RegistrationStatus.Registered &&
+        //     darknodeDetails.ethBalance.lt(lowValue)
+        // ) {
+        //     notification = {
+        //         title: "Low gas balance.",
+        //         detail: "If your darknode runs out of ETH, it won't earn fees.",
+        //         type: NotificationType.Warning,
+        //     };
     }
 
     return (
-        <div className="statuspage--notifications">
-            {notification ? <div className={`statuspage--notification ${notification.type}`}>
+        <div className="darknodepage--notifications">
+            {notification ? <div className={`darknodepage--notification ${notification.type}`}>
                 <FontAwesomeIcon icon={notificationType[notification.type]} />
-                <div className="statuspage--notification--details">
+                <div className="darknodepage--notification--details">
                     <h2>{notification.title}</h2>
                     <span>{notification.detail}</span>
                 </div>

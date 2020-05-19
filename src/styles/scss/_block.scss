@@ -532,13 +532,15 @@
     &:hover:after {
         position: absolute;
         top: 5px;
-        left: -300px;
+        left: -312px;
         width: 300px;
         content: attr(title);
-        padding: 2px;
-        background-color: transparentize($color: white, $amount: 0);
+        padding: 5px;
+        background-color: #19324E;
+        border-radius: 4px;
         line-height: 1.4em;
         color: $red;
+        font-weight: 600;
         border: 1px solid $red;
     }
 }

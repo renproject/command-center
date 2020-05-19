@@ -183,10 +183,32 @@
 
 /* Collateral Status */
 
+.collateral-status {
+    color: transparent;
+    background-clip: text;
+    display: flex;
+    align-items: center;
+
+    span {
+        transition: all 600ms;
+    }
+
+    .loading {
+        height: 15px;
+    }
+}
+
+.collateral-status--loading {
+    opacity: 0;
+}
+
 .collateral-status--over {
     background: linear-gradient(270deg, #4ED487 0%, $green 50.12%, #48E0E0 100%);
-    color: transparent;
-    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+.collateral-status--under {
+    background: linear-gradient(270deg, #FF4545 0%, #E6499A 49.85%, #C849E6 100%);
     background-clip: text;
 }
 
@@ -245,6 +267,10 @@
     background: linear-gradient(270deg, #4ED487 0%, $green 50.12%, #48E0E0 100%);
     height: 100%;
     border-radius: 6px;
+
+    &.collateral-chart--l--under {
+        background: linear-gradient(270deg, #FF4545 0%, #E6499A 49.85%, #C849E6 100%);
+    }
 }
 
 .collateral-chart--r3 {
@@ -309,6 +335,16 @@
 
     .collateral-table--bullet--inner {
         background: linear-gradient(270deg, #4ED487 0%, $green 50.12%, #48E0E0 100%);
+    }
+
+    &.row--l--under {
+        .collateral-table--bullet {
+            background: linear-gradient(270deg, #FF45454c 0%, #E6499A4c 49.85%, #C849E64c 100%);
+        }
+
+        .collateral-table--bullet--inner {
+            background: linear-gradient(270deg, #FF4545 0%, #E6499A 49.85%, #C849E6 100%);
+        }
     }
 }
 

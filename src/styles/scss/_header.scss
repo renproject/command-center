@@ -175,7 +175,7 @@
     line-height: 20px;
 
     &.header--account--connected {
-        @extend .no-mobile;
+        @extend .no-medium;
     }
 }
 
@@ -223,7 +223,7 @@
 }
 
 .header--mobile-menu--button {
-    @extend .mobile-only;
+    @extend .medium-only;
 
     // width: 0px;
     height: 100%;
@@ -266,7 +266,7 @@
 }
 
 .header--group:not(.header--group--account) {
-    @extend .no-mobile;
+    @extend .no-medium;
 }
 
 .header--group--active {
@@ -429,6 +429,14 @@
         margin-left: 20px;
         margin-right: 20px;
         font-size: 12px;
+
+        @media (max-width: $max-xl) {
+            display: none;
+        }
+    }
+
+    @media (max-width: $max-xl) {
+        max-width: 150px;
     }
 
     .new-blue {

@@ -31,9 +31,10 @@ const isBlock = (search: string): number | undefined => {
 };
 
 interface Props extends RouteComponentProps {
+    className?: string;
 }
 
-export const Search = withRouter(({ history }: Props) => {
+export const Search = withRouter(({ history, className }: Props) => {
     const [searchInput, setSearchInput] = React.useState("");
     const [loadingSearch, setLoadingSearch] = React.useState(false);
     const [notFound, setNotFound] = React.useState(false);
@@ -65,10 +66,10 @@ export const Search = withRouter(({ history }: Props) => {
     };
 
     return (
-        <li className="header--group header--group--search">
+        <div className={classNames("header--group--search", className)}>
             <form onSubmit={loadingSearch ? () => { /* disabled */ } : handleSubmit}>
                 <input disabled={loadingSearch} type="text" className={classNames("header--search--input", "header--selected", notFound ? "header--search--404" : "")} onChange={handleInput} value={searchInput} placeholder="Search darknodes / transactions" />
             </form>
-        </li>
+        </div>
     );
 });

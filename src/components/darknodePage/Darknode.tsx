@@ -9,7 +9,7 @@ import { NetworkStateContainer } from "../../store/networkStateContainer";
 import { Web3Container } from "../../store/web3Store";
 import { NotFound } from "../common/404";
 import { _catch_ } from "../common/ErrorBoundary";
-import { StatusPage } from "./statuspage/StatusPage";
+import { DarknodePage } from "./darknodePage/DarknodePage";
 
 export enum DarknodeAction {
     View = "view",
@@ -43,7 +43,7 @@ export const getDarknodeParam = (params: unknown): string | undefined => {
  */
 export const Darknode = withRouter(({ match, location }: Props) => {
     const { address } = Web3Container.useContainer();
-    const { darknodeDetails, darknodeNames, setDarknodeName, addRegisteringDarknode } = NetworkStateContainer.useContainer();
+    const { darknodeDetails, darknodeNames, storeDarknodeName: setDarknodeName, addRegisteringDarknode } = NetworkStateContainer.useContainer();
 
     const [darknodeID, setDarknodeID] = React.useState<string | undefined>(undefined);
     const [action, setAction] = React.useState<string | undefined>(undefined);
@@ -104,7 +104,7 @@ export const Darknode = withRouter(({ match, location }: Props) => {
         return <NotFound />;
     }
 
-    return _catch_(<StatusPage
+    return _catch_(<DarknodePage
         key={darknodeOrURL}
         action={darknodeAction}
         publicKey={publicKey}

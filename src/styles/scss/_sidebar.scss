@@ -5,6 +5,9 @@ $collapsed-width: 80px;
 $full-width: 360px;
 $mobile-full-width: 100vw;
 
+$max-sidebar: $max-md;
+$min-header: $min-lg;
+
 .sidebar .blocky {
     width: 42px;
     border-radius: 50%;
@@ -43,6 +46,11 @@ $mobile-full-width: 100vw;
 
 .sidebar--darknodes {
     background: url('../../styles/images/sidebar-empty.svg') repeat-y;
+
+    @media(max-width: $max-sidebar) {
+        background: none;
+    }
+
     background-position-x: 19px;
     background-position-y: 27px;
     flex: 1;
@@ -94,9 +102,6 @@ $mobile-full-width: 100vw;
     margin-left: 5px;
     margin-bottom: -1px;
 }
-
-$max-sidebar: $max-md;
-$min-header: $min-lg;
 
 .sidebar.sidebar--mobile--active {
     @media(max-width: $max-sidebar) {
@@ -292,6 +297,10 @@ nav li {
     // position: fixed !important;
     // bottom: 0;
     background: #002247CC;
+
+    @media(max-width: $max-sidebar) {
+        display: none;
+    }
 }
 
 input[type="text"].sidebar--search--input {

@@ -12,7 +12,7 @@ interface StatProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDiv
 
 export const Stat = ({ icon, message, big, nested, highlight, children, className, ...props }: StatProps) =>
     <div {...props} className={["stat", highlight ? "stat--highlight" : "", nested ? "stat--nested" : "", className].join(" ")}>
-        <hr />
+        <div className="hr" />
         <h2 className="stat--title">{icon ? <span className="stat--title--icon">{icon}</span> : <></>} {message}</h2>
         <div className={["stat--children", big ? "stat--children--big" : ""].join(" ")}>{children}</div>
     </div>;

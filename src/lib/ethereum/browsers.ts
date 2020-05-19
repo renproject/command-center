@@ -6,6 +6,7 @@ import mistIcon from "../../styles/images/browsers/mist.png";
 import statusIcon from "../../styles/images/browsers/status.svg";
 import toshiIcon from "../../styles/images/browsers/toshi.png";
 import trustIcon from "../../styles/images/browsers/trust.svg";
+import walletIcon from "../../styles/images/wallet.svg";
 
 /**
  * This file is for changing text and icons based on which Web3 wallet the user
@@ -19,7 +20,7 @@ export enum Web3Browser {
     Trust = "Trust",
     MetaMask = "MetaMask",
     Mist = "Mist",
-    Web3Browser = "Wallet",
+    Web3Browser = "Web3 Browser",
 }
 
 export const getWeb3BrowserName = (newProvider: provider): Web3Browser => {
@@ -68,6 +69,6 @@ export const getWeb3BrowserIcon = (web3Browser: Web3Browser): string => {
         case Web3Browser.Mist:
             return mistIcon;
         case Web3Browser.Web3Browser:
-            return metamaskIcon;
+            return walletIcon;
     }
 };

@@ -114,7 +114,7 @@ export const WithdrawPopup: React.StatelessComponent<Props> = ({ token, status, 
                 </div>;
             case Stage.Withdrawing:
                 return <div className="popup--buttons">
-                    <Loading />
+                    <Loading alt={true} />
                 </div>;
             case Stage.Done:
                 return <div className="popup--buttons">
