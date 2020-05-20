@@ -13,19 +13,20 @@ import { Stat, Stats } from "../common/Stat";
 
 interface Props {
     l: BigNumber;
-    r: BigNumber | null;
-    rRen: BigNumber;
+    b: BigNumber | null;
+    bRen: BigNumber;
 }
 
 const RowBullet = () => <div className="collateral-table--bullet"><div className="collateral-table--bullet--inner" /></div>;
 
-export const Collateral = ({ l, r, rRen }: Props) => {
+export const Collateral = ({ l, b, bRen }: Props) => {
 
-    const lDivR = r === null || l.isZero() ? 0 : r.isEqualTo(0) ? 100 : l.div(r).multipliedBy(100).toNumber();
-    const r3 = Math.max(0, 33 - lDivR);
+    const lDivB = b === null || l.isZero() ? 0 : b.isEqualTo(0) ? 100 : BigNumber.min(l.div(b), 1).multipliedBy(100).toNumber();
+    const bDivL = b === null || l.isZero() ? 100 : l.isEqualTo(0) ? 100 : BigNumber.min(b.div(l), 1).multipliedBy(100).toNumber();
+    // const r3 = Math.max(0, 33 - lDivR);
 
-    const loadingCollateralization = r === null || l.isZero();
-    const overCollateralized = r === null || l.lte(r.div(3));
+    const loadingCollateralization = b === null || l.isZero();
+    const overCollateralized = b === null || l.lte(b);
 
     return (
         <div className="collateral">
@@ -47,9 +48,13 @@ export const Collateral = ({ l, r, rRen }: Props) => {
                     <div className="collateral-chart-section">
                         <div className="collateral-chart">
                             <div className="collateral-chart--bar">
-                                <div style={{ width: `${lDivR}%` }} className={classNames("collateral-chart--l", overCollateralized ? "collateral-chart--l--over" : "collateral-chart--l--under")}><span className="collateral-chart--label">L</span></div>
-                                <div style={{ width: `${r3}%` }} className="collateral-chart--r3"><span className="collateral-chart--label">{overCollateralized ? <>R/3</> : null}</span></div>
-                                <div style={{ width: `${100 - lDivR - r3}%` }} className="collateral-chart--r"><span className="collateral-chart--label">R</span></div>
+                                <div style={{ width: `${lDivB}%` }} className={classNames("collateral-chart--l", overCollateralized ? "collateral-chart--l--over" : "collateral-chart--l--under")}><span className="collateral-chart--label">L</span></div>
+                                {/* <div style={{ width: `${r3}%` }} className="collateral-chart--b3"><span className="collateral-chart--label">{overCollateralized ? <>B/3</> : null}</span></div> */}
+                                <div style={{ width: `${100 - lDivB}%` }} className="collateral-chart--b"><span className="collateral-chart--label">B</span></div>
+                                {!overCollateralized ?
+                                    <div style={{ width: `${bDivL}%` }} className="collateral-chart--b-line"><span className={classNames("collateral-chart--label", bDivL > 99 ? "collateral-chart--label--down" : bDivL < 3 ? "collateral-chart--label--right" : "")}>R</span></div> :
+                                    null
+                                }
                             </div>
                         </div>
                         <div className="collateral-table">
@@ -57,13 +62,13 @@ export const Collateral = ({ l, r, rRen }: Props) => {
                                 <div className={classNames("collateral-table--row--left", "row--l", overCollateralized ? "row--l--over" : "row--l--under")}><RowBullet /> Value Locked (L)</div>
                                 <div className="collateral-table--row--right">${l.toFormat(2)}</div>
                             </div>
-                            <div className="collateral-table--row">
-                                <div className="collateral-table--row--left row--r3"><RowBullet /> Ceiling (R/3)</div>
+                            {/* <div className="collateral-table--row">
+                                <div className="collateral-table--row--left row--b3"><RowBullet /> Ceiling (R/3)</div>
                                 <div className="collateral-table--row--right">${(r || new BigNumber(0)).div(3).toFormat(2)}</div>
-                            </div>
+                            </div> */}
                             <div className="collateral-table--row">
-                                <div className="collateral-table--row--left row--r"><RowBullet /> Ren Bonded (R)</div>
-                                <div className="collateral-table--row--right">{rRen.toFormat(0)} REN {r ? <span className="collateral-chart--row--small">(${r.toFormat(2)})</span> : null}</div>
+                                <div className="collateral-table--row--left row--b"><RowBullet /> Value Bonded (B)</div>
+                                <div className="collateral-table--row--right">{bRen.toFormat(0)} REN {b ? <span className="collateral-chart--bow--small">(${b.toFormat(2)})</span> : null}</div>
                             </div>
                         </div>
                     </div>

@@ -1,5 +1,6 @@
 import { Loading, naturalTime } from "@renproject/react-components";
 import React, { useEffect, useState } from "react";
+// import { Line } from "react-chartjs-2";
 import { Bar } from "react-chartjs-2";
 
 import { QuotePeriodData, QuotePeriodResponse } from "../../lib/graphQL/volumes";
@@ -169,13 +170,12 @@ Chart.elements.Rectangle.prototype.draw = function () {
         } else {
             // Positive Value
             ctx.moveTo(x + radius, y);
-            if (radius === 6) {
-                ctx.lineTo(x + width - radius - 0.1, y);
-                ctx.lineTo(x + width - radius - 0.1, 0);
-                ctx.lineTo(x + width - radius + 0.1, 0);
-                ctx.lineTo(x + width - radius + 0.1, y);
-            } else {
-                ctx.lineTo(x + width - radius, y);
+            if (height > 0) {
+                ctx.lineTo(x + width / 2 - 0.1, y);
+                ctx.lineTo(x + width / 2 - 0.1, 0);
+                ctx.lineTo(x + width / 2 + 0.1, 0);
+                ctx.lineTo(x + width / 2 + 0.1, y);
+                ctx.lineTo(x + width / 2, y);
             }
             ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
             ctx.lineTo(x + width, y + height - radius);
@@ -195,7 +195,7 @@ Chart.elements.Rectangle.prototype.draw = function () {
 
 interface Props {
     periodSeries: QuotePeriodResponse | null | undefined;
-    graphType: "Volume" | "Locked";
+    graphType: "PeriodVolume" | "TotalLocked";
 }
 
 export const HistoryChart: React.StatelessComponent<Props> = ({ periodSeries, graphType }) => {
@@ -223,6 +223,7 @@ export const HistoryChart: React.StatelessComponent<Props> = ({ periodSeries, gr
     return <div className="overview--chart--outer">
         <div className="volume--chart">
             {cachedSeries ? <><div className="overview--chart--canvas">
+                {/* <Line */}
                 <Bar
                     height={330}
                     width={400}
@@ -243,7 +244,7 @@ export const HistoryChart: React.StatelessComponent<Props> = ({ periodSeries, gr
                                 showingSeconds: false
                             })),
                             datasets: [{
-                                data: empty ? [100] : cachedSeries.map(item => item[`quoteTotal${graphType}`]),
+                                data: empty ? [100] : cachedSeries.map(item => item[`quote${graphType}`]),
                                 fillColor: gradient,
                                 backgroundColor: gradient,
                                 borderColor: "#001A38",
@@ -252,10 +253,28 @@ export const HistoryChart: React.StatelessComponent<Props> = ({ periodSeries, gr
                                 shadowOffsetX: 0,
                                 shadowOffsetY: 0,
                                 shadowBlur: 10,
+                                barHitRadius: 10,
 
                                 shadowColor: "#ffffff30",
 
-                                // hoverBackgroundColor: [],
+                                // data: empty ? [100] : cachedSeries.map(item => item[`quote${graphType}`]),
+                                // borderColor: "#006FE8",
+                                // lineTension: 0.3,
+                                // backgroundColor: 'rgba(75,192,192,0.0)',
+                                // borderCapStyle: 'butt',
+                                // borderDash: [],
+                                // borderDashOffset: 0.0,
+                                // borderJoinStyle: 'miter',
+                                // pointBorderColor: '#006FE8',
+                                // pointBackgroundColor: '#fff',
+                                // pointBorderWidth: 1,
+                                // pointHoverRadius: 5,
+                                // pointHoverBackgroundColor: 'rgba(75,192,192,1)',
+                                // pointHoverBorderColor: 'rgba(220,220,220,1)',
+                                // pointHoverBorderWidth: 2,
+                                // pointRadius: 1,
+                                // pointHitRadius: 10,
+                                // bezierCurve: true,
                             }],
                         };
                     }}

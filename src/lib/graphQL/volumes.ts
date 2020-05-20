@@ -37,13 +37,13 @@ export const getSubperiodCount = (type: string): { graph: number, amount: number
         case PeriodType.HOUR:
             return { graph: 7, amount: 1, type: PeriodType.HOUR };
         case PeriodType.DAY:
-            return { graph: 7, amount: 24, type: PeriodType.HOUR };
+            return { graph: 12, amount: 24, type: PeriodType.HOUR };
         case PeriodType.WEEK:
             return { graph: 7, amount: 7, type: PeriodType.DAY };
         case PeriodType.MONTH:
-            return { graph: 7, amount: 31, type: PeriodType.DAY };
+            return { graph: 12, amount: 31, type: PeriodType.DAY };
         case PeriodType.YEAR:
-            return { graph: 7, amount: 12, type: PeriodType.MONTH };
+            return { graph: 12, amount: 12, type: PeriodType.MONTH };
         case PeriodType.ALL:
             return { graph: 8, amount: 8, type: PeriodType.WEEK }; // TODO: Fix `31` value
         default:
@@ -76,28 +76,36 @@ export const getVolumes = async (client: ApolloClient<unknown>, periodType: Peri
     const periodTimespan = getPeriodTimespan(subperiod.type);
     const adjustedTimestamp = Math.floor(currentTimestamp / periodTimespan) * periodTimespan;
 
-    const count = 24;
-    const periods = Array.from(Array(count)).map((_, i) => adjustedTimestamp - periodTimespan * i);
+    const periods = Array.from(Array(subperiod.amount)).map((_, i) => adjustedTimestamp - periodTimespan * i);
 
-    let historic = periods.map((periodDate) => {
+    const historic = periods.map((periodDate) => {
+        const exactMatch = periodDatas.filter((periodData) => periodData.date === periodDate).first<PeriodData>();
+        if (exactMatch) {
+            return exactMatch;
+        }
+
         // tslint:disable-next-line: no-non-null-assertion
-        return periodDatas.filter((periodData) => periodData.date <= periodDate).first<PeriodData>({
-            __typename: "PeriodData",
+        const inexact = periodDatas.filter((periodData) => periodData.date <= periodDate).first<PeriodData>() || {};
+
+        return {
+            id: `${periodType}${periodDate / periodTimespan}`,
+            type: subperiod.type,
             date: periodDate,
-            id: `${response.data.periodDatas}${periodDate / periodTimespan}`,
             // total
 
-            totalTxCountBTC: "0",
-            totalLockedBTC: "0",
-            totalVolumeBTC: "0",
+            __typename: "PeriodData",
 
-            totalTxCountZEC: "0",
-            totalLockedZEC: "0",
-            totalVolumeZEC: "0",
+            totalTxCountBTC: inexact.totalTxCountBTC || "0",
+            totalLockedBTC: inexact.totalLockedBTC || "0",
+            totalVolumeBTC: inexact.totalVolumeBTC || "0",
 
-            totalTxCountBCH: "0",
-            totalLockedBCH: "0",
-            totalVolumeBCH: "0",
+            totalTxCountZEC: inexact.totalTxCountZEC || "0",
+            totalLockedZEC: inexact.totalLockedZEC || "0",
+            totalVolumeZEC: inexact.totalVolumeZEC || "0",
+
+            totalTxCountBCH: inexact.totalTxCountBCH || "0",
+            totalLockedBCH: inexact.totalLockedBCH || "0",
+            totalVolumeBCH: inexact.totalVolumeBCH || "0",
 
             // period
 
@@ -113,8 +121,7 @@ export const getVolumes = async (client: ApolloClient<unknown>, periodType: Peri
             periodLockedBCH: "0",
             periodVolumeBCH: "0",
 
-            type: subperiod.type,
-        });
+        };
     })
         .reverse()
         .map(item => ({
@@ -122,9 +129,10 @@ export const getVolumes = async (client: ApolloClient<unknown>, periodType: Peri
             date: Math.min(item.date + periodTimespan, currentTimestamp),
         }));
 
-    historic = historic.slice(historic.length - subperiod.amount);
-
     const averagePeriods = historic.slice(historic.length - subperiod.amount);
+
+    const graphPeriods = historic.slice(historic.length - subperiod.graph);
+
     const average = averagePeriods.slice(0, averagePeriods.length - 1).reduce((sum, period) => {
         return {
             ...sum,
@@ -144,7 +152,7 @@ export const getVolumes = async (client: ApolloClient<unknown>, periodType: Peri
     }, averagePeriods[averagePeriods.length - 1]);
 
     return {
-        historic,
+        historic: graphPeriods,
         average,
     };
 };

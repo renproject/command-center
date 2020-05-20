@@ -241,6 +241,7 @@
     align-items: center;
     margin-left: 5px;
     margin-right: 5px;
+    position: relative;
 
     >div {
         display: flex;
@@ -258,9 +259,17 @@
 
     /* identical to box height */
     display: flex;
-    align-items: top;
+    align-items: flex-start;
     letter-spacing: 1.92857px;
     padding: 5px;
+
+    &.collateral-chart--label--down {
+        align-items: flex-end;
+    }
+
+    &.collateral-chart--label--right {
+        margin-right: -25px;
+    }
 }
 
 .collateral-chart--l {
@@ -274,17 +283,26 @@
     }
 }
 
-.collateral-chart--r3 {
+.collateral-chart--b3 {
     height: 55px;
     background: #1F4873;
     z-index: 1;
 }
 
-.collateral-chart--r {
+.collateral-chart--b {
     height: 55px;
     background: #192D42;
     border-top-right-radius: 6px;
     border-bottom-right-radius: 6px;
+}
+
+.collateral-chart--b-line {
+    height: 100%;
+    border-right: 2px dashed #192D42;
+    position: relative;
+    left: 0;
+    z-index: 4;
+    position: absolute;
 }
 
 /* Collateral Table */
@@ -350,7 +368,7 @@
     }
 }
 
-.row--r3 {
+.row--b3 {
     .collateral-table--bullet {
         background: #1F48731e;
     }
@@ -360,7 +378,7 @@
     }
 }
 
-.row--r {
+.row--b {
     .collateral-table--bullet {
         background: #192D421e;
     }
