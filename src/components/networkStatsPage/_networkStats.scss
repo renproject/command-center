@@ -245,7 +245,7 @@
 
     >div {
         display: flex;
-        justify-content: right;
+        justify-content: flex-end;
 
         width: 0;
         transition: width 0.6s ease-in-out;
@@ -408,7 +408,7 @@
 
 .period-selector {
     display: flex;
-    justify-content: right;
+    justify-content: flex-end;
 }
 
 .period-option {
@@ -458,7 +458,7 @@
 .stat-tabs {
     width: 100%;
     display: flex;
-    justify-content: left;
+    justify-content: flex-start;
     margin-bottom: 100px;
     border-bottom: 1px solid #1A2E46;
 }

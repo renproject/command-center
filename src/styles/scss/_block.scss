@@ -38,7 +38,7 @@
 
 .block--title {
     display: flex;
-    justify-content: left;
+    justify-content: flex-start;
     margin: 18px 20px;
 
     >h3 {
@@ -233,7 +233,7 @@
     }
 
     .fees-block--table--token {
-        align-items: left;
+        align-items: flex-start;
 
         svg {
             margin-bottom: -6px;

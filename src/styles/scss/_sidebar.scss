@@ -27,7 +27,7 @@ $min-header: $min-lg;
     border-left: 4px solid rgba(0, 0, 0, 0);
     display: flex;
     align-items: center;
-    justify-content: left;
+    justify-content: flex-start;
 
     &:hover {
         border-left: 4px solid transparentize($blue-bright, 1 - 0.5);
