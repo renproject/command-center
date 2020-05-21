@@ -1,4 +1,4 @@
-import { mainnet, RenNetworkDetails } from "@renproject/contracts";
+import { RenNetworkDetails } from "@renproject/contracts";
 import { TxStatus } from "@renproject/interfaces";
 import { sleep } from "@renproject/react-components";
 import RenSDK from "@renproject/ren";
@@ -145,10 +145,8 @@ export const registerNode = async (
     const darknodeRegistry = getDarknodeRegistry(web3, renNetwork);
 
     try {
-        const params = renNetwork.name === mainnet.name ? [darknodeID, publicKey, bond.toFixed()] : [darknodeID, publicKey];
         const res = await waitForTX(
-            // @ts-ignore
-            darknodeRegistry.methods.register(...params).send({ from: address, gas }),
+            darknodeRegistry.methods.register(darknodeID, publicKey).send({ from: address, gas }),
             onDone
         );
         resolved = true;

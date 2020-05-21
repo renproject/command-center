@@ -53,7 +53,6 @@ export const AccountDropdown: React.StatelessComponent<Props> = ({ }) => {
             }
         }
         document.removeEventListener("mousedown", clickAway);
-        // @ts-ignore
     };
 
     const toggle = () => {

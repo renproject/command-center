@@ -25,7 +25,6 @@ export const MoreDropdown: React.StatelessComponent<Props> = ({ }) => {
             }
         }
         document.removeEventListener("mousedown", clickAway);
-        // @ts-ignore
     };
 
     const toggle = () => {
