@@ -86,13 +86,18 @@ export const NetworkStats = () => {
     const [volumePeriod, setVolumePeriod] = useState<PeriodType>(PeriodType.ALL);
     const [lockedPeriod, setLockedPeriod] = useState<PeriodType>(PeriodType.ALL);
 
-    const [volumeTab, setVolumeTab] = useState<StatTab>(StatTab.History);
-    const [lockedTab, setLockedTab] = useState<StatTab>(StatTab.DigitalAssets);
+    const [volumeTab, setVolumeTab] = useState<StatTab>(StatTab.DigitalAssets);
+    const [lockedTab, setLockedTab] = useState<StatTab>(StatTab.History);
 
     const [periodSeries, setPeriodSeries] = useState<Map<PeriodType, PeriodResponse | null | undefined>>(Map<PeriodType, PeriodResponse | null | undefined>());
     // periodSeriesUpdated indicated whether the quote values should be
     // recalculated for the period series.
     const [periodSeriesUpdated, setPeriodSeriesUpdated] = useState<Map<PeriodType, boolean>>(Map<PeriodType, boolean>());
+    const [pricesUpdated, setPricesUpdated] = useState(false);
+
+    useEffect(() => {
+        setPricesUpdated(true);
+    }, [tokenPrices, quoteCurrency]);
 
     useEffect(() => {
         (async () => {
@@ -120,12 +125,13 @@ export const NetworkStats = () => {
     useEffect(() => {
         for (const period of [PeriodType.DAY, PeriodType.HOUR, PeriodType.MONTH, PeriodType.WEEK, PeriodType.YEAR, PeriodType.ALL]) {
             const individualPeriodSeries = periodSeries.get(period);
-            if (tokenPrices && individualPeriodSeries && periodSeriesUpdated.get(period)) {
+            if (tokenPrices && individualPeriodSeries && (periodSeriesUpdated.get(period) || pricesUpdated)) {
                 setQuotePeriodSeries(quotePeriodSeries.set(period, normalizeSeriesVolumes(individualPeriodSeries, tokenPrices, quoteCurrency)));
                 setPeriodSeriesUpdated(periodSeriesUpdated.set(period, false));
             }
         }
-    }, [periodSeries, tokenPrices, quoteCurrency]);
+        setPricesUpdated(false);
+    }, [periodSeries, pricesUpdated]);
 
     const collateral = <Collateral l={total} b={b} bRen={new BigNumber(currentDarknodeCount || 0).times(100000)} />;
 
@@ -149,7 +155,7 @@ export const NetworkStats = () => {
                             <div className="overview--bottom">
                                 <StatTabs selected={volumeTab} onChange={setVolumeTab} volumePeriod={volumePeriod} assetsPeriod={volumePeriod} />
                                 {volumeTab === StatTab.History ?
-                                    <HistoryChart graphType={"PeriodVolume"} periodSeries={quotePeriodSeries.get(volumePeriod)} /> :
+                                    <HistoryChart graphType={"PeriodVolume"} periodSeries={quotePeriodSeries.get(volumePeriod)} quoteCurrency={quoteCurrency} /> :
                                     <TokenChart graphType={"Volume"} quoteCurrency={quoteCurrency} periodSeries={quotePeriodSeries.get(volumePeriod)} />
                                 }
                             </div>
@@ -170,7 +176,7 @@ export const NetworkStats = () => {
                             <div className="overview--bottom">
                                 <StatTabs selected={lockedTab} onChange={setLockedTab} volumePeriod={lockedPeriod} assetsPeriod={null} />
                                 {lockedTab === StatTab.History ?
-                                    <HistoryChart graphType={"TotalLocked"} periodSeries={quotePeriodSeries.get(lockedPeriod)} /> :
+                                    <HistoryChart graphType={"TotalLocked"} periodSeries={quotePeriodSeries.get(lockedPeriod)} quoteCurrency={quoteCurrency} /> :
                                     <TokenChart graphType={"Locked"} quoteCurrency={quoteCurrency} periodSeries={quotePeriodSeries.get(lockedPeriod)} />
                                 }
                             </div>

@@ -204,11 +204,15 @@
 
 .collateral-status--over {
     background: linear-gradient(270deg, #4ED487 0%, $green 50.12%, #48E0E0 100%);
+    // Use semi-transparent text so that it shows up in Safari but doesn't
+    // affect the gradient in other browsers.
+    color: #4ED48744;
     background-clip: text;
 }
 
 .collateral-status--under {
     background: linear-gradient(270deg, #FF4545 0%, #E6499A 49.85%, #C849E6 100%);
+    color: #FF454544;
     background-clip: text;
 }
 

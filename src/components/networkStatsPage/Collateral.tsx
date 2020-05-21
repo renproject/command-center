@@ -52,7 +52,7 @@ export const Collateral = ({ l, b, bRen }: Props) => {
                                 {/* <div style={{ width: `${r3}%` }} className="collateral-chart--b3"><span className="collateral-chart--label">{overCollateralized ? <>B/3</> : null}</span></div> */}
                                 <div style={{ width: `${100 - lDivB}%` }} className="collateral-chart--b"><span className="collateral-chart--label">B</span></div>
                                 {!overCollateralized ?
-                                    <div style={{ width: `${bDivL}%` }} className="collateral-chart--b-line"><span className={classNames("collateral-chart--label", bDivL > 99 ? "collateral-chart--label--down" : bDivL < 3 ? "collateral-chart--label--right" : "")}>R</span></div> :
+                                    <div style={{ width: `${bDivL}%` }} className="collateral-chart--b-line"><span className={classNames("collateral-chart--label", bDivL > 99 ? "collateral-chart--label--down" : bDivL < 3 ? "collateral-chart--label--right" : "")}>B</span></div> :
                                     null
                                 }
                             </div>

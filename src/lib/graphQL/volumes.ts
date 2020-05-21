@@ -37,15 +37,15 @@ export const getSubperiodCount = (type: string): { graph: number, amount: number
         case PeriodType.HOUR:
             return { graph: 7, amount: 1, type: PeriodType.HOUR };
         case PeriodType.DAY:
-            return { graph: 12, amount: 24, type: PeriodType.HOUR };
+            return { graph: 24, amount: 24, type: PeriodType.HOUR };
         case PeriodType.WEEK:
             return { graph: 7, amount: 7, type: PeriodType.DAY };
         case PeriodType.MONTH:
-            return { graph: 12, amount: 31, type: PeriodType.DAY };
+            return { graph: 31, amount: 31, type: PeriodType.DAY };
         case PeriodType.YEAR:
             return { graph: 12, amount: 12, type: PeriodType.MONTH };
         case PeriodType.ALL:
-            return { graph: 8, amount: 8, type: PeriodType.WEEK }; // TODO: Fix `31` value
+            return { graph: 31, amount: 31, type: PeriodType.DAY }; // TODO: Fix `31` value
         default:
             throw new Error(`Unknown period type ${type}`);
     }

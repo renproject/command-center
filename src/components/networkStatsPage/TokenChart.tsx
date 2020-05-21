@@ -3,6 +3,7 @@ import React from "react";
 import { Doughnut } from "react-chartjs-2";
 
 import { QuotePeriodResponse } from "../../lib/graphQL/volumes";
+import { textCurrencyIcon } from "./HistoryChart";
 
 const colors = [
     "#004CA0",
@@ -21,9 +22,9 @@ interface Props {
 export const TokenChart: React.FunctionComponent<Props> = ({ periodSeries, quoteCurrency, graphType }) => {
     const tokens = ["BTC", "ZEC", "BCH"];
 
-    return <div className="overview--chart--outer">
+    return <div className="overview--chart--outer" style={{ maxWidth: "calc(100vw - 80px)" }}>
         <div className="overview--chart">
-            {periodSeries ? <><div className="overview--chart--canvas">
+            {periodSeries ? <><div className="overview--chart--canvas" style={{ maxWidth: "calc(100vw - 80px)" }}>
                 <Doughnut
                     height={186}
                     width={186}
@@ -39,6 +40,38 @@ export const TokenChart: React.FunctionComponent<Props> = ({ periodSeries, quote
                             // hoverBackgroundColor: [],
                         }]
                     }}
+                    options={{
+                        tooltips: {
+                            callbacks: {
+                                // tslint:disable-next-line: no-any
+                                title: (tooltipItem: any, data: any) => {
+                                    return (graphType === "Volume" ? "Volume - " : "Value locked - ") + data.labels[tooltipItem[0].index];
+                                },
+                                // tslint:disable-next-line: no-any
+                                label: (tooltipItem: any, data: any) => {
+                                    const dataset = data.datasets[0];
+                                    const percent = dataset._meta[0] ? Math.round((dataset.data[tooltipItem.index] / dataset._meta[0].total) * 100) : undefined;
+                                    return `${textCurrencyIcon(quoteCurrency)}${data.datasets[0].data[tooltipItem.index]} ${quoteCurrency.toUpperCase()}${percent !== undefined ? ` - ${percent}%` : ""}`;
+                                },
+                                // // tslint:disable-next-line: no-any
+                                // afterLabel: (tooltipItem: any, data: any) => {
+                                //     const dataset = data.datasets[0];
+                                //     const percent = Math.round((dataset.data[tooltipItem.index] / dataset._meta[0].total) * 100);
+                                //     return percent + "%";
+                                // }
+                            },
+                            backgroundColor: "#00050B",
+                            borderWidth: 0,
+                            titleFontSize: 14,
+                            titleFontColor: "#fff",
+                            bodyFontColor: "#fff",
+                            bodyFontSize: 14,
+                            displayColors: false,
+                            xPadding: 10,
+                            yPadding: 10,
+                        }
+                    }
+                    }
                 />
             </div>
                 <div className="overview--chart--legend">

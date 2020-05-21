@@ -44,9 +44,12 @@ export const IntegratorRow: React.FC<Props> = ({ index, integrator, isActive, se
 
     // Day volume in token quantity
 
-    const dayVolumeBTCReadable = React.useMemo(() => tokenToReadable(integrator.integrator24H.volumeBTC, Token.BTC), [integrator.integrator24H.volumeBTC]);
-    const dayVolumeBCHReadable = React.useMemo(() => tokenToReadable(integrator.integrator24H.volumeBCH, Token.BCH), [integrator.integrator24H.volumeBCH]);
-    const dayVolumeZECReadable = React.useMemo(() => tokenToReadable(integrator.integrator24H.volumeZEC, Token.ZEC), [integrator.integrator24H.volumeZEC]);
+    const dayVolumeBTCReadable = React.useMemo(() => tokenToReadable(integrator.integrator24H.date === currentTime ?
+        integrator.integrator24H.volumeBTC : new BigNumber(0), Token.BTC), [integrator.integrator24H.volumeBTC]);
+    const dayVolumeBCHReadable = React.useMemo(() => tokenToReadable(integrator.integrator24H.date === currentTime ?
+        integrator.integrator24H.volumeBCH : new BigNumber(0), Token.BCH), [integrator.integrator24H.volumeBCH]);
+    const dayVolumeZECReadable = React.useMemo(() => tokenToReadable(integrator.integrator24H.date === currentTime ?
+        integrator.integrator24H.volumeZEC : new BigNumber(0), Token.ZEC), [integrator.integrator24H.volumeZEC]);
 
     // Day volume in quote currency
 
