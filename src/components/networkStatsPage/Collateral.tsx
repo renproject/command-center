@@ -1,4 +1,4 @@
-import { Loading } from "@renproject/react-components";
+import { Currency, CurrencyIcon, Loading } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import React from "react";
 
@@ -15,11 +15,12 @@ interface Props {
     l: BigNumber;
     b: BigNumber | null;
     bRen: BigNumber;
+    quoteCurrency: Currency;
 }
 
 const RowBullet = () => <div className="collateral-table--bullet"><div className="collateral-table--bullet--inner" /></div>;
 
-export const Collateral = ({ l, b, bRen }: Props) => {
+export const Collateral = ({ l, b, bRen, quoteCurrency }: Props) => {
 
     const lDivB = b === null || l.isZero() ? 0 : b.isEqualTo(0) ? 100 : BigNumber.min(l.div(b), 1).multipliedBy(100).toNumber();
     const bDivL = b === null || l.isZero() ? 100 : l.isEqualTo(0) ? 100 : BigNumber.min(b.div(l), 1).multipliedBy(100).toNumber();
@@ -60,15 +61,15 @@ export const Collateral = ({ l, b, bRen }: Props) => {
                         <div className="collateral-table">
                             <div className="collateral-table--row">
                                 <div className={classNames("collateral-table--row--left", "row--l", overCollateralized ? "row--l--over" : "row--l--under")}><RowBullet /> Value Locked (L)</div>
-                                <div className="collateral-table--row--right">${l.toFormat(2)}</div>
+                                <div className="collateral-table--row--right"><CurrencyIcon currency={quoteCurrency} />{l.toFormat(2)}</div>
                             </div>
                             {/* <div className="collateral-table--row">
                                 <div className="collateral-table--row--left row--b3"><RowBullet /> Ceiling (R/3)</div>
-                                <div className="collateral-table--row--right">${(r || new BigNumber(0)).div(3).toFormat(2)}</div>
+                                <div className="collateral-table--row--right"><CurrencyIcon currency={quoteCurrency} />{(r || new BigNumber(0)).div(3).toFormat(2)}</div>
                             </div> */}
                             <div className="collateral-table--row">
                                 <div className="collateral-table--row--left row--b"><RowBullet /> Value Bonded (B)</div>
-                                <div className="collateral-table--row--right">{bRen.toFormat(0)} REN {b ? <span className="collateral-chart--bow--small">(${b.toFormat(2)})</span> : null}</div>
+                                <div className="collateral-table--row--right">{bRen.toFormat(0)} REN {b ? <span className="collateral-chart--bow--small">(<CurrencyIcon currency={quoteCurrency} />{b.toFormat(2)})</span> : null}</div>
                             </div>
                         </div>
                     </div>

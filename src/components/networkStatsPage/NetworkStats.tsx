@@ -133,7 +133,7 @@ export const NetworkStats = () => {
         setPricesUpdated(false);
     }, [periodSeries, pricesUpdated]);
 
-    const collateral = <Collateral l={total} b={b} bRen={new BigNumber(currentDarknodeCount || 0).times(100000)} />;
+    const collateral = <Collateral l={total} b={b} bRen={new BigNumber(currentDarknodeCount || 0).times(100000)} quoteCurrency={quoteCurrency} />;
 
     return (
         <div className="network-stats container">

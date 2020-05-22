@@ -520,7 +520,7 @@ export const fetchCycleAndPendingRewards = async (
         new BigNumber(0),
     );
 
-    const currentShareCount = await retryNTimes(async () => await darknodeRegistry.methods.numDarknodesPreviousEpoch().call(), 5)
+    const currentShareCount = await retryNTimes(async () => await darknodeRegistry.methods.numDarknodes().call(), 5)
         .then((bn: (BN | number | string | null)) => bn === null ? null : new BigNumber(bn.toString()));
     const πCurrent = safePromiseAllMap(
         NewTokenDetails.map(async (_tokenDetails, token) => {

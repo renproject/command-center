@@ -28,6 +28,8 @@ export const TopUpController: React.StatelessComponent<Props> = ({ darknodeID })
         if (isNaN(parseFloat(newValue)) || parseFloat(newValue) <= 0) {
             setDisabled(true);
             setResultMessage(null);
+        } else if (!address) {
+            setResultMessage(<>Please connect your Web3 wallet first.</>);
         } else if (accountBalance.isLessThan(newValue)) {
             setResultMessage(<>Insufficient balance. Maximum deposit: <CurrencyIcon currency={Currency.ETH} /><TokenBalance token={Token.ETH} amount={accountBalance.times(new BigNumber(10).pow(18))} digits={3} /></>);
             setDisabled(true);
@@ -41,7 +43,7 @@ export const TopUpController: React.StatelessComponent<Props> = ({ darknodeID })
 
         let traderBalance;
         if (!address) {
-            traderBalance = new BigNumber(-1);
+            traderBalance = new BigNumber(0);
         } else {
             traderBalance = new BigNumber((await web3.eth.getBalance(address)).toString())
                 .div(new BigNumber(10).exponentiatedBy(18));
