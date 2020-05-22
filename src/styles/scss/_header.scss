@@ -448,3 +448,19 @@
         display: none;
     }
 }
+
+.header--network {
+    padding: 4px;
+    margin: 0 20px;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #aaa;
+
+    display: flex;
+    margin-top: 2px;
+
+    .header--network--text {
+        margin-top: 1px;
+        margin-left: 4px;
+    }
+}

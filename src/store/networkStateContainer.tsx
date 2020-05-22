@@ -80,6 +80,7 @@ const useNetworkStateContainer = () => {
     const [currentDarknodeCount, setCurrentDarknodeCount] = useState(null as number | null);
     const [previousDarknodeCount, setPreviousDarknodeCount] = useState(null as number | null);
     const [nextDarknodeCount, setNextDarknodeCount] = useState(null as number | null);
+    const [payoutPercent, setPayoutPercent] = useState(null as number | null);
 
     ///////////////////////////////////////////////////////////
     // If these change, localstorage migration may be needed //
@@ -275,6 +276,7 @@ const useNetworkStateContainer = () => {
             pendingTotalInEth: newPendingTotalInEth,
             pendingRewardsInEth: newPendingRewardsInEth,
             currentShareCount: newCurrentShareCount,
+            payoutPercent: newPayoutPercent,
         } = await fetchCycleAndPendingRewardsPromise;
 
         if (newPendingRewardsInEth !== null) {
@@ -288,6 +290,9 @@ const useNetworkStateContainer = () => {
         }
         if (newPreviousCycle !== null && newPreviousCycle !== undefined) {
             setPreviousCycle(newPreviousCycle.toString());
+        }
+        if (newPayoutPercent !== null && newPayoutPercent !== undefined) {
+            setPayoutPercent(newPayoutPercent.toNumber());
         }
         setPendingRewards(newPendingRewards);
         // tslint:disable-next-line: strict-type-predicates
@@ -636,6 +641,7 @@ const useNetworkStateContainer = () => {
         currentDarknodeCount, setCurrentDarknodeCount,
         previousDarknodeCount, setPreviousDarknodeCount,
         nextDarknodeCount, setNextDarknodeCount,
+        payoutPercent,
         quoteCurrency, setQuoteCurrency,
         darknodeNames, setDarknodeNames,
         darknodeRegisteringList, setDarknodeRegisteringList,

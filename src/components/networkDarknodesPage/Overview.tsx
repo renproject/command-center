@@ -12,20 +12,21 @@ import {
 import { ReactComponent as IconIncome } from "../../styles/images/icon-income.svg";
 import { ReactComponent as RewardsIcon } from "../../styles/images/icon-rewards-white.svg";
 import { Change } from "../common/Change";
+import { ExternalLink } from "../common/ExternalLink";
 import { Stat, Stats } from "../common/Stat";
 import { TokenBalance } from "../common/TokenBalance";
 import { DarknodeMap } from "./darknodeMap/DarknodeMap";
 import { MapContainer } from "./mapContainer";
 
 export const Overview = () => {
-    const { currentCycle, previousCycle, pendingTotalInEth, quoteCurrency, currentShareCount, currentDarknodeCount, nextDarknodeCount } = NetworkStateContainer.useContainer();
+    const { currentCycle, previousCycle, pendingTotalInEth, quoteCurrency, currentShareCount, currentDarknodeCount, nextDarknodeCount, payoutPercent } = NetworkStateContainer.useContainer();
     const { timeUntilNextEpoch, timeSinceLastEpoch, epochInterval } = EpochContainer.useContainer();
     const { latestCLIVersion, latestCLIVersionDaysAgo } = GithubAPIContainer.useContainer();
 
     const container = MapContainer.useContainer();
     const current = pendingTotalInEth.get(currentCycle, undefined);
     const previous = pendingTotalInEth.get(previousCycle, undefined);
-    const currentSummed = current ? current.times(currentShareCount) : undefined;
+    const currentSummed = current ? current.times(currentShareCount).div(payoutPercent || 0).times(100) : undefined;
     const previousSummed = previous ? previous.times(currentShareCount) : undefined;
 
     return (
@@ -44,7 +45,7 @@ export const Overview = () => {
                             </>}
                         </Stat>
                         <Stat message="Change next epoch" big>{nextDarknodeCount === null || currentDarknodeCount === null ? <Loading alt={true} /> : <>
-                            <Change change={nextDarknodeCount - currentDarknodeCount ? nextDarknodeCount - currentDarknodeCount : "-"} />
+                            <Change change={nextDarknodeCount - currentDarknodeCount} />
                         </>}</Stat>
                         <Stat message="% Ren Registered" big>{currentDarknodeCount === null ? <Loading alt={true} /> : <>
                             {100 * currentDarknodeCount / 100000}%
@@ -74,7 +75,8 @@ export const Overview = () => {
                                     token={Token.ETH}
                                     convertTo={quoteCurrency}
                                     amount={currentSummed}
-                                /></> : <Loading alt />}</Stat>
+                                /></> : <Loading alt />}
+                        </Stat>
                     </Stats>
                 </Stat>
             </Stats>
@@ -124,7 +126,7 @@ export const Overview = () => {
                                 Version published <b>{latestCLIVersionDaysAgo}</b>
                             </p>
                         </div>
-                        <button className="darknode-cli--button button">Launch a Darknode</button>
+                        <ExternalLink href="https://github.com/renproject/darknode-cli"><button className="darknode-cli--button button">Download CLI</button></ExternalLink>
                     </Stat>
                 </Stats>
                 {/* <RewardChart /> */}

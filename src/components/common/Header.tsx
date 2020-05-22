@@ -8,6 +8,7 @@ import { Link, RouteComponentProps, withRouter } from "react-router-dom";
 
 import { NetworkStateContainer } from "../../store/networkStateContainer";
 import { UIContainer } from "../../store/uiStore";
+import { Web3Container } from "../../store/web3Store";
 // import { Web3Container } from "../../store/web3Store";
 import { ReactComponent as RenVMIcon } from "../../styles/images/Icon-HyperDrive.svg";
 import { ReactComponent as IntegratorsIcon } from "../../styles/images/icon-integrators.svg";
@@ -17,6 +18,7 @@ import { ReactComponent as OverviewIcon } from "../../styles/images/Icon-Overvie
 import { AccountDropdown } from "./AccountDropdown";
 import { ExternalLink, URLs } from "./ExternalLink";
 import { MoreDropdown } from "./MoreDropdown";
+import { StatusDot, StatusDotColor } from "./StatusDot";
 
 // import { Search } from "./Search";
 
@@ -66,7 +68,7 @@ interface Props extends RouteComponentProps {
 export const Header = withRouter(({ location }: Props) => {
 
     const { showMobileMenu } = UIContainer.useContainer();
-    // const { renNetwork, setRenNetwork } = Web3Container.useContainer();
+    const { renNetwork } = Web3Container.useContainer();
     const { quoteCurrency, setQuoteCurrency } = NetworkStateContainer.useContainer();
 
     const setCurrency = (currency: string): void => {
@@ -122,10 +124,12 @@ export const Header = withRouter(({ location }: Props) => {
             <Link className="no-underline" to="/">
                 <div className="header--logo" />
             </Link>
-            <ExternalLink href={URLs.welcomeToCommandCenter} className="new">
+            {renNetwork.name === "mainnet" ? <ExternalLink href={URLs.welcomeToCommandCenter} className="new">
                 <span className="new-new xl-or-larger">New</span>
                 <span className="new-blue">Welcome to the RenVM Command Center →</span>
-            </ExternalLink>
+            </ExternalLink> : <div className="new">
+                    <div className="header--network"><StatusDot color={StatusDotColor.Yellow} size={16} /> <span className="header--network--text">{renNetwork.name.toUpperCase()}</span></div>
+                </div>}
             <div className="header--menu">
                 <MenuItem path="/" title="Network" icon={<NetworkIcon />} activePath={location.pathname} />
                 <MenuItem path="/integrators" title="Integrators" icon={<IntegratorsIcon />} activePath={location.pathname} />

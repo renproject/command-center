@@ -8,7 +8,7 @@ import { Route, Router, Switch } from "react-router-dom";
 import { App } from "./components/App";
 import { Connect } from "./components/common/Connect";
 import { _catch_ } from "./components/common/ErrorBoundary";
-import { NODE_ENV } from "./lib/react/environmentVariables";
+import { DEFAULT_REN_NETWORK, NODE_ENV } from "./lib/react/environmentVariables";
 import { history } from "./lib/react/history";
 import { onLoad } from "./lib/react/onLoad";
 
@@ -25,7 +25,7 @@ if (NODE_ENV !== "development") {
     }
 }
 
-onLoad("Command Center");
+onLoad(`Command Center${DEFAULT_REN_NETWORK !== "mainnet" ? " (" + DEFAULT_REN_NETWORK + ")" : ""}`);
 
 ReactDOM.render(
     _catch_(

@@ -522,6 +522,8 @@ export const fetchCycleAndPendingRewards = async (
 
     const currentShareCount = await retryNTimes(async () => await darknodeRegistry.methods.numDarknodes().call(), 5)
         .then((bn: (BN | number | string | null)) => bn === null ? null : new BigNumber(bn.toString()));
+    const currentCyclePayoutPercent = await retryNTimes(async () => await darknodePayment.methods.currentCyclePayoutPercent().call(), 5)
+        .then((bn: (BN | number | string | null)) => bn === null ? new BigNumber(50) : new BigNumber(bn.toString()));
     const πCurrent = safePromiseAllMap(
         NewTokenDetails.map(async (_tokenDetails, token) => {
             if (currentShareCount === null || currentShareCount.isZero()) {
@@ -533,7 +535,7 @@ export const fetchCycleAndPendingRewards = async (
                 if (currentCycleRewardPool === null) {
                     return new BigNumber(0);
                 }
-                return new BigNumber((currentCycleRewardPool).toString()).div(currentShareCount).decimalPlaces(0);
+                return new BigNumber((currentCycleRewardPool).toString()).div(100).decimalPlaces(0).times(currentCyclePayoutPercent).div(currentShareCount).decimalPlaces(0);
             } catch (error) {
                 console.error(`Error fetching rewards for ${token}`, error);
                 return new BigNumber(0);
@@ -587,6 +589,7 @@ export const fetchCycleAndPendingRewards = async (
         pendingTotalInEth,
         pendingRewardsInEth,
         currentShareCount,
+        payoutPercent: currentCyclePayoutPercent,
     };
 };
 

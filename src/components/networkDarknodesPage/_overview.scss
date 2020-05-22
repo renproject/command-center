@@ -12,6 +12,12 @@
             flex-grow: 1;
         }
 
+        @media (min-width: $min-md) {
+            .map {
+                flex-grow: 4;
+            }
+        }
+
         >canvas {
             width: 200px !important;
             height: 200px !important;
@@ -32,12 +38,16 @@
             }
         }
 
+        .CircularProgressbar {
+            width: unset;
+        }
+
         .overview--chart--outer {
             background: linear-gradient(-180deg, #00457F -1080.14%, #002148 85.91%);
             border-radius: 4px;
             height: 400px;
 
-            min-width: 500px;
+            // min-width: 500px;
 
             flex: 1 1 0px;
 
