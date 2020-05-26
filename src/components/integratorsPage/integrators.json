@@ -13,7 +13,10 @@
             "url": "uniswap.exchange"
         },
         "0x7ddfa2e5435027f6e13ca8db2f32ebd5551158bb": {
-            "url": "Etherscan - BasicAdapter"
+            "name": "RenVM Demo Page",
+            "logo": "/integrators/ren.svg",
+            "urlHref": "https://renproject.github.io/gateway-staging/?network=testnet",
+            "url": "Gateway Staging"
         },
         "0x40f41fd6f5fb0dd1bf7e05e3a07a2ac56ac6fe11": {
             "name": "WBTC Cafe",
@@ -37,15 +40,18 @@
             "url": "Etherscan - CurveExchangeAdapter"
         },
         "0x795a46daab5389d01b45ff6c68029c248b22999a": {
-            "name": "Ren Gateway",
+            "name": "Ren Bridge",
             "logo": "/integrators/ren.svg",
-            "urlHref": "http://ren-gateway.web.app",
-            "url": "ren-gateway.web.app"
+            "urlHref": "https://bridge.renproject.io",
+            "url": "bridge.renproject.io"
         }
     },
     "devnet": {
         "0xfabdb1f53ef8b080332621cbc9f820a39e7a1b83": {
-            "url": "Etherscan - BasicAdapter"
+            "name": "RenVM Demo Page",
+            "logo": "/integrators/ren.svg",
+            "urlHref": "https://renproject.github.io/gateway-staging/?network=devnet",
+            "url": "Gateway Staging"
         }
     },
     "mainnet": {
@@ -54,6 +60,18 @@
             "logo": "/integrators/wbtc.svg",
             "urlHref": "https://wbtc.cafe",
             "url": "wbtc.cafe"
+        },
+        "0x2407750d9e57990559b6be9c17ea200cbdf17b93": {
+            "name": "Curve",
+            "logo": "/integrators/curve.svg",
+            "urlHref": "https://curve.fi",
+            "url": "curve.fi"
+        },
+        "0x32666b64e9fd0f44916e1378efb2cfa3b3b96e80": {
+            "name": "RenVM Demo Page",
+            "logo": "/integrators/ren.svg",
+            "urlHref": "https://renproject.github.io/gateway-staging/?network=mainnet",
+            "url": "Gateway Staging"
         }
     }
 }
