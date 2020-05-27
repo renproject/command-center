@@ -44,6 +44,12 @@
             "logo": "/integrators/ren.svg",
             "urlHref": "https://bridge.renproject.io",
             "url": "bridge.renproject.io"
+        },
+        "0x3b4353d80464af08cc0787ea9c45bbc50f8c5cce": {
+            "url": "Etherscan - BtcToAave"
+        },
+        "0xb005bb5e58878318d559561a49f0b67c616d11f0": {
+            "url": "Etherscan - BtcToAave"
         }
     },
     "devnet": {
@@ -58,20 +64,20 @@
         "0xc633576775ab431ff627746d2c4af6686c4c719c": {
             "name": "WBTC Cafe",
             "logo": "/integrators/wbtc.svg",
-            "urlHref": "https://wbtc.cafe",
-            "url": "wbtc.cafe"
+            "_urlHref": "https://wbtc.cafe",
+            "_url": "wbtc.cafe"
         },
         "0x2407750d9e57990559b6be9c17ea200cbdf17b93": {
             "name": "Curve",
             "logo": "/integrators/curve.svg",
-            "urlHref": "https://curve.fi",
-            "url": "curve.fi"
+            "_urlHref": "https://curve.fi",
+            "_url": "curve.fi"
         },
         "0x32666b64e9fd0f44916e1378efb2cfa3b3b96e80": {
             "name": "RenVM Demo Page",
             "logo": "/integrators/ren.svg",
-            "urlHref": "https://renproject.github.io/gateway-staging/?network=mainnet",
-            "url": "Gateway Staging"
+            "_urlHref": "https://renproject.github.io/gateway-staging/?network=mainnet",
+            "_url": "Gateway Staging"
         }
     }
 }
