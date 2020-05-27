@@ -35,7 +35,7 @@ export const Notifications: React.StatelessComponent<Props> = (props) => {
     ) {
         notification = {
             title: "Registration in progress!",
-            detail: `Your darknode will be registered within ${renNetwork.name === "chaosnet" ? "8 days" : "24 hours"}.`,
+            detail: `Your darknode will be registered within ${renNetwork.name === "chaosnet" || renNetwork.name === "mainnet" ? "8 days" : "24 hours"}.`,
             type: NotificationType.Information,
         };
     } else if (
@@ -45,7 +45,7 @@ export const Notifications: React.StatelessComponent<Props> = (props) => {
     ) {
         notification = {
             title: "Deregistration in progress.",
-            detail: `Your darknode will be deregistered within ${renNetwork.name === "chaosnet" ? "8 days" : "24 hours"}.`,
+            detail: `Your darknode will be deregistered within ${renNetwork.name === "chaosnet" || renNetwork.name === "mainnet" ? "8 days" : "24 hours"}.`,
             type: NotificationType.Information,
         };
     } else if (
@@ -55,7 +55,7 @@ export const Notifications: React.StatelessComponent<Props> = (props) => {
     ) {
         notification = {
             title: "Darknode deregistered.",
-            detail: `You will be able to withdraw your REN within ${renNetwork.name === "chaosnet" ? "8 days" : "24 hours"}.`,
+            detail: `You will be able to withdraw your REN within ${renNetwork.name === "chaosnet" || renNetwork.name === "mainnet" ? "8 days" : "24 hours"}.`,
             type: NotificationType.Information,
         };
     } else if (

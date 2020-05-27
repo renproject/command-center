@@ -61,7 +61,7 @@ export const FeesBlockRow: React.FC<RowProps> = ({ token, quoteCurrency, balance
                     {quoteCurrency.toUpperCase()}
                 </span>
             </td>
-            {isOperator ? <td>
+            {tab === Tab.Withdrawable && isOperator ? <td>
                 <FeesItem
                     disabled={tab !== Tab.Withdrawable}
                     token={token}

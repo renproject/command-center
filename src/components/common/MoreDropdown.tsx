@@ -48,7 +48,7 @@ export const MoreDropdown: React.StatelessComponent<Props> = ({ }) => {
                 <ul className="header--dropdown">
                     <Option href={URLs.renProjectDevelopers}>RenVM Developer Center</Option>
                     <Option href={URLs.renProject}>RenProject.io</Option>
-                    <Option href={URLs.gitbook}>Documentation</Option>
+                    <Option href={URLs.wiki}>RenVM Wiki</Option>
                     <Option href={URLs.gitbookDevelopers}>Developer Docs</Option>
                 </ul>
             </div> : <></>

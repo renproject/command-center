@@ -13,6 +13,7 @@ export const URLs = {
     gitbookDarknodes: "https://docs.renproject.io/darknodes/",
 
     welcomeToCommandCenter: "https://medium.com/renproject",
+    wiki: "https://github.com/renproject/ren/wiki",
 };
 
 
