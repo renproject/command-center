@@ -49,10 +49,12 @@ const ganache = (buildPath: string, networkID: number): RenNetworkDetails => {
         networkID,
         infura: "https://kovan.infura.io",
         etherscan: "https://kovan.etherscan.io",
-        renVM: {
-            mpkh: "0x0c0b293a30e5398533783f344c296f57d78e4cbc",
-            mintAuthority: "0x04084f1cACCB87Dcab9a29a084281294dA96Bf44",
-        },
+        isTestnet: true,
+        lightnode: "",
+        // renVM: {
+        //     mpkh: "0x0c0b293a30e5398533783f344c296f57d78e4cbc",
+        //     mintAuthority: "0x04084f1cACCB87Dcab9a29a084281294dA96Bf44",
+        // },
         addresses: {
             ren: {
                 Protocol: {

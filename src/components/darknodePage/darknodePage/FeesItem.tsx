@@ -9,7 +9,7 @@ import { AllTokenDetails, OldToken, Token } from "../../../lib/ethereum/tokens";
 import { NetworkStateContainer } from "../../../store/networkStateContainer";
 import { Web3Container } from "../../../store/web3Store";
 
-const minimumShiftedAmount = 0.00015;
+const minimumShiftedAmount = 0.0004;
 
 export const FeesItem = ({ darknodeID, token, amount, disabled }: Props) => {
     const { withdrawReward, waitForTX, updateDarknodeDetails } = NetworkStateContainer.useContainer();
@@ -29,6 +29,7 @@ export const FeesItem = ({ darknodeID, token, amount, disabled }: Props) => {
                 // tslint:disable-next-line: await-promise
                 await withdrawReward(darknodeID, token as Token);
             } catch (error) {
+                console.error(error);
                 setLoading(false);
                 return;
             }

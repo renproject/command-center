@@ -371,6 +371,7 @@ const useNetworkStateContainer = () => {
         darknodeID: string,
         token: Token | OldToken,
     ) => new Promise(async (resolve, reject) => {
+
         const tokenDetails = AllTokenDetails.get(token);
         if (tokenDetails === undefined) {
             throw new Error("Unknown token");
@@ -425,10 +426,10 @@ const useNetworkStateContainer = () => {
         }
     });
 
-    const withdrawReward = (
+    const withdrawReward = async (
         darknodeID: string,
         token: Token,
-    ) => async () => {
+    ) => {
         const tokenDetails = AllTokenDetails.get(token);
         if (tokenDetails === undefined) {
             throw new Error("Unknown token");
@@ -668,7 +669,6 @@ const useNetworkStateContainer = () => {
         updateCycleAndPendingRewards,
         updateDarknodeDetails,
         updateOperatorDarknodes,
-        showWithdrawToken,
         withdrawReward,
         showRegisterPopup,
         showDeregisterPopup,

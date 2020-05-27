@@ -312,7 +312,7 @@ const burn = async (
 ) => {
     const contractDetails = token === Token.BTC ? renNetwork.addresses.gateways.BTCGateway :
         token === Token.ZEC ? renNetwork.addresses.gateways.ZECGateway :
-            token === Token.BCH ? renNetwork.addresses.gateways.ZECGateway : undefined;
+            token === Token.BCH ? renNetwork.addresses.gateways.BCHGateway : undefined;
     if (!contractDetails) {
         throw new Error(`Unable to shift out token ${token}`);
     }
@@ -320,29 +320,29 @@ const burn = async (
 
     const sdk = new RenSDK(renNetwork.name);
 
-    const ethereumTxHash = await waitForTX(contract.methods.shiftOut(
+    await waitForTX(contract.methods.burn(
         (sdk.utils[token].addressToHex || RenSDK.Tokens[token].addressToHex)(recipient), // _to
         amount.decimalPlaces(0).toFixed(), // _amount in Satoshis
     ).send({ from: address })
     );
 
-    const shiftOut = await sdk.burnAndRelease({
-        // Send BTC from the Ethereum blockchain to the Bitcoin blockchain.
-        // This is the reverse of shitIn.
-        sendToken: token === Token.BCH ? RenSDK.Tokens.BCH.Eth2Bch :
-            Token.ZEC ? RenSDK.Tokens.ZEC.Eth2Zec :
-                RenSDK.Tokens.BTC.Eth2Btc,
+    // const shiftOut = await sdk.burnAndRelease({
+    //     // Send BTC from the Ethereum blockchain to the Bitcoin blockchain.
+    //     // This is the reverse of shitIn.
+    //     sendToken: token === Token.BCH ? RenSDK.Tokens.BCH.Eth2Bch :
+    //         Token.ZEC ? RenSDK.Tokens.ZEC.Eth2Zec :
+    //             RenSDK.Tokens.BTC.Eth2Btc,
 
-        // The web3 provider to talk to Ethereum
-        web3Provider: web3.currentProvider,
+    //     // The web3 provider to talk to Ethereum
+    //     web3Provider: web3.currentProvider,
 
-        // The transaction hash of our contract call
-        ethereumTxHash,
-    }).readFromEthereum();
+    //     // The transaction hash of our contract call
+    //     ethereumTxHash,
+    // }).readFromEthereum();
 
-    const promiEvent = shiftOut.submit();
-    promiEvent.on("status", onStatus);
-    await promiEvent;
+    // const promiEvent = shiftOut.submit();
+    // promiEvent.on("status", onStatus);
+    // await promiEvent;
 };
 
 const TransferEventABI = [

@@ -1,15 +1,16 @@
 import * as React from "react";
 
-import { faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { TxStatus } from "@renproject/interfaces";
-import { Loading, TokenIcon } from "@renproject/react-components";
+import { Loading } from "@renproject/react-components";
 import { List } from "immutable";
 
 import { AllTokenDetails, Token } from "../../../lib/ethereum/tokens";
 import { classNames } from "../../../lib/react/className";
 import { NetworkStateContainer } from "../../../store/networkStateContainer";
 import { Web3Container } from "../../../store/web3Store";
+import { ReactComponent as CheckImage } from "../../../styles/images/check.svg";
 
 enum Stage {
     Pending,
@@ -18,26 +19,30 @@ enum Stage {
     Error,
 }
 
-const renderTxStatus = (status: TxStatus | null) => {
-    switch (status) {
-        case null:
-            return "Submitting";
-        case TxStatus.TxStatusNil:
-            return "Submitting";
-        case TxStatus.TxStatusConfirming:
-            return "Waiting for confirmations";
-        case TxStatus.TxStatusPending:
-            return "Executing";
-        case TxStatus.TxStatusExecuting:
-            return "Executing";
-        case TxStatus.TxStatusDone:
-            return "Done";
-        case TxStatus.TxStatusReverted:
-            return "Reverted";
-    }
+// const renderTxStatus = (status: TxStatus | null) => {
+//     switch (status) {
+//         case null:
+//             return "Submitting";
+//         case TxStatus.TxStatusNil:
+//             return "Submitting";
+//         case TxStatus.TxStatusConfirming:
+//             return "Waiting for confirmations";
+//         case TxStatus.TxStatusPending:
+//             return "Executing";
+//         case TxStatus.TxStatusExecuting:
+//             return "Executing";
+//         case TxStatus.TxStatusDone:
+//             return "Done";
+//         case TxStatus.TxStatusReverted:
+//             return "Reverted";
+//     }
+// };
+
+export const ColoredBanner: React.FunctionComponent<{ token: Token }> = ({ token }) => {
+    return <div className={`colored-banner colored-banner--${token.toLowerCase()}`} />;
 };
 
-export const WithdrawPopup: React.StatelessComponent<Props> = ({ token, status, withdraw, onDone, onCancel }) => {
+export const WithdrawPopup: React.StatelessComponent<Props> = ({ token, withdraw, onDone, onCancel }) => {
     const { renNetwork } = Web3Container.useContainer();
     const { withdrawAddresses, addToWithdrawAddresses, removeFromWithdrawAddresses } = NetworkStateContainer.useContainer();
 
@@ -46,6 +51,8 @@ export const WithdrawPopup: React.StatelessComponent<Props> = ({ token, status, 
     const [selectedAddress, setSelectedAddress] = React.useState(null as string | null);
     const [newAddress, setNewAddress] = React.useState(null as string | null);
     const [newAddressValid, setNewAddressValid] = React.useState(false);
+
+    const tokenDetails = AllTokenDetails.get(token);
 
     const addNewAddress = (e: React.FormEvent<HTMLFormElement>): void => {
         e.preventDefault();
@@ -61,14 +68,18 @@ export const WithdrawPopup: React.StatelessComponent<Props> = ({ token, status, 
         const element = (event.currentTarget as HTMLButtonElement);
         if (selectedAddress === element.value) {
             setSelectedAddress(null);
+        } else {
+            removeFromWithdrawAddresses(token, element.value);
         }
-        removeFromWithdrawAddresses(token, element.value);
     };
 
-    const handleSelectAddress = (event: React.FormEvent<HTMLInputElement | HTMLButtonElement>): string => {
+    const handleSelectAddress = (event: React.FormEvent<HTMLInputElement | HTMLButtonElement>) => {
         const element = (event.target as (HTMLInputElement | HTMLButtonElement));
-        setSelectedAddress(element.value);
-        return element.value;
+        if (selectedAddress === element.value) {
+            setSelectedAddress(null);
+        } else {
+            setSelectedAddress(element.value);
+        }
     };
 
     const handleAddressInput = (event: React.FormEvent<HTMLInputElement | HTMLButtonElement>) => {
@@ -79,7 +90,6 @@ export const WithdrawPopup: React.StatelessComponent<Props> = ({ token, status, 
         setSelectedAddress(null);
         setNewAddress(address);
 
-        const tokenDetails = AllTokenDetails.get(token);
         if (!tokenDetails) {
             return;
         }
@@ -87,16 +97,24 @@ export const WithdrawPopup: React.StatelessComponent<Props> = ({ token, status, 
     };
 
     const callWithdraw = async () => {
-        if (!selectedAddress) {
-            setError("No address selected. ");
+        if (!selectedAddress && (!newAddressValid || !newAddress)) {
+            setError("No address selected.");
             return;
         }
 
         setStage(Stage.Withdrawing);
         setError(null);
 
+        const address = selectedAddress || newAddress || "";
+
         try {
-            await withdraw(selectedAddress);
+            if (newAddress) {
+                addToWithdrawAddresses(token, address);
+                setSelectedAddress(address);
+                setNewAddress(null);
+                setNewAddressValid(false);
+            }
+            await withdraw(address);
             setStage(Stage.Done);
         } catch (error) {
             setStage(Stage.Error);
@@ -110,11 +128,11 @@ export const WithdrawPopup: React.StatelessComponent<Props> = ({ token, status, 
             case Stage.Pending:
                 return <div className="popup--buttons">
                     <button className="sign--button button--white" onClick={onCancel}>Cancel</button>
-                    <button className="sign--button button" disabled={selectedAddress === null} onClick={callWithdraw}>Submit</button>
+                    <button className="sign--button button" disabled={selectedAddress === null && !newAddressValid} onClick={callWithdraw}>Submit</button>
                 </div>;
             case Stage.Withdrawing:
                 return <div className="popup--buttons">
-                    <Loading alt={true} />
+                    {/* <Loading alt={true} /> */}
                 </div>;
             case Stage.Done:
                 return <div className="popup--buttons">
@@ -122,56 +140,73 @@ export const WithdrawPopup: React.StatelessComponent<Props> = ({ token, status, 
                 </div>;
             case Stage.Error:
                 return <>
-                    {error ? <p className="red popup--error">{error}</p> : null}
                     <div className="popup--buttons">
                         <button className="sign--button button--white" onClick={onCancel}>Cancel</button>
-                        <button className="sign--button button--white" disabled={selectedAddress === null} onClick={callWithdraw}>Retry</button>
+                        <button className="sign--button button--white" disabled={selectedAddress === null && !newAddressValid} onClick={callWithdraw}>Retry</button>
                     </div>
                 </>;
         }
     };
 
     return <div className="popup withdraw">
-        <h2>Select <TokenIcon token={token} /> {token} withdraw address</h2>
-        {stage === Stage.Pending || stage === Stage.Error ?
-            <>
-                <div className="withdraw--addresses">
-                    {withdrawAddresses.get(token, List<string>()).map((withdrawAddress: string) => {
-                        return <div key={withdrawAddress} className={classNames("withdraw--address--outer", selectedAddress === withdrawAddress ? `withdraw--selected` : "")}>
-                            <button
-                                onClick={handleSelectAddress}
-                                value={withdrawAddress}
-                                className={`monospace withdraw--address`}
-                            >
-                                {withdrawAddress}
-                            </button>
-                            <button value={withdrawAddress} onClick={removeAddress} className="withdraw--address--remove">
-                                <FontAwesomeIcon icon={faTimes} pull="right" />
-                            </button>
-                        </div>;
-                    }).toArray()}
-                </div>
-                <form onSubmit={addNewAddress}>
-                    <div className={`new-address--outer ${newAddressValid ? "input--valid" : ""}`}>
-                        <input
-                            type="text"
-                            placeholder="New address"
-                            value={newAddress || ""}
-                            className="new-address"
-                            onChange={handleAddressInput}
-                        />
-                        <button type="submit" title={newAddressValid ? "Add address" : `Invalid ${token} address`} disabled={!newAddressValid} className={["new-address--plus", newAddressValid ? "new-address--plus--green" : "new-address--plus--red"].join(" ")}>
-                            <FontAwesomeIcon icon={faPlus} pull="right" />
-                        </button>
-                    </div>
-                </form>
-            </> : <>
-                {status === TxStatus.TxStatusConfirming || status === TxStatus.TxStatusExecuting || status === TxStatus.TxStatusPending || status === TxStatus.TxStatusDone ? <>
-                    The withdrawal has been submitted to RenVM. Your funds will be available shortly.<br />
-                    Status: {renderTxStatus(status)}
-                </> : <></>}
-            </>}
-        {renderButtons()}
+        <ColoredBanner token={token} />
+        <div className="popup--body">
+            <div className="popup--top">
+                {stage === Stage.Error ? <>
+                    {error ? <p className="red popup--error">{error}</p> : null}
+                </> : <>
+                        <h3>Withdraw {token} tokens</h3>
+                        <h2>{stage === Stage.Withdrawing ? <>Withdrawing {token}</> :
+                            stage === Stage.Done ? <>{token} withdrawn</> :
+                                <>Enter your {tokenDetails ? tokenDetails.name : token} withdraw address</>}
+                        </h2>
+                    </>}
+                {stage === Stage.Pending || stage === Stage.Error ?
+                    <>
+                        <div className={`withdraw--addresses ${withdrawAddresses.size === 0 ? "withdraw--addresses--empty" : ""}`}>
+                            {withdrawAddresses.get(token, List<string>()).map((withdrawAddress: string) => {
+                                return <div key={withdrawAddress} className={classNames("withdraw--address--outer", selectedAddress === withdrawAddress ? `withdraw--selected` : "")}>
+                                    <button
+                                        onClick={handleSelectAddress}
+                                        value={withdrawAddress}
+                                        className={`monospace withdraw--address`}
+                                    >
+                                        {withdrawAddress}
+                                    </button>
+                                    <button value={withdrawAddress} onClick={removeAddress} className="withdraw--address--remove">
+                                        <FontAwesomeIcon icon={faTimes} pull="right" />
+                                    </button>
+                                </div>;
+                            }).toArray()}
+                        </div>
+                    </> : null}
+                {stage === Stage.Withdrawing ? <div className="withdraw--loading">
+                    <p>Waiting for two Ethereum transactions</p>
+                    <Loading alt={true} />
+                </div> : null}
+                {stage === Stage.Done ? <div className="withdraw--loading">
+                    <p>{token} withdrawn. It will be deposited to your address after 30 Ethereum confirmations.</p>
+                </div> : null}
+            </div>
+            <div className="popup--bottom">
+                {stage === Stage.Pending || stage === Stage.Error ?
+                    <form onSubmit={addNewAddress}>
+                        <div className={`new-address--outer ${newAddressValid ? "input--valid" : ""}`}>
+                            <input
+                                type="text"
+                                placeholder="New address"
+                                value={newAddress || ""}
+                                className={`new-address ${selectedAddress ? "new-address--faded" : ""}`}
+                                onChange={handleAddressInput}
+                            />
+                            <label className="input-label"><span>{tokenDetails ? tokenDetails.name : token} address</span></label>
+                            {newAddressValid ? <CheckImage className="new-address--check" /> : null}
+                        </div>
+                        <p className="new-address--description">This address is where you will receive your rewards.</p>
+                    </form> : null}
+                {renderButtons()}
+            </div>
+        </div>
     </div>;
 };
 
