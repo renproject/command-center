@@ -74,10 +74,10 @@
             "_url": "curve.fi"
         },
         "0x32666b64e9fd0f44916e1378efb2cfa3b3b96e80": {
-            "name": "RenVM Demo Page",
+            "name": "RenBridge",
             "logo": "/integrators/ren.svg",
-            "_urlHref": "https://renproject.github.io/gateway-staging/?network=mainnet",
-            "_url": "Gateway Staging"
+            "_urlHref": "https://bridge.renproject.io",
+            "_url": "bridge.renproject.io"
         }
     }
 }
