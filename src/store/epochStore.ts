@@ -44,7 +44,7 @@ const useEpochContainer = () => {
                     if (!newEpoch) {
                         throw new LocalError("currentEpoch returned null");
                     }
-                    const newEpochInterval = new BigNumber(await retryNTimes(async () => await darknodeRegistry.methods.minimumEpochInterval().call(), 5)).toNumber();
+                    const newEpochInterval = 60 * 60 * 24; // new BigNumber(await retryNTimes(async () => await darknodeRegistry.methods.minimumEpochInterval().call(), 5)).toNumber();
                     setEpoch(newEpoch);
                     setEpochInterval(newEpochInterval);
 

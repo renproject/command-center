@@ -17,7 +17,7 @@ interface DarknodeLocation {
     point: Point;
 }
 
-const sampleDarknodes: DarknodeLocation[] = [];
+// const sampleDarknodes: DarknodeLocation[] = [];
 
 interface QueryResponse {
     jsonrpc: "2.0";
@@ -161,6 +161,11 @@ const useMapContainer = () => {
         const { ip, darknodeID } = parseMultiAddress(multiAddress);
         try {
             const { longitude, latitude } = await getLocation(ip);
+
+            // tslint:disable-next-line: strict-type-predicates
+            if (longitude === null || latitude === null) {
+                return;
+            }
 
             // Shift by random amount to avoid markers covering one another.
             const random = (seedS: string) => {

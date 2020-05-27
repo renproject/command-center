@@ -4,6 +4,7 @@ import * as React from "react";
 
 import { faServer } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { naturalTime } from "@renproject/react-components";
 import { buildStyles, CircularProgressbar } from "react-circular-progressbar";
 
 import { EpochContainer } from "../../../../store/epochStore";
@@ -12,7 +13,13 @@ import { Block, BlockBody, BlockTitle } from "./Block";
 
 export const EpochBlock = ({ darknodeDetails }: Props): JSX.Element => {
 
-    const { timeUntilNextEpoch, timeSinceLastEpoch, epochInterval } = EpochContainer.useContainer();
+    // const { timeUntilNextEpoch, timeSinceLastEpoch, epochInterval } = EpochContainer.useContainer();
+    const { timeSinceLastEpoch } = EpochContainer.useContainer();
+
+    const [currentTime, setCurrentTime] = React.useState<number | null>(null);
+    React.useEffect(() => {
+        setCurrentTime(new Date().getTime() / 1000);
+    }, [timeSinceLastEpoch]);
 
     return (
 
@@ -29,8 +36,20 @@ export const EpochBlock = ({ darknodeDetails }: Props): JSX.Element => {
                     <div className="resources--chart--and--label">
                         <div className="epoch-chart">
                             <CircularProgressbar
-                                value={Math.min((timeSinceLastEpoch || 0) / (epochInterval || 1), 100)}
-                                text={`${Math.floor((timeSinceLastEpoch || 0) / 60 / 60 / 24)} days`}
+                                // value={Math.min((timeSinceLastEpoch || 0) / (epochInterval || 1) * 100, 100)}
+                                // text={currentTime !== null && timeUntilNextEpoch !== null ? naturalTime(currentTime + timeUntilNextEpoch, {
+                                //     suffix: "",
+                                //     message: "",
+                                //     countDown: true,
+                                //     showingSeconds: false
+                                // }) : ""}
+                                value={100}
+                                text={currentTime !== null && timeSinceLastEpoch !== null ? naturalTime(currentTime - timeSinceLastEpoch, {
+                                    suffix: "",
+                                    message: "",
+                                    countDown: false,
+                                    showingSeconds: false
+                                }) : ""}
                                 styles={buildStyles({
                                     // Text size
                                     textSize: "16px",
@@ -51,8 +70,19 @@ export const EpochBlock = ({ darknodeDetails }: Props): JSX.Element => {
                         </div>
                     </div>
                     <div className="epoch-right">
-                        <p>{Math.floor((timeUntilNextEpoch || 0) / 60 / 60 / 24)} days until next epoch</p>
-                        <p>Ends 00:00 UTC 23rd April, 2020</p>
+                        <p>Epochs are currently called manually</p>
+                        {/* <p>{currentTime !== null && timeUntilNextEpoch !== null ? naturalTime(currentTime + timeUntilNextEpoch, {
+                            suffix: "until next epoch",
+                            message: "Epochs are currently called manually",
+                            countDown: true,
+                            showingSeconds: false
+                        }) : ""}</p> */}
+                        <p>{currentTime !== null && timeSinceLastEpoch !== null ? naturalTime(currentTime - timeSinceLastEpoch, {
+                            suffix: "since last epoch",
+                            message: "Epoch called just now",
+                            countDown: false,
+                            showingSeconds: false
+                        }) : ""}</p>
                     </div>
                 </div>
             </BlockBody> : null}
