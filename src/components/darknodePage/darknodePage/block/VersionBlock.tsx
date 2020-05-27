@@ -3,6 +3,7 @@ import * as React from "react";
 import { faBolt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+import { RegistrationStatus } from "../../../../lib/ethereum/contractReads";
 import { classNames } from "../../../../lib/react/className";
 import { GithubAPIContainer } from "../../../../store/githubApiStore";
 import { DarknodesState } from "../../../../store/networkStateContainer";
@@ -29,7 +30,9 @@ export const VersionBlock = ({ darknodeDetails }: Props): JSX.Element => {
 
             <div className={classNames("version-block--status", darknodeDetails && darknodeDetails.nodeStatistics ? "version-block--status--operational" : "")}>
                 <StatusDot color={darknodeDetails && darknodeDetails.nodeStatistics ? StatusDotColor.Green : StatusDotColor.Yellow} size={24} />
-                {darknodeDetails ? darknodeDetails.nodeStatistics ? "Operational" : "Unable to connect" : "Connecting..."}
+                {darknodeDetails ? (darknodeDetails.nodeStatistics ?
+                    "Operational" :
+                    darknodeDetails.registrationStatus === RegistrationStatus.Registered ? "Unable to connect" : "Not registered") : "Connecting..."}
             </div>
 
             <div className="block--advanced--bottom">
