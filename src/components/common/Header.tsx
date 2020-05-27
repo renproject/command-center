@@ -126,7 +126,7 @@ export const Header = withRouter(({ location }: Props) => {
             </Link>
             {renNetwork.name === "mainnet" ? <ExternalLink href={URLs.welcomeToCommandCenter} className="new">
                 <span className="new-new xl-or-larger">New</span>
-                <span className="new-blue">Welcome to the RenVM Command Center →</span>
+                <span className="new-blue">Mainnet is live. →</span>
             </ExternalLink> : <div className="new">
                     <div className="header--network"><StatusDot color={StatusDotColor.Yellow} size={16} /> <span className="header--network--text">{renNetwork.name.toUpperCase()}</span></div>
                 </div>}
