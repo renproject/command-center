@@ -72,7 +72,7 @@ const MultiStepPopupClass: React.StatelessComponent<Props> = ({ steps,
                 await steps[currentStep].call();
             } catch (error) {
                 const isRejected = (error.message || "").match(ErrorCanceledByUser);
-                if (!isRejected) {
+                if (error && !isRejected) {
                     catchInteractionException(error, {
                         description: "Error in MultiStepPopup > step.call",
                         shownToUser: "As message box in MultiStepPopup",

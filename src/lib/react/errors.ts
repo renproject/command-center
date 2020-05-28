@@ -5,7 +5,7 @@ import * as Sentry from "@sentry/browser";
 import { RenNetwork } from "@renproject/contracts";
 import { naturalTime } from "@renproject/react-components";
 
-import { DEFAULT_REN_NETWORK, NODE_ENV } from "./environmentVariables";
+import { DEFAULT_REN_NETWORK, NODE_ENV, SENTRY_DSN } from "./environmentVariables";
 
 interface Details {
     description: string;
@@ -89,63 +89,67 @@ const rawError = (errorObject: Error) => {
 };
 
 const catchException = <X extends Details>(error: any, details: X) => {
-    if (error._noCapture_) {
+    console.error(error);
+
+    if (error._noCapture_ || !SENTRY_DSN) {
         // tslint:disable-next-line: no-console
-        console.error(error);
         return;
     }
 
-    Sentry.withScope(scope => {
-        // How long ago the page was loaded at
-        scope.setExtra("pageLoadedAt", pageLoadedAt());
+    try {
+        Sentry.withScope(scope => {
+            // How long ago the page was loaded at
+            scope.setExtra("pageLoadedAt", pageLoadedAt());
 
-        // Category
-        if (details.category) {
-            scope.setTag("category", details.category);
-        }
+            // Category
+            if (details.category) {
+                scope.setTag("category", details.category);
+            }
 
-        // Level
-        if (details.level) {
-            scope.setLevel(details.level);
-        }
+            // Level
+            if (details.level) {
+                scope.setLevel(details.level);
+            }
 
-        // Extra information
-        Object.keys(details)
-            .forEach(key => {
-                scope.setExtra(key, details[key]);
-            });
+            // Extra information
+            Object.keys(details)
+                .forEach(key => {
+                    scope.setExtra(key, details[key]);
+                });
 
-        if (error && error.response) {
-            scope.setExtra("responseData", error.response.data);
-            scope.setExtra("responseStatus", error.response.status);
-        }
+            if (error && error.response) {
+                scope.setExtra("responseData", error.response.data);
+                scope.setExtra("responseStatus", error.response.status);
+            }
 
-        scope.setExtra("caught", true);
-        scope.setExtra("zRawError", rawError(error));
+            scope.setExtra("caught", true);
+            scope.setExtra("zRawError", rawError(error));
 
-        // tslint:disable-next-line: no-console
-        console.error(error);
+            // tslint:disable-next-line: no-console
 
-        if (DEFAULT_REN_NETWORK !== RenNetwork.Mainnet) {
-            if (typeof error === "string") {
-                // tslint:disable-next-line: no-parameter-reassignment
-                error = `[${DEFAULT_REN_NETWORK}-${NODE_ENV}] ${error}`;
-            } else {
-                try {
-                    error.message = `[${DEFAULT_REN_NETWORK}-${NODE_ENV}] ${error.message || error}`;
-                } catch {
-                    // Ignore: Unable to overwrite message (may be read-only)
+            if (DEFAULT_REN_NETWORK !== RenNetwork.Mainnet) {
+                if (typeof error === "string") {
+                    // tslint:disable-next-line: no-parameter-reassignment
+                    error = `[${DEFAULT_REN_NETWORK}-${NODE_ENV}] ${error}`;
+                } else {
+                    try {
+                        error.message = `[${DEFAULT_REN_NETWORK}-${NODE_ENV}] ${error.message || error}`;
+                    } catch {
+                        // Ignore: Unable to overwrite message (may be read-only)
+                    }
                 }
             }
-        }
 
-        // Check if we should ignore the error
-        if (details.ignoreNetwork && isNetworkError(error)) {
-            return;
-        }
+            // Check if we should ignore the error
+            if (details.ignoreNetwork && isNetworkError(error)) {
+                return;
+            }
 
-        Sentry.captureException(error);
-    });
+            Sentry.captureException(error);
+        });
+    } catch (sentryError) {
+        // Ignore sentry error.
+    }
 };
 
 export const ignoreException = <X extends Details & Described>(error: any, details?: X | string) => {
