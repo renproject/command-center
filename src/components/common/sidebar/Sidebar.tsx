@@ -1,52 +1,54 @@
 import * as React from "react";
 
-import {
-    faExternalLinkAlt, faGlobeAmericas, faPlus, faThLarge, faTimes,
-} from "@fortawesome/free-solid-svg-icons";
+import { faExternalLinkAlt, faPlus, faThLarge, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
-import { bindActionCreators } from "redux";
 
 import { darknodeIDHexToBase58 } from "../../../lib/darknode/darknodeID";
 import { RegistrationStatus } from "../../../lib/ethereum/contractReads";
-import { promptLogin } from "../../../store/account/accountActions";
-import { ApplicationState } from "../../../store/applicationState";
-import { AppDispatch } from "../../../store/rootReducer";
-import { hideMobileMenu } from "../../../store/ui/uiActions";
+import { classNames } from "../../../lib/react/className";
+import { NetworkStateContainer } from "../../../store/networkStateContainer";
+import { UIContainer } from "../../../store/uiStore";
+import { Web3Container } from "../../../store/web3Store";
 import { ReactComponent as RenVMIcon } from "../../../styles/images/Icon-HyperDrive.svg";
+import { ReactComponent as IntegratorsIcon } from "../../../styles/images/icon-integrators.svg";
+import { ReactComponent as NetworkIcon } from "../../../styles/images/icon-network.svg";
+import { ReactComponent as OverviewIcon } from "../../../styles/images/Icon-Overview.svg";
 import { ReactComponent as Search } from "../../../styles/images/search.svg";
+import { ExternalLink, URLs } from "../ExternalLink";
 import { SidebarIcon } from "./SidebarIcon";
 
-const mapStateToProps = (state: ApplicationState) => ({
-    store: {
-        address: state.account.address,
-        darknodeList: state.account.address ? state.network.darknodeList.get(state.account.address, null) : null,
-        darknodeDetails: state.network.darknodeDetails,
-        darknodeNames: state.network.darknodeNames,
-        quoteCurrency: state.network.quoteCurrency,
-        mobileMenuActive: state.ui.mobileMenuActive,
-        web3BrowserName: state.account.web3BrowserName,
-    },
-});
+const MenuItem: React.FC<{ title?: string, path?: string, icon: JSX.Element, activePath?: string, onClick: () => void, className?: string }> = ({ title, path, icon, activePath, onClick, className }) => {
+    const inner = <div role="link" onClick={onClick} className={classNames("sidebar--row sidebar--nav", activePath && activePath === path ? "sidebar--active" : "", className)}>
+        <div className="sidebar--nav--icon sidebar--icon">
+            {icon}
+        </div>
+        {title ? <div className="sidebar--text">{title}</div> : <></>}
+    </div>;
+    return !path ? inner : <Link className={classNames("no-underline")} to={path} onClick={onClick}>
+        {inner}
+    </Link>;
+};
 
-const mapDispatchToProps = (dispatch: AppDispatch) => ({
-    actions: bindActionCreators({
-        hideMobileMenu,
-        promptLogin,
-    }, dispatch),
-});
-
-interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps>, RouteComponentProps {
+interface Props extends RouteComponentProps {
     selectedDarknode: string | undefined;
 }
 /**
  * Sidebar displays stats about an operator's darknodes collectively,
  * as well as a breakdown of each darknode
  */
-export const Sidebar = connect(mapStateToProps, mapDispatchToProps)(withRouter(
-    ({ selectedDarknode, store, actions, location }: Props) => {
-        const { address, darknodeList, darknodeDetails, darknodeNames, quoteCurrency, mobileMenuActive, web3BrowserName } = store;
+export const Sidebar = withRouter(
+    ({ selectedDarknode, location }: Props) => {
+
+        const { darknodeDetails, darknodeNames, quoteCurrency } = NetworkStateContainer.useContainer();
+        const { address, web3BrowserName, promptLogin } = Web3Container.useContainer();
+        const { mobileMenuActive, hideMobileMenu } = UIContainer.useContainer();
+
+        const { darknodeList, hiddenDarknodes } = NetworkStateContainer.useContainer();
+        const accountDarknodeList = React.useMemo(() => address ? darknodeList.get(address, null) : null, [darknodeList]);
+        const accountHiddenDarknodes = React.useMemo(() => address ? hiddenDarknodes.get(address, null) : null, [hiddenDarknodes]);
+
+        const shownDarknodeList = !accountDarknodeList ? accountDarknodeList : accountDarknodeList.filter(d => !accountHiddenDarknodes || !accountHiddenDarknodes.contains(d));
 
         const [searchFilter, setSearchFilter] = React.useState("");
 
@@ -56,54 +58,40 @@ export const Sidebar = connect(mapStateToProps, mapDispatchToProps)(withRouter(
         };
 
         const handleLogin = async () => {
-            await actions.promptLogin({ manual: true, redirect: false, showPopup: true, immediatePopup: true });
+            await promptLogin({ manual: true, redirect: false, showPopup: true, immediatePopup: true });
         };
+
+        React.useEffect((): void => {
+            if (mobileMenuActive) {
+                document.documentElement.classList.add("noscroll");
+            } else {
+                document.documentElement.classList.remove("noscroll");
+            }
+        }, [mobileMenuActive]);
 
         return <>
             <nav className={["sidebar", address ? "sidebar--logged-in" : "", mobileMenuActive ? "sidebar--mobile--active" : ""].join(" ")}>
 
                 <div className="sidebar--top">
 
-                    <div className="sidebar--row mobile-only" role="menuitem" onClick={actions.hideMobileMenu}>
-                        <div className="sidebar--nav--icon sidebar--icon">
-                            <FontAwesomeIcon icon={faTimes} className="darknode-card--bottom--icon" />
-                        </div>
-                        <div className="sidebar--text">Close</div>
+                    <div className="medium-only">
+                        <MenuItem icon={<FontAwesomeIcon icon={faTimes} />} onClick={hideMobileMenu} className={"sidebar--close"} />
+                        <MenuItem path="/" title="Network" icon={<NetworkIcon />} activePath={location.pathname} onClick={hideMobileMenu} />
+                        <MenuItem path="/integrators" title="Integrators" icon={<IntegratorsIcon />} activePath={location.pathname} onClick={hideMobileMenu} />
+                        <MenuItem path="/darknode-stats" title="Darknodes" icon={<OverviewIcon />} activePath={location.pathname} onClick={hideMobileMenu} />
+                        <MenuItem path="/renvm" title="RenVM" icon={<RenVMIcon />} activePath={location.pathname} onClick={hideMobileMenu} />
+                        {/* <MenuItem icon={<FontAwesomeIcon icon={faTimes} />} onClick={hideMobileMenu} className={"sidebar--close"} />
+                        <MenuItem path="/" title="Darknodes" icon={<FontAwesomeIcon icon={faGlobeAmericas} />} onClick={hideMobileMenu} activePath={location.pathname} />
+                        <MenuItem path="/renvm" title="RenVM" icon={<RenVMIcon />} onClick={hideMobileMenu} activePath={location.pathname} /> */}
                     </div>
-
-                    <Link className="mobile-only no-underline" to="/" onClick={actions.hideMobileMenu}>
-                        <div className={["sidebar--row", location.pathname === "/" ? "sidebar--active" : ""].join(" ")}>
-                            <div className="sidebar--nav--icon sidebar--icon">
-                                <FontAwesomeIcon icon={faGlobeAmericas} className="darknode-card--bottom--icon" />
-                            </div>
-                            <div className="sidebar--text">Darknodes</div>
-                        </div>
-                    </Link>
-
-                    <Link className="mobile-only no-underline" to="/renvm" onClick={actions.hideMobileMenu}>
-                        <div className={["sidebar--row", location.pathname.match("/(renvm|hyperdrive)") ? "sidebar--active" : ""].join(" ")}>
-                            <div className="sidebar--nav--icon sidebar--icon">
-                                <RenVMIcon className="darknode-card--bottom--icon" />
-                            </div>
-                            <div className="sidebar--text">RenVM</div>
-                        </div>
-                    </Link>
-
-                    <Link className="no-underline" to="/all" onClick={actions.hideMobileMenu}>
-                        <div className={["sidebar--row", location.pathname === "/all" ? "sidebar--active" : ""].join(" ")}>
-                            <div className="sidebar--nav--icon sidebar--icon">
-                                <FontAwesomeIcon icon={faThLarge} className="darknode-card--bottom--icon" />
-                            </div>
-                            <div className="sidebar--text">Your Darknodes</div>
-                        </div>
-                    </Link>
+                    <MenuItem path="/all" title="Your Darknodes" icon={<FontAwesomeIcon icon={faThLarge} />} onClick={hideMobileMenu} activePath={location.pathname} />
 
                     <div className="search--filter--feedback">
                         {searchFilter ? <>Showing results for "{searchFilter}"</> : <>{" "}</>}
                     </div>
 
                     <div className="sidebar--darknodes">
-                        {address && darknodeList ? darknodeList
+                        {address && shownDarknodeList ? shownDarknodeList
                             .filter((darknodeID: string) => {
                                 if (!searchFilter) {
                                     return true;
@@ -123,21 +111,22 @@ export const Sidebar = connect(mapStateToProps, mapDispatchToProps)(withRouter(
                                     feesEarnedTotalEth={details && details.feesEarnedTotalEth}
                                     ethBalance={details && details.ethBalance}
                                     quoteCurrency={quoteCurrency}
+                                    connected={details && details.nodeStatistics ? true : false}
                                     hideMobileMenu={hideMobileMenu}
                                 />;
                             }).toArray() : <>
                             </>}
 
-                        {address ? <a target="_blank" rel="noopener noreferrer" href="https://docs.renproject.io/darknodes/"><div className="sidebar--row">
+                        {address ? <ExternalLink href={URLs.gitbookDarknodes}><div className="sidebar--row">
                             <div className="sidebar--nav--icon sidebar--icon">
                                 <div className="sidebar--nav--icon--circle sidebar--plus">
-                                    <FontAwesomeIcon icon={faPlus} className="darknode-card--bottom--icon" />
+                                    <FontAwesomeIcon icon={faPlus} />
                                 </div>
                             </div>
                             <div className="sidebar--text">
                                 <div className="sidebar--name">Create new Darknode <FontAwesomeIcon icon={faExternalLinkAlt} className="external-link" /></div>
                             </div>
-                        </div></a> : null}
+                        </div></ExternalLink> : null}
                     </div>
                 </div>
                 <div className="sidebar--search sidebar--row">
@@ -146,13 +135,15 @@ export const Sidebar = connect(mapStateToProps, mapDispatchToProps)(withRouter(
                             <Search />
                         </div>
                     </div>
-                    <input disabled={!address || !darknodeList} type="text" className="sidebar--search--input" onChange={handleInput} value={searchFilter} placeholder="Search" />
+                    <input disabled={!address || !shownDarknodeList} type="text" className="sidebar--search--input" onChange={handleInput} value={searchFilter} placeholder="Search" />
                 </div>
             </nav>
-            {!address ? <div className="sidebar--connect" onClick={handleLogin} role="button">
-                <div className="wallet-icon--inner" />
-                Connect {web3BrowserName}
+            {!address ? <div className="sidebar--connect xl-or-larger" onClick={handleLogin} role="button">
+                <div className="wallet-icon">
+                    <div className="wallet-icon--inner" />
+                </div>
+                <span>Connect {web3BrowserName}</span>
             </div> : <></>}
         </>;
     }
-));
+);

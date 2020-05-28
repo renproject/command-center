@@ -1,95 +1,40 @@
 // tslint:disable: no-unused-variable
 
-import { RenNetworkDetails, testnet } from "@renproject/contracts";
+import { RenNetworkDetails } from "@renproject/contracts";
+import { RenVMArg, RenVMType } from "@renproject/interfaces";
 import { sleep } from "@renproject/react-components";
+import RenJS from "@renproject/ren";
+import { ResponseQueryTx } from "@renproject/rpc";
 import Axios from "axios";
-import { List } from "immutable";
+import { List, OrderedMap } from "immutable";
 import { useState } from "react";
 import { createContainer } from "unstated-next";
 
+import { EncodedData, Encodings } from "../../lib/general/encodedData";
 import { extractError } from "../../lib/react/errors";
-import { getLightnode } from "../overviewPage/mapContainer";
+import { Web3Container } from "../../store/web3Store";
+import { getLightnode } from "../networkDarknodesPage/mapContainer";
 
-type Addr = string;
-type B = string;
-type B32 = string;
-type U32 = number;
-type U64 = number;
-// tslint:disable-next-line: no-any
-type Value = any;
-
-export enum Type {
-    Addr = "addr",
-    Str = "str",
-    B20 = "b20",
-    B32 = "b32",
-    B = "b",
-    I8 = "i8",
-    I16 = "i16",
-    I32 = "i32",
-    I64 = "i64",
-    U8 = "u8",
-    U16 = "u16",
-    U32 = "u32",
-    U64 = "u64",
-    BTCCompatUTXOs = "ext_btcCompatUTXOs",
-}
-
-interface Arg {
-    name: string;
-    type: Type;
-    value: Value;
-}
-
-type Args = Arg[];
-
-export interface Tx {
-    hash: B32;
-    to: Addr;
-    args: Args;
-    out: Args;
-}
+export type Tx = ResponseQueryTx["tx"];
 
 type Txs = Tx[];
 
-interface ExtBtcCompatUTXO {
-    txHash: B32;
-    vOut: U32;
-    scriptPubKey: B;
-    amount: U64;
-    ghash: B32;
-}
-
-type ExtBtcCompatUTXOs = ExtBtcCompatUTXO[];
-
 export interface Block {
-    hash: B32;
+    hash: RenVMType.TypeB32;
     header: {
         kind: 1;
-        parentHash: B32;
-        baseHash: B32;
-        height: U64;
-        round: U64;
-        timestamp: U64;
+        parentHash: RenVMType.TypeB32;
+        baseHash: RenVMType.TypeB32;
+        height: number;
+        round: number;
+        timestamp: number;
         signatories: null;
     };
     data: Txs;
     prevState: [
-        {
-            name: "bchUTXOs";
-            type: "ext_btcCompatUTXOs";
-            value: ExtBtcCompatUTXOs;
-        },
-        {
-            name: "btcUTXOs";
-            type: "ext_btcCompatUTXOs";
-            value: ExtBtcCompatUTXOs;
-        },
-        {
-            name: "zecUTXOs";
-            type: "ext_btcCompatUTXOs";
-            value: ExtBtcCompatUTXOs;
-        }
+        RenVMArg<"bch", RenVMType.ExtTypeBtcCompatUTXOs>,
+        RenVMArg<"btc", RenVMType.ExtTypeBtcCompatUTXOs>,
+        RenVMArg<"zec", RenVMType.ExtTypeBtcCompatUTXOs>,
     ];
 }
 
@@ -146,53 +91,64 @@ const getBlocks = async (network: RenNetworkDetails, previousBlocks: List<Block>
     if (firstBlock) {
         previousHeight = firstBlock.header.height;
     }
-    if (previousHeight === null) {
-        const request = { jsonrpc: "2.0", method: "ren_queryBlocks", params: { n: N }, id: 67 };
-        let response;
-        let i = 0;
-        do {
-            response = (await retryNTimes(async () => await Axios.post<RPCResponse<ResponseQueryBlocks>>(lightnode, request), 5)).data.result;
-            i++;
-        } while ((response.blocks === null || response.blocks.length === 0) && i < 5);
-        return response.blocks ? List(response.blocks).sort((a, b) => b.header.height - a.header.height) : List();
-    } else {
-        let currentHeight = null as number | null;
-        let syncedHeight = null as number | null;
-        let newBlocks = List<Block>();
-        while (
-            currentHeight === null || syncedHeight === null ||
-            (syncedHeight > previousHeight + 1 && syncedHeight + N - 1 > currentHeight && syncedHeight > 0)
-        ) {
-            const request = { jsonrpc: "2.0", method: "ren_queryBlock", params: { blockHeight: syncedHeight && syncedHeight - 1 }, id: 67 };
-            const response = (await retryNTimes(() => Axios.post<RPCResponse<ResponseQueryBlock>>(lightnode, request), 4)).data.result;
-            const latestBlock = response.block;
-            if (latestBlock.header.height === previousHeight) {
-                break;
-            }
-            currentHeight = currentHeight || latestBlock.header.height;
-            syncedHeight = latestBlock.header.height;
-            newBlocks = newBlocks.push(latestBlock);
-        }
-        return newBlocks.concat(previousBlocks).slice(0, N).toList();
-    }
+    // if (previousHeight === null) {
+    const request = { jsonrpc: "2.0", method: "ren_queryBlocks", params: { n: N }, id: 67 };
+    let response;
+    let i = 0;
+    do {
+        response = (await retryNTimes(async () => await Axios.post<RPCResponse<ResponseQueryBlocks>>(lightnode, request), 5)).data.result;
+        i++;
+    } while ((response.blocks === null || response.blocks.length === 0) && i < 5);
+    return response.blocks ? List(response.blocks).sort((a, b) => b.header.height - a.header.height) : List();
+    // } else {
+    //     let currentHeight = null as number | null;
+    //     let syncedHeight = null as number | null;
+    //     let newBlocks = List<Block>();
+    //     while (
+    //         currentHeight === null || syncedHeight === null ||
+    //         (syncedHeight > previousHeight + 1 && syncedHeight + N - 1 > currentHeight && syncedHeight > 0)
+    //     ) {
+    //         const request = { jsonrpc: "2.0", method: "ren_queryBlock", params: { blockHeight: syncedHeight && syncedHeight - 1 }, id: 67 };
+    //         const response = (await retryNTimes(() => Axios.post<RPCResponse<ResponseQueryBlock>>(lightnode, request), 4)).data.result;
+    //         const latestBlock = response.block;
+    //         if (latestBlock.header.height === previousHeight) {
+    //             break;
+    //         }
+    //         currentHeight = currentHeight || latestBlock.header.height;
+    //         syncedHeight = latestBlock.header.height;
+    //         newBlocks = newBlocks.push(latestBlock);
+    //     }
+    //     return newBlocks.concat(previousBlocks).slice(0, N).toList();
+    // }
 };
 
-const useRenVMContainer = (initialState = testnet as RenNetworkDetails) => {
-    // tslint:disable-next-line: whitespace
-    const [network,] = useState(initialState);
+const useRenVMContainer = () => {
+    const { renNetwork: network } = Web3Container.useContainer();
+
     // tslint:disable-next-line: prefer-const
     let [blocks, setBlocks] = useState<List<Block> | null>(null);
     // tslint:disable-next-line: prefer-const
     let [currentBlock, setCurrentBlock] = useState<null | Block>(null);
     // tslint:disable-next-line: prefer-const
     let [currentBlockNumber, setCurrentBlockNumber] = useState<null | number>(null);
+    // tslint:disable-next-line: prefer-const
+    let [currentTransaction, setCurrentTransaction] = useState<undefined | null | ResponseQueryTx>(undefined);
+    // tslint:disable-next-line: prefer-const
+    let [currentTransactionHash, setCurrentTransactionHash] = useState<undefined | null | string>(undefined);
+    // tslint:disable-next-line: prefer-const
+    let [transactions, setTransactions] = useState<OrderedMap<string, ResponseQueryTx | null>>(OrderedMap());
 
     const updateBlocks = async () => {
-        blocks = await getBlocks(network, blocks || List<Block>());
-        setBlocks(blocks);
+        if (network) {
+            blocks = await getBlocks(network, blocks || List<Block>());
+            setBlocks(blocks);
+        }
     };
 
     const getBlock = async (blockNumber: number) => {
+        if (!network) {
+            return;
+        }
         const lightnode = getLightnode(network);
         if (!lightnode) {
             return;
@@ -227,7 +183,36 @@ const useRenVMContainer = (initialState = testnet as RenNetworkDetails) => {
         setCurrentBlockNumber(currentBlockNumber);
     };
 
-    return { blocks, updateBlocks, getBlock, currentBlock, currentBlockNumber };
+    const getTransaction = async (txHashHex: string, options?: { skipCache?: boolean }) => {
+        if (options && !options.skipCache && transactions && transactions.get(txHashHex)) {
+            currentTransaction = transactions.get(txHashHex);
+        } else {
+
+            if (network) {
+                try {
+                    currentTransaction = await new RenJS(network.name).renVM.queryTx(new EncodedData(txHashHex, Encodings.HEX).toBase64());
+                } catch (error) {
+                    console.error(error);
+                    currentTransaction = null;
+                }
+            } else {
+                currentTransaction = null;
+            }
+
+            const count = transactions.count();
+            transactions = transactions
+                .slice(count - 5, count)
+                .set(txHashHex, currentTransaction || null);
+            setTransactions(transactions);
+        }
+
+        setCurrentTransactionHash(txHashHex);
+        setCurrentTransaction(currentTransaction);
+
+        return currentTransaction;
+    };
+
+    return { network, blocks, updateBlocks, getBlock, currentBlock, currentBlockNumber, getTransaction, currentTransaction, currentTransactionHash };
 };
 
 export const RenVMContainer = createContainer(useRenVMContainer);

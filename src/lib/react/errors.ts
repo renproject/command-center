@@ -88,7 +88,7 @@ const rawError = (errorObject: Error) => {
     return rawErrorJSON;
 };
 
-const _catchException_ = <X extends Details>(error: any, details: X) => {
+const catchException = <X extends Details>(error: any, details: X) => {
     if (error._noCapture_) {
         // tslint:disable-next-line: no-console
         console.error(error);
@@ -148,26 +148,35 @@ const _catchException_ = <X extends Details>(error: any, details: X) => {
     });
 };
 
+export const ignoreException = <X extends Details & Described>(error: any, details?: X | string) => {
+    // tslint:disable-next-line: no-console
+    console.error(error, details);
+};
+
 // Background exceptions are thrown in background loops and actions
-export const _catchBackgroundException_ = <X extends Details & Described>(error: any, details: X | string) => {
-    _catchException_(error, { ignoreNetwork: true, ...(typeof details === "string" ? { description: details } : details), category: "background_exception" });
+export const catchBackgroundException = <X extends Details & Described>(error: any, details: X | string) => {
+    catchException(error, { ignoreNetwork: true, ...(typeof details === "string" ? { description: details } : details), category: "background_exception" });
 };
 
 // Interaction exceptions are thrown as a direct result of a user interaction
-export const _catchInteractionException_ = <X extends Details & Described & ShownToUser>(error: any, details: X | string) => {
-    _catchException_(error, { ...(typeof details === "string" ? { description: details } : details), category: "interaction_exception" });
+export const catchInteractionException = <X extends Details & Described & ShownToUser>(error: any, details: X | string) => {
+    catchException(error, { ...(typeof details === "string" ? { description: details } : details), category: "interaction_exception" });
 };
 
 // Component exceptions are thrown from an ErrorBoundary
-export const _catchComponentException_ = (error: any, errorInfo: React.ErrorInfo) => {
-    _catchException_(error, { ...errorInfo, description: "Error caught in Error Boundary. See Component stack trace.", category: "component_exception" });
+export const catchComponentException = (error: any, errorInfo: React.ErrorInfo) => {
+    catchException(error, { ...errorInfo, description: "Error caught in Error Boundary. See Component stack trace.", category: "component_exception" });
 };
 
 // _noCapture_ is to mark errors that should not be reported to Sentry.
-export const _noCapture_ = (error: Error): Error => {
+export const noCapture = (error: Error): Error => {
     (error as any)._noCapture_ = true;
     return error;
 };
+
+export class LocalError extends Error {
+    public _noCapture_ = true;
+}
 
 // tslint:disable-next-line: no-any
 export const extractError = (error: any): string => {

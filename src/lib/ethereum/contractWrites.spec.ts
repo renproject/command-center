@@ -1,6 +1,8 @@
 import { RenNetworkDetails } from "@renproject/contracts";
 import Web3 from "web3";
+import { PromiEvent } from "web3-core";
 
+import { WaitForTX } from "../../store/networkStateContainer";
 import { createWeb3, Provider } from "../../test/globalSetup";
 import { darknodeIDBase58ToHex } from "../darknode/darknodeID";
 import { getDarknodeRegistry } from "./contract";
@@ -8,13 +10,21 @@ import {
     getDarknodeStatus, getMinimumBond, getOperatorDarknodes, RegistrationStatus,
 } from "./contractReads";
 import { approveNode, callEpoch, deregisterNode, refundNode, registerNode } from "./contractWrites";
-import { simpleWaitForTX, waitForTX } from "./waitForTX";
 
 let web3: Web3, network: RenNetworkDetails, provider: Provider, address: string;
 beforeAll(async () => { ({ web3, network, provider, address } = await createWeb3()); });
 afterAll(() => { provider.engine.stop(); });
 
 const darknodeID = darknodeIDBase58ToHex("8MJpA1rXYMPTeJoYjsFBHJcuYBe7zQ");
+
+const simpleWaitForTX: WaitForTX = async <T extends {}>(promiEvent: PromiEvent<T>, onConfirmation?: (confirmations?: number) => void) => new Promise<string>((resolve, reject) => {
+    promiEvent.on("transactionHash", (txHash) => {
+        resolve(txHash);
+        promiEvent.on("confirmation", (confirmations) => {
+            if (onConfirmation) { onConfirmation(confirmations); }
+        });
+    }).catch(reject);
+});
 
 test("registering darknode", async () => {
     jest.setTimeout(20000);
@@ -47,7 +57,7 @@ test("registering darknode", async () => {
 
 const triggerBlock = async () => {
     // tslint:disable-next-line: await-promise
-    await waitForTX(
+    await simpleWaitForTX(
         // tslint:disable-next-line: no-any
         (getDarknodeRegistry(web3, network).methods.minimumBond() as any)
             .send({ from: address })

@@ -173,8 +173,6 @@ export const AllTokenDetails = OrderedMap<Token | OldToken, TokenDetail<Token | 
     ;
 
 // tslint:disable-next-line:  no-unnecessary-type-assertion
-export const OldTokenDetails = AllTokenDetails.filter((details) => details.old) as OrderedMap<OldToken, TokenDetail<OldToken>>;
-// tslint:disable-next-line:  no-unnecessary-type-assertion
 export const NewTokenDetails = AllTokenDetails.filter((details) => !details.old) as OrderedMap<Token, TokenDetail<Token>>;
 
 const coinGeckoURL = `https://api.coingecko.com/api/v3`;

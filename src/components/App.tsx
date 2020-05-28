@@ -1,79 +1,62 @@
 import * as React from "react";
 
-import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
-import { Route, RouteComponentProps, Switch, useLocation, withRouter } from "react-router-dom";
-import { bindActionCreators } from "redux";
+import { FeedbackButton } from "@renproject/react-components";
+import { Route, RouteComponentProps, Switch, withRouter } from "react-router-dom";
 
 import { DEFAULT_REN_NETWORK } from "../lib/react/environmentVariables";
-import { _catchBackgroundException_ } from "../lib/react/errors";
-import { promptLogin } from "../store/account/accountActions";
-import { ApplicationState } from "../store/applicationState";
-import { AppDispatch } from "../store/rootReducer";
+import { catchBackgroundException } from "../lib/react/errors";
+import { Web3Container } from "../store/web3Store";
 import { AllDarknodes } from "./allDarknodesPage/AllDarknodes";
 import { NotFound } from "./common/404";
 import { BackgroundTasks } from "./common/BackgroundTasks";
-import { Connect } from "./common/Connect";
 import { _catch_ } from "./common/ErrorBoundary";
-import { Footer } from "./common/Footer";
+import { URLs } from "./common/ExternalLink";
 import { Header } from "./common/Header";
 import { LoggingIn } from "./common/LoggingIn";
 import { PopupController } from "./common/popups/PopupController";
 import { Sidebar } from "./common/sidebar/Sidebar";
 import { Darknode, getDarknodeParam } from "./darknodePage/Darknode";
-import { Overview } from "./overviewPage/Overview";
+import { IntegratorsPage } from "./integratorsPage/IntegratorsPage";
+import { Overview } from "./networkDarknodesPage/Overview";
+import { NetworkStats } from "./networkStatsPage/NetworkStats";
 import { RenVM } from "./renvmPage/RenVM";
+import { ScrollToTop } from "./ScrollToTop";
 
-// Component that attaches scroll to top hanler on router change
-// renders nothing, just attaches side effects
-export const ScrollToTopWithRouter = withRouter(() => {
-    // this assumes that current router state is accessed via hook
-    // but it does not matter, pathname and search (or that ever) may come from props, context, etc.
-    const location = useLocation();
-
-    // just run the effect on pathname and/or search change
-    React.useEffect(() => {
-        try {
-            // trying to use new API - https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollTo
-            window.scroll({
-                top: 0,
-                left: 0,
-                behavior: "smooth",
-            });
-        } catch (error) {
-            // just a fallback for older browsers
-            window.scrollTo(0, 0);
-        }
-    }, [location]);
-
-    // renders nothing, since nothing is needed
-    return null;
-});
+interface Props extends
+    RouteComponentProps {
+}
 
 /**
  * App is the main visual component responsible for displaying different routes
  * and running background app loops
  */
-const AppClass = ({ match: { params }, store: { address, loggedInBefore, renNetwork }, actions }: Props) => {
+export const App = withRouter(({ match: { params } }: Props) => {
+    const { web3, address, loggedInBefore, promptLogin, renNetwork, setWeb3, setRenNetwork: setNetwork } = Web3Container.useContainer();
 
-    React.useEffect(() => {
-        if (loggedInBefore) {
-            actions.promptLogin({ manual: false, redirect: false, showPopup: false, immediatePopup: false })
-                .catch((error) => _catchBackgroundException_(error, "Error in App > promptLogin"));
-        }
-    }, []);
-
-    const withAccount = React.useCallback(<T extends React.ComponentClass>(component: T):
+    const withAccount = React.useCallback(<T extends React.ComponentClass | React.StatelessComponent>(component: T):
         React.ComponentClass | React.StatelessComponent =>
         address ? component : LoggingIn,
         [address],
     );
 
+    React.useEffect(() => {
+        setWeb3(web3);
+        setNetwork(renNetwork);
+    }, [web3]);
+
     const darknodeID = getDarknodeParam(params);
     const showNetworkBanner = renNetwork.name !== DEFAULT_REN_NETWORK;
 
+    React.useEffect(() => {
+        if (loggedInBefore && darknodeID) {
+            promptLogin({ manual: false, redirect: false, showPopup: false, immediatePopup: false })
+                .catch((error) => catchBackgroundException(error, "Error in App > promptLogin"));
+        }
+    }, []);
+
     return <div className="app">
-        <BackgroundTasks key={`${address || undefined} ${renNetwork.name}`} />
-        <ScrollToTopWithRouter />
+        <BackgroundTasks />
+        <ScrollToTop />
         {/*
             * We set the key to be the address so that any sub-component state is reset after changing accounts
             * (e.g. if in
@@ -84,48 +67,41 @@ const AppClass = ({ match: { params }, store: { address, loggedInBefore, renNetw
                 <div className="network--banner">Using <span className="banner--bold">{renNetwork.label}</span> RenVM network, <span className="banner--bold">{renNetwork.chainLabel}</span> Ethereum network</div> :
                 <></>
             }
-            <Connect>
-                <PopupController>
-                    {_catch_(<Sidebar selectedDarknode={darknodeID} />)}
-                    <div className="app--body">
-                        {_catch_(<Switch>
-                            {/* tslint:disable-next-line: react-this-binding-issue jsx-no-lambda */}
-                            <Route path="/" exact component={Overview} />
-                            <Route path="/all" exact component={withAccount(AllDarknodes)} />
-                            <Route path="/hyperdrive" exact component={RenVM} />
-                            <Route path="/hyperdrive/:blockNumber" exact component={RenVM} />
-                            <Route path="/renvm" exact component={RenVM} />
-                            <Route path="/renvm/:blockNumber" exact component={RenVM} />
-                            <Route path="/darknode/:darknodeID" exact component={Darknode} />
-                            <Route component={NotFound} />
-                        </Switch>, { popup: true })}
-                    </div>
-                    {_catch_(<Footer />)}
-                </PopupController>
-            </Connect>
+            <PopupController>
+                {_catch_(<Sidebar selectedDarknode={darknodeID} />)}
+                <div className="app--body">
+                    {_catch_(<Switch>
+                        {/* tslint:disable-next-line: react-this-binding-issue jsx-no-lambda */}
+                        <Route path="/" exact component={NetworkStats} />
+                        <Route path="/integrators" exact component={IntegratorsPage} />
+                        <Route path="/integrators/:page" exact component={IntegratorsPage} />
+                        <Route path="/darknode-stats" exact component={Overview} />
+                        <Route path="/all" exact component={withAccount(AllDarknodes)} />
+                        <Route path="/darknode/:darknodeID" exact component={Darknode} />
+
+                        {/* Old hyperdrive URLs */}
+                        <Route path="/hyperdrive" exact component={RenVM} />
+                        <Route path="/hyperdrive/:blockNumber" exact component={RenVM} />
+
+                        <Route path="/renvm" exact component={RenVM} />
+
+                        {/* RenVM TX */}
+                        <Route path="/tx/:txHash" exact component={RenVM} />
+                        <Route path="/renvm/tx/:txHash" exact component={RenVM} />
+
+                        {/* RenVM Block */}
+                        <Route path="/block/:blockNumber" exact component={RenVM} />
+                        <Route path="/renvm/:blockNumber" exact component={RenVM} />
+                        <Route path="/renvm/block/:blockNumber" exact component={RenVM} />
+
+                        {/* 404 */}
+                        <Route component={NotFound} />
+                    </Switch>, { popup: true })}
+                    <FeedbackButton url={URLs.feedbackButton} />
+                </div>
+                {/* {_catch_(<Footer />)} */}
+            </PopupController>
             {_catch_(<Header />)}
         </div>
     </div>;
-};
-
-const mapStateToProps = (state: ApplicationState) => ({
-    store: {
-        address: state.account.address,
-        loggedInBefore: state.account.loggedInBefore,
-        renNetwork: state.account.renNetwork,
-    },
 });
-
-const mapDispatchToProps = (dispatch: AppDispatch) => ({
-    actions: bindActionCreators({
-        promptLogin,
-    }, dispatch),
-});
-
-interface Props extends
-    ReturnType<typeof mapStateToProps>,
-    ConnectedReturnType<typeof mapDispatchToProps>,
-    RouteComponentProps {
-}
-
-export const App = connect(mapStateToProps, mapDispatchToProps)(withRouter(AppClass));

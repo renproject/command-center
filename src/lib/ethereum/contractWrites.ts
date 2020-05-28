@@ -1,16 +1,17 @@
-import { mainnet, RenNetworkDetails } from "@renproject/contracts";
+import { RenNetworkDetails } from "@renproject/contracts";
+import { TxStatus } from "@renproject/interfaces";
 import { sleep } from "@renproject/react-components";
-import RenSDK, { TxStatus } from "@renproject/ren";
+import RenSDK from "@renproject/ren";
 import BigNumber from "bignumber.js";
 import Web3 from "web3";
 import { TransactionConfig, TransactionReceipt } from "web3-core";
 import { sha3, toChecksumAddress } from "web3-utils";
 
 import { retryNTimes } from "../../components/renvmPage/renvmContainer";
-import { _catchInteractionException_, _noCapture_ } from "../react/errors";
+import { WaitForTX } from "../../store/networkStateContainer";
+import { catchInteractionException, noCapture } from "../react/errors";
 import { getDarknodePayment, getDarknodeRegistry } from "./contract";
 import { AllTokenDetails, OldToken, Token } from "./tokens";
-import { WaitForTX } from "./waitForTX";
 
 export const fundNode = async (
     web3: Web3,
@@ -83,10 +84,10 @@ export const approveNode = async (
         ercBalance = new BigNumber(await retryNTimes(async () => await ercContract.methods.balanceOf(address).call(), 5));
     } catch (error) {
         ercBalance = bond;
-        _catchInteractionException_(error, "Error in contractWrites.ts: approveNode > balanceOf");
+        catchInteractionException(error, "Error in contractWrites.ts: approveNode > balanceOf");
     }
     if (ercBalance.lt(bond)) {
-        throw _noCapture_(new Error("You have insufficient REN to register a darknode."));
+        throw noCapture(new Error("You have insufficient REN to register a darknode."));
     }
 
     // Check if they've already approved REN
@@ -96,7 +97,7 @@ export const approveNode = async (
             await retryNTimes(async () => await ercContract.methods.allowance(address, renNetwork.addresses.ren.DarknodeRegistry.address).call(), 5),
         );
     } catch (error) {
-        _catchInteractionException_(error, "Error in contractWrites.ts: approveNode > allowance");
+        catchInteractionException(error, "Error in contractWrites.ts: approveNode > allowance");
         ercAllowance = new BigNumber(0);
     }
     if (ercAllowance.gte(bond)) {
@@ -132,7 +133,7 @@ export const registerNode = async (
         );
     } catch (error) {
         ercAllowance = new BigNumber(0);
-        _catchInteractionException_(error, "Error in contractWrites.ts: registerNode > allowance");
+        catchInteractionException(error, "Error in contractWrites.ts: registerNode > allowance");
     }
 
     let gas: number | undefined = hardCodedGas;
@@ -144,10 +145,8 @@ export const registerNode = async (
     const darknodeRegistry = getDarknodeRegistry(web3, renNetwork);
 
     try {
-        const params = renNetwork.name === mainnet.name ? [darknodeID, publicKey, bond.toFixed()] : [darknodeID, publicKey];
         const res = await waitForTX(
-            // @ts-ignore
-            darknodeRegistry.methods.register(...params).send({ from: address, gas }),
+            darknodeRegistry.methods.register(darknodeID, publicKey).send({ from: address, gas }),
             onDone
         );
         resolved = true;
@@ -294,40 +293,6 @@ export const claimForNode = async (
 //     // }
 // };
 
-export const withdrawOldToken = async (
-    web3: Web3,
-    renNetwork: RenNetworkDetails,
-    address: string | null,
-    darknodeID: string,
-    token: Token | OldToken,
-    waitForTX: WaitForTX,
-) => new Promise(async (resolve, reject) => {
-
-    if (renNetwork.name !== "mainnet") {
-        throw new Error(`Withdrawing old tokens not supported on network ${renNetwork.name}`);
-    }
-
-    if (!address) {
-        throw new Error(`Unable to retrieve account address.`);
-    }
-
-    const network = renNetwork as typeof mainnet;
-
-    try {
-        const rewardVault = new (web3.eth.Contract)(
-            network.addresses.ren.DarknodeRewardVault.abi,
-            network.addresses.ren.DarknodeRewardVault.address
-        );
-        await waitForTX(
-            rewardVault.methods.withdraw(darknodeID, network.addresses.oldTokens[token].address).send({ from: address }),
-            resolve,
-        );
-    } catch (error) {
-        reject(error);
-        return;
-    }
-});
-
 // export const bridgedToken = (web3: Web3, renNetwork: RenNetworkDetails, address: string): Contract => {
 //     return new web3.eth.Contract(renNetwork.WarpGateToken.abi, address);
 // };
@@ -345,9 +310,9 @@ const burn = async (
     waitForTX: WaitForTX,
     onStatus: (status: TxStatus) => void,
 ) => {
-    const contractDetails = token === Token.BTC ? renNetwork.addresses.shifter.BTCShifter :
-        token === Token.ZEC ? renNetwork.addresses.shifter.ZECShifter :
-            token === Token.BCH ? renNetwork.addresses.shifter.BCHShifter : undefined;
+    const contractDetails = token === Token.BTC ? renNetwork.addresses.gateways.BTCGateway :
+        token === Token.ZEC ? renNetwork.addresses.gateways.ZECGateway :
+            token === Token.BCH ? renNetwork.addresses.gateways.BCHGateway : undefined;
     if (!contractDetails) {
         throw new Error(`Unable to shift out token ${token}`);
     }
@@ -355,29 +320,29 @@ const burn = async (
 
     const sdk = new RenSDK(renNetwork.name);
 
-    const txHash = await waitForTX(contract.methods.shiftOut(
-        (sdk.utils[token].addressToHex || sdk.Tokens[token].addressToHex)(recipient), // _to
+    await waitForTX(contract.methods.burn(
+        (sdk.utils[token].addressToHex || RenSDK.Tokens[token].addressToHex)(recipient), // _to
         amount.decimalPlaces(0).toFixed(), // _amount in Satoshis
     ).send({ from: address })
     );
 
-    const shiftOut = await sdk.shiftOut({
-        // Send BTC from the Ethereum blockchain to the Bitcoin blockchain.
-        // This is the reverse of shitIn.
-        sendToken: token === Token.BCH ? RenSDK.Tokens.BCH.Eth2Bch :
-            Token.ZEC ? RenSDK.Tokens.ZEC.Eth2Zec :
-                RenSDK.Tokens.BTC.Eth2Btc,
+    // const shiftOut = await sdk.burnAndRelease({
+    //     // Send BTC from the Ethereum blockchain to the Bitcoin blockchain.
+    //     // This is the reverse of shitIn.
+    //     sendToken: token === Token.BCH ? RenSDK.Tokens.BCH.Eth2Bch :
+    //         Token.ZEC ? RenSDK.Tokens.ZEC.Eth2Zec :
+    //             RenSDK.Tokens.BTC.Eth2Btc,
 
-        // The web3 provider to talk to Ethereum
-        web3Provider: web3.currentProvider,
+    //     // The web3 provider to talk to Ethereum
+    //     web3Provider: web3.currentProvider,
 
-        // The transaction hash of our contract call
-        txHash,
-    }).readFromEthereum();
+    //     // The transaction hash of our contract call
+    //     ethereumTxHash,
+    // }).readFromEthereum();
 
-    const promiEvent = shiftOut.submitToRenVM();
-    promiEvent.on("status", onStatus);
-    await promiEvent;
+    // const promiEvent = shiftOut.submit();
+    // promiEvent.on("status", onStatus);
+    // await promiEvent;
 };
 
 const TransferEventABI = [

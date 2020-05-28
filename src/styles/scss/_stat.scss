@@ -10,14 +10,21 @@
 
 .stat {
 
-    hr {
-        color: #1A2E46;
-        margin-bottom: 10px;
+    .hr {
+        border-bottom: 1px solid #1A2E46;
+        height: 1px;
+        width: 100%;
+        border-color: #1A2E46;
+        margin-bottom: 15px;
         border-width: 1px;
+
+        @media(min-width: $min-lg) {
+            margin-bottom: 25px;
+        }
     }
 
     flex-grow: 1;
-    min-width: 200px;
+    // min-width: 200px;
     margin-bottom: 10px;
 
     &:not(:last-child) {
@@ -25,8 +32,9 @@
     }
 }
 
-.stat .stat {
-    hr {
+.stat .stat,
+.stat.stat--nested {
+    .hr {
         border: none;
     }
 
@@ -36,11 +44,13 @@
         letter-spacing: 1.5px;
         height: 28px;
         color: #F9F9F9;
+        margin-bottom: 0px;
     }
 }
 
 .stat--title {
     font-size: 14px;
+
     line-height: 16px;
     font-weight: bold;
 
@@ -51,12 +61,19 @@
     // max-width: 200px;
 
     color: #FFFFFF;
+    display: flex;
+
+    margin-bottom: 30px;
+}
+
+.stat--title--icon {
+    margin-right: 10px;
 }
 
 .stat--highlight {
-    background: #043D7D;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
-    border-radius: 6px;
+    background: #001327;
+    // box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
+    border-radius: 4px;
     // Left
     padding-left: 20px;
     padding-right: 20px;
@@ -72,8 +89,13 @@
     line-height: 37px;
     color: #F9F9F9;
 
+    @media(max-width: $max-md) {
+        font-size: 28px;
+    }
+
     .loading {
-        float: left;
+        // float: left;
+        height: 38px;
     }
 
     .stat--children--diff {
@@ -88,7 +110,7 @@
 
 .change-indicator {
     &.positive {
-        color: #3CBC98;
+        color: $green;
 
         &::after {
             content: "\25b2";

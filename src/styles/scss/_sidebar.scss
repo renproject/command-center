@@ -5,9 +5,21 @@ $collapsed-width: 80px;
 $full-width: 360px;
 $mobile-full-width: 100vw;
 
+$max-sidebar: $max-md;
+$min-header: $min-lg;
+
 .sidebar .blocky {
     width: 42px;
     border-radius: 50%;
+}
+
+.sidebar .status-dot {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin-right: 10px;
+    width: 0 !important;
+    background: $blue-dark !important;
 }
 
 .sidebar--row {
@@ -15,7 +27,7 @@ $mobile-full-width: 100vw;
     border-left: 4px solid rgba(0, 0, 0, 0);
     display: flex;
     align-items: center;
-    justify-content: left;
+    justify-content: flex-start;
 
     &:hover {
         border-left: 4px solid transparentize($blue-bright, 1 - 0.5);
@@ -34,6 +46,11 @@ $mobile-full-width: 100vw;
 
 .sidebar--darknodes {
     background: url('../../styles/images/sidebar-empty.svg') repeat-y;
+
+    @media(max-width: $max-sidebar) {
+        background: none;
+    }
+
     background-position-x: 19px;
     background-position-y: 27px;
     flex: 1;
@@ -45,6 +62,7 @@ $mobile-full-width: 100vw;
 
 .sidebar--nav {
     margin-bottom: 50px;
+    cursor: pointer;
 }
 
 .sidebar--nav--icon svg {
@@ -85,9 +103,6 @@ $mobile-full-width: 100vw;
     margin-bottom: -1px;
 }
 
-$max-sidebar: $max-md;
-$min-header: $min-lg;
-
 .sidebar.sidebar--mobile--active {
     @media(max-width: $max-sidebar) {
         width: $mobile-full-width;
@@ -116,6 +131,7 @@ $min-header: $min-lg;
     margin-right: 4px;
     display: flex;
     justify-content: center;
+    position: relative;
 }
 
 .sidebar--icon--empty {
@@ -146,10 +162,10 @@ $min-header: $min-lg;
         width: 0px;
     }
 
-    @media(max-width: $max-sidebar) {
-        // This sets the faTimes symbol to be aligned with the faBars symbol
-        padding-top: 17px;
-    }
+    // @media(max-width: $max-sidebar) {
+    //     // This sets the faTimes symbol to be aligned with the faBars symbol
+    //     padding-top: 17px;
+    // }
 
     overflow-x: hidden;
     -webkit-transition: width .1s linear;
@@ -225,14 +241,22 @@ $min-header: $min-lg;
         >div+div {
             margin-left: 20px;
         }
+
+        svg {
+            width: 15px;
+            height: 15px;
+            opacity: 1;
+            margin-right: 5px;
+        }
     }
 
     .sidebar--text--rewards {
-        color: $green;
+        display: flex;
+        align-items: center;
     }
 
     .sidebar--text--gas {
-        color: $red;
+        @extend .sidebar--text--rewards;
     }
 
     .currency-symbol {
@@ -273,6 +297,10 @@ nav li {
     // position: fixed !important;
     // bottom: 0;
     background: #002247CC;
+
+    @media(max-width: $max-sidebar) {
+        display: none;
+    }
 }
 
 input[type="text"].sidebar--search--input {
@@ -310,16 +338,16 @@ input[type="text"].sidebar--search--input {
 }
 
 .sidebar--connect {
-    background: #006FE8;
-    box-shadow: -2px 2px 4px #000000;
+    background: #002B5C;
+    // box-shadow: -2px 2px 4px #000000;
     border-bottom-left-radius: 12px;
     border-bottom-right-radius: 12px;
     transform: rotate(-90deg);
     position: absolute;
     top: 50vh;
-    width: 200px;
-    height: 28px;
-    left: -5px;
+    width: 240px;
+    height: 34px;
+    left: -23px;
     z-index: 20;
 
     cursor: pointer;
@@ -332,15 +360,49 @@ input[type="text"].sidebar--search--input {
     justify-content: center;
     align-items: center;
 
+    padding: 0 20px;
+
+
+    span {
+        font-weight: normal;
+        font-size: 14px;
+        line-height: 16px;
+
+        /* identical to box height */
+
+        color: #F9F9F9;
+    }
+
+    .wallet-icon {
+        width: 34px;
+        height: 34px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 12px;
+    }
+
     .wallet-icon--inner {
         background: url('../../styles/images/wallet.svg') no-repeat;
         background-size: 12px 14px;
+        background-color: $blue-bright;
+        margin: 0;
         height: 14px;
         width: 12px;
-        margin-right: 6px;
     }
 
     @media(max-width: $max-sidebar) {
         display: none;
     }
+}
+
+
+.sidebar--close {
+    cursor: pointer;
+    height: 48px;
+    justify-content: flex-end;
+}
+
+.sidebar--nav {
+    height: 48px;
 }

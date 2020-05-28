@@ -17,25 +17,31 @@ export const resetEVM = async (web3: Web3, snapshotID: string) => {
 
 export type Provider = { engine: { stop: () => void; } };
 
-const ganache = (buildPath: string, networkID: number) => {
+const ganache = (buildPath: string, networkID: number): RenNetworkDetails => {
     // tslint:disable: non-literal-require
-    const zBTC = require(join(buildPath, "zBTC.json"));
-    const zZEC = require(join(buildPath, "zZEC.json"));
-    const ZECShifter = require(join(buildPath, "ZECShifter.json"));
-    const zBCH = require(join(buildPath, "zBCH.json"));
-    const BCHShifter = require(join(buildPath, "BCHShifter.json"));
-    const ShifterRegistry = require(join(buildPath, "ShifterRegistry.json"));
+    const ProtocolProxy = require(join(buildPath, "ProtocolProxy.json"));
+    const ProtocolLogic = require(join(buildPath, "ProtocolLogic.json"));
+    const GatewayLogic = require(join(buildPath, "GatewayLogic.json"));
+    const RenBTC = require(join(buildPath, "RenBTC.json"));
+    const BTCGateway = require(join(buildPath, "BTCGateway.json"));
+    const RenZEC = require(join(buildPath, "RenZEC.json"));
+    const ZECGateway = require(join(buildPath, "ZECGateway.json"));
+    const RenBCH = require(join(buildPath, "RenBCH.json"));
+    const BCHGateway = require(join(buildPath, "BCHGateway.json"));
+    const GatewayRegistry = require(join(buildPath, "GatewayRegistry.json"));
     const RenToken = require(join(buildPath, "RenToken.json"));
     const DarknodeSlasher = require(join(buildPath, "DarknodeSlasher.json"));
     const DarknodeRegistryStore = require(join(buildPath, "DarknodeRegistryStore.json"));
-    const DarknodeRegistry = require(join(buildPath, "DarknodeRegistry.json"));
+    const DarknodeRegistryProxy = require(join(buildPath, "DarknodeRegistryProxy.json"));
+    const DarknodeRegistryLogic = require(join(buildPath, "DarknodeRegistryLogic.json"));
     const DarknodePaymentStore = require(join(buildPath, "DarknodePaymentStore.json"));
     const DarknodePayment = require(join(buildPath, "DarknodePayment.json"));
-    const BTCShifter = require(join(buildPath, "BTCShifter.json"));
+    const BasicAdapter = require(join(buildPath, "BasicAdapter.json"));
     const ERC20 = require("darknode-sol/build/erc/ERC20.json");
     // tslint:enable: non-literal-require
 
     return {
+        version: "1.0.0",
         name: "localnet",
         chain: "kovan",
         label: "Localnet",
@@ -43,22 +49,29 @@ const ganache = (buildPath: string, networkID: number) => {
         networkID,
         infura: "https://kovan.infura.io",
         etherscan: "https://kovan.etherscan.io",
-        renVM: {
-            mpkh: "0x0c0b293a30e5398533783f344c296f57d78e4cbc",
-            mintAuthority: "0x04084f1cACCB87Dcab9a29a084281294dA96Bf44",
-        },
+        isTestnet: true,
+        lightnode: "",
+        // renVM: {
+        //     mpkh: "0x0c0b293a30e5398533783f344c296f57d78e4cbc",
+        //     mintAuthority: "0x04084f1cACCB87Dcab9a29a084281294dA96Bf44",
+        // },
         addresses: {
             ren: {
+                Protocol: {
+                    address: ProtocolProxy.networks[networkID].address,
+                    abi: ProtocolLogic.abi as AbiItem[],
+                    artifact: ProtocolProxy,
+                },
                 DarknodeSlasher: {
                     address: DarknodeSlasher.networks[networkID].address,
                     abi: DarknodeSlasher.abi as AbiItem[],
                     artifact: DarknodeSlasher,
                 },
                 DarknodeRegistry: {
-                    address: DarknodeRegistry.networks[networkID].address,
-                    abi: DarknodeRegistry.abi as AbiItem[],
-                    artifact: DarknodeRegistry,
-                    block: 0
+                    address: DarknodeRegistryProxy.networks[networkID].address,
+                    abi: DarknodeRegistryLogic.abi as AbiItem[],
+                    artifact: DarknodeRegistryLogic,
+                    block: 17625998,
                 },
                 DarknodeRegistryStore: {
                     address: DarknodeRegistryStore.networks[networkID].address,
@@ -76,41 +89,52 @@ const ganache = (buildPath: string, networkID: number) => {
                     artifact: DarknodePaymentStore,
                 },
             },
-            shifter: {
-                ShifterRegistry: {
-                    address: ShifterRegistry.networks[networkID].address,
-                    abi: ShifterRegistry.abi as AbiItem[],
-                    artifact: ShifterRegistry,
+            gateways: {
+                GatewayRegistry: {
+                    address: GatewayRegistry.networks[networkID].address,
+                    abi: GatewayRegistry.abi as AbiItem[],
+                    artifact: GatewayRegistry,
                 },
-                zBTC: {
-                    _address: zBTC.networks[networkID].address,
-                    abi: zBTC.abi as AbiItem[],
-                    artifact: zBTC,
+                RenBTC: {
+                    _address: RenBTC.networks[networkID].address,
+                    abi: RenBTC.abi as AbiItem[],
+                    artifact: RenBTC,
+                    description: "gatewayRegistry.getTokenBySymbol(\"BTC\")",
                 },
-                BTCShifter: {
-                    _address: BTCShifter.networks[networkID].address,
-                    abi: BTCShifter.abi as AbiItem[],
-                    artifact: BTCShifter,
+                BTCGateway: {
+                    _address: BTCGateway.networks[networkID].address,
+                    abi: GatewayLogic.abi as AbiItem[],
+                    artifact: GatewayLogic,
+                    description: "gatewayRegistry.getGatewayBySymbol(\"BTC\")",
                 },
-                zZEC: {
-                    _address: zZEC.networks[networkID].address,
-                    abi: zZEC.abi as AbiItem[],
-                    artifact: zZEC,
+                RenZEC: {
+                    _address: RenZEC.networks[networkID].address,
+                    abi: RenZEC.abi as AbiItem[],
+                    artifact: RenZEC,
+                    description: "gatewayRegistry.getTokenBySymbol(\"ZEC\")",
                 },
-                ZECShifter: {
-                    _address: ZECShifter.networks[networkID].address,
-                    abi: ZECShifter.abi as AbiItem[],
-                    artifact: ZECShifter,
+                ZECGateway: {
+                    _address: ZECGateway.networks[networkID].address,
+                    abi: GatewayLogic.abi as AbiItem[],
+                    artifact: GatewayLogic,
+                    description: "gatewayRegistry.getGatewayBySymbol(\"ZEC\")",
                 },
-                zBCH: {
-                    _address: zBCH.networks[networkID].address,
-                    abi: zBCH.abi as AbiItem[],
-                    artifact: zBCH,
+                RenBCH: {
+                    _address: RenBCH.networks[networkID].address,
+                    abi: RenBCH.abi as AbiItem[],
+                    artifact: RenBCH,
+                    description: "gatewayRegistry.getTokenBySymbol(\"BCH\")",
                 },
-                BCHShifter: {
-                    _address: BCHShifter.networks[networkID].address,
-                    abi: BCHShifter.abi as AbiItem[],
-                    artifact: BCHShifter,
+                BCHGateway: {
+                    _address: BCHGateway.networks[networkID].address,
+                    abi: GatewayLogic.abi as AbiItem[],
+                    artifact: GatewayLogic,
+                    description: "gatewayRegistry.getGatewayBySymbol(\"BCH\")",
+                },
+                BasicAdapter: {
+                    address: BasicAdapter.networks[networkID].address,
+                    abi: BasicAdapter.abi as AbiItem[],
+                    artifact: BasicAdapter,
                 },
             },
             tokens: {
@@ -119,21 +143,21 @@ const ganache = (buildPath: string, networkID: number) => {
                     decimals: 18
                 },
                 BTC: {
-                    address: zBTC.networks[networkID].address,
-                    abi: zBTC.abi as AbiItem[],
-                    artifact: zBTC,
+                    address: RenBTC.networks[networkID].address,
+                    abi: RenBTC.abi as AbiItem[],
+                    artifact: RenBTC,
                     decimals: 8
                 },
                 ZEC: {
-                    address: zZEC.networks[networkID].address,
-                    abi: zZEC.abi as AbiItem[],
-                    artifact: zZEC,
+                    address: RenZEC.networks[networkID].address,
+                    abi: RenZEC.abi as AbiItem[],
+                    artifact: RenZEC,
                     decimals: 8
                 },
                 BCH: {
-                    address: zBCH.networks[networkID].address,
-                    abi: zBCH.abi as AbiItem[],
-                    artifact: zBCH,
+                    address: RenBCH.networks[networkID].address,
+                    abi: RenBCH.abi as AbiItem[],
+                    artifact: RenBCH,
                     decimals: 8
                 },
                 REN: {

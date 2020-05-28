@@ -1,40 +1,21 @@
 import * as React from "react";
 
-import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
-import { bindActionCreators } from "redux";
-
 import { darknodeIDHexToBase58 } from "../../../lib/darknode/darknodeID";
 import { RegistrationStatus } from "../../../lib/ethereum/contractReads";
-import { ApplicationState, DarknodesState } from "../../../store/applicationState";
-import { removeDarknode, removeRegisteringDarknode } from "../../../store/network/operatorActions";
-import { AppDispatch } from "../../../store/rootReducer";
+import { DarknodesState, NetworkStateContainer } from "../../../store/networkStateContainer";
+import { Web3Container } from "../../../store/web3Store";
 import { CardView } from "./CardView";
 
-const mapStateToProps = (state: ApplicationState) => ({
-    store: {
-        address: state.account.address,
-        quoteCurrency: state.network.quoteCurrency,
-        renNetwork: state.account.renNetwork,
-    },
-});
-
-const mapDispatchToProps = (dispatch: AppDispatch) => ({
-    actions: bindActionCreators({
-        removeRegisteringDarknode,
-        removeDarknode,
-    }, dispatch),
-});
-
-interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps> {
+interface Props {
     darknodeID: string;
     darknodeDetails: DarknodesState | null;
     name: string | undefined;
     publicKey: string | undefined;
 }
 
-export const DarknodeCard = connect(mapStateToProps, mapDispatchToProps)((props: Props) => {
-    const { actions, darknodeID, darknodeDetails, name, store, publicKey } = props;
-    const { address, quoteCurrency, renNetwork } = store;
+export const DarknodeCard = ({ darknodeID, darknodeDetails, name, publicKey }: Props) => {
+    const { address, renNetwork: renNetwork } = Web3Container.useContainer();
+    const { quoteCurrency, hideDarknode, removeRegisteringDarknode } = NetworkStateContainer.useContainer();
 
     const [confirmedRemove, setConfirmedRemove] = React.useState(false);
 
@@ -53,11 +34,11 @@ export const DarknodeCard = connect(mapStateToProps, mapDispatchToProps)((props:
 
         // tslint:disable-next-line: await-promise
         if (continuable) {
-            actions.removeRegisteringDarknode({ darknodeID });
+            removeRegisteringDarknode(darknodeID);
         } else if (address) {
-            actions.removeDarknode({ darknodeID, operator: address, network: renNetwork.name });
+            hideDarknode(darknodeID, address, renNetwork.name);
         }
-    }, [confirmedRemove, continuable, actions, address, darknodeID, renNetwork.name]);
+    }, [confirmedRemove, continuable, removeRegisteringDarknode, address, darknodeID, renNetwork.name]);
 
     const faded = darknodeDetails &&
         darknodeDetails.registrationStatus === RegistrationStatus.Unregistered &&
@@ -83,4 +64,4 @@ export const DarknodeCard = connect(mapStateToProps, mapDispatchToProps)((props:
         removeDarknode={handleRemoveDarknode}
         continuable={continuable}
     />;
-});
+};

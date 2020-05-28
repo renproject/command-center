@@ -1,18 +1,29 @@
 import Web3 from "web3";
-import { provider } from "web3-providers";
+import { HttpProvider, provider } from "web3-providers";
 
 import { Language } from "../../languages/language";
-import { _noCapture_ } from "../react/errors";
+import { noCapture } from "../react/errors";
 
 export const ErrorCanceledByUser = "User denied transaction signature.";
 
-const ErrorNoWeb3 = Language.wallet.mustInstallMetaMask;
+const ErrorNoWeb3 = Language.wallet.mustInstallWeb3Browser;
 // const ErrorNoAccounts = Language.wallet.noAccounts;
 const ErrorAccountAccessRejected = Language.wallet.mustConnect;
 
 export const getReadOnlyWeb3 = (publicNode: string): Web3 => {
     return new Web3(publicNode);
 };
+
+interface EthereumProvider extends HttpProvider {
+    enable(): Promise<void>;
+}
+
+declare global {
+    interface Window {
+        web3: Web3 | undefined;
+        ethereum: EthereumProvider | undefined;
+    }
+}
 
 export const getInjectedWeb3Provider = async (onAnyProvider?: (provider: provider) => void): Promise<provider> => {
     let injectedProvider;
@@ -22,12 +33,12 @@ export const getInjectedWeb3Provider = async (onAnyProvider?: (provider: provide
             await window.ethereum.enable();
             injectedProvider = window.ethereum;
         } catch (error) {
-            throw _noCapture_(new Error(ErrorAccountAccessRejected));
+            throw noCapture(new Error(ErrorAccountAccessRejected));
         }
     } else if (window.web3) {
         injectedProvider = window.web3.currentProvider;
     } else {
-        throw _noCapture_(new Error(ErrorNoWeb3));
+        throw noCapture(new Error(ErrorNoWeb3));
     }
 
     if (onAnyProvider) { onAnyProvider(injectedProvider); }

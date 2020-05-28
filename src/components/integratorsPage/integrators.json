@@ -1,0 +1,83 @@
+{
+    "testnet": {
+        "0x3973b2acdfac17171315e49ef19a0758b8b6f104": {
+            "name": "Curve",
+            "logo": "/integrators/curve.svg",
+            "urlHref": "https://curve.fi",
+            "url": "curve.fi"
+        },
+        "0xad81fdc92e2ecb43e6207647b17f6d5075e6a1fd": {
+            "name": "Uniswap",
+            "logo": "/integrators/uniswap.png",
+            "urlHref": "https://uniswap.exchange",
+            "url": "uniswap.exchange"
+        },
+        "0x7ddfa2e5435027f6e13ca8db2f32ebd5551158bb": {
+            "name": "RenVM Demo Page",
+            "logo": "/integrators/ren.svg",
+            "urlHref": "https://renproject.github.io/gateway-staging/?network=testnet",
+            "url": "Gateway Staging"
+        },
+        "0x40f41fd6f5fb0dd1bf7e05e3a07a2ac56ac6fe11": {
+            "name": "WBTC Cafe",
+            "logo": "/integrators/wbtc.svg",
+            "urlHref": "https://wbtc.cafe",
+            "url": "wbtc.cafe"
+        },
+        "0x3aa969d343bd6ae66c4027bb61a382dc96e88150": {
+            "url": "Etherscan - Basic"
+        },
+        "0xb9b0442de9bc214a23b434ee2ec7af8a4e1b3eee": {
+            "url": "Etherscan - Basic"
+        },
+        "0x7262337b576cecbf9febb6b8fbb5210b98d43139": {
+            "url": "Etherscan - CurveExchangeAdapter"
+        },
+        "0xc896813996330ab852f2f27f27bf4523abf80b27": {
+            "url": "Etherscan - Vesting"
+        },
+        "0x43f0dc6f2b65260753fd73c429e54be7af920f9d": {
+            "url": "Etherscan - CurveExchangeAdapter"
+        },
+        "0x795a46daab5389d01b45ff6c68029c248b22999a": {
+            "name": "Ren Bridge",
+            "logo": "/integrators/ren.svg",
+            "urlHref": "https://bridge.renproject.io",
+            "url": "bridge.renproject.io"
+        },
+        "0x3b4353d80464af08cc0787ea9c45bbc50f8c5cce": {
+            "url": "Etherscan - BtcToAave"
+        },
+        "0xb005bb5e58878318d559561a49f0b67c616d11f0": {
+            "url": "Etherscan - BtcToAave"
+        }
+    },
+    "devnet": {
+        "0xfabdb1f53ef8b080332621cbc9f820a39e7a1b83": {
+            "name": "RenVM Demo Page",
+            "logo": "/integrators/ren.svg",
+            "urlHref": "https://renproject.github.io/gateway-staging/?network=devnet",
+            "url": "Gateway Staging"
+        }
+    },
+    "mainnet": {
+        "0xc633576775ab431ff627746d2c4af6686c4c719c": {
+            "name": "WBTC Cafe",
+            "logo": "/integrators/wbtc.svg",
+            "urlHref": "https://wbtc.cafe",
+            "url": "wbtc.cafe"
+        },
+        "0x2407750d9e57990559b6be9c17ea200cbdf17b93": {
+            "name": "Curve",
+            "logo": "/integrators/curve.svg",
+            "urlHref": "https://curve.fi",
+            "url": "curve.fi"
+        },
+        "0x32666b64e9fd0f44916e1378efb2cfa3b3b96e80": {
+            "name": "RenBridge",
+            "logo": "/integrators/ren.svg",
+            "urlHref": "https://bridge.renproject.io",
+            "url": "bridge.renproject.io"
+        }
+    }
+}

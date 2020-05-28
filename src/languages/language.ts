@@ -5,7 +5,7 @@ export interface Language {
         metamask: string;
 
         noAccounts: string;
-        mustInstallMetaMask: string;
+        mustInstallWeb3Browser: string;
         mustUnlock: string;
         mustConnect: string;
     };

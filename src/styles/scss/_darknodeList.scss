@@ -99,6 +99,14 @@ $darknode-card-margin: 10px;
         border-left: 2px solid #001B3A;
     }
 
+    >div>svg {
+        margin-right: 10px;
+    }
+
+    >div>span {
+        margin-bottom: -3px;
+    }
+
     .darknode-card--rewards {
         font-size: 15px;
         color: $green;
@@ -120,13 +128,17 @@ $darknode-card-margin: 10px;
         font-weight: bold;
     }
 
-    .darknode-card--bottom--icon {
-        font-size: 2em;
+    .sidebar--nav--icon {
 
-        mix-blend-mode: normal;
-        opacity: 0.4;
+        svg,
+        img {
+            font-size: 2em;
 
-        margin-right: 20px;
+            mix-blend-mode: normal;
+            opacity: 0.4;
+
+            margin-right: 20px;
+        }
     }
 }
 
@@ -167,20 +179,20 @@ $darknode-card-margin: 10px;
         background-color: #031830;
     }
 
-    &.fourth {
-        @media(max-width: 1574px) {
-            display: none;
-        }
-    }
+    // &.fourth {
+    //     @media(max-width: 1186px) {
+    //         display: none;
+    //     }
+    // }
 
     &.third {
-        @media(max-width: 1219px) {
+        @media(max-width: 1186px) {
             display: none;
         }
     }
 
     &.second {
-        @media(max-width: 864px) {
+        @media(max-width: 741px) {
             display: none;
         }
     }

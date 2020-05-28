@@ -1,30 +1,37 @@
 import * as React from "react";
 
-import { connect } from "react-redux"; // Custom typings
-
-import { ApplicationState } from "../../store/applicationState";
-import { MapContainer } from "../overviewPage/mapContainer";
+import { ApolloWithNetwork } from "../../lib/graphQL/ApolloWithNetwork";
+import { DEFAULT_REN_NETWORK } from "../../lib/react/environmentVariables";
+import { EpochContainer } from "../../store/epochStore";
+import { GithubAPIContainer } from "../../store/githubApiStore";
+import { NetworkStateContainer } from "../../store/networkStateContainer";
+import { PopupContainer } from "../../store/popupStore";
+import { UIContainer } from "../../store/uiStore";
+import { Web3Container } from "../../store/web3Store";
+import { MapContainer } from "../networkDarknodesPage/mapContainer";
 import { RenVMContainer } from "../renvmPage/renvmContainer";
 
-class ConnectClass extends React.Component<Props> {
-    public render = (): JSX.Element => {
-        const { store: { renNetwork } } = this.props;
+export const Connect: React.StatelessComponent<Props> = ({ children }) => {
+    return <PopupContainer.Provider>
+        <Web3Container.Provider initialState={DEFAULT_REN_NETWORK}>
+            <ApolloWithNetwork>
+                <NetworkStateContainer.Provider>
+                    <UIContainer.Provider>
+                        <MapContainer.Provider>
+                            <RenVMContainer.Provider>
+                                <EpochContainer.Provider>
+                                    <GithubAPIContainer.Provider>
+                                        {children}
+                                    </GithubAPIContainer.Provider>
+                                </EpochContainer.Provider>
+                            </RenVMContainer.Provider>
+                        </MapContainer.Provider>
+                    </UIContainer.Provider>
+                </NetworkStateContainer.Provider>
+            </ApolloWithNetwork>
+        </Web3Container.Provider>
+    </PopupContainer.Provider>;
+};
 
-        return <MapContainer.Provider initialState={renNetwork}>
-            <RenVMContainer.Provider initialState={renNetwork}>
-                {this.props.children}
-            </RenVMContainer.Provider>
-        </MapContainer.Provider>;
-    }
+interface Props {
 }
-
-const mapStateToProps = (state: ApplicationState) => ({
-    store: {
-        renNetwork: state.account.renNetwork,
-    },
-});
-
-interface Props extends ReturnType<typeof mapStateToProps> {
-}
-
-export const Connect = connect(mapStateToProps)(ConnectClass);

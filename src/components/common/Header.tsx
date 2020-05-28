@@ -2,34 +2,38 @@ import * as React from "react";
 
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { RenNetwork, RenNetworks } from "@renproject/contracts";
+// import { RenNetwork, RenNetworks } from "@renproject/contracts";
 import { currencies, Currency, CurrencyIcon, Dropdown } from "@renproject/react-components";
-import { connect, ConnectedReturnType } from "react-redux"; // Custom typings
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
-import { bindActionCreators } from "redux";
 
-import { storeRenNetwork } from "../../store/account/accountActions";
-import { ApplicationState } from "../../store/applicationState";
-import { storeQuoteCurrency } from "../../store/network/operatorActions";
-import { AppDispatch } from "../../store/rootReducer";
-import { showMobileMenu } from "../../store/ui/uiActions";
+import { NetworkStateContainer } from "../../store/networkStateContainer";
+import { UIContainer } from "../../store/uiStore";
+import { Web3Container } from "../../store/web3Store";
+// import { Web3Container } from "../../store/web3Store";
 import { ReactComponent as RenVMIcon } from "../../styles/images/Icon-HyperDrive.svg";
+import { ReactComponent as IntegratorsIcon } from "../../styles/images/icon-integrators.svg";
+import { ReactComponent as NetworkIcon } from "../../styles/images/icon-network.svg";
 import { ReactComponent as OverviewIcon } from "../../styles/images/Icon-Overview.svg";
 // import { ReactComponent as English } from "../../styles/images/rp-flag-uk.svg";
 import { AccountDropdown } from "./AccountDropdown";
+import { ExternalLink, URLs } from "./ExternalLink";
+import { MoreDropdown } from "./MoreDropdown";
+import { StatusDot, StatusDotColor } from "./StatusDot";
+
+// import { Search } from "./Search";
 
 // const languageOptions = new Map()
 //     .set("EN",
 //         <><English /> English</>
 //     );
 
-const networkOptions = new Map()
-    // .set(RenNetwork.Mainnet, <>Mainnet</>)
-    .set(RenNetwork.Chaosnet, <>Chaosnet</>)
-    .set(RenNetwork.Testnet, <>Testnet</>)
-    .set(RenNetwork.Devnet, <>Devnet</>)
-    .set(RenNetwork.Localnet, <>Localnet</>)
-    ;
+// const networkOptions = new Map()
+//     // .set(RenNetwork.Mainnet, <>Mainnet</>)
+//     .set(RenNetwork.Chaosnet, <>Chaosnet</>)
+//     .set(RenNetwork.Testnet, <>Testnet</>)
+//     .set(RenNetwork.Devnet, <>Devnet</>)
+//     .set(RenNetwork.Localnet, <>Localnet</>)
+//     ;
 
 const getCurrencyOptions = () => {
     const options = new Map<string, React.ReactNode>();
@@ -46,41 +50,41 @@ const getCurrencyOptions = () => {
 
 const currencyOptions = getCurrencyOptions();
 
+const MenuItem: React.FC<{ path: string, title: string, icon: JSX.Element, activePath: string }> = ({ path, title, icon, activePath }) =>
+    <Link className="no-underline" to={path}>
+        <li className={["header--group", activePath.split("/")[1] === path.split("/")[1] ? "header--group--active" : ""].join(" ")}>
+            <div className="header--selected">
+                {icon} <div>{title}</div>
+            </div>
+        </li>
+    </Link>;
+
+interface Props extends RouteComponentProps {
+}
+
 /**
  * Header is a visual component providing page branding and navigation.
  */
-const HeaderClass = (props: Props) => {
+export const Header = withRouter(({ location }: Props) => {
+
+    const { showMobileMenu } = UIContainer.useContainer();
+    const { renNetwork } = Web3Container.useContainer();
+    const { quoteCurrency, setQuoteCurrency } = NetworkStateContainer.useContainer();
 
     const setCurrency = (currency: string): void => {
-        props.actions.storeQuoteCurrency({ quoteCurrency: currency as Currency });
+        setQuoteCurrency(currency as Currency);
     };
 
-    const setNetwork = (network: string): void => {
-        props.actions.storeRenNetwork(RenNetworks[network]);
-        setInterval(() => {
-            const currentLocation = window.location.pathname;
-            // history.push("/loading");
-            // Reload to clear all stores and cancel timeouts
-            // (e.g. deposit/withdrawal confirmations)
-            // tslint:disable-next-line: no-console
-            console.log(`Reloading page (${currentLocation})`);
-            window.location.replace(currentLocation);
-        }, 100);
-    };
+    // const setNetwork = (network: string): void => {
+    //     setRenNetwork(RenNetworks[network]);
+    //     setInterval(() => {
+    //         window.location.reload();
+    //     }, 100);
+    // };
 
     // const setLanguage = (language: string): void => {
     //     // NOT IMPLEMENTED
     // }
-
-    const [searchInput, setSearchInput] = React.useState("");
-
-    const handleInput = (event: React.FormEvent<HTMLInputElement>): void => {
-        const element = (event.target as HTMLInputElement);
-        setSearchInput(String(element.value).toLowerCase());
-    };
-
-    const { location } = props;
-    const { address, quoteCurrency, renNetwork } = props.store;
 
     // const languageDropdownNode = <Dropdown
     //     key="languageDropdown"
@@ -92,15 +96,15 @@ const HeaderClass = (props: Props) => {
     //     setValue={setLanguage}
     // />;
 
-    const networkDropdownNode = <Dropdown
-        key="networkDropdown"
-        selected={{
-            value: renNetwork.name,
-            render: networkOptions.get(renNetwork.name),
-        }}
-        options={networkOptions}
-        setValue={setNetwork}
-    />;
+    // const networkDropdownNode = <Dropdown
+    //     key="networkDropdown"
+    //     selected={{
+    //         value: renNetwork.name,
+    //         render: networkOptions.get(renNetwork.name),
+    //     }}
+    //     options={networkOptions}
+    //     setValue={setNetwork}
+    // />;
 
     const currencyDropdownNode = <Dropdown
         key="currencyDropdown"
@@ -117,59 +121,32 @@ const HeaderClass = (props: Props) => {
 
     return (
         <div className={["header"].join(" ")}>
-            {address ? <div role="button" className="header--mobile-menu--button">
-                <button onClick={props.actions.showMobileMenu}>
-                    <FontAwesomeIcon icon={faBars} />
-                </button>
-            </div> : <></>}
             <Link className="no-underline" to="/">
                 <div className="header--logo" />
             </Link>
+            {renNetwork.name === "mainnet" ? <ExternalLink href={URLs.welcomeToCommandCenter} className="new">
+                <span className="new-new xl-or-larger">New</span>
+                <span className="new-blue">Mainnet is live. →</span>
+            </ExternalLink> : <div className="new">
+                    <div className="header--network"><StatusDot color={StatusDotColor.Yellow} size={16} /> <span className="header--network--text">{renNetwork.name.toUpperCase()}</span></div>
+                </div>}
             <div className="header--menu">
-                {/* <li className={["header--group"].join(" ")}>
-                    <input type="text" className="header--search--input" onChange={handleInput} value={searchInput} placeholder="🔍 Search by Darknode / Transaction" />
-                </li> */}
-                <Link className="no-underline" to="/">
-                    <li className={["header--group", location.pathname === "/" ? "header--group--active" : ""].join(" ")}>
-                        <div className="header--selected">
-                            <OverviewIcon className="header--selected--icon" /> <div>Darknodes</div>
-                        </div>
-                    </li>
-                </Link>
-                <Link className="no-underline" to="/renvm">
-                    <li className={["header--group", location.pathname.match("/(renvm|hyperdrive)") ? "header--group--active" : ""].join(" ")}>
-                        <div className="header--selected">
-                            <RenVMIcon className="header--selected--icon" /> <div>RenVM</div>
-                        </div>
-                    </li>
-                </Link>
+                <MenuItem path="/" title="Network" icon={<NetworkIcon />} activePath={location.pathname} />
+                <MenuItem path="/integrators" title="Integrators" icon={<IntegratorsIcon />} activePath={location.pathname} />
+                <MenuItem path="/darknode-stats" title="Darknodes" icon={<OverviewIcon />} activePath={location.pathname} />
+                <MenuItem path="/renvm" title="RenVM" icon={<RenVMIcon />} activePath={location.pathname} />
+
                 {/* {languageDropdownNode} */}
                 {currencyDropdownNode}
-                {networkDropdownNode}
+                {/* {networkDropdownNode} */}
+                <MoreDropdown />
                 <AccountDropdown />
+            </div>
+            <div role="button" className="header--mobile-menu--button">
+                <button onClick={showMobileMenu}>
+                    <FontAwesomeIcon icon={faBars} />
+                </button>
             </div>
         </div>
     );
-};
-
-const mapStateToProps = (state: ApplicationState) => ({
-    store: {
-        address: state.account.address,
-        quoteCurrency: state.network.quoteCurrency,
-        renNetwork: state.account.renNetwork,
-    },
 });
-
-const mapDispatchToProps = (dispatch: AppDispatch) => ({
-    actions: bindActionCreators({
-        storeQuoteCurrency,
-        showMobileMenu,
-        storeRenNetwork,
-    }, dispatch),
-});
-
-interface Props extends ReturnType<typeof mapStateToProps>, ConnectedReturnType<typeof mapDispatchToProps>,
-    RouteComponentProps {
-}
-
-export const Header = connect(mapStateToProps, mapDispatchToProps)(withRouter(HeaderClass));
