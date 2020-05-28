@@ -36,7 +36,12 @@ yarn
 yarn start
 ```
 
-Change the network with the environment variable `REACT_APP_NETWORK="testnet"`.
+To configure the network or add an Infura key, create a `.env` file:
+
+```sh
+REACT_APP_INFURA_KEY="" # Optional
+REACT_APP_NETWORK="mainnet" # Options are "testnet" (default) or "mainnet
+```
 
 ### Tests
 
