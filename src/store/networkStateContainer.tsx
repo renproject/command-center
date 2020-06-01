@@ -74,6 +74,7 @@ const useNetworkStateContainer = () => {
     const [pendingRewardsInEth, setPendingRewardsInEth] = useState(OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber>>());
     const [cycleTimeout, setCycleTimeout] = useState(new BigNumber(0));
     const [currentShareCount, setCurrentShareCount] = useState(new BigNumber(1));
+    const [previousShareCount, setPreviousShareCount] = useState(new BigNumber(1));
 
     const [currentDarknodeCount, setCurrentDarknodeCount] = useState(null as number | null);
     const [previousDarknodeCount, setPreviousDarknodeCount] = useState(null as number | null);
@@ -274,6 +275,7 @@ const useNetworkStateContainer = () => {
             pendingTotalInEth: newPendingTotalInEth,
             pendingRewardsInEth: newPendingRewardsInEth,
             currentShareCount: newCurrentShareCount,
+            previousShareCount: newPreviousShareCount,
             payoutPercent: newPayoutPercent,
         } = await fetchCycleAndPendingRewardsPromise;
 
@@ -300,6 +302,9 @@ const useNetworkStateContainer = () => {
         }
         if (newCurrentShareCount !== null) {
             setCurrentShareCount(newCurrentShareCount);
+        }
+        if (newPreviousShareCount !== null) {
+            setPreviousShareCount(newPreviousShareCount);
         }
     };
 
@@ -629,6 +634,7 @@ const useNetworkStateContainer = () => {
         pendingRewardsInEth,
         cycleTimeout,
         currentShareCount,
+        previousShareCount,
         currentDarknodeCount,
         previousDarknodeCount,
         nextDarknodeCount,

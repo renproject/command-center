@@ -435,7 +435,7 @@ export const getOperatorDarknodes = async (
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-// Darknode Reward Vault contract //////////////////////////////////////////////
+// Darknode Payment contract ///////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
 // Sum up fees into the total ETH value (in wei).
@@ -491,6 +491,8 @@ export const fetchCycleAndPendingRewards = async (
     const πEpoch = retryNTimes(async () => await darknodeRegistry.methods.currentEpoch().call(), 2);
     const πEpochInterval = retryNTimes(async () => await darknodeRegistry.methods.minimumEpochInterval().call(), 2);
 
+    const previousShareCount = await retryNTimes(async () => await darknodeRegistry.methods.numDarknodesPreviousEpoch().call(), 2)
+        .then((bn: (BN | number | string | null)) => bn === null ? null : new BigNumber(bn.toString()));
     const πPrevious = safePromiseAllMap(
         NewTokenDetails.map(async (_tokenDetails, token) => {
             try {
@@ -577,6 +579,7 @@ export const fetchCycleAndPendingRewards = async (
         pendingTotalInEth,
         pendingRewardsInEth,
         currentShareCount,
+        previousShareCount,
         payoutPercent: currentCyclePayoutPercent,
     };
 };

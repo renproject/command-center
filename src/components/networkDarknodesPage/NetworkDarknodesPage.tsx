@@ -18,14 +18,14 @@ import { TokenBalance } from "../common/TokenBalance";
 import { DarknodeMap } from "./darknodeMap/DarknodeMap";
 
 export const NetworkDarknodesPage = () => {
-    const { currentCycle, previousCycle, pendingTotalInEth, quoteCurrency, currentShareCount, currentDarknodeCount, nextDarknodeCount, payoutPercent, previousDarknodeCount } = NetworkStateContainer.useContainer();
+    const { currentCycle, previousCycle, pendingTotalInEth, quoteCurrency, currentShareCount, previousShareCount, currentDarknodeCount, nextDarknodeCount, payoutPercent, previousDarknodeCount } = NetworkStateContainer.useContainer();
     const { timeUntilNextEpoch, timeSinceLastEpoch, epochInterval } = EpochContainer.useContainer();
     const { latestCLIVersion, latestCLIVersionDaysAgo } = GithubAPIContainer.useContainer();
 
     const current = pendingTotalInEth.get(currentCycle, undefined);
     const previous = pendingTotalInEth.get(previousCycle, undefined);
     const currentSummed = current ? current.times(currentShareCount).div(payoutPercent || 0).times(100) : undefined;
-    const previousSummed = previous ? previous.times(currentShareCount) : undefined;
+    const previousSummed = previous ? previous.times(previousShareCount) : undefined;
 
     const [currentTime, setCurrentTime] = React.useState<number | null>(null);
     React.useEffect(() => {

@@ -40,7 +40,7 @@
             "url": "Etherscan - CurveExchangeAdapter"
         },
         "0x795a46daab5389d01b45ff6c68029c248b22999a": {
-            "name": "Ren Bridge",
+            "name": "RenBridge",
             "logo": "/integrators/ren.svg",
             "urlHref": "https://bridge.renproject.io",
             "url": "bridge.renproject.io"
