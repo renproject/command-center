@@ -12,6 +12,7 @@ import { ReactComponent as IconMintFee } from "../../styles/images/icon-mint-fee
 import { Stat, Stats } from "../common/Stat";
 
 interface Props {
+    minted: BigNumber;
     l: BigNumber;
     b: BigNumber | null;
     bRen: BigNumber;
@@ -20,7 +21,7 @@ interface Props {
 
 const RowBullet = () => <div className="collateral-table--bullet"><div className="collateral-table--bullet--inner" /></div>;
 
-export const Collateral: React.FC<Props> = ({ l, b, bRen, quoteCurrency }) => {
+export const Collateral: React.FC<Props> = ({ minted, l, b, bRen, quoteCurrency }) => {
 
     const lDivB = b === null || l.isZero() ? 0 : b.isEqualTo(0) ? 100 : BigNumber.min(l.div(b), 1).multipliedBy(100).toNumber();
     const bDivL = b === null || l.isZero() ? 100 : l.isEqualTo(0) ? 100 : BigNumber.min(b.div(l), 1).multipliedBy(100).toNumber();
@@ -62,6 +63,10 @@ export const Collateral: React.FC<Props> = ({ l, b, bRen, quoteCurrency }) => {
                             <div className="collateral-table--row">
                                 <div className={classNames("collateral-table--row--left", "row--l", overCollateralized ? "row--l--over" : "row--l--under")}><RowBullet /> Value Locked (L)</div>
                                 <div className="collateral-table--row--right"><CurrencyIcon currency={quoteCurrency} />{l.toFormat(2)}</div>
+                            </div>
+                            <div className="collateral-table--row">
+                                <div className="collateral-table--row--left row--b"><RowBullet /> Value Minted</div>
+                                <div className="collateral-table--row--right">{minted ? <span className="collateral-chart--bow--small"><CurrencyIcon currency={quoteCurrency} />{minted.toFormat(2)}</span> : null}</div>
                             </div>
                             {/* <div className="collateral-table--row">
                                 <div className="collateral-table--row--left row--b3"><RowBullet /> Ceiling (R/3)</div>

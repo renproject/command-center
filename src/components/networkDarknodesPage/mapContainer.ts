@@ -161,7 +161,7 @@ const useMapContainer = () => {
             const { longitude, latitude } = await getLocation(ip);
 
             // tslint:disable-next-line: strict-type-predicates
-            if (!longitude || !latitude) {
+            if (typeof longitude !== "number" || typeof latitude !== "number") {
                 return;
             }
 

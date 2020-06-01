@@ -393,6 +393,12 @@
 }
 
 .collateral-table--row--right {
+
+    &,
+    >span {
+        @extend .monospace;
+    }
+
     font-weight: 500;
     font-size: 12px;
     line-height: 29px;

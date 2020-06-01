@@ -30,9 +30,10 @@ export const NetworkStats = () => {
         container.updateBlocks().catch(console.error);
         const interval = setInterval(() => {
             container.updateBlocks().catch(console.error);
-        }, 1000 * 7.5);
+        }, 1000 * 120);
         return () => clearInterval(interval);
-    }, []); // 7.5 seconds
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []); // 120 seconds
 
     const firstBlock = container.blocks ? container.blocks.first<Block | null>(null) : null;
 
@@ -48,19 +49,19 @@ export const NetworkStats = () => {
                     const token = state.name.replace("UTXOs", "").toUpperCase() as Token;
                     if (tokenPrices === null) {
                         lockedBalances = lockedBalances.set(token, new BigNumber(0));
-                        return;
+                        return null;
                     }
 
                     const tokenPriceMap = tokenPrices.get(token, undefined);
                     if (!tokenPriceMap) {
                         lockedBalances = lockedBalances.set(token, new BigNumber(0));
-                        return;
+                        return null;
                     }
 
                     const price = tokenPriceMap.get(quoteCurrency, undefined);
                     if (!price) {
                         lockedBalances = lockedBalances.set(token, new BigNumber(0));
-                        return;
+                        return null;
                     }
 
                     const tokenDetails = AllTokenDetails.get(token, undefined);
@@ -71,8 +72,9 @@ export const NetworkStats = () => {
 
                     lockedBalances = lockedBalances.set(token, amount.times(price));
                     total = total.plus(lockedBalances.get(token, new BigNumber(0)));
-                    return;
+                    return null;
                 }
+                return null;
             });
     }
 
@@ -119,6 +121,7 @@ export const NetworkStats = () => {
                 }
             }
         })().catch(console.error);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [volumePeriod, lockedPeriod]);
 
     const [quotePeriodSeries, setQuotePeriodSeries] = useState<Map<PeriodType, QuotePeriodResponse>>(Map<PeriodType, QuotePeriodResponse>());
@@ -131,9 +134,16 @@ export const NetworkStats = () => {
             }
         }
         setPricesUpdated(false);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [periodSeries, pricesUpdated]);
 
-    const collateral = <Collateral l={total} b={b} bRen={new BigNumber(currentDarknodeCount || 0).times(100000)} quoteCurrency={quoteCurrency} />;
+    const allPeriod = quotePeriodSeries.get(PeriodType.ALL);
+    let mintedTotal = new BigNumber(0);
+    if (allPeriod) {
+        mintedTotal = new BigNumber(allPeriod.average.quoteTotalLocked);
+    }
+
+    const collateral = <Collateral l={total} minted={mintedTotal} b={b} bRen={new BigNumber(currentDarknodeCount || 0).times(100000)} quoteCurrency={quoteCurrency} />;
 
     const volumePeriodSeries = quotePeriodSeries.get(volumePeriod);
     const lockedPeriodSeries = quotePeriodSeries.get(lockedPeriod);

@@ -96,7 +96,7 @@ export const DarknodeMap = () => {
                         <circle
                             cx={0}
                             cy={0}
-                            r={5}
+                            r={4}
                         />
                     </Link>
                 </Marker>;
