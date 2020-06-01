@@ -4,7 +4,7 @@ import React, { useMemo } from "react";
 import { Web3Container } from "../../store/web3Store";
 import { apolloClient } from "./client";
 
-export const ApolloWithNetwork: React.StatelessComponent<{}> = ({ children }) => {
+export const ApolloWithNetwork: React.FC<{}> = ({ children }) => {
     const { renNetwork } = Web3Container.useContainer();
     const client = useMemo(() => apolloClient(renNetwork), [renNetwork]);
 

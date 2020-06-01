@@ -11,10 +11,13 @@ import { EpochContainer } from "../../../../store/epochStore";
 import { DarknodesState } from "../../../../store/networkStateContainer";
 import { Block, BlockBody, BlockTitle } from "./Block";
 
-export const EpochBlock = ({ darknodeDetails }: Props): JSX.Element => {
+interface Props {
+    darknodeDetails: DarknodesState | null;
+}
 
-    // const { timeUntilNextEpoch, timeSinceLastEpoch, epochInterval } = EpochContainer.useContainer();
-    const { timeSinceLastEpoch } = EpochContainer.useContainer();
+export const EpochBlock: React.FC<Props> = ({ darknodeDetails }) => {
+
+    const { timeUntilNextEpoch, timeSinceLastEpoch, epochInterval } = EpochContainer.useContainer();
 
     const [currentTime, setCurrentTime] = React.useState<number | null>(null);
     React.useEffect(() => {
@@ -36,20 +39,20 @@ export const EpochBlock = ({ darknodeDetails }: Props): JSX.Element => {
                     <div className="resources--chart--and--label">
                         <div className="epoch-chart">
                             <CircularProgressbar
-                                // value={Math.min((timeSinceLastEpoch || 0) / (epochInterval || 1) * 100, 100)}
-                                // text={currentTime !== null && timeUntilNextEpoch !== null ? naturalTime(currentTime + timeUntilNextEpoch, {
-                                //     suffix: "",
-                                //     message: "",
-                                //     countDown: true,
-                                //     showingSeconds: false
-                                // }) : ""}
-                                value={100}
-                                text={currentTime !== null && timeSinceLastEpoch !== null ? naturalTime(currentTime - timeSinceLastEpoch, {
+                                value={Math.min((timeSinceLastEpoch || 0) / (epochInterval || 1) * 100, 100)}
+                                text={currentTime !== null && timeUntilNextEpoch !== null ? naturalTime(currentTime + timeUntilNextEpoch, {
                                     suffix: "",
                                     message: "",
-                                    countDown: false,
+                                    countDown: true,
                                     showingSeconds: false
                                 }) : ""}
+                                // value={100}
+                                // text={currentTime !== null && timeSinceLastEpoch !== null ? naturalTime(currentTime - timeSinceLastEpoch, {
+                                //     suffix: "",
+                                //     message: "",
+                                //     countDown: false,
+                                //     showingSeconds: false
+                                // }) : ""}
                                 styles={buildStyles({
                                     // Text size
                                     textSize: "16px",
@@ -70,13 +73,13 @@ export const EpochBlock = ({ darknodeDetails }: Props): JSX.Element => {
                         </div>
                     </div>
                     <div className="epoch-right">
-                        <p>Epochs are currently called manually</p>
-                        {/* <p>{currentTime !== null && timeUntilNextEpoch !== null ? naturalTime(currentTime + timeUntilNextEpoch, {
+                        {/* <p>Epochs are currently called manually</p> */}
+                        <p>{currentTime !== null && timeUntilNextEpoch !== null ? naturalTime(currentTime + timeUntilNextEpoch, {
                             suffix: "until next epoch",
-                            message: "Epochs are currently called manually",
+                            message: "New epoch will be called shortly",
                             countDown: true,
                             showingSeconds: false
-                        }) : ""}</p> */}
+                        }) : ""}</p>
                         <p>{currentTime !== null && timeSinceLastEpoch !== null ? naturalTime(currentTime - timeSinceLastEpoch, {
                             suffix: "since last epoch",
                             message: "Epoch called just now",
@@ -89,8 +92,3 @@ export const EpochBlock = ({ darknodeDetails }: Props): JSX.Element => {
         </Block>
     );
 };
-
-// tslint:disable: react-unused-props-and-state
-interface Props {
-    darknodeDetails: DarknodesState | null;
-}

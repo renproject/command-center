@@ -17,7 +17,7 @@ import { PopupController } from "./common/popups/PopupController";
 import { Sidebar } from "./common/sidebar/Sidebar";
 import { Darknode, getDarknodeParam } from "./darknodePage/Darknode";
 import { IntegratorsPage } from "./integratorsPage/IntegratorsPage";
-import { Overview } from "./networkDarknodesPage/Overview";
+import { NetworkDarknodesPage } from "./networkDarknodesPage/NetworkDarknodesPage";
 import { NetworkStats } from "./networkStatsPage/NetworkStats";
 import { RenVM } from "./renvmPage/RenVM";
 import { ScrollToTop } from "./ScrollToTop";
@@ -71,11 +71,10 @@ export const App = withRouter(({ match: { params } }: Props) => {
                 {_catch_(<Sidebar selectedDarknode={darknodeID} />)}
                 <div className="app--body">
                     {_catch_(<Switch>
-                        {/* tslint:disable-next-line: react-this-binding-issue jsx-no-lambda */}
                         <Route path="/" exact component={NetworkStats} />
                         <Route path="/integrators" exact component={IntegratorsPage} />
                         <Route path="/integrators/:page" exact component={IntegratorsPage} />
-                        <Route path="/darknode-stats" exact component={Overview} />
+                        <Route path="/darknode-stats" exact component={NetworkDarknodesPage} />
                         <Route path="/all" exact component={withAccount(AllDarknodes)} />
                         <Route path="/darknode/:darknodeID" exact component={Darknode} />
 
@@ -99,7 +98,6 @@ export const App = withRouter(({ match: { params } }: Props) => {
                     </Switch>, { popup: true })}
                     <FeedbackButton url={URLs.feedbackButton} />
                 </div>
-                {/* {_catch_(<Footer />)} */}
             </PopupController>
             {_catch_(<Header />)}
         </div>

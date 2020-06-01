@@ -17,7 +17,7 @@ interface Props {
     registrySync: { progress: number, target: number };
 }
 
-export const DarknodeList: React.StatelessComponent<Props> = ({
+export const DarknodeList: React.FC<Props> = ({
     darknodeList,
     darknodeDetails,
     darknodeNames,

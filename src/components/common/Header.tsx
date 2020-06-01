@@ -20,21 +20,6 @@ import { ExternalLink, URLs } from "./ExternalLink";
 import { MoreDropdown } from "./MoreDropdown";
 import { StatusDot, StatusDotColor } from "./StatusDot";
 
-// import { Search } from "./Search";
-
-// const languageOptions = new Map()
-//     .set("EN",
-//         <><English /> English</>
-//     );
-
-// const networkOptions = new Map()
-//     // .set(RenNetwork.Mainnet, <>Mainnet</>)
-//     .set(RenNetwork.Chaosnet, <>Chaosnet</>)
-//     .set(RenNetwork.Testnet, <>Testnet</>)
-//     .set(RenNetwork.Devnet, <>Devnet</>)
-//     .set(RenNetwork.Localnet, <>Localnet</>)
-//     ;
-
 const getCurrencyOptions = () => {
     const options = new Map<string, React.ReactNode>();
 

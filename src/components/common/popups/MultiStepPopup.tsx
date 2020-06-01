@@ -13,7 +13,7 @@ import { PopupError } from "./PopupController";
  * MultiStepPopup is a popup component that prompts the user to approve a
  * series of Ethereum transactions
  */
-const MultiStepPopupClass: React.StatelessComponent<Props> = ({ steps,
+const MultiStepPopupClass: React.FC<Props> = ({ steps,
     title,
     confirm,
     warning,
@@ -52,13 +52,6 @@ const MultiStepPopupClass: React.StatelessComponent<Props> = ({ steps,
     };
 
     const onDone = () => {
-        // const { onDone } = this.props;
-        // if (onDone) {
-        //     const promiseOrVoid = onDone();
-        //     if (promiseOrVoid) {
-        //         promiseOrVoid.catch(console.error);
-        //     }
-        // }
         clearPopup();
     };
 
@@ -215,7 +208,6 @@ interface Props {
     ignoreWarning?: string;
 
     onCancel?: (() => void) | (() => Promise<void>);
-    // onDone?: (() => void) | (() => Promise<void>);
 }
 
 export const MultiStepPopup = MultiStepPopupClass;

@@ -9,15 +9,13 @@ const Option: React.FC<{ href: string }> = ({ href, children }) =>
         {children}
     </li></ExternalLink>;
 
-// tslint:disable: react-unused-props-and-state
-export const MoreDropdown: React.StatelessComponent<Props> = ({ }) => {
+export const MoreDropdown: React.FC<{}> = () => {
     const [shown, setShown] = React.useState(false);
 
     const ref = React.useRef(null as HTMLDivElement | null);
 
     // tslint:disable-next-line: no-any
     const clickAway = (event: any) => {
-        // tslint:disable-next-line: no-any
         if (ref) {
             const current = ref.current;
             if ((current && !current.contains(event.target))) {
@@ -55,6 +53,3 @@ export const MoreDropdown: React.StatelessComponent<Props> = ({ }) => {
         }
     </div>;
 };
-
-interface Props {
-}

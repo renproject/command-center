@@ -11,7 +11,7 @@ interface Props {
     darknodeDetails: DarknodesState | null;
 }
 
-export const GasBlock: React.StatelessComponent<Props> = ({ darknodeDetails }) => {
+export const GasBlock: React.FC<Props> = ({ darknodeDetails }) => {
 
     const gasValue = darknodeDetails ?
         (darknodeDetails.ethBalance.div(new BigNumber(Math.pow(10, 18)))).toFixed(3) :

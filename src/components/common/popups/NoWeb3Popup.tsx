@@ -11,7 +11,7 @@ interface Props {
     onCancel(): void;
 }
 
-export const NoWeb3Popup: React.StatelessComponent<Props> = ({ message, disabled, onCancel, onConnect }) => {
+export const NoWeb3Popup: React.FC<Props> = ({ message, disabled, onCancel, onConnect }) => {
     const { web3BrowserName } = Web3Container.useContainer();
     return <div className="popup no-web3">
         <WalletIcons web3BrowserName={web3BrowserName} />

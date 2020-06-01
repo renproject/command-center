@@ -1,10 +1,9 @@
 import { RenNetworkDetails } from "@renproject/contracts";
-import { TxStatus } from "@renproject/interfaces";
 import { sleep } from "@renproject/react-components";
 import RenSDK from "@renproject/ren";
 import BigNumber from "bignumber.js";
 import Web3 from "web3";
-import { TransactionConfig, TransactionReceipt } from "web3-core";
+import { TransactionReceipt } from "web3-core";
 import { sha3, toChecksumAddress } from "web3-utils";
 
 import { retryNTimes } from "../../components/renvmPage/renvmContainer";
@@ -13,6 +12,17 @@ import { catchInteractionException, noCapture } from "../react/errors";
 import { getDarknodePayment, getDarknodeRegistry } from "./contract";
 import { AllTokenDetails, OldToken, Token } from "./tokens";
 
+/**
+ * Top-up the ETH balance of a darknode.
+ *
+ * @param web3 Web3 provider with `address` unlocked.
+ * @param address Ethereum address to send ETH from.
+ * @param darknodeID Hexadecimal ID of the darknode to fund.
+ * @param ethAmountStr Amount as a string.
+ * @param onCancel Callback if the user cancels or an error is thrown.
+ * @param onDone Callback after the transaction's txHash is available.
+ * @param waitForTX Returns the txHash of a PromiEvent.
+ */
 export const fundNode = async (
     web3: Web3,
     address: string,
@@ -22,6 +32,7 @@ export const fundNode = async (
     onDone: () => void,
     waitForTX: WaitForTX,
 ): Promise<string> => {
+
     // Convert eth to wei
     const ethAmount = new BigNumber(ethAmountStr);
     const weiAmount = ethAmount.times(new BigNumber(10).exponentiatedBy(18)).decimalPlaces(0);
@@ -29,14 +40,14 @@ export const fundNode = async (
         throw new Error(`Invalid ETH amount ${ethAmountStr} - please try again`);
     }
 
-    let resolved = false;
-
+    // Simple ETH transaction with no data.
     const call = () => web3.eth.sendTransaction({
         to: darknodeID,
         value: weiAmount.toFixed(),
         from: address,
     });
 
+    let resolved = false;
     try {
         const res = await waitForTX(
             call(),
@@ -54,20 +65,15 @@ export const fundNode = async (
 // Darknode Registry contract //
 ////////////////////////////////
 
-export const callEpoch = async (
-    web3: Web3,
-    renNetwork: RenNetworkDetails,
-    address: string,
-    waitForTX: WaitForTX,
-    txConfig?: TransactionConfig,
-) => {
-    const darknodeRegistry = getDarknodeRegistry(web3, renNetwork);
-
-    return await waitForTX(
-        darknodeRegistry.methods.epoch().send({ ...txConfig, from: address }),
-    );
-};
-
+/**
+ * Approve REN to the DarknodeRegistry contract for registering a node.
+ *
+ * @param web3 Web3 provider with `address` unlocked.
+ * @param renNetwork The details of the selected Ren network.
+ * @param address Ethereum address to send Ethereum transactions from.
+ * @param bond The bond amount in REN's smallest unit (1e-18 REN).
+ * @param waitForTX Returns the txHash of a PromiEvent.
+ */
 export const approveNode = async (
     web3: Web3,
     renNetwork: RenNetworkDetails,
@@ -75,13 +81,12 @@ export const approveNode = async (
     bond: BigNumber,
     waitForTX: WaitForTX,
 ) => {
-    // tslint:disable-next-line:no-non-null-assertion
     const ercContract = new (web3.eth.Contract)(renNetwork.addresses.erc.ERC20.abi, renNetwork.addresses.tokens.REN.address);
 
     // Check that the user has sufficient REN for bond
     let ercBalance;
     try {
-        ercBalance = new BigNumber(await retryNTimes(async () => await ercContract.methods.balanceOf(address).call(), 5));
+        ercBalance = new BigNumber(await retryNTimes(async () => await ercContract.methods.balanceOf(address).call(), 2));
     } catch (error) {
         ercBalance = bond;
         catchInteractionException(error, "Error in contractWrites.ts: approveNode > balanceOf");
@@ -94,7 +99,7 @@ export const approveNode = async (
     let ercAllowance;
     try {
         ercAllowance = new BigNumber(
-            await retryNTimes(async () => await ercContract.methods.allowance(address, renNetwork.addresses.ren.DarknodeRegistry.address).call(), 5),
+            await retryNTimes(async () => await ercContract.methods.allowance(address, renNetwork.addresses.ren.DarknodeRegistry.address).call(), 2),
         );
     } catch (error) {
         catchInteractionException(error, "Error in contractWrites.ts: approveNode > allowance");
@@ -110,6 +115,19 @@ export const approveNode = async (
     );
 };
 
+/**
+ * Register node in the DarknodeRegistry contract. Must have called
+ * [[approveNode]] first. The darknode will then have the status
+ * "Registration Pending" until the next epoch.
+ *
+ * @param web3 Web3 provider with `address` unlocked.
+ * @param darknodeID Hexadecimal ID of the darknode to register.
+ * @param publicKey Hexadecimal public key of the darknode.
+ * @param bond The bond amount in REN's smallest unit (1e-18 REN).
+ * @param onCancel Callback if the user cancels or an error is thrown.
+ * @param onDone Callback after the transaction's txHash is available.
+ * @param waitForTX Returns the txHash of a PromiEvent.
+ */
 export const registerNode = async (
     web3: Web3,
     renNetwork: RenNetworkDetails,
@@ -123,13 +141,12 @@ export const registerNode = async (
 ): Promise<string> => {
     const hardCodedGas = 500000;
 
-    // tslint:disable-next-line:no-non-null-assertion
     const ercContract = new (web3.eth.Contract)(renNetwork.addresses.erc.ERC20.abi, renNetwork.addresses.tokens.REN.address);
 
     let ercAllowance;
     try {
         ercAllowance = new BigNumber(
-            await retryNTimes(async () => await ercContract.methods.allowance(address, renNetwork.addresses.ren.DarknodeRegistry.address).call(), 5)
+            await retryNTimes(async () => await ercContract.methods.allowance(address, renNetwork.addresses.ren.DarknodeRegistry.address).call(), 2)
         );
     } catch (error) {
         ercAllowance = new BigNumber(0);
@@ -157,6 +174,17 @@ export const registerNode = async (
     }
 };
 
+/**
+ * Deregister a node in the DarknodeRegistry contract. The node will then have
+ * the status "Pending Deregistration" until the next epoch. The bond won't
+ * be returned yet.
+ *
+ * @param renNetwork The details of the selected Ren network.
+ * @param darknodeID Hexadecimal ID of the darknode to deregister.
+ * @param onCancel Callback if the user cancels or an error is thrown.
+ * @param onDone Callback after the transaction's txHash is available.
+ * @param waitForTX Returns the txHash of a PromiEvent.
+ */
 export const deregisterNode = async (
     web3: Web3,
     renNetwork: RenNetworkDetails,
@@ -186,6 +214,16 @@ export const deregisterNode = async (
     }
 };
 
+/**
+ * Return the REN bond of the darknode. This is the last step in deregistering
+ * a darknode.
+ *
+ * @param address Ethereum address to send Ethereum transactions from.
+ * @param darknodeID Hexadecimal ID of the darknode to refund.
+ * @param onCancel Callback if the user cancels or an error is thrown.
+ * @param onDone Callback after the transaction's txHash is available.
+ * @param waitForTX Returns the txHash of a PromiEvent.
+ */
 export const refundNode = async (
     web3: Web3,
     renNetwork: RenNetworkDetails,
@@ -217,89 +255,17 @@ export const refundNode = async (
 // Darknode Payment contract //
 ///////////////////////////////
 
-export const claimForNode = async (
-    web3: Web3,
-    renNetwork: RenNetworkDetails,
-    useFixedGasLimit: boolean,
-    address: string,
-    darknodeID: string,
-    onCancel: () => void,
-    onDone: () => void,
-    waitForTX: WaitForTX,
-): Promise<string> => {
-    // Convert eth to wei
-
-    const darknodePayment = getDarknodePayment(web3, renNetwork);
-    let resolved = false;
-
-    const call = () => darknodePayment.methods.claim(darknodeID).send({ from: address, gas: useFixedGasLimit ? 200000 : undefined });
-
-    try {
-        const res = await waitForTX(
-            call(),
-            onDone
-        );
-        resolved = true;
-        return res;
-    } catch (error) {
-        if (resolved) { onCancel(); }
-        throw error;
-    }
-};
-
-// export const changeCycle = async (
-//     web3: Web3,
-//     renNetwork: RenNetworkDetails,
-//     ignoreError: boolean,
-//     address: string,
-//     onCancel: () => void,
-//     onDone: () => void,
-//     waitForTX: WaitForTX,
-// ): Promise<string> => {
-//     return "";
-
-//     // // Convert eth to wei
-
-//     // const darknodePayment = getDarknodePayment(web3, renNetwork);
-
-//     // let resolved = false;
-
-//     // // Try to call `changeCycle` as a read function to see if it reverts
-//     // const cycleTimeoutCall = await darknodePayment.methods.cycleTimeout().call({ from: address });
-//     // if (!cycleTimeoutCall) {
-//     //     throw _noCapture_(new Error("Unable to change timeout - please try again"));
-//     // }
-//     // const canCall = new BigNumber(cycleTimeoutCall.toString());
-//     // if (canCall.isEqualTo(0) || !alreadyPast(canCall.toNumber())) {
-//     //     return "";
-//     // }
-
-//     // const call = () => darknodePayment.methods.changeCycle().send({ from: address });
-
-//     // try {
-//     //     const res = await waitForTX(
-//     //         call(),
-//     //         onDone,
-//     //     );
-//     //     resolved = true;
-//     //     return res;
-//     // } catch (error) {
-//     //     if (ignoreError) {
-//     //         resolved = true;
-//     //         return "";
-//     //     }
-//     //     if (resolved) { onCancel(); }
-//     //     throw error;
-//     // }
-// };
-
-// export const bridgedToken = (web3: Web3, renNetwork: RenNetworkDetails, address: string): Contract => {
-//     return new web3.eth.Contract(renNetwork.WarpGateToken.abi, address);
-// };
-
-// export const btcAddressToHex = (address: string) => `0x${decode58(address).toString("hex")}`;
-// export const zecAddressToHex = (address: string) => `0x${decode58(address).toString("hex")}`;
-
+/**
+ * Burn a Ren token to its native blockchain.
+ *
+ * @param web3 Web3 provider with `address` unlocked.
+ * @param darknodeID Hexadecimal ID of the darknode to register.
+ * @param address Ethereum address to send Ethereum transactions from.
+ * @param token The token to withdraw fees for.
+ * @param amount The amount to be burnt in the smallest unit of the token.
+ * @param recipient The address on the native blockchain to receive funds.
+ * @param waitForTX Returns the txHash of a PromiEvent.
+ */
 const burn = async (
     web3: Web3,
     renNetwork: RenNetworkDetails,
@@ -308,7 +274,6 @@ const burn = async (
     amount: BigNumber,
     recipient: string,
     waitForTX: WaitForTX,
-    onStatus: (status: TxStatus) => void,
 ) => {
     const contractDetails = token === Token.BTC ? renNetwork.addresses.gateways.BTCGateway :
         token === Token.ZEC ? renNetwork.addresses.gateways.ZECGateway :
@@ -325,24 +290,6 @@ const burn = async (
         amount.decimalPlaces(0).toFixed(), // _amount in Satoshis
     ).send({ from: address })
     );
-
-    // const shiftOut = await sdk.burnAndRelease({
-    //     // Send BTC from the Ethereum blockchain to the Bitcoin blockchain.
-    //     // This is the reverse of shitIn.
-    //     sendToken: token === Token.BCH ? RenSDK.Tokens.BCH.Eth2Bch :
-    //         Token.ZEC ? RenSDK.Tokens.ZEC.Eth2Zec :
-    //             RenSDK.Tokens.BTC.Eth2Btc,
-
-    //     // The web3 provider to talk to Ethereum
-    //     web3Provider: web3.currentProvider,
-
-    //     // The transaction hash of our contract call
-    //     ethereumTxHash,
-    // }).readFromEthereum();
-
-    // const promiEvent = shiftOut.submit();
-    // promiEvent.on("status", onStatus);
-    // await promiEvent;
 };
 
 const TransferEventABI = [
@@ -361,6 +308,17 @@ const TransferEventABI = [
     }
 ];
 
+/**
+ * Withdraw a darknode's fees for a single token from the DarknodePayment
+ * contract.
+ *
+ * @param web3 Web3 provider with `address` unlocked.
+ * @param darknodeID Hexadecimal ID of the darknode to register.
+ * @param address Ethereum address to send Ethereum transactions from.
+ * @param darknodeID Hexadecimal ID of the darknode to refund.
+ * @param token The token to withdraw fees for.
+ * @param waitForTX Returns the txHash of a PromiEvent.
+ */
 export const withdrawToken = (
     web3: Web3,
     renNetwork: RenNetworkDetails,
@@ -368,7 +326,6 @@ export const withdrawToken = (
     darknodeID: string,
     token: Token | OldToken,
     waitForTX: WaitForTX,
-    onStatus: (status: TxStatus) => void,
 ) => async (withdrawAddress?: string) => {
 
     const tokenDetails = AllTokenDetails.get(token);
@@ -387,13 +344,6 @@ export const withdrawToken = (
     }
 
     const tx = await waitForTX(darknodePayment.methods.withdraw(darknodeID, renNetwork.addresses.tokens[token].address).send({ from: address }));
-
-    // let recentRegistrationEvents = await web3.eth.getPastLogs({
-    //     address: renNetwork.addresses.tokens[token].address,
-    //     fromBlock: txHash,
-    //     toBlock: txHash,
-    //     topics: [,],
-    // });
 
     if (tokenDetails.wrapped) {
         if (!withdrawAddress) {
@@ -423,6 +373,6 @@ export const withdrawToken = (
             }
         }
 
-        await burn(web3, renNetwork, address, token as Token, value, withdrawAddress, waitForTX, onStatus);
+        await burn(web3, renNetwork, address, token as Token, value, withdrawAddress, waitForTX);
     }
 };

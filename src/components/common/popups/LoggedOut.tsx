@@ -15,7 +15,7 @@ interface Props {
  * LoggedOut is a popup component for prompting a user to select an
  * Ethereum account
  */
-export const LoggedOut: React.StatelessComponent<Props> = ({ newAddress, onCancel, onConnect }) => {
+export const LoggedOut: React.FC<Props> = ({ newAddress, onCancel, onConnect }) => {
     const { web3BrowserName } = Web3Container.useContainer();
     return <div className="popup no-web3 popup--logged-out">
         <WalletIcons web3BrowserName={web3BrowserName} />

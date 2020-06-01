@@ -38,7 +38,7 @@ interface RowProps {
     quoteCurrency: Currency;
 }
 
-export const FeesBlockRow: React.FC<RowProps> = ({ token, quoteCurrency, balance, isOperator, tab, percent, darknodeDetails }) => {
+const FeesBlockRow: React.FC<RowProps> = ({ token, quoteCurrency, balance, isOperator, tab, percent, darknodeDetails }) => {
     return <>
         <tr style={{}}>
             <td className="fees-block--table--token">
@@ -78,7 +78,7 @@ export const FeesBlockRow: React.FC<RowProps> = ({ token, quoteCurrency, balance
     </>;
 };
 
-export const FeesBlock: React.StatelessComponent<Props> = ({ darknodeDetails, isOperator }) => {
+export const FeesBlock: React.FC<Props> = ({ darknodeDetails, isOperator }) => {
 
     const { quoteCurrency, currentCycle, previousCycle, pendingRewards, pendingTotalInEth, tokenPrices } = NetworkStateContainer.useContainer();
 
@@ -182,7 +182,6 @@ export const FeesBlock: React.StatelessComponent<Props> = ({ darknodeDetails, is
                                 <tbody>
                                     {
                                         fees.map((balance, token) => ({
-                                            // tslint:disable-next-line: no-non-null-assertion
                                             balance, percent: balance
                                                 .div(new BigNumber(10).exponentiatedBy(AllTokenDetails.get(token, { decimals: 0 }).decimals))
                                                 .times(tokenPrices?.get(token)?.get(Currency.ETH) || 0)

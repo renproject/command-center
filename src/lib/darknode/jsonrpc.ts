@@ -3,7 +3,7 @@ import Axios from "axios";
 
 import { retryNTimes, RPCResponse } from "../../components/renvmPage/renvmContainer";
 
-export interface ResponseQueryStat {
+interface ResponseQueryStat {
     version: string;
     multiAddress: string;
     cpus: Array<{

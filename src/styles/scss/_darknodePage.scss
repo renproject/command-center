@@ -1,11 +1,11 @@
-.darknodepage {
+.darknodePage {
 
     &.container {
         padding-top: 20px;
         max-width: unset;
     }
 
-    .darknodepage--banner {
+    .darknodePage--banner {
         display: flex;
         color: white;
         flex-wrap: wrap;
@@ -28,7 +28,7 @@
         // }
     }
 
-    .darknodepage--banner .blocky {
+    .darknodePage--banner .blocky {
         $border: 10px;
         $width: 80px;
         border-radius: 50%;
@@ -36,7 +36,7 @@
         border: $border solid $blue-dark;
     }
 
-    .darknodepage--banner--details {
+    .darknodePage--banner--details {
         display: flex;
         flex-direction: column;
         height: 100%;
@@ -56,7 +56,7 @@
         }
     }
 
-    .darknodepage--banner--top {
+    .darknodePage--banner--top {
         height: 47.5px;
 
         // >:not(:first-child) {
@@ -89,7 +89,7 @@
         }
     }
 
-    .darknodepage--rename {
+    .darknodePage--rename {
         display: flex;
         align-items: center;
         z-index: 1;
@@ -113,17 +113,17 @@
             background: $blue-darker;
         }
 
-        .darknodepage--rename--save {
+        .darknodePage--rename--save {
             background: white;
             color: $blue-darker;
         }
 
-        .darknodepage--rename--save:disabled {
+        .darknodePage--rename--save:disabled {
             color: $light-grey;
         }
     }
 
-    .darknodepage--bottom {
+    .darknodePage--bottom {
 
         @media screen and (min-width: $min-xl) {
             display: flex;
@@ -185,7 +185,7 @@
         }
     }
 
-    &.darknodepage--focused {
+    &.darknodePage--focused {
         .status *+* {
             margin-left: 10px;
         }
@@ -196,37 +196,33 @@
             padding: 0 40px;
         }
 
-        .status--button:disabled {
-            // background: transparentize($blue-bright, 1 - 0.4);
-        }
-
         .status--button .loading {
             margin-left: 10px;
             display: inline-block;
             margin-bottom: -3px;
         }
 
-        .darknodepage--bottom {
+        .darknodePage--bottom {
             mix-blend-mode: normal;
             opacity: 0.3;
             pointer-events: none;
         }
     }
 
-    &.darknodepage--no-darknode {
-        .darknodepage--bottom {
+    &.darknodePage--no-darknode {
+        .darknodePage--bottom {
             mix-blend-mode: normal;
             opacity: 0.3;
             pointer-events: none;
         }
     }
 
-    &.darknodepage--renaming {
+    &.darknodePage--renaming {
 
-        .darknodepage--bottom,
+        .darknodePage--bottom,
         .blocky,
         .status,
-        .darknodepage--notifications {
+        .darknodePage--notifications {
             mix-blend-mode: normal;
             opacity: 0.3;
             pointer-events: none;
@@ -456,14 +452,10 @@
     }
 }
 
-.darknodepage--banner--right {
+.darknodePage--banner--right {
     flex-grow: 1;
     display: flex;
     align-items: flex-end;
-
-    >div>div {
-        // width: 450px;
-    }
 
     @media(max-width: $max-lg) {
         width: 100%;
@@ -478,13 +470,13 @@
     }
 }
 
-.darknodepage--notifications {
+.darknodePage--notifications {
     display: flex;
     justify-content: flex-end;
     width: 100%;
 }
 
-.darknodepage--notification {
+.darknodePage--notification {
     background: transparentize($blue-bright, 1 - 0.28);
     border-top-right-radius: 2px;
     border-bottom-right-radius: 2px;
@@ -526,7 +518,7 @@
         margin-left: 0;
     }
 
-    .darknodepage--notification--details {
+    .darknodePage--notification--details {
         display: flex;
         flex-direction: column;
         margin-left: 20px;
@@ -581,7 +573,7 @@
     min-width: 0px;
 }
 
-.darknodepage--banner--edit {
+.darknodePage--banner--edit {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -608,13 +600,13 @@
     }
 }
 
-.block--column.darknodepage--banner--name {
+.block--column.darknodePage--banner--name {
     display: flex;
     flex-flow: row;
     justify-content: flex-start;
 }
 
-.darknodepage--banner--top {
+.darknodePage--banner--top {
     margin-left: 20px;
     flex-flow: column;
     height: 100% !important;

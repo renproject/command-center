@@ -1443,31 +1443,20 @@
     web3-eth-contract "1.2.2"
     web3-utils "1.2.2"
 
-"@renproject/chains@^1.0.0-alpha.10":
-  version "1.0.0-alpha.10"
-  resolved "https://registry.yarnpkg.com/@renproject/chains/-/chains-1.0.0-alpha.10.tgz#10b4e603088b49b1ec52a7e7410e3f76a1e2ed29"
-  integrity sha512-Yx6xJqHWaM1SbQhOto9uPORNTOsHmksevurcdNrPolTtgIhN2dWI/5IuyCCy48IBGkOrYFvwPLf4N299b7a1zg==
+"@renproject/chains@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@renproject/chains/-/chains-1.0.1.tgz#a60117abe7e0e0e5140fe90e77494a53795c7497"
+  integrity sha512-/85NHdMvLkGgEJyd/4Yrp2N8GD1ydK74AoOa5DstIu9UtIJUaar7ph0AsM7wuLdyDTHvTABMuispp+xApR843Q==
   dependencies:
-    "@renproject/contracts" "^0.6.0"
-    "@renproject/interfaces" "^1.0.0-alpha.10"
+    "@renproject/interfaces" "^1.0.1"
     "@types/bs58" "^4.0.1"
-    "@types/ethereumjs-util" "^6.1.0"
-    "@types/node" "^13.13.4"
-    axios "^0.19.2"
+    "@types/node" "^14.0.5"
     bchaddrjs "^0.4.8"
-    bignumber.js "^9.0.0"
-    bitcore-lib "^8.17.1"
-    bitcore-lib-cash "^8.19.0"
+    bitcore-lib "^8.20.3"
+    bitcore-lib-cash "^8.20.3"
     bitcore-lib-zcash zcash-hackworks/bitcore-lib-zcash
     bs58 "^4.0.1"
-    ethereumjs-util "^6.2.0"
-    immutable "^4.0.0-rc.12"
-    send-crypto "0.2.3"
-    sha3 "^2.1.2"
     wallet-address-validator "^0.2.4"
-    web3 "^2.0.0-alpha.1"
-    web3-core "^2.0.0-alpha.1"
-    web3-eth-abi "^2.0.0-alpha.1"
 
 "@renproject/contracts@^0.6.0":
   version "0.6.0"
@@ -1481,38 +1470,25 @@
   resolved "https://registry.yarnpkg.com/@renproject/fonts/-/fonts-1.0.1.tgz#5eb052638eec862760044b4367f062f8a890c5b8"
   integrity sha512-OWk811Ay63UdPxY5nEg4N99Goz6K9HLaeGfUN2q0uehhQ70hJDqDQq/vYl5rtE07mv7MYX7GYTpj5POlPbZNRg==
 
-"@renproject/interfaces@^1.0.0-alpha.10":
-  version "1.0.0-alpha.10"
-  resolved "https://registry.yarnpkg.com/@renproject/interfaces/-/interfaces-1.0.0-alpha.10.tgz#5463e05acc5f3f74c9eed9e076cf058900621884"
-  integrity sha512-LYJVTdIVktOC3WUlFzBeoV98RSSrV2p0+pnnpYQYAoCvzOFPm+A+tHe0njQNBFZ+doDdIbSN0+ug+2MX7EHE0g==
+"@renproject/interfaces@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@renproject/interfaces/-/interfaces-1.0.1.tgz#69a81af03bd81fe01347fa840d690a29b35eb85d"
+  integrity sha512-MZ/89MWBCRYgxvHf3XDyxUluSfpHD+wTMwLPZ94X3TN9l1mV2MsSkEaMuzgNomOwn/PxMulGlFJNZjuCsBdgWg==
   dependencies:
-    "@renproject/contracts" "^0.6.0"
     "@types/node" "^13.13.4"
     bignumber.js "^9.0.0"
-    events "^3.1.0"
-
-"@renproject/provider@^1.0.0-alpha.10":
-  version "1.0.0-alpha.10"
-  resolved "https://registry.yarnpkg.com/@renproject/provider/-/provider-1.0.0-alpha.10.tgz#868c6643726300b3ca49fb8179c80479ade5b314"
-  integrity sha512-EtTDn5os8wb/oU4h1MmiWeUP/PHpngb4E23pkLF+YiQ9SPqplLyxdsLa1nTxl+UNmeMUOHOskUk5kHe+YkUhQA==
-  dependencies:
-    "@renproject/contracts" "^0.6.0"
-    "@renproject/interfaces" "^1.0.0-alpha.10"
-    "@renproject/utils" "^1.0.0-alpha.10"
-    "@types/bs58" "^4.0.1"
-    "@types/ethereumjs-util" "^6.1.0"
-    "@types/node" "^13.13.4"
-    axios "^0.19.2"
-    bchaddrjs "^0.4.8"
-    bignumber.js "^9.0.0"
-    bs58 "^4.0.1"
-    ethereumjs-util "^6.2.0"
-    immutable "^4.0.0-rc.12"
-    send-crypto "0.2.3"
-    sha3 "^2.1.2"
-    web3 "^2.0.0-alpha.1"
     web3-core "^2.0.0-alpha.1"
-    web3-eth-abi "^2.0.0-alpha.1"
+
+"@renproject/provider@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@renproject/provider/-/provider-1.0.2.tgz#f47c60f0fdceaf0085d42465dce1214ba492e7d6"
+  integrity sha512-cVd3myQ7HC/cfeVMypm4X2IKq//RZBHUdtBg/7+qZKVkPSz7S7kNKdkwAYxzIkioQH7tLOpbJZdGYFddPbP74g==
+  dependencies:
+    "@renproject/interfaces" "^1.0.1"
+    "@renproject/utils" "^1.0.2"
+    "@types/node" "^14.0.5"
+    axios "^0.19.2"
+    immutable "^4.0.0-rc.12"
 
 "@renproject/react-components@^1.0.0-alpha.10":
   version "1.0.0-alpha.10"
@@ -1531,76 +1507,56 @@
     react-router-dom "^5.1.2"
     react-select "^3.1.0"
 
-"@renproject/ren@^1.0.0-alpha.10":
-  version "1.0.0-alpha.10"
-  resolved "https://registry.yarnpkg.com/@renproject/ren/-/ren-1.0.0-alpha.10.tgz#922fe51090e9142a05e9e4699de97d4713668abf"
-  integrity sha512-x/DM1YbMEfgFYD5uNvvYDsCNdmbBuTC8A3E9jG8JP0qyfXcKokWDP3bibb3QF1LrHjUkmlqkCuqMDJlu7R9cFg==
+"@renproject/ren@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@renproject/ren/-/ren-1.0.2.tgz#a2f2eb88445e08030b3b685b3263c311af543a4b"
+  integrity sha512-n/uLRoU3AbfjZoD4TsQESYrZsZgD75dwK+RTr4tKRPpc11anYUMBU7ehhcn2KVLmz0fXOUCj36TP4O0Sx1yhgA==
   dependencies:
-    "@renproject/chains" "^1.0.0-alpha.10"
+    "@renproject/chains" "^1.0.1"
     "@renproject/contracts" "^0.6.0"
-    "@renproject/interfaces" "^1.0.0-alpha.10"
-    "@renproject/provider" "^1.0.0-alpha.10"
-    "@renproject/rpc" "^1.0.0-alpha.10"
-    "@renproject/utils" "^1.0.0-alpha.10"
+    "@renproject/interfaces" "^1.0.1"
+    "@renproject/provider" "^1.0.2"
+    "@renproject/rpc" "^1.0.2"
+    "@renproject/utils" "^1.0.2"
     "@types/bs58" "^4.0.1"
-    "@types/ethereumjs-util" "^6.1.0"
-    "@types/node" "^13.13.4"
-    axios "^0.19.2"
-    bchaddrjs "^0.4.8"
+    "@types/node" "^14.0.5"
     bignumber.js "^9.0.0"
     bs58 "^4.0.1"
-    ethereumjs-util "^6.2.0"
+    ethereumjs-util "^7.0.1"
     immutable "^4.0.0-rc.12"
     send-crypto "0.2.3"
-    sha3 "^2.1.2"
     wallet-address-validator "^0.2.4"
     web3 "^2.0.0-alpha.1"
     web3-core "^2.0.0-alpha.1"
-    web3-eth-abi "^2.0.0-alpha.1"
 
-"@renproject/rpc@^1.0.0-alpha.10":
-  version "1.0.0-alpha.10"
-  resolved "https://registry.yarnpkg.com/@renproject/rpc/-/rpc-1.0.0-alpha.10.tgz#44697173755b3aa12b49545d5ff7bac4765c4ea5"
-  integrity sha512-FL/IwGt57XpTW05mV0nM+srC2fC3URUdguMWIdgInIgP/0F6hZbBQJKYLL6kvsPzDXLa3gkI40BqS1qwu/kqog==
+"@renproject/rpc@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@renproject/rpc/-/rpc-1.0.2.tgz#371c00e1ec8955e52f609c61873b8b0362bb122a"
+  integrity sha512-EJ1ubvHKj/OXlo0wDVqZ3vezMCR7uAR+MTTTGJ0uBPfwrT+xSczyxoKRFGH+oJrvxNQsoWxg/bcSeuZVBSENJg==
   dependencies:
     "@renproject/contracts" "^0.6.0"
-    "@renproject/interfaces" "^1.0.0-alpha.10"
-    "@renproject/provider" "^1.0.0-alpha.10"
-    "@renproject/utils" "^1.0.0-alpha.10"
-    "@types/bs58" "^4.0.1"
-    "@types/ethereumjs-util" "^6.1.0"
-    "@types/node" "^13.13.4"
-    axios "^0.19.2"
-    bchaddrjs "^0.4.8"
+    "@renproject/interfaces" "^1.0.1"
+    "@renproject/provider" "^1.0.2"
+    "@renproject/utils" "^1.0.2"
+    "@types/node" "^14.0.5"
     bignumber.js "^9.0.0"
-    bs58 "^4.0.1"
-    ethereumjs-util "^6.2.0"
     immutable "^4.0.0-rc.12"
-    send-crypto "0.2.3"
-    sha3 "^2.1.2"
-    web3 "^2.0.0-alpha.1"
-    web3-core "^2.0.0-alpha.1"
-    web3-eth-abi "^2.0.0-alpha.1"
 
-"@renproject/utils@^1.0.0-alpha.10":
-  version "1.0.0-alpha.10"
-  resolved "https://registry.yarnpkg.com/@renproject/utils/-/utils-1.0.0-alpha.10.tgz#e59255d51770580f9603508c71eae47d1386e7ae"
-  integrity sha512-Lq5pni4znVib6Q5u6qXl8DR55InkSEpCdrSGPWYENVDPLNAmH7uEWsv639EuiN3tt61t6ezSdEBFSebZGk89Sg==
+"@renproject/utils@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@renproject/utils/-/utils-1.0.2.tgz#7054bb7e5a0d08919cec03fa500d8768f7e16e09"
+  integrity sha512-0PeKFMsjJtOAXl6MSQugZnMXo1cBhT3Trhpadr/H0JRmM8wIHH00KZTjK0IK/ZjZ7bwtZ6kVxCO+zeZ9Y0C2BA==
   dependencies:
-    "@renproject/chains" "^1.0.0-alpha.10"
+    "@renproject/chains" "^1.0.1"
     "@renproject/contracts" "^0.6.0"
-    "@renproject/interfaces" "^1.0.0-alpha.10"
-    "@types/bs58" "^4.0.1"
-    "@types/ethereumjs-util" "^6.1.0"
-    "@types/node" "^13.13.4"
+    "@renproject/interfaces" "^1.0.1"
+    "@types/node" "^14.0.5"
     axios "^0.19.2"
-    bchaddrjs "^0.4.8"
     bignumber.js "^9.0.0"
-    bs58 "^4.0.1"
-    ethereumjs-util "^6.2.0"
+    ethereumjs-util "^7.0.1"
+    events "^3.1.0"
     immutable "^4.0.0-rc.12"
     send-crypto "0.2.3"
-    sha3 "^2.1.2"
     web3 "^2.0.0-alpha.1"
     web3-core "^2.0.0-alpha.1"
     web3-eth-abi "^2.0.0-alpha.1"
@@ -1945,13 +1901,6 @@
   dependencies:
     bignumber.js "7.2.1"
 
-"@types/ethereumjs-util@^6.1.0":
-  version "6.1.0"
-  resolved "https://registry.yarnpkg.com/@types/ethereumjs-util/-/ethereumjs-util-6.1.0.tgz#9dabd7302ec9728a7d99be15f4143977c33cd5ac"
-  integrity sha512-5N0RJldhKCKwDksdnuNHbEJuwO5pjEdtwdHj/kZLxaS84s5R1NLgYfAuDF/VZ4whYABJJvv+o0O8TXLm+F/Byw==
-  dependencies:
-    ethereumjs-util "*"
-
 "@types/events@*":
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/@types/events/-/events-3.0.0.tgz#2862f3f58a9a7f7c3e78d79f130dd4d71c25c2a7"
@@ -2068,6 +2017,11 @@
   version "14.0.5"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-14.0.5.tgz#3d03acd3b3414cf67faf999aed11682ed121f22b"
   integrity sha512-90hiq6/VqtQgX8Sp0EzeIsv3r+ellbGj4URKj5j30tLlZvRUpnAe9YbYnjl3pJM93GyXU0tghHhvXHq+5rnCKA==
+
+"@types/node@^14.0.6":
+  version "14.0.6"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.0.6.tgz#f9e178b2da31a4b0ec60b64649e244c31ce18daf"
+  integrity sha512-FbNmu4F67d3oZMWBV6Y4MaPER+0EpE9eIYf2yaHhCWovc1dlXCZkqGX4NLHfVVr6umt20TNBdRzrNJIzIKfdbw==
 
 "@types/parse-json@^4.0.0":
   version "4.0.0"
@@ -3858,12 +3812,12 @@ bitcoin-ops@^1.3.0:
   resolved "https://registry.yarnpkg.com/bitcoin-ops/-/bitcoin-ops-1.4.1.tgz#e45de620398e22fd4ca6023de43974ff42240278"
   integrity sha512-pef6gxZFztEhaE9RY9HmWVmiIHqCb2OyS4HPKkpc6CIiiOa3Qmuoylxc5P2EkU3w+5eTSifI9SEZC88idAIGow==
 
-bitcore-lib-cash@^8.19.0:
-  version "8.20.1"
-  resolved "https://registry.yarnpkg.com/bitcore-lib-cash/-/bitcore-lib-cash-8.20.1.tgz#7df1dcda0a9f996158727fec693f3a7789c572ff"
-  integrity sha512-tP3qdnkvsZOcyhP6L4+D3mc8sfJCVl4E8j8KyTPi+8lvz+O5NTgklL9cDgT+brP9DuFLB15oW4Xn14B3320VPw==
+bitcore-lib-cash@^8.20.3:
+  version "8.20.3"
+  resolved "https://registry.yarnpkg.com/bitcore-lib-cash/-/bitcore-lib-cash-8.20.3.tgz#a082e4b735f44eae36643c2be35ab496d32d6f6f"
+  integrity sha512-dTEO8Gb+OwlgG4bwXVRVaMgcBE+U2uSY1+jWHzuT5JWlqlfHxd+Yi1H9a9p3BZOxsHMb2EKKn4DcfxyKyoOOsA==
   dependencies:
-    bitcore-lib "^8.20.1"
+    bitcore-lib "^8.20.3"
     bn.js "=4.11.8"
     bs58 "^4.0.1"
     buffer-compare "=1.1.1"
@@ -3882,23 +3836,10 @@ bitcore-lib-cash@^8.19.0:
     inherits "=2.0.1"
     lodash "=3.10.1"
 
-bitcore-lib@^8.17.1:
-  version "8.17.1"
-  resolved "https://registry.yarnpkg.com/bitcore-lib/-/bitcore-lib-8.17.1.tgz#99c5a9d479663686d2b278299bda665805c04e7e"
-  integrity sha512-o8TaQb5UGsr2CpND7voCIWnooYqs7JpBCEBiR3pVjp7DHLCfSQ/FzQzxz6R7aqMvNSzE1O+ONFdUlKDGbqM8qw==
-  dependencies:
-    bech32 "=1.1.3"
-    bn.js "=4.11.8"
-    bs58 "^4.0.1"
-    buffer-compare "=1.1.1"
-    elliptic "=6.4.0"
-    inherits "=2.0.1"
-    lodash "=4.17.15"
-
-bitcore-lib@^8.20.1:
-  version "8.20.1"
-  resolved "https://registry.yarnpkg.com/bitcore-lib/-/bitcore-lib-8.20.1.tgz#e4e84014e2ef9525a276469603735b31d4e5bd7b"
-  integrity sha512-uiZ2RDU+F2WhuhnyXZdJHELS1Jm3VwCBtdlXBKj+omdvq/m4rP9ok2f2c8eatkOOrjaM0o1BnreNyT4uPY+2zg==
+bitcore-lib@^8.20.3:
+  version "8.20.3"
+  resolved "https://registry.yarnpkg.com/bitcore-lib/-/bitcore-lib-8.20.3.tgz#e167e2cec43ea1528eaa11aedf6e2d33a5e46c78"
+  integrity sha512-+L6aSDkY+UKQ7ZyKj7rWaQ9RojGJ/3hNtT9Ob4hCwiEAR2JAeGOLonjtNtteGx5JwNnXS2h+FixDfP2lE9skKw==
   dependencies:
     bech32 "=1.1.3"
     bn.js "=4.11.8"
@@ -4268,14 +4209,6 @@ buffer-xor@^1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/buffer-xor/-/buffer-xor-1.0.3.tgz#26e61ed1422fb70dd42e6e36729ed51d855fe8d9"
   integrity sha1-JuYe0UIvtw3ULm42cp7VHYVf6Nk=
-
-buffer@5.5.0:
-  version "5.5.0"
-  resolved "https://registry.yarnpkg.com/buffer/-/buffer-5.5.0.tgz#9c3caa3d623c33dd1c7ef584b89b88bf9c9bc1ce"
-  integrity sha512-9FTEDjLjwoAkEwyMGDjYJQN2gfRgOKBKRfiglhvibGbpeeU/pQn1bJxQqm32OD/AIeEuHxU9roxXxg34Byp/Ww==
-  dependencies:
-    base64-js "^1.0.2"
-    ieee754 "^1.1.4"
 
 buffer@^4.3.0:
   version "4.9.2"
@@ -6724,19 +6657,6 @@ ethereumjs-tx@^2.1.1:
     ethereumjs-common "^1.5.0"
     ethereumjs-util "^6.0.0"
 
-ethereumjs-util@*, ethereumjs-util@^6.0.0, ethereumjs-util@^6.1.0, ethereumjs-util@^6.2.0:
-  version "6.2.0"
-  resolved "https://registry.yarnpkg.com/ethereumjs-util/-/ethereumjs-util-6.2.0.tgz#23ec79b2488a7d041242f01e25f24e5ad0357960"
-  integrity sha512-vb0XN9J2QGdZGIEKG2vXM+kUdEivUfU6Wmi5y0cg+LRhDYKnXIZ/Lz7XjFbHRR9VIKq2lVGLzGBkA++y2nOdOQ==
-  dependencies:
-    "@types/bn.js" "^4.11.3"
-    bn.js "^4.11.0"
-    create-hash "^1.1.2"
-    ethjs-util "0.1.6"
-    keccak "^2.0.0"
-    rlp "^2.2.3"
-    secp256k1 "^3.0.1"
-
 ethereumjs-util@^5.0.0, ethereumjs-util@^5.0.1, ethereumjs-util@^5.1.1, ethereumjs-util@^5.1.2, ethereumjs-util@^5.1.3, ethereumjs-util@^5.1.5:
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/ethereumjs-util/-/ethereumjs-util-5.2.0.tgz#3e0c0d1741471acf1036052d048623dee54ad642"
@@ -6749,6 +6669,32 @@ ethereumjs-util@^5.0.0, ethereumjs-util@^5.0.1, ethereumjs-util@^5.1.1, ethereum
     rlp "^2.0.0"
     safe-buffer "^5.1.1"
     secp256k1 "^3.0.1"
+
+ethereumjs-util@^6.0.0, ethereumjs-util@^6.1.0:
+  version "6.2.0"
+  resolved "https://registry.yarnpkg.com/ethereumjs-util/-/ethereumjs-util-6.2.0.tgz#23ec79b2488a7d041242f01e25f24e5ad0357960"
+  integrity sha512-vb0XN9J2QGdZGIEKG2vXM+kUdEivUfU6Wmi5y0cg+LRhDYKnXIZ/Lz7XjFbHRR9VIKq2lVGLzGBkA++y2nOdOQ==
+  dependencies:
+    "@types/bn.js" "^4.11.3"
+    bn.js "^4.11.0"
+    create-hash "^1.1.2"
+    ethjs-util "0.1.6"
+    keccak "^2.0.0"
+    rlp "^2.2.3"
+    secp256k1 "^3.0.1"
+
+ethereumjs-util@^7.0.1:
+  version "7.0.2"
+  resolved "https://registry.yarnpkg.com/ethereumjs-util/-/ethereumjs-util-7.0.2.tgz#7e0d9fcd225ece6e49ee4ea65609d124715f1d15"
+  integrity sha512-ATAP02eJLpAlWGfiKQddNrRfZpwXiTFhRN2EM/yLXMCdBW/xjKYblNKcx8GLzzrjXg0ymotck+lam1nuV90arQ==
+  dependencies:
+    "@types/bn.js" "^4.11.3"
+    bn.js "^5.1.2"
+    create-hash "^1.1.2"
+    ethjs-util "0.1.6"
+    keccak "^3.0.0"
+    rlp "^2.2.4"
+    secp256k1 "^4.0.1"
 
 ethereumjs-vm@^2.1.0, ethereumjs-vm@^2.3.4, ethereumjs-vm@^2.6.0:
   version "2.6.0"
@@ -9575,6 +9521,14 @@ keccak@^2.0.0:
     nan "^2.14.0"
     safe-buffer "^5.2.0"
 
+keccak@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/keccak/-/keccak-3.0.0.tgz#420d1de4a38a04f33ff8401f0535fb93756861d4"
+  integrity sha512-/4h4FIfFEpTEuySXi/nVFM5rqSKPnnhI7cL4K3MFSwoI3VyM7AhPSq3SsysARtnEBEeIKMBUWD8cTh9nHE8AkA==
+  dependencies:
+    node-addon-api "^2.0.0"
+    node-gyp-build "^4.2.0"
+
 keyv@^3.0.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/keyv/-/keyv-3.1.0.tgz#ecc228486f69991e49e9476485a5be1e8fc5c4d9"
@@ -10596,6 +10550,11 @@ no-case@^3.0.3:
     lower-case "^2.0.1"
     tslib "^1.10.0"
 
+node-addon-api@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/node-addon-api/-/node-addon-api-2.0.0.tgz#f9afb8d777a91525244b01775ea0ddbe1125483b"
+  integrity sha512-ASCL5U13as7HhOExbT6OlWJJUV/lLzL2voOSP1UVehpRD8FbSrSDjfScK/KwAvVTI5AS6r4VwbOMlIqtvRidnA==
+
 node-alias@^1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/node-alias/-/node-alias-1.0.4.tgz#1f1b916b56b9ea241c0135f97ced6940f556f292"
@@ -10634,6 +10593,11 @@ node-forge@0.9.0:
   version "0.9.0"
   resolved "https://registry.yarnpkg.com/node-forge/-/node-forge-0.9.0.tgz#d624050edbb44874adca12bb9a52ec63cb782579"
   integrity sha512-7ASaDa3pD+lJ3WvXFsxekJQelBKRpne+GOVbLbtHYdd7pFspyeuJHnWfLplGf3SwKGbfs/aYl5V/JCIaHVUKKQ==
+
+node-gyp-build@^4.2.0:
+  version "4.2.2"
+  resolved "https://registry.yarnpkg.com/node-gyp-build/-/node-gyp-build-4.2.2.tgz#3f44b65adaafd42fb6c3d81afd630e45c847eb66"
+  integrity sha512-Lqh7mrByWCM8Cf9UPqpeoVBBo5Ugx+RKu885GAzmLBVYjeywScxHXPGLa4JfYNZmcNGwzR0Glu5/9GaQZMFqyA==
 
 node-gyp@^3.8.0:
   version "3.8.0"
@@ -12892,10 +12856,10 @@ react-select@^3.1.0:
     react-input-autosize "^2.2.2"
     react-transition-group "^4.3.0"
 
-react-simple-maps@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/react-simple-maps/-/react-simple-maps-2.0.0.tgz#877e27b15a95ef1602b7e3e24185bb7f095ac4a2"
-  integrity sha512-xi1y3citL7g9aB1LWddx2/XSmnsvXEyoN8zBf4BKxq+BPyjwC1sn7HJkFW5BYr70Ltrw2dhOfJvyi1EThejGNQ==
+react-simple-maps@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/react-simple-maps/-/react-simple-maps-2.1.0.tgz#55a55595bdefd32b50bd3569dccb6790bb628001"
+  integrity sha512-Jw0yZ4WV2zAG8s3tbNK/Q9a/yi+shjKUT+Ia/U3mtQwvgNVq4u91oaCzc6MxoTR7/Od4XmO2WVXvaTfAn41H0Q==
   dependencies:
     d3-geo "^1.11.9"
     d3-selection "^1.4.1"
@@ -13517,6 +13481,13 @@ rlp@^2.0.0, rlp@^2.2.3:
   dependencies:
     bn.js "^4.11.1"
 
+rlp@^2.2.4:
+  version "2.2.5"
+  resolved "https://registry.yarnpkg.com/rlp/-/rlp-2.2.5.tgz#b0577b763e909f21a9dea31b4b235b2393f15ef1"
+  integrity sha512-y1QxTQOp0OZnjn19FxBmped4p+BSKPHwGndaqrESseyd2xXZtcgR3yuTIosh8CaMaOii9SKIYerBXnV/CpJ3qw==
+  dependencies:
+    bn.js "^4.11.1"
+
 rsvp@^4.8.4:
   version "4.8.5"
   resolved "https://registry.yarnpkg.com/rsvp/-/rsvp-4.8.5.tgz#c8f155311d167f68f21e168df71ec5b083113734"
@@ -13719,6 +13690,15 @@ secp256k1@^3.0.1, secp256k1@^3.5.2:
     nan "^2.14.0"
     safe-buffer "^5.1.2"
 
+secp256k1@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/secp256k1/-/secp256k1-4.0.1.tgz#b9570ca26ace9e74c3171512bba253da9c0b6d60"
+  integrity sha512-iGRjbGAKfXMqhtdkkuNxsgJQfJO8Oo78Rm7DAvsG3XKngq+nJIOGqrCSXcQqIVsmCj0wFanE5uTKFxV3T9j2wg==
+  dependencies:
+    elliptic "^6.5.2"
+    node-addon-api "^2.0.0"
+    node-gyp-build "^4.2.0"
+
 seek-bzip@^1.0.5:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/seek-bzip/-/seek-bzip-1.0.5.tgz#cfe917cb3d274bcffac792758af53173eb1fabdc"
@@ -13915,13 +13895,6 @@ sha.js@^2.4.0, sha.js@^2.4.8:
   dependencies:
     inherits "^2.0.1"
     safe-buffer "^5.0.1"
-
-sha3@^2.1.2:
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/sha3/-/sha3-2.1.2.tgz#76f404e401d17ca1d23d8458a3790d57f0671bac"
-  integrity sha512-agYUtkzMsdFTQkM3ECyt6YW0552fyEb0tYZkl7olurS1Vg2Ms5+2SdF4VFPC1jnwtiXMb8b0fSyuAGZh+q2mAw==
-  dependencies:
-    buffer "5.5.0"
 
 shallow-clone@^0.1.2:
   version "0.1.2"
@@ -16320,32 +16293,6 @@ web3-net@2.0.0-alpha.1:
     web3-core-method "2.0.0-alpha.1"
     web3-providers "2.0.0-alpha.1"
     web3-utils "2.0.0-alpha.1"
-
-"web3-provider-engine@git+https://github.com/trufflesuite/provider-engine.git#web3-one":
-  version "14.0.6"
-  uid "3538c60bc4836b73ccae1ac3f64c8fed8ef19c1a"
-  resolved "git+https://github.com/trufflesuite/provider-engine.git#3538c60bc4836b73ccae1ac3f64c8fed8ef19c1a"
-  dependencies:
-    async "^2.5.0"
-    backoff "^2.5.0"
-    clone "^2.0.0"
-    cross-fetch "^2.1.0"
-    eth-block-tracker "^3.0.0"
-    eth-json-rpc-infura "^3.1.0"
-    eth-sig-util "^1.4.2"
-    ethereumjs-block "^1.2.2"
-    ethereumjs-tx "^1.2.0"
-    ethereumjs-util "^5.1.5"
-    ethereumjs-vm "^2.3.4"
-    json-rpc-error "^2.0.0"
-    json-stable-stringify "^1.0.1"
-    promise-to-callback "^1.0.0"
-    readable-stream "^2.2.9"
-    request "^2.85.0"
-    semaphore "^1.0.3"
-    ws "^5.1.1"
-    xhr "^2.2.0"
-    xtend "^4.0.1"
 
 "web3-provider-engine@https://github.com/trufflesuite/provider-engine#web3-one":
   version "14.0.6"

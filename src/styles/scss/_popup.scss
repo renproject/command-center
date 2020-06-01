@@ -95,26 +95,6 @@
     margin-top: 10px;
 }
 
-.popup .sign--data {
-    margin-top: 30px;
-    margin-bottom: 30px;
-}
-
-.popup .sign--datum {
-    background-color: $off-white;
-    border: 1px solid $light-grey;
-    padding: 10px;
-    color: #333;
-}
-
-.popup .sign--datum+.sign--datum {
-    border-left: none;
-}
-
-.popup .sign--button {
-    margin-top: 15px;
-}
-
 .popup--buttons {
     display: flex;
     flex-flow: row;

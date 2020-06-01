@@ -8,7 +8,7 @@ import { EmptyDarknodeList } from "../allDarknodesPage/darknodeList/EmptyDarknod
  * LoggingIn is a page whose principal components are wallet selection to allow users
  * to log-in, and the hidden orderbook
  */
-export const LoggingIn = ({ }: Props) => {
+export const LoggingIn: React.FC<{}> = () => {
     const { address, promptLogin } = Web3Container.useContainer();
 
     const handleLogin = React.useCallback(async (): Promise<void> => {
@@ -25,6 +25,3 @@ export const LoggingIn = ({ }: Props) => {
         <EmptyDarknodeList />
     </div>;
 };
-
-interface Props {
-}

@@ -17,13 +17,12 @@ export const URLs = {
 };
 
 
-export const ExternalLink = ({ children, ...props }: Props) => {
+export const ExternalLink: React.FC<Props> = ({ children, ...props }) =>
     // tslint:disable-next-line: react-a11y-anchors
-    return <a
+    <a
         {...props}
         target="_blank"
         rel="noopener noreferrer"
     >
         {children}
     </a>;
-};

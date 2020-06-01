@@ -16,15 +16,12 @@ import { ExternalLink } from "../common/ExternalLink";
 import { Stat, Stats } from "../common/Stat";
 import { TokenBalance } from "../common/TokenBalance";
 import { DarknodeMap } from "./darknodeMap/DarknodeMap";
-import { MapContainer } from "./mapContainer";
 
-export const Overview = () => {
-    const { currentCycle, previousCycle, pendingTotalInEth, quoteCurrency, currentShareCount, currentDarknodeCount, nextDarknodeCount, payoutPercent } = NetworkStateContainer.useContainer();
-    const { timeSinceLastEpoch } = EpochContainer.useContainer();
-    // const { timeUntilNextEpoch, timeSinceLastEpoch, epochInterval } = EpochContainer.useContainer();
+export const NetworkDarknodesPage = () => {
+    const { currentCycle, previousCycle, pendingTotalInEth, quoteCurrency, currentShareCount, currentDarknodeCount, nextDarknodeCount, payoutPercent, previousDarknodeCount } = NetworkStateContainer.useContainer();
+    const { timeUntilNextEpoch, timeSinceLastEpoch, epochInterval } = EpochContainer.useContainer();
     const { latestCLIVersion, latestCLIVersionDaysAgo } = GithubAPIContainer.useContainer();
 
-    const container = MapContainer.useContainer();
     const current = pendingTotalInEth.get(currentCycle, undefined);
     const previous = pendingTotalInEth.get(previousCycle, undefined);
     const currentSummed = current ? current.times(currentShareCount).div(payoutPercent || 0).times(100) : undefined;
@@ -40,16 +37,16 @@ export const Overview = () => {
             <Stats>
                 <Stat icon={<IconDarknodesOnline />} message="Darknodes online">
                     <Stats>
-                        {/* <Stat message="Registered" big>{currentDarknodeCount === null ? <Loading alt={true} /> : <>
+                        <Stat message="Registered" big>{currentDarknodeCount === null ? <Loading alt={true} /> : <>
                             {currentDarknodeCount}
                             {previousDarknodeCount !== null ? <Change className="stat--children--diff" change={currentDarknodeCount - previousDarknodeCount} /> : <></>}
-                        </>}</Stat> */}
-                        <Stat message="Online" big>
+                        </>}</Stat>
+                        {/* <Stat message="Online" big>
                             {container.darknodeCount === null ? <Loading alt /> : <>
                                 {container.darknodeCount}
 
                             </>}
-                        </Stat>
+                        </Stat> */}
                         <Stat message="Change next epoch" big>{nextDarknodeCount === null || currentDarknodeCount === null ? <Loading alt={true} /> : <>
                             <Change change={nextDarknodeCount - currentDarknodeCount} />
                         </>}</Stat>
@@ -96,20 +93,20 @@ export const Overview = () => {
                             <div className="resources--chart--and--label">
                                 <div className="epoch-chart--small">
                                     <CircularProgressbar
-                                        // value={Math.min((timeSinceLastEpoch || 0) / (epochInterval || 1) * 100, 100)}
-                                        // text={currentTime !== null && timeUntilNextEpoch !== null ? naturalTime(currentTime + timeUntilNextEpoch, {
-                                        //     suffix: "",
-                                        //     message: "",
-                                        //     countDown: true,
-                                        //     showingSeconds: false
-                                        // }) : ""}
-                                        value={100}
-                                        text={currentTime !== null && timeSinceLastEpoch !== null ? naturalTime(currentTime - timeSinceLastEpoch, {
+                                        value={Math.min((timeSinceLastEpoch || 0) / (epochInterval || 1) * 100, 100)}
+                                        text={currentTime !== null && timeUntilNextEpoch !== null ? naturalTime(currentTime + timeUntilNextEpoch, {
                                             suffix: "",
                                             message: "",
-                                            countDown: false,
+                                            countDown: true,
                                             showingSeconds: false
                                         }) : ""}
+                                        // value={100}
+                                        // text={currentTime !== null && timeSinceLastEpoch !== null ? naturalTime(currentTime - timeSinceLastEpoch, {
+                                        //     suffix: "",
+                                        //     message: "",
+                                        //     countDown: false,
+                                        //     showingSeconds: false
+                                        // }) : ""}
                                         styles={buildStyles({
                                             // Text size
                                             textSize: "16px",
@@ -130,13 +127,13 @@ export const Overview = () => {
                                 </div>
                             </div>
                             <div className="epoch-right">
-                                <p>Epochs are currently called manually</p>
-                                {/* <p>{currentTime !== null && timeUntilNextEpoch !== null ? naturalTime(currentTime + timeUntilNextEpoch, {
+                                {/* <p>Epochs are currently called manually</p> */}
+                                <p>{currentTime !== null && timeUntilNextEpoch !== null ? naturalTime(currentTime + timeUntilNextEpoch, {
                                     suffix: "until next epoch",
-                                    message: "Epochs are currently called manually",
+                                    message: "New epoch will be called shortly",
                                     countDown: true,
                                     showingSeconds: false
-                                }) : ""}</p> */}
+                                }) : ""}</p>
                                 <p>{currentTime !== null && timeSinceLastEpoch !== null ? naturalTime(currentTime - timeSinceLastEpoch, {
                                     suffix: "since last epoch",
                                     message: "Epoch called just now",
@@ -158,7 +155,6 @@ export const Overview = () => {
                         <ExternalLink href="https://github.com/renproject/darknode-cli"><button className="darknode-cli--button button">Download CLI</button></ExternalLink>
                     </Stat>
                 </Stats>
-                {/* <RewardChart /> */}
             </div>
         </div>
     );

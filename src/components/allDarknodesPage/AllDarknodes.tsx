@@ -9,7 +9,7 @@ import { DarknodeList } from "./darknodeList/DarknodeList";
  * Home is a page whose principal components are wallet selection to allow users
  * to log-in, and the hidden orderbook
  */
-export const AllDarknodes: React.StatelessComponent<{}> = () => {
+export const AllDarknodes: React.FC<{}> = () => {
 
     const { address, renNetwork: network } = Web3Container.useContainer();
     const { darknodeDetails, darknodeNames, darknodeRegisteringList, registrySync, darknodeList, hiddenDarknodes } = NetworkStateContainer.useContainer();

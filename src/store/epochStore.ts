@@ -1,5 +1,3 @@
-// tslint:disable: no-unused-variable
-
 import BigNumber from "bignumber.js";
 import { useEffect, useState } from "react";
 import { createContainer } from "unstated-next";
@@ -40,11 +38,11 @@ const useEpochContainer = () => {
                     loopTimeout = 200;
                     setLoopTimeout(loopTimeout);
                     const darknodeRegistry = getDarknodeRegistry(web3, network);
-                    const newEpoch: Epoch = await retryNTimes(async () => await darknodeRegistry.methods.currentEpoch().call(), 5);
+                    const newEpoch: Epoch = await retryNTimes(async () => await darknodeRegistry.methods.currentEpoch().call(), 2);
                     if (!newEpoch) {
                         throw new LocalError("currentEpoch returned null");
                     }
-                    const newEpochInterval = 60 * 60 * 24; // new BigNumber(await retryNTimes(async () => await darknodeRegistry.methods.minimumEpochInterval().call(), 5)).toNumber();
+                    const newEpochInterval = new BigNumber(await retryNTimes(async () => await darknodeRegistry.methods.minimumEpochInterval().call(), 2)).toNumber();
                     setEpoch(newEpoch);
                     setEpochInterval(newEpochInterval);
 

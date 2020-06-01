@@ -33,7 +33,7 @@ export const TransactionPreview = ({ tx }: { tx: Tx }) => {
     </>;
 };
 
-export const txUrl = (txHash: string, token: Asset, network: RenNetworkDetails): string => {
+const txUrl = (txHash: string, token: Asset, network: RenNetworkDetails): string => {
     const isTx = txHash && txHash.slice && txHash.match(/^(0x)?[a-fA-F0-9]+$/);
     switch (token) {
         case Asset.ETH:
@@ -94,7 +94,7 @@ interface Props {
     onClose: () => void;
 }
 
-export const RenVMTransaction = ({ network, txHash, transaction, onClose }: Props) => {
+export const RenVMTransaction: React.FC<Props> = ({ network, txHash, transaction, onClose }) => {
     const txHash64 = txHash ? new EncodedData(txHash, EncodedData.Encodings.HEX).toBase64() : undefined;
 
     return (

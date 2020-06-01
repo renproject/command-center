@@ -11,7 +11,7 @@ import { TopUp } from "./TopUp";
 
 export const CONFIRMATION_MESSAGE = "Transaction confirmed.";
 
-export const TopUpController: React.StatelessComponent<Props> = ({ darknodeID }) => {
+export const TopUpController: React.FC<Props> = ({ darknodeID }) => {
     const { address, web3 } = Web3Container.useContainer();
     const { updateDarknodeDetails, showFundPopup } = NetworkStateContainer.useContainer();
 
@@ -96,8 +96,7 @@ export const TopUpController: React.StatelessComponent<Props> = ({ darknodeID })
             }
         };
 
-        // tslint:disable-next-line: await-promise
-        await showFundPopup(darknodeID, value, onCancel, onDone);
+        showFundPopup(darknodeID, value, onCancel, onDone);
     };
 
     React.useEffect(() => {
@@ -107,7 +106,6 @@ export const TopUpController: React.StatelessComponent<Props> = ({ darknodeID })
     }, []);
 
     return <TopUp
-        darknodeID={darknodeID}
         value={value}
         resultMessage={resultMessage}
         pending={pending}

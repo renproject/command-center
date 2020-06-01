@@ -92,7 +92,6 @@ const catchException = <X extends Details>(error: any, details: X) => {
     console.error(error);
 
     if (error._noCapture_ || !SENTRY_DSN) {
-        // tslint:disable-next-line: no-console
         return;
     }
 
@@ -125,11 +124,8 @@ const catchException = <X extends Details>(error: any, details: X) => {
             scope.setExtra("caught", true);
             scope.setExtra("zRawError", rawError(error));
 
-            // tslint:disable-next-line: no-console
-
             if (DEFAULT_REN_NETWORK !== RenNetwork.Mainnet) {
                 if (typeof error === "string") {
-                    // tslint:disable-next-line: no-parameter-reassignment
                     error = `[${DEFAULT_REN_NETWORK}-${NODE_ENV}] ${error}`;
                 } else {
                     try {
@@ -153,7 +149,6 @@ const catchException = <X extends Details>(error: any, details: X) => {
 };
 
 export const ignoreException = <X extends Details & Described>(error: any, details?: X | string) => {
-    // tslint:disable-next-line: no-console
     console.error(error, details);
 };
 

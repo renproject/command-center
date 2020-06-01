@@ -5,7 +5,6 @@ import { BlockBody } from "../block/Block";
 import { CONFIRMATION_MESSAGE } from "./TopUpController";
 
 interface Props {
-    darknodeID: string;
     value: string;
     resultMessage: React.ReactNode;
     pending: boolean;
@@ -15,9 +14,7 @@ interface Props {
     sendFunds: () => void;
 }
 
-export const TopUp = (props: Props) => {
-    const { value, resultMessage, pending, disabled, handleChange, handleBlur, sendFunds } = props;
-
+export const TopUp: React.FC<Props> = ({ value, resultMessage, pending, disabled, handleChange, handleBlur, sendFunds }) => {
     const handleChangeEvent = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         handleChange(event.target.value);
     }, [handleChange]);

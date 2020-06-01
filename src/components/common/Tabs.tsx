@@ -1,6 +1,14 @@
 import React, { useState } from "react";
 
-export const Tabs = ({ tabs, defaultTab, onTab, className, children, ...props }: Props) => {
+interface Props extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
+    tabs: {
+        [tab: string]: React.ReactNode;
+    };
+    defaultTab?: string;
+    onTab?: (tab: string) => void;
+}
+
+export const Tabs: React.FC<Props> = ({ tabs, defaultTab, onTab, className, children, ...props }) => {
     const [selectedTab, setSelectedTab] = useState<keyof Props["tabs"]>(defaultTab || Object.keys(tabs)[0]);
 
     return <div {...props} className={[className, "tabs--outer"].join(" ")}>
@@ -19,11 +27,3 @@ export const Tabs = ({ tabs, defaultTab, onTab, className, children, ...props }:
         {children}
     </div>;
 };
-
-interface Props extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
-    tabs: {
-        [tab: string]: React.ReactNode;
-    };
-    defaultTab?: string;
-    onTab?: (tab: string) => void;
-}

@@ -19,11 +19,28 @@ import { NewTokenDetails, OldToken, Token, TokenPrices } from "./tokens";
 
 export const NULL = "0x0000000000000000000000000000000000000000";
 
-// Remove 0x prefix from a hex string
-export const strip0x = (hex: string) => hex.substring(0, 2) === "0x" ? hex.slice(2) : hex;
+/**
+ * Remove "0x" prefix from a hex string if there is one.
+ *
+ * @example
+ * strip0x("0x1234") // "1234"
+ * strip0x("1234")   // "1234"
+ *
+ * @param hex The string to remove "0x" from.
+ */
+export const strip0x = (hex: string): string => hex.substring(0, 2) === "0x" ? hex.slice(2) : hex;
 
-// Add a 0x prefix to a hex value, converting to a string first
-export const Ox = (hex: string | Buffer) => {
+/**
+ * Add a "0x" prefix to a hex value, converting to a string if required.
+ *
+ * @example
+ * Ox("1234")               // 0x1234
+ * Ox("0x1234")             // 0x1234
+ * Ox(Buffer([0x12, 0x34])) // 0x1234
+ *
+ * @param hex The string or Buffer to add "0x" to.
+ */
+export const Ox = (hex: string | Buffer): string => {
     const hexString = typeof hex === "string" ? hex : hex.toString("hex");
     return hexString.substring(0, 2) === "0x" ? hexString : `0x${hexString}`;
 };
@@ -37,14 +54,15 @@ export const Ox = (hex: string | Buffer) => {
  *
  * @param web3 A Web3 instance.
  * @param renNetwork A Ren network object.
- * @returns A promise to the minimum bond as a BigNumber.
+ * @returns A promise to the minimum bond as a BigNumber, in REN's smallest unit
+ *          (1e-18 REN).
  */
 export const getMinimumBond = async (web3: Web3, renNetwork: RenNetworkDetails): Promise<BigNumber> => {
     try {
         return await retryNTimes(async () => {
             const minimumBond = (await getDarknodeRegistry(web3, renNetwork).methods.minimumBond().call());
             return new BigNumber((minimumBond).toString());
-        }, 5);
+        }, 2);
     } catch (error) {
         catchBackgroundException(new Error(`Unable to retrieve minimum bond${error && error.message ? `: ${error.message}` : ``}`), "Error in contractReads > getMinimumBond");
         return new BigNumber(renNetwork.name === "chaosnet" ? "10000000000000000000000" : "100000000000000000000000");
@@ -66,7 +84,7 @@ const getDarknodePublicKey = async (web3: Web3, renNetwork: RenNetworkDetails, d
                 throw new Error("Public key is NULL");
             }
             return publicKey;
-        }, 5);
+        }, 2);
     } catch (error) {
         catchBackgroundException(new Error(`Unable to retrieve darknode public key${error && error.message ? `: ${error.message}` : ``}`), "Error in contractReads > getDarknodePublicKey, getDarknodeRegistry");
         return NULL;
@@ -81,7 +99,7 @@ const getDarknodePublicKey = async (web3: Web3, renNetwork: RenNetworkDetails, d
  * @returns A promise to the operator as a hex string.
  */
 const getDarknodeOperator = async (web3: Web3, renNetwork: RenNetworkDetails, darknodeID: string): Promise<string> => {
-    const owner = await retryNTimes(async () => await getDarknodeRegistry(web3, renNetwork).methods.getDarknodeOperator(darknodeID).call(), 5);
+    const owner = await retryNTimes(async () => await getDarknodeRegistry(web3, renNetwork).methods.getDarknodeOperator(darknodeID).call(), 2);
     if (owner === null) {
         catchBackgroundException(noCapture(new Error("Unable to retrieve darknode owner")), "Error in contractReads > getDarknodeOperator, getDarknodeRegistry");
         return NULL;
@@ -97,11 +115,11 @@ export interface DarknodeCounts {
 
 export const getDarknodeCounts = async (web3: Web3, renNetwork: RenNetworkDetails): Promise<DarknodeCounts> => {
     const darknodeRegistry = getDarknodeRegistry(web3, renNetwork);
-    const currentEpoch = await retryNTimes(async () => await darknodeRegistry.methods.numDarknodes().call(), 5);
+    const currentEpoch = await retryNTimes(async () => await darknodeRegistry.methods.numDarknodes().call(), 2);
     if (currentEpoch === null) { throw noCapture(new Error("Unable to retrieve darknode count")); }
-    const previousEpoch = await retryNTimes(async () => await darknodeRegistry.methods.numDarknodesPreviousEpoch().call(), 5);
+    const previousEpoch = await retryNTimes(async () => await darknodeRegistry.methods.numDarknodesPreviousEpoch().call(), 2);
     if (previousEpoch === null) { throw noCapture(new Error("Unable to retrieve darknode count")); }
-    const nextEpoch = await retryNTimes(async () => await darknodeRegistry.methods.numDarknodesNextEpoch().call(), 5);
+    const nextEpoch = await retryNTimes(async () => await darknodeRegistry.methods.numDarknodesNextEpoch().call(), 2);
     if (nextEpoch === null) { throw noCapture(new Error("Unable to retrieve darknode count")); }
     return {
         currentDarknodeCount: new BigNumber(currentEpoch.toString()).toNumber(),
@@ -141,11 +159,11 @@ export const getDarknodeStatus = async (web3: Web3, renNetwork: RenNetworkDetail
         isRefunded,
         isRefundable,
     ] = await Promise.all([
-        retryNTimes(async () => darknodeRegistry.methods.isPendingRegistration(darknodeID).call(), 5),
-        retryNTimes(async () => darknodeRegistry.methods.isPendingDeregistration(darknodeID).call(), 5),
-        retryNTimes(async () => darknodeRegistry.methods.isDeregisterable(darknodeID).call(), 5),
-        retryNTimes(async () => darknodeRegistry.methods.isRefunded(darknodeID).call(), 5),
-        retryNTimes(async () => darknodeRegistry.methods.isRefundable(darknodeID).call(), 5),
+        retryNTimes(async () => darknodeRegistry.methods.isPendingRegistration(darknodeID).call(), 2),
+        retryNTimes(async () => darknodeRegistry.methods.isPendingDeregistration(darknodeID).call(), 2),
+        retryNTimes(async () => darknodeRegistry.methods.isDeregisterable(darknodeID).call(), 2),
+        retryNTimes(async () => darknodeRegistry.methods.isRefunded(darknodeID).call(), 2),
+        retryNTimes(async () => darknodeRegistry.methods.isRefundable(darknodeID).call(), 2),
     ]);
 
     if (isRefunded) {
@@ -266,32 +284,6 @@ export const fetchDarknodeBalanceHistory = async (
 };
 
 /**
- * Fetches all the darknodes from the Darknode Registry contract.
- *
- * @param web3 A Web3 instance.
- * @param renNetwork A Ren network object.
- * @returns A promise to the list of all darknode IDs (as hex string).
- */
-export const getAllDarknodes = async (web3: Web3, renNetwork: RenNetworkDetails): Promise<string[]> => {
-    const batchSize = 10;
-
-    const allDarknodes = [];
-    let lastDarknode = NULL;
-    const filter = (address: string) => address !== NULL && address !== lastDarknode;
-    do {
-        const darknodeRegistry = getDarknodeRegistry(web3, renNetwork);
-        const darknodes = await retryNTimes(async () => await darknodeRegistry.methods.getDarknodes(lastDarknode, batchSize.toString()).call(), 5);
-        if (darknodes === null) {
-            throw noCapture(new Error("Error calling 'darknodeRegistry.methods.getDarknodes'"));
-        }
-        allDarknodes.push(...darknodes.filter(filter));
-        [lastDarknode] = darknodes.slice(-1);
-    } while (lastDarknode !== NULL);
-
-    return allDarknodes;
-};
-
-/**
  * Find the darknodes by reading the logs of the Darknode Registry.
  *
  * @param web3 A Web3 instance.
@@ -397,11 +389,7 @@ export const getOperatorDarknodes = async (
     reportProgress?: (progress: number, total: number) => void,
     onDarknode?: (darknodeID: string) => void,
 ): Promise<OrderedSet<string>> => {
-    // Skip calling getAllDarknodes - they will all be in the logs as well.
-    let darknodes = OrderedSet(
-        // Retrieve currently registered darknodes.
-        // await getAllDarknodes(web3, renNetwork)
-    );
+    let darknodes = OrderedSet();
 
     const darknodeRegistry = getDarknodeRegistry(web3, renNetwork);
 
@@ -426,7 +414,7 @@ export const getOperatorDarknodes = async (
         if (operator) {
             return [darknodeID, operator];
         } else {
-            return [darknodeID, await retryNTimes(async () => await darknodeRegistry.methods.getDarknodeOperator(darknodeID).call(), 5)] as [string, string];
+            return [darknodeID, await retryNTimes(async () => await darknodeRegistry.methods.getDarknodeOperator(darknodeID).call(), 2)] as [string, string];
         }
     }).toArray();
 
@@ -497,17 +485,17 @@ export const fetchCycleAndPendingRewards = async (
 
     let pendingRewards = OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber>>();
 
-    const πCurrentCycle = retryNTimes(async () => await darknodePayment.methods.currentCycle().call(), 5) as Promise<BN | string | number | undefined | null>;
-    const πPreviousCycle = retryNTimes(async () => await darknodePayment.methods.previousCycle().call(), 5) as Promise<BN | string | number | undefined | null>;
+    const πCurrentCycle = retryNTimes(async () => await darknodePayment.methods.currentCycle().call(), 2) as Promise<BN | string | number | undefined | null>;
+    const πPreviousCycle = retryNTimes(async () => await darknodePayment.methods.previousCycle().call(), 2) as Promise<BN | string | number | undefined | null>;
 
-    const πEpoch = retryNTimes(async () => await darknodeRegistry.methods.currentEpoch().call(), 5);
-    const πEpochInterval = retryNTimes(async () => await darknodeRegistry.methods.minimumEpochInterval().call(), 5);
+    const πEpoch = retryNTimes(async () => await darknodeRegistry.methods.currentEpoch().call(), 2);
+    const πEpochInterval = retryNTimes(async () => await darknodeRegistry.methods.minimumEpochInterval().call(), 2);
 
     const πPrevious = safePromiseAllMap(
         NewTokenDetails.map(async (_tokenDetails, token) => {
             try {
                 const tokenAddress = token === Token.ETH ? "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" : renNetwork.addresses.tokens[token].address;
-                const previousCycleRewardShareBN = await retryNTimes(async () => await darknodePayment.methods.previousCycleRewardShare(tokenAddress).call(), 5);
+                const previousCycleRewardShareBN = await retryNTimes(async () => await darknodePayment.methods.previousCycleRewardShare(tokenAddress).call(), 2);
                 if (previousCycleRewardShareBN === null) {
                     return new BigNumber(0);
                 }
@@ -520,9 +508,9 @@ export const fetchCycleAndPendingRewards = async (
         new BigNumber(0),
     );
 
-    const currentShareCount = await retryNTimes(async () => await darknodeRegistry.methods.numDarknodes().call(), 5)
+    const currentShareCount = await retryNTimes(async () => await darknodeRegistry.methods.numDarknodes().call(), 2)
         .then((bn: (BN | number | string | null)) => bn === null ? null : new BigNumber(bn.toString()));
-    const currentCyclePayoutPercent = await retryNTimes(async () => await darknodePayment.methods.currentCyclePayoutPercent().call(), 5)
+    const currentCyclePayoutPercent = await retryNTimes(async () => await darknodePayment.methods.currentCyclePayoutPercent().call(), 2)
         .then((bn: (BN | number | string | null)) => bn === null ? new BigNumber(50) : new BigNumber(bn.toString()));
     const πCurrent = safePromiseAllMap(
         NewTokenDetails.map(async (_tokenDetails, token) => {
@@ -531,7 +519,7 @@ export const fetchCycleAndPendingRewards = async (
             }
             try {
                 const tokenAddress = token === Token.ETH ? "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" : renNetwork.addresses.tokens[token].address;
-                const currentCycleRewardPool = await retryNTimes(async () => await darknodePayment.methods.currentCycleRewardPool(tokenAddress).call(), 5);
+                const currentCycleRewardPool = await retryNTimes(async () => await darknodePayment.methods.currentCycleRewardPool(tokenAddress).call(), 2);
                 if (currentCycleRewardPool === null) {
                     return new BigNumber(0);
                 }
@@ -621,7 +609,7 @@ const getBalances = async (
         NewTokenDetails.map(async (_tokenDetails, token) => {
             let balance1;
             try {
-                const balance1Call = await retryNTimes(async () => await darknodePayment.methods.darknodeBalances(darknodeID, renNetwork.addresses.tokens[token].address).call(), 5);
+                const balance1Call = await retryNTimes(async () => await darknodePayment.methods.darknodeBalances(darknodeID, renNetwork.addresses.tokens[token].address).call(), 2);
                 balance1 = new BigNumber((balance1Call || "0").toString());
             } catch (error) {
                 catchBackgroundException(error, "Error in contractReads > darknodeBalances");
@@ -659,7 +647,7 @@ export enum DarknodeFeeStatus {
     NOT_WHITELISTED = "NOT_WHITELISTED",
 }
 
-export const getDarknodeFees = async (
+const getDarknodeFees = async (
     web3: Web3,
     renNetwork: RenNetworkDetails,
     darknodeID: string,
@@ -681,7 +669,7 @@ export const getDarknodeFees = async (
     return { feesEarned, oldFeesEarned, feesEarnedTotalEth };
 };
 
-export const getDarknodeCycleRewards = async (
+const getDarknodeCycleRewards = async (
     web3: Web3,
     renNetwork: RenNetworkDetails,
     darknodeID: string,
@@ -691,22 +679,22 @@ export const getDarknodeCycleRewards = async (
 
     const darknodePayment = getDarknodePayment(web3, renNetwork);
 
-    const currentCycleBN = await retryNTimes(async () => await darknodePayment.methods.currentCycle().call(), 5);
-    const previousCycleBN = await retryNTimes(async () => await darknodePayment.methods.previousCycle().call(), 5);
+    const currentCycleBN = await retryNTimes(async () => await darknodePayment.methods.currentCycle().call(), 2);
+    const previousCycleBN = await retryNTimes(async () => await darknodePayment.methods.previousCycle().call(), 2);
     // const blacklisted = await darknodePaymentStore.methods.isBlacklisted(darknodeID).call();
     const darknodeRegistry = getDarknodeRegistry(web3, renNetwork);
     let currentStatus;
     let previousStatus;
-    const isRegisteredInPreviousEpoch = await retryNTimes(async () => await darknodeRegistry.methods.isRegisteredInPreviousEpoch(darknodeID).call(), 5);
+    const isRegisteredInPreviousEpoch = await retryNTimes(async () => await darknodeRegistry.methods.isRegisteredInPreviousEpoch(darknodeID).call(), 2);
     currentStatus = registrationStatus === RegistrationStatus.Registered ? DarknodeFeeStatus.NOT_CLAIMED : DarknodeFeeStatus.NOT_WHITELISTED;
-    const cycleStartTimeBN = await retryNTimes(async () => await darknodePayment.methods.cycleStartTime().call(), 5);
+    const cycleStartTimeBN = await retryNTimes(async () => await darknodePayment.methods.cycleStartTime().call(), 2);
     if (!cycleStartTimeBN || !isRegisteredInPreviousEpoch) { // || whitelistedTime.gte(cycleStartTimeBN.toString())) {
         previousStatus = DarknodeFeeStatus.NOT_WHITELISTED;
     } else {
         if (previousCycleBN === null) {
             previousStatus = DarknodeFeeStatus.CLAIMED;
         } else {
-            const claimed = await retryNTimes(async () => await darknodePayment.methods.rewardClaimed(darknodeID, previousCycleBN.toString()).call(), 5);
+            const claimed = await retryNTimes(async () => await darknodePayment.methods.rewardClaimed(darknodeID, previousCycleBN.toString()).call(), 2);
             if (claimed) {
                 previousStatus = DarknodeFeeStatus.CLAIMED;
             } else {

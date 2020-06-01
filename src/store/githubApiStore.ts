@@ -1,5 +1,3 @@
-// tslint:disable: no-unused-variable
-
 import { naturalTime } from "@renproject/react-components";
 import Axios from "axios";
 import moment from "moment";

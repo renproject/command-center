@@ -11,7 +11,7 @@ import { Web3Container } from "../../store/web3Store";
 import { MapContainer } from "../networkDarknodesPage/mapContainer";
 import { RenVMContainer } from "../renvmPage/renvmContainer";
 
-export const Connect: React.StatelessComponent<Props> = ({ children }) => {
+export const Connect: React.FC<Props> = ({ children }) => {
     return <PopupContainer.Provider>
         <Web3Container.Provider initialState={DEFAULT_REN_NETWORK}>
             <ApolloWithNetwork>

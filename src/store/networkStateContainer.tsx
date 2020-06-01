@@ -1,4 +1,3 @@
-import { TxStatus } from "@renproject/interfaces";
 import { Currency, CurrencyIcon, Record } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import { List, Map, OrderedMap, OrderedSet } from "immutable";
@@ -57,7 +56,6 @@ const useNetworkStateContainer = () => {
     const [tokenPrices, setTokenPrices] = useState(null as TokenPrices | null);
 
     const [darknodeCount, setDarknodeCount] = useState(null as BigNumber | null);
-    const [orderCount, setOrderCount] = useState(null as BigNumber | null);
 
     const [registrySync, setRegistrySync] = useState({ progress: 0, target: 0 });
 
@@ -291,6 +289,7 @@ const useNetworkStateContainer = () => {
         if (newPreviousCycle !== null && newPreviousCycle !== undefined) {
             setPreviousCycle(newPreviousCycle.toString());
         }
+        // tslint:disable-next-line: strict-type-predicates
         if (newPayoutPercent !== null && newPayoutPercent !== undefined) {
             setPayoutPercent(newPayoutPercent.toNumber());
         }
@@ -381,12 +380,6 @@ const useNetworkStateContainer = () => {
             throw new Error(`Unable to retrieve account address.`);
         }
 
-        let shiftStatus = TxStatus.TxStatusNil;
-
-        const onStatus = (status: TxStatus) => {
-            shiftStatus = status;
-        };
-
         const withdraw = withdrawToken(
             web3,
             renNetwork,
@@ -394,7 +387,6 @@ const useNetworkStateContainer = () => {
             darknodeID,
             token,
             waitForTX,
-            onStatus,
         );
         const onCancel = () => {
             clearPopup();
@@ -411,7 +403,6 @@ const useNetworkStateContainer = () => {
                     withdraw={withdraw}
                     onDone={onDone}
                     onCancel={onCancel}
-                    status={shiftStatus}
                 />,
                 onCancel,
                 overlay: true
@@ -626,45 +617,39 @@ const useNetworkStateContainer = () => {
         secondsPerBlock,
         tokenPrices,
         darknodeCount, setDarknodeCount,
-        orderCount, setOrderCount,
-        registrySync, setRegistrySync,
+        registrySync,
         darknodeDetails,
-        balanceHistories, setBalanceHistories,
+        balanceHistories,
         transactions, setTransactions,
-        confirmations, setConfirmations,
+        confirmations,
         currentCycle, setCurrentCycle,
-        previousCycle, setPreviousCycle,
-        pendingRewards, setPendingRewards,
-        pendingTotalInEth, setPendingTotalInEth,
-        pendingRewardsInEth, setPendingRewardsInEth,
-        cycleTimeout, setCycleTimeout,
-        currentShareCount, setCurrentShareCount,
-        currentDarknodeCount, setCurrentDarknodeCount,
-        previousDarknodeCount, setPreviousDarknodeCount,
-        nextDarknodeCount, setNextDarknodeCount,
+        previousCycle,
+        pendingRewards,
+        pendingTotalInEth,
+        pendingRewardsInEth,
+        cycleTimeout,
+        currentShareCount,
+        currentDarknodeCount,
+        previousDarknodeCount,
+        nextDarknodeCount,
         payoutPercent,
         quoteCurrency, setQuoteCurrency,
-        darknodeNames, setDarknodeNames,
-        darknodeRegisteringList, setDarknodeRegisteringList,
-        darknodeList, setDarknodeList,
-        hiddenDarknodes, setHiddenDarknodes,
-        withdrawAddresses, setWithdrawAddresses,
+        darknodeNames,
+        darknodeRegisteringList,
+        darknodeList,
+        hiddenDarknodes,
+        withdrawAddresses,
 
         updateTokenPrices,
         updateSecondsPerBlock,
         updateDarknodeBalanceHistory,
         hideDarknode,
         unhideDarknode,
-        updateDarknodeCounts,
-        addDarknodes,
-        storeEmptyDarknodeList,
         addRegisteringDarknode,
         removeRegisteringDarknode,
         addToWithdrawAddresses,
         removeFromWithdrawAddresses,
         storeDarknodeName,
-        addTransaction,
-        storeTxConfirmations,
         waitForTX,
         updateCycleAndPendingRewards,
         updateDarknodeDetails,

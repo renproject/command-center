@@ -227,7 +227,7 @@ interface Props {
     quoteCurrency: Currency;
 }
 
-export const HistoryChart: React.StatelessComponent<Props> = ({ periodSeries, graphType, quoteCurrency }) => {
+export const HistoryChart: React.FC<Props> = ({ periodSeries, graphType, quoteCurrency }) => {
 
     const [cachedSeries, setCachedPeriod] = useState<QuotePeriodData[] | null>(null);
     const [pendingSeries, setPendingPeriod] = useState<QuotePeriodData[] | null>(null);

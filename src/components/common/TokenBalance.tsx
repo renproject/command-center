@@ -51,18 +51,17 @@ export const tokenToQuote = (amount: number | string | BigNumber, token: Token |
     return new BigNumber(0);
 };
 
-export const TokenBalance = (props: Props) => {
-    const { token, convertTo, digits } = props;
+export const TokenBalance: React.FC<Props> = ({ amount, token, convertTo, digits }) => {
     const { tokenPrices } = NetworkStateContainer.useContainer();
 
     const tokenDetails = AllTokenDetails.get(token as Token, undefined);
     const decimals = tokenDetails ? new BigNumber(tokenDetails.decimals.toString()).toNumber() : 0;
 
-    const amount = new BigNumber(props.amount)
+    const amountBN = new BigNumber(amount)
         .div(new BigNumber(Math.pow(10, decimals)));
 
     if (!convertTo) {
-        return <>{digits !== undefined ? amount.toFixed(digits) : amount.toFixed()}</>;
+        return <>{digits !== undefined ? amountBN.toFixed(digits) : amountBN.toFixed()}</>;
     }
 
     if (!tokenPrices) {
@@ -80,7 +79,7 @@ export const TokenBalance = (props: Props) => {
     }
 
     return <>{
-        amount
+        amountBN
             .multipliedBy(price)
             .toFixed(digits === undefined ? defaultDigits(convertTo) : digits)
     }</>;

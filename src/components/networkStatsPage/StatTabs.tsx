@@ -7,7 +7,7 @@ export enum StatTab {
     DigitalAssets = "Digital Assets",
 }
 
-export const Tab: React.FunctionComponent<{ value: StatTab, selected: string, onChange: (value: StatTab) => void }> = ({ value, selected, onChange, children }) => {
+const Tab: React.FunctionComponent<{ value: StatTab, selected: string, onChange: (value: StatTab) => void }> = ({ value, selected, onChange, children }) => {
     const onClick = React.useCallback(() => {
         onChange(value);
     }, [onChange, value]);

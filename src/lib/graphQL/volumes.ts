@@ -15,7 +15,7 @@ export enum PeriodType {
     ALL = "ALL",
 }
 
-export const getPeriodTimespan = (type: string): number => {
+const getPeriodTimespan = (type: string): number => {
     switch (type) {
         case PeriodType.HOUR:
             return 60 * 60;
@@ -32,7 +32,7 @@ export const getPeriodTimespan = (type: string): number => {
     }
 };
 
-export const getSubperiodCount = (type: string): { graph: number, amount: number, type: PeriodType } => {
+const getSubperiodCount = (type: string): { graph: number, amount: number, type: PeriodType } => {
     switch (type) {
         case PeriodType.HOUR:
             return { graph: 7, amount: 1, type: PeriodType.HOUR };
@@ -55,8 +55,6 @@ export interface PeriodResponse {
     historic: PeriodData[];
     average: PeriodData;
 }
-
-export type PeriodResponses = Map<PeriodType, PeriodResponse>;
 
 export const getVolumes = async (client: ApolloClient<unknown>, periodType: PeriodType): Promise<PeriodResponse> => {
 
@@ -84,7 +82,6 @@ export const getVolumes = async (client: ApolloClient<unknown>, periodType: Peri
             return exactMatch;
         }
 
-        // tslint:disable-next-line: no-non-null-assertion
         const inexact = periodDatas.filter((periodData) => periodData.date <= periodDate).first<PeriodData>() || {};
 
         return {
@@ -190,7 +187,7 @@ const normalizeValue = (amount: string, digits: number): BigNumber => {
     return new BigNumber(amount).div(new BigNumber(10).exponentiatedBy(digits));
 };
 
-export const normalizeVolumes = (periodData: PeriodData, tokenPrices: TokenPrices, quoteCurrency: Currency): QuotePeriodData => {
+const normalizeVolumes = (periodData: PeriodData, tokenPrices: TokenPrices, quoteCurrency: Currency): QuotePeriodData => {
 
     const data = {
         ...periodData,

@@ -11,7 +11,14 @@ import { Web3Container } from "../../../store/web3Store";
 
 const minimumShiftedAmount = 0.0004;
 
-export const FeesItem = ({ darknodeID, token, amount, disabled }: Props) => {
+interface Props {
+    disabled: boolean;
+    token: Token | OldToken;
+    amount: string | BigNumber;
+    darknodeID: string;
+}
+
+export const FeesItem: React.FC<Props> = ({ darknodeID, token, amount, disabled }) => {
     const { withdrawReward, waitForTX, updateDarknodeDetails } = NetworkStateContainer.useContainer();
     const { web3, address, renNetwork } = Web3Container.useContainer();
 
@@ -26,14 +33,12 @@ export const FeesItem = ({ darknodeID, token, amount, disabled }: Props) => {
 
         if (address && tokenDetails && !tokenDetails.old) {
             try {
-                // tslint:disable-next-line: await-promise
                 await withdrawReward(darknodeID, token as Token);
             } catch (error) {
                 console.error(error);
                 setLoading(false);
                 return;
             }
-            // tslint:disable-next-line: await-promise
             await updateDarknodeDetails(darknodeID);
         }
 
@@ -64,11 +69,3 @@ export const FeesItem = ({ darknodeID, token, amount, disabled }: Props) => {
         </button>
     );
 };
-
-// tslint:disable: react-unused-props-and-state
-interface Props {
-    disabled: boolean;
-    token: Token | OldToken;
-    amount: string | BigNumber;
-    darknodeID: string;
-}

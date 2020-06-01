@@ -13,7 +13,7 @@ interface Props {
     publicKey: string | undefined;
 }
 
-export const DarknodeCard = ({ darknodeID, darknodeDetails, name, publicKey }: Props) => {
+export const DarknodeCard: React.FC<Props> = ({ darknodeID, darknodeDetails, name, publicKey }) => {
     const { address, renNetwork: renNetwork } = Web3Container.useContainer();
     const { quoteCurrency, hideDarknode, removeRegisteringDarknode } = NetworkStateContainer.useContainer();
 
@@ -32,7 +32,6 @@ export const DarknodeCard = ({ darknodeID, darknodeDetails, name, publicKey }: P
             return;
         }
 
-        // tslint:disable-next-line: await-promise
         if (continuable) {
             removeRegisteringDarknode(darknodeID);
         } else if (address) {

@@ -25,7 +25,7 @@ interface Props {
     continuable: boolean;
 }
 
-export const CardView = ({ darknodeID, darknodeDetails, name, quoteCurrency, url, faded, hidable, confirmedRemove, removeDarknode, continuable }: Props) => {
+export const CardView: React.FC<Props> = ({ darknodeID, darknodeDetails, name, quoteCurrency, url, faded, hidable, confirmedRemove, removeDarknode, continuable }) => {
     const handleRemoveDarknode = React.useCallback((e: React.MouseEvent<HTMLDivElement>): void => {
         e.stopPropagation();
         e.preventDefault();

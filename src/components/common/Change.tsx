@@ -4,8 +4,8 @@ interface Props extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElem
     change: number | string;
 }
 
-export const Change = ({ change, className, ...props }: Props) => {
-    return <span
+export const Change: React.FC<Props> = ({ change, className, ...props }) =>
+    <span
         {...props}
         className={[
             className,
@@ -17,4 +17,3 @@ export const Change = ({ change, className, ...props }: Props) => {
     >
         {change}
     </span>;
-};

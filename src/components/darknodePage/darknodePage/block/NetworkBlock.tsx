@@ -9,9 +9,11 @@ import { DarknodesState } from "../../../../store/networkStateContainer";
 import { ReactComponent as CopyIcon } from "../../../../styles/images/icon-copy.svg";
 import { Block, BlockBody, BlockTitle } from "./Block";
 
-export const NetworkBlock = (props: Props): JSX.Element => {
-    const { darknodeDetails } = props;
+interface Props {
+    darknodeDetails: DarknodesState | null;
+}
 
+export const NetworkBlock: React.FC<Props> = ({ darknodeDetails }) => {
     const darknodeIDBase58 = darknodeDetails ? darknodeIDHexToBase58(darknodeDetails.ID) : "";
 
     return (
@@ -52,8 +54,3 @@ export const NetworkBlock = (props: Props): JSX.Element => {
         </Block>
     );
 };
-
-// tslint:disable: react-unused-props-and-state
-interface Props {
-    darknodeDetails: DarknodesState | null;
-}

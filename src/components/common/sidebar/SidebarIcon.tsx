@@ -29,7 +29,7 @@ interface Props {
  * Sidebar displays stats about an operator's darknodes collectively,
  * as well as a breakdown of each darknode
  */
-export const SidebarIcon = ({ darknodeID, storedName, active, faded, quoteCurrency, feesEarnedTotalEth, ethBalance, connected, hideMobileMenu }: Props) => {
+export const SidebarIcon: React.FC<Props> = ({ darknodeID, storedName, active, faded, quoteCurrency, feesEarnedTotalEth, ethBalance, connected, hideMobileMenu }) => {
     const name = storedName ? storedName : <DarknodeID darknodeID={darknodeID} />;
 
     const darknodeIDBase58 = darknodeIDHexToBase58(darknodeID);

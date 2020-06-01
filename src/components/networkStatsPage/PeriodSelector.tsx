@@ -2,16 +2,7 @@ import React from "react";
 
 import { PeriodType } from "../../lib/graphQL/volumes";
 
-// export enum PeriodType {
-//     Hour = "H",
-//     Day = "D",
-//     Week = "W",
-//     Month = "M",
-//     Year = "Y",
-//     All = "A",
-// }
-
-export const PeriodOption = ({ value, selected, onChange }: { value: PeriodType, selected: PeriodType, onChange: (value: PeriodType) => void }) => {
+const PeriodOption = ({ value, selected, onChange }: { value: PeriodType, selected: PeriodType, onChange: (value: PeriodType) => void }) => {
     const onClick = React.useCallback(() => {
         onChange(value);
     }, [onChange, value]);

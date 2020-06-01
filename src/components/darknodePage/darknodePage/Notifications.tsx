@@ -5,9 +5,11 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { RenNetworkDetails } from "@renproject/contracts";
+import { naturalTime } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 
 import { RegistrationStatus } from "../../../lib/ethereum/contractReads";
+import { EpochContainer } from "../../../store/epochStore";
 import { DarknodesState } from "../../../store/networkStateContainer";
 
 const lowValue = new BigNumber(Math.pow(10, 18)).multipliedBy(0.01);
@@ -24,8 +26,27 @@ const notificationType = {
     [NotificationType.Error]: faTimesCircle,
 };
 
-export const Notifications: React.StatelessComponent<Props> = (props) => {
-    const { isOperator, darknodeDetails, renNetwork } = props;
+interface Props {
+    isOperator: boolean;
+    darknodeDetails: DarknodesState | null;
+    renNetwork: RenNetworkDetails;
+}
+
+export const Notifications: React.FC<Props> = ({ isOperator, darknodeDetails, renNetwork }) => {
+
+    const { timeUntilNextEpoch, timeSinceLastEpoch } = EpochContainer.useContainer();
+
+    const [currentTime, setCurrentTime] = React.useState<number | null>(null);
+    React.useEffect(() => {
+        setCurrentTime(new Date().getTime() / 1000);
+    }, [timeSinceLastEpoch]);
+
+    const nextEpochReadable = currentTime !== null && timeUntilNextEpoch !== null ? naturalTime(currentTime + timeUntilNextEpoch, {
+        prefix: "in",
+        message: "next epoch",
+        countDown: true,
+        showingSeconds: false
+    }) : "";
 
     let notification;
     if (
@@ -35,7 +56,7 @@ export const Notifications: React.StatelessComponent<Props> = (props) => {
     ) {
         notification = {
             title: "Registration in progress!",
-            detail: `Your darknode will be registered within ${renNetwork.name === "chaosnet" || renNetwork.name === "mainnet" ? "8 days" : "24 hours"}.`,
+            detail: `Your darknode will be registered ${nextEpochReadable}.`,
             type: NotificationType.Information,
         };
     } else if (
@@ -45,7 +66,7 @@ export const Notifications: React.StatelessComponent<Props> = (props) => {
     ) {
         notification = {
             title: "Deregistration in progress.",
-            detail: `Your darknode will be deregistered within ${renNetwork.name === "chaosnet" || renNetwork.name === "mainnet" ? "8 days" : "24 hours"}.`,
+            detail: `Your darknode will be deregistered ${nextEpochReadable}.`,
             type: NotificationType.Information,
         };
     } else if (
@@ -72,10 +93,10 @@ export const Notifications: React.StatelessComponent<Props> = (props) => {
     }
 
     return (
-        <div className="darknodepage--notifications">
-            {notification ? <div className={`darknodepage--notification ${notification.type}`}>
+        <div className="darknodePage--notifications">
+            {notification ? <div className={`darknodePage--notification ${notification.type}`}>
                 <FontAwesomeIcon icon={notificationType[notification.type]} />
-                <div className="darknodepage--notification--details">
+                <div className="darknodePage--notification--details">
                     <h2>{notification.title}</h2>
                     <span>{notification.detail}</span>
                 </div>
@@ -83,9 +104,3 @@ export const Notifications: React.StatelessComponent<Props> = (props) => {
         </div>
     );
 };
-
-interface Props {
-    isOperator: boolean;
-    darknodeDetails: DarknodesState | null;
-    renNetwork: RenNetworkDetails;
-}

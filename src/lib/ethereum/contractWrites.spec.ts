@@ -1,6 +1,6 @@
 import { RenNetworkDetails } from "@renproject/contracts";
 import Web3 from "web3";
-import { PromiEvent } from "web3-core";
+import { PromiEvent, TransactionConfig } from "web3-core";
 
 import { WaitForTX } from "../../store/networkStateContainer";
 import { createWeb3, Provider } from "../../test/globalSetup";
@@ -9,7 +9,7 @@ import { getDarknodeRegistry } from "./contract";
 import {
     getDarknodeStatus, getMinimumBond, getOperatorDarknodes, RegistrationStatus,
 } from "./contractReads";
-import { approveNode, callEpoch, deregisterNode, refundNode, registerNode } from "./contractWrites";
+import { approveNode, deregisterNode, refundNode, registerNode } from "./contractWrites";
 
 let web3: Web3, network: RenNetworkDetails, provider: Provider, address: string;
 beforeAll(async () => { ({ web3, network, provider, address } = await createWeb3()); });
@@ -25,6 +25,20 @@ const simpleWaitForTX: WaitForTX = async <T extends {}>(promiEvent: PromiEvent<T
         });
     }).catch(reject);
 });
+
+const callEpoch = async (
+    web3Object: Web3,
+    renNetwork: RenNetworkDetails,
+    fromAddress: string,
+    waitForTX: WaitForTX,
+    txConfig?: TransactionConfig,
+) => {
+    const darknodeRegistry = getDarknodeRegistry(web3Object, renNetwork);
+
+    return await waitForTX(
+        darknodeRegistry.methods.epoch().send({ ...txConfig, from: fromAddress }),
+    );
+};
 
 test("registering darknode", async () => {
     jest.setTimeout(20000);

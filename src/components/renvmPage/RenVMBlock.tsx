@@ -13,7 +13,7 @@ interface Props {
     onBlockClick: (bockNumber: number) => void;
 }
 
-export const RenVMBlock = ({ blockNumber, onClose, onTxClick, block }: Props) => {
+export const RenVMBlock: React.FC<Props> = ({ blockNumber, onClose, onTxClick, block }) => {
 
     return <TitledSection
         onClose={onClose}

@@ -1,10 +1,8 @@
-// tslint:disable: no-unused-variable
-
 // import { useState } from "react";
 import { useState } from "react";
 import { createContainer } from "unstated-next";
 
-export interface PopupDetails {
+interface PopupDetails {
     popup: JSX.Element;
     overlay?: boolean;
     dismissible?: boolean;

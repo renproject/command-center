@@ -7,8 +7,7 @@ import { NetworkStateContainer } from "../../store/networkStateContainer";
 import { Web3Container } from "../../store/web3Store";
 import { ExternalLink } from "./ExternalLink";
 
-// tslint:disable: react-unused-props-and-state
-export const AccountDropdown: React.StatelessComponent<Props> = ({ }) => {
+export const AccountDropdown: React.FC<Props> = ({ }) => {
     const [shown, setShown] = React.useState(false);
     const [copied, setCopied] = React.useState(false);
 
@@ -45,7 +44,6 @@ export const AccountDropdown: React.StatelessComponent<Props> = ({ }) => {
 
     // tslint:disable-next-line: no-any
     const clickAway = (event: any) => {
-        // tslint:disable-next-line: no-any
         if (ref) {
             const current = ref.current;
             if ((current && !current.contains(event.target))) {
@@ -130,12 +128,12 @@ export const AccountDropdown: React.StatelessComponent<Props> = ({ }) => {
                     {transactions.size > 0 ?
                         <>
                             {transactions.map((_tx, txHash) => {
-                                const confs = confirmations.get(txHash, 0);
+                                const txConfirmations = confirmations.get(txHash, 0);
                                 return <li key={txHash} className="transaction">
-                                    {confs === 0 ? <Loading /> : <></>}
-                                    {confs === -1 ? <span className="red">(ERR) {" "}</span> : <></>}
+                                    {txConfirmations === 0 ? <Loading /> : <></>}
+                                    {txConfirmations === -1 ? <span className="red">(ERR) {" "}</span> : <></>}
                                     <ExternalLink className="transaction--hash" href={`${renNetwork.etherscan}/tx/${txHash}`}>{txHash.substring(0, 12)}...</ExternalLink>
-                                    {confs > 0 ? <>{" "}({confs} conf.)</> : ""}
+                                    {txConfirmations > 0 ? <>{" "}({txConfirmations} conf.)</> : ""}
                                 </li>;
                             }).valueSeq().toArray()}
                         </> : <></>

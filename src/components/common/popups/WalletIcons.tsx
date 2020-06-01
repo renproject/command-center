@@ -14,7 +14,7 @@ interface Props {
     web3BrowserName: Web3Browser;
 }
 
-export const WalletIcons: React.StatelessComponent<Props> = ({ web3BrowserName }) => {
+export const WalletIcons: React.FC<Props> = ({ web3BrowserName }) => {
     return web3BrowserName === Web3Browser.Web3Browser ?
         <div className="connect-web3--browsers">
             <a target="_blank" rel="noopener noreferrer" title="Metamask Web3 Browser" href="https://metamask.io/"><Metamask /></a>

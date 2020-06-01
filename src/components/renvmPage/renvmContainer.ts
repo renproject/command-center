@@ -1,5 +1,3 @@
-// tslint:disable: no-unused-variable
-
 import { RenNetworkDetails } from "@renproject/contracts";
 import { RenVMArg, RenVMType } from "@renproject/interfaces";
 import { sleep } from "@renproject/react-components";
@@ -96,7 +94,7 @@ const getBlocks = async (network: RenNetworkDetails, previousBlocks: List<Block>
     let response;
     let i = 0;
     do {
-        response = (await retryNTimes(async () => await Axios.post<RPCResponse<ResponseQueryBlocks>>(lightnode, request), 5)).data.result;
+        response = (await retryNTimes(async () => await Axios.post<RPCResponse<ResponseQueryBlocks>>(lightnode, request), 2)).data.result;
         i++;
     } while ((response.blocks === null || response.blocks.length === 0) && i < 5);
     return response.blocks ? List(response.blocks).sort((a, b) => b.header.height - a.header.height) : List();
@@ -173,7 +171,7 @@ const useRenVMContainer = () => {
         // Fetch the block from the lightnode.
         if (!newCurrentBlock) {
             const request = { jsonrpc: "2.0", method: "ren_queryBlock", params: { n: 5, blockHeight: blockNumber }, id: 67 };
-            const response = (await retryNTimes(async () => await Axios.post<RPCResponse<ResponseQueryBlock>>(lightnode, request), 5)).data.result;
+            const response = (await retryNTimes(async () => await Axios.post<RPCResponse<ResponseQueryBlock>>(lightnode, request), 2)).data.result;
             newCurrentBlock = response.block;
         }
 

@@ -13,7 +13,11 @@ import { Block, BlockBody, BlockTitle } from "./Block";
 
 const UPDATE_DARKNODE_LINK = "https://docs.renproject.io/darknodes/manage/updating";
 
-export const VersionBlock = ({ darknodeDetails }: Props): JSX.Element => {
+interface Props {
+    darknodeDetails: DarknodesState | null;
+}
+
+export const VersionBlock: React.FC<Props> = ({ darknodeDetails }) => {
     const { latestDarknodeVersionFull, isDarknodeUpToDate, latestDarknodeVersionDaysAgo } = GithubAPIContainer.useContainer();
 
     const upToDate: boolean | null = darknodeDetails && darknodeDetails.nodeStatistics ? isDarknodeUpToDate(darknodeDetails.nodeStatistics.version) : null;
@@ -51,8 +55,3 @@ export const VersionBlock = ({ darknodeDetails }: Props): JSX.Element => {
         </Block>
     );
 };
-
-// tslint:disable: react-unused-props-and-state
-interface Props {
-    darknodeDetails: DarknodesState | null;
-}

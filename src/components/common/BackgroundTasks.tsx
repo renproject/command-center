@@ -8,20 +8,6 @@ import { NetworkStateContainer } from "../../store/networkStateContainer";
 import { Web3Container } from "../../store/web3Store";
 import { getDarknodeParam } from "../darknodePage/Darknode";
 
-export const asyncSetInterval = (fn: () => Promise<number | void>, onErrorRetry: number, errorMessage: string, timeout: NodeJS.Timer | undefined, setNewTimeout: (timeout: NodeJS.Timer) => void): void => {
-    (async () => {
-        if (timeout) { clearTimeout(timeout); }
-        let retry = onErrorRetry;
-        try {
-            retry = (await fn() || onErrorRetry);
-        } catch (error) {
-            if (errorMessage) { catchBackgroundException(error, errorMessage); }
-        }
-        if (timeout) { clearTimeout(timeout); }
-        setNewTimeout(setTimeout(asyncSetInterval, retry || onErrorRetry, fn, onErrorRetry, errorMessage, timeout, setNewTimeout) as unknown as NodeJS.Timer);
-    })().catch(error => catchBackgroundException(error, "Error in BackgroundTasks: asyncSetInterval"));
-};
-
 interface Props extends RouteComponentProps {
 }
 
@@ -43,7 +29,6 @@ export const BackgroundTasks = withRouter(({ match }: Props) => {
         (async () => {
             let retry = 120;
             try {
-                // tslint:disable-next-line: await-promise
                 await updateTokenPrices();
             } catch (error) {
                 catchBackgroundException(error, "Error in BackgroundTasks > updateTokenPrices");
@@ -61,10 +46,9 @@ export const BackgroundTasks = withRouter(({ match }: Props) => {
     const [rewardsTrigger, setRewardsTrigger] = React.useState(0);
     React.useEffect(() => {
         (async () => {
-            let retry = 120;
+            let retry = address ? 120 : 240;
             if (tokenPrices) {
                 try {
-                    // tslint:disable-next-line: await-promise
                     await updateCycleAndPendingRewards();
                 } catch (error) {
                     catchBackgroundException(error, "Error in BackgroundTasks > callUpdateRewards");
@@ -114,7 +98,6 @@ export const BackgroundTasks = withRouter(({ match }: Props) => {
                     if (accountDarknodeList) {
                         list = (list || OrderedSet()).merge(accountDarknodeList);
                     }
-                    // tslint:disable-next-line: await-promise
                     await updateOperatorDarknodes();
                     timeout = 120;
                 } catch (error) {
@@ -130,7 +113,7 @@ export const BackgroundTasks = withRouter(({ match }: Props) => {
         })().catch(error => catchBackgroundException(error, "Error in BackgroundTasks > callUpdateOperatorDarknodes"));
     }, operatorDarknodesTriggers);
 
-    // Update selected darknode statistics every 30 seconds, or when the
+    // Update selected darknode statistics every 120 seconds, or when the
     // selected Darknode changes;
     const [selectedDarknodeTimeout, setSelectedDarknodeTimeout] = React.useState<NodeJS.Timer | undefined>(undefined);
     const [selectedDarknodeTrigger, setSelectedDarknodeTrigger] = React.useState(0);
@@ -140,9 +123,8 @@ export const BackgroundTasks = withRouter(({ match }: Props) => {
             let timeout = 1; // if the action isn't called, try again in 1 second
             if (tokenPrices && darknodeID) {
                 try {
-                    // tslint:disable-next-line: await-promise
                     await updateDarknodeDetails(darknodeID);
-                    timeout = 30;
+                    timeout = 120;
                 } catch (error) {
                     catchBackgroundException(error, "Error in BackgroundTasks > callUpdateSelectedDarknode");
                     timeout = 15; // try again in half the time

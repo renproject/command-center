@@ -2,7 +2,6 @@ import * as React from "react";
 
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { TxStatus } from "@renproject/interfaces";
 import { Loading } from "@renproject/react-components";
 import { List } from "immutable";
 
@@ -19,30 +18,11 @@ enum Stage {
     Error,
 }
 
-// const renderTxStatus = (status: TxStatus | null) => {
-//     switch (status) {
-//         case null:
-//             return "Submitting";
-//         case TxStatus.TxStatusNil:
-//             return "Submitting";
-//         case TxStatus.TxStatusConfirming:
-//             return "Waiting for confirmations";
-//         case TxStatus.TxStatusPending:
-//             return "Executing";
-//         case TxStatus.TxStatusExecuting:
-//             return "Executing";
-//         case TxStatus.TxStatusDone:
-//             return "Done";
-//         case TxStatus.TxStatusReverted:
-//             return "Reverted";
-//     }
-// };
-
-export const ColoredBanner: React.FunctionComponent<{ token: Token }> = ({ token }) => {
+const ColoredBanner: React.FunctionComponent<{ token: Token }> = ({ token }) => {
     return <div className={`colored-banner colored-banner--${token.toLowerCase()}`} />;
 };
 
-export const WithdrawPopup: React.StatelessComponent<Props> = ({ token, withdraw, onDone, onCancel }) => {
+export const WithdrawPopup: React.FC<Props> = ({ token, withdraw, onDone, onCancel }) => {
     const { renNetwork } = Web3Container.useContainer();
     const { withdrawAddresses, addToWithdrawAddresses, removeFromWithdrawAddresses } = NetworkStateContainer.useContainer();
 
@@ -212,7 +192,6 @@ export const WithdrawPopup: React.StatelessComponent<Props> = ({ token, withdraw
 
 interface Props {
     token: Token;
-    status: TxStatus;
     withdraw(address: string): Promise<void>;
     onDone(): void;
     onCancel(): void;

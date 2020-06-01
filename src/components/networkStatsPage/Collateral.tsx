@@ -20,7 +20,7 @@ interface Props {
 
 const RowBullet = () => <div className="collateral-table--bullet"><div className="collateral-table--bullet--inner" /></div>;
 
-export const Collateral = ({ l, b, bRen, quoteCurrency }: Props) => {
+export const Collateral: React.FC<Props> = ({ l, b, bRen, quoteCurrency }) => {
 
     const lDivB = b === null || l.isZero() ? 0 : b.isEqualTo(0) ? 100 : BigNumber.min(l.div(b), 1).multipliedBy(100).toNumber();
     const bDivL = b === null || l.isZero() ? 100 : l.isEqualTo(0) ? 100 : BigNumber.min(b.div(l), 1).multipliedBy(100).toNumber();

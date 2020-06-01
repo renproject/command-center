@@ -1,5 +1,3 @@
-// tslint:disable: no-unused-variable
-
 import { RenNetworkDetails } from "@renproject/contracts";
 import { sleep } from "@renproject/react-components";
 import Axios from "axios";
@@ -109,7 +107,7 @@ const getAllDarknodes = async (network: RenNetworkDetails) => {
         throw new Error(`No lightnode to fetch darknode locations.`);
     }
     const request = { jsonrpc: "2.0", method: "ren_queryPeers", params: {}, id: 67 };
-    const response = (await retryNTimes(async () => await Axios.post<QueryResponse>(lightnode, request), 5)).data;
+    const response = (await retryNTimes(async () => await Axios.post<QueryResponse>(lightnode, request), 2)).data;
     return response.result.peers;
     // return darknodeIDs.map(parseMultiAddress);
 };
@@ -163,14 +161,14 @@ const useMapContainer = () => {
             const { longitude, latitude } = await getLocation(ip);
 
             // tslint:disable-next-line: strict-type-predicates
-            if (longitude === null || latitude === null) {
+            if (!longitude || !latitude) {
                 return;
             }
 
             // Shift by random amount to avoid markers covering one another.
             const random = (seedS: string) => {
                 const seed = Array.from(seedS).reduce((r, i) => r + i.charCodeAt(0), 0);
-                const x = Math.sin(seed) * 10000;
+                const x = Math.sin(seed) * 20000;
                 const xInt = x - Math.floor(x);
                 return xInt * 2 - 1;
             };
