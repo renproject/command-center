@@ -49,7 +49,8 @@ export const App = withRouter(({ match: { params } }: Props) => {
     const showNetworkBanner = renNetwork.name !== DEFAULT_REN_NETWORK;
 
     React.useEffect(() => {
-        if (loggedInBefore && darknodeID) {
+        // if (loggedInBefore && darknodeID) {
+        if (loggedInBefore) {
             promptLogin({ manual: false, redirect: false, showPopup: false, immediatePopup: false })
                 .catch((error) => catchBackgroundException(error, "Error in App > promptLogin"));
         }

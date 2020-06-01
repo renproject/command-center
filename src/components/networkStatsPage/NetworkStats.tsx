@@ -30,10 +30,9 @@ export const NetworkStats = () => {
         container.updateBlocks().catch(console.error);
         const interval = setInterval(() => {
             container.updateBlocks().catch(console.error);
-        }, 1000 * 15); // 15 seconds
+        }, 1000 * 7.5);
         return () => clearInterval(interval);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, []); // 7.5 seconds
 
     const firstBlock = container.blocks ? container.blocks.first<Block | null>(null) : null;
 
@@ -49,19 +48,19 @@ export const NetworkStats = () => {
                     const token = state.name.replace("UTXOs", "").toUpperCase() as Token;
                     if (tokenPrices === null) {
                         lockedBalances = lockedBalances.set(token, new BigNumber(0));
-                        return null;
+                        return;
                     }
 
                     const tokenPriceMap = tokenPrices.get(token, undefined);
                     if (!tokenPriceMap) {
                         lockedBalances = lockedBalances.set(token, new BigNumber(0));
-                        return null;
+                        return;
                     }
 
                     const price = tokenPriceMap.get(quoteCurrency, undefined);
                     if (!price) {
                         lockedBalances = lockedBalances.set(token, new BigNumber(0));
-                        return null;
+                        return;
                     }
 
                     const tokenDetails = AllTokenDetails.get(token, undefined);
@@ -72,8 +71,8 @@ export const NetworkStats = () => {
 
                     lockedBalances = lockedBalances.set(token, amount.times(price));
                     total = total.plus(lockedBalances.get(token, new BigNumber(0)));
+                    return;
                 }
-                return null;
             });
     }
 
@@ -120,7 +119,6 @@ export const NetworkStats = () => {
                 }
             }
         })().catch(console.error);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [volumePeriod, lockedPeriod]);
 
     const [quotePeriodSeries, setQuotePeriodSeries] = useState<Map<PeriodType, QuotePeriodResponse>>(Map<PeriodType, QuotePeriodResponse>());
@@ -133,10 +131,12 @@ export const NetworkStats = () => {
             }
         }
         setPricesUpdated(false);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [periodSeries, pricesUpdated]);
 
     const collateral = <Collateral l={total} b={b} bRen={new BigNumber(currentDarknodeCount || 0).times(100000)} quoteCurrency={quoteCurrency} />;
+
+    const volumePeriodSeries = quotePeriodSeries.get(volumePeriod);
+    const lockedPeriodSeries = quotePeriodSeries.get(lockedPeriod);
 
     return (
         <div className="network-stats container">
@@ -150,7 +150,7 @@ export const NetworkStats = () => {
                     <div className="stat-with-period">
                         <PeriodSelector selected={volumePeriod} onChange={setVolumePeriod} />
                         <Stat message={`Volume (${volumePeriod === PeriodType.ALL ? volumePeriod : `1${volumePeriod.slice(0, 1).toUpperCase()}`})`} icon={<IconVolume />} big className="stat--extra-big">
-                            {quotePeriodSeries.get(volumePeriod) ? <><CurrencyIcon currency={quoteCurrency} />{quotePeriodSeries.get(volumePeriod)?.average.quotePeriodVolume}{/*<TokenBalance
+                            {volumePeriodSeries ? <><CurrencyIcon currency={quoteCurrency} />{new BigNumber(volumePeriodSeries.average.quotePeriodVolume).toFormat(2)}{/*<TokenBalance
                             token={Token.ETH}
                             convertTo={quoteCurrency}
                             amount={previousSummed}
@@ -167,7 +167,7 @@ export const NetworkStats = () => {
                     <div className="stat-with-period">
                         <PeriodSelector selected={lockedPeriod} onChange={setLockedPeriod} />
                         <Stat message="Value locked" icon={<IconValueLocked />} big className="stat--extra-big">
-                            {quotePeriodSeries.get(lockedPeriod) ? <><CurrencyIcon currency={quoteCurrency} />{quotePeriodSeries.get(lockedPeriod)?.average.quoteTotalLocked}
+                            {lockedPeriodSeries ? <><CurrencyIcon currency={quoteCurrency} />{new BigNumber(lockedPeriodSeries.average.quoteTotalLocked).toFormat(2)}
                                 {/* {total ? <> */}
                                 {/* <CurrencyIcon currency={quoteCurrency} /> */}
                                 {/* {total.toFormat(2)}{/*<TokenBalance */}
