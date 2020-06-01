@@ -78,6 +78,8 @@ export const Darknode = withRouter(({ match, location }: Props) => {
         setAction(urlAction);
         setPublicKey(urlPublicKey);
         // setProvidedName(name);
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [location.search]);
 
     const details = darknodeOrURL ? darknodeDetails.get(darknodeOrURL, null) : null;

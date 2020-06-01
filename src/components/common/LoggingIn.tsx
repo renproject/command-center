@@ -15,10 +15,11 @@ export const LoggingIn: React.FC<{}> = () => {
         if (!address) {
             await promptLogin({ manual: false, redirect: false, showPopup: true, immediatePopup: false });
         }
-    }, [address]);
+    }, [promptLogin, address]);
 
     React.useEffect(() => {
         handleLogin().catch((error) => catchBackgroundException(error, "Error in LoggingIn > handleLogin"));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return <div className="logging-in">

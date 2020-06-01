@@ -38,6 +38,7 @@ export const Registration: React.FC<Props> = ({ darknodeID, darknodeDetails, reg
         if (registrationStatus !== initialRegistrationStatus) {
             setActive(false);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [registrationStatus]);
 
     const onCancel = () => {

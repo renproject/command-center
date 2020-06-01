@@ -69,6 +69,7 @@ const useGithubAPIContainer = () => {
             setTimeout(() => rerender(!r), inNSeconds(loaded, now, interval));
             catchBackgroundException(error, "Error in epochStore: useEffect > fetchEpoch");
         });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [everyNSeconds(loaded, now, interval)]);
 
     const isDarknodeUpToDate = useCallback((darknodeVersionFull: string) => {
@@ -78,7 +79,7 @@ const useGithubAPIContainer = () => {
             console.error(error);
             return null;
         }
-    }, [latestDarknodeVersion]);
+    }, [latestDarknodeVersionFull]);
 
     const isCLIUpToDate = useCallback((cliVersionFull: string) => {
         try {
@@ -87,7 +88,7 @@ const useGithubAPIContainer = () => {
             console.error(error);
             return null;
         }
-    }, [latestCLIVersion]);
+    }, [latestCLIVersionFull]);
 
     return { latestDarknodeVersion, latestDarknodeVersionFull, latestDarknodeVersionDaysAgo, latestCLIVersion, latestCLIVersionFull, latestCLIVersionDaysAgo, isDarknodeUpToDate, isCLIUpToDate };
 };

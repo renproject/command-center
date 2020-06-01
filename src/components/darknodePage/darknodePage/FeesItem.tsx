@@ -19,8 +19,8 @@ interface Props {
 }
 
 export const FeesItem: React.FC<Props> = ({ darknodeID, token, amount, disabled }) => {
-    const { withdrawReward, waitForTX, updateDarknodeDetails } = NetworkStateContainer.useContainer();
-    const { web3, address, renNetwork } = Web3Container.useContainer();
+    const { withdrawReward, updateDarknodeDetails } = NetworkStateContainer.useContainer();
+    const { address } = Web3Container.useContainer();
 
     const [loading, setLoading] = React.useState(false);
 
@@ -43,7 +43,7 @@ export const FeesItem: React.FC<Props> = ({ darknodeID, token, amount, disabled 
         }
 
         setLoading(false);
-    }, [withdrawReward, waitForTX, updateDarknodeDetails, darknodeID, web3, address, renNetwork, token]);
+    }, [withdrawReward, updateDarknodeDetails, darknodeID, address, token, tokenDetails]);
 
     let isDisabled = false;
     let title = "";

@@ -43,6 +43,7 @@ export const useInitialState = <S>(
     return useMemo(() => readItem<S>(storage, key, unmarshalFromStorage) ?? defaultStateRef.current, [
         key,
         storage,
+        unmarshalFromStorage
     ]);
 };
 
@@ -68,7 +69,7 @@ export const useStorageWriter = <S>(
         }
 
         return;
-    }, [state, key, writeError, storage]);
+    }, [state, key, writeError, storage, marshalToStorage]);
 
     return writeError;
 };
@@ -91,6 +92,7 @@ export const useStorageListener = <S>(
         }
 
         onChangeRef.current(readItem<S>(storage, key, unmarshalFromStorage) ?? defaultStateRef.current);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [key, storage]);
 
     useEffect(() => {
@@ -111,5 +113,6 @@ export const useStorageListener = <S>(
         }
 
         return;
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [key]);
 };

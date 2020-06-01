@@ -1,6 +1,5 @@
 import * as React from "react";
 
-import { OrderedSet } from "immutable";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 
 import { catchBackgroundException } from "../../lib/react/errors";
@@ -17,8 +16,7 @@ interface Props extends RouteComponentProps {
  */
 export const BackgroundTasks = withRouter(({ match }: Props) => {
     const { address, lookForLogout } = Web3Container.useContainer();
-    const { darknodeRegisteringList, darknodeList, tokenPrices, updateTokenPrices, updateCycleAndPendingRewards, updateOperatorDarknodes, updateDarknodeDetails } = NetworkStateContainer.useContainer();
-    const accountDarknodeList = React.useMemo(() => address ? darknodeList.get(address, null) : null, [darknodeList]);
+    const { tokenPrices, updateTokenPrices, updateCycleAndPendingRewards, updateOperatorDarknodes, updateDarknodeDetails } = NetworkStateContainer.useContainer();
 
     const darknodeID = getDarknodeParam(match.params);
 
@@ -39,6 +37,7 @@ export const BackgroundTasks = withRouter(({ match }: Props) => {
         })().catch((error) => {
             catchBackgroundException(error, "Error in BackgroundTasks > updateTokenPrices");
         });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pricesTrigger]);
 
     // Update rewards every 120 seconds
@@ -61,6 +60,7 @@ export const BackgroundTasks = withRouter(({ match }: Props) => {
         })().catch(error => {
             catchBackgroundException(error, "Error in BackgroundTasks > callUpdateRewards");
         });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [rewardsTrigger]);
 
     // See if the user has logged out every 5 seconds
@@ -79,6 +79,7 @@ export const BackgroundTasks = withRouter(({ match }: Props) => {
         })().catch((error) => {
             catchBackgroundException(error, "Error in BackgroundTasks > callLookForLogout");
         });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [logoutTrigger]);
 
     // Update operator statistics every 120 seconds, or when the user changes
@@ -91,13 +92,6 @@ export const BackgroundTasks = withRouter(({ match }: Props) => {
             let timeout = 1; // Retry in a second, unless the call succeeds
             if (address) {
                 try {
-                    let list = null;
-                    if (darknodeRegisteringList.size > 0) {
-                        list = darknodeRegisteringList.keySeq().toOrderedSet();
-                    }
-                    if (accountDarknodeList) {
-                        list = (list || OrderedSet()).merge(accountDarknodeList);
-                    }
                     await updateOperatorDarknodes();
                     timeout = 120;
                 } catch (error) {
@@ -111,6 +105,7 @@ export const BackgroundTasks = withRouter(({ match }: Props) => {
                 timeout * 1000,
             ) as unknown as NodeJS.Timer);
         })().catch(error => catchBackgroundException(error, "Error in BackgroundTasks > callUpdateOperatorDarknodes"));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, operatorDarknodesTriggers);
 
     // Update selected darknode statistics every 120 seconds, or when the
@@ -136,6 +131,7 @@ export const BackgroundTasks = withRouter(({ match }: Props) => {
                 timeout * 1000,
             ) as unknown as NodeJS.Timer);
         })().catch(error => catchBackgroundException(error, "Error in BackgroundTasks > callUpdateSelectedDarknode"));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, selectedDarknodeTriggers);
 
     React.useEffect(() => {
@@ -147,6 +143,7 @@ export const BackgroundTasks = withRouter(({ match }: Props) => {
             if (operatorDarknodesTimeout) { clearTimeout(operatorDarknodesTimeout); }
             if (selectedDarknodeTimeout) { clearTimeout(selectedDarknodeTimeout); }
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return <></>;

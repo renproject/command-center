@@ -7,7 +7,7 @@ import { NetworkStateContainer } from "../../store/networkStateContainer";
 import { Web3Container } from "../../store/web3Store";
 import { ExternalLink } from "./ExternalLink";
 
-export const AccountDropdown: React.FC<Props> = ({ }) => {
+export const AccountDropdown: React.FC<Props> = () => {
     const [shown, setShown] = React.useState(false);
     const [copied, setCopied] = React.useState(false);
 

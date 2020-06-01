@@ -14,8 +14,8 @@ export const AllDarknodes: React.FC<{}> = () => {
     const { address, renNetwork: network } = Web3Container.useContainer();
     const { darknodeDetails, darknodeNames, darknodeRegisteringList, registrySync, darknodeList, hiddenDarknodes } = NetworkStateContainer.useContainer();
 
-    const accountDarknodeList = React.useMemo(() => address ? darknodeList.get(address, null) : null, [darknodeList]);
-    const accountHiddenDarknodes = React.useMemo(() => address ? hiddenDarknodes.get(address, null) : null, [hiddenDarknodes]);
+    const accountDarknodeList = React.useMemo(() => address ? darknodeList.get(address, null) : null, [address, darknodeList]);
+    const accountHiddenDarknodes = React.useMemo(() => address ? hiddenDarknodes.get(address, null) : null, [address, hiddenDarknodes]);
 
     const shownDarknodeList = !accountDarknodeList ? accountDarknodeList : accountDarknodeList.filter(d => !accountHiddenDarknodes || !accountHiddenDarknodes.contains(d));
 

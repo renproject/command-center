@@ -91,9 +91,7 @@ export const TopUpController: React.FC<Props> = ({ darknodeID }) => {
             setPending(false);
 
             // If the user hasn't changed the value, set it to 0.
-            if (value === value) {
-                setValue("0");
-            }
+            setValue(currentValue => currentValue === value ? "0" : currentValue);
         };
 
         showFundPopup(darknodeID, value, onCancel, onDone);
@@ -103,6 +101,7 @@ export const TopUpController: React.FC<Props> = ({ darknodeID }) => {
         updateTraderBalance().catch((error) => {
             catchBackgroundException(error, "Error in TopUpController > updateTraderBalance");
         });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return <TopUp

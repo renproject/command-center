@@ -45,8 +45,8 @@ export const Sidebar = withRouter(
         const { mobileMenuActive, hideMobileMenu } = UIContainer.useContainer();
 
         const { darknodeList, hiddenDarknodes } = NetworkStateContainer.useContainer();
-        const accountDarknodeList = React.useMemo(() => address ? darknodeList.get(address, null) : null, [darknodeList]);
-        const accountHiddenDarknodes = React.useMemo(() => address ? hiddenDarknodes.get(address, null) : null, [hiddenDarknodes]);
+        const accountDarknodeList = React.useMemo(() => address ? darknodeList.get(address, null) : null, [darknodeList, address]);
+        const accountHiddenDarknodes = React.useMemo(() => address ? hiddenDarknodes.get(address, null) : null, [hiddenDarknodes, address]);
 
         const shownDarknodeList = !accountDarknodeList ? accountDarknodeList : accountDarknodeList.filter(d => !accountHiddenDarknodes || !accountHiddenDarknodes.contains(d));
 

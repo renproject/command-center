@@ -14,22 +14,6 @@ import { RenVMBlock } from "./RenVMBlock";
 import { Block, RenVMContainer } from "./renvmContainer";
 import { RenVMTransaction, TransactionPreview } from "./RenVMTransaction";
 
-// Returning a new object reference guarantees that a before-and-after
-//   equivalence check will always be false, resulting in a re-render, even
-//   when multiple calls to forceUpdate are batched.
-
-// const useForceUpdate = () => {
-//     const [, dispatch] = useState<{}>(Object.create(null));
-
-//     // Turn dispatch(required_parameter) into dispatch().
-//     return useCallback(
-//         (): void => {
-//             dispatch(Object.create(null));
-//         },
-//         [dispatch],
-//     );
-// };
-
 export const RenVM = withRouter(({ match: { params }, history }) => {
     const container = RenVMContainer.useContainer();
 
@@ -39,15 +23,14 @@ export const RenVM = withRouter(({ match: { params }, history }) => {
         ? parseInt(params.blockNumber, 10)
         : null;
 
-    // const forceUpdate = useForceUpdate();
-
     React.useEffect(() => {
         container.updateBlocks().catch(console.error);
         const interval = setInterval(() => {
             container.updateBlocks().catch(console.error);
-        }, 1000 * 7.5);
+        }, 1000 * 15); // 15 seconds
         return () => clearInterval(interval);
-    }, []); // 7.5 seconds
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     React.useEffect(() => {
         if (txHash) { container.getTransaction(txHash).catch(console.error); }
@@ -55,12 +38,14 @@ export const RenVM = withRouter(({ match: { params }, history }) => {
             if (txHash) { container.getTransaction(txHash, { skipCache: true }).catch(console.error); }
         }, 1000 * 10);
         return () => clearInterval(interval);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [txHash]);
 
     React.useEffect(() => {
         if (blockNumber) {
             container.getBlock(blockNumber).catch(console.error);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [blockNumber]);
 
     const onTxClick = useCallback((txHash64: string) => {
@@ -127,6 +112,7 @@ export const RenVM = withRouter(({ match: { params }, history }) => {
                     {token}
                 </Stat>;
             }
+            return null;
         });
     }
 

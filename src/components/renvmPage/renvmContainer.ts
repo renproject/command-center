@@ -79,17 +79,11 @@ export const retryNTimes = async <T>(fnCall: () => Promise<T>, retries: number) 
     throw returnError;
 };
 
-const getBlocks = async (network: RenNetworkDetails, previousBlocks: List<Block>): Promise<List<Block>> => {
+const getBlocks = async (network: RenNetworkDetails): Promise<List<Block>> => {
     const lightnode = getLightnode(network);
     if (!lightnode) {
         throw new Error(`No lightnode to fetch darknode locations.`);
     }
-    const firstBlock = previousBlocks.first<Block | null>(null);
-    let previousHeight = null;
-    if (firstBlock) {
-        previousHeight = firstBlock.header.height;
-    }
-    // if (previousHeight === null) {
     const request = { jsonrpc: "2.0", method: "ren_queryBlocks", params: { n: N }, id: 67 };
     let response;
     let i = 0;
@@ -98,26 +92,6 @@ const getBlocks = async (network: RenNetworkDetails, previousBlocks: List<Block>
         i++;
     } while ((response.blocks === null || response.blocks.length === 0) && i < 5);
     return response.blocks ? List(response.blocks).sort((a, b) => b.header.height - a.header.height) : List();
-    // } else {
-    //     let currentHeight = null as number | null;
-    //     let syncedHeight = null as number | null;
-    //     let newBlocks = List<Block>();
-    //     while (
-    //         currentHeight === null || syncedHeight === null ||
-    //         (syncedHeight > previousHeight + 1 && syncedHeight + N - 1 > currentHeight && syncedHeight > 0)
-    //     ) {
-    //         const request = { jsonrpc: "2.0", method: "ren_queryBlock", params: { blockHeight: syncedHeight && syncedHeight - 1 }, id: 67 };
-    //         const response = (await retryNTimes(() => Axios.post<RPCResponse<ResponseQueryBlock>>(lightnode, request), 4)).data.result;
-    //         const latestBlock = response.block;
-    //         if (latestBlock.header.height === previousHeight) {
-    //             break;
-    //         }
-    //         currentHeight = currentHeight || latestBlock.header.height;
-    //         syncedHeight = latestBlock.header.height;
-    //         newBlocks = newBlocks.push(latestBlock);
-    //     }
-    //     return newBlocks.concat(previousBlocks).slice(0, N).toList();
-    // }
 };
 
 const useRenVMContainer = () => {
@@ -138,7 +112,7 @@ const useRenVMContainer = () => {
 
     const updateBlocks = async () => {
         if (network) {
-            blocks = await getBlocks(network, blocks || List<Block>());
+            blocks = await getBlocks(network);
             setBlocks(blocks);
         }
     };

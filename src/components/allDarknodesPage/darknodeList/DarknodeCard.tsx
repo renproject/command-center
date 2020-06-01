@@ -14,7 +14,7 @@ interface Props {
 }
 
 export const DarknodeCard: React.FC<Props> = ({ darknodeID, darknodeDetails, name, publicKey }) => {
-    const { address, renNetwork: renNetwork } = Web3Container.useContainer();
+    const { address, renNetwork } = Web3Container.useContainer();
     const { quoteCurrency, hideDarknode, removeRegisteringDarknode } = NetworkStateContainer.useContainer();
 
     const [confirmedRemove, setConfirmedRemove] = React.useState(false);
@@ -37,7 +37,7 @@ export const DarknodeCard: React.FC<Props> = ({ darknodeID, darknodeDetails, nam
         } else if (address) {
             hideDarknode(darknodeID, address, renNetwork.name);
         }
-    }, [confirmedRemove, continuable, removeRegisteringDarknode, address, darknodeID, renNetwork.name]);
+    }, [confirmedRemove, continuable, removeRegisteringDarknode, address, darknodeID, renNetwork.name, hideDarknode]);
 
     const faded = darknodeDetails &&
         darknodeDetails.registrationStatus === RegistrationStatus.Unregistered &&

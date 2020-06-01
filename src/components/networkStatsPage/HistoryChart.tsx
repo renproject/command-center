@@ -32,7 +32,6 @@ export const textCurrencyIcon = (currency: Currency) => {
     }
 };
 
-
 // const { Chart } = require("react-chartjs-2");
 // require("chartjs-plugin-style");
 
@@ -76,7 +75,7 @@ export const textCurrencyIcon = (currency: Currency) => {
 //     // Canvas doesn't allow us to stroke inside the width so we can
 //     // adjust the sizes to fit if we're setting a stroke on the line
 //     if (borderWidth) {
-//         // borderWidth shold be less than bar width and bar height.
+//         // borderWidth should be less than bar width and bar height.
 //         const barSize = Math.min(Math.abs(left - right), Math.abs(top - bottom));
 //         borderWidth = borderWidth > barSize ? barSize : borderWidth;
 //         const halfStroke = borderWidth / 2;

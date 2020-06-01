@@ -42,6 +42,7 @@ export const App = withRouter(({ match: { params } }: Props) => {
     React.useEffect(() => {
         setWeb3(web3);
         setNetwork(renNetwork);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [web3]);
 
     const darknodeID = getDarknodeParam(params);
@@ -52,6 +53,7 @@ export const App = withRouter(({ match: { params } }: Props) => {
             promptLogin({ manual: false, redirect: false, showPopup: false, immediatePopup: false })
                 .catch((error) => catchBackgroundException(error, "Error in App > promptLogin"));
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return <div className="app">

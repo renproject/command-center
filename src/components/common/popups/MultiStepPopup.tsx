@@ -92,6 +92,7 @@ const MultiStepPopupClass: React.FC<Props> = ({ steps,
                     catchBackgroundException(error, "Error in MultiStepPopup > running steps");
                 });
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // Show a warning to the user

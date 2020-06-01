@@ -29,7 +29,7 @@ export const DarknodeMap = () => {
         return () => {
             clearInterval(interval);
         };
-        // tslint:disable-next-line:react-hooks/exhaustive-dep
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [network && network.name]);
 
     return <div className="map">

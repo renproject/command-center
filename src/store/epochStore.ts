@@ -30,13 +30,14 @@ const useEpochContainer = () => {
 
     // tslint:disable-next-line: prefer-const
     let [loopTimeout, setLoopTimeout] = useState(200); // Update every 200 seconds
+    const loopTrigger = everyNSeconds(loaded, now, loopTimeout);
 
     useEffect(() => {
+        let nextLoopTimeout = 1;
         (async () => {
             if (network && web3) {
+                nextLoopTimeout = 200;
                 try {
-                    loopTimeout = 200;
-                    setLoopTimeout(loopTimeout);
                     const darknodeRegistry = getDarknodeRegistry(web3, network);
                     const newEpoch: Epoch = await retryNTimes(async () => await darknodeRegistry.methods.currentEpoch().call(), 2);
                     if (!newEpoch) {
@@ -53,20 +54,19 @@ const useEpochContainer = () => {
                     const newTimeSinceLastEpoch = Math.max(now - newEpochTimestamp, 0);
                     setTimeSinceLastEpoch(newTimeSinceLastEpoch);
                 } catch (error) {
-                    loopTimeout = 10;
-                    setLoopTimeout(loopTimeout);
+                    nextLoopTimeout = 10;
                     catchBackgroundException(error, "Error in EpochContainer: fetchEpoch");
                 }
-            } else {
-                loopTimeout = 1;
-                setLoopTimeout(loopTimeout);
             }
-            setTimeout(() => rerender(!r), inNSeconds(loaded, now, loopTimeout));
+            setLoopTimeout(nextLoopTimeout);
+            setTimeout(() => rerender(!r), inNSeconds(loaded, now, nextLoopTimeout));
         })().catch(error => {
-            setTimeout(() => rerender(!r), inNSeconds(loaded, now, loopTimeout));
+            setLoopTimeout(nextLoopTimeout);
+            setTimeout(() => rerender(!r), inNSeconds(loaded, now, nextLoopTimeout));
             catchBackgroundException(error, "Error in epochStore: useEffect > fetchEpoch");
         });
-    }, [web3, everyNSeconds(loaded, now, loopTimeout)]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [web3, loopTrigger]);
 
     return { epoch, timeUntilNextEpoch, epochInterval, timeSinceLastEpoch };
 };

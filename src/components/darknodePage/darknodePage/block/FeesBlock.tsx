@@ -94,17 +94,16 @@ export const FeesBlock: React.FC<Props> = ({ darknodeDetails, isOperator }) => {
         if (disableClaim && cycleStatus !== currentCycleStatus) {
             setDisableClaim(false);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [cycleStatus]);
 
     const showPreviousPending = darknodeDetails && darknodeDetails.cycleStatus.get(previousCycle) === DarknodeFeeStatus.NOT_CLAIMED;
     const showCurrentPending = darknodeDetails && darknodeDetails.cycleStatus.get(currentCycle) === DarknodeFeeStatus.NOT_CLAIMED;
     let pendingTotal = new BigNumber(0);
     let summedPendingRewards = OrderedMap<Token | OldToken, BigNumber>();
-    let summedClaimable = new BigNumber(0);
     if (showPreviousPending) {
         pendingTotal = pendingTotal.plus(pendingTotalInEth.get(previousCycle, new BigNumber(0)));
         summedPendingRewards = pendingRewards.get(previousCycle, OrderedMap());
-        summedClaimable = pendingTotal;
     }
     if (showCurrentPending) {
         pendingTotal = pendingTotal.plus(pendingTotalInEth.get(currentCycle, new BigNumber(0)));

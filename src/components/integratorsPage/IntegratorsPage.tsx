@@ -50,6 +50,7 @@ export const IntegratorsPage = withRouter(({ match: { params }, history }) => {
         if (params.page && paramsPage !== page) {
             setPage(paramsPage);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [params.page]);
 
     const changePage = React.useCallback((nextPage: number) => {

@@ -75,6 +75,7 @@ export const DarknodePage: React.FC<Props> = ({ darknodeDetails, darknodeID, nam
         if (newName === undefined && name !== undefined) {
             setNewName(name);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [name]);
 
     let noDarknode;
