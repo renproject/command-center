@@ -1,4 +1,5 @@
 import { CurrencyIcon, Loading, naturalTime } from "@renproject/react-components";
+import BigNumber from "bignumber.js";
 import React from "react";
 import { buildStyles, CircularProgressbar } from "react-circular-progressbar";
 
@@ -32,6 +33,8 @@ export const NetworkDarknodesPage = () => {
         setCurrentTime(new Date().getTime() / 1000);
     }, [timeSinceLastEpoch]);
 
+    const percent = currentDarknodeCount ? new BigNumber(currentDarknodeCount).times(100000).div(1000000000).times(100).toNumber() : null;
+
     return (
         <div className="overview container">
             <Stats>
@@ -50,8 +53,8 @@ export const NetworkDarknodesPage = () => {
                         <Stat message="Change next epoch" big>{nextDarknodeCount === null || currentDarknodeCount === null ? <Loading alt={true} /> : <>
                             <Change change={nextDarknodeCount - currentDarknodeCount} />
                         </>}</Stat>
-                        <Stat message="% Ren Registered" big>{currentDarknodeCount === null ? <Loading alt={true} /> : <>
-                            {100 * currentDarknodeCount / 100000}%
+                        <Stat message="% Ren Registered" big>{percent === null ? <Loading alt={true} /> : <>
+                            {percent}%
                         </>}</Stat>
                     </Stats>
                 </Stat>
