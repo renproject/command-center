@@ -1,7 +1,7 @@
 import * as React from "react";
 
-import { Tabs } from "../../../common/Tabs";
-import { BlockBody } from "../block/Block";
+import { Tabs } from "../../common/Tabs";
+import { BlockBody } from "../blocks/Block";
 import { CONFIRMATION_MESSAGE } from "./TopUpController";
 
 interface Props {

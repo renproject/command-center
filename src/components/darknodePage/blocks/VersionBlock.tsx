@@ -3,12 +3,12 @@ import * as React from "react";
 import { faBolt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { RegistrationStatus } from "../../../../lib/ethereum/contractReads";
-import { classNames } from "../../../../lib/react/className";
-import { GithubAPIContainer } from "../../../../store/githubApiStore";
-import { DarknodesState } from "../../../../store/networkStateContainer";
-import { ExternalLink } from "../../../common/ExternalLink";
-import { StatusDot, StatusDotColor } from "../../../common/StatusDot";
+import { RegistrationStatus } from "../../../lib/ethereum/contractReads";
+import { classNames } from "../../../lib/react/className";
+import { GithubAPIContainer } from "../../../store/githubApiStore";
+import { DarknodesState } from "../../../store/networkStateContainer";
+import { ExternalLink } from "../../common/ExternalLink";
+import { StatusDot, StatusDotColor } from "../../common/StatusDot";
 import { Block, BlockBody, BlockTitle } from "./Block";
 
 const UPDATE_DARKNODE_LINK = "https://docs.renproject.io/darknodes/manage/updating";

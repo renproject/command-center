@@ -10,7 +10,7 @@ import { Token } from "../../../lib/ethereum/tokens";
 import { DarknodesState } from "../../../store/networkStateContainer";
 import { DarknodeID } from "../../common/DarknodeID";
 import { TokenBalance } from "../../common/TokenBalance";
-import { statusText } from "../../darknodePage/darknodePage/Registration";
+import { statusText } from "../../darknodePage/Registration";
 
 interface Props {
     darknodeID: string;

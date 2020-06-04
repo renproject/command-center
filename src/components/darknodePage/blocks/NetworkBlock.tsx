@@ -4,9 +4,9 @@ import { faServer } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { naturalTime } from "@renproject/react-components";
 
-import { darknodeIDHexToBase58 } from "../../../../lib/darknode/darknodeID";
-import { DarknodesState } from "../../../../store/networkStateContainer";
-import { ReactComponent as CopyIcon } from "../../../../styles/images/icon-copy.svg";
+import { darknodeIDHexToBase58 } from "../../../lib/darknode/darknodeID";
+import { DarknodesState } from "../../../store/networkStateContainer";
+import { ReactComponent as CopyIcon } from "../../../styles/images/icon-copy.svg";
 import { Block, BlockBody, BlockTitle } from "./Block";
 
 interface Props {

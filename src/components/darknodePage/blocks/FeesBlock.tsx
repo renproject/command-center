@@ -4,14 +4,14 @@ import { Currency, CurrencyIcon, TokenIcon } from "@renproject/react-components"
 import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
 
-import { DarknodeFeeStatus } from "../../../../lib/ethereum/contractReads";
-import { AllTokenDetails, OldToken, Token } from "../../../../lib/ethereum/tokens";
-import { classNames } from "../../../../lib/react/className";
-import { DarknodesState, NetworkStateContainer } from "../../../../store/networkStateContainer";
-import { ReactComponent as RewardsIcon } from "../../../../styles/images/icon-rewards-white.svg";
-// import { ReactComponent as WithdrawIcon } from "../../../../styles/images/icon-withdraw.svg";
-import { Tabs } from "../../../common/Tabs";
-import { TokenBalance } from "../../../common/TokenBalance";
+import { DarknodeFeeStatus } from "../../../lib/ethereum/contractReads";
+import { AllTokenDetails, OldToken, Token } from "../../../lib/ethereum/tokens";
+import { classNames } from "../../../lib/react/className";
+import { DarknodesState, NetworkStateContainer } from "../../../store/networkStateContainer";
+import { ReactComponent as RewardsIcon } from "../../../styles/images/icon-rewards-white.svg";
+// import { ReactComponent as WithdrawIcon } from "../../../styles/images/icon-withdraw.svg";
+import { Tabs } from "../../common/Tabs";
+import { TokenBalance } from "../../common/TokenBalance";
 import { FeesItem } from "../FeesItem";
 import { Block, BlockBody, BlockTitle } from "./Block";
 

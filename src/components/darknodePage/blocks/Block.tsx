@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { classNames } from "../../../../lib/react/className";
+import { classNames } from "../../../lib/react/className";
 
 interface Props {
     children: React.ReactNode;

@@ -9,7 +9,7 @@ import { NetworkStateContainer } from "../../store/networkStateContainer";
 import { Web3Container } from "../../store/web3Store";
 import { NotFound } from "../common/404";
 import { _catch_ } from "../common/ErrorBoundary";
-import { DarknodePage } from "./darknodePage/DarknodePage";
+import { DarknodeView } from "./DarknodeView";
 
 export enum DarknodeAction {
     View = "view",
@@ -41,7 +41,7 @@ export const getDarknodeParam = (params: unknown): string | undefined => {
  *     1) action: either "register" or "deregister"
  *     2) public_key: only used if action is "register"
  */
-export const Darknode = withRouter(({ match, location }: Props) => {
+export const DarknodePage = withRouter(({ match, location }: Props) => {
     const { address } = Web3Container.useContainer();
     const { darknodeDetails, darknodeNames, storeDarknodeName: setDarknodeName, addRegisteringDarknode } = NetworkStateContainer.useContainer();
 
@@ -106,7 +106,7 @@ export const Darknode = withRouter(({ match, location }: Props) => {
         return <NotFound />;
     }
 
-    return _catch_(<DarknodePage
+    return _catch_(<DarknodeView
         key={darknodeOrURL}
         action={darknodeAction}
         publicKey={publicKey}

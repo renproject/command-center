@@ -1,10 +1,11 @@
 # `🎛️ Command Center`
 
-[mainnet.renproject.io](https://mainnet.renproject.io)
+* Mainnet: <https://mainnet.renproject.io>
+* Testnet: <https://testnet.renproject.io>
 
 The Command Center is a dashboard for seeing RenVM stats and for operating darknodes. It should be used along side the [Darknode CLI](https://github.com/renproject/darknode-cli).
 
-For instructions on running a darknode, see [docs.renproject.io/darknodes](https://docs.renproject.io/darknodes).
+For instructions on running a darknode, see <https://docs.renproject.io/darknodes>.
 
 ## Previews
 
@@ -42,6 +43,8 @@ To configure the network or add an Infura key, create a `.env` file:
 REACT_APP_INFURA_KEY="" # Optional
 REACT_APP_NETWORK="mainnet" # Options are "testnet" (default) or "mainnet
 ```
+
+If you don't have an Infura key, you should make sure to connect your Web3 wallet when the page is loaded. You may see some errors until the wallet is connected. A free Infura key can generated at [https://infura.io](https://infura.io/).
 
 ### Tests
 

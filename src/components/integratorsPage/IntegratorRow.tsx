@@ -16,8 +16,8 @@ import Integrators from "./integrators.json";
 
 const DefaultLogo = require("../../styles/images/integrators/default.png");
 
-const resolveIntegrator = (networkDetails: RenNetworkDetails, address: string): { name: string, logo: string, urlHref: string, url: string } => {
-    const details = (Integrators[networkDetails.name] && Integrators[networkDetails.name][address]) || {};
+const resolveIntegrator = (networkDetails: RenNetworkDetails, id: string, address: string): { name: string, logo: string, urlHref: string, url: string } => {
+    const details = (Integrators[networkDetails.name] && Integrators[networkDetails.name][id]) || {};
 
     return {
         name: details.name || address,
@@ -39,7 +39,7 @@ export const IntegratorRow: React.FC<Props> = ({ index, integrator, isActive, se
     const { quoteCurrency, tokenPrices } = NetworkStateContainer.useContainer();
     const currentTime = useMemo(() => getCurrent24HourPeriod(), []);
 
-    const { name, logo, url, urlHref } = resolveIntegrator(renNetwork, integrator.contractAddress);
+    const { name, logo, url, urlHref } = resolveIntegrator(renNetwork, integrator.id, integrator.contractAddress);
     const toggleExpanded = React.useCallback(() => { isActive ? setActiveIntegrator(null) : setActiveIntegrator(integrator.id); }, [isActive, setActiveIntegrator, integrator.id]);
 
     // Day volume in token quantity

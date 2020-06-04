@@ -99,11 +99,6 @@
         .volume--chart {
             @extend .overview--chart;
             width: 100%;
-
-            >.overview--chart--canvas {
-                // width: 100%;
-                // height: 100px;
-            }
         }
 
         .overview--chart {

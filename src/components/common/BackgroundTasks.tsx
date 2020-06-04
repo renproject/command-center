@@ -5,7 +5,7 @@ import { RouteComponentProps, withRouter } from "react-router-dom";
 import { catchBackgroundException } from "../../lib/react/errors";
 import { NetworkStateContainer } from "../../store/networkStateContainer";
 import { Web3Container } from "../../store/web3Store";
-import { getDarknodeParam } from "../darknodePage/Darknode";
+import { getDarknodeParam } from "../darknodePage/DarknodePage";
 
 interface Props extends RouteComponentProps {
 }

@@ -2,17 +2,17 @@ import * as React from "react";
 
 import { Blocky, InfoLabel } from "@renproject/react-components";
 
-import { NULL, RegistrationStatus } from "../../../lib/ethereum/contractReads";
-import { DarknodesState, NetworkStateContainer } from "../../../store/networkStateContainer";
-import { Web3Container } from "../../../store/web3Store";
-import { DarknodeID } from "../../common/DarknodeID";
-import { DarknodeAction } from "../Darknode";
-import { EpochBlock } from "./block/EpochBlock";
-import { FeesBlock } from "./block/FeesBlock";
-import { GasBlock } from "./block/GasBlock";
-import { NetworkBlock } from "./block/NetworkBlock";
-import { ResourcesBlock } from "./block/ResourcesBlock";
-import { VersionBlock } from "./block/VersionBlock";
+import { NULL, RegistrationStatus } from "../../lib/ethereum/contractReads";
+import { DarknodesState, NetworkStateContainer } from "../../store/networkStateContainer";
+import { Web3Container } from "../../store/web3Store";
+import { DarknodeID } from "../common/DarknodeID";
+import { EpochBlock } from "./blocks/EpochBlock";
+import { FeesBlock } from "./blocks/FeesBlock";
+import { GasBlock } from "./blocks/GasBlock";
+import { NetworkBlock } from "./blocks/NetworkBlock";
+import { ResourcesBlock } from "./blocks/ResourcesBlock";
+import { VersionBlock } from "./blocks/VersionBlock";
+import { DarknodeAction } from "./DarknodePage";
 import { Notifications } from "./Notifications";
 import { Registration } from "./Registration";
 
@@ -26,7 +26,7 @@ interface Props {
     publicKey: string | undefined;
 }
 
-export const DarknodePage: React.FC<Props> = ({ darknodeDetails, darknodeID, name, isOperator, action, publicKey }) => {
+export const DarknodeView: React.FC<Props> = ({ darknodeDetails, darknodeID, name, isOperator, action, publicKey }) => {
     const { renNetwork } = Web3Container.useContainer();
     const { storeDarknodeName: setDarknodeName } = NetworkStateContainer.useContainer();
 

@@ -7,8 +7,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { naturalTime } from "@renproject/react-components";
 import { buildStyles, CircularProgressbar } from "react-circular-progressbar";
 
-import { EpochContainer } from "../../../../store/epochStore";
-import { DarknodesState } from "../../../../store/networkStateContainer";
+import { EpochContainer } from "../../../store/epochStore";
+import { DarknodesState } from "../../../store/networkStateContainer";
 import { Block, BlockBody, BlockTitle } from "./Block";
 
 interface Props {

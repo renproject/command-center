@@ -5,9 +5,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Loading } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 
-import { AllTokenDetails, OldToken, Token } from "../../../lib/ethereum/tokens";
-import { NetworkStateContainer } from "../../../store/networkStateContainer";
-import { Web3Container } from "../../../store/web3Store";
+import { AllTokenDetails, OldToken, Token } from "../../lib/ethereum/tokens";
+import { NetworkStateContainer } from "../../store/networkStateContainer";
+import { Web3Container } from "../../store/web3Store";
 
 const minimumShiftedAmount = 0.0004;
 

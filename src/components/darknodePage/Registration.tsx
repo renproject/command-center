@@ -2,12 +2,12 @@ import * as React from "react";
 
 import { Loading } from "@renproject/react-components";
 
-import { NULL, RegistrationStatus } from "../../../lib/ethereum/contractReads";
-import { classNames } from "../../../lib/react/className";
-import { catchInteractionException } from "../../../lib/react/errors";
-import { DarknodesState, NetworkStateContainer } from "../../../store/networkStateContainer";
-import { Web3Container } from "../../../store/web3Store";
-import { StatusDot, StatusDotColor } from "../../common/StatusDot";
+import { NULL, RegistrationStatus } from "../../lib/ethereum/contractReads";
+import { classNames } from "../../lib/react/className";
+import { catchInteractionException } from "../../lib/react/errors";
+import { DarknodesState, NetworkStateContainer } from "../../store/networkStateContainer";
+import { Web3Container } from "../../store/web3Store";
+import { StatusDot, StatusDotColor } from "../common/StatusDot";
 
 export const statusText = {
     [RegistrationStatus.Unknown]: "Loading...",

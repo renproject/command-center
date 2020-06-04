@@ -1,7 +1,7 @@
 import React from "react";
 import { useLocation, withRouter } from "react-router-dom";
 
-// Component that attaches scroll to top hanler on router change
+// Component that attaches scroll to top handler on router change
 // renders nothing, just attaches side effects
 export const ScrollToTop = withRouter(() => {
     // this assumes that current router state is accessed via hook

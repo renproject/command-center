@@ -2,11 +2,11 @@ import { Currency, CurrencyIcon } from "@renproject/react-components";
 import { BigNumber } from "bignumber.js";
 import React from "react";
 
-import { Token } from "../../../../lib/ethereum/tokens";
-import { catchBackgroundException } from "../../../../lib/react/errors";
-import { NetworkStateContainer } from "../../../../store/networkStateContainer";
-import { Web3Container } from "../../../../store/web3Store";
-import { TokenBalance } from "../../../common/TokenBalance";
+import { Token } from "../../../lib/ethereum/tokens";
+import { catchBackgroundException } from "../../../lib/react/errors";
+import { NetworkStateContainer } from "../../../store/networkStateContainer";
+import { Web3Container } from "../../../store/web3Store";
+import { TokenBalance } from "../../common/TokenBalance";
 import { TopUp } from "./TopUp";
 
 export const CONFIRMATION_MESSAGE = "Transaction confirmed.";
