@@ -107,10 +107,10 @@ export const NetworkStats = () => {
         (async () => {
             for (const period of [volumePeriod, lockedPeriod]) {
                 if (periodSeries.get(period) === undefined) {
-                    setPeriodSeries(periodSeries.set(period, null));
-                    setPeriodSeriesUpdated(periodSeriesUpdated.set(period, true));
+                    setPeriodSeries(currentPeriodSeries => currentPeriodSeries.set(period, null));
+                    setPeriodSeriesUpdated(currentPeriodSeriesUpdated => currentPeriodSeriesUpdated.set(period, true));
 
-                    let response;
+                    let response: PeriodResponse;
                     try {
                         response = await getVolumes(client, period);
                     } catch (error) {
@@ -118,8 +118,8 @@ export const NetworkStats = () => {
                     }
 
                     // periodSeries = ;
-                    setPeriodSeries(periodSeries.set(period, response));
-                    setPeriodSeriesUpdated(periodSeriesUpdated.set(period, true));
+                    setPeriodSeries(currentPeriodSeries => currentPeriodSeries.set(period, response));
+                    setPeriodSeriesUpdated(currentPeriodSeriesUpdated => currentPeriodSeriesUpdated.set(period, true));
                 }
             }
         })().catch(console.error);
@@ -131,8 +131,8 @@ export const NetworkStats = () => {
         for (const period of [PeriodType.DAY, PeriodType.HOUR, PeriodType.MONTH, PeriodType.WEEK, PeriodType.YEAR, PeriodType.ALL]) {
             const individualPeriodSeries = periodSeries.get(period);
             if (tokenPrices && individualPeriodSeries && (periodSeriesUpdated.get(period) || pricesUpdated)) {
-                setQuotePeriodSeries(quotePeriodSeries.set(period, normalizeSeriesVolumes(individualPeriodSeries, tokenPrices, quoteCurrency)));
-                setPeriodSeriesUpdated(periodSeriesUpdated.set(period, false));
+                setQuotePeriodSeries(currentQuotePeriodSeries => currentQuotePeriodSeries.set(period, normalizeSeriesVolumes(individualPeriodSeries, tokenPrices, quoteCurrency)));
+                setPeriodSeriesUpdated(currentPeriodSeriesUpdated => currentPeriodSeriesUpdated.set(period, false));
             }
         }
         setPricesUpdated(false);
@@ -149,6 +149,7 @@ export const NetworkStats = () => {
 
     const volumePeriodSeries = quotePeriodSeries.get(volumePeriod);
     const lockedPeriodSeries = quotePeriodSeries.get(lockedPeriod);
+    const valueLockedOrAll = lockedPeriodSeries || quotePeriodSeries.get(PeriodType.ALL);
 
     return (
         <div className="network-stats container">
@@ -191,7 +192,7 @@ export const NetworkStats = () => {
                             big={true}
                             className="stat--extra-big"
                         >
-                            {lockedPeriodSeries ? <><CurrencyIcon currency={quoteCurrency} />{new BigNumber(lockedPeriodSeries.average.quoteTotalLocked).toFormat(2)}
+                            {valueLockedOrAll ? <><CurrencyIcon currency={quoteCurrency} />{new BigNumber(valueLockedOrAll.average.quoteTotalLocked).toFormat(2)}
                                 {/* {total ? <> */}
                                 {/* <CurrencyIcon currency={quoteCurrency} /> */}
                                 {/* {total.toFormat(2)}{/*<TokenBalance */}
