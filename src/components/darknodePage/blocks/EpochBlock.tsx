@@ -9,6 +9,7 @@ import { buildStyles, CircularProgressbar } from "react-circular-progressbar";
 
 import { EpochContainer } from "../../../store/epochStore";
 import { DarknodesState } from "../../../store/networkStateContainer";
+import { SECONDS } from "../../common/BackgroundTasks";
 import { Block, BlockBody, BlockTitle } from "./Block";
 
 interface Props {
@@ -21,7 +22,7 @@ export const EpochBlock: React.FC<Props> = ({ darknodeDetails }) => {
 
     const [currentTime, setCurrentTime] = React.useState<number | null>(null);
     React.useEffect(() => {
-        setCurrentTime(new Date().getTime() / 1000);
+        setCurrentTime(new Date().getTime() / SECONDS);
     }, [timeSinceLastEpoch]);
 
     return (

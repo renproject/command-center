@@ -7,10 +7,8 @@
             "url": "curve.fi"
         },
         "0xad81fdc92e2ecb43e6207647b17f6d5075e6a1fd": {
-            "name": "Uniswap",
-            "logo": "/integrators/uniswap.png",
-            "urlHref": "https://uniswap.exchange",
-            "url": "uniswap.exchange"
+            "name": "Uniswap Adapter",
+            "logo": "/integrators/uniswap.png"
         },
         "0x7ddfa2e5435027f6e13ca8db2f32ebd5551158bb": {
             "name": "RenVM Demo Page",
@@ -45,11 +43,17 @@
             "urlHref": "https://bridge.renproject.io",
             "url": "bridge.renproject.io"
         },
+        "0x853fd00e802c2186bd2a1ba5dc94c07ef74b16c3": {
+            "name": "BTC to Aave",
+            "logo": "/integrators/aave.svg"
+        },
         "0x3b4353d80464af08cc0787ea9c45bbc50f8c5cce": {
-            "url": "Etherscan - BtcToAave"
+            "name": "BTC to Aave",
+            "logo": "/integrators/aave.svg"
         },
         "0xb005bb5e58878318d559561a49f0b67c616d11f0": {
-            "url": "Etherscan - BtcToAave"
+            "name": "BTC to Aave",
+            "logo": "/integrators/aave.svg"
         }
     },
     "devnet": {

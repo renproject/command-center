@@ -3,6 +3,7 @@ import { ApolloClient } from "apollo-boost";
 import BigNumber from "bignumber.js";
 import { List, Map } from "immutable";
 
+import { SECONDS } from "../../components/common/BackgroundTasks";
 import { Token, TokenPrices } from "../ethereum/tokens";
 import { PeriodData, QUERY_PERIOD_HISTORY } from "./queries";
 
@@ -16,17 +17,24 @@ export enum PeriodType {
 }
 
 const getPeriodTimespan = (type: string): number => {
+    const minutes = 60; // 60 seconds
+    const hours = 60 * minutes;
+    const days = 24 * hours;
+    const weeks = 7 * days;
+    const months = 31 * days;
+    const years = 365 * days;
+
     switch (type) {
         case PeriodType.HOUR:
-            return 60 * 60;
+            return 1 * hours;
         case PeriodType.DAY:
-            return 60 * 60 * 24;
+            return 1 * days;
         case PeriodType.WEEK:
-            return 60 * 60 * 24 * 7;
+            return 1 * weeks;
         case PeriodType.MONTH:
-            return 60 * 60 * 24 * 31;
+            return 1 * months;
         case PeriodType.YEAR:
-            return 60 * 60 * 24 * 365;
+            return 1 * years;
         default:
             throw new Error(`Unknown period type ${type}`);
     }
@@ -70,7 +78,7 @@ export const getVolumes = async (client: ApolloClient<unknown>, periodType: Peri
 
     const periodDatas = List(response.data.periodDatas);
 
-    const currentTimestamp = Math.floor(new Date().getTime() / 1000);
+    const currentTimestamp = Math.floor(new Date().getTime() / SECONDS);
     const periodTimespan = getPeriodTimespan(subperiod.type);
     const adjustedTimestamp = Math.floor(currentTimestamp / periodTimespan) * periodTimespan;
 
@@ -229,7 +237,7 @@ export const normalizeSeriesVolumes = (periodResponse: PeriodResponse, tokenPric
 
 
 export const getCurrent24HourPeriod = () => {
-    const currentTimestamp = Math.floor(new Date().getTime() / 1000);
+    const currentTimestamp = Math.floor(new Date().getTime() / SECONDS);
     const periodTimespan = getPeriodTimespan(PeriodType.DAY);
     return Math.floor(currentTimestamp / periodTimespan) * periodTimespan;
 };

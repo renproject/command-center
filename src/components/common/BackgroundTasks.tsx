@@ -7,6 +7,8 @@ import { NetworkStateContainer } from "../../store/networkStateContainer";
 import { Web3Container } from "../../store/web3Store";
 import { getDarknodeParam } from "../darknodePage/DarknodePage";
 
+export const SECONDS = 1000;
+
 interface Props extends RouteComponentProps {
 }
 
@@ -26,14 +28,15 @@ export const BackgroundTasks = withRouter(({ match }: Props) => {
     React.useEffect(() => {
         (async () => {
             let retry = 120;
+            const errorRetry = 20;
             try {
                 await updateTokenPrices();
             } catch (error) {
                 catchBackgroundException(error, "Error in BackgroundTasks > updateTokenPrices");
-                retry = 20;
+                retry = errorRetry;
             }
             if (pricesTimeout) { clearTimeout(pricesTimeout); }
-            setPricesTimeout(setTimeout(() => setPricesTrigger(pricesTrigger + 1), retry * 1000) as unknown as NodeJS.Timer);
+            setPricesTimeout(setTimeout(() => setPricesTrigger(pricesTrigger + 1), retry * SECONDS) as unknown as NodeJS.Timer);
         })().catch((error) => {
             catchBackgroundException(error, "Error in BackgroundTasks > updateTokenPrices");
         });
@@ -56,7 +59,7 @@ export const BackgroundTasks = withRouter(({ match }: Props) => {
                 retry = 1;
             }
             if (rewardsTimeout) { clearTimeout(rewardsTimeout); }
-            setRewardsTimeout(setTimeout(() => setRewardsTrigger(rewardsTrigger + 1), retry * 1000) as unknown as NodeJS.Timer);
+            setRewardsTimeout(setTimeout(() => setRewardsTrigger(rewardsTrigger + 1), retry * SECONDS) as unknown as NodeJS.Timer);
         })().catch(error => {
             catchBackgroundException(error, "Error in BackgroundTasks > callUpdateRewards");
         });
@@ -75,7 +78,7 @@ export const BackgroundTasks = withRouter(({ match }: Props) => {
                 });
             }
             if (logoutTimeout) { clearTimeout(logoutTimeout); }
-            setLogoutTimeout(setTimeout(() => setLogoutTrigger(logoutTrigger + 1), retry * 1000) as unknown as NodeJS.Timer);
+            setLogoutTimeout(setTimeout(() => setLogoutTrigger(logoutTrigger + 1), retry * SECONDS) as unknown as NodeJS.Timer);
         })().catch((error) => {
             catchBackgroundException(error, "Error in BackgroundTasks > callLookForLogout");
         });
@@ -102,7 +105,7 @@ export const BackgroundTasks = withRouter(({ match }: Props) => {
             if (operatorDarknodesTimeout) { clearTimeout(operatorDarknodesTimeout); }
             setOperatorDarknodesTimeout(setTimeout(
                 () => setOperatorDarknodesTrigger(operatorDarknodesTrigger + 1),
-                timeout * 1000,
+                timeout * SECONDS,
             ) as unknown as NodeJS.Timer);
         })().catch(error => catchBackgroundException(error, "Error in BackgroundTasks > callUpdateOperatorDarknodes"));
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -128,7 +131,7 @@ export const BackgroundTasks = withRouter(({ match }: Props) => {
             if (selectedDarknodeTimeout) { clearTimeout(selectedDarknodeTimeout); }
             setSelectedDarknodeTimeout(setTimeout(
                 () => setSelectedDarknodeTrigger(selectedDarknodeTrigger + 1),
-                timeout * 1000,
+                timeout * SECONDS,
             ) as unknown as NodeJS.Timer);
         })().catch(error => catchBackgroundException(error, "Error in BackgroundTasks > callUpdateSelectedDarknode"));
         // eslint-disable-next-line react-hooks/exhaustive-deps

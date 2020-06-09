@@ -1,4 +1,5 @@
 import { Currency, Loading, naturalTime } from "@renproject/react-components";
+import BigNumber from "bignumber.js";
 import React, { useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
 
@@ -342,7 +343,7 @@ export const HistoryChart: React.FC<Props> = ({ periodSeries, graphType, quoteCu
                                 },
                                 // tslint:disable-next-line: no-any
                                 label: (tooltipItem: any, data: any) => {
-                                    return `${textCurrencyIcon(quoteCurrency)}${data.datasets[0].data[tooltipItem.index]} ${quoteCurrency.toUpperCase()}`;
+                                    return `${textCurrencyIcon(quoteCurrency)}${new BigNumber(data.datasets[0].data[tooltipItem.index]).toFormat()} ${quoteCurrency.toUpperCase()}`;
                                 },
                                 // afterLabel: (tooltipItem: any, data: any) => {
                                 //     return "";

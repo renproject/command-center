@@ -61,7 +61,7 @@ export const TokenBalance: React.FC<Props> = ({ amount, token, convertTo, digits
         .div(new BigNumber(Math.pow(10, decimals)));
 
     if (!convertTo) {
-        return <>{digits !== undefined ? amountBN.toFixed(digits) : amountBN.toFixed()}</>;
+        return <>{digits !== undefined ? amountBN.toFormat(digits) : amountBN.toFormat()}</>;
     }
 
     if (!tokenPrices) {
@@ -81,6 +81,7 @@ export const TokenBalance: React.FC<Props> = ({ amount, token, convertTo, digits
     return <>{
         amountBN
             .multipliedBy(price)
+            .decimalPlaces(digits === undefined ? defaultDigits(convertTo) : digits, BigNumber.ROUND_FLOOR)
             .toFixed(digits === undefined ? defaultDigits(convertTo) : digits)
     }</>;
 };

@@ -68,7 +68,7 @@ export const IntegratorRow: React.FC<Props> = ({ index, integrator, isActive, se
     // Day volume total
 
     const dayVolume = React.useMemo(() => integrator.integrator24H.date === currentTime && tokenPrices ?
-        dayVolumeBTC.plus(dayVolumeZEC).plus(dayVolumeBCH).toFixed() :
+        dayVolumeBTC.plus(dayVolumeZEC).plus(dayVolumeBCH).toFormat() :
         "0", [integrator.integrator24H.date, currentTime, tokenPrices, dayVolumeBCH, dayVolumeBTC, dayVolumeZEC]);
 
     // All-time volume in token quantity
@@ -93,16 +93,16 @@ export const IntegratorRow: React.FC<Props> = ({ index, integrator, isActive, se
 
     // All-time volume total
 
-    const allVolume = React.useMemo(() => allVolumeBTC.plus(allVolumeZEC).plus(allVolumeBCH).toFixed(), [allVolumeBTC, allVolumeZEC, allVolumeBCH]);
+    const allVolume = React.useMemo(() => allVolumeBTC.plus(allVolumeZEC).plus(allVolumeBCH).toFormat(), [allVolumeBTC, allVolumeZEC, allVolumeBCH]);
     const stopPropagation = React.useCallback((e) => e.stopPropagation(), []);
 
     return <>
         <tr className="integrator" onClick={toggleExpanded}>
             <td className="col-0">{index}</td>
             <td className="col-1">
-                <object role="presentation" data={logo} type="image/png">
-                    <img role="presentation" alt="" src={DefaultLogo} />
-                </object>
+                <div className="img-wrapper">
+                    <img role="presentation" alt="" src={logo} />
+                </div>
             </td>
             <td className="col-2"><div className="integrator-name">
                 <span>{name}</span>
@@ -127,43 +127,43 @@ export const IntegratorRow: React.FC<Props> = ({ index, integrator, isActive, se
                             <tr>
                                 <td>Daily BTC Volume</td>
                                 <td>
-                                    {dayVolumeBTCReadable.toFixed()} BTC
-                                (<CurrencyIcon currency={quoteCurrency} />{dayVolumeBTC.toFixed()} {quoteCurrency.toUpperCase()})
+                                    {dayVolumeBTCReadable.toFormat()} BTC
+                                (<CurrencyIcon currency={quoteCurrency} />{dayVolumeBTC.toFormat()} {quoteCurrency.toUpperCase()})
                             </td>
                             </tr>
                             <tr>
                                 <td>Daily ZEC Volume</td>
                                 <td>
-                                    {dayVolumeZECReadable.toFixed()} ZEC
-                                (<CurrencyIcon currency={quoteCurrency} />{dayVolumeZEC.toFixed()} {quoteCurrency.toUpperCase()})
+                                    {dayVolumeZECReadable.toFormat()} ZEC
+                                (<CurrencyIcon currency={quoteCurrency} />{dayVolumeZEC.toFormat()} {quoteCurrency.toUpperCase()})
                             </td>
                             </tr>
                             <tr>
                                 <td>Daily BCH Volume</td>
                                 <td>
-                                    {dayVolumeBCHReadable.toFixed()} BCH
-                                (<CurrencyIcon currency={quoteCurrency} />{dayVolumeBCH.toFixed()} {quoteCurrency.toUpperCase()})
+                                    {dayVolumeBCHReadable.toFormat()} BCH
+                                (<CurrencyIcon currency={quoteCurrency} />{dayVolumeBCH.toFormat()} {quoteCurrency.toUpperCase()})
                             </td>
                             </tr>
                             <tr>
                                 <td>All time BTC Volume</td>
                                 <td>
-                                    {allVolumeBTCReadable.toFixed()} BTC
-                                (<CurrencyIcon currency={quoteCurrency} />{allVolumeBTC.toFixed()} {quoteCurrency.toUpperCase()})
+                                    {allVolumeBTCReadable.toFormat()} BTC
+                                (<CurrencyIcon currency={quoteCurrency} />{allVolumeBTC.toFormat()} {quoteCurrency.toUpperCase()})
                             </td>
                             </tr>
                             <tr>
                                 <td>All time ZEC Volume</td>
                                 <td>
-                                    {allVolumeZECReadable.toFixed()} ZEC
-                                (<CurrencyIcon currency={quoteCurrency} />{allVolumeZEC.toFixed()} {quoteCurrency.toUpperCase()})
+                                    {allVolumeZECReadable.toFormat()} ZEC
+                                (<CurrencyIcon currency={quoteCurrency} />{allVolumeZEC.toFormat()} {quoteCurrency.toUpperCase()})
                             </td>
                             </tr>
                             <tr>
                                 <td>All time BCH Volume</td>
                                 <td>
-                                    {allVolumeBCHReadable.toFixed()} BCH
-                                (<CurrencyIcon currency={quoteCurrency} />{allVolumeBCH.toFixed()} {quoteCurrency.toUpperCase()})
+                                    {allVolumeBCHReadable.toFormat()} BCH
+                                (<CurrencyIcon currency={quoteCurrency} />{allVolumeBCH.toFormat()} {quoteCurrency.toUpperCase()})
                             </td>
                             </tr>
                         </table>

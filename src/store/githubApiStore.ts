@@ -5,10 +5,11 @@ import { useCallback, useEffect, useState } from "react";
 import semver from "semver";
 import { createContainer } from "unstated-next";
 
+import { SECONDS } from "../components/common/BackgroundTasks";
 import { retryNTimes } from "../components/renvmPage/renvmContainer";
 import { catchBackgroundException } from "../lib/react/errors";
 
-const time = () => Math.floor(new Date().getTime() / 1000);
+const time = () => Math.floor(new Date().getTime() / SECONDS);
 const everyNSeconds = (loaded: number, now: number, n: number) => Math.floor((now - loaded) / n);
 const inNSeconds = (loaded: number, now: number, n: number) => (n - ((now - loaded) % n)) * 1000;
 
@@ -33,7 +34,7 @@ const useGithubAPIContainer = () => {
     useEffect(() => {
         (async () => {
             try {
-                const response = await retryNTimes(() => Axios.get<VersionResponse | VersionError>(DARKNODE_ENDPOINT), 5);
+                const response = await retryNTimes(() => Axios.get<VersionResponse | VersionError>(DARKNODE_ENDPOINT), 2);
                 if (!response.data || response.data.message) {
                     throw new Error(response.data ? response.data.message : "No data returned from Github API.");
                 }
@@ -49,7 +50,7 @@ const useGithubAPIContainer = () => {
                 catchBackgroundException(error, "Error in GithubAPIContainer: fetchEpoch");
             }
             try {
-                const response = await retryNTimes(() => Axios.get<VersionResponse | VersionError>(DARKNODE_CLI_ENDPOINT), 5);
+                const response = await retryNTimes(() => Axios.get<VersionResponse | VersionError>(DARKNODE_CLI_ENDPOINT), 2);
                 if (!response.data || response.data.message) {
                     throw new Error(response.data ? response.data.message : "No data returned from Github API.");
                 }

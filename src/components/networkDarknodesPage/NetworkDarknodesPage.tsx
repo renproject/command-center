@@ -12,14 +12,17 @@ import {
 } from "../../styles/images/icon-darknodes-online.svg";
 import { ReactComponent as IconIncome } from "../../styles/images/icon-income.svg";
 import { ReactComponent as RewardsIcon } from "../../styles/images/icon-rewards-white.svg";
+import { SECONDS } from "../common/BackgroundTasks";
 import { Change } from "../common/Change";
 import { ExternalLink } from "../common/ExternalLink";
 import { Stat, Stats } from "../common/Stat";
 import { TokenBalance } from "../common/TokenBalance";
 import { DarknodeMap } from "./darknodeMap/DarknodeMap";
 
+export const REN_TOTAL_SUPPLY = new BigNumber(1000000000);
+
 export const NetworkDarknodesPage = () => {
-    const { currentCycle, previousCycle, pendingTotalInEth, quoteCurrency, currentShareCount, previousShareCount, currentDarknodeCount, nextDarknodeCount, payoutPercent, previousDarknodeCount } = NetworkStateContainer.useContainer();
+    const { currentCycle, previousCycle, pendingTotalInEth, quoteCurrency, currentShareCount, previousShareCount, currentDarknodeCount, nextDarknodeCount, payoutPercent, previousDarknodeCount, minimumBond } = NetworkStateContainer.useContainer();
     const { timeUntilNextEpoch, timeSinceLastEpoch, epochInterval } = EpochContainer.useContainer();
     const { latestCLIVersion, latestCLIVersionDaysAgo } = GithubAPIContainer.useContainer();
 
@@ -30,10 +33,10 @@ export const NetworkDarknodesPage = () => {
 
     const [currentTime, setCurrentTime] = React.useState<number | null>(null);
     React.useEffect(() => {
-        setCurrentTime(new Date().getTime() / 1000);
+        setCurrentTime(new Date().getTime() / SECONDS);
     }, [timeSinceLastEpoch]);
 
-    const percent = currentDarknodeCount ? new BigNumber(currentDarknodeCount).times(100000).div(1000000000).times(100).toNumber() : null;
+    const percent = currentDarknodeCount && minimumBond ? new BigNumber(currentDarknodeCount).times(minimumBond.div(new BigNumber(10).exponentiatedBy(18))).div(REN_TOTAL_SUPPLY).times(100).toNumber() : null;
 
     return (
         <div className="overview container">
@@ -53,7 +56,7 @@ export const NetworkDarknodesPage = () => {
                         <Stat message="Change next epoch" big>{nextDarknodeCount === null || currentDarknodeCount === null ? <Loading alt={true} /> : <>
                             <Change change={nextDarknodeCount - currentDarknodeCount} />
                         </>}</Stat>
-                        <Stat message="% Ren Registered" big>{percent === null ? <Loading alt={true} /> : <>
+                        <Stat message="% Ren Bonded" big>{percent === null ? <Loading alt={true} /> : <>
                             {percent}%
                         </>}</Stat>
                     </Stats>
@@ -91,7 +94,12 @@ export const NetworkDarknodesPage = () => {
                 <DarknodeMap />
                 <Stats className="overview--bottom--right">
                     {/* <Stat message="All time total" big>$?</Stat> */}
-                    <Stat message="Reward Period/EPOCH Ends" highlight={true} nested={true}>
+                    <Stat
+                        message="Reward Period/EPOCH Ends"
+                        highlight={true}
+                        nested={true}
+                        infoLabel={<>An epoch is a recurring period of 30 days used for Darknode registration and for distributing rewards to Darknodes that have been active for that entire epoch.</>}
+                    >
                         <div className="epoch--block--charts epoch--block--charts--small">
                             <div className="resources--chart--and--label">
                                 <div className="epoch-chart--small">

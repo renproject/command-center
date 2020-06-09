@@ -7,6 +7,7 @@ import { naturalTime } from "@renproject/react-components";
 import { darknodeIDHexToBase58 } from "../../../lib/darknode/darknodeID";
 import { DarknodesState } from "../../../store/networkStateContainer";
 import { ReactComponent as CopyIcon } from "../../../styles/images/icon-copy.svg";
+import { SECONDS } from "../../common/BackgroundTasks";
 import { Block, BlockBody, BlockTitle } from "./Block";
 
 interface Props {
@@ -36,12 +37,12 @@ export const NetworkBlock: React.FC<Props> = ({ darknodeDetails }) => {
                             {/* <tr><td>Operator</td><td>{darknodeDetails.operator}</td></tr> */}
                             {/* <tr><td>Version</td><td>{darknodeDetails.nodeStatistics ? darknodeDetails.nodeStatistics.version : ""}</td></tr> */}
                             <tr><td>MultiAddress</td><td><CopyIcon /> {darknodeDetails.nodeStatistics ? darknodeDetails.nodeStatistics.multiAddress : ""}</td></tr>
-                            <tr><td>System Uptime</td><td><CopyIcon /> {darknodeDetails.nodeStatistics ? naturalTime(Date.now() / 1000 - darknodeDetails.nodeStatistics.systemUptime, {
+                            <tr><td>System Uptime</td><td><CopyIcon /> {darknodeDetails.nodeStatistics ? naturalTime(Date.now() / SECONDS - darknodeDetails.nodeStatistics.systemUptime, {
                                 message: "Just now",
                                 countDown: false,
                                 showingSeconds: false
                             }) : ""}</td></tr>
-                            <tr><td>Service Uptime</td><td><CopyIcon /> {darknodeDetails.nodeStatistics ? naturalTime(Date.now() / 1000 - darknodeDetails.nodeStatistics.serviceUptime, {
+                            <tr><td>Service Uptime</td><td><CopyIcon /> {darknodeDetails.nodeStatistics ? naturalTime(Date.now() / SECONDS - darknodeDetails.nodeStatistics.serviceUptime, {
                                 message: "Just now",
                                 countDown: false,
                                 showingSeconds: false

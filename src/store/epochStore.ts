@@ -2,6 +2,7 @@ import BigNumber from "bignumber.js";
 import { useEffect, useState } from "react";
 import { createContainer } from "unstated-next";
 
+import { SECONDS } from "../components/common/BackgroundTasks";
 import { retryNTimes } from "../components/renvmPage/renvmContainer";
 import { getDarknodeRegistry } from "../lib/ethereum/contract";
 import { catchBackgroundException, LocalError } from "../lib/react/errors";
@@ -12,9 +13,12 @@ interface Epoch {
     blocktime: string;
 }
 
-const time = () => Math.floor(new Date().getTime() / 1000);
+const time = () => Math.floor(new Date().getTime() / SECONDS);
 const everyNSeconds = (loaded: number, now: number, n: number) => Math.floor((now - loaded)) % n === 0;
-const inNSeconds = (loaded: number, now: number, n: number) => (n - ((now - loaded) % n)) * 1000;
+const inNSeconds = (loaded: number, now: number, n: number) => (n - ((now - loaded) % n)) * SECONDS;
+
+const EPOCH_LOOP_TIMEOUT = 200; // seconds
+const RETRY_TIMEOUT = 10; // seconds
 
 const useEpochContainer = () => {
     const { renNetwork: network, web3 } = Web3Container.useContainer();
@@ -29,14 +33,14 @@ const useEpochContainer = () => {
     const [timeSinceLastEpoch, setTimeSinceLastEpoch] = useState(null as number | null);
 
     // tslint:disable-next-line: prefer-const
-    let [loopTimeout, setLoopTimeout] = useState(200); // Update every 200 seconds
+    let [loopTimeout, setLoopTimeout] = useState(EPOCH_LOOP_TIMEOUT); // Update every 200 seconds
     const loopTrigger = everyNSeconds(loaded, now, loopTimeout);
 
     useEffect(() => {
         let nextLoopTimeout = 1;
         (async () => {
             if (network && web3) {
-                nextLoopTimeout = 200;
+                nextLoopTimeout = EPOCH_LOOP_TIMEOUT;
                 try {
                     const darknodeRegistry = getDarknodeRegistry(web3, network);
                     const newEpoch: Epoch = await retryNTimes(async () => await darknodeRegistry.methods.currentEpoch().call(), 2);
@@ -54,7 +58,7 @@ const useEpochContainer = () => {
                     const newTimeSinceLastEpoch = Math.max(now - newEpochTimestamp, 0);
                     setTimeSinceLastEpoch(newTimeSinceLastEpoch);
                 } catch (error) {
-                    nextLoopTimeout = 10;
+                    nextLoopTimeout = RETRY_TIMEOUT;
                     catchBackgroundException(error, "Error in EpochContainer: fetchEpoch");
                 }
             }

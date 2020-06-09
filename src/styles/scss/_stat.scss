@@ -36,6 +36,7 @@
 .stat.stat--nested {
     .hr {
         border: none;
+        margin-bottom: 0;
     }
 
     .stat--title {
@@ -45,6 +46,10 @@
         height: 28px;
         color: #F9F9F9;
         margin-bottom: 0px;
+    }
+
+    .stat--title--outer {
+        margin-bottom: 0;
     }
 }
 
@@ -62,8 +67,19 @@
 
     color: #FFFFFF;
     display: flex;
+    align-items: center;
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
 
+.stat--title--outer {
+    display: flex;
+    align-items: center;
     margin-bottom: 30px;
+
+    .stat--title {
+        margin-bottom: 0;
+    }
 }
 
 .stat--title--icon {
@@ -125,4 +141,9 @@
             ;
         }
     }
+}
+
+.stat--subtitle {
+    margin-left: 4px;
+    color: #FFFFFF66;
 }

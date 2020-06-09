@@ -166,11 +166,11 @@
 
 /* Collateral */
 
-.collateral-stat {
-    .stat--title {
-        margin-bottom: 26px;
-    }
-}
+// .collateral-stat {
+    //     .stat--title {
+    //         margin-bottom: 26px;
+    //     }
+    // }
 
 .collateral-stats--top {
     margin-bottom: 80px;
@@ -391,7 +391,8 @@
 
     &,
     >span {
-        @extend .monospace;
+        // @extend .monospace;
+        font-family: "Courier New", Courier, monospace;
     }
 
     font-weight: 500;

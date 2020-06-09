@@ -225,10 +225,17 @@
                 }
             }
 
-            img,
-            object {
+            img {
                 max-height: 33px;
                 max-width: 33px;
+            }
+
+            .img-wrapper {
+                width: 33px;
+                height: 33px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
 
             .integrator-name {

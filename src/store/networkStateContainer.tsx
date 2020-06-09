@@ -11,8 +11,8 @@ import { TokenBalance } from "../components/common/TokenBalance";
 import { NodeStatistics } from "../lib/darknode/jsonrpc";
 import {
     calculateSecondsPerBlock, DarknodeCounts, DarknodeFeeStatus, fetchCycleAndPendingRewards,
-    fetchDarknodeBalanceHistory, fetchDarknodeDetails, getDarknodeCounts, getMinimumBond,
-    getOperatorDarknodes, HistoryPeriod, NULL, RegistrationStatus,
+    fetchDarknodeDetails, getDarknodeCounts, getMinimumBond, getOperatorDarknodes, NULL,
+    RegistrationStatus,
 } from "../lib/ethereum/contractReads";
 import {
     approveNode, deregisterNode, fundNode, refundNode, registerNode, withdrawToken,
@@ -61,7 +61,7 @@ const useNetworkStateContainer = () => {
 
     const [darknodeDetails, setDarknodeDetails] = useState(Map<string, DarknodesState>());
 
-    const [balanceHistories, setBalanceHistories] = useState(Map<string, OrderedMap<number, BigNumber>>());
+    // const [balanceHistories, setBalanceHistories] = useState(Map<string, OrderedMap<number, BigNumber>>());
 
     // tslint:disable-next-line: no-any
     const [transactions, setTransactions] = useState(OrderedMap<string, PromiEvent<any>>());
@@ -80,6 +80,7 @@ const useNetworkStateContainer = () => {
     const [previousDarknodeCount, setPreviousDarknodeCount] = useState(null as number | null);
     const [nextDarknodeCount, setNextDarknodeCount] = useState(null as number | null);
     const [payoutPercent, setPayoutPercent] = useState(null as number | null);
+    const [minimumBond, setMinimumBond] = useState(null as BigNumber | null);
 
     ///////////////////////////////////////////////////////////
     // If these change, localstorage migration may be needed //
@@ -108,18 +109,18 @@ const useNetworkStateContainer = () => {
         }
     };
 
-    const updateDarknodeBalanceHistory = async (
-        darknodeID: string,
-        previousHistory: OrderedMap<number, BigNumber> | null,
-        historyPeriod: HistoryPeriod,
-        useSecondsPerBlock: number,
-    ) => {
-        const balanceHistory = await fetchDarknodeBalanceHistory(web3, darknodeID, previousHistory, historyPeriod, useSecondsPerBlock);
-        setBalanceHistories(latestBalanceHistories => latestBalanceHistories.set(
-            darknodeID,
-            balanceHistory,
-        ));
-    };
+    // const updateDarknodeBalanceHistory = async (
+    //     darknodeID: string,
+    //     previousHistory: OrderedMap<number, BigNumber> | null,
+    //     historyPeriod: HistoryPeriod,
+    //     useSecondsPerBlock: number,
+    // ) => {
+    //     const balanceHistory = await fetchDarknodeBalanceHistory(web3, darknodeID, previousHistory, historyPeriod, useSecondsPerBlock);
+    //     setBalanceHistories(latestBalanceHistories => latestBalanceHistories.set(
+    //         darknodeID,
+    //         balanceHistory,
+    //     ));
+    // };
 
     const hideDarknode = (darknodeID: string, operator: string, network: string) => {
         try {
@@ -261,6 +262,10 @@ const useNetworkStateContainer = () => {
         const fetchCycleAndPendingRewardsPromise = fetchCycleAndPendingRewards(web3, renNetwork, tokenPrices);
 
         try {
+            if (!minimumBond) {
+                const nextMinimumBond = await getMinimumBond(web3, renNetwork);
+                setMinimumBond(nextMinimumBond);
+            }
             const darknodeCounts = await getDarknodeCountsPromise;
             updateDarknodeCounts(darknodeCounts);
         } catch (error) {
@@ -444,10 +449,10 @@ const useNetworkStateContainer = () => {
             throw new Error(`Unable to retrieve account address.`);
         }
 
-        const minimumBond = await getMinimumBond(web3, renNetwork);
+        const darknodeBond = minimumBond || await getMinimumBond(web3, renNetwork);
 
         const step1 = async () => {
-            await approveNode(web3, renNetwork, address, minimumBond, waitForTX);
+            await approveNode(web3, renNetwork, address, darknodeBond, waitForTX);
         };
 
         const step2 = async () => {
@@ -457,7 +462,7 @@ const useNetworkStateContainer = () => {
                 address,
                 darknodeID,
                 publicKey,
-                minimumBond,
+                darknodeBond,
                 onCancel,
                 onDone,
                 waitForTX,
@@ -624,7 +629,7 @@ const useNetworkStateContainer = () => {
         darknodeCount, setDarknodeCount,
         registrySync,
         darknodeDetails,
-        balanceHistories,
+        // balanceHistories,
         transactions, setTransactions,
         confirmations,
         currentCycle, setCurrentCycle,
@@ -639,6 +644,7 @@ const useNetworkStateContainer = () => {
         previousDarknodeCount,
         nextDarknodeCount,
         payoutPercent,
+        minimumBond,
         quoteCurrency, setQuoteCurrency,
         darknodeNames,
         darknodeRegisteringList,
@@ -648,7 +654,7 @@ const useNetworkStateContainer = () => {
 
         updateTokenPrices,
         updateSecondsPerBlock,
-        updateDarknodeBalanceHistory,
+        // updateDarknodeBalanceHistory,
         hideDarknode,
         unhideDarknode,
         addRegisteringDarknode,

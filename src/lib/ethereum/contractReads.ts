@@ -212,76 +212,76 @@ export const calculateSecondsPerBlock = async (
 
 export const HistoryIterations = 5;
 
-export enum HistoryPeriod {
-    Day = 60 * 60 * 24,
-    Week = Day * 7,
-    Month = Week * 4,
-    HalfYear = Week * 26,
-    Year = Week * 52,
-}
+// export enum HistoryPeriod {
+//     Day = 60 * 60 * 24,
+//     Week = Day * 7,
+//     Month = Week * 4,
+//     HalfYear = Week * 26,
+//     Year = Week * 52,
+// }
 
-/**
- * Given a history period, retrieves the darknode's balance history for
- * intervals in the period.
- *
- * @param web3 A Web3 instance.
- * @param darknodeID The ID of the darknode as a hex string.
- * @param previousHistory The previous data-points so we don't repeat requests.
- * @param historyPeriod The history period to fetch the balance history for.
- * @param secondsPerBlock An estimate of the time between blocks in the network.
- * @returns Returns a promise to a map from block numbers to the corresponding
- *          balance.
- */
-export const fetchDarknodeBalanceHistory = async (
-    web3: Web3,
-    darknodeID: string,
-    previousHistory: OrderedMap<number, BigNumber> | null,
-    historyPeriod: HistoryPeriod,
-    secondsPerBlock: number,
-): Promise<OrderedMap<number, BigNumber>> => {
-    let balanceHistory = previousHistory || OrderedMap<number, BigNumber>();
+// /**
+//  * Given a history period, retrieves the darknode's balance history for
+//  * intervals in the period.
+//  *
+//  * @param web3 A Web3 instance.
+//  * @param darknodeID The ID of the darknode as a hex string.
+//  * @param previousHistory The previous data-points so we don't repeat requests.
+//  * @param historyPeriod The history period to fetch the balance history for.
+//  * @param secondsPerBlock An estimate of the time between blocks in the network.
+//  * @returns Returns a promise to a map from block numbers to the corresponding
+//  *          balance.
+//  */
+// export const fetchDarknodeBalanceHistory = async (
+//     web3: Web3,
+//     darknodeID: string,
+//     previousHistory: OrderedMap<number, BigNumber> | null,
+//     historyPeriod: HistoryPeriod,
+//     secondsPerBlock: number,
+// ): Promise<OrderedMap<number, BigNumber>> => {
+//     let balanceHistory = previousHistory || OrderedMap<number, BigNumber>();
 
-    // If the page is kept open, the history data will keep growing, so we limit
-    // it to 200 entries.
-    if (balanceHistory.size > 200) {
-        balanceHistory = OrderedMap<number, BigNumber>();
-    }
+//     // If the page is kept open, the history data will keep growing, so we limit
+//     // it to 200 entries.
+//     if (balanceHistory.size > 200) {
+//         balanceHistory = OrderedMap<number, BigNumber>();
+//     }
 
-    const currentBlock = await web3.eth.getBlockNumber();
+//     const currentBlock = await web3.eth.getBlockNumber();
 
-    const jump = Math.floor((historyPeriod / secondsPerBlock) / HistoryIterations);
+//     const jump = Math.floor((historyPeriod / secondsPerBlock) / HistoryIterations);
 
-    for (let i = 0; i < HistoryIterations; i++) {
-        // Move back by `jump` blocks
-        let block = currentBlock - i * jump;
+//     for (let i = 0; i < HistoryIterations; i++) {
+//         // Move back by `jump` blocks
+//         let block = currentBlock - i * jump;
 
-        // ...
-        block = block - block % jump;
+//         // ...
+//         block = block - block % jump;
 
-        if (!balanceHistory.has(block)) {
-            const blockBalance = await web3.eth.getBalance(darknodeID, block) as string | null;
+//         if (!balanceHistory.has(block)) {
+//             const blockBalance = await web3.eth.getBalance(darknodeID, block) as string | null;
 
-            if (blockBalance !== null) {
-                const balance = new BigNumber(blockBalance.toString());
-                balanceHistory = balanceHistory.set(block, balance);
-            }
-        }
-    }
+//             if (blockBalance !== null) {
+//                 const balance = new BigNumber(blockBalance.toString());
+//                 balanceHistory = balanceHistory.set(block, balance);
+//             }
+//         }
+//     }
 
-    // Also add most recent block
-    if (!balanceHistory.has(currentBlock)) {
-        const currentBalance = await web3.eth.getBalance(darknodeID, currentBlock) as string | null;
+//     // Also add most recent block
+//     if (!balanceHistory.has(currentBlock)) {
+//         const currentBalance = await web3.eth.getBalance(darknodeID, currentBlock) as string | null;
 
-        if (currentBalance !== null) {
-            const balance = new BigNumber(currentBalance.toString());
-            balanceHistory = balanceHistory.set(currentBlock, balance);
-        }
-    }
+//         if (currentBalance !== null) {
+//             const balance = new BigNumber(currentBalance.toString());
+//             balanceHistory = balanceHistory.set(currentBlock, balance);
+//         }
+//     }
 
-    balanceHistory = balanceHistory.sortBy((_: BigNumber, value: number) => value);
+//     balanceHistory = balanceHistory.sortBy((_: BigNumber, value: number) => value);
 
-    return balanceHistory;
-};
+//     return balanceHistory;
+// };
 
 /**
  * Find the darknodes by reading the logs of the Darknode Registry.
@@ -339,16 +339,20 @@ const retrieveDarknodesInLogs = async (
     recentRegistrationEvents = recentRegistrationEvents.concat(recentRegistrationEvents2);
     for (const event of recentRegistrationEvents) {
         // The log data returns back like this:
-        // 0x000000000000000000000000945458e071eca54bb534d8ac7c8cd1a3eb318d92000000000000000000000000000000000000000000\
-        // 00152d02c7e14af6800000
+        // 0x000000000000000000000000945458e071eca54bb534d8ac7c8cd1a3eb318d9200000000000000000000000000000000000000000000152d02c7e14af6800000
         // and we want to extract this: 0x945458e071eca54bb534d8ac7c8cd1a3eb318d92 (20 bytes, 40 characters long)
+        const prefixLength = 2;
+        const dataLength = 64;
+        const addressLength = 40;
+        const start = dataLength + prefixLength - addressLength; // 26
+
         let darknodeID;
         let operator;
         if (event.topics.length === 3) {
-            darknodeID = toChecksumAddress(`0x${(event.topics[2] as string).substr(26, 40)}`);
-            operator = toChecksumAddress(`0x${(event.topics[1] as string).substr(26, 40)}`);
+            darknodeID = toChecksumAddress(`0x${(event.topics[2] as string).substr(start, addressLength)}`);
+            operator = toChecksumAddress(`0x${(event.topics[1] as string).substr(start, addressLength)}`);
         } else {
-            darknodeID = toChecksumAddress(`0x${event.data.substr(26, 40)}`);
+            darknodeID = toChecksumAddress(`0x${event.data.substr(start, addressLength)}`);
         }
         darknodes = darknodes.add({ darknodeID, operator });
     }
@@ -512,8 +516,9 @@ export const fetchCycleAndPendingRewards = async (
 
     const currentShareCount = await retryNTimes(async () => await darknodeRegistry.methods.numDarknodes().call(), 2)
         .then((bn: (BN | number | string | null)) => bn === null ? null : new BigNumber(bn.toString()));
+    const defaultPayoutPercent = 50;
     const currentCyclePayoutPercent = await retryNTimes(async () => await darknodePayment.methods.currentCyclePayoutPercent().call(), 2)
-        .then((bn: (BN | number | string | null)) => bn === null ? new BigNumber(50) : new BigNumber(bn.toString()));
+        .then((bn: (BN | number | string | null)) => bn === null ? new BigNumber(defaultPayoutPercent) : new BigNumber(bn.toString()));
     const πCurrent = safePromiseAllMap(
         NewTokenDetails.map(async (_tokenDetails, token) => {
             if (currentShareCount === null || currentShareCount.isZero()) {

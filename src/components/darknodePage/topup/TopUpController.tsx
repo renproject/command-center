@@ -57,7 +57,7 @@ export const TopUpController: React.FC<Props> = ({ darknodeID }) => {
         try {
             traderBalance = await updateTraderBalance();
             if (traderBalance.isLessThan(value)) {
-                setValue(traderBalance.toFixed());
+                setValue(traderBalance.toFormat());
                 setDisabled(true);
             }
         } catch (error) {

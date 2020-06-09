@@ -12,6 +12,7 @@ import {
 import { NetworkStateContainer } from "../../store/networkStateContainer";
 import { ReactComponent as IconValueLocked } from "../../styles/images/icon-value-locked.svg";
 import { ReactComponent as IconVolume } from "../../styles/images/icon-volume.svg";
+import { SECONDS } from "../common/BackgroundTasks";
 import { Stat, Stats } from "../common/Stat";
 import { Block, RenVMContainer } from "../renvmPage/renvmContainer";
 import { Collateral } from "./Collateral";
@@ -26,11 +27,12 @@ export const NetworkStats = () => {
     const { quoteCurrency, currentDarknodeCount, tokenPrices } = NetworkStateContainer.useContainer();
     const container = RenVMContainer.useContainer();
 
+    const updateBlocksInterval = 120 * SECONDS;
     useEffect(() => {
         container.updateBlocks().catch(console.error);
         const interval = setInterval(() => {
             container.updateBlocks().catch(console.error);
-        }, 1000 * 120);
+        }, updateBlocksInterval);
         return () => clearInterval(interval);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []); // 120 seconds
@@ -159,7 +161,13 @@ export const NetworkStats = () => {
                 <Stats>
                     <div className="stat-with-period">
                         <PeriodSelector selected={volumePeriod} onChange={setVolumePeriod} />
-                        <Stat message={`Volume (${volumePeriod === PeriodType.ALL ? volumePeriod : `1${volumePeriod.slice(0, 1).toUpperCase()}`})`} icon={<IconVolume />} big className="stat--extra-big">
+                        <Stat
+                            message={<>Volume <span className="stat--subtitle">({volumePeriod === PeriodType.ALL ? volumePeriod : `1${volumePeriod.slice(0, 1).toUpperCase()}`})</span></>}
+                            icon={<IconVolume />}
+                            big={true}
+                            infoLabel={<>Total amount of volume transacted via RenVM.</>}
+                            className="stat--extra-big"
+                        >
                             {volumePeriodSeries ? <><CurrencyIcon currency={quoteCurrency} />{new BigNumber(volumePeriodSeries.average.quotePeriodVolume).toFormat(2)}{/*<TokenBalance
                             token={Token.ETH}
                             convertTo={quoteCurrency}
@@ -176,7 +184,13 @@ export const NetworkStats = () => {
                     </div>
                     <div className="stat-with-period">
                         <PeriodSelector selected={lockedPeriod} onChange={setLockedPeriod} />
-                        <Stat message="Value locked" icon={<IconValueLocked />} big className="stat--extra-big">
+                        <Stat
+                            message="Value locked"
+                            icon={<IconValueLocked />}
+                            infoLabel={<>The total value (TVL) of all digital assets currently locked in RenVM.</>}
+                            big={true}
+                            className="stat--extra-big"
+                        >
                             {lockedPeriodSeries ? <><CurrencyIcon currency={quoteCurrency} />{new BigNumber(lockedPeriodSeries.average.quoteTotalLocked).toFormat(2)}
                                 {/* {total ? <> */}
                                 {/* <CurrencyIcon currency={quoteCurrency} /> */}

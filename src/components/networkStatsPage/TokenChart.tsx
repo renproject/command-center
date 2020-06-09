@@ -1,4 +1,5 @@
 import { Currency, CurrencyIcon, Loading, TokenIcon } from "@renproject/react-components";
+import BigNumber from "bignumber.js";
 import React from "react";
 import { Doughnut } from "react-chartjs-2";
 
@@ -51,7 +52,7 @@ export const TokenChart: React.FunctionComponent<Props> = ({ periodSeries, quote
                                 label: (tooltipItem: any, data: any) => {
                                     const dataset = data.datasets[0];
                                     const percent = dataset._meta[0] ? Math.round((dataset.data[tooltipItem.index] / dataset._meta[0].total) * 100) : undefined;
-                                    return `${textCurrencyIcon(quoteCurrency)}${data.datasets[0].data[tooltipItem.index]} ${quoteCurrency.toUpperCase()}${percent !== undefined ? ` - ${percent}%` : ""}`;
+                                    return `${textCurrencyIcon(quoteCurrency)}${new BigNumber(data.datasets[0].data[tooltipItem.index]).toFormat()} ${quoteCurrency.toUpperCase()}${percent !== undefined ? ` - ${percent}%` : ""}`;
                                 },
                                 // // tslint:disable-next-line: no-any
                                 // afterLabel: (tooltipItem: any, data: any) => {
@@ -85,7 +86,7 @@ export const TokenChart: React.FunctionComponent<Props> = ({ periodSeries, quote
                                     <CurrencyIcon currency={quoteCurrency} />
                                     {/* <TokenBalance */}
                                     {/* token={Token.ETH} */}
-                                    {periodSeries.average[`quote${graphType === "Locked" ? "Total" : "Period"}${graphType}${token}`]}
+                                    {new BigNumber(periodSeries.average[`quote${graphType === "Locked" ? "Total" : "Period"}${graphType}${token}`]).toFormat()}
                                     {/* convertTo={quoteCurrency} */}
                                     {/* /> */}
                                 </div>

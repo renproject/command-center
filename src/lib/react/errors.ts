@@ -5,6 +5,7 @@ import * as Sentry from "@sentry/browser";
 import { RenNetwork } from "@renproject/contracts";
 import { naturalTime } from "@renproject/react-components";
 
+import { SECONDS } from "../../components/common/BackgroundTasks";
 import { DEFAULT_REN_NETWORK, NODE_ENV, SENTRY_DSN } from "./environmentVariables";
 
 interface Details {
@@ -28,7 +29,7 @@ export const pageLoadedAt = (): string => {
         pageLoaded = new Date();
         return pageLoaded.toUTCString();
     } else {
-        return naturalTime(Math.floor(pageLoaded.getTime() / 1000), {
+        return naturalTime(Math.floor(pageLoaded.getTime() / SECONDS), {
             message: "Just now",
             suffix: "ago",
             countDown: false,

@@ -11,6 +11,7 @@ import BigNumber from "bignumber.js";
 import { RegistrationStatus } from "../../lib/ethereum/contractReads";
 import { EpochContainer } from "../../store/epochStore";
 import { DarknodesState } from "../../store/networkStateContainer";
+import { SECONDS } from "../common/BackgroundTasks";
 
 const lowValue = new BigNumber(Math.pow(10, 18)).multipliedBy(0.01);
 
@@ -38,7 +39,7 @@ export const Notifications: React.FC<Props> = ({ isOperator, darknodeDetails, re
 
     const [currentTime, setCurrentTime] = React.useState<number | null>(null);
     React.useEffect(() => {
-        setCurrentTime(new Date().getTime() / 1000);
+        setCurrentTime(new Date().getTime() / SECONDS);
     }, [timeSinceLastEpoch]);
 
     const nextEpochReadable = currentTime !== null && timeUntilNextEpoch !== null ? naturalTime(currentTime + timeUntilNextEpoch, {
