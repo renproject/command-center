@@ -5,6 +5,7 @@ import { Loading } from "@renproject/react-components";
 import { NULL, RegistrationStatus } from "../../lib/ethereum/contractReads";
 import { classNames } from "../../lib/react/className";
 import { catchInteractionException } from "../../lib/react/errors";
+import { GraphContainer } from "../../store/graphStore";
 import { DarknodesState, NetworkStateContainer } from "../../store/networkStateContainer";
 import { Web3Container } from "../../store/web3Store";
 import { StatusDot, StatusDotColor } from "../common/StatusDot";
@@ -28,7 +29,8 @@ interface Props {
 }
 
 export const Registration: React.FC<Props> = ({ darknodeID, darknodeDetails, registrationStatus, isOperator, publicKey }) => {
-    const { address, renNetwork } = Web3Container.useContainer();
+    const { address } = Web3Container.useContainer();
+    const { renVM } = GraphContainer.useContainer();
     const { tokenPrices, unhideDarknode, updateDarknodeDetails, updateOperatorDarknodes, showRegisterPopup, showDeregisterPopup, showRefundPopup } = NetworkStateContainer.useContainer();
 
     const [initialRegistrationStatus,] = React.useState(registrationStatus);
@@ -79,7 +81,7 @@ export const Registration: React.FC<Props> = ({ darknodeID, darknodeDetails, reg
             await showRegisterPopup(
                 darknodeID, publicKey, onCancel, onDoneRegister,
             );
-            unhideDarknode(darknodeID, address, renNetwork.name);
+            unhideDarknode(darknodeID, address);
         } catch (error) {
             catchInteractionException(error, "Error in Registration > handleRegister > showRegisterPopup");
             onCancel();
@@ -110,7 +112,7 @@ export const Registration: React.FC<Props> = ({ darknodeID, darknodeDetails, reg
     };
 
     const disabled = active || !address;
-    const registrationDisabled = disabled || !publicKey || !tokenPrices;
+    const registrationDisabled = disabled || !publicKey || !tokenPrices || !renVM;
 
     const noStatus =
         (registrationStatus === RegistrationStatus.Unregistered) ||

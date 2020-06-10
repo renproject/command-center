@@ -13,3 +13,6 @@ export const getDarknodePayment = (web3: Web3, renNetwork: RenNetworkDetails): D
     renNetwork.addresses.ren.DarknodePayment.abi,
     renNetwork.addresses.ren.DarknodePayment.address
 );
+
+export const getRenToken = (web3: Web3, renNetwork: RenNetworkDetails) =>
+    new (web3.eth.Contract)(renNetwork.addresses.erc.ERC20.abi, renNetwork.addresses.tokens.REN.address);

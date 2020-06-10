@@ -7,6 +7,7 @@ import { OrderedMap } from "immutable";
 import { DarknodeFeeStatus } from "../../../lib/ethereum/contractReads";
 import { AllTokenDetails, OldToken, Token } from "../../../lib/ethereum/tokens";
 import { classNames } from "../../../lib/react/className";
+import { GraphContainer } from "../../../store/graphStore";
 import { DarknodesState, NetworkStateContainer } from "../../../store/networkStateContainer";
 import { ReactComponent as RewardsIcon } from "../../../styles/images/icon-rewards-white.svg";
 // import { ReactComponent as WithdrawIcon } from "../../../styles/images/icon-withdraw.svg";
@@ -80,7 +81,9 @@ const FeesBlockRow: React.FC<RowProps> = ({ token, quoteCurrency, balance, isOpe
 
 export const FeesBlock: React.FC<Props> = ({ darknodeDetails, isOperator }) => {
 
-    const { quoteCurrency, currentCycle, previousCycle, pendingRewards, pendingTotalInEth, tokenPrices } = NetworkStateContainer.useContainer();
+    const { quoteCurrency, pendingRewards, pendingTotalInEth, tokenPrices } = NetworkStateContainer.useContainer();
+    const { renVM } = GraphContainer.useContainer();
+    const { currentCycle, previousCycle } = renVM || {};
 
     const [tab, setTab] = React.useState(Tab.Withdrawable);
     const [disableClaim, setDisableClaim] = React.useState(false);
@@ -97,19 +100,19 @@ export const FeesBlock: React.FC<Props> = ({ darknodeDetails, isOperator }) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [cycleStatus]);
 
-    const showPreviousPending = darknodeDetails && darknodeDetails.cycleStatus.get(previousCycle) === DarknodeFeeStatus.NOT_CLAIMED;
-    const showCurrentPending = darknodeDetails && darknodeDetails.cycleStatus.get(currentCycle) === DarknodeFeeStatus.NOT_CLAIMED;
+    const showPreviousPending = previousCycle && darknodeDetails && darknodeDetails.cycleStatus.get(previousCycle) === DarknodeFeeStatus.NOT_CLAIMED;
+    const showCurrentPending = currentCycle && darknodeDetails && darknodeDetails.cycleStatus.get(currentCycle) === DarknodeFeeStatus.NOT_CLAIMED;
     let pendingTotal = new BigNumber(0);
     let summedPendingRewards = OrderedMap<Token | OldToken, BigNumber>();
-    if (showPreviousPending) {
+    if (previousCycle && showPreviousPending) {
         pendingTotal = pendingTotal.plus(pendingTotalInEth.get(previousCycle, new BigNumber(0)));
         summedPendingRewards = pendingRewards.get(previousCycle, OrderedMap());
     }
-    if (showCurrentPending) {
+    if (currentCycle && showCurrentPending) {
         pendingTotal = pendingTotal.plus(pendingTotalInEth.get(currentCycle, new BigNumber(0)));
         summedPendingRewards = pendingRewards.get(currentCycle, OrderedMap());
     }
-    if (showPreviousPending && showCurrentPending) {
+    if (previousCycle && currentCycle && showPreviousPending && showCurrentPending) {
         summedPendingRewards = mergeFees(
             pendingRewards.get(previousCycle, OrderedMap()),
             pendingRewards.get(currentCycle, OrderedMap())

@@ -99,7 +99,7 @@ const MultiStepPopupClass: React.FC<Props> = ({ steps,
     if (warning && notStarted && !warningIgnored) {
         return <div className="popup multi-step">
             <div className="multi-step--top">
-                <img alt="" role="presentation" src={Warn} />
+                <img alt="" role="presentation" className="multi-step--top--warn" src={Warn} />
                 <h2 className={ignoreWarning ? "multi-step--with-ignore" : ""}>{warning}</h2>
                 {ignoreWarning ?
                     <span

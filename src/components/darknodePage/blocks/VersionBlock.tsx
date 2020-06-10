@@ -4,6 +4,7 @@ import { faBolt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { RegistrationStatus } from "../../../lib/ethereum/contractReads";
+import { isDefined } from "../../../lib/general/isDefined";
 import { classNames } from "../../../lib/react/className";
 import { GithubAPIContainer } from "../../../store/githubApiStore";
 import { DarknodesState } from "../../../store/networkStateContainer";
@@ -49,7 +50,7 @@ export const VersionBlock: React.FC<Props> = ({ darknodeDetails }) => {
                             <table className="darknode-info">
                                 <tbody>
                                     <tr><td>Your Software Version</td><td>{darknodeDetails.nodeStatistics ? darknodeDetails.nodeStatistics.version : ""}</td></tr>
-                                    <tr><td>Latest Version</td><td>{latestDarknodeVersionFull ? latestDarknodeVersionFull : ""} {upToDate !== null ? upToDate ? <>{" "}- <span className="green">Up to date</span></> : <>{" "}- <ExternalLink className="blue" href={UPDATE_DARKNODE_LINK}>Update now</ExternalLink></> : ""}</td></tr>
+                                    <tr><td>Latest Version</td><td>{latestDarknodeVersionFull ? latestDarknodeVersionFull : ""} {isDefined(upToDate) ? upToDate ? <>{" "}- <span className="green">Up to date</span></> : <>{" "}- <ExternalLink className="blue" href={UPDATE_DARKNODE_LINK}>Update now</ExternalLink></> : ""}</td></tr>
                                     <tr><td>Version published</td><td>{latestDarknodeVersionDaysAgo}</td></tr>
                                 </tbody>
                             </table>

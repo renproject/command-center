@@ -101,7 +101,7 @@ export interface Integrator {
   integrator24H: Integrator;
 }
 
-export const INTEGRATORS = gql`
+export const QUERY_INTEGRATORS = gql`
 query getIntegrators($offset: Int, $count: Int) {
     integrators(orderBy: volumeBTC, orderDirection: desc, first: $count, skip: $offset, where: { date: 0 }) {
     id

@@ -5,9 +5,11 @@ import * as React from "react";
 import { faServer } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { naturalTime } from "@renproject/react-components";
+import BigNumber from "bignumber.js";
 import { buildStyles, CircularProgressbar } from "react-circular-progressbar";
 
-import { EpochContainer } from "../../../store/epochStore";
+import { isDefined } from "../../../lib/general/isDefined";
+import { GraphContainer } from "../../../store/graphStore";
 import { DarknodesState } from "../../../store/networkStateContainer";
 import { SECONDS } from "../../common/BackgroundTasks";
 import { Block, BlockBody, BlockTitle } from "./Block";
@@ -18,11 +20,12 @@ interface Props {
 
 export const EpochBlock: React.FC<Props> = ({ darknodeDetails }) => {
 
-    const { timeUntilNextEpoch, timeSinceLastEpoch, epochInterval } = EpochContainer.useContainer();
+    const { renVM } = GraphContainer.useContainer();
+    const { timeUntilNextEpoch, timeSinceLastEpoch, minimumEpochInterval } = renVM || {};
 
-    const [currentTime, setCurrentTime] = React.useState<number | null>(null);
+    const [currentTime, setCurrentTime] = React.useState<BigNumber | null>(null);
     React.useEffect(() => {
-        setCurrentTime(new Date().getTime() / SECONDS);
+        setCurrentTime(new BigNumber(new Date().getTime() / SECONDS));
     }, [timeSinceLastEpoch]);
 
     return (
@@ -40,20 +43,13 @@ export const EpochBlock: React.FC<Props> = ({ darknodeDetails }) => {
                     <div className="resources--chart--and--label">
                         <div className="epoch-chart">
                             <CircularProgressbar
-                                value={Math.min((timeSinceLastEpoch || 0) / (epochInterval || 1) * 100, 100)}
-                                text={currentTime !== null && timeUntilNextEpoch !== null ? naturalTime(currentTime + timeUntilNextEpoch, {
+                                value={BigNumber.min((timeSinceLastEpoch || new BigNumber(0)).div(minimumEpochInterval || new BigNumber(1)).times(100), 100).toNumber()}
+                                text={isDefined(currentTime) && isDefined(timeUntilNextEpoch) ? naturalTime(timeUntilNextEpoch.plus(currentTime).toNumber(), {
                                     suffix: "",
                                     message: "",
                                     countDown: true,
                                     showingSeconds: false
                                 }) : ""}
-                                // value={100}
-                                // text={currentTime !== null && timeSinceLastEpoch !== null ? naturalTime(currentTime - timeSinceLastEpoch, {
-                                //     suffix: "",
-                                //     message: "",
-                                //     countDown: false,
-                                //     showingSeconds: false
-                                // }) : ""}
                                 styles={buildStyles({
                                     // Text size
                                     textSize: "16px",
@@ -75,13 +71,13 @@ export const EpochBlock: React.FC<Props> = ({ darknodeDetails }) => {
                     </div>
                     <div className="epoch-right">
                         {/* <p>Epochs are currently called manually</p> */}
-                        <p>{currentTime !== null && timeUntilNextEpoch !== null ? naturalTime(currentTime + timeUntilNextEpoch, {
+                        <p>{isDefined(currentTime) && isDefined(timeUntilNextEpoch) ? naturalTime(currentTime.plus(timeUntilNextEpoch).toNumber(), {
                             suffix: "until next epoch",
                             message: "New epoch will be called shortly",
                             countDown: true,
                             showingSeconds: false
                         }) : ""}</p>
-                        <p>{currentTime !== null && timeSinceLastEpoch !== null ? naturalTime(currentTime - timeSinceLastEpoch, {
+                        <p>{isDefined(currentTime) && isDefined(timeSinceLastEpoch) ? naturalTime(currentTime.minus(timeSinceLastEpoch).toNumber(), {
                             suffix: "since last epoch",
                             message: "Epoch called just now",
                             countDown: false,

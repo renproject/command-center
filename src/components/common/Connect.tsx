@@ -2,8 +2,8 @@ import * as React from "react";
 
 import { ApolloWithNetwork } from "../../lib/graphQL/ApolloWithNetwork";
 import { DEFAULT_REN_NETWORK } from "../../lib/react/environmentVariables";
-import { EpochContainer } from "../../store/epochStore";
 import { GithubAPIContainer } from "../../store/githubApiStore";
+import { GraphContainer } from "../../store/graphStore";
 import { NetworkStateContainer } from "../../store/networkStateContainer";
 import { PopupContainer } from "../../store/popupStore";
 import { UIContainer } from "../../store/uiStore";
@@ -15,19 +15,19 @@ export const Connect: React.FC<Props> = ({ children }) => {
     return <PopupContainer.Provider>
         <Web3Container.Provider initialState={DEFAULT_REN_NETWORK}>
             <ApolloWithNetwork>
-                <NetworkStateContainer.Provider>
-                    <UIContainer.Provider>
-                        <MapContainer.Provider>
-                            <RenVMContainer.Provider>
-                                <EpochContainer.Provider>
+                <GraphContainer.Provider>
+                    <NetworkStateContainer.Provider>
+                        <UIContainer.Provider>
+                            <MapContainer.Provider>
+                                <RenVMContainer.Provider>
                                     <GithubAPIContainer.Provider>
                                         {children}
                                     </GithubAPIContainer.Provider>
-                                </EpochContainer.Provider>
-                            </RenVMContainer.Provider>
-                        </MapContainer.Provider>
-                    </UIContainer.Provider>
-                </NetworkStateContainer.Provider>
+                                </RenVMContainer.Provider>
+                            </MapContainer.Provider>
+                        </UIContainer.Provider>
+                    </NetworkStateContainer.Provider>
+                </GraphContainer.Provider>
             </ApolloWithNetwork>
         </Web3Container.Provider>
     </PopupContainer.Provider>;

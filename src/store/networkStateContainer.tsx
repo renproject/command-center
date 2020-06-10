@@ -1,3 +1,4 @@
+import { useApolloClient } from "@apollo/react-hooks";
 import { Currency, CurrencyIcon, Record } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import { List, Map, OrderedMap, OrderedSet } from "immutable";
@@ -8,17 +9,24 @@ import { PromiEvent } from "web3-core";
 import { MultiStepPopup } from "../components/common/popups/MultiStepPopup";
 import { WithdrawPopup } from "../components/common/popups/WithdrawPopup";
 import { TokenBalance } from "../components/common/TokenBalance";
+import { retryNTimes } from "../components/renvmPage/renvmContainer";
 import { NodeStatistics } from "../lib/darknode/jsonrpc";
+import { getDarknodePayment, getDarknodeRegistry } from "../lib/ethereum/contract";
 import {
-    calculateSecondsPerBlock, DarknodeCounts, DarknodeFeeStatus, fetchCycleAndPendingRewards,
-    fetchDarknodeDetails, getDarknodeCounts, getMinimumBond, getOperatorDarknodes, NULL,
-    RegistrationStatus,
+    calculateSecondsPerBlock, DarknodeFeeStatus, fetchDarknodeDetails, getOperatorDarknodes, NULL,
+    RegistrationStatus, sumUpFeeMap,
 } from "../lib/ethereum/contractReads";
 import {
     approveNode, deregisterNode, fundNode, refundNode, registerNode, withdrawToken,
 } from "../lib/ethereum/contractWrites";
-import { AllTokenDetails, getPrices, OldToken, Token, TokenPrices } from "../lib/ethereum/tokens";
+import {
+    AllTokenDetails, getPrices, NewTokenDetails, OldToken, Token, TokenPrices,
+} from "../lib/ethereum/tokens";
+import { isDefined } from "../lib/general/isDefined";
+import { safePromiseAllMap } from "../lib/general/promiseAll";
+import { RenVM } from "../lib/graphQL/queries/renVM";
 import { catchBackgroundException, catchInteractionException } from "../lib/react/errors";
+import { GraphContainer } from "./graphStore";
 import { PopupContainer } from "./popupStore";
 import useStorageState from "./useStorageState/useStorageState";
 import { Web3Container } from "./web3Store";
@@ -50,12 +58,12 @@ export type WaitForTX = <T>(promiEvent: PromiEvent<T>, onConfirmation?: (confirm
 const useNetworkStateContainer = () => {
     const { web3, renNetwork, address } = Web3Container.useContainer();
     const { setPopup, clearPopup } = PopupContainer.useContainer();
+    const { renVM, fetchRenVM } = GraphContainer.useContainer();
+    const client = useApolloClient();
 
     const [secondsPerBlock, setSecondsPerBlock] = useState(null as number | null);
 
     const [tokenPrices, setTokenPrices] = useState(null as TokenPrices | null);
-
-    const [darknodeCount, setDarknodeCount] = useState(null as BigNumber | null);
 
     const [registrySync, setRegistrySync] = useState({ progress: 0, target: 0 });
 
@@ -67,20 +75,11 @@ const useNetworkStateContainer = () => {
     const [transactions, setTransactions] = useState(OrderedMap<string, PromiEvent<any>>());
     const [confirmations, setConfirmations] = useState(OrderedMap<string, number>());
 
-    const [currentCycle, setCurrentCycle] = useState("");
-    const [previousCycle, setPreviousCycle] = useState("");
+    const [numberOfDarknodesNextEpoch, setNumberOfDarknodesNextEpoch] = useState<BigNumber | null>(null);
+
     const [pendingRewards, setPendingRewards] = useState(OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber>>());
     const [pendingTotalInEth, setPendingTotalInEth] = useState(OrderedMap<string /* cycle */, BigNumber>());
     const [pendingRewardsInEth, setPendingRewardsInEth] = useState(OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber>>());
-    const [cycleTimeout, setCycleTimeout] = useState(new BigNumber(0));
-    const [currentShareCount, setCurrentShareCount] = useState(new BigNumber(1));
-    const [previousShareCount, setPreviousShareCount] = useState(new BigNumber(1));
-
-    const [currentDarknodeCount, setCurrentDarknodeCount] = useState(null as number | null);
-    const [previousDarknodeCount, setPreviousDarknodeCount] = useState(null as number | null);
-    const [nextDarknodeCount, setNextDarknodeCount] = useState(null as number | null);
-    const [payoutPercent, setPayoutPercent] = useState(null as number | null);
-    const [minimumBond, setMinimumBond] = useState(null as BigNumber | null);
 
     ///////////////////////////////////////////////////////////
     // If these change, localstorage migration may be needed //
@@ -104,7 +103,7 @@ const useNetworkStateContainer = () => {
 
     const updateSecondsPerBlock = async () => {
         const newSecondsPerBlock = await calculateSecondsPerBlock(web3);
-        if (newSecondsPerBlock !== null) {
+        if (isDefined(newSecondsPerBlock)) {
             setSecondsPerBlock(newSecondsPerBlock);
         }
     };
@@ -122,7 +121,7 @@ const useNetworkStateContainer = () => {
     //     ));
     // };
 
-    const hideDarknode = (darknodeID: string, operator: string, network: string) => {
+    const hideDarknode = (darknodeID: string, operator: string) => {
         try {
             let operatorHiddenDarknodes = hiddenDarknodes.get(operator) || OrderedSet<string>();
 
@@ -134,7 +133,7 @@ const useNetworkStateContainer = () => {
         }
     };
 
-    const unhideDarknode = (darknodeID: string, operator: string, network: string) => {
+    const unhideDarknode = (darknodeID: string, operator: string) => {
         try {
             let operatorHiddenDarknodes = hiddenDarknodes.get(operator) || OrderedSet<string>();
 
@@ -145,14 +144,6 @@ const useNetworkStateContainer = () => {
             catchInteractionException(error, "Error in networkReducer > removeDarknode");
         }
     };
-
-
-    const updateDarknodeCounts = (darknodeCounts: DarknodeCounts) => {
-        setCurrentDarknodeCount(darknodeCounts.currentDarknodeCount);
-        setPreviousDarknodeCount(darknodeCounts.previousDarknodeCount);
-        setNextDarknodeCount(darknodeCounts.nextDarknodeCount);
-    };
-
 
     const addDarknodes = (darknodes: OrderedSet<string>) => {
         if (!address) {
@@ -248,6 +239,8 @@ const useNetworkStateContainer = () => {
             addTransaction(txHash, promiEvent);
             promiEvent.on("confirmation", (numberOfConfirmations) => {
                 storeTxConfirmations(txHash, numberOfConfirmations);
+            });
+            promiEvent.once("confirmation", (numberOfConfirmations) => {
                 if (onConfirmation) { onConfirmation(numberOfConfirmations); }
             });
             promiEvent.on("error", () => {
@@ -256,73 +249,145 @@ const useNetworkStateContainer = () => {
         }).catch(reject);
     });
 
-    const updateCycleAndPendingRewards = async (
-    ) => {
-        const getDarknodeCountsPromise = getDarknodeCounts(web3, renNetwork);
-        const fetchCycleAndPendingRewardsPromise = fetchCycleAndPendingRewards(web3, renNetwork, tokenPrices);
+    /**
+     * Retrieves information about the pending rewards in the Darknode Payment
+     * contract.
+     *
+     * @returns `{
+     *     pendingRewards: For each cycle, a map from tokens to rewards
+     *     currentCycle: The current cycle (as a block number)
+     *     previousCycle: The previous cycle (as a block number)
+     *     cycleTimeout: The earliest the current cycle could end (as a block number)
+     *     pendingTotalInEth: For each cycle, The pending rewards added up as ETH
+     * }`
+     */
+    const fetchCycleAndPendingRewards = async (latestRenVM: RenVM) => {
+        const darknodePayment = getDarknodePayment(web3, renNetwork);
+        const darknodeRegistry = getDarknodeRegistry(web3, renNetwork);
 
         try {
-            if (!minimumBond) {
-                const nextMinimumBond = await getMinimumBond(web3, renNetwork);
-                setMinimumBond(nextMinimumBond);
-            }
-            const darknodeCounts = await getDarknodeCountsPromise;
-            updateDarknodeCounts(darknodeCounts);
+            const darknodesNextEpoch = await darknodeRegistry.methods.numDarknodesNextEpoch().call();
+            setNumberOfDarknodesNextEpoch(new BigNumber(darknodesNextEpoch.toString()));
         } catch (error) {
-            // Ignore error
+            // Ignore error;
         }
+
+        let newPendingRewards = OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber>>();
+
+        const πPrevious = safePromiseAllMap(
+            NewTokenDetails.map(async (_tokenDetails, token) => {
+                try {
+                    const tokenAddress = token === Token.ETH ? "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" : renNetwork.addresses.tokens[token].address;
+                    let previousCycleRewardShareBN;
+                    if (token === Token.BTC) {
+                        previousCycleRewardShareBN = renVM && renVM.currentEpoch.rewardShareBTC;
+                    } else if (token === Token.ZEC) {
+                        previousCycleRewardShareBN = renVM && renVM.currentEpoch.rewardShareZEC;
+                    } else if (token === Token.BCH) {
+                        previousCycleRewardShareBN = renVM && renVM.currentEpoch.rewardShareBCH;
+                    } else {
+                        previousCycleRewardShareBN = await retryNTimes(async () => await darknodePayment.methods.previousCycleRewardShare(tokenAddress).call(), 2);
+                    }
+                    if (previousCycleRewardShareBN === null) {
+                        return new BigNumber(0);
+                    }
+                    return new BigNumber(previousCycleRewardShareBN.toString()).decimalPlaces(0);
+                } catch (error) {
+                    console.error(`Error fetching rewards for ${token}`, error);
+                    return new BigNumber(0);
+                }
+            }).toOrderedMap(),
+            new BigNumber(0),
+        );
+
+        const πCurrent = safePromiseAllMap(
+            NewTokenDetails.map(async (_tokenDetails, token) => {
+                if (latestRenVM.numberOfDarknodes.isZero()) {
+                    return new BigNumber(0);
+                }
+                try {
+                    const tokenAddress = token === Token.ETH ? "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" : renNetwork.addresses.tokens[token].address;
+                    const currentCycleRewardPool = await retryNTimes(async () => await darknodePayment.methods.currentCycleRewardPool(tokenAddress).call(), 2);
+                    if (currentCycleRewardPool === null) {
+                        return new BigNumber(0);
+                    }
+                    return new BigNumber((currentCycleRewardPool).toString()).div(100).decimalPlaces(0).times(latestRenVM.currentCyclePayoutPercent).div(latestRenVM.numberOfDarknodes).decimalPlaces(0);
+                } catch (error) {
+                    console.error(`Error fetching rewards for ${token}`, error);
+                    return new BigNumber(0);
+                }
+            }
+            ).toOrderedMap(),
+            new BigNumber(0),
+        );
+
+        const previous = await πPrevious;
+        if (isDefined(latestRenVM)) {
+            newPendingRewards = newPendingRewards.set(latestRenVM.previousCycle, previous);
+        }
+
+        const current = await πCurrent;
+        if (isDefined(latestRenVM)) {
+            newPendingRewards = newPendingRewards.set(latestRenVM.currentCycle, current);
+        }
+
+        let newPendingTotalInEth = null;
+        let newPendingRewardsInEth = null;
+        if (tokenPrices) {
+            const [previousTotal, previousInEth] = sumUpFeeMap(previous, tokenPrices);
+            const [currentTotal, currentInEth] = sumUpFeeMap(current, tokenPrices);
+            newPendingTotalInEth = OrderedMap<string /* cycle */, BigNumber>();
+            newPendingRewardsInEth = OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber>>();
+            if (isDefined(latestRenVM)) {
+                newPendingTotalInEth = newPendingTotalInEth.set(latestRenVM.previousCycle, previousTotal);
+                newPendingRewardsInEth = newPendingRewardsInEth.set(latestRenVM.previousCycle, previousInEth);
+                newPendingTotalInEth = newPendingTotalInEth.set(latestRenVM.currentCycle, currentTotal);
+                newPendingRewardsInEth = newPendingRewardsInEth.set(latestRenVM.currentCycle, currentInEth);
+            }
+        }
+
+        return {
+            newPendingRewards,
+            newPendingTotalInEth,
+            newPendingRewardsInEth,
+        };
+    };
+
+
+    const updateCycleAndPendingRewards = async (
+    ) => {
+        if (!renVM) {
+            return;
+        }
+        const fetchCycleAndPendingRewardsPromise = fetchCycleAndPendingRewards(renVM);
 
         const {
-            pendingRewards: newPendingRewards,
-            currentCycle: newCurrentCycle,
-            previousCycle: newPreviousCycle,
-            cycleTimeout: newCycleTimeout,
-            pendingTotalInEth: newPendingTotalInEth,
-            pendingRewardsInEth: newPendingRewardsInEth,
-            currentShareCount: newCurrentShareCount,
-            previousShareCount: newPreviousShareCount,
-            payoutPercent: newPayoutPercent,
+            newPendingRewards,
+            newPendingTotalInEth,
+            newPendingRewardsInEth,
         } = await fetchCycleAndPendingRewardsPromise;
 
-        if (newPendingRewardsInEth !== null) {
+        if (isDefined(newPendingRewardsInEth)) {
             setPendingRewardsInEth(newPendingRewardsInEth);
         }
-        if (newPendingTotalInEth !== null) {
+        if (isDefined(newPendingTotalInEth)) {
             setPendingTotalInEth(newPendingTotalInEth);
         }
-        if (newCurrentCycle !== null && newCurrentCycle !== undefined) {
-            setCurrentCycle(newCurrentCycle.toString());
-        }
-        if (newPreviousCycle !== null && newPreviousCycle !== undefined) {
-            setPreviousCycle(newPreviousCycle.toString());
-        }
-        // tslint:disable-next-line: strict-type-predicates
-        if (newPayoutPercent !== null && newPayoutPercent !== undefined) {
-            setPayoutPercent(newPayoutPercent.toNumber());
-        }
         setPendingRewards(newPendingRewards);
-        // tslint:disable-next-line: strict-type-predicates
-        if (newCycleTimeout !== null) {
-            setCycleTimeout(newCycleTimeout);
-        }
-        if (newCurrentShareCount !== null) {
-            setCurrentShareCount(newCurrentShareCount);
-        }
-        if (newPreviousShareCount !== null) {
-            setPreviousShareCount(newPreviousShareCount);
-        }
     };
 
     const updateDarknodeDetails = async (
         darknodeID: string,
+        latestRenVM?: RenVM,
     ) => {
-        const details = await fetchDarknodeDetails(web3, renNetwork, darknodeID, tokenPrices);
-        storeDarknodeDetails(details);
+        const latestRenVMOrNull = latestRenVM || (await fetchRenVM());
+        if (latestRenVMOrNull) {
+            const details = await fetchDarknodeDetails(client, latestRenVMOrNull, web3, renNetwork, darknodeID, tokenPrices);
+            storeDarknodeDetails(details);
+        }
     };
 
-    const updateOperatorDarknodes = async () => {
-        // await updateCycleAndPendingRewards(web3, renNetwork, tokenPrices);
-
+    const updateOperatorDarknodes = async (selectedDarknode?: string | undefined) => {
         if (!address) {
             return;
         }
@@ -355,8 +420,16 @@ const useNetworkStateContainer = () => {
             return null;
         });
 
+        const latestRenVM = await fetchRenVM();
+        if (!latestRenVM) {
+            throw new Error("Unable to load network status");
+        }
         await Promise.all(newDarknodeList.toList().map(async (darknodeID: string) => {
-            return updateDarknodeDetails(darknodeID);
+            // The selected darknode is updated in a different background loop.
+            if (darknodeID === selectedDarknode) {
+                return;
+            }
+            return updateDarknodeDetails(darknodeID, latestRenVM);
         }).toArray());
 
         await Promise.all(newDarknodeList.toList().map(async (darknodeID: string) => {
@@ -448,11 +521,12 @@ const useNetworkStateContainer = () => {
         if (!address) {
             throw new Error(`Unable to retrieve account address.`);
         }
-
-        const darknodeBond = minimumBond || await getMinimumBond(web3, renNetwork);
+        if (!renVM) {
+            throw new Error(`Unable to register - unable to fetch minimum bond.`);
+        }
 
         const step1 = async () => {
-            await approveNode(web3, renNetwork, address, darknodeBond, waitForTX);
+            await approveNode(web3, renNetwork, address, renVM.minimumBond, waitForTX);
         };
 
         const step2 = async () => {
@@ -462,7 +536,7 @@ const useNetworkStateContainer = () => {
                 address,
                 darknodeID,
                 publicKey,
-                darknodeBond,
+                renVM.minimumBond,
                 onCancel,
                 onDone,
                 waitForTX,
@@ -626,25 +700,14 @@ const useNetworkStateContainer = () => {
     return {
         secondsPerBlock,
         tokenPrices,
-        darknodeCount, setDarknodeCount,
         registrySync,
         darknodeDetails,
         // balanceHistories,
         transactions, setTransactions,
         confirmations,
-        currentCycle, setCurrentCycle,
-        previousCycle,
         pendingRewards,
         pendingTotalInEth,
         pendingRewardsInEth,
-        cycleTimeout,
-        currentShareCount,
-        previousShareCount,
-        currentDarknodeCount,
-        previousDarknodeCount,
-        nextDarknodeCount,
-        payoutPercent,
-        minimumBond,
         quoteCurrency, setQuoteCurrency,
         darknodeNames,
         darknodeRegisteringList,
@@ -671,6 +734,8 @@ const useNetworkStateContainer = () => {
         showDeregisterPopup,
         showRefundPopup,
         showFundPopup,
+
+        numberOfDarknodesNextEpoch,
     };
 };
 

@@ -48,6 +48,7 @@ export const NetworkBlock: React.FC<Props> = ({ darknodeDetails }) => {
                                 showingSeconds: false
                             }) : ""}</td></tr>
                             <tr><td>CPU Cores</td><td><CopyIcon /> {darknodeDetails.nodeStatistics ? darknodeDetails.nodeStatistics.cores : ""}</td></tr>
+                            <tr><td>ID (hex)</td><td><CopyIcon /> {darknodeDetails.ID}</td></tr>
                         </tbody>
                     </table>
                 </div>

@@ -9,7 +9,8 @@ import { naturalTime } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 
 import { RegistrationStatus } from "../../lib/ethereum/contractReads";
-import { EpochContainer } from "../../store/epochStore";
+import { isDefined } from "../../lib/general/isDefined";
+import { GraphContainer } from "../../store/graphStore";
 import { DarknodesState } from "../../store/networkStateContainer";
 import { SECONDS } from "../common/BackgroundTasks";
 
@@ -35,14 +36,15 @@ interface Props {
 
 export const Notifications: React.FC<Props> = ({ isOperator, darknodeDetails, renNetwork }) => {
 
-    const { timeUntilNextEpoch, timeSinceLastEpoch } = EpochContainer.useContainer();
+    const { renVM } = GraphContainer.useContainer();
+    const { timeUntilNextEpoch, timeSinceLastEpoch } = renVM || { timeUntilNextEpoch: null, timeSinceLastEpoch: null };
 
     const [currentTime, setCurrentTime] = React.useState<number | null>(null);
     React.useEffect(() => {
         setCurrentTime(new Date().getTime() / SECONDS);
     }, [timeSinceLastEpoch]);
 
-    const nextEpochReadable = currentTime !== null && timeUntilNextEpoch !== null ? naturalTime(currentTime + timeUntilNextEpoch, {
+    const nextEpochReadable = isDefined(currentTime) && isDefined(timeUntilNextEpoch) ? naturalTime(currentTime + timeUntilNextEpoch.toNumber(), {
         prefix: "in",
         message: "next epoch",
         countDown: true,
@@ -67,7 +69,7 @@ export const Notifications: React.FC<Props> = ({ isOperator, darknodeDetails, re
     ) {
         notification = {
             title: "Deregistration in progress.",
-            detail: `Your darknode will be deregistered ${nextEpochReadable}.`,
+            detail: `Your darknode will be deregistered ${nextEpochReadable}. Your bond will be locked for another epoch after that.`,
             type: NotificationType.Information,
         };
     } else if (
@@ -77,7 +79,7 @@ export const Notifications: React.FC<Props> = ({ isOperator, darknodeDetails, re
     ) {
         notification = {
             title: "Darknode deregistered.",
-            detail: `You will be able to withdraw your REN within ${renNetwork.name === "chaosnet" || renNetwork.name === "mainnet" ? "8 days" : "24 hours"}.`,
+            detail: `You will be able to withdraw your bond ${nextEpochReadable}.`,
             type: NotificationType.Information,
         };
     } else if (

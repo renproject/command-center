@@ -6,7 +6,7 @@ import { OrderedMap } from "immutable";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { withRouter } from "react-router-dom";
 
-import { Integrator, INTEGRATORS } from "../../lib/graphQL/queries";
+import { Integrator, QUERY_INTEGRATORS } from "../../lib/graphQL/queries";
 import { extractError } from "../../lib/react/errors";
 import { Web3Container } from "../../store/web3Store";
 import { ReactComponent as RemoteBack } from "../../styles/images/remote-back.svg";
@@ -78,7 +78,7 @@ export const IntegratorsPage = withRouter(({ match: { params }, history }) => {
         if (integrators.get(page) === undefined) {
             setIntegrators(integrators.set(page, null));
             apollo.query<{ integrators: Integrator[] }>({
-                query: INTEGRATORS,
+                query: QUERY_INTEGRATORS,
                 variables: {
                     count: ROWS_PER_PAGE,
                     offset: page * ROWS_PER_PAGE,

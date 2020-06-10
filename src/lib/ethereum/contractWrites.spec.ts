@@ -1,4 +1,5 @@
 import { RenNetworkDetails } from "@renproject/contracts";
+import BigNumber from "bignumber.js";
 import Web3 from "web3";
 import { PromiEvent, TransactionConfig } from "web3-core";
 
@@ -6,9 +7,7 @@ import { WaitForTX } from "../../store/networkStateContainer";
 import { createWeb3, Provider } from "../../test/globalSetup";
 import { darknodeIDBase58ToHex } from "../darknode/darknodeID";
 import { getDarknodeRegistry } from "./contract";
-import {
-    getDarknodeStatus, getMinimumBond, getOperatorDarknodes, RegistrationStatus,
-} from "./contractReads";
+import { getDarknodeStatus, getOperatorDarknodes, RegistrationStatus } from "./contractReads";
 import { approveNode, deregisterNode, refundNode, registerNode } from "./contractWrites";
 
 let web3: Web3, network: RenNetworkDetails, provider: Provider, address: string;
@@ -43,7 +42,7 @@ const callEpoch = async (
 test("registering darknode", async () => {
     jest.setTimeout(20000);
 
-    const bond = await getMinimumBond(web3, network);
+    const bond = new BigNumber(100000).times(new BigNumber(10).exponentiatedBy(18));
 
     (await getDarknodeStatus(web3, network, darknodeID))
         .should.equal(RegistrationStatus.Unregistered);

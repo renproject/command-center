@@ -2,6 +2,7 @@ import * as qs from "query-string";
 import * as React from "react";
 
 import { RouteComponentProps, withRouter } from "react-router-dom";
+import { toChecksumAddress } from "web3-utils";
 
 import { darknodeIDBase58ToHex } from "../../lib/darknode/darknodeID";
 import { RegistrationStatus } from "../../lib/ethereum/contractReads";
@@ -23,7 +24,7 @@ export const getDarknodeParam = (params: unknown): string | undefined => {
     if (darknodeID58) {
         try {
             // Convert from base-58 to hex
-            darknodeID = darknodeIDBase58ToHex(darknodeID58);
+            darknodeID = darknodeID58.slice(0, 2) === "0x" ? toChecksumAddress(darknodeID58) : darknodeIDBase58ToHex(darknodeID58);
         } catch (error) {
             // If the darknode ID is malformatted, ignore it
             console.error(error);

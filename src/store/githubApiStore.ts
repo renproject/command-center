@@ -1,27 +1,18 @@
 import { naturalTime } from "@renproject/react-components";
 import Axios from "axios";
 import moment from "moment";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import semver from "semver";
 import { createContainer } from "unstated-next";
 
-import { SECONDS } from "../components/common/BackgroundTasks";
+import { useTaskSchedule } from "../components/common/ScheduleTask";
 import { retryNTimes } from "../components/renvmPage/renvmContainer";
 import { catchBackgroundException } from "../lib/react/errors";
-
-const time = () => Math.floor(new Date().getTime() / SECONDS);
-const everyNSeconds = (loaded: number, now: number, n: number) => Math.floor((now - loaded) / n);
-const inNSeconds = (loaded: number, now: number, n: number) => (n - ((now - loaded) % n)) * 1000;
 
 const DARKNODE_ENDPOINT = "https://api.github.com/repos/renproject/darknode-release/releases/latest";
 const DARKNODE_CLI_ENDPOINT = "https://api.github.com/repos/renproject/darknode-cli/releases/latest";
 
 const useGithubAPIContainer = () => {
-    const now = time();
-
-    const [loaded,] = useState(now);
-    const [r, rerender] = useState(true);
-
     const [latestDarknodeVersionFull, setLatestDarknodeVersionFull] = useState(null as string | null);
     const [latestDarknodeVersion, setLatestDarknodeVersion] = useState(null as string | null);
     const [latestDarknodeVersionDaysAgo, setLatestDarknodeVersionDaysAgo] = useState(null as string | null);
@@ -30,48 +21,45 @@ const useGithubAPIContainer = () => {
     const [latestCLIVersion, setLatestCLIVersion] = useState(null as string | null);
     const [latestCLIVersionDaysAgo, setLatestCLIVersionDaysAgo] = useState(null as string | null);
 
-    const interval = 200; // Update every 200 seconds
-    useEffect(() => {
-        (async () => {
-            try {
-                const response = await retryNTimes(() => Axios.get<VersionResponse | VersionError>(DARKNODE_ENDPOINT), 2);
-                if (!response.data || response.data.message) {
-                    throw new Error(response.data ? response.data.message : "No data returned from Github API.");
-                }
-                setLatestDarknodeVersionFull(response.data.tag_name);
-                setLatestDarknodeVersion(response.data.tag_name);
-                setLatestDarknodeVersionDaysAgo(naturalTime(moment(response.data.published_at).unix(), {
-                    suffix: "ago",
-                    message: "Just now",
-                    countDown: false,
-                    showingSeconds: false
-                }));
-            } catch (error) {
-                catchBackgroundException(error, "Error in GithubAPIContainer: fetchEpoch");
+    const updater = async () => {
+        let interval = 200;
+        try {
+            const response = await retryNTimes(() => Axios.get<VersionResponse | VersionError>(DARKNODE_ENDPOINT), 2);
+            if (!response.data || response.data.message) {
+                throw new Error(response.data ? response.data.message : "No data returned from Github API.");
             }
-            try {
-                const response = await retryNTimes(() => Axios.get<VersionResponse | VersionError>(DARKNODE_CLI_ENDPOINT), 2);
-                if (!response.data || response.data.message) {
-                    throw new Error(response.data ? response.data.message : "No data returned from Github API.");
-                }
-                setLatestCLIVersionFull(response.data.tag_name);
-                setLatestCLIVersion(response.data.tag_name);
-                setLatestCLIVersionDaysAgo(naturalTime(moment(response.data.published_at).unix(), {
-                    suffix: "ago",
-                    message: "Just now",
-                    countDown: false,
-                    showingSeconds: false
-                }));
-            } catch (error) {
-                catchBackgroundException(error, "Error in GithubAPIContainer: fetchEpoch");
+            setLatestDarknodeVersionFull(response.data.tag_name);
+            setLatestDarknodeVersion(response.data.tag_name);
+            setLatestDarknodeVersionDaysAgo(naturalTime(moment(response.data.published_at).unix(), {
+                suffix: "ago",
+                message: "Just now",
+                countDown: false,
+                showingSeconds: false
+            }));
+        } catch (error) {
+            catchBackgroundException(error, "Error in GithubAPIContainer: fetchEpoch");
+            interval = 10;
+        }
+        try {
+            const response = await retryNTimes(() => Axios.get<VersionResponse | VersionError>(DARKNODE_CLI_ENDPOINT), 2);
+            if (!response.data || response.data.message) {
+                throw new Error(response.data ? response.data.message : "No data returned from Github API.");
             }
-            setTimeout(() => rerender(!r), inNSeconds(loaded, now, interval));
-        })().catch(error => {
-            setTimeout(() => rerender(!r), inNSeconds(loaded, now, interval));
-            catchBackgroundException(error, "Error in epochStore: useEffect > fetchEpoch");
-        });
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [everyNSeconds(loaded, now, interval)]);
+            setLatestCLIVersionFull(response.data.tag_name);
+            setLatestCLIVersion(response.data.tag_name);
+            setLatestCLIVersionDaysAgo(naturalTime(moment(response.data.published_at).unix(), {
+                suffix: "ago",
+                message: "Just now",
+                countDown: false,
+                showingSeconds: false
+            }));
+        } catch (error) {
+            catchBackgroundException(error, "Error in GithubAPIContainer: fetchEpoch");
+            interval = 10;
+        }
+        return interval;
+    };
+    useTaskSchedule(updater);
 
     const isDarknodeUpToDate = useCallback((darknodeVersionFull: string) => {
         try {

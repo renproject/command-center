@@ -2,6 +2,7 @@ import * as React from "react";
 
 import { Blocky } from "@renproject/react-components";
 
+import { isDefined } from "../../../lib/general/isDefined";
 import { Web3Container } from "../../../store/web3Store";
 import { WalletIcons } from "./WalletIcons";
 
@@ -20,7 +21,7 @@ export const LoggedOut: React.FC<Props> = ({ newAddress, onCancel, onConnect }) 
     return <div className="popup no-web3 popup--logged-out">
         <WalletIcons web3BrowserName={web3BrowserName} />
 
-        {newAddress !== null ?
+        {isDefined(newAddress) ?
             <>
                 <h2>Your Web3 account has changed.</h2>
                 <div className="popup--description">

@@ -9,7 +9,7 @@ import { sha3, toChecksumAddress } from "web3-utils";
 import { retryNTimes } from "../../components/renvmPage/renvmContainer";
 import { WaitForTX } from "../../store/networkStateContainer";
 import { catchInteractionException, noCapture } from "../react/errors";
-import { getDarknodePayment, getDarknodeRegistry } from "./contract";
+import { getDarknodePayment, getDarknodeRegistry, getRenToken } from "./contract";
 import { AllTokenDetails, OldToken, Token } from "./tokens";
 
 /**
@@ -81,7 +81,7 @@ export const approveNode = async (
     bond: BigNumber,
     waitForTX: WaitForTX,
 ) => {
-    const ercContract = new (web3.eth.Contract)(renNetwork.addresses.erc.ERC20.abi, renNetwork.addresses.tokens.REN.address);
+    const ercContract = getRenToken(web3, renNetwork);
 
     // Check that the user has sufficient REN for bond
     let ercBalance;
@@ -141,7 +141,7 @@ export const registerNode = async (
 ): Promise<string> => {
     const hardCodedGas = 500000;
 
-    const ercContract = new (web3.eth.Contract)(renNetwork.addresses.erc.ERC20.abi, renNetwork.addresses.tokens.REN.address);
+    const ercContract = getRenToken(web3, renNetwork);
 
     let ercAllowance;
     try {

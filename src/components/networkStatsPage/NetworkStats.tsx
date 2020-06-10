@@ -6,9 +6,11 @@ import { Map, OrderedMap } from "immutable";
 import React, { useEffect, useState } from "react";
 
 import { AllTokenDetails, OldToken, Token } from "../../lib/ethereum/tokens";
+import { isDefined } from "../../lib/general/isDefined";
 import {
     getVolumes, normalizeSeriesVolumes, PeriodResponse, PeriodType, QuotePeriodResponse,
 } from "../../lib/graphQL/volumes";
+import { GraphContainer } from "../../store/graphStore";
 import { NetworkStateContainer } from "../../store/networkStateContainer";
 import { ReactComponent as IconValueLocked } from "../../styles/images/icon-value-locked.svg";
 import { ReactComponent as IconVolume } from "../../styles/images/icon-volume.svg";
@@ -24,7 +26,9 @@ import { TokenChart } from "./TokenChart";
 export const NetworkStats = () => {
     const client = useApolloClient();
 
-    const { quoteCurrency, currentDarknodeCount, tokenPrices } = NetworkStateContainer.useContainer();
+    const { renVM } = GraphContainer.useContainer();
+    const { numberOfDarknodes } = renVM || {};
+    const { quoteCurrency, tokenPrices } = NetworkStateContainer.useContainer();
     const container = RenVMContainer.useContainer();
 
     const updateBlocksInterval = 120 * SECONDS;
@@ -85,7 +89,7 @@ export const NetworkStats = () => {
     const renTokenPriceMap = tokenPrices && tokenPrices.get(OldToken.REN, null);
     const renPrice = (renTokenPriceMap && renTokenPriceMap.get(quoteCurrency, null));
 
-    const b = currentDarknodeCount !== null && renPrice !== null ? new BigNumber(currentDarknodeCount || 0).times(100000).times(renPrice) : null;
+    const b = isDefined(numberOfDarknodes) && isDefined(renPrice) ? numberOfDarknodes.times(100000).times(renPrice) : null;
 
     const [volumePeriod, setVolumePeriod] = useState<PeriodType>(PeriodType.ALL);
     const [lockedPeriod, setLockedPeriod] = useState<PeriodType>(PeriodType.ALL);
@@ -145,7 +149,7 @@ export const NetworkStats = () => {
         mintedTotal = new BigNumber(allPeriod.average.quoteTotalLocked);
     }
 
-    const collateral = <Collateral l={total} minted={mintedTotal} b={b} bRen={new BigNumber(currentDarknodeCount || 0).times(100000)} quoteCurrency={quoteCurrency} />;
+    const collateral = <Collateral l={total} minted={mintedTotal} b={b} bRen={(numberOfDarknodes || new BigNumber(0)).times(100000)} quoteCurrency={quoteCurrency} />;
 
     const volumePeriodSeries = quotePeriodSeries.get(volumePeriod);
     const lockedPeriodSeries = quotePeriodSeries.get(lockedPeriod);

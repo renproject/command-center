@@ -1,6 +1,6 @@
 {
     "testnet": {
-        "0x3973b2acdfac17171315e49ef19a0758b8b6f104": {
+        "curve": {
             "name": "Curve",
             "logo": "/integrators/curve.svg",
             "urlHref": "https://curve.fi",
