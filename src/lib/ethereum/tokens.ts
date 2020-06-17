@@ -112,7 +112,7 @@ export const NewTokenDetails = AllTokenDetails.filter((details) => details.feesT
 
 const coinGeckoURL = `https://api.coingecko.com/api/v3`;
 const coinGeckoParams = `localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`;
-export const getPrices = (): Promise<TokenPrices> =>
+export const getPrices = (previousTokenPrices: TokenPrices | null): Promise<TokenPrices> =>
     AllTokenDetails.toArray().map(([token, tokenDetails]) =>
         ({
             token, responsePromise: Axios.get(
@@ -125,6 +125,10 @@ export const getPrices = (): Promise<TokenPrices> =>
                 const price = Map<Currency, number>((await responsePromise).data.market_data.current_price);
                 prices = prices.set(token, price);
             } catch (error) {
+                const previousPrice = previousTokenPrices && previousTokenPrices.get(token);
+                if (previousPrice) {
+                    prices = prices.set(token, previousPrice);
+                }
                 console.error(error);
             }
             return prices;

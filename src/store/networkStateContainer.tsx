@@ -90,7 +90,7 @@ const useNetworkStateContainer = () => {
 
     const updateTokenPrices = async () => {
         try {
-            setTokenPrices(await getPrices());
+            setTokenPrices(await getPrices(tokenPrices));
         } catch (error) {
             catchBackgroundException(error, "Error in networkActions > updateTokenPrices");
         }
