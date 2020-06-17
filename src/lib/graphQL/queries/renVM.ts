@@ -21,7 +21,7 @@ export interface RawRenVM {
     numberOfDarknodesNextEpoch: string;
     minimumBond: string;
     minimumEpochInterval: string;
-    currentCyclePayoutPercent: string;
+    // currentCyclePayoutPercent: string;
     totalTxCountBTC: string;
     totalLockedBTC: string;
     totalVolumeBTC: string;
@@ -56,7 +56,7 @@ export interface RenVM {
     numberOfDarknodesNextEpoch: BigNumber;
     minimumBond: BigNumber;
     minimumEpochInterval: BigNumber;
-    currentCyclePayoutPercent: BigNumber;
+    // currentCyclePayoutPercent: BigNumber;
     totalTxCountBTC: BigNumber;
     totalLockedBTC: BigNumber;
     totalVolumeBTC: BigNumber;
@@ -83,7 +83,7 @@ export const QUERY_RENVM = gql`
       numberOfDarknodesNextEpoch
       minimumBond
       minimumEpochInterval
-      currentCyclePayoutPercent
+    #   currentCyclePayoutPercent
       deregistrationInterval
       totalTxCountBTC
       totalLockedBTC
@@ -148,7 +148,7 @@ export const queryRenVM = async (client: ApolloClient<object>): Promise<RenVM> =
         numberOfDarknodes: new BigNumber(response.data.renVM.numberOfDarknodes),
         numberOfDarknodesLastEpoch: new BigNumber(response.data.renVM.numberOfDarknodesLastEpoch),
         numberOfDarknodesNextEpoch: new BigNumber(response.data.renVM.numberOfDarknodesNextEpoch),
-        currentCyclePayoutPercent: new BigNumber(response.data.renVM.currentCyclePayoutPercent),
+        // currentCyclePayoutPercent: new BigNumber(response.data.renVM.currentCyclePayoutPercent),
         totalLockedBCH: new BigNumber(response.data.renVM.totalLockedBCH),
         totalLockedBTC: new BigNumber(response.data.renVM.totalLockedBTC),
         totalLockedZEC: new BigNumber(response.data.renVM.totalLockedZEC),

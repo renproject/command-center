@@ -54,15 +54,12 @@ export const BackgroundTasks = withRouter(({ match }: Props) => {
 
     const loggedOutUpdater = async () => {
         if (address) {
-
             try {
                 await (lookForLogout() as unknown as Promise<void>).catch((error) => {
                     catchBackgroundException(error, "Error in BackgroundTasks > loggedOutUpdater");
                 });
-                return 5;
             } catch (error) {
                 catchBackgroundException(error, "Error in BackgroundTasks > loggedOutUpdater");
-                return 5;
             }
         }
         return 5;
@@ -81,7 +78,7 @@ export const BackgroundTasks = withRouter(({ match }: Props) => {
         }
         return 1;
     };
-    useTaskSchedule(operatorStatsUpdater);
+    useTaskSchedule(operatorStatsUpdater, [address]);
 
     const selectedDarknodeUpdater = async () => {
         if (tokenPrices && darknodeID) {
@@ -95,7 +92,7 @@ export const BackgroundTasks = withRouter(({ match }: Props) => {
         }
         return 1;
     };
-    useTaskSchedule(selectedDarknodeUpdater);
+    useTaskSchedule(selectedDarknodeUpdater, [darknodeID]);
 
     return <></>;
 });

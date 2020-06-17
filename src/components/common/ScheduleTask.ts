@@ -5,7 +5,8 @@ const time = (): number => Math.floor(new Date().getTime() / SECONDS);
 
 type ReturnResult<T> = number | { timeout: number, result: T };
 
-export const useTaskSchedule = <T = undefined>(task: () => ReturnResult<T> | Promise<ReturnResult<T>>, errorTimeout = 1) => {
+// tslint:disable-next-line: no-any
+export const useTaskSchedule = <T = undefined>(task: () => ReturnResult<T> | Promise<ReturnResult<T>>, extraDependencies: any[] = [], errorTimeout = 1) => {
     const now = time();
     const [, rerender] = useState(true);
 
@@ -29,6 +30,11 @@ export const useTaskSchedule = <T = undefined>(task: () => ReturnResult<T> | Pro
             return timeout.result;
         }
     }, [task, scheduleNextCall]);
+
+    // Reset last updated if the dependencies have changed.
+    useEffect(() => {
+        setLastUpdated(0);
+    }, extraDependencies);
 
     useEffect(() => {
         if (!shouldUpdated) {

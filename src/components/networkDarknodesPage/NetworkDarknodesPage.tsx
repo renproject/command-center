@@ -24,13 +24,13 @@ export const REN_TOTAL_SUPPLY = new BigNumber(1000000000);
 
 export const NetworkDarknodesPage = () => {
     const { renVM } = GraphContainer.useContainer();
-    const { currentCycle, previousCycle, numberOfDarknodes, numberOfDarknodesLastEpoch, minimumBond, timeUntilNextEpoch, timeSinceLastEpoch, minimumEpochInterval, currentCyclePayoutPercent } = renVM || {};
-    const { pendingTotalInEth, quoteCurrency, numberOfDarknodesNextEpoch } = NetworkStateContainer.useContainer();
+    const { currentCycle, previousCycle, numberOfDarknodes, numberOfDarknodesLastEpoch, numberOfDarknodesNextEpoch, minimumBond, timeUntilNextEpoch, timeSinceLastEpoch, minimumEpochInterval } = renVM || {};
+    const { pendingTotalInEth, quoteCurrency } = NetworkStateContainer.useContainer();
     const { latestCLIVersion, latestCLIVersionDaysAgo } = GithubAPIContainer.useContainer();
 
     const current = currentCycle && pendingTotalInEth.get(currentCycle, undefined);
     const previous = previousCycle && pendingTotalInEth.get(previousCycle, undefined);
-    const currentSummed = current && numberOfDarknodes ? current.times(numberOfDarknodes).div(currentCyclePayoutPercent || 0).times(100) : undefined;
+    const currentSummed = current && numberOfDarknodes ? current.times(numberOfDarknodes) : undefined;
     const previousSummed = previous && numberOfDarknodesLastEpoch ? previous.times(numberOfDarknodesLastEpoch) : undefined;
 
     const [currentTime, setCurrentTime] = React.useState<BigNumber | null>(null);

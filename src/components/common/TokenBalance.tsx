@@ -3,17 +3,17 @@ import * as React from "react";
 import { Currency } from "@renproject/react-components";
 import { BigNumber } from "bignumber.js";
 
-import { AllTokenDetails, OldToken, Token, TokenPrices } from "../../lib/ethereum/tokens";
+import { AllTokenDetails, Token, TokenPrices } from "../../lib/ethereum/tokens";
 import { NetworkStateContainer } from "../../store/networkStateContainer";
 
 interface Props {
-    token: Token | OldToken;
+    token: Token;
     amount: number | string | BigNumber;
     convertTo?: Currency;
     digits?: number; // Always shows this many digits (e.g. for 3 d.p.: 0.100, 0.111)
 }
 
-const defaultDigits = (quoteCurrency: Currency | Token | OldToken) => {
+const defaultDigits = (quoteCurrency: Currency | Token) => {
     let digits;
     switch (quoteCurrency) {
         case Currency.BTC:
@@ -30,15 +30,15 @@ const defaultDigits = (quoteCurrency: Currency | Token | OldToken) => {
     return digits;
 };
 
-export const tokenToReadable = (amount: number | string | BigNumber, token: Token | OldToken): BigNumber => {
-    const tokenDetails = AllTokenDetails.get(token as Token, undefined);
+export const tokenToReadable = (amount: number | string | BigNumber, token: Token): BigNumber => {
+    const tokenDetails = AllTokenDetails.get(token, undefined);
     const decimals = tokenDetails ? new BigNumber(tokenDetails.decimals.toString()).toNumber() : 0;
 
     return new BigNumber(amount).div(new BigNumber(10).exponentiatedBy(decimals)).decimalPlaces(defaultDigits(token));
 };
 
-export const tokenToQuote = (amount: number | string | BigNumber, token: Token | OldToken, quoteCurrency: Currency, tokenPrices: TokenPrices): BigNumber => {
-    const tokenDetails = AllTokenDetails.get(token as Token, undefined);
+export const tokenToQuote = (amount: number | string | BigNumber, token: Token, quoteCurrency: Currency, tokenPrices: TokenPrices): BigNumber => {
+    const tokenDetails = AllTokenDetails.get(token, undefined);
     const decimals = tokenDetails ? new BigNumber(tokenDetails.decimals.toString()).toNumber() : 0;
     const prices = tokenPrices.get(token);
 
@@ -54,7 +54,7 @@ export const tokenToQuote = (amount: number | string | BigNumber, token: Token |
 export const TokenBalance: React.FC<Props> = ({ amount, token, convertTo, digits }) => {
     const { tokenPrices } = NetworkStateContainer.useContainer();
 
-    const tokenDetails = AllTokenDetails.get(token as Token, undefined);
+    const tokenDetails = AllTokenDetails.get(token, undefined);
     const decimals = tokenDetails ? new BigNumber(tokenDetails.decimals.toString()).toNumber() : 0;
 
     const amountBN = new BigNumber(amount)

@@ -5,7 +5,7 @@ import BigNumber from "bignumber.js";
 import { Map, OrderedMap } from "immutable";
 import React, { useEffect, useState } from "react";
 
-import { AllTokenDetails, OldToken, Token } from "../../lib/ethereum/tokens";
+import { AllTokenDetails, Token } from "../../lib/ethereum/tokens";
 import { isDefined } from "../../lib/general/isDefined";
 import {
     getVolumes, normalizeSeriesVolumes, PeriodResponse, PeriodType, QuotePeriodResponse,
@@ -86,7 +86,7 @@ export const NetworkStats = () => {
 
     lockedBalances = lockedBalances.sortBy((_value, key) => Object.keys(Token).indexOf(key));
 
-    const renTokenPriceMap = tokenPrices && tokenPrices.get(OldToken.REN, null);
+    const renTokenPriceMap = tokenPrices && tokenPrices.get(Token.REN, null);
     const renPrice = (renTokenPriceMap && renTokenPriceMap.get(quoteCurrency, null));
 
     const b = isDefined(numberOfDarknodes) && isDefined(renPrice) ? numberOfDarknodes.times(100000).times(renPrice) : null;
@@ -181,7 +181,7 @@ export const NetworkStats = () => {
                             <div className="overview--bottom">
                                 <StatTabs selected={volumeTab} onChange={setVolumeTab} volumePeriod={volumePeriod} assetsPeriod={volumePeriod} />
                                 {volumeTab === StatTab.History ?
-                                    <HistoryChart graphType={"PeriodVolume"} periodSeries={quotePeriodSeries.get(volumePeriod)} quoteCurrency={quoteCurrency} /> :
+                                    <HistoryChart graphType={"TotalVolume"} periodSeries={quotePeriodSeries.get(volumePeriod)} quoteCurrency={quoteCurrency} /> :
                                     <TokenChart graphType={"Volume"} quoteCurrency={quoteCurrency} periodSeries={quotePeriodSeries.get(volumePeriod)} />
                                 }
                             </div>

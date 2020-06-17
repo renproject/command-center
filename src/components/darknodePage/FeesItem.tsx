@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Loading } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 
-import { AllTokenDetails, OldToken, Token } from "../../lib/ethereum/tokens";
+import { AllTokenDetails, Token } from "../../lib/ethereum/tokens";
 import { NetworkStateContainer } from "../../store/networkStateContainer";
 import { Web3Container } from "../../store/web3Store";
 
@@ -13,7 +13,7 @@ const minimumShiftedAmount = 0.0004;
 
 interface Props {
     disabled: boolean;
-    token: Token | OldToken;
+    token: Token;
     amount: string | BigNumber;
     darknodeID: string;
 }
@@ -31,9 +31,9 @@ export const FeesItem: React.FC<Props> = ({ darknodeID, token, amount, disabled 
     const handleWithdraw = React.useCallback(async (): Promise<void> => {
         setLoading(true);
 
-        if (address && tokenDetails && !tokenDetails.old) {
+        if (address && tokenDetails) {
             try {
-                await withdrawReward(darknodeID, token as Token);
+                await withdrawReward(darknodeID, token);
             } catch (error) {
                 console.error(error);
                 setLoading(false);
@@ -62,7 +62,7 @@ export const FeesItem: React.FC<Props> = ({ darknodeID, token, amount, disabled 
         <button
             title={title}
             className={["withdraw-fees", isDisabled ? "withdraw-fees-disabled" : ""].join(" ")}
-            disabled={isDisabled || !tokenDetails || tokenDetails.old}
+            disabled={isDisabled || !tokenDetails || !tokenDetails.feesToken}
             onClick={isDisabled ? undefined : handleWithdraw}
         >
             {loading ? <Loading alt /> : <FontAwesomeIcon icon={faChevronRight} pull="left" />}

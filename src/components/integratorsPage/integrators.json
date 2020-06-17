@@ -17,10 +17,7 @@
             "url": "Gateway Staging"
         },
         "0x40f41fd6f5fb0dd1bf7e05e3a07a2ac56ac6fe11": {
-            "name": "WBTC Cafe",
-            "logo": "/integrators/wbtc.svg",
-            "urlHref": "https://wbtc.cafe",
-            "url": "wbtc.cafe"
+            "url": "Etherscan - WBTCCDPProxy"
         },
         "0x3aa969d343bd6ae66c4027bb61a382dc96e88150": {
             "url": "Etherscan - Basic"
@@ -66,10 +63,7 @@
     },
     "mainnet": {
         "0xc633576775ab431ff627746d2c4af6686c4c719c": {
-            "name": "WBTC Cafe",
-            "logo": "/integrators/wbtc.svg",
-            "urlHref": "https://wbtc.cafe",
-            "url": "wbtc.cafe"
+            "url": "Etherscan - WBTCCDPProxy"
         },
         "curve": {
             "name": "Curve",

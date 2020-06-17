@@ -40,7 +40,6 @@ export const TopUpController: React.FC<Props> = ({ darknodeID }) => {
     };
 
     const updateTraderBalance = async (): Promise<BigNumber> => {
-
         let traderBalance;
         if (!address) {
             traderBalance = new BigNumber(0);

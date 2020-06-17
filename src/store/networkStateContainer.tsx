@@ -11,16 +11,16 @@ import { WithdrawPopup } from "../components/common/popups/WithdrawPopup";
 import { TokenBalance } from "../components/common/TokenBalance";
 import { retryNTimes } from "../components/renvmPage/renvmContainer";
 import { NodeStatistics } from "../lib/darknode/jsonrpc";
-import { getDarknodePayment, getDarknodeRegistry } from "../lib/ethereum/contract";
+import { getDarknodePayment } from "../lib/ethereum/contract";
 import {
-    calculateSecondsPerBlock, DarknodeFeeStatus, fetchDarknodeDetails, getOperatorDarknodes, NULL,
-    RegistrationStatus, sumUpFeeMap,
+    DarknodeFeeStatus, fetchDarknodeDetails, getOperatorDarknodes, NULL, RegistrationStatus,
+    sumUpFeeMap,
 } from "../lib/ethereum/contractReads";
 import {
     approveNode, deregisterNode, fundNode, refundNode, registerNode, withdrawToken,
 } from "../lib/ethereum/contractWrites";
 import {
-    AllTokenDetails, getPrices, NewTokenDetails, OldToken, Token, TokenPrices,
+    AllTokenDetails, getPrices, NewTokenDetails, Token, TokenPrices,
 } from "../lib/ethereum/tokens";
 import { isDefined } from "../lib/general/isDefined";
 import { safePromiseAllMap } from "../lib/general/promiseAll";
@@ -37,7 +37,6 @@ export class DarknodesState extends Record({
     publicKey: "",
     ethBalance: new BigNumber(0),
     feesEarned: OrderedMap<Token, BigNumber>(),
-    oldFeesEarned: OrderedMap<OldToken, BigNumber>(),
     feesEarnedTotalEth: new BigNumber(0),
 
     cycleStatus: OrderedMap<string, DarknodeFeeStatus>(),
@@ -61,8 +60,6 @@ const useNetworkStateContainer = () => {
     const { renVM, fetchRenVM } = GraphContainer.useContainer();
     const client = useApolloClient();
 
-    const [secondsPerBlock, setSecondsPerBlock] = useState(null as number | null);
-
     const [tokenPrices, setTokenPrices] = useState(null as TokenPrices | null);
 
     const [registrySync, setRegistrySync] = useState({ progress: 0, target: 0 });
@@ -74,8 +71,6 @@ const useNetworkStateContainer = () => {
     // tslint:disable-next-line: no-any
     const [transactions, setTransactions] = useState(OrderedMap<string, PromiEvent<any>>());
     const [confirmations, setConfirmations] = useState(OrderedMap<string, number>());
-
-    const [numberOfDarknodesNextEpoch, setNumberOfDarknodesNextEpoch] = useState<BigNumber | null>(null);
 
     const [pendingRewards, setPendingRewards] = useState(OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber>>());
     const [pendingTotalInEth, setPendingTotalInEth] = useState(OrderedMap<string /* cycle */, BigNumber>());
@@ -100,26 +95,6 @@ const useNetworkStateContainer = () => {
             catchBackgroundException(error, "Error in networkActions > updateTokenPrices");
         }
     };
-
-    const updateSecondsPerBlock = async () => {
-        const newSecondsPerBlock = await calculateSecondsPerBlock(web3);
-        if (isDefined(newSecondsPerBlock)) {
-            setSecondsPerBlock(newSecondsPerBlock);
-        }
-    };
-
-    // const updateDarknodeBalanceHistory = async (
-    //     darknodeID: string,
-    //     previousHistory: OrderedMap<number, BigNumber> | null,
-    //     historyPeriod: HistoryPeriod,
-    //     useSecondsPerBlock: number,
-    // ) => {
-    //     const balanceHistory = await fetchDarknodeBalanceHistory(web3, darknodeID, previousHistory, historyPeriod, useSecondsPerBlock);
-    //     setBalanceHistories(latestBalanceHistories => latestBalanceHistories.set(
-    //         darknodeID,
-    //         balanceHistory,
-    //     ));
-    // };
 
     const hideDarknode = (darknodeID: string, operator: string) => {
         try {
@@ -263,14 +238,6 @@ const useNetworkStateContainer = () => {
      */
     const fetchCycleAndPendingRewards = async (latestRenVM: RenVM) => {
         const darknodePayment = getDarknodePayment(web3, renNetwork);
-        const darknodeRegistry = getDarknodeRegistry(web3, renNetwork);
-
-        try {
-            const darknodesNextEpoch = await darknodeRegistry.methods.numDarknodesNextEpoch().call();
-            setNumberOfDarknodesNextEpoch(new BigNumber(darknodesNextEpoch.toString()));
-        } catch (error) {
-            // Ignore error;
-        }
 
         let newPendingRewards = OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber>>();
 
@@ -278,20 +245,11 @@ const useNetworkStateContainer = () => {
             NewTokenDetails.map(async (_tokenDetails, token) => {
                 try {
                     const tokenAddress = token === Token.ETH ? "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" : renNetwork.addresses.tokens[token].address;
-                    let previousCycleRewardShareBN;
-                    if (token === Token.BTC) {
-                        previousCycleRewardShareBN = renVM && renVM.currentEpoch.rewardShareBTC;
-                    } else if (token === Token.ZEC) {
-                        previousCycleRewardShareBN = renVM && renVM.currentEpoch.rewardShareZEC;
-                    } else if (token === Token.BCH) {
-                        previousCycleRewardShareBN = renVM && renVM.currentEpoch.rewardShareBCH;
-                    } else {
-                        previousCycleRewardShareBN = await retryNTimes(async () => await darknodePayment.methods.previousCycleRewardShare(tokenAddress).call(), 2);
-                    }
-                    if (previousCycleRewardShareBN === null) {
-                        return new BigNumber(0);
-                    }
-                    return new BigNumber(previousCycleRewardShareBN.toString()).decimalPlaces(0);
+                    if (renVM && token === Token.BTC) return renVM.currentEpoch.rewardShareBTC.decimalPlaces(0);
+                    if (renVM && token === Token.ZEC) return renVM.currentEpoch.rewardShareZEC.decimalPlaces(0);
+                    if (renVM && token === Token.BCH) return renVM.currentEpoch.rewardShareBCH.decimalPlaces(0);
+                    const previousCycleRewardShareBN = await retryNTimes(async () => await darknodePayment.methods.previousCycleRewardShare(tokenAddress).call(/**/), 2);
+                    return new BigNumber((previousCycleRewardShareBN || new BigNumber(0)).toString()).decimalPlaces(0);
                 } catch (error) {
                     console.error(`Error fetching rewards for ${token}`, error);
                     return new BigNumber(0);
@@ -311,7 +269,7 @@ const useNetworkStateContainer = () => {
                     if (currentCycleRewardPool === null) {
                         return new BigNumber(0);
                     }
-                    return new BigNumber((currentCycleRewardPool).toString()).div(100).decimalPlaces(0).times(latestRenVM.currentCyclePayoutPercent).div(latestRenVM.numberOfDarknodes).decimalPlaces(0);
+                    return new BigNumber((currentCycleRewardPool).toString()).decimalPlaces(0).div(latestRenVM.numberOfDarknodes).decimalPlaces(0);
                 } catch (error) {
                     console.error(`Error fetching rewards for ${token}`, error);
                     return new BigNumber(0);
@@ -451,7 +409,7 @@ const useNetworkStateContainer = () => {
 
     const showWithdrawToken = async (
         darknodeID: string,
-        token: Token | OldToken,
+        token: Token,
     ) => new Promise(async (resolve, reject) => {
 
         const tokenDetails = AllTokenDetails.get(token);
@@ -482,7 +440,7 @@ const useNetworkStateContainer = () => {
         if (tokenDetails.wrapped) {
             setPopup({
                 popup: <WithdrawPopup
-                    token={token as Token}
+                    token={token}
                     withdraw={withdraw}
                     onDone={onDone}
                     onCancel={onCancel}
@@ -698,11 +656,9 @@ const useNetworkStateContainer = () => {
     };
 
     return {
-        secondsPerBlock,
         tokenPrices,
         registrySync,
         darknodeDetails,
-        // balanceHistories,
         transactions, setTransactions,
         confirmations,
         pendingRewards,
@@ -716,8 +672,6 @@ const useNetworkStateContainer = () => {
         withdrawAddresses,
 
         updateTokenPrices,
-        updateSecondsPerBlock,
-        // updateDarknodeBalanceHistory,
         hideDarknode,
         unhideDarknode,
         addRegisteringDarknode,
@@ -734,8 +688,6 @@ const useNetworkStateContainer = () => {
         showDeregisterPopup,
         showRefundPopup,
         showFundPopup,
-
-        numberOfDarknodesNextEpoch,
     };
 };
 

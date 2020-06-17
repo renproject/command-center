@@ -4,7 +4,6 @@ import { ApolloClient } from "apollo-boost";
 import BigNumber from "bignumber.js";
 import { OrderedMap, OrderedSet } from "immutable";
 import Web3 from "web3";
-import { Block } from "web3-eth";
 import { sha3, toChecksumAddress } from "web3-utils";
 
 import { getLightnode } from "../../components/networkDarknodesPage/mapContainer";
@@ -19,7 +18,7 @@ import { RenVM } from "../graphQL/queries/renVM";
 import { catchBackgroundException } from "../react/errors";
 import { getDarknodePayment, getDarknodeRegistry } from "./contract";
 import { getDarknodeStatus, isRegisteredInEpoch } from "./darknodeStatus";
-import { NewTokenDetails, OldToken, Token, TokenPrices } from "./tokens";
+import { NewTokenDetails, Token, TokenPrices } from "./tokens";
 
 export const NULL = "0x0000000000000000000000000000000000000000";
 
@@ -62,108 +61,6 @@ export enum RegistrationStatus {
     Deregistered = "awaiting refund period",
     Refundable = "refundable",
 }
-
-/**
- * Estimates the number of seconds per block for the network.
- *
- * @param web3 A Web3 instance.
- * @returns A promise to the estimate or null.
- */
-export const calculateSecondsPerBlock = async (
-    web3: Web3,
-): Promise<number | null> => {
-    const sampleSize = 1000;
-
-    const fetchedBlockNumber = await web3.eth.getBlockNumber();
-    let currentBlockNumber = fetchedBlockNumber;
-    let currentBlock: Block | null = null;
-    // If current block isn't know yet, try previous block, up to 10 times
-    while (currentBlock === null && currentBlockNumber > fetchedBlockNumber - 10) {
-        currentBlock = await web3.eth.getBlock(currentBlockNumber);
-        currentBlockNumber -= 1;
-    }
-    const previousBlock: Block | null = await web3.eth.getBlock(currentBlockNumber - sampleSize) as Block | null;
-
-    if (isDefined(currentBlock) && isDefined(previousBlock)) {
-        const currentTimestamp = parseInt(currentBlock.timestamp.toString(), 10);
-        const previousTimestamp = parseInt(previousBlock.timestamp.toString(), 10);
-        return Math.floor((currentTimestamp - previousTimestamp) / sampleSize);
-    }
-    return null;
-};
-
-export const HistoryIterations = 5;
-
-// export enum HistoryPeriod {
-//     Day = 60 * 60 * 24,
-//     Week = Day * 7,
-//     Month = Week * 4,
-//     HalfYear = Week * 26,
-//     Year = Week * 52,
-// }
-
-// /**
-//  * Given a history period, retrieves the darknode's balance history for
-//  * intervals in the period.
-//  *
-//  * @param web3 A Web3 instance.
-//  * @param darknodeID The ID of the darknode as a hex string.
-//  * @param previousHistory The previous data-points so we don't repeat requests.
-//  * @param historyPeriod The history period to fetch the balance history for.
-//  * @param secondsPerBlock An estimate of the time between blocks in the network.
-//  * @returns Returns a promise to a map from block numbers to the corresponding
-//  *          balance.
-//  */
-// export const fetchDarknodeBalanceHistory = async (
-//     web3: Web3,
-//     darknodeID: string,
-//     previousHistory: OrderedMap<number, BigNumber> | null,
-//     historyPeriod: HistoryPeriod,
-//     secondsPerBlock: number,
-// ): Promise<OrderedMap<number, BigNumber>> => {
-//     let balanceHistory = previousHistory || OrderedMap<number, BigNumber>();
-
-//     // If the page is kept open, the history data will keep growing, so we limit
-//     // it to 200 entries.
-//     if (balanceHistory.size > 200) {
-//         balanceHistory = OrderedMap<number, BigNumber>();
-//     }
-
-//     const currentBlock = await web3.eth.getBlockNumber();
-
-//     const jump = Math.floor((historyPeriod / secondsPerBlock) / HistoryIterations);
-
-//     for (let i = 0; i < HistoryIterations; i++) {
-//         // Move back by `jump` blocks
-//         let block = currentBlock - i * jump;
-
-//         // ...
-//         block = block - block % jump;
-
-//         if (!balanceHistory.has(block)) {
-//             const blockBalance = await web3.eth.getBalance(darknodeID, block) as string | null;
-
-//             if (isDefined(blockBalance)) {
-//                 const balance = new BigNumber(blockBalance.toString());
-//                 balanceHistory = balanceHistory.set(block, balance);
-//             }
-//         }
-//     }
-
-//     // Also add most recent block
-//     if (!balanceHistory.has(currentBlock)) {
-//         const currentBalance = await web3.eth.getBalance(darknodeID, currentBlock) as string | null;
-
-//         if (isDefined(currentBalance)) {
-//             const balance = new BigNumber(currentBalance.toString());
-//             balanceHistory = balanceHistory.set(currentBlock, balance);
-//         }
-//     }
-
-//     balanceHistory = balanceHistory.sortBy((_: BigNumber, value: number) => value);
-
-//     return balanceHistory;
-// };
 
 /**
  * Find the darknodes by reading the logs of the Darknode Registry.
@@ -279,17 +176,6 @@ export const getOperatorDarknodes = async (
 
     const darknodeRegistry = getDarknodeRegistry(web3, renNetwork);
 
-    // Retrieve darknodes that are pending registration.
-
-    // Get Registration events.
-
-    // We may want to only look at the current epoch first, to retrieve pending
-    // registrations, before looking for deregistrations across all blocks.
-    // Only look from the last epoch, since we are
-    // only interested in newly registered darknodes.
-    // const epoch = await darknodeRegistry.methods.currentEpoch().call();
-    // const fromBlock = epoch ? `0x${new BigNumber(epoch.blocknumber.toString()).toString(16)}` : renNetwork.addresses.ren.DarknodeRegistry.block || "0x00";
-
     operatorAddress = toChecksumAddress(operatorAddress);
 
     const fromBlock = renNetwork.addresses.ren.DarknodeRegistry.block || "0x00";
@@ -301,7 +187,7 @@ export const getOperatorDarknodes = async (
             return [darknodeID, operator];
         } else {
             // For backwards compatibility.
-            return [darknodeID, await retryNTimes(async () => await darknodeRegistry.methods.getDarknodeOperator(darknodeID).call(), 2)] as [string, string];
+            return [darknodeID, await retryNTimes(async () => await darknodeRegistry.methods.getDarknodeOperator(darknodeID).call(/**/), 2)] as [string, string];
         }
     }).toArray();
 
@@ -327,7 +213,7 @@ export const getOperatorDarknodes = async (
 
 // Sum up fees into the total ETH value (in wei).
 export const sumUpFeeMap = (
-    feesEarned: OrderedMap<Token | OldToken, BigNumber>,
+    feesEarned: OrderedMap<Token, BigNumber>,
     tokenPrices: TokenPrices,
 ): [BigNumber, OrderedMap<Token, BigNumber>] => {
 
@@ -363,6 +249,7 @@ export const sumUpFeeMap = (
 const getBalances = async (
     web3: Web3,
     renNetwork: RenNetworkDetails,
+    darknode: Darknode | null,
     darknodeID: string,
 ): Promise<OrderedMap<Token, BigNumber>> => {
     const darknodePayment = getDarknodePayment(web3, renNetwork);
@@ -373,16 +260,19 @@ const getBalances = async (
 
     const balances = await safePromiseAllList(
         NewTokenDetails.map(async (_tokenDetails, token) => {
-            let balance1;
+            let tokenBalance;
             try {
-                const balance1Call = await retryNTimes(async () => await darknodePayment.methods.darknodeBalances(darknodeID, renNetwork.addresses.tokens[token].address).call(), 2);
-                balance1 = new BigNumber((balance1Call || "0").toString());
+                if (darknode && token === Token.BTC) return { balance: darknode.balanceBTC, token };
+                if (darknode && token === Token.ZEC) return { balance: darknode.balanceZEC, token };
+                if (darknode && token === Token.BCH) return { balance: darknode.balanceBCH, token };
+                const balance1Call = await retryNTimes(async () => await darknodePayment.methods.darknodeBalances(darknodeID, renNetwork.addresses.tokens[token].address).call(/**/), 2);
+                tokenBalance = new BigNumber((balance1Call || "0").toString());
             } catch (error) {
                 catchBackgroundException(error, "Error in contractReads > darknodeBalances");
-                balance1 = new BigNumber(0);
+                tokenBalance = new BigNumber(0);
             }
             return {
-                balance: balance1, // .plus(balance2),
+                balance: tokenBalance, // .plus(balance2),
                 token: token as Token | null,
             };
         }).valueSeq().toList(),
@@ -408,39 +298,12 @@ export enum DarknodeFeeStatus {
     NOT_WHITELISTED = "NOT_WHITELISTED",
 }
 
-const getDarknodeFees = async (
-    web3: Web3,
-    renNetwork: RenNetworkDetails,
-    darknodeID: string,
-    tokenPrices: TokenPrices | null,
-) => {
-    // Get earned fees
-    const feesEarned = await getBalances(web3, renNetwork, darknodeID);
-    const oldFeesEarned = OrderedMap<OldToken, BigNumber>();
-    let feesEarnedTotalEth = new BigNumber(0);
-    if (tokenPrices) {
-        //
-        // tslint:disable-next-line: whitespace
-        const [oldFeesInEth,] = sumUpFeeMap(oldFeesEarned, tokenPrices);
-        // tslint:disable-next-line: whitespace
-        const [newFeesInEth,] = sumUpFeeMap(feesEarned, tokenPrices);
-        feesEarnedTotalEth = newFeesInEth.plus(oldFeesInEth);
-    }
-
-    return { feesEarned, oldFeesEarned, feesEarnedTotalEth };
-};
-
 const getDarknodeCycleRewards = async (
     renVM: RenVM,
     darknode: Darknode | null,
-    web3: Web3,
-    renNetwork: RenNetworkDetails,
-    darknodeID: string,
     registrationStatus: RegistrationStatus,
 ) => {
     // Cycle status ////////////////////////////////////////////////////////////
-
-    const darknodePayment = getDarknodePayment(web3, renNetwork);
 
     let currentStatus;
     let previousStatus;
@@ -449,7 +312,7 @@ const getDarknodeCycleRewards = async (
     if (!isRegisteredInPreviousEpoch) {
         previousStatus = DarknodeFeeStatus.NOT_WHITELISTED;
     } else {
-        const claimed = await retryNTimes(async () => await darknodePayment.methods.rewardClaimed(darknodeID, renVM.previousCycle.toString()).call(), 2);
+        const claimed = darknode && (renVM.previousCycle === darknode.lastClaimedEpoch || renVM.previousCycle === darknode.previousLastClaimedEpoch);
         if (claimed) {
             previousStatus = DarknodeFeeStatus.CLAIMED;
         } else {
@@ -495,23 +358,26 @@ export const fetchDarknodeDetails = async (
 
     const darknode = await queryDarknode(client, darknodeID);
 
+    // Get registration status
+    const registrationStatus = darknode ? getDarknodeStatus(darknode, renVM) : RegistrationStatus.Unregistered;
+
     // Get eth Balance
     const πEthBalance = web3.eth.getBalance(darknodeID)
         .then((ethBalanceBN) => ethBalanceBN ? new BigNumber(ethBalanceBN.toString()) : new BigNumber(0))
         .catch(() => new BigNumber(0));
 
-    const πFees = getDarknodeFees(web3, renNetwork, darknodeID, tokenPrices);
-
     // Call queryStats
     const πNodeStatistics = queryStat(getLightnode(renNetwork), darknodeIDHexToBase58(darknodeID))
         .catch((error) => /* ignore */ null);
 
-    // Get registration status
-    const registrationStatus = darknode ? getDarknodeStatus(darknode, renVM) : RegistrationStatus.Unregistered;
+    const πCycleStatuses = getDarknodeCycleRewards(renVM, darknode, registrationStatus);
 
-    const πCycleStatuses = getDarknodeCycleRewards(renVM, darknode, web3, renNetwork, darknodeID, registrationStatus);
-
-    const { feesEarned, oldFeesEarned, feesEarnedTotalEth } = await πFees;
+    // Get earned fees
+    const feesEarned = await getBalances(web3, renNetwork, darknode, darknodeID);
+    let feesEarnedTotalEth = new BigNumber(0);
+    if (tokenPrices) {
+        [feesEarnedTotalEth,] = sumUpFeeMap(feesEarned, tokenPrices);
+    }
 
     return new DarknodesState({
         ID: darknodeID,
@@ -519,7 +385,6 @@ export const fetchDarknodeDetails = async (
         publicKey: darknode ? darknode.publicKey : undefined,
         ethBalance: await πEthBalance,
         feesEarned,
-        oldFeesEarned,
         feesEarnedTotalEth,
 
         cycleStatus: await πCycleStatuses,

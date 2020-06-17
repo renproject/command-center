@@ -4,8 +4,8 @@ import { Currency, CurrencyIcon, TokenIcon } from "@renproject/react-components"
 import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
 
-import { DarknodeFeeStatus } from "../../../lib/ethereum/contractReads";
-import { AllTokenDetails, OldToken, Token } from "../../../lib/ethereum/tokens";
+import { DarknodeFeeStatus, RegistrationStatus } from "../../../lib/ethereum/contractReads";
+import { AllTokenDetails, Token } from "../../../lib/ethereum/tokens";
 import { classNames } from "../../../lib/react/className";
 import { GraphContainer } from "../../../store/graphStore";
 import { DarknodesState, NetworkStateContainer } from "../../../store/networkStateContainer";
@@ -21,8 +21,8 @@ enum Tab {
     Pending = "Pending",
 }
 
-const mergeFees = (left: OrderedMap<Token | OldToken, BigNumber>, right: OrderedMap<Token | OldToken, BigNumber>) => {
-    let newFees = OrderedMap<Token | OldToken, BigNumber>();
+const mergeFees = (left: OrderedMap<Token, BigNumber>, right: OrderedMap<Token, BigNumber>) => {
+    let newFees = OrderedMap<Token, BigNumber>();
     for (const token of left.keySeq().concat(right.keySeq()).toArray()) {
         newFees = newFees.set(token, new BigNumber(0).plus(left.get(token, new BigNumber(0)).plus(right.get(token, new BigNumber(0)))));
     }
@@ -30,7 +30,7 @@ const mergeFees = (left: OrderedMap<Token | OldToken, BigNumber>, right: Ordered
 };
 
 interface RowProps {
-    token: Token | OldToken;
+    token: Token;
     isOperator: boolean;
     darknodeDetails: DarknodesState;
     tab: Tab;
@@ -62,7 +62,7 @@ const FeesBlockRow: React.FC<RowProps> = ({ token, quoteCurrency, balance, isOpe
                     {quoteCurrency.toUpperCase()}
                 </span>
             </td>
-            {tab === Tab.Withdrawable && isOperator ? <td>
+            {tab === Tab.Withdrawable && isOperator && (darknodeDetails.registrationStatus === RegistrationStatus.Registered || darknodeDetails.registrationStatus === RegistrationStatus.DeregistrationPending) ? <td>
                 <FeesItem
                     disabled={tab !== Tab.Withdrawable}
                     token={token}
@@ -103,7 +103,7 @@ export const FeesBlock: React.FC<Props> = ({ darknodeDetails, isOperator }) => {
     const showPreviousPending = previousCycle && darknodeDetails && darknodeDetails.cycleStatus.get(previousCycle) === DarknodeFeeStatus.NOT_CLAIMED;
     const showCurrentPending = currentCycle && darknodeDetails && darknodeDetails.cycleStatus.get(currentCycle) === DarknodeFeeStatus.NOT_CLAIMED;
     let pendingTotal = new BigNumber(0);
-    let summedPendingRewards = OrderedMap<Token | OldToken, BigNumber>();
+    let summedPendingRewards = OrderedMap<Token, BigNumber>();
     if (previousCycle && showPreviousPending) {
         pendingTotal = pendingTotal.plus(pendingTotalInEth.get(previousCycle, new BigNumber(0)));
         summedPendingRewards = pendingRewards.get(previousCycle, OrderedMap());
@@ -119,7 +119,7 @@ export const FeesBlock: React.FC<Props> = ({ darknodeDetails, isOperator }) => {
         );
     }
 
-    let fees = OrderedMap<Token | OldToken, BigNumber>();
+    let fees = OrderedMap<Token, BigNumber>();
     if (darknodeDetails) {
         fees = tab === Tab.Withdrawable ? darknodeDetails.feesEarned :
             tab === Tab.Pending ? summedPendingRewards :
@@ -146,10 +146,12 @@ export const FeesBlock: React.FC<Props> = ({ darknodeDetails, isOperator }) => {
 
             {darknodeDetails ? <BlockBody>
                 <Tabs
-                    tabs={{
+                    tabs={darknodeDetails.registrationStatus === RegistrationStatus.Registered || darknodeDetails.registrationStatus === RegistrationStatus.DeregistrationPending ? {
                         Withdrawable: <></>,
                         Pending: <></>,
-                    }}
+                    } : {
+                            Withdrawable: <></>,
+                        }}
                     onTab={onTab}
                 >
                     <div className="block--advanced">
@@ -192,7 +194,7 @@ export const FeesBlock: React.FC<Props> = ({ darknodeDetails, isOperator }) => {
                                                 .times(100)
                                                 .decimalPlaces(2)
                                                 .toNumber() || 0,
-                                        })).sortBy(item => -item.percent).toArray().map(([token, { balance, percent }]: [Token | OldToken, { balance: BigNumber, percent: number }], i) => {
+                                        })).sortBy(item => -item.percent).toArray().map(([token, { balance, percent }]: [Token, { balance: BigNumber, percent: number }], i) => {
                                             return <FeesBlockRow
                                                 key={token}
                                                 token={token}

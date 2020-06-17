@@ -4,13 +4,14 @@ import RenSDK from "@renproject/ren";
 import BigNumber from "bignumber.js";
 import Web3 from "web3";
 import { TransactionReceipt } from "web3-core";
+import { AbiCoder } from "web3-eth-abi";
 import { sha3, toChecksumAddress } from "web3-utils";
 
 import { retryNTimes } from "../../components/renvmPage/renvmContainer";
 import { WaitForTX } from "../../store/networkStateContainer";
 import { catchInteractionException, noCapture } from "../react/errors";
 import { getDarknodePayment, getDarknodeRegistry, getRenToken } from "./contract";
-import { AllTokenDetails, OldToken, Token } from "./tokens";
+import { AllTokenDetails, Token } from "./tokens";
 
 /**
  * Top-up the ETH balance of a darknode.
@@ -324,7 +325,7 @@ export const withdrawToken = (
     renNetwork: RenNetworkDetails,
     address: string | null,
     darknodeID: string,
-    token: Token | OldToken,
+    token: Token,
     waitForTX: WaitForTX,
 ) => async (withdrawAddress?: string) => {
 
@@ -363,16 +364,18 @@ export const withdrawToken = (
             }
         }
 
+        const abiCoder = new AbiCoder();
+
         let value = new BigNumber(0);
         for (const log of receipt.logs) {
             if (log.topics[0] === sha3("Transfer(address,address,uint256)")) {
-                const event = web3.eth.abi.decodeLog(TransferEventABI, log.data, (log.topics as string[]).slice(1));
+                const event = abiCoder.decodeLog(TransferEventABI, log.data, (log.topics as string[]).slice(1));
                 if (toChecksumAddress(event.from) === toChecksumAddress(renNetwork.addresses.ren.DarknodePaymentStore.address) && toChecksumAddress(event.to) === toChecksumAddress(address)) {
                     value = value.plus(event.value);
                 }
             }
         }
 
-        await burn(web3, renNetwork, address, token as Token, value, withdrawAddress, waitForTX);
+        await burn(web3, renNetwork, address, token, value, withdrawAddress, waitForTX);
     }
 };
