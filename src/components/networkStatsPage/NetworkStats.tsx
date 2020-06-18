@@ -12,6 +12,7 @@ import {
 } from "../../lib/graphQL/volumes";
 import { GraphContainer } from "../../store/graphStore";
 import { NetworkStateContainer } from "../../store/networkStateContainer";
+import { Web3Container } from "../../store/web3Store";
 import { ReactComponent as IconValueLocked } from "../../styles/images/icon-value-locked.svg";
 import { ReactComponent as IconVolume } from "../../styles/images/icon-volume.svg";
 import { SECONDS } from "../common/BackgroundTasks";
@@ -26,6 +27,7 @@ import { TokenChart } from "./TokenChart";
 export const NetworkStats = () => {
     const client = useApolloClient();
 
+    const { web3, renNetwork } = Web3Container.useContainer();
     const { renVM } = GraphContainer.useContainer();
     const { numberOfDarknodes } = renVM || {};
     const { quoteCurrency, tokenPrices } = NetworkStateContainer.useContainer();
@@ -116,7 +118,7 @@ export const NetworkStats = () => {
 
                     let response: PeriodResponse;
                     try {
-                        response = await getVolumes(client, period);
+                        response = await getVolumes(renNetwork, client, period, await web3.eth.getBlockNumber());
                     } catch (error) {
                         console.error(error);
                     }

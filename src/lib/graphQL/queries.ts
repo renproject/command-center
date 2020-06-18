@@ -36,54 +36,6 @@ export interface PeriodData {
   __typename: string; // "PeriodData";
 }
 
-export const QUERY_PERIOD_HISTORY = gql`
-
-# enum PeriodType {
-#     HOUR
-#     DAY
-#     WEEK
-#     MONTH
-#     YEAR
-# }
-
-query GetPeriodData($type: PeriodType!) {
-    periodDatas(where: {type: $type }, orderBy: date, orderDirection: desc, first: 31) {
-        id
-        type
-        date
-
-        #Total
-
-        totalTxCountBTC
-        totalLockedBTC
-        totalVolumeBTC
-
-        totalTxCountZEC
-        totalLockedZEC
-        totalVolumeZEC
-
-        totalTxCountBCH
-        totalLockedBCH
-        totalVolumeBCH
-
-        # Period
-
-        periodTxCountBTC
-        periodLockedBTC
-        periodVolumeBTC
-
-        periodTxCountZEC
-        periodLockedZEC
-        periodVolumeZEC
-
-        periodTxCountBCH
-        periodLockedBCH
-        periodVolumeBCH
-  }
-}
-`;
-
-
 export interface Integrator {
   "__typename": "Integrator";
   id: string; // "0x3973b2acdfac17171315e49ef19a0758b8b6f104";

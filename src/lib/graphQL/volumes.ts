@@ -1,11 +1,14 @@
+import { mainnet, RenNetwork, RenNetworkDetails } from "@renproject/contracts";
 import { Currency } from "@renproject/react-components";
-import { ApolloClient } from "apollo-boost";
+import { ApolloClient, gql } from "apollo-boost";
 import BigNumber from "bignumber.js";
 import { List, Map } from "immutable";
+import moment from "moment";
 
 import { SECONDS } from "../../components/common/BackgroundTasks";
 import { Token, TokenPrices } from "../ethereum/tokens";
-import { PeriodData, QUERY_PERIOD_HISTORY } from "./queries";
+import { PeriodData } from "./queries";
+import { QUERY_RENVM_HISTORY, RawRenVMHistoric } from "./queries/renVM";
 
 export enum PeriodType {
     HOUR = "HOUR",
@@ -16,7 +19,19 @@ export enum PeriodType {
     ALL = "ALL",
 }
 
-const getPeriodTimespan = (type: string): number => {
+const getNetworkStart = (renNetwork: RenNetworkDetails) => {
+    switch (renNetwork.name) {
+        case RenNetwork.Devnet:
+            return "2020-03-23T00+00";
+        case RenNetwork.Testnet:
+            return "2020-04-15T00+00";
+        case RenNetwork.Mainnet:
+        default:
+            return "2020-05-27T00+00";
+    }
+};
+
+const getPeriodTimespan = (type: string, renNetwork: RenNetworkDetails = mainnet): number => {
     const minutes = 60; // 60 seconds
     const hours = 60 * minutes;
     const days = 24 * hours;
@@ -35,25 +50,10 @@ const getPeriodTimespan = (type: string): number => {
             return 1 * months;
         case PeriodType.YEAR:
             return 1 * years;
-        default:
-            throw new Error(`Unknown period type ${type}`);
-    }
-};
-
-const getSubperiodCount = (type: string): { graph: number, amount: number, type: PeriodType } => {
-    switch (type) {
-        case PeriodType.HOUR:
-            return { graph: 7, amount: 1, type: PeriodType.HOUR };
-        case PeriodType.DAY:
-            return { graph: 24, amount: 24, type: PeriodType.HOUR };
-        case PeriodType.WEEK:
-            return { graph: 7, amount: 7, type: PeriodType.DAY };
-        case PeriodType.MONTH:
-            return { graph: 31, amount: 31, type: PeriodType.DAY };
-        case PeriodType.YEAR:
-            return { graph: 12, amount: 12, type: PeriodType.MONTH };
         case PeriodType.ALL:
-            return { graph: 31, amount: 31, type: PeriodType.DAY }; // TODO: Fix `31` value
+            // Mar-24-2020 11:22:40 PM UTC
+            // return Math.floor(moment().diff("2020-03-24T00+00") / 1000);
+            return Math.floor(moment().diff(getNetworkStart(renNetwork)) / 1000);
         default:
             throw new Error(`Unknown period type ${type}`);
     }
@@ -64,81 +64,105 @@ export interface PeriodResponse {
     average: PeriodData;
 }
 
-export const getVolumes = async (client: ApolloClient<unknown>, periodType: PeriodType): Promise<PeriodResponse> => {
+export const getVolumes = async (renNetwork: RenNetworkDetails, client: ApolloClient<unknown>, periodType: PeriodType, currentBlock: number): Promise<PeriodResponse> => {
 
-    const subperiod = getSubperiodCount(periodType);
-    const response = await client
-        .query<{ periodDatas: PeriodData[] }>({
-            query: QUERY_PERIOD_HISTORY,
-            variables: {
-                type: subperiod.type,
-                // amount: ,
-            }
+    // TODO: Calculate dynamically or search for date in subgraph.
+    const blockTime = renNetwork.isTestnet ? 4 : 13; // seconds
+
+    // Allow 30 blocks for the subgraph to sync blocks. This also matches the
+    // time for burns to be considered final in RenVM on mainnet.
+    currentBlock = currentBlock - 30;
+
+    // Calculate the steps so that there are 30 segments show on the graph.
+    // An extra segment is fetched at the start to calculate the volume of
+    // the first segment.
+    const periodSecondsCount = getPeriodTimespan(periodType, renNetwork);
+    const startingBlock = currentBlock - (periodSecondsCount / blockTime);
+    const segmentCount = 30;
+    const segmentLength = Math.ceil((currentBlock - startingBlock) / (segmentCount));
+    const blocks = Array.from(new Array(segmentCount + 1)).map((_, i) => currentBlock - (segmentCount - i) * segmentLength);
+
+    // Build GraphQL query containing a request for each of the blocks.
+    const query = gql(`
+{
+        ${blocks.map(block => QUERY_RENVM_HISTORY(block)).join("\n")}
+}
+    `);
+
+    const responseAlt = await client
+        .query<{ [block: string]: RawRenVMHistoric | null }>({
+            query,
         });
 
-    const periodDatas = List(response.data.periodDatas);
-
-    const currentTimestamp = Math.floor(new Date().getTime() / SECONDS);
-    const periodTimespan = getPeriodTimespan(subperiod.type);
-    const adjustedTimestamp = Math.floor(currentTimestamp / periodTimespan) * periodTimespan;
-
-    const periods = Array.from(Array(subperiod.amount)).map((_, i) => adjustedTimestamp - periodTimespan * i);
-
-    const historic = periods.map((periodDate) => {
-        const exactMatch = periodDatas.filter((periodData) => periodData.date === periodDate).first<PeriodData>();
-        if (exactMatch) {
-            return exactMatch;
+    // Add block number to each result.
+    const responseRows = List(Object.keys(responseAlt.data).map((rowID) => {
+        const blockData = responseAlt.data[rowID];
+        let blockNumber = 0;
+        // Extract numerical block number from ID. `rowID` follows the pattern
+        // `block_1234`.
+        try {
+            const match = rowID.match(/\d+/);
+            blockNumber = parseInt(match ? match[0] : "0", 10);
+        } catch (error) {
+            console.error(error);
         }
 
-        const inexact = periodDatas.filter((periodData) => periodData.date <= periodDate).first<PeriodData>() || {};
+        return {
+            id: rowID,
+            blockNumber,
+            blockData,
+        };
+    })).sortBy(item => item.blockNumber);
+
+    // Calculate period volume by subtracting total volume between each
+    // consecutive segment.
+    const graphPeriods = Array.from(new Array(segmentCount)).map((_, i): PeriodData => {
+        // tslint:disable-next-line: no-non-null-assertion
+        const start = responseRows.get(i)!;
+        // tslint:disable-next-line: no-non-null-assertion
+        const end = responseRows.get(i + 1)!;
+
+        const isFirstRow = periodType === PeriodType.ALL && i === 0;
 
         return {
-            id: `${periodType}${periodDate / periodTimespan}`,
-            type: subperiod.type,
-            date: periodDate,
+            id: end.id, // "HOUR441028";
+            type: "HOUR", // "HOUR";
+            date: moment().unix() - (currentBlock - end.blockNumber) * blockTime, // 1587700800;
+
             // total
 
-            __typename: "PeriodData",
+            totalTxCountBTC: end.blockData ? end.blockData.totalTxCountBTC : "0",
+            totalLockedBTC: end.blockData ? end.blockData.totalLockedBTC : "0",
+            totalVolumeBTC: end.blockData ? end.blockData.totalVolumeBTC : "0",
 
-            totalTxCountBTC: inexact.totalTxCountBTC || "0",
-            totalLockedBTC: inexact.totalLockedBTC || "0",
-            totalVolumeBTC: inexact.totalVolumeBTC || "0",
+            totalTxCountZEC: end.blockData ? end.blockData.totalTxCountZEC : "0",
+            totalLockedZEC: end.blockData ? end.blockData.totalLockedZEC : "0",
+            totalVolumeZEC: end.blockData ? end.blockData.totalVolumeZEC : "0",
 
-            totalTxCountZEC: inexact.totalTxCountZEC || "0",
-            totalLockedZEC: inexact.totalLockedZEC || "0",
-            totalVolumeZEC: inexact.totalVolumeZEC || "0",
-
-            totalTxCountBCH: inexact.totalTxCountBCH || "0",
-            totalLockedBCH: inexact.totalLockedBCH || "0",
-            totalVolumeBCH: inexact.totalVolumeBCH || "0",
+            totalTxCountBCH: end.blockData ? end.blockData.totalTxCountBCH : "0",
+            totalLockedBCH: end.blockData ? end.blockData.totalLockedBCH : "0",
+            totalVolumeBCH: end.blockData ? end.blockData.totalVolumeBCH : "0",
 
             // period
 
-            periodTxCountBTC: "0",
-            periodLockedBTC: "0",
-            periodVolumeBTC: "0",
+            periodTxCountBTC: new BigNumber(end.blockData ? end.blockData.totalTxCountBTC : "0").minus(start.blockData && !isFirstRow ? start.blockData.totalTxCountBTC : "0").toFixed(),
+            periodLockedBTC: new BigNumber(end.blockData ? end.blockData.totalLockedBTC : "0").minus(start.blockData && !isFirstRow ? start.blockData.totalLockedBTC : "0").toFixed(),
+            periodVolumeBTC: new BigNumber(end.blockData ? end.blockData.totalVolumeBTC : "0").minus(start.blockData && !isFirstRow ? start.blockData.totalVolumeBTC : "0").toFixed(),
 
-            periodTxCountZEC: "0",
-            periodLockedZEC: "0",
-            periodVolumeZEC: "0",
+            periodTxCountZEC: new BigNumber(end.blockData ? end.blockData.totalTxCountZEC : "0").minus(start.blockData && !isFirstRow ? start.blockData.totalTxCountZEC : "0").toFixed(),
+            periodLockedZEC: new BigNumber(end.blockData ? end.blockData.totalLockedZEC : "0").minus(start.blockData && !isFirstRow ? start.blockData.totalLockedZEC : "0").toFixed(),
+            periodVolumeZEC: new BigNumber(end.blockData ? end.blockData.totalVolumeZEC : "0").minus(start.blockData && !isFirstRow ? start.blockData.totalVolumeZEC : "0").toFixed(),
 
-            periodTxCountBCH: "0",
-            periodLockedBCH: "0",
-            periodVolumeBCH: "0",
+            periodTxCountBCH: new BigNumber(end.blockData ? end.blockData.totalTxCountBCH : "0").minus(start.blockData && !isFirstRow ? start.blockData.totalTxCountBCH : "0").toFixed(),
+            periodLockedBCH: new BigNumber(end.blockData ? end.blockData.totalLockedBCH : "0").minus(start.blockData && !isFirstRow ? start.blockData.totalLockedBCH : "0").toFixed(),
+            periodVolumeBCH: new BigNumber(end.blockData ? end.blockData.totalVolumeBCH : "0").minus(start.blockData && !isFirstRow ? start.blockData.totalVolumeBCH : "0").toFixed(),
 
+            __typename: "PeriodData",
         };
-    })
-        .reverse()
-        .map(item => ({
-            ...item,
-            date: Math.min(item.date + periodTimespan, currentTimestamp),
-        }));
+    });
 
-    const averagePeriods = historic.slice(historic.length - subperiod.amount);
-
-    const graphPeriods = historic.slice(historic.length - subperiod.graph);
-
-    const average = averagePeriods.slice(0, averagePeriods.length - 1).reduce((sum, period) => {
+    // Add up volumes and locked values for the entire period.
+    const average = graphPeriods.slice(0, graphPeriods.length - 1).reduce((sum, period) => {
         return {
             ...sum,
             date: Math.max(sum.date, period.date),
@@ -154,7 +178,7 @@ export const getVolumes = async (client: ApolloClient<unknown>, periodType: Peri
             periodVolumeBCH: new BigNumber(sum.periodVolumeBCH).plus(period.periodVolumeBCH).toFixed(0),
             periodLockedBCH: new BigNumber(sum.periodLockedBCH).plus(period.periodLockedBCH).toFixed(0),
         };
-    }, averagePeriods[averagePeriods.length - 1]);
+    }, graphPeriods[graphPeriods.length - 1]);
 
     return {
         historic: graphPeriods,
@@ -191,7 +215,7 @@ export interface QuotePeriodResponse {
     average: QuotePeriodData;
 }
 
-const normalizeValue = (amount: string, digits: number): BigNumber => {
+const normalizeValue = (amount: string | BigNumber, digits: number): BigNumber => {
     return new BigNumber(amount).div(new BigNumber(10).exponentiatedBy(digits));
 };
 
@@ -213,7 +237,6 @@ const normalizeVolumes = (periodData: PeriodData, tokenPrices: TokenPrices, quot
         quotePeriodVolumeZEC: normalizeValue(periodData.periodVolumeZEC, 8).times(tokenPrices.get(Token.ZEC, Map<Currency, number>()).get(quoteCurrency) || 0).decimalPlaces(2).toNumber(),
         quotePeriodLockedBCH: normalizeValue(periodData.periodLockedBCH, 8).times(tokenPrices.get(Token.BCH, Map<Currency, number>()).get(quoteCurrency) || 0).decimalPlaces(2).toNumber(),
         quotePeriodVolumeBCH: normalizeValue(periodData.periodVolumeBCH, 8).times(tokenPrices.get(Token.BCH, Map<Currency, number>()).get(quoteCurrency) || 0).decimalPlaces(2).toNumber(),
-        // tslint:enable: no-non-null-assertion
     };
 
     return {
