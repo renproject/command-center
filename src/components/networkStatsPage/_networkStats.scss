@@ -167,10 +167,31 @@
 /* Collateral */
 
 // .collateral-stat {
-    //     .stat--title {
-    //         margin-bottom: 26px;
-    //     }
-    // }
+//     .stat--title {
+//         margin-bottom: 26px;
+//     }
+// }
+
+.collateral-status {
+
+    .info-label {
+        height: 22px;
+        margin-left: 5px;
+    }
+
+    .info-label--message {
+        left: 5px;
+    }
+
+    .info-label--icon {
+        width: 22px;
+        height: 22px;
+        margin-left: 0;
+        margin-top: 0;
+
+        // stroke: #4ED487 !important;
+    }
+}
 
 .collateral-stats--top {
     margin-bottom: 80px;
@@ -186,6 +207,10 @@
 
     span {
         transition: all 600ms;
+    }
+
+    svg {
+        margin-left: 5px;
     }
 
     .loading {
@@ -313,6 +338,10 @@
     margin-top: -30px;
     padding-top: 60px;
     border-radius: 4px;
+
+    &.collateral-table-greycore {
+        padding-top: 0;
+    }
 
     background: #001327;
 }

@@ -10,6 +10,7 @@ import {
 } from "../../styles/images/icon-collateralization.svg";
 import { ReactComponent as IconMintFee } from "../../styles/images/icon-mint-fee.svg";
 import { ExternalLink } from "../common/ExternalLink";
+import { InfoLabel } from "../common/infoLabel/InfoLabel";
 import { Stat, Stats } from "../common/Stat";
 
 interface Props {
@@ -22,6 +23,9 @@ interface Props {
 
 const RowBullet = () => <div className="collateral-table--bullet"><div className="collateral-table--bullet--inner" /></div>;
 
+// This will be updated once the Greycore is phased out.
+const GREYCORE_ACTIVE = true;
+
 export const Collateral: React.FC<Props> = ({ minted, l, b, bRen, quoteCurrency }) => {
 
     const lDivB = b === null || l.isZero() ? 0 : b.isEqualTo(0) ? 100 : BigNumber.min(l.div(b), 1).multipliedBy(100).toNumber();
@@ -29,7 +33,7 @@ export const Collateral: React.FC<Props> = ({ minted, l, b, bRen, quoteCurrency 
     // const r3 = Math.max(0, 33 - lDivR);
 
     const loadingCollateralization = b === null || l.isZero();
-    const overCollateralized = b === null || l.lte(b);
+    const overCollateralized = GREYCORE_ACTIVE || (b === null || l.lte(b));
 
     return (
         <div className="collateral">
@@ -38,24 +42,31 @@ export const Collateral: React.FC<Props> = ({ minted, l, b, bRen, quoteCurrency 
                     className="collateral-stat"
                     message="Collateralization"
                     icon={<IconCollateralization />}
-                    infoLabel={<>To ensure maximum security, the amount of value locked should not exceed ⅓ of the value of REN bonded in the Darknode contract. For more information, <ExternalLink href="https://github.com/renproject/ren/wiki/Safety-and-Liveliness#safety">see here</ExternalLink>.</>}
+                    infoLabel={GREYCORE_ACTIVE ?
+                        // <>During RenVM phases Subzero and Zero, there is a semi-decentralized network of Darknodes called the Greycore. These Darknodes are responsibly for execution and whilst they are in operation, RenVM does not need to be over-collateralized to remain secure. Overtime, once the economics are safe, the Ren team will phase out the Greycore. <ExternalLink href="https://github.com/renproject/ren/wiki/Greycore">Read more</ExternalLink></> :
+                        undefined :
+                        <>To ensure maximum security, the amount of value locked should not exceed ⅓ of the value of REN bonded in the Darknode contract. For more information, <ExternalLink href="https://github.com/renproject/ren/wiki/Safety-and-Liveliness#safety">see here</ExternalLink>.</>
+                    }
                     big={true}
+
                 >
                     <div className="collateral-status-outer">
                         <div className="collateral-pre-status">RenVM is currently{loadingCollateralization ? <>...</> : null}</div>
                         <div className={classNames("collateral-status", overCollateralized ? "collateral-status--over" : "collateral-status--under")}>
                             {loadingCollateralization ? <Loading /> : null}
-                            <span className={loadingCollateralization ? "collateral-status--loading" : ""}>
-                                {overCollateralized ?
-                                    <>over-collateralized. <IconCheckCircle /></> :
-                                    <>under-collateralized.</>
+                            <span style={{ display: "flex", alignItems: "center" }} className={loadingCollateralization ? "collateral-status--loading" : ""}>
+                                {GREYCORE_ACTIVE ?
+                                    <>secure. <IconCheckCircle /><InfoLabel direction={"bottom"}>During RenVM phases Subzero and Zero, there is a semi-decentralized network of Darknodes called the Greycore. These Darknodes are responsibly for execution and whilst they are in operation, RenVM does not need to be over-collateralized to remain secure. Overtime, once the economics are safe, the Ren team will phase out the Greycore. <ExternalLink href="https://github.com/renproject/ren/wiki/Greycore">Read more</ExternalLink></InfoLabel></> :
+                                    overCollateralized ?
+                                        <>over-collateralized. <IconCheckCircle /></> :
+                                        <>under-collateralized.</>
                                 }
                             </span>
                         </div>
                     </div>
 
                     <div className="collateral-chart-section">
-                        <div className="collateral-chart">
+                        {!GREYCORE_ACTIVE ? <div className="collateral-chart">
                             <div className="collateral-chart--bar">
                                 <div style={{ width: `${lDivB}%` }} className={classNames("collateral-chart--l", overCollateralized ? "collateral-chart--l--over" : "collateral-chart--l--under")}><span className="collateral-chart--label">L</span></div>
                                 {/* <div style={{ width: `${r3}%` }} className="collateral-chart--b3"><span className="collateral-chart--label">{overCollateralized ? <>B/3</> : null}</span></div> */}
@@ -65,8 +76,8 @@ export const Collateral: React.FC<Props> = ({ minted, l, b, bRen, quoteCurrency 
                                     null
                                 }
                             </div>
-                        </div>
-                        <div className="collateral-table">
+                        </div> : <></>}
+                        <div className={classNames("collateral-table", GREYCORE_ACTIVE ? "collateral-table-greycore" : "")}>
                             <div className="collateral-table--row">
                                 <div className={classNames("collateral-table--row--left", "row--l", overCollateralized ? "row--l--over" : "row--l--under")}><RowBullet /> Value Locked (L)</div>
                                 <div className="collateral-table--row--right"><CurrencyIcon currency={quoteCurrency} />{l.toFormat(2)}</div>
