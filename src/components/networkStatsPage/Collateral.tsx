@@ -43,7 +43,7 @@ export const Collateral: React.FC<Props> = ({ minted, l, b, bRen, quoteCurrency 
                     message="Collateralization"
                     icon={<IconCollateralization />}
                     infoLabel={GREYCORE_ACTIVE ?
-                        // <>During RenVM phases Subzero and Zero, there is a semi-decentralized network of Darknodes called the Greycore. These Darknodes are responsible for execution and whilst they are in operation, RenVM does not need to be over-collateralized to remain secure. Overtime, once the economics are safe, the Ren team will phase out the Greycore. <ExternalLink href="https://github.com/renproject/ren/wiki/Greycore">Read more</ExternalLink></> :
+                        // <>During RenVM phases Subzero and Zero, there is a semi-decentralized network of Darknodes called the Greycore. These Darknodes are responsible for execution and whilst they are in operation, RenVM does not need to be over-collateralized to remain secure. Over time, once the economics are safe, the Ren team will phase out the Greycore. <ExternalLink href="https://github.com/renproject/ren/wiki/Greycore">Read more</ExternalLink></> :
                         undefined :
                         <>To ensure maximum security, the amount of value locked should not exceed the value of REN bonded in the Darknode contract. For more information, <ExternalLink href="https://github.com/renproject/ren/wiki/Safety-and-Liveliness#safety">see here</ExternalLink>.</>
                     }
@@ -56,7 +56,7 @@ export const Collateral: React.FC<Props> = ({ minted, l, b, bRen, quoteCurrency 
                             {loadingCollateralization ? <Loading /> : null}
                             <span style={{ display: "flex", alignItems: "center" }} className={loadingCollateralization ? "collateral-status--loading" : ""}>
                                 {GREYCORE_ACTIVE ?
-                                    <>secure. <IconCheckCircle /><InfoLabel direction={"bottom"}>During RenVM phases Subzero and Zero, there is a semi-decentralized network of Darknodes called the Greycore. These Darknodes are responsible for execution and whilst they are in operation, RenVM does not need to be over-collateralized to remain secure. Overtime, once the economics are safe, the Ren team will phase out the Greycore. <ExternalLink href="https://github.com/renproject/ren/wiki/Greycore">Read more</ExternalLink>.</InfoLabel></> :
+                                    <>secure. <IconCheckCircle /><InfoLabel direction={"bottom"}>During RenVM phases Subzero and Zero, there is a semi-decentralized network of Darknodes called the Greycore. These Darknodes are responsible for execution and whilst they are in operation, RenVM does not need to be over-collateralized to remain secure. Over time, once the economics are safe, the Ren team will phase out the Greycore. <ExternalLink href="https://github.com/renproject/ren/wiki/Greycore">Read more</ExternalLink>.</InfoLabel></> :
                                     overCollateralized ?
                                         <>over-collateralized. <IconCheckCircle /></> :
                                         <>under-collateralized.</>
