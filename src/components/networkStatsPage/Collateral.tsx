@@ -103,7 +103,7 @@ export const Collateral: React.FC<Props> = ({ minted, l, b, bRen, quoteCurrency 
                     className="collateral-stat stat--extra-big"
                     message="Mint Fee"
                     icon={<IconMintFee />}
-                    infoLabel={<>The current RenVM minting fee. It is a dynamic fee which fluctuates based on the amount of value locked within in RemVM. For more information, <ExternalLink href="https://github.com/renproject/ren/wiki/Safety-and-Liveliness#fees">see here</ExternalLink>.</>}
+                    infoLabel={<>The current RenVM minting fee. It is a dynamic fee which fluctuates based on the amount of value locked within in RenVM. For more information, <ExternalLink href="https://github.com/renproject/ren/wiki/Safety-and-Liveliness#fees">see here</ExternalLink>.</>}
                     big={true}
                 >
                     0.1%
@@ -112,7 +112,7 @@ export const Collateral: React.FC<Props> = ({ minted, l, b, bRen, quoteCurrency 
                     className="collateral-stat stat--extra-big"
                     message="Burn Fee"
                     icon={<IconBurnFee />}
-                    infoLabel={<>The current RenVM burning fee. It is a dynamic fee which fluctuates based on the amount of value locked within in RemVM. For more information, <ExternalLink href="https://github.com/renproject/ren/wiki/Safety-and-Liveliness#fees">see here</ExternalLink>.</>}
+                    infoLabel={<>The current RenVM burning fee. It is a dynamic fee which fluctuates based on the amount of value locked within in RenVM. For more information, <ExternalLink href="https://github.com/renproject/ren/wiki/Safety-and-Liveliness#fees">see here</ExternalLink>.</>}
                     big={true}
                 >
                     0.1%
