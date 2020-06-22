@@ -37,7 +37,7 @@ const currencyOptions = getCurrencyOptions();
 
 const MenuItem: React.FC<{ path: string, title: string, icon: JSX.Element, activePath: string }> = ({ path, title, icon, activePath }) =>
     <Link className="no-underline" to={path}>
-        <li className={["header--group", activePath.split("/")[1] === path.split("/")[1] ? "header--group--active" : ""].join(" ")}>
+        <li className={["header--group", activePath && activePath.split("/")[1] === path.split("/")[1] ? "header--group--active" : ""].join(" ")}>
             <div className="header--selected">
                 {icon} <div>{title}</div>
             </div>
