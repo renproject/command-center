@@ -2,12 +2,12 @@ import * as React from "react";
 
 import { faStar } from "@fortawesome/free-regular-svg-icons";
 import { faFire, faTimes } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FontAwesomeIcon, FontAwesomeIconProps } from "@fortawesome/react-fontawesome";
 import { Blocky, Currency, CurrencyIcon } from "@renproject/react-components";
 import { Link } from "react-router-dom";
 
 import { Token } from "../../../lib/ethereum/tokens";
-import { DarknodesState } from "../../../store/networkStateContainer";
+import { DarknodesState } from "../../../store/networkContainer";
 import { DarknodeID } from "../../common/DarknodeID";
 import { TokenBalance } from "../../common/TokenBalance";
 import { statusText } from "../../darknodePage/Registration";
@@ -36,7 +36,7 @@ export const CardView: React.FC<Props> = ({ darknodeID, darknodeDetails, name, q
         <div className={["darknode-card", faded ? "darknode-card--faded" : ""].join(" ")}>
             <div className="darknode-card--top">
                 {hidable ? <div role="button" className="card--hide" onClick={handleRemoveDarknode}>
-                    {confirmedRemove ? "Are you sure?" : <FontAwesomeIcon icon={faTimes} pull="left" />}
+                    {confirmedRemove ? "Are you sure?" : <FontAwesomeIcon icon={faTimes as FontAwesomeIconProps["icon"]} pull="left" />}
                 </div> : null}
             </div>
             <div className="darknode-card--middle">
@@ -54,7 +54,7 @@ export const CardView: React.FC<Props> = ({ darknodeID, darknodeDetails, name, q
             {darknodeDetails ?
                 <div className="darknode-card--bottom">
                     <div className="darknode-card--rewards">
-                        <FontAwesomeIcon icon={faStar} className="darknode-card--bottom--icon" />
+                        <FontAwesomeIcon icon={faStar as FontAwesomeIconProps["icon"]} className="darknode-card--bottom--icon" />
                         <span className="currency-value">
                             <CurrencyIcon currency={quoteCurrency} />
                             <TokenBalance
@@ -67,7 +67,7 @@ export const CardView: React.FC<Props> = ({ darknodeID, darknodeDetails, name, q
                         <span className="currency-symbol">{quoteCurrency.toUpperCase()}</span>
                     </div>
                     <div className="darknode-card--gas">
-                        <FontAwesomeIcon icon={faFire} className="darknode-card--bottom--icon" />
+                        <FontAwesomeIcon icon={faFire as FontAwesomeIconProps["icon"]} className="darknode-card--bottom--icon" />
                         <span className="currency-value">
                             <CurrencyIcon currency={Currency.ETH} />
                             <TokenBalance token={Token.ETH} amount={darknodeDetails.ethBalance} digits={3} />

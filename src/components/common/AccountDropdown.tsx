@@ -3,7 +3,7 @@ import * as React from "react";
 import { Blocky, Loading } from "@renproject/react-components";
 
 import { classNames } from "../../lib/react/className";
-import { NetworkStateContainer } from "../../store/networkStateContainer";
+import { NetworkContainer } from "../../store/networkContainer";
 import { Web3Container } from "../../store/web3Store";
 import { ExternalLink } from "./ExternalLink";
 
@@ -12,7 +12,7 @@ export const AccountDropdown: React.FC<Props> = () => {
     const [copied, setCopied] = React.useState(false);
 
     const { address, web3BrowserName, renNetwork, promptLogin, logout } = Web3Container.useContainer();
-    const { transactions, confirmations } = NetworkStateContainer.useContainer();
+    const { transactions, confirmations } = NetworkContainer.useContainer();
 
     const ref = React.useRef(null as HTMLDivElement | null);
 

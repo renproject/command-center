@@ -3,7 +3,7 @@ import * as React from "react";
 import {
     faExclamationTriangle, faInfoCircle, faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FontAwesomeIcon, FontAwesomeIconProps } from "@fortawesome/react-fontawesome";
 import { RenNetworkDetails } from "@renproject/contracts";
 import { naturalTime } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
@@ -11,7 +11,7 @@ import BigNumber from "bignumber.js";
 import { RegistrationStatus } from "../../lib/ethereum/contractReads";
 import { isDefined } from "../../lib/general/isDefined";
 import { GraphContainer } from "../../store/graphStore";
-import { DarknodesState } from "../../store/networkStateContainer";
+import { DarknodesState } from "../../store/networkContainer";
 import { SECONDS } from "../common/BackgroundTasks";
 
 const lowValue = new BigNumber(Math.pow(10, 18)).multipliedBy(0.01);
@@ -98,7 +98,7 @@ export const Notifications: React.FC<Props> = ({ isOperator, darknodeDetails, re
     return (
         <div className="darknodePage--notifications">
             {notification ? <div className={`darknodePage--notification ${notification.type}`}>
-                <FontAwesomeIcon icon={notificationType[notification.type]} />
+                <FontAwesomeIcon icon={notificationType[notification.type] as FontAwesomeIconProps["icon"]} />
                 <div className="darknodePage--notification--details">
                     <h2>{notification.title}</h2>
                     <span>{notification.detail}</span>

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 
-export const SECONDS = 1000;
+const SECONDS = 1000;
 const time = (): number => Math.floor(new Date().getTime() / SECONDS);
 
 type ReturnResult<T> = number | { timeout: number, result: T };

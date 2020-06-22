@@ -1,13 +1,5 @@
 import { List, OrderedMap } from "immutable";
 
-export const awaitOr = async<T, E>(π: Promise<T>, e: E): Promise<T | E> => {
-    try {
-        return await π;
-    } catch (error) {
-        return e;
-    }
-};
-
 // FIXME: safePromiseAllList still throws uncaught errors
 
 // The same as Promise.all except that if an entry throws, it sets it to the

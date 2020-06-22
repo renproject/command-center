@@ -54,7 +54,7 @@ export class DarknodesState extends Record({
 
 export type WaitForTX = <T>(promiEvent: PromiEvent<T>, onConfirmation?: (confirmations?: number) => void) => Promise<string>;
 
-const useNetworkStateContainer = () => {
+const useNetworkContainer = () => {
     const { web3, renNetwork, address } = Web3Container.useContainer();
     const { setPopup, clearPopup } = PopupContainer.useContainer();
     const { renVM, fetchRenVM } = GraphContainer.useContainer();
@@ -691,4 +691,4 @@ const useNetworkStateContainer = () => {
     };
 };
 
-export const NetworkStateContainer = createContainer(useNetworkStateContainer);
+export const NetworkContainer = createContainer(useNetworkContainer);

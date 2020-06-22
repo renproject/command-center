@@ -1,11 +1,11 @@
 import * as React from "react";
 
 import { faServer } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FontAwesomeIcon, FontAwesomeIconProps } from "@fortawesome/react-fontawesome";
 import filesize from "filesize";
 import { Doughnut } from "react-chartjs-2";
 
-import { DarknodesState } from "../../../store/networkStateContainer";
+import { DarknodesState } from "../../../store/networkContainer";
 import { Block, BlockBody, BlockTitle } from "./Block";
 
 interface Props {
@@ -16,7 +16,7 @@ export const ResourcesBlock: React.FC<Props> = ({ darknodeDetails }) =>
     <Block className="resources-block">
         <BlockTitle>
             <h3>
-                <FontAwesomeIcon icon={faServer} pull="left" />
+                <FontAwesomeIcon icon={faServer as FontAwesomeIconProps["icon"]} pull="left" />
                     Resource Usage
                 </h3>
         </BlockTitle>

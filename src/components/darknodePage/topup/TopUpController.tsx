@@ -4,7 +4,7 @@ import React from "react";
 
 import { Token } from "../../../lib/ethereum/tokens";
 import { catchBackgroundException } from "../../../lib/react/errors";
-import { NetworkStateContainer } from "../../../store/networkStateContainer";
+import { NetworkContainer } from "../../../store/networkContainer";
 import { Web3Container } from "../../../store/web3Store";
 import { TokenBalance } from "../../common/TokenBalance";
 import { TopUp } from "./TopUp";
@@ -13,7 +13,7 @@ export const CONFIRMATION_MESSAGE = "Transaction confirmed.";
 
 export const TopUpController: React.FC<Props> = ({ darknodeID }) => {
     const { address, web3 } = Web3Container.useContainer();
-    const { updateDarknodeDetails, showFundPopup } = NetworkStateContainer.useContainer();
+    const { updateDarknodeDetails, showFundPopup } = NetworkContainer.useContainer();
 
     const [value, setValue] = React.useState("");
     const [resultMessage, setResultMessage] = React.useState<React.ReactNode>(null);

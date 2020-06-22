@@ -1,13 +1,13 @@
 import * as React from "react";
 
 import { faExternalLinkAlt, faPlus, faThLarge, faTimes } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FontAwesomeIcon, FontAwesomeIconProps } from "@fortawesome/react-fontawesome";
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
 
 import { darknodeIDHexToBase58 } from "../../../lib/darknode/darknodeID";
 import { RegistrationStatus } from "../../../lib/ethereum/contractReads";
 import { classNames } from "../../../lib/react/className";
-import { NetworkStateContainer } from "../../../store/networkStateContainer";
+import { NetworkContainer } from "../../../store/networkContainer";
 import { UIContainer } from "../../../store/uiStore";
 import { Web3Container } from "../../../store/web3Store";
 import { ReactComponent as RenVMIcon } from "../../../styles/images/Icon-HyperDrive.svg";
@@ -40,11 +40,11 @@ interface Props extends RouteComponentProps {
 export const Sidebar = withRouter(
     ({ selectedDarknode, location }: Props) => {
 
-        const { darknodeDetails, darknodeNames, quoteCurrency } = NetworkStateContainer.useContainer();
+        const { darknodeDetails, darknodeNames, quoteCurrency } = NetworkContainer.useContainer();
         const { address, web3BrowserName, promptLogin } = Web3Container.useContainer();
         const { mobileMenuActive, hideMobileMenu } = UIContainer.useContainer();
 
-        const { darknodeList, hiddenDarknodes } = NetworkStateContainer.useContainer();
+        const { darknodeList, hiddenDarknodes } = NetworkContainer.useContainer();
         const accountDarknodeList = React.useMemo(() => address ? darknodeList.get(address, null) : null, [darknodeList, address]);
         const accountHiddenDarknodes = React.useMemo(() => address ? hiddenDarknodes.get(address, null) : null, [hiddenDarknodes, address]);
 
@@ -75,16 +75,16 @@ export const Sidebar = withRouter(
                 <div className="sidebar--top">
 
                     <div className="medium-only">
-                        <MenuItem icon={<FontAwesomeIcon icon={faTimes} />} onClick={hideMobileMenu} className={"sidebar--close"} />
+                        <MenuItem icon={<FontAwesomeIcon icon={faTimes as FontAwesomeIconProps["icon"]} />} onClick={hideMobileMenu} className={"sidebar--close"} />
                         <MenuItem path="/" title="Network" icon={<NetworkIcon />} activePath={location.pathname} onClick={hideMobileMenu} />
                         <MenuItem path="/integrators" title="Integrators" icon={<IntegratorsIcon />} activePath={location.pathname} onClick={hideMobileMenu} />
-                        <MenuItem path="/darknode-stats" title="Darknodes" icon={<OverviewIcon />} activePath={location.pathname} onClick={hideMobileMenu} />
+                        <MenuItem path="/darknodes" title="Darknodes" icon={<OverviewIcon />} activePath={location.pathname} onClick={hideMobileMenu} />
                         <MenuItem path="/renvm" title="RenVM" icon={<RenVMIcon />} activePath={location.pathname} onClick={hideMobileMenu} />
-                        {/* <MenuItem icon={<FontAwesomeIcon icon={faTimes} />} onClick={hideMobileMenu} className={"sidebar--close"} />
-                        <MenuItem path="/" title="Darknodes" icon={<FontAwesomeIcon icon={faGlobeAmericas} />} onClick={hideMobileMenu} activePath={location.pathname} />
+                        {/* <MenuItem icon={<FontAwesomeIcon icon={faTimes as FontAwesomeIconProps["icon"]} />} onClick={hideMobileMenu} className={"sidebar--close"} />
+                        <MenuItem path="/" title="Darknodes" icon={<FontAwesomeIcon icon={faGlobeAmericas as FontAwesomeIconProps["icon"]} />} onClick={hideMobileMenu} activePath={location.pathname} />
                         <MenuItem path="/renvm" title="RenVM" icon={<RenVMIcon />} onClick={hideMobileMenu} activePath={location.pathname} /> */}
                     </div>
-                    <MenuItem path="/all" title="Your Darknodes" icon={<FontAwesomeIcon icon={faThLarge} />} onClick={hideMobileMenu} activePath={location.pathname} />
+                    <MenuItem path="/all" title="Your Darknodes" icon={<FontAwesomeIcon icon={faThLarge as FontAwesomeIconProps["icon"]} />} onClick={hideMobileMenu} activePath={location.pathname} />
 
                     <div className="search--filter--feedback">
                         {searchFilter ? <>Showing results for "{searchFilter}"</> : <>{" "}</>}
@@ -120,11 +120,11 @@ export const Sidebar = withRouter(
                         {address ? <ExternalLink href={URLs.gitbookDarknodes}><div className="sidebar--row">
                             <div className="sidebar--nav--icon sidebar--icon">
                                 <div className="sidebar--nav--icon--circle sidebar--plus">
-                                    <FontAwesomeIcon icon={faPlus} />
+                                    <FontAwesomeIcon icon={faPlus as FontAwesomeIconProps["icon"]} />
                                 </div>
                             </div>
                             <div className="sidebar--text">
-                                <div className="sidebar--name">Create new Darknode <FontAwesomeIcon icon={faExternalLinkAlt} className="external-link" /></div>
+                                <div className="sidebar--name">Create new Darknode <FontAwesomeIcon icon={faExternalLinkAlt as FontAwesomeIconProps["icon"]} className="external-link" /></div>
                             </div>
                         </div></ExternalLink> : null}
                     </div>

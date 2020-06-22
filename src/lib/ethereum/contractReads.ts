@@ -8,7 +8,7 @@ import { sha3, toChecksumAddress } from "web3-utils";
 
 import { getLightnode } from "../../components/networkDarknodesPage/mapContainer";
 import { retryNTimes } from "../../components/renvmPage/renvmContainer";
-import { DarknodesState } from "../../store/networkStateContainer";
+import { DarknodesState } from "../../store/networkContainer";
 import { darknodeIDHexToBase58 } from "../darknode/darknodeID";
 import { queryStat } from "../darknode/jsonrpc";
 import { isDefined } from "../general/isDefined";

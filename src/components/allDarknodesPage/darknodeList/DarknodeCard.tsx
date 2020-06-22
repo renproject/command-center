@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { darknodeIDHexToBase58 } from "../../../lib/darknode/darknodeID";
 import { RegistrationStatus } from "../../../lib/ethereum/contractReads";
-import { DarknodesState, NetworkStateContainer } from "../../../store/networkStateContainer";
+import { DarknodesState, NetworkContainer } from "../../../store/networkContainer";
 import { Web3Container } from "../../../store/web3Store";
 import { CardView } from "./CardView";
 
@@ -15,7 +15,7 @@ interface Props {
 
 export const DarknodeCard: React.FC<Props> = ({ darknodeID, darknodeDetails, name, publicKey }) => {
     const { address } = Web3Container.useContainer();
-    const { quoteCurrency, hideDarknode, removeRegisteringDarknode } = NetworkStateContainer.useContainer();
+    const { quoteCurrency, hideDarknode, removeRegisteringDarknode } = NetworkContainer.useContainer();
 
     const [confirmedRemove, setConfirmedRemove] = React.useState(false);
 

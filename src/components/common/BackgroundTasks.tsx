@@ -4,7 +4,7 @@ import { RouteComponentProps, withRouter } from "react-router-dom";
 
 import { catchBackgroundException } from "../../lib/react/errors";
 import { GraphContainer } from "../../store/graphStore";
-import { NetworkStateContainer } from "../../store/networkStateContainer";
+import { NetworkContainer } from "../../store/networkContainer";
 import { Web3Container } from "../../store/web3Store";
 import { getDarknodeParam } from "../darknodePage/DarknodePage";
 import { useTaskSchedule } from "./ScheduleTask";
@@ -20,7 +20,7 @@ interface Props extends RouteComponentProps {
  */
 export const BackgroundTasks = withRouter(({ match }: Props) => {
     const { address, lookForLogout } = Web3Container.useContainer();
-    const { tokenPrices, updateTokenPrices, updateCycleAndPendingRewards, updateOperatorDarknodes, updateDarknodeDetails } = NetworkStateContainer.useContainer();
+    const { tokenPrices, updateTokenPrices, updateCycleAndPendingRewards, updateOperatorDarknodes, updateDarknodeDetails } = NetworkContainer.useContainer();
     const { renVM } = GraphContainer.useContainer();
 
     const darknodeID = getDarknodeParam(match.params);

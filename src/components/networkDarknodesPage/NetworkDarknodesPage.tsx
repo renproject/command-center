@@ -7,7 +7,7 @@ import { Token } from "../../lib/ethereum/tokens";
 import { isDefined } from "../../lib/general/isDefined";
 import { GithubAPIContainer } from "../../store/githubApiStore";
 import { GraphContainer } from "../../store/graphStore";
-import { NetworkStateContainer } from "../../store/networkStateContainer";
+import { NetworkContainer } from "../../store/networkContainer";
 import {
     ReactComponent as IconDarknodesOnline,
 } from "../../styles/images/icon-darknodes-online.svg";
@@ -20,12 +20,12 @@ import { Stat, Stats } from "../common/Stat";
 import { TokenBalance } from "../common/TokenBalance";
 import { DarknodeMap } from "./darknodeMap/DarknodeMap";
 
-export const REN_TOTAL_SUPPLY = new BigNumber(1000000000);
+const REN_TOTAL_SUPPLY = new BigNumber(1000000000);
 
 export const NetworkDarknodesPage = () => {
     const { renVM } = GraphContainer.useContainer();
     const { currentCycle, previousCycle, numberOfDarknodes, numberOfDarknodesLastEpoch, numberOfDarknodesNextEpoch, minimumBond, timeUntilNextEpoch, timeSinceLastEpoch, minimumEpochInterval } = renVM || {};
-    const { pendingTotalInEth, quoteCurrency } = NetworkStateContainer.useContainer();
+    const { pendingTotalInEth, quoteCurrency } = NetworkContainer.useContainer();
     const { latestCLIVersion, latestCLIVersionDaysAgo } = GithubAPIContainer.useContainer();
 
     const current = currentCycle && pendingTotalInEth.get(currentCycle, undefined);

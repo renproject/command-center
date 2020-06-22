@@ -6,7 +6,7 @@ import { toChecksumAddress } from "web3-utils";
 
 import { darknodeIDBase58ToHex } from "../../lib/darknode/darknodeID";
 import { RegistrationStatus } from "../../lib/ethereum/contractReads";
-import { NetworkStateContainer } from "../../store/networkStateContainer";
+import { NetworkContainer } from "../../store/networkContainer";
 import { Web3Container } from "../../store/web3Store";
 import { NotFound } from "../common/404";
 import { _catch_ } from "../common/ErrorBoundary";
@@ -44,7 +44,7 @@ export const getDarknodeParam = (params: unknown): string | undefined => {
  */
 export const DarknodePage = withRouter(({ match, location }: Props) => {
     const { address } = Web3Container.useContainer();
-    const { darknodeDetails, darknodeNames, storeDarknodeName: setDarknodeName, addRegisteringDarknode } = NetworkStateContainer.useContainer();
+    const { darknodeDetails, darknodeNames, storeDarknodeName: setDarknodeName, addRegisteringDarknode } = NetworkContainer.useContainer();
 
     const [darknodeID, setDarknodeID] = React.useState<string | undefined>(undefined);
     const [action, setAction] = React.useState<string | undefined>(undefined);

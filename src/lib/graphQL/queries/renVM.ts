@@ -14,7 +14,7 @@ export interface Epoch {
   rewardShareBCH: BigNumber;
 }
 
-export interface RawRenVM {
+interface RawRenVM {
   "__typename": "Integrator";
   numberOfDarknodes: string;
   numberOfDarknodesLastEpoch: string;
@@ -75,7 +75,7 @@ export interface RenVM {
   deregistrationInterval: BigNumber;
 }
 
-export const QUERY_RENVM = gql`
+const QUERY_RENVM = gql`
   query getRenVM {
     renVM(id: "1") {
       numberOfDarknodes
@@ -180,19 +180,6 @@ export interface RawRenVMHistoric {
   totalTxCountBCH: string;
   totalLockedBCH: string;
   totalVolumeBCH: string;
-}
-
-export interface RenVMHistoric {
-  blockNumber: number;
-  totalTxCountBTC: BigNumber;
-  totalLockedBTC: BigNumber;
-  totalVolumeBTC: BigNumber;
-  totalTxCountZEC: BigNumber;
-  totalLockedZEC: BigNumber;
-  totalVolumeZEC: BigNumber;
-  totalTxCountBCH: BigNumber;
-  totalLockedBCH: BigNumber;
-  totalVolumeBCH: BigNumber;
 }
 
 export const QUERY_RENVM_HISTORY = (block: number) => `  block_${block}: renVM(id: "1", block: { number: ${block} }) {

@@ -149,9 +149,9 @@ const catchException = <X extends Details>(error: any, details: X) => {
     }
 };
 
-export const ignoreException = <X extends Details & Described>(error: any, details?: X | string) => {
-    console.error(error, details);
-};
+// export const ignoreException = <X extends Details & Described>(error: any, details?: X | string) => {
+//     console.error(error, details);
+// };
 
 // Background exceptions are thrown in background loops and actions
 export const catchBackgroundException = <X extends Details & Described>(error: any, details: X | string) => {
@@ -174,9 +174,9 @@ export const noCapture = (error: Error): Error => {
     return error;
 };
 
-export class LocalError extends Error {
-    public _noCapture_ = true;
-}
+// export class LocalError extends Error {
+//     public _noCapture_ = true;
+// }
 
 // tslint:disable-next-line: no-any
 export const extractError = (error: any): string => {

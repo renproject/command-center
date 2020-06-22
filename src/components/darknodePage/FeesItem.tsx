@@ -1,12 +1,12 @@
 import * as React from "react";
 
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FontAwesomeIcon, FontAwesomeIconProps } from "@fortawesome/react-fontawesome";
 import { Loading } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 
 import { AllTokenDetails, Token } from "../../lib/ethereum/tokens";
-import { NetworkStateContainer } from "../../store/networkStateContainer";
+import { NetworkContainer } from "../../store/networkContainer";
 import { Web3Container } from "../../store/web3Store";
 
 const minimumShiftedAmount = 0.0004;
@@ -19,7 +19,7 @@ interface Props {
 }
 
 export const FeesItem: React.FC<Props> = ({ darknodeID, token, amount, disabled }) => {
-    const { withdrawReward, updateDarknodeDetails } = NetworkStateContainer.useContainer();
+    const { withdrawReward, updateDarknodeDetails } = NetworkContainer.useContainer();
     const { address } = Web3Container.useContainer();
 
     const [loading, setLoading] = React.useState(false);
@@ -65,7 +65,7 @@ export const FeesItem: React.FC<Props> = ({ darknodeID, token, amount, disabled 
             disabled={isDisabled || !tokenDetails || !tokenDetails.feesToken}
             onClick={isDisabled ? undefined : handleWithdraw}
         >
-            {loading ? <Loading alt /> : <FontAwesomeIcon icon={faChevronRight} pull="left" />}
+            {loading ? <Loading alt /> : <FontAwesomeIcon icon={faChevronRight as FontAwesomeIconProps["icon"]} pull="left" />}
         </button>
     );
 };

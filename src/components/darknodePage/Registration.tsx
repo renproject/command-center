@@ -6,7 +6,7 @@ import { NULL, RegistrationStatus } from "../../lib/ethereum/contractReads";
 import { classNames } from "../../lib/react/className";
 import { catchInteractionException } from "../../lib/react/errors";
 import { GraphContainer } from "../../store/graphStore";
-import { DarknodesState, NetworkStateContainer } from "../../store/networkStateContainer";
+import { DarknodesState, NetworkContainer } from "../../store/networkContainer";
 import { Web3Container } from "../../store/web3Store";
 import { StatusDot, StatusDotColor } from "../common/StatusDot";
 
@@ -31,7 +31,7 @@ interface Props {
 export const Registration: React.FC<Props> = ({ darknodeID, darknodeDetails, registrationStatus, isOperator, publicKey }) => {
     const { address } = Web3Container.useContainer();
     const { renVM } = GraphContainer.useContainer();
-    const { tokenPrices, unhideDarknode, updateDarknodeDetails, updateOperatorDarknodes, showRegisterPopup, showDeregisterPopup, showRefundPopup } = NetworkStateContainer.useContainer();
+    const { tokenPrices, unhideDarknode, updateDarknodeDetails, updateOperatorDarknodes, showRegisterPopup, showDeregisterPopup, showRefundPopup } = NetworkContainer.useContainer();
 
     const [initialRegistrationStatus,] = React.useState(registrationStatus);
     const [active, setActive] = React.useState(false);

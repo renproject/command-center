@@ -8,7 +8,7 @@ import { DarknodeFeeStatus, RegistrationStatus } from "../../../lib/ethereum/con
 import { AllTokenDetails, Token } from "../../../lib/ethereum/tokens";
 import { classNames } from "../../../lib/react/className";
 import { GraphContainer } from "../../../store/graphStore";
-import { DarknodesState, NetworkStateContainer } from "../../../store/networkStateContainer";
+import { DarknodesState, NetworkContainer } from "../../../store/networkContainer";
 import { ReactComponent as RewardsIcon } from "../../../styles/images/icon-rewards-white.svg";
 // import { ReactComponent as WithdrawIcon } from "../../../styles/images/icon-withdraw.svg";
 import { Tabs } from "../../common/Tabs";
@@ -81,7 +81,7 @@ const FeesBlockRow: React.FC<RowProps> = ({ token, quoteCurrency, balance, isOpe
 
 export const FeesBlock: React.FC<Props> = ({ darknodeDetails, isOperator }) => {
 
-    const { quoteCurrency, pendingRewards, pendingTotalInEth, tokenPrices } = NetworkStateContainer.useContainer();
+    const { quoteCurrency, pendingRewards, pendingTotalInEth, tokenPrices } = NetworkContainer.useContainer();
     const { renVM } = GraphContainer.useContainer();
     const { currentCycle, previousCycle } = renVM || {};
 

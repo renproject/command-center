@@ -3,7 +3,7 @@ import * as React from "react";
 import { Blocky, InfoLabel } from "@renproject/react-components";
 
 import { NULL, RegistrationStatus } from "../../lib/ethereum/contractReads";
-import { DarknodesState, NetworkStateContainer } from "../../store/networkStateContainer";
+import { DarknodesState, NetworkContainer } from "../../store/networkContainer";
 import { Web3Container } from "../../store/web3Store";
 import { DarknodeID } from "../common/DarknodeID";
 import { EpochBlock } from "./blocks/EpochBlock";
@@ -28,7 +28,7 @@ interface Props {
 
 export const DarknodeView: React.FC<Props> = ({ darknodeDetails, darknodeID, name, isOperator, action, publicKey }) => {
     const { renNetwork } = Web3Container.useContainer();
-    const { storeDarknodeName: setDarknodeName } = NetworkStateContainer.useContainer();
+    const { storeDarknodeName: setDarknodeName } = NetworkContainer.useContainer();
 
     const [renaming, setRenaming] = React.useState(false);
     const [newName, setNewName] = React.useState<string | undefined>(name);

@@ -1,13 +1,13 @@
 import * as React from "react";
 
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FontAwesomeIcon, FontAwesomeIconProps } from "@fortawesome/react-fontawesome";
 import { Loading } from "@renproject/react-components";
 import { List } from "immutable";
 
 import { AllTokenDetails, Token } from "../../../lib/ethereum/tokens";
 import { classNames } from "../../../lib/react/className";
-import { NetworkStateContainer } from "../../../store/networkStateContainer";
+import { NetworkContainer } from "../../../store/networkContainer";
 import { Web3Container } from "../../../store/web3Store";
 import { ReactComponent as CheckImage } from "../../../styles/images/check.svg";
 
@@ -24,7 +24,7 @@ const ColoredBanner: React.FunctionComponent<{ token: Token }> = ({ token }) => 
 
 export const WithdrawPopup: React.FC<Props> = ({ token, withdraw, onDone, onCancel }) => {
     const { renNetwork } = Web3Container.useContainer();
-    const { withdrawAddresses, addToWithdrawAddresses, removeFromWithdrawAddresses } = NetworkStateContainer.useContainer();
+    const { withdrawAddresses, addToWithdrawAddresses, removeFromWithdrawAddresses } = NetworkContainer.useContainer();
 
     const [error, setError] = React.useState(null as string | null);
     const [stage, setStage] = React.useState(Stage.Pending);
@@ -154,7 +154,7 @@ export const WithdrawPopup: React.FC<Props> = ({ token, withdraw, onDone, onCanc
                                         {withdrawAddress}
                                     </button>
                                     <button value={withdrawAddress} onClick={removeAddress} className="withdraw--address--remove">
-                                        <FontAwesomeIcon icon={faTimes} pull="right" />
+                                        <FontAwesomeIcon icon={faTimes as FontAwesomeIconProps["icon"]} pull="right" />
                                     </button>
                                 </div>;
                             }).toArray()}

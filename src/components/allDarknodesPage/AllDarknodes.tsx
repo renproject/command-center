@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { NetworkStateContainer } from "../../store/networkStateContainer";
+import { NetworkContainer } from "../../store/networkContainer";
 import { Web3Container } from "../../store/web3Store";
 import { _catch_ } from "../common/ErrorBoundary";
 import { DarknodeList } from "./darknodeList/DarknodeList";
@@ -12,7 +12,7 @@ import { DarknodeList } from "./darknodeList/DarknodeList";
 export const AllDarknodes: React.FC<{}> = () => {
 
     const { address, renNetwork: network } = Web3Container.useContainer();
-    const { darknodeDetails, darknodeNames, darknodeRegisteringList, registrySync, darknodeList, hiddenDarknodes } = NetworkStateContainer.useContainer();
+    const { darknodeDetails, darknodeNames, darknodeRegisteringList, registrySync, darknodeList, hiddenDarknodes } = NetworkContainer.useContainer();
 
     const accountDarknodeList = React.useMemo(() => address ? darknodeList.get(address, null) : null, [address, darknodeList]);
     const accountHiddenDarknodes = React.useMemo(() => address ? hiddenDarknodes.get(address, null) : null, [address, hiddenDarknodes]);

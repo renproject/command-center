@@ -2,7 +2,7 @@ import * as React from "react";
 
 import BigNumber from "bignumber.js";
 
-import { DarknodesState } from "../../../store/networkStateContainer";
+import { DarknodesState } from "../../../store/networkContainer";
 import { ReactComponent as FlameIcon } from "../../../styles/images/icon-flame.svg";
 import { TopUpController } from "../topup/TopUpController";
 import { Block, BlockTitle } from "./Block";

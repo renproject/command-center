@@ -3,14 +3,14 @@ import "react-circular-progressbar/dist/styles.css";
 import * as React from "react";
 
 import { faServer } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FontAwesomeIcon, FontAwesomeIconProps } from "@fortawesome/react-fontawesome";
 import { naturalTime } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import { buildStyles, CircularProgressbar } from "react-circular-progressbar";
 
 import { isDefined } from "../../../lib/general/isDefined";
 import { GraphContainer } from "../../../store/graphStore";
-import { DarknodesState } from "../../../store/networkStateContainer";
+import { DarknodesState } from "../../../store/networkContainer";
 import { SECONDS } from "../../common/BackgroundTasks";
 import { Block, BlockBody, BlockTitle } from "./Block";
 
@@ -33,7 +33,7 @@ export const EpochBlock: React.FC<Props> = ({ darknodeDetails }) => {
         <Block className="epoch-block">
             <BlockTitle>
                 <h3>
-                    <FontAwesomeIcon icon={faServer} pull="left" />
+                    <FontAwesomeIcon icon={faServer as FontAwesomeIconProps["icon"]} pull="left" />
                     Next Epoch
                 </h3>
             </BlockTitle>

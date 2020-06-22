@@ -1,13 +1,13 @@
 import * as React from "react";
 
 import { faBolt } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FontAwesomeIcon, FontAwesomeIconProps } from "@fortawesome/react-fontawesome";
 
 import { RegistrationStatus } from "../../../lib/ethereum/contractReads";
 import { isDefined } from "../../../lib/general/isDefined";
 import { classNames } from "../../../lib/react/className";
 import { GithubAPIContainer } from "../../../store/githubApiStore";
-import { DarknodesState } from "../../../store/networkStateContainer";
+import { DarknodesState } from "../../../store/networkContainer";
 import { ExternalLink } from "../../common/ExternalLink";
 import { StatusDot, StatusDotColor } from "../../common/StatusDot";
 import { Block, BlockBody, BlockTitle } from "./Block";
@@ -28,7 +28,7 @@ export const VersionBlock: React.FC<Props> = ({ darknodeDetails }) => {
         <Block className="version-block">
             <BlockTitle>
                 <h3>
-                    <FontAwesomeIcon icon={faBolt} pull="left" />
+                    <FontAwesomeIcon icon={faBolt as FontAwesomeIconProps["icon"]} pull="left" />
                     Darknode Status
                 </h3>
             </BlockTitle>

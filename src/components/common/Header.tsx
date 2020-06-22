@@ -1,12 +1,12 @@
 import * as React from "react";
 
 import { faBars } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FontAwesomeIcon, FontAwesomeIconProps } from "@fortawesome/react-fontawesome";
 // import { RenNetwork, RenNetworks } from "@renproject/contracts";
 import { currencies, Currency, CurrencyIcon, Dropdown } from "@renproject/react-components";
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
 
-import { NetworkStateContainer } from "../../store/networkStateContainer";
+import { NetworkContainer } from "../../store/networkContainer";
 import { UIContainer } from "../../store/uiStore";
 import { Web3Container } from "../../store/web3Store";
 // import { Web3Container } from "../../store/web3Store";
@@ -54,7 +54,7 @@ export const Header = withRouter(({ location }: Props) => {
 
     const { showMobileMenu } = UIContainer.useContainer();
     const { renNetwork } = Web3Container.useContainer();
-    const { quoteCurrency, setQuoteCurrency } = NetworkStateContainer.useContainer();
+    const { quoteCurrency, setQuoteCurrency } = NetworkContainer.useContainer();
 
     const setCurrency = (currency: string): void => {
         setQuoteCurrency(currency as Currency);
@@ -118,7 +118,7 @@ export const Header = withRouter(({ location }: Props) => {
             <div className="header--menu">
                 <MenuItem path="/" title="Network" icon={<NetworkIcon />} activePath={location.pathname} />
                 <MenuItem path="/integrators" title="Integrators" icon={<IntegratorsIcon />} activePath={location.pathname} />
-                <MenuItem path="/darknode-stats" title="Darknodes" icon={<OverviewIcon />} activePath={location.pathname} />
+                <MenuItem path="/darknodes" title="Darknodes" icon={<OverviewIcon />} activePath={location.pathname} />
                 <MenuItem path="/renvm" title="RenVM" icon={<RenVMIcon />} activePath={location.pathname} />
 
                 {/* {languageDropdownNode} */}
@@ -129,7 +129,7 @@ export const Header = withRouter(({ location }: Props) => {
             </div>
             <div role="button" className="header--mobile-menu--button">
                 <button onClick={showMobileMenu}>
-                    <FontAwesomeIcon icon={faBars} />
+                    <FontAwesomeIcon icon={faBars as FontAwesomeIconProps["icon"]} />
                 </button>
             </div>
         </div>

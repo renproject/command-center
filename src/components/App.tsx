@@ -59,9 +59,11 @@ export const App = withRouter(({ match: { params } }: RouteComponentProps) => {
                 <div className="app--body">
                     {_catch_(<Switch>
                         <Route path="/" exact component={NetworkStats} />
+                        <Route path="/network" exact component={NetworkStats} />
                         <Route path="/integrators" exact component={IntegratorsPage} />
                         <Route path="/integrators/:page" exact component={IntegratorsPage} />
                         <Route path="/darknode-stats" exact component={NetworkDarknodesPage} />
+                        <Route path="/darknodes" exact component={NetworkDarknodesPage} />
                         <Route path="/all" exact component={withAccount(AllDarknodes)} />
                         <Route path="/darknode/:darknodeID" exact component={DarknodePage} />
 

@@ -1,11 +1,11 @@
 import * as React from "react";
 
 import { faServer } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FontAwesomeIcon, FontAwesomeIconProps } from "@fortawesome/react-fontawesome";
 import { naturalTime } from "@renproject/react-components";
 
 import { darknodeIDHexToBase58 } from "../../../lib/darknode/darknodeID";
-import { DarknodesState } from "../../../store/networkStateContainer";
+import { DarknodesState } from "../../../store/networkContainer";
 import { ReactComponent as CopyIcon } from "../../../styles/images/icon-copy.svg";
 import { SECONDS } from "../../common/BackgroundTasks";
 import { Block, BlockBody, BlockTitle } from "./Block";
@@ -22,7 +22,7 @@ export const NetworkBlock: React.FC<Props> = ({ darknodeDetails }) => {
         <Block className="network-block">
             <BlockTitle>
                 <h3>
-                    <FontAwesomeIcon icon={faServer} pull="left" />
+                    <FontAwesomeIcon icon={faServer as FontAwesomeIconProps["icon"]} pull="left" />
                     Technical Info
                 </h3>
             </BlockTitle>
