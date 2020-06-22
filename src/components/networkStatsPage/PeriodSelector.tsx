@@ -12,11 +12,11 @@ const PeriodOption = ({ value, selected, onChange }: { value: PeriodType, select
 export const PeriodSelector = ({ selected, onChange }: { selected: PeriodType, onChange: (value: PeriodType) => void }) => {
     return (
         <div className="period-selector">
-            {/* <PeriodOption value={PeriodType.HOUR} selected={selected} onChange={onChange} /> */}
+            <PeriodOption value={PeriodType.HOUR} selected={selected} onChange={onChange} />
             <PeriodOption value={PeriodType.DAY} selected={selected} onChange={onChange} />
-            {/* <PeriodOption value={PeriodType.WEEK} selected={selected} onChange={onChange} /> */}
+            <PeriodOption value={PeriodType.WEEK} selected={selected} onChange={onChange} />
             <PeriodOption value={PeriodType.MONTH} selected={selected} onChange={onChange} />
-            <PeriodOption value={PeriodType.YEAR} selected={selected} onChange={onChange} />
+            {/* <PeriodOption value={PeriodType.YEAR} selected={selected} onChange={onChange} /> */}
             <PeriodOption value={PeriodType.ALL} selected={selected} onChange={onChange} />
         </div>
     );
