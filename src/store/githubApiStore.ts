@@ -12,6 +12,8 @@ import { catchBackgroundException } from "../lib/react/errors";
 const DARKNODE_ENDPOINT = "https://api.github.com/repos/renproject/darknode-release/releases/latest";
 const DARKNODE_CLI_ENDPOINT = "https://api.github.com/repos/renproject/darknode-cli/releases/latest";
 
+const API_LIMIT_ERROR = /API rate limit exceeded/;
+
 const useGithubAPIContainer = () => {
     const [latestDarknodeVersionFull, setLatestDarknodeVersionFull] = useState(null as string | null);
     const [latestDarknodeVersion, setLatestDarknodeVersion] = useState(null as string | null);
@@ -21,8 +23,10 @@ const useGithubAPIContainer = () => {
     const [latestCLIVersion, setLatestCLIVersion] = useState(null as string | null);
     const [latestCLIVersionDaysAgo, setLatestCLIVersionDaysAgo] = useState(null as string | null);
 
+    const HOUR = 60 * 60;
+
     const updater = async () => {
-        let interval = 200;
+        let interval = 0.5 * HOUR;
         try {
             const response = await retryNTimes(() => Axios.get<VersionResponse | VersionError>(DARKNODE_ENDPOINT), 2);
             if (!response.data || response.data.message) {
@@ -37,8 +41,12 @@ const useGithubAPIContainer = () => {
                 showingSeconds: false
             }));
         } catch (error) {
-            catchBackgroundException(error, "Error in GithubAPIContainer: fetchEpoch");
-            interval = 10;
+            if (error && error.message && error.message.match && error.message.match(API_LIMIT_ERROR)) {
+                interval = 2 * HOUR;
+            } else {
+                catchBackgroundException(error, "Error in GithubAPIContainer: fetchEpoch");
+                interval = 30;
+            }
         }
         try {
             const response = await retryNTimes(() => Axios.get<VersionResponse | VersionError>(DARKNODE_CLI_ENDPOINT), 2);
@@ -54,8 +62,12 @@ const useGithubAPIContainer = () => {
                 showingSeconds: false
             }));
         } catch (error) {
-            catchBackgroundException(error, "Error in GithubAPIContainer: fetchEpoch");
-            interval = 10;
+            if (error && error.message && error.message.match && error.message.match(API_LIMIT_ERROR)) {
+                interval = 2 * HOUR;
+            } else {
+                catchBackgroundException(error, "Error in GithubAPIContainer: fetchEpoch");
+                interval = 30;
+            }
         }
         return interval;
     };
