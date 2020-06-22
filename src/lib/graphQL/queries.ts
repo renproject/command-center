@@ -85,3 +85,12 @@ query getIntegrators($offset: Int, $count: Int) {
   }
 }
 `;
+
+export const QUERY_BLOCK = gql`
+{
+  renVM(id: "1") {
+    activeBlock
+    activeTimestamp
+  }
+}
+`;

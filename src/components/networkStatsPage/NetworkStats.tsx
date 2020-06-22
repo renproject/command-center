@@ -27,7 +27,7 @@ import { TokenChart } from "./TokenChart";
 export const NetworkStats = () => {
     const client = useApolloClient();
 
-    const { web3, renNetwork } = Web3Container.useContainer();
+    const { renNetwork } = Web3Container.useContainer();
     const { renVM } = GraphContainer.useContainer();
     const { numberOfDarknodes } = renVM || {};
     const { quoteCurrency, tokenPrices } = NetworkStateContainer.useContainer();
@@ -118,7 +118,7 @@ export const NetworkStats = () => {
 
                     let response: PeriodResponse;
                     try {
-                        response = await getVolumes(renNetwork, client, period, await web3.eth.getBlockNumber());
+                        response = await getVolumes(renNetwork, client, period);
                     } catch (error) {
                         console.error(error);
                     }

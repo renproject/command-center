@@ -34,6 +34,7 @@ export const useTaskSchedule = <T = undefined>(task: () => ReturnResult<T> | Pro
     // Reset last updated if the dependencies have changed.
     useEffect(() => {
         setLastUpdated(0);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, extraDependencies);
 
     useEffect(() => {

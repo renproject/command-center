@@ -7,7 +7,7 @@ import moment from "moment";
 
 import { SECONDS } from "../../components/common/BackgroundTasks";
 import { Token, TokenPrices } from "../ethereum/tokens";
-import { PeriodData } from "./queries";
+import { PeriodData, QUERY_BLOCK } from "./queries";
 import { QUERY_RENVM_HISTORY, RawRenVMHistoric } from "./queries/renVM";
 
 export enum PeriodType {
@@ -64,23 +64,37 @@ export interface PeriodResponse {
     average: PeriodData;
 }
 
-export const getVolumes = async (renNetwork: RenNetworkDetails, client: ApolloClient<unknown>, periodType: PeriodType, currentBlock: number): Promise<PeriodResponse> => {
+export const getVolumes = async (renNetwork: RenNetworkDetails, client: ApolloClient<unknown>, periodType: PeriodType): Promise<PeriodResponse> => {
+    const now = moment().unix();
+
+    const latestBlockResponse = await client.query<{
+        renVM: {
+            activeBlock: string;
+            activeTimestamp: string;
+        }
+    }>({
+        query: QUERY_BLOCK,
+    });
+
+    const activeBlock = new BigNumber(latestBlockResponse.data.renVM.activeBlock).toNumber();
+    const activeTimestamp = new BigNumber(latestBlockResponse.data.renVM.activeTimestamp).toNumber();
 
     // TODO: Calculate dynamically or search for date in subgraph.
     const blockTime = renNetwork.isTestnet ? 4 : 13; // seconds
 
     // Allow 30 blocks for the subgraph to sync blocks. This also matches the
     // time for burns to be considered final in RenVM on mainnet.
-    currentBlock = currentBlock - 30;
+    // currentBlock = currentBlock - 30;
 
     // Calculate the steps so that there are 30 segments show on the graph.
     // An extra segment is fetched at the start to calculate the volume of
     // the first segment.
     const periodSecondsCount = getPeriodTimespan(periodType, renNetwork);
-    const startingBlock = currentBlock - (periodSecondsCount / blockTime);
+    const startingBlock = activeBlock - ((periodSecondsCount - (now - activeTimestamp)) / blockTime);
+    // currentBlock - (periodSecondsCount / blockTime);
     const segmentCount = 30;
-    const segmentLength = Math.ceil((currentBlock - startingBlock) / (segmentCount));
-    const blocks = Array.from(new Array(segmentCount + 1)).map((_, i) => currentBlock - (segmentCount - i) * segmentLength);
+    const segmentLength = Math.ceil((activeBlock - startingBlock) / (segmentCount));
+    const blocks = Array.from(new Array(segmentCount + 1)).map((_, i) => activeBlock - (segmentCount - i) * segmentLength);
 
     // Build GraphQL query containing a request for each of the blocks.
     const query = gql(`
@@ -127,7 +141,7 @@ export const getVolumes = async (renNetwork: RenNetworkDetails, client: ApolloCl
         return {
             id: end.id, // "HOUR441028";
             type: "HOUR", // "HOUR";
-            date: moment().unix() - (currentBlock - end.blockNumber) * blockTime, // 1587700800;
+            date: activeTimestamp - (activeBlock - end.blockNumber) * blockTime, // 1587700800;
 
             // total
 

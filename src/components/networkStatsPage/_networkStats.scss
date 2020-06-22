@@ -131,21 +131,22 @@
                 border-radius: 4px;
                 padding: 4px 20px;
 
-                span {
-                    margin-bottom: -3px;
-                }
-
                 >div {
+
+                    display: flex;
+                    align-items: center;
 
                     >:first-child {
                         display: flex;
                         align-items: center;
                         font-weight: 500;
 
+                        margin-right: 10px;
 
                         svg {
                             width: 14px;
                             margin-right: 10px;
+                            margin-bottom: 3px;
                         }
                     }
 
