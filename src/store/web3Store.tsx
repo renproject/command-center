@@ -194,6 +194,8 @@ const useWeb3Container = (initialState = "testnet" as RenNetwork) => {
             // Navigate to the Exchange page
             history.push("/home");
         }
+
+        return defaultAddress;
     };
 
     // lookForLogout detects if 1) the user has changed or logged out of their Web3
