@@ -218,8 +218,9 @@ const useNetworkContainer = () => {
             promiEvent.once("confirmation", (numberOfConfirmations) => {
                 if (onConfirmation) { onConfirmation(numberOfConfirmations); }
             });
-            promiEvent.on("error", () => {
+            promiEvent.on("error", (error) => {
                 storeTxConfirmations(txHash, -1);
+                reject(error);
             });
         }).catch(reject);
     });

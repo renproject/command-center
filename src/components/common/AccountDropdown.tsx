@@ -2,6 +2,7 @@ import * as React from "react";
 
 import { Blocky, Loading } from "@renproject/react-components";
 
+import { copyToClipboard } from "../../lib/copyToClipboard";
 import { classNames } from "../../lib/react/className";
 import { NetworkContainer } from "../../store/networkContainer";
 import { Web3Container } from "../../store/web3Store";
@@ -28,17 +29,9 @@ export const AccountDropdown: React.FC<Props> = () => {
         logout();
     };
 
-    const copyToClipboard = (e: React.MouseEvent<HTMLElement>): void => {
+    const onClickCopy = (e: React.MouseEvent<HTMLElement>): void => {
         const el = e.currentTarget.childNodes[0] as Element;
-        const value = el.getAttribute("data-addr");
-        if (value) {
-            const fauxInput = document.createElement("input");
-            document.body.appendChild(fauxInput);
-            fauxInput.setAttribute("value", value);
-            fauxInput.select();
-            document.execCommand("copy");
-            document.body.removeChild(fauxInput);
-        }
+        copyToClipboard(el);
         setCopied(true);
     };
 
@@ -109,7 +102,7 @@ export const AccountDropdown: React.FC<Props> = () => {
         {address && shown ?
             <div className="header--dropdown--spacing header--dropdown--options header--dropdown--accounts">
                 <ul className={["header--dropdown", !address ? "header--dropdown--login" : ""].join(" ")}>
-                    <li role="button" onClick={copyToClipboard} className="header--dropdown--option">
+                    <li role="button" onClick={onClickCopy} className="header--dropdown--option">
                         <span data-addr={address}>
                             {copied ?
                                 <span>Copied</span>

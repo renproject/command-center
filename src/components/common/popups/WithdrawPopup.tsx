@@ -1,10 +1,11 @@
 import * as React from "react";
 
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faCopy, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon, FontAwesomeIconProps } from "@fortawesome/react-fontawesome";
 import { Loading } from "@renproject/react-components";
 import { List } from "immutable";
 
+import { copyToClipboard } from "../../../lib/copyToClipboard";
 import { AllTokenDetails, Token } from "../../../lib/ethereum/tokens";
 import { classNames } from "../../../lib/react/className";
 import { NetworkContainer } from "../../../store/networkContainer";
@@ -128,6 +129,11 @@ export const WithdrawPopup: React.FC<Props> = ({ token, withdraw, onDone, onCanc
         }
     };
 
+    const onClickCopy = (e: React.MouseEvent<HTMLElement>): void => {
+        const el = e.currentTarget as Element;
+        copyToClipboard(el);
+    };
+
     return <div className="popup withdraw">
         <ColoredBanner token={token} />
         <div className="popup--body">
@@ -152,6 +158,9 @@ export const WithdrawPopup: React.FC<Props> = ({ token, withdraw, onDone, onCanc
                                         className={`monospace withdraw--address`}
                                     >
                                         {withdrawAddress}
+                                    </button>
+                                    <button onClick={onClickCopy} data-addr={withdrawAddress} className="withdraw--address--remove">
+                                        <FontAwesomeIcon icon={faCopy as FontAwesomeIconProps["icon"]} pull="right" />
                                     </button>
                                     <button value={withdrawAddress} onClick={removeAddress} className="withdraw--address--remove">
                                         <FontAwesomeIcon icon={faTimes as FontAwesomeIconProps["icon"]} pull="right" />
