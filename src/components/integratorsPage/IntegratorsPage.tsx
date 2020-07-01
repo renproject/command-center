@@ -63,7 +63,7 @@ export const IntegratorsPage = withRouter(({ match: { params }, history }) => {
                 <tbody>
                     {!filteredPage ? <EmptyRow><Loading alt={true} /></EmptyRow> :
                         typeof filteredPage === "string" ? <EmptyRow>Error loading integrators: {currentPage}</EmptyRow> :
-                            filteredPage.length === 0 ? <EmptyRow>No results</EmptyRow> :
+                            filteredPage.length === 0 ? <EmptyRow>No results. <button className="text-button" onClick={goToPreviousPage}>Previous page</button></EmptyRow> :
                                 filteredPage.map((integrator, i) =>
                                     <IntegratorRow key={integrator.now.id} index={i + 1} integrator={integrator} isActive={activeIntegrator === integrator.now.id} setActiveIntegrator={setActiveIntegrator} />
                                 )}

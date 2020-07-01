@@ -125,15 +125,15 @@
 }
 
 .withdraw--selected {
-    background-color: $blue-bright !important;
-    border-color: $blue-bright;
+    background-color: $primary !important;
+    border-color: $primary;
 
     >* {
         color: white;
     }
 
     font-weight: 900;
-    // border: 1px solid $blue-bright;
+    // border: 1px solid $primary;
 }
 
 .withdraw--address--remove {
@@ -162,7 +162,7 @@
     margin-bottom: 10px;
     position: relative;
     background: #09203B;
-    border: 1.6px solid $blue-bright;
+    border: 1.6px solid $primary;
     box-sizing: border-box;
     border-radius: 4px;
     height: 40px;
@@ -219,7 +219,7 @@
 
     /* identical to box height */
 
-    color: $blue-bright;
+    color: $primary;
 
     position: absolute;
     top: 0;

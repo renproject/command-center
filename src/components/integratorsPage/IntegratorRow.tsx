@@ -42,9 +42,9 @@ export const IntegratorRow: React.FC<Props> = ({ index, integrator, isActive, se
 
     // Day volume in token quantity
 
-    const dayVolumeBTCRaw = integrator.day ? new BigNumber(integrator.now.volumeBTC).minus(integrator.day.volumeBTC) : new BigNumber(0);
-    const dayVolumeZECRaw = integrator.day ? new BigNumber(integrator.now.volumeZEC).minus(integrator.day.volumeZEC) : new BigNumber(0);
-    const dayVolumeBCHRaw = integrator.day ? new BigNumber(integrator.now.volumeBCH).minus(integrator.day.volumeBCH) : new BigNumber(0);
+    const dayVolumeBTCRaw = new BigNumber(integrator.now.volumeBTC).minus(integrator.day ? integrator.day.volumeBTC : new BigNumber(0));
+    const dayVolumeZECRaw = new BigNumber(integrator.now.volumeZEC).minus(integrator.day ? integrator.day.volumeZEC : new BigNumber(0));
+    const dayVolumeBCHRaw = new BigNumber(integrator.now.volumeBCH).minus(integrator.day ? integrator.day.volumeBCH : new BigNumber(0));
 
     const dayVolumeBTCReadable = React.useMemo(() => tokenToReadable(dayVolumeBTCRaw ?
         dayVolumeBTCRaw : new BigNumber(0), Token.BTC), [dayVolumeBTCRaw]);

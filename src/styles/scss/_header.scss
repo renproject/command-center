@@ -150,11 +150,11 @@
 }
 
 .header--dropdown .header--dropdown--highlight {
-    color: $blue-bright;
+    color: $primary;
 
     &:hover,
     &:active {
-        color: $blue-bright;
+        color: $primary;
     }
 }
 
@@ -270,7 +270,7 @@
 }
 
 .header--group--active {
-    border-bottom: 3px solid $blue-bright !important;
+    border-bottom: 3px solid $primary !important;
 }
 
 .transaction {
@@ -292,7 +292,7 @@
     }
 
     a.transaction--hash {
-        color: $blue-bright;
+        color: $primary;
     }
 }
 
@@ -402,8 +402,8 @@
     }
 
     &:focus {
-        // border-left: 1apx solid $blue-bright !important;
-        // border-right: 1px solid $blue-bright !important;
+        // border-left: 1apx solid $primary !important;
+        // border-right: 1px solid $primary !important;
     }
 
     &.header--search--404 {
@@ -440,7 +440,7 @@
     }
 
     .new-blue {
-        color: $blue-bright;
+        color: $primary;
         font-size: 12px;
     }
 

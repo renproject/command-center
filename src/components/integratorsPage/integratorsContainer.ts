@@ -89,22 +89,27 @@ const useIntegratorsContainer = () => {
                 const periodSecondsCount = getPeriodTimespan(PeriodType.DAY, renNetwork);
                 const startingBlock = Math.floor(activeBlock - ((periodSecondsCount - (now - activeTimestamp)) / blockTime));
 
-                // Build GraphQL query containing a request for each of the blocks.
-                const query = gql(`
-                    {
-                            ${response.data.integrators.map(integratorData => QUERY_INTEGRATORS_HISTORY(integratorData.id, startingBlock)).join("\n")}
-                    }
-                `);
+                let integratorsWithDay: Array<{ now: Integrator, day: Integrator | null }> = [];
 
-                const responseDay = await apollo
-                    .query<{ [block: string]: Integrator | null }>({
-                        query,
+                if (response.data.integrators.length) {
+
+                    // Build GraphQL query containing a request for each of the blocks.
+                    const query = gql(`
+                        {
+                                ${response.data.integrators.map(integratorData => QUERY_INTEGRATORS_HISTORY(integratorData.id, startingBlock)).join("\n")}
+                        }
+                    `);
+
+                    const responseDay = await apollo
+                        .query<{ [block: string]: Integrator | null }>({
+                            query,
+                        });
+
+                    integratorsWithDay = response.data.integrators.map(integrator => {
+                        const integratorDay = Object.values(responseDay.data).filter((iDay: Integrator | null) => iDay && iDay.id === integrator.id)[0] || null;
+                        return { now: integrator, day: integratorDay };
                     });
-
-                const integratorsWithDay = response.data.integrators.map(integrator => {
-                    const integratorDay = Object.values(responseDay.data).filter((iDay: Integrator | null) => iDay && iDay.id === integrator.id)[0] || null;
-                    return { now: integrator, day: integratorDay };
-                });
+                }
 
                 // response.data.integrators
 

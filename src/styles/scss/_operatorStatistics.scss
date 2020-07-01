@@ -75,7 +75,7 @@
     }
 
     .darknodesList--view {
-        background-color: $blue-bright;
+        background-color: $primary;
         box-shadow: rgba(0, 0, 0, 0.5) 0px 3px 5px;
         color: white;
         border-radius: 2px;
@@ -87,7 +87,7 @@
     }
 
     .darknodesList--view:active {
-        background-color: darken($blue-bright, 5%);
+        background-color: darken($primary, 5%);
         box-shadow: rgba(0, 0, 0, 0.5) 0px 0px 10px;
     }
 

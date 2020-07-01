@@ -253,7 +253,7 @@ svg.icon {
 }
 
 .blue {
-    color: $blue-bright;
+    color: $primary;
 }
 
 .orange {
@@ -470,4 +470,22 @@ label {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.text-button {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    height: initial;
+    width: initial;
+    color: $primary;
+
+    :hover {
+        margin-top: -1px;
+    }
+
+    :active {
+        margin-top: 0px;
+    }
 }

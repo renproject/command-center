@@ -30,7 +30,7 @@ $min-header: $min-lg;
     justify-content: flex-start;
 
     &:hover {
-        border-left: 4px solid transparentize($blue-bright, 1 - 0.5);
+        border-left: 4px solid transparentize($primary, 1 - 0.5);
         background-color: $blue-dark;
     }
 }
@@ -117,7 +117,7 @@ $min-header: $min-lg;
 }
 
 .sidebar--row.sidebar--active {
-    border-left: 4px solid $blue-bright;
+    border-left: 4px solid $primary;
 }
 
 .sidebar--row.sidebar--faded {
@@ -385,7 +385,7 @@ input[type="text"].sidebar--search--input {
     .wallet-icon--inner {
         background: url('../../styles/images/wallet.svg') no-repeat;
         background-size: 12px 14px;
-        background-color: $blue-bright;
+        background-color: $primary;
         margin: 0;
         height: 14px;
         width: 12px;
