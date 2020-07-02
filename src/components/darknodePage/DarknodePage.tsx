@@ -86,7 +86,7 @@ export const DarknodePage = withRouter(({ match, location }: Props) => {
     const details = darknodeOrURL ? darknodeDetails.get(darknodeOrURL, null) : null;
     const name = darknodeOrURL ? darknodeNames.get(darknodeOrURL) : undefined;
 
-    const readOnly = !details || !address || details.operator !== address;
+    const readOnly = !details || !address || details.operator.toLowerCase() !== address.toLowerCase();
 
     let darknodeAction = DarknodeAction.View;
     if (
