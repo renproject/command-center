@@ -1,13 +1,8 @@
 $icon-size: 12px;
 
 .info-label {
-    // display: inline-block;
-    // vertical-align: middle;
     margin-left: 5px;
     position: relative;
-
-    // padding: 5px;
-    // margin-top: -5px;
 
     &,
     * {
@@ -15,31 +10,13 @@ $icon-size: 12px;
     }
 
     &.info-label-bottom {
-        .info-label--message {
-            // margin-top: 5px;
-            // transform: translateX(-50%) translateY(0%);
-        }
-
-        // .info-label--message:after,
-        // .info-label--message:before {
-        //     top: -4%;
-        // }
-
         .info-label--message:after {
-            // transform: translateX(-50%) translateY(0%);
-
             border-bottom-color: #ffffff;
             border-width: 7px;
             margin-left: -1px;
             bottom: 100%;
             border-color: transparent transparent white transparent;
         }
-
-        // .info-label--message:before {
-        //     border-bottom-color: #cccccc;
-        //     border-width: 8px;
-        //     margin-left: -8px;
-        // }
     }
 }
 
@@ -59,19 +36,14 @@ $icon-size: 12px;
 }
 
 .info-label--message {
-    // $width: 200;
-
     line-height: initial;
     text-align: center;
-    // visibility: hidden;
     background-color: white;
     color: #333;
     padding: 15px;
     border-radius: 4px;
     position: absolute;
-    // left: -50%;
     width: 260px;
-    // opacity: 0;
     display: none;
     transition: all 0.2s;
     z-index: 100;
@@ -94,57 +66,7 @@ $icon-size: 12px;
         content: "";
         left: 50%;
         position: absolute;
-        // margin-left: -5px;
         border-width: 5px;
         border-style: solid;
     }
-
-    // margin-left: $icon-size / 2;
-    // margin-top: -26px;
-    // display: none;
-    // font-weight: normal;
-    // line-height: 1.4;
-    // background-color: white;
-    // color: #000;
-    // border: 1px solid #cccccc;
-    // border-radius: 4px;
-    // box-shadow: 0px 1px 2px rgba(0, 27, 58, 0.05);
-    // padding: 8px;
-    // position: absolute;
-    // // transform: translateX(-50%) translateY(-100%);
-    // z-index: 30;
-    // max-width: 220px;
-    // width: 220px;
-    // text-align: center;
-    // white-space: normal;
 }
-
-// .info-label--message:after,
-// .info-label--message:before {
-//     top: 100%;
-//     left: 50%;
-//     border: solid transparent;
-//     content: " ";
-//     height: 0;
-//     width: 0;
-//     position: absolute;
-//     pointer-events: none;
-// }
-
-// .info-label--message:after {
-//     // border-top-color: #ffffff;
-//     // border-width: 7px;
-//     // margin-left: -7px;
-
-//     content: "";
-//     position: absolute;
-//     margin-left: -5px;
-//     border-width: 5px;
-//     border-style: solid;
-// }
-
-// .info-label--message:before {
-//     border-top-color: #cccccc;
-//     border-width: 8px;
-//     margin-left: -8px;
-// }

@@ -4,6 +4,7 @@
 
 .Select.Select--currency {
     width: 100%;
+
     @media(min-width: $min-sm) {
         width: 300px;
     }
@@ -36,7 +37,8 @@
 }
 
 .Select.Select--basic>.Select-control .Select-input {
-    height: 33px; // Subtracted 2px for border
+    height: 33px;
+    /* Subtracted 2px for border */
 }
 
 .Select.Select--basic>.Select-control .Select-value {

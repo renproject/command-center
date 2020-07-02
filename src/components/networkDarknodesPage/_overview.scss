@@ -47,8 +47,6 @@
             border-radius: 4px;
             height: 400px;
 
-            // min-width: 500px;
-
             flex: 1 1 0px;
 
             display: flex;
@@ -60,8 +58,6 @@
         .chart--tabs {
             cursor: pointer;
             width: 100%;
-            // background: #1C2127;
-            // box-sizing: border-box;
             margin: 0px;
             margin-bottom: 0;
             display: flex;
@@ -84,7 +80,6 @@
 
             width: 50%;
             transition: all 200ms;
-            // border: 0px solid rgba(145, 149, 160, 0.1);
             border: 1px solid transparent;
             padding: 10px;
             border-bottom: 2px solid #001b39;
@@ -98,10 +93,6 @@
         .chart--tab--selected {
             border-bottom: 2px solid transparent;
             box-shadow: none;
-            // background: #282C35;
-            // border: 1px solid $primary;
-            // box-sizing: border-box;
-            // box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
             color: #E0E3EB;
 
             >span {
@@ -115,9 +106,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-
-            // width: 100%;
-            // max-width: 40%;
 
             .overview--chart--legend--table {
                 width: 200px;

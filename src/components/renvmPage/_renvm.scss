@@ -1,5 +1,4 @@
 .renvm {
-    // display: flex;
 
     h1,
     h2 {
@@ -8,7 +7,6 @@
         font-size: 14px;
         line-height: 16px;
 
-        /* identical to box height */
         letter-spacing: 1.75px;
         text-transform: uppercase;
         color: #ffffff;
@@ -67,8 +65,6 @@
                 color: #f9f9f9;
                 width: auto;
 
-                // min-width: 100px;
-
                 @media(min-width: $min-sm) {
                     min-width: 100px;
                 }
@@ -91,7 +87,7 @@
             cursor: pointer;
             height: 40px;
             border: none;
-            background-color: #00000000 !important; // transparent
+            background-color: #00000000 !important;
 
             &:hover:nth-child(odd)>td,
             &:hover>td {
@@ -196,7 +192,6 @@
     top: ((55px - $size) / 2);
     height: $size;
     width: $size;
-    // margin-top: 0;
     background: url('../../styles/images/exit-black.svg');
     background-size: 12px 12px;
     background-repeat: no-repeat;

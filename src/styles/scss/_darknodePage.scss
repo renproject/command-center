@@ -18,14 +18,6 @@
                 margin-left: 0;
             }
         }
-
-        // >*+* {
-        //     margin-left: 30px;
-
-        //     @media(max-width: $max-sm) {
-        //         margin-left: 10px;
-        //     }
-        // }
     }
 
     .darknodePage--banner .blocky {
@@ -59,9 +51,6 @@
     .darknodePage--banner--top {
         height: 47.5px;
 
-        // >:not(:first-child) {
-        //     margin-left: 20px;
-        // }
         h3 {
             font-size: 34px;
             margin: 0;
@@ -160,9 +149,7 @@
     .status>* {
         background: #19324E;
         border: 1px solid white;
-        // display: block;
         padding: 0px 20px;
-        // max-width: 200px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -380,7 +367,6 @@
         height: 40px;
         background: $primary;
         border: none;
-        // border: 1px solid #FFFFFF;
         box-sizing: border-box;
         border-radius: 4px;
         font-weight: 600;
@@ -445,10 +431,6 @@
         overflow: hidden;
         text-overflow: ellipsis;
         min-width: 0px;
-
-        // @media(max-width: $max-sm) {
-        //     display: none;
-        // }
     }
 }
 

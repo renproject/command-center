@@ -1,5 +1,4 @@
 .map {
-    // flex: 1 1 600px;
     flex: 2 2 465px;
     display: flex;
     max-height: 600px;
@@ -9,9 +8,6 @@
     }
 
     .map--world {
-        // width: 100%;
-        // min-width: 500px;
-        // max-width: 60%;
         flex: 1 1 60%;
         min-width: 60%;
     }
@@ -30,7 +26,6 @@
         font-size: 14px;
         line-height: 16px;
 
-        /* identical to box height */
         letter-spacing: 1.75px;
         text-transform: uppercase;
         color: #FFFFFF;
