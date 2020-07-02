@@ -57,11 +57,11 @@ export const CardView: React.FC<Props> = ({ darknodeID, darknodeDetails, name, q
                         <FontAwesomeIcon icon={faStar as FontAwesomeIconProps["icon"]} className="darknode-card--bottom--icon" />
                         <span className="currency-value">
                             <CurrencyIcon currency={quoteCurrency} />
-                            <TokenBalance
+                            {darknodeDetails.feesEarnedTotalEth ? <TokenBalance
                                 token={Token.ETH}
                                 convertTo={quoteCurrency}
                                 amount={darknodeDetails.feesEarnedTotalEth}
-                            />
+                            /> : "..."}
                         </span>
                         {" "}
                         <span className="currency-symbol">{quoteCurrency.toUpperCase()}</span>
@@ -70,7 +70,7 @@ export const CardView: React.FC<Props> = ({ darknodeID, darknodeDetails, name, q
                         <FontAwesomeIcon icon={faFire as FontAwesomeIconProps["icon"]} className="darknode-card--bottom--icon" />
                         <span className="currency-value">
                             <CurrencyIcon currency={Currency.ETH} />
-                            <TokenBalance token={Token.ETH} amount={darknodeDetails.ethBalance} digits={3} />
+                            {darknodeDetails.ethBalance ? <TokenBalance token={Token.ETH} amount={darknodeDetails.ethBalance} digits={3} /> : <>...</>}
                         </span>
                         {" "}
                         <span className="currency-symbol">ETH</span>

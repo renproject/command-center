@@ -213,24 +213,29 @@ export const getOperatorDarknodes = async (
 
 // Sum up fees into the total ETH value (in wei).
 export const sumUpFeeMap = (
-    feesEarned: OrderedMap<Token, BigNumber>,
+    feesEarned: OrderedMap<Token, BigNumber | null>,
     tokenPrices: TokenPrices,
-): [BigNumber, OrderedMap<Token, BigNumber>] => {
+): [BigNumber | null, OrderedMap<Token, BigNumber | null>] => {
 
-    let totalEth = new BigNumber(0);
+    // let totalEth: BigNumber | null = null;
 
     const feesEarnedInEth = NewTokenDetails.map((tokenDetails, token) => {
         const price = tokenPrices.get(token, undefined);
         const decimals = tokenDetails ? new BigNumber(tokenDetails.decimals.toString()).toNumber() : 0;
-        const inEth = feesEarned.get(token, new BigNumber(0))
-            .div(Math.pow(10, decimals))
-            .multipliedBy(price ? price.get(Currency.ETH, 0) : 0);
-        totalEth = totalEth.plus(inEth);
-        return inEth;
+        const tokenFees = feesEarned.get(token, new BigNumber(0));
+        return tokenFees ?
+            tokenFees
+                .div(Math.pow(10, decimals))
+                .multipliedBy(price ? price.get(Currency.ETH, 0) : 0) :
+            tokenFees;
     });
 
+    const totalEth = feesEarnedInEth.reduce((acc, inEth) => {
+        return inEth ? (acc || new BigNumber(0)).plus(inEth) : acc;
+    }, null as BigNumber | null);
+
     // Convert to wei
-    return [totalEth.multipliedBy(new BigNumber(10).pow(18)), feesEarnedInEth];
+    return [totalEth ? totalEth.multipliedBy(new BigNumber(10).pow(18)) : totalEth, feesEarnedInEth];
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -364,7 +369,7 @@ export const fetchDarknodeDetails = async (
     // Get eth Balance
     const πEthBalance = web3.eth.getBalance(darknodeID)
         .then((ethBalanceBN) => ethBalanceBN ? new BigNumber(ethBalanceBN.toString()) : new BigNumber(0))
-        .catch(() => new BigNumber(0));
+        .catch(() => null);
 
     // Call queryStats
     const πNodeStatistics = queryStat(getLightnode(renNetwork), darknodeIDHexToBase58(darknodeID))
@@ -374,7 +379,7 @@ export const fetchDarknodeDetails = async (
 
     // Get earned fees
     const feesEarned = await getBalances(web3, renNetwork, darknode, darknodeID);
-    let feesEarnedTotalEth = new BigNumber(0);
+    let feesEarnedTotalEth: BigNumber | null = null;
     if (tokenPrices) {
         [feesEarnedTotalEth,] = sumUpFeeMap(feesEarned, tokenPrices);
     }

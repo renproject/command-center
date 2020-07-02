@@ -18,8 +18,8 @@ interface Props {
     storedName: string | undefined;
     active: boolean;
     faded: boolean;
-    feesEarnedTotalEth: BigNumber | string | undefined;
-    ethBalance: BigNumber | string | undefined;
+    feesEarnedTotalEth: BigNumber | string | null | undefined;
+    ethBalance: BigNumber | string | null | undefined;
     quoteCurrency: Currency;
     connected: boolean;
     hideMobileMenu: () => void;

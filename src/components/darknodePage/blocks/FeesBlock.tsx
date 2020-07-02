@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { Currency, CurrencyIcon, TokenIcon } from "@renproject/react-components";
+import { Currency, CurrencyIcon, Loading, TokenIcon } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
 
@@ -21,10 +21,13 @@ enum Tab {
     Pending = "Pending",
 }
 
-const mergeFees = (left: OrderedMap<Token, BigNumber>, right: OrderedMap<Token, BigNumber>) => {
-    let newFees = OrderedMap<Token, BigNumber>();
+const mergeFees = (left: OrderedMap<Token, BigNumber | null>, right: OrderedMap<Token, BigNumber | null>) => {
+    let newFees = OrderedMap<Token, BigNumber | null>();
     for (const token of left.keySeq().concat(right.keySeq()).toArray()) {
-        newFees = newFees.set(token, new BigNumber(0).plus(left.get(token, new BigNumber(0)).plus(right.get(token, new BigNumber(0)))));
+        const leftFee = left.get(token, null);
+        const rightFee = right.get(token, null);
+        const newFee = leftFee || rightFee ? new BigNumber(0).plus(leftFee || new BigNumber(0)).plus(rightFee || new BigNumber(0)) : null;
+        newFees = newFees.set(token, newFee);
     }
     return newFees;
 };
@@ -35,7 +38,7 @@ interface RowProps {
     darknodeDetails: DarknodesState;
     tab: Tab;
     percent: number;
-    balance: BigNumber;
+    balance: BigNumber | null;
     quoteCurrency: Currency;
 }
 
@@ -48,25 +51,27 @@ const FeesBlockRow: React.FC<RowProps> = ({ token, quoteCurrency, balance, isOpe
                 <span>{token}</span>
             </td>
             <td className="fees-block--table--value">
-                <TokenBalance token={token} amount={balance} />
+                {balance ? <TokenBalance token={token} amount={balance} /> : <Loading alt={true} />}
             </td>
             <td className="fees-block--table--usd">
-                <CurrencyIcon currency={quoteCurrency} />
-                <TokenBalance
-                    token={token}
-                    amount={balance}
-                    convertTo={quoteCurrency}
-                />
-                {" "}
-                <span className="fees-block--table--usd-symbol">
-                    {quoteCurrency.toUpperCase()}
-                </span>
+                {balance ? <>
+                    <CurrencyIcon currency={quoteCurrency} />
+                    <TokenBalance
+                        token={token}
+                        amount={balance}
+                        convertTo={quoteCurrency}
+                    />
+                    {" "}
+                    <span className="fees-block--table--usd-symbol">
+                        {quoteCurrency.toUpperCase()}
+                    </span>
+                </> : <></>}
             </td>
             {tab === Tab.Withdrawable && isOperator && (darknodeDetails.registrationStatus === RegistrationStatus.Registered || darknodeDetails.registrationStatus === RegistrationStatus.DeregistrationPending) ? <td>
                 <FeesItem
-                    disabled={tab !== Tab.Withdrawable}
+                    disabled={tab !== Tab.Withdrawable || !balance}
                     token={token}
-                    amount={balance}
+                    amount={balance || new BigNumber(0)}
                     darknodeID={darknodeDetails.ID}
                 />
             </td> : <></>}
@@ -102,14 +107,18 @@ export const FeesBlock: React.FC<Props> = ({ darknodeDetails, isOperator }) => {
 
     const showPreviousPending = previousCycle && darknodeDetails && darknodeDetails.cycleStatus.get(previousCycle) === DarknodeFeeStatus.NOT_CLAIMED;
     const showCurrentPending = currentCycle && darknodeDetails && darknodeDetails.cycleStatus.get(currentCycle) === DarknodeFeeStatus.NOT_CLAIMED;
-    let pendingTotal = new BigNumber(0);
-    let summedPendingRewards = OrderedMap<Token, BigNumber>();
+
+    const pendingTotal = [previousCycle, currentCycle].reduce((acc, cycle) => {
+        if (!cycle) { return acc; }
+        const cycleFees = pendingTotalInEth.get(cycle, null);
+        return cycleFees ? (acc || new BigNumber(0)).plus(cycleFees) : acc;
+    }, null as BigNumber | null);
+
+    let summedPendingRewards = OrderedMap<Token, BigNumber | null>();
     if (previousCycle && showPreviousPending) {
-        pendingTotal = pendingTotal.plus(pendingTotalInEth.get(previousCycle, new BigNumber(0)));
         summedPendingRewards = pendingRewards.get(previousCycle, OrderedMap());
     }
     if (currentCycle && showCurrentPending) {
-        pendingTotal = pendingTotal.plus(pendingTotalInEth.get(currentCycle, new BigNumber(0)));
         summedPendingRewards = pendingRewards.get(currentCycle, OrderedMap());
     }
     if (previousCycle && currentCycle && showPreviousPending && showCurrentPending) {
@@ -119,7 +128,7 @@ export const FeesBlock: React.FC<Props> = ({ darknodeDetails, isOperator }) => {
         );
     }
 
-    let fees = OrderedMap<Token, BigNumber>();
+    let fees = OrderedMap<Token, BigNumber | null>();
     if (darknodeDetails) {
         fees = tab === Tab.Withdrawable ? darknodeDetails.feesEarned :
             tab === Tab.Pending ? summedPendingRewards :
@@ -132,6 +141,10 @@ export const FeesBlock: React.FC<Props> = ({ darknodeDetails, isOperator }) => {
     const onTab = React.useCallback((newTab: string) => {
         setTab(newTab as Tab);
     }, [setTab]);
+
+    const tabTotal = darknodeDetails ?
+        tab === Tab.Withdrawable ? darknodeDetails.feesEarnedTotalEth : pendingTotal :
+        null;
 
     return (
         <Block
@@ -161,14 +174,14 @@ export const FeesBlock: React.FC<Props> = ({ darknodeDetails, isOperator }) => {
                                     <CurrencyIcon currency={quoteCurrency} />
                                 </span>
                                 <span className="fees-block--advanced--value">
-                                    <TokenBalance
-                                        token={Token.ETH}
-                                        convertTo={quoteCurrency}
-                                        amount={
-                                            tab === Tab.Withdrawable ? darknodeDetails.feesEarnedTotalEth :
-                                                pendingTotal
-                                        }
-                                    />
+                                    {tabTotal ?
+                                        <TokenBalance
+                                            token={Token.ETH}
+                                            convertTo={quoteCurrency}
+                                            amount={tabTotal}
+                                        /> :
+                                        <Loading />
+                                    }
                                 </span>
                                 <span className="fees-block--advanced--unit">{quoteCurrency.toUpperCase()}</span>
                             </div>
@@ -185,16 +198,20 @@ export const FeesBlock: React.FC<Props> = ({ darknodeDetails, isOperator }) => {
                                 </thead>
                                 <tbody>
                                     {
-                                        fees.map((balance, token) => ({
-                                            balance, percent: balance
-                                                .div(new BigNumber(10).exponentiatedBy(AllTokenDetails.get(token, { decimals: 0 }).decimals))
-                                                .times(tokenPrices?.get(token)?.get(Currency.ETH) || 0)
-                                                .times(new BigNumber(10).exponentiatedBy(18))
-                                                .div(tab === Tab.Withdrawable ? darknodeDetails.feesEarnedTotalEth : pendingTotal)
-                                                .times(100)
-                                                .decimalPlaces(2)
-                                                .toNumber() || 0,
-                                        })).sortBy(item => -item.percent).toArray().map(([token, { balance, percent }]: [Token, { balance: BigNumber, percent: number }], i) => {
+                                        fees.map((balance, token) => {
+                                            const total = tab === Tab.Withdrawable ? darknodeDetails.feesEarnedTotalEth : pendingTotal;
+                                            return {
+                                                balance, percent: balance && total ? balance
+                                                    .div(new BigNumber(10).exponentiatedBy(AllTokenDetails.get(token, { decimals: 0 }).decimals))
+                                                    .times(tokenPrices?.get(token)?.get(Currency.ETH) || 0)
+                                                    .times(new BigNumber(10).exponentiatedBy(18))
+                                                    .div(total)
+                                                    .times(100)
+                                                    .decimalPlaces(2)
+                                                    .toNumber() || 0 :
+                                                    0,
+                                            };
+                                        }).sortBy(item => -item.percent).toArray().map(([token, { balance, percent }]: [Token, { balance: BigNumber | null, percent: number }], i) => {
                                             return <FeesBlockRow
                                                 key={token}
                                                 token={token}

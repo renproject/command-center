@@ -86,6 +86,7 @@ export const Notifications: React.FC<Props> = ({ isOperator, darknodeDetails, re
         isOperator &&
         darknodeDetails &&
         darknodeDetails.registrationStatus === RegistrationStatus.Registered &&
+        darknodeDetails.ethBalance &&
         darknodeDetails.ethBalance.lt(lowValue)
     ) {
         notification = {

@@ -35,9 +35,9 @@ export class DarknodesState extends Record({
     ID: "",
     multiAddress: "",
     publicKey: "",
-    ethBalance: new BigNumber(0),
+    ethBalance: null as BigNumber | null,
     feesEarned: OrderedMap<Token, BigNumber>(),
-    feesEarnedTotalEth: new BigNumber(0),
+    feesEarnedTotalEth: null as BigNumber | null,
 
     cycleStatus: OrderedMap<string, DarknodeFeeStatus>(),
 
@@ -72,9 +72,9 @@ const useNetworkContainer = () => {
     const [transactions, setTransactions] = useState(OrderedMap<string, PromiEvent<any>>());
     const [confirmations, setConfirmations] = useState(OrderedMap<string, number>());
 
-    const [pendingRewards, setPendingRewards] = useState(OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber>>());
-    const [pendingTotalInEth, setPendingTotalInEth] = useState(OrderedMap<string /* cycle */, BigNumber>());
-    const [pendingRewardsInEth, setPendingRewardsInEth] = useState(OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber>>());
+    const [pendingRewards, setPendingRewards] = useState(OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber | null>>());
+    const [pendingTotalInEth, setPendingTotalInEth] = useState(OrderedMap<string /* cycle */, BigNumber | null>());
+    const [pendingRewardsInEth, setPendingRewardsInEth] = useState(OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber | null>>());
 
     ///////////////////////////////////////////////////////////
     // If these change, localstorage migration may be needed //
@@ -240,7 +240,7 @@ const useNetworkContainer = () => {
     const fetchCycleAndPendingRewards = async (latestRenVM: RenVM) => {
         const darknodePayment = getDarknodePayment(web3, renNetwork);
 
-        let newPendingRewards = OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber>>();
+        let newPendingRewards = OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber | null>>();
 
         const πPrevious = safePromiseAllMap(
             NewTokenDetails.map(async (_tokenDetails, token) => {
@@ -273,11 +273,11 @@ const useNetworkContainer = () => {
                     return new BigNumber((currentCycleRewardPool).toString()).decimalPlaces(0).div(latestRenVM.numberOfDarknodes).decimalPlaces(0);
                 } catch (error) {
                     console.error(`Error fetching rewards for ${token}`, error);
-                    return new BigNumber(0);
+                    return null;
                 }
             }
             ).toOrderedMap(),
-            new BigNumber(0),
+            null,
         );
 
         const previous = await πPrevious;
@@ -295,8 +295,8 @@ const useNetworkContainer = () => {
         if (tokenPrices) {
             const [previousTotal, previousInEth] = sumUpFeeMap(previous, tokenPrices);
             const [currentTotal, currentInEth] = sumUpFeeMap(current, tokenPrices);
-            newPendingTotalInEth = OrderedMap<string /* cycle */, BigNumber>();
-            newPendingRewardsInEth = OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber>>();
+            newPendingTotalInEth = OrderedMap<string /* cycle */, BigNumber | null>();
+            newPendingRewardsInEth = OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber | null>>();
             if (isDefined(latestRenVM)) {
                 newPendingTotalInEth = newPendingTotalInEth.set(latestRenVM.previousCycle, previousTotal);
                 newPendingRewardsInEth = newPendingRewardsInEth.set(latestRenVM.previousCycle, previousInEth);
