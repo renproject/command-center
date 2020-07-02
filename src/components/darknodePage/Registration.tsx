@@ -77,7 +77,7 @@ export const Registration: React.FC<Props> = ({ darknodeID, darknodeDetails, reg
         // If the user is not logged in, prompt login. On mobile, it may not be
         // obvious to the user that they need to login.
         if (!account) {
-            account = await promptLogin({ manual: true, redirect: false, showPopup: true, immediatePopup: true });
+            account = await promptLogin({ manual: true });
         }
 
         if (!account) {
@@ -87,7 +87,7 @@ export const Registration: React.FC<Props> = ({ darknodeID, darknodeDetails, reg
         setActive(true);
         try {
             await showRegisterPopup(
-                darknodeID, publicKey, onCancel, onDoneRegister,
+                account, darknodeID, publicKey, onCancel, onDoneRegister,
             );
             unhideDarknode(darknodeID, account);
         } catch (error) {

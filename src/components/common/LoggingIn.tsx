@@ -13,7 +13,7 @@ export const LoggingIn: React.FC<{}> = () => {
 
     const handleLogin = React.useCallback(async (): Promise<void> => {
         if (!address) {
-            await promptLogin({ manual: false, redirect: false, showPopup: true, immediatePopup: false });
+            await promptLogin({ manual: false });
         }
     }, [promptLogin, address]);
 

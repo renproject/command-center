@@ -58,7 +58,7 @@ export const Sidebar = withRouter(
         };
 
         const handleLogin = async () => {
-            await promptLogin({ manual: true, redirect: false, showPopup: true, immediatePopup: true });
+            await promptLogin({ manual: true });
         };
 
         React.useEffect((): void => {

@@ -408,11 +408,10 @@ const useNetworkContainer = () => {
         }
     };
 
-    const showWithdrawToken = async (
+    const withdrawReward = async (
         darknodeID: string,
         token: Token,
     ) => new Promise(async (resolve, reject) => {
-
         const tokenDetails = AllTokenDetails.get(token);
         if (tokenDetails === undefined) {
             throw new Error("Unknown token");
@@ -459,25 +458,13 @@ const useNetworkContainer = () => {
         }
     });
 
-    const withdrawReward = async (
-        darknodeID: string,
-        token: Token,
-    ) => {
-        const tokenDetails = AllTokenDetails.get(token);
-        if (tokenDetails === undefined) {
-            throw new Error("Unknown token");
-        }
-
-        await showWithdrawToken(darknodeID, token);
-    };
-
-
     const showRegisterPopup = async (
+        web3Address: string,
         darknodeID: string,
         publicKey: string,
         onCancel: () => void, onDone: () => void,
     ) => {
-        if (!address) {
+        if (!web3Address) {
             throw new Error(`Unable to retrieve account address.`);
         }
         if (!renVM) {
@@ -485,14 +472,14 @@ const useNetworkContainer = () => {
         }
 
         const step1 = async () => {
-            await approveNode(web3, renNetwork, address, renVM.minimumBond, waitForTX);
+            await approveNode(web3, renNetwork, web3Address, renVM.minimumBond, waitForTX);
         };
 
         const step2 = async () => {
             await registerNode(
                 web3,
                 renNetwork,
-                address,
+                web3Address,
                 darknodeID,
                 publicKey,
                 renVM.minimumBond,

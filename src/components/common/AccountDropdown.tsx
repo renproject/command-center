@@ -20,7 +20,7 @@ export const AccountDropdown: React.FC<Props> = () => {
     const handleLogin = async (): Promise<void> => {
         setShown(false);
         if (!address) {
-            await promptLogin({ manual: true, redirect: false, showPopup: true, immediatePopup: true });
+            await promptLogin({ manual: true });
         }
     };
 
@@ -125,7 +125,7 @@ export const AccountDropdown: React.FC<Props> = () => {
                                 return <li key={txHash} className="transaction">
                                     {txConfirmations === 0 ? <Loading /> : <></>}
                                     {txConfirmations === -1 ? <span className="red">(ERR) {" "}</span> : <></>}
-                                    <ExternalLink className="transaction--hash" href={`${renNetwork.etherscan}/tx/${txHash}`}>{txHash.substring(0, 12)}...</ExternalLink>
+                                    <ExternalLink className="transaction--hash" href={`${renNetwork.etherscan}/tx/${txHash}`}>{txHash.substring(0, 10)}...</ExternalLink>
                                     {txConfirmations > 0 ? <>{" "}({txConfirmations} conf.)</> : ""}
                                 </li>;
                             }).valueSeq().toArray()}

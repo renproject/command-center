@@ -40,7 +40,7 @@ export const App = withRouter(({ match: { params } }: RouteComponentProps) => {
 
     React.useEffect(() => {
         if (loggedInBefore) { // && darknodeID) {
-            promptLogin({ manual: false, redirect: false, showPopup: false, immediatePopup: false })
+            promptLogin({ manual: false })
                 .catch((error) => catchBackgroundException(error, "Error in App > promptLogin"));
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -247,8 +247,10 @@
     }
 }
 
-.header--dropdown--accounts {
-    width: 200px;
+.header--dropdown--options.header--dropdown--accounts {
+    width: 170px;
+    padding-left: 0;
+    padding-right: 0;
 }
 
 .header--group>div {
