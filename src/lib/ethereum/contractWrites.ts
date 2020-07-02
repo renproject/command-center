@@ -351,17 +351,23 @@ export const withdrawToken = (
             throw new Error("Invalid withdraw address");
         }
 
+        /**
+         * Find burn details in previous transaction.
+         */
+
         let receipt: TransactionReceipt | undefined;
 
-        while (!receipt || !receipt.logs) {
+        // tslint:disable-next-line: no-constant-condition
+        while (true) {
             try {
                 receipt = await web3.eth.getTransactionReceipt(tx);
             } catch (error) {
                 // Ignore error
             }
-            if (!receipt) {
-                await sleep(1000);
+            if (receipt && receipt.logs && receipt.blockHash) {
+                break;
             }
+            await sleep(1000);
         }
 
         const abiCoder = new AbiCoder();
@@ -374,6 +380,10 @@ export const withdrawToken = (
                     value = value.plus(event.value);
                 }
             }
+        }
+
+        if (value.isZero()) {
+            throw new Error(`Unable to detect burn event in transaction receipt.`);
         }
 
         await burn(web3, renNetwork, address, token, value, withdrawAddress, waitForTX);
