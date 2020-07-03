@@ -108,7 +108,7 @@ export const FeesBlock: React.FC<Props> = ({ darknodeDetails, isOperator }) => {
     const showPreviousPending = previousCycle && darknodeDetails && darknodeDetails.cycleStatus.get(previousCycle) === DarknodeFeeStatus.NOT_CLAIMED;
     const showCurrentPending = currentCycle && darknodeDetails && darknodeDetails.cycleStatus.get(currentCycle) === DarknodeFeeStatus.NOT_CLAIMED;
 
-    const pendingTotal = [previousCycle, currentCycle].reduce((acc, cycle) => {
+    const pendingTotal = [showPreviousPending ? previousCycle : null, showCurrentPending ? currentCycle : null].reduce((acc, cycle) => {
         if (!cycle) { return acc; }
         const cycleFees = pendingTotalInEth.get(cycle, null);
         return cycleFees ? (acc || new BigNumber(0)).plus(cycleFees) : acc;
@@ -199,13 +199,12 @@ export const FeesBlock: React.FC<Props> = ({ darknodeDetails, isOperator }) => {
                                 <tbody>
                                     {
                                         fees.map((balance, token) => {
-                                            const total = tab === Tab.Withdrawable ? darknodeDetails.feesEarnedTotalEth : pendingTotal;
                                             return {
-                                                balance, percent: balance && total ? balance
+                                                balance, percent: balance && tabTotal ? balance
                                                     .div(new BigNumber(10).exponentiatedBy(AllTokenDetails.get(token, { decimals: 0 }).decimals))
                                                     .times(tokenPrices?.get(token)?.get(Currency.ETH) || 0)
                                                     .times(new BigNumber(10).exponentiatedBy(18))
-                                                    .div(total)
+                                                    .div(tabTotal)
                                                     .times(100)
                                                     .decimalPlaces(2)
                                                     .toNumber() || 0 :
