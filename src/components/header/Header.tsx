@@ -2,23 +2,20 @@ import * as React from "react";
 
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon, FontAwesomeIconProps } from "@fortawesome/react-fontawesome";
-// import { RenNetwork, RenNetworks } from "@renproject/contracts";
 import { currencies, Currency, CurrencyIcon, Dropdown } from "@renproject/react-components";
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
 
 import { NetworkContainer } from "../../store/networkContainer";
 import { UIContainer } from "../../store/uiStore";
 import { Web3Container } from "../../store/web3Store";
-// import { Web3Container } from "../../store/web3Store";
 import { ReactComponent as RenVMIcon } from "../../styles/images/Icon-HyperDrive.svg";
 import { ReactComponent as IntegratorsIcon } from "../../styles/images/icon-integrators.svg";
 import { ReactComponent as NetworkIcon } from "../../styles/images/icon-network.svg";
 import { ReactComponent as OverviewIcon } from "../../styles/images/Icon-Overview.svg";
-// import { ReactComponent as English } from "../../styles/images/rp-flag-uk.svg";
+import { ExternalLink, URLs } from "../../views/ExternalLink";
+import { StatusDot, StatusDotColor } from "../../views/StatusDot";
 import { AccountDropdown } from "./AccountDropdown";
-import { ExternalLink, URLs } from "./ExternalLink";
 import { MoreDropdown } from "./MoreDropdown";
-import { StatusDot, StatusDotColor } from "./StatusDot";
 
 const getCurrencyOptions = () => {
     const options = new Map<string, React.ReactNode>();

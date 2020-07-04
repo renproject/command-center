@@ -15,7 +15,7 @@ import { ReactComponent as IntegratorsIcon } from "../../../styles/images/icon-i
 import { ReactComponent as NetworkIcon } from "../../../styles/images/icon-network.svg";
 import { ReactComponent as OverviewIcon } from "../../../styles/images/Icon-Overview.svg";
 import { ReactComponent as Search } from "../../../styles/images/search.svg";
-import { ExternalLink, URLs } from "../ExternalLink";
+import { ExternalLink, URLs } from "../../../views/ExternalLink";
 import { SidebarIcon } from "./SidebarIcon";
 
 const MenuItem: React.FC<{ title?: string, path?: string, icon: JSX.Element, activePath?: string, onClick: () => void, className?: string }> = ({ title, path, icon, activePath, onClick, className }) => {

@@ -9,9 +9,9 @@ import {
     ReactComponent as IconCollateralization,
 } from "../../styles/images/icon-collateralization.svg";
 import { ReactComponent as IconMintFee } from "../../styles/images/icon-mint-fee.svg";
-import { ExternalLink } from "../common/ExternalLink";
-import { InfoLabel } from "../common/infoLabel/InfoLabel";
-import { Stat, Stats } from "../common/Stat";
+import { ExternalLink } from "../../views/ExternalLink";
+import { InfoLabel } from "../../views/infoLabel/InfoLabel";
+import { Stat, Stats } from "../../views/Stat";
 
 interface Props {
     minted: BigNumber;

@@ -8,8 +8,8 @@ import { Integrator } from "../../lib/graphQL/queries";
 import { classNames } from "../../lib/react/className";
 import { NetworkContainer } from "../../store/networkContainer";
 import { Web3Container } from "../../store/web3Store";
-import { ExternalLink } from "../common/ExternalLink";
-import { TitledSection } from "../common/TitledSection";
+import { ExternalLink } from "../../views/ExternalLink";
+import { TitledSection } from "../../views/TitledSection";
 import { tokenToQuote, tokenToReadable } from "../common/TokenBalance";
 import Integrators from "./integrators.json";
 

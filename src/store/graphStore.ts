@@ -2,7 +2,7 @@ import { useApolloClient } from "@apollo/react-hooks";
 import { useState } from "react";
 import { createContainer } from "unstated-next";
 
-import { useTaskSchedule } from "../components/common/ScheduleTask";
+import { useTaskSchedule } from "../hooks/useTaskSchedule";
 import { queryRenVM, RenVM } from "../lib/graphQL/queries/renVM";
 import { catchBackgroundException } from "../lib/react/errors";
 

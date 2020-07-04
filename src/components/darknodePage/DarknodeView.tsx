@@ -5,7 +5,7 @@ import { Blocky, InfoLabel } from "@renproject/react-components";
 import { NULL, RegistrationStatus } from "../../lib/ethereum/contractReads";
 import { DarknodesState, NetworkContainer } from "../../store/networkContainer";
 import { Web3Container } from "../../store/web3Store";
-import { DarknodeID } from "../common/DarknodeID";
+import { DarknodeID } from "../../views/DarknodeID";
 import { EpochBlock } from "./blocks/EpochBlock";
 import { FeesBlock } from "./blocks/FeesBlock";
 import { GasBlock } from "./blocks/GasBlock";

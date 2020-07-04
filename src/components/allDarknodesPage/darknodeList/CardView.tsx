@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 
 import { Token } from "../../../lib/ethereum/tokens";
 import { DarknodesState } from "../../../store/networkContainer";
-import { DarknodeID } from "../../common/DarknodeID";
+import { DarknodeID } from "../../../views/DarknodeID";
 import { TokenBalance } from "../../common/TokenBalance";
 import { statusText } from "../../darknodePage/Registration";
 

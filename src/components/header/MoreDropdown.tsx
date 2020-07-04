@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { classNames } from "../../lib/react/className";
 import { ReactComponent as IconDropdown } from "../../styles/images/icon-dropdown.svg";
-import { ExternalLink, URLs } from "./ExternalLink";
+import { ExternalLink, URLs } from "../../views/ExternalLink";
 
 const Option: React.FC<{ href: string }> = ({ href, children }) =>
     <ExternalLink href={href}><li role="button" className="header--dropdown--option">

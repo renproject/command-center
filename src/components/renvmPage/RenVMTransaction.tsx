@@ -10,7 +10,7 @@ import { strip0x } from "../../lib/ethereum/contractReads";
 import { Token } from "../../lib/ethereum/tokens";
 import { EncodedData } from "../../lib/general/encodedData";
 import { classNames } from "../../lib/react/className";
-import { ExternalLink } from "../common/ExternalLink";
+import { ExternalLink } from "../../views/ExternalLink";
 import { Tx } from "./renvmContainer";
 
 export const TransactionPreview = ({ tx }: { tx: Tx }) => {

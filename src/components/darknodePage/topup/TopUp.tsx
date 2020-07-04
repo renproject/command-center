@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { Tabs } from "../../common/Tabs";
+import { Tabs } from "../../../views/Tabs";
 import { BlockBody } from "../blocks/Block";
 import { CONFIRMATION_MESSAGE } from "./TopUpController";
 
@@ -14,15 +14,24 @@ interface Props {
     sendFunds: () => void;
 }
 
+enum Tab {
+    Add = "Add",
+    Withdraw = "Withdraw (CLI)",
+}
+
 export const TopUp: React.FC<Props> = ({ value, resultMessage, pending, disabled, handleChange, handleBlur, sendFunds }) => {
     const handleChangeEvent = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         handleChange(event.target.value);
     }, [handleChange]);
 
+    const [tab, setTab] = React.useState<string>(Tab.Add);
+
     return <div className="topup">
         <Tabs
+            selected={tab}
+            onTab={setTab}
             tabs={{
-                Add: <BlockBody>
+                [Tab.Add]: <BlockBody>
                     <label>
                         {resultMessage ?
                             <p

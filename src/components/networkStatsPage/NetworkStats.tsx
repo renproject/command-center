@@ -5,7 +5,7 @@ import React from "react";
 import { PeriodType } from "../../lib/graphQL/volumes";
 import { ReactComponent as IconValueLocked } from "../../styles/images/icon-value-locked.svg";
 import { ReactComponent as IconVolume } from "../../styles/images/icon-volume.svg";
-import { Stat, Stats } from "../common/Stat";
+import { Stat, Stats } from "../../views/Stat";
 import { Collateral } from "./Collateral";
 import { HistoryChart } from "./HistoryChart";
 import { NetworkStatsContainer } from "./networkStatsContainer";

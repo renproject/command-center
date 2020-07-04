@@ -1,6 +1,6 @@
 import React from "react";
 
-import { classNames } from "../../lib/react/className";
+import { classNames } from "../lib/react/className";
 import { InfoLabel } from "./infoLabel/InfoLabel";
 
 interface StatProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
@@ -12,13 +12,19 @@ interface StatProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDiv
     infoLabel?: React.ReactNode;
 }
 
-export const Stat = ({ icon, message, big, nested, highlight, infoLabel, children, className, ...props }: StatProps) =>
+export const Stat = ({ icon, message, big, nested, highlight, infoLabel, children, className, ...props }: StatProps) => (
     <div {...props} className={["stat", highlight ? "stat--highlight" : "", nested ? "stat--nested" : "", className].join(" ")}>
         <div className="hr" />
         <div className="stat--title--outer"><h2 className="stat--title">{icon ? <span className="stat--title--icon">{icon}</span> : <></>} {message}</h2>{infoLabel ? <InfoLabel direction={"bottom"}>{infoLabel}</InfoLabel> : null}</div>
         <div className={["stat--children", big ? "stat--children--big" : ""].join(" ")}>{children}</div>
-    </div>;
+    </div>
+);
 
-interface StatsProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> { }
+interface StatsProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
+}
 
-export const Stats = ({ children, className, ...props }: StatsProps) => <div {...props} className={classNames("statistic--row", className)}>{children}</div>;
+export const Stats = ({ children, className, ...props }: StatsProps) => (
+    <div {...props} className={classNames("statistic--row", className)}>
+        {children}
+    </div>
+);

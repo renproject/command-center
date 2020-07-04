@@ -1,7 +1,7 @@
 import { Loading, naturalTime } from "@renproject/react-components";
 import React from "react";
 
-import { TitledSection } from "../common/TitledSection";
+import { TitledSection } from "../../views/TitledSection";
 import { Block } from "./renvmContainer";
 import { TransactionPreview } from "./RenVMTransaction";
 

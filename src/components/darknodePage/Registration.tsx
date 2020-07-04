@@ -8,7 +8,7 @@ import { catchInteractionException } from "../../lib/react/errors";
 import { GraphContainer } from "../../store/graphStore";
 import { DarknodesState, NetworkContainer } from "../../store/networkContainer";
 import { Web3Container } from "../../store/web3Store";
-import { StatusDot, StatusDotColor } from "../common/StatusDot";
+import { StatusDot, StatusDotColor } from "../../views/StatusDot";
 
 export const statusText = {
     [RegistrationStatus.Unknown]: "Loading...",

@@ -8,7 +8,7 @@ import { darknodeIDBase58ToHex } from "../../lib/darknode/darknodeID";
 import { RegistrationStatus } from "../../lib/ethereum/contractReads";
 import { NetworkContainer } from "../../store/networkContainer";
 import { Web3Container } from "../../store/web3Store";
-import { NotFound } from "../common/404";
+import { NotFound } from "../../views/404";
 import { _catch_ } from "../common/ErrorBoundary";
 import { DarknodeView } from "./DarknodeView";
 

@@ -11,7 +11,7 @@ import { GraphContainer } from "../../../store/graphStore";
 import { DarknodesState, NetworkContainer } from "../../../store/networkContainer";
 import { ReactComponent as RewardsIcon } from "../../../styles/images/icon-rewards-white.svg";
 // import { ReactComponent as WithdrawIcon } from "../../../styles/images/icon-withdraw.svg";
-import { Tabs } from "../../common/Tabs";
+import { Tabs } from "../../../views/Tabs";
 import { TokenBalance } from "../../common/TokenBalance";
 import { FeesItem } from "../FeesItem";
 import { Block, BlockBody, BlockTitle } from "./Block";
@@ -159,6 +159,7 @@ export const FeesBlock: React.FC<Props> = ({ darknodeDetails, isOperator }) => {
 
             {darknodeDetails ? <BlockBody>
                 <Tabs
+                    selected={tab}
                     tabs={darknodeDetails.registrationStatus === RegistrationStatus.Registered || darknodeDetails.registrationStatus === RegistrationStatus.DeregistrationPending ? {
                         Withdrawable: <></>,
                         Pending: <></>,

@@ -5,8 +5,8 @@ interface Props {
     onClose?: () => void;
 }
 
-export const TitledSection: React.FC<Props> = ({ top, onClose, children }) => {
-    return <div className="titled-block">
+export const TitledSection: React.FC<Props> = ({ top, onClose, children }) => (
+    <div className="titled-block">
         {onClose ? <div role="button" className="titled-block--close popup--x popup--x--white" onClick={onClose} /> : null}
 
         <div className="titled-block--top">
@@ -16,5 +16,5 @@ export const TitledSection: React.FC<Props> = ({ top, onClose, children }) => {
         <div className="titled-block--bottom">
             {children}
         </div>
-    </div>;
-};
+    </div>
+);

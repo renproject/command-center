@@ -7,8 +7,8 @@ import { CSSTransition, TransitionGroup } from "react-transition-group";
 
 import { Token } from "../../lib/ethereum/tokens";
 import { EncodedData } from "../../lib/general/encodedData";
+import { Stat, Stats } from "../../views/Stat";
 import { Search } from "../common/Search";
-import { Stat, Stats } from "../common/Stat";
 import { TokenBalance } from "../common/TokenBalance";
 import { RenVMBlock } from "./RenVMBlock";
 import { Block, RenVMContainer } from "./renvmContainer";

@@ -1,7 +1,7 @@
-import { Currency, Loading, naturalTime } from "@renproject/react-components";
-import BigNumber from "bignumber.js";
-import React from "react";
-import { Line } from "react-chartjs-2";
+import { Currency, Loading } from "@renproject/react-components";
+import HighchartsReact from "highcharts-react-official";
+import Highcharts from "highcharts/highstock";
+import React, { useEffect } from "react";
 
 import { QuotePeriodResponse } from "../../lib/graphQL/volumes";
 
@@ -32,6 +32,54 @@ export const textCurrencyIcon = (currency: Currency) => {
     }
 };
 
+const getOptions = (data: Array<[number, number]>, quoteCurrency: Currency) => ({
+    rangeSelector: {
+        // selected: 1
+        enabled: false,
+    },
+    navigator: {
+        enabled: false,
+    },
+    scrollbar: {
+        enabled: false,
+    },
+
+    chart: {
+        backgroundColor: null,
+        width: 400,
+    },
+
+    yAxis: [{
+        gridLineColor: null,
+        labels: {
+            enabled: false,
+            style: {
+                color: "white",
+            }
+        },
+        min: 0,
+    }],
+
+    xAxis: [{
+        lineColor: null,
+        labels: {
+            style: {
+                color: "white",
+            }
+        },
+    }],
+
+    series: [{
+        name: `Value Locked (${quoteCurrency.toUpperCase()})`,
+        data,
+        tooltip: {
+            valueDecimals: 2
+        },
+        color: "#006FE8",
+        lineWidth: 4,
+    }]
+});
+
 interface Props {
     periodSeries: QuotePeriodResponse | null | undefined;
     graphType: "TotalVolume" | "TotalLocked";
@@ -40,95 +88,33 @@ interface Props {
 
 export const HistoryChart: React.FC<Props> = ({ periodSeries, graphType, quoteCurrency }) => {
 
+    // tslint:disable-next-line: no-any
+    const [options, setOptions] = React.useState<any | null>(null);
+
     const cachedSeries = periodSeries && periodSeries.historic;
+
+    useEffect(() => {
+        if (cachedSeries) {
+            setOptions(getOptions(cachedSeries.map(item =>
+                [
+                    item.date * 1000,
+                    parseInt(item[`quote${graphType}`], 10)
+                ]
+            ), quoteCurrency));
+        }
+    }, [cachedSeries, quoteCurrency]);
 
     return <div className="overview--chart--outer" style={{ maxWidth: "calc(100vw - 80px)" }}>
         <div className="volume--chart">
             {cachedSeries ? <><div className="overview--chart--canvas" style={{ maxWidth: "calc(100vw - 80px)" }}>
-                <Line
-                    // <Bar
-                    height={330}
-                    width={400}
-                    legend={{ display: false }}
-                    // tslint:disable-next-line: react-this-binding-issue jsx-no-lambda no-any
-                    data={(canvas: any) => {
-                        const ctx = canvas.getContext("2d");
-                        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-                        gradient.addColorStop(0, "#006FE8");
-                        gradient.addColorStop(1, "#074487");
-
-                        return {
-                            maintainAspectRation: true,
-                            labels: cachedSeries.map(item => naturalTime(item.date, {
-                                suffix: "ago",
-                                message: "current",
-                                countDown: false,
-                                showingSeconds: false
-                            })),
-                            datasets: [{
-                                data: cachedSeries.map(item => item[`quote${graphType}`]),
-                                borderColor: "#006FE8",
-                                lineTension: 0.3,
-                                backgroundColor: "rgba(75,192,192,0.0)",
-                                borderCapStyle: "butt",
-                                borderDash: [],
-                                borderDashOffset: 0.0,
-                                borderJoinStyle: "miter",
-                                pointBorderColor: "#006FE8",
-                                pointBackgroundColor: "#006FE8",
-                                pointBorderWidth: 0,
-                                pointHoverRadius: 5,
-                                pointHoverBackgroundColor: "#001732",
-                                pointHoverBorderColor: "#006FE8",
-                                pointHoverBorderWidth: 2,
-                                pointRadius: 1,
-                                pointHitRadius: 10,
-                                bezierCurve: true,
-                            }],
-                        };
-                    }}
-                    options={{
-                        cornerRadius: 20,
-                        scales: {
-                            yAxes: [{
-                                ticks: {
-                                    beginAtZero: true,
-                                    display: false
-                                },
-                                offset: false,
-                                radius: 25,
-                            }],
-                            xAxes: [{
-                                ticks: {
-                                    fontColor: "#969696",
-                                    fontSize: 9,
-                                },
-                                barThickness: 13
-                            }],
-                        },
-                        tooltips: {
-                            callbacks: {
-                                // tslint:disable-next-line: no-any
-                                title: (tooltipItem: any, data: any) => {
-                                    return (graphType === "TotalVolume" ? "Volume - " : "Value locked - ") + data.labels[tooltipItem[0].index];
-                                },
-                                // tslint:disable-next-line: no-any
-                                label: (tooltipItem: any, data: any) => {
-                                    return `${textCurrencyIcon(quoteCurrency)}${new BigNumber(data.datasets[0].data[tooltipItem.index]).toFormat()} ${quoteCurrency.toUpperCase()}`;
-                                },
-                            },
-                            backgroundColor: "#00050B",
-                            borderWidth: 0,
-                            titleFontSize: 14,
-                            titleFontColor: "#fff",
-                            bodyFontColor: "#fff",
-                            bodyFontSize: 14,
-                            displayColors: false,
-                            xPadding: 10,
-                            yPadding: 10,
-                        }
-                    }}
-                />
+                {options ?
+                    <HighchartsReact
+                        highcharts={Highcharts}
+                        constructorType={"stockChart"}
+                        options={options}
+                    /> :
+                    null
+                }
             </div>
             </> : <Loading alt />}
         </div>

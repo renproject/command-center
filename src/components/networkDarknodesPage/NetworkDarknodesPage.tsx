@@ -13,10 +13,10 @@ import {
 } from "../../styles/images/icon-darknodes-online.svg";
 import { ReactComponent as IconIncome } from "../../styles/images/icon-income.svg";
 import { ReactComponent as RewardsIcon } from "../../styles/images/icon-rewards-white.svg";
+import { Change } from "../../views/Change";
+import { ExternalLink } from "../../views/ExternalLink";
+import { Stat, Stats } from "../../views/Stat";
 import { SECONDS } from "../common/BackgroundTasks";
-import { Change } from "../common/Change";
-import { ExternalLink } from "../common/ExternalLink";
-import { Stat, Stats } from "../common/Stat";
 import { TokenBalance } from "../common/TokenBalance";
 import { DarknodeMap } from "./darknodeMap/DarknodeMap";
 

@@ -6,9 +6,9 @@ import { copyToClipboard } from "../../lib/copyToClipboard";
 import { classNames } from "../../lib/react/className";
 import { NetworkContainer } from "../../store/networkContainer";
 import { Web3Container } from "../../store/web3Store";
-import { ExternalLink } from "./ExternalLink";
+import { ExternalLink } from "../../views/ExternalLink";
 
-export const AccountDropdown: React.FC<Props> = () => {
+export const AccountDropdown: React.FC = () => {
     const [shown, setShown] = React.useState(false);
     const [copied, setCopied] = React.useState(false);
 
@@ -136,6 +136,3 @@ export const AccountDropdown: React.FC<Props> = () => {
         }
     </div>;
 };
-
-interface Props {
-}

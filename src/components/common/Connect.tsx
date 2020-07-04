@@ -13,8 +13,8 @@ import { MapContainer } from "../networkDarknodesPage/mapContainer";
 import { NetworkStatsContainer } from "../networkStatsPage/networkStatsContainer";
 import { RenVMContainer } from "../renvmPage/renvmContainer";
 
-export const Connect: React.FC<Props> = ({ children }) => {
-    return <PopupContainer.Provider>
+export const Connect: React.FC = ({ children }) => (
+    <PopupContainer.Provider>
         <Web3Container.Provider initialState={DEFAULT_REN_NETWORK}>
             <ApolloWithNetwork>
                 <GraphContainer.Provider>
@@ -36,8 +36,5 @@ export const Connect: React.FC<Props> = ({ children }) => {
                 </GraphContainer.Provider>
             </ApolloWithNetwork>
         </Web3Container.Provider>
-    </PopupContainer.Provider>;
-};
-
-interface Props {
-}
+    </PopupContainer.Provider>
+);

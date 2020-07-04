@@ -5,8 +5,8 @@ import { useCallback, useState } from "react";
 import semver from "semver";
 import { createContainer } from "unstated-next";
 
-import { useTaskSchedule } from "../components/common/ScheduleTask";
 import { retryNTimes } from "../components/renvmPage/renvmContainer";
+import { useTaskSchedule } from "../hooks/useTaskSchedule";
 import { catchBackgroundException } from "../lib/react/errors";
 
 const DARKNODE_ENDPOINT = "https://api.github.com/repos/renproject/darknode-release/releases/latest";

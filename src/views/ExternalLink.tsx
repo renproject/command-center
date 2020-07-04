@@ -17,7 +17,7 @@ export const URLs = {
 };
 
 
-export const ExternalLink: React.FC<Props> = ({ children, ...props }) =>
+export const ExternalLink: React.FC<Props> = ({ children, ...props }) => (
     // tslint:disable-next-line: react-a11y-anchors
     <a
         {...props}
@@ -25,4 +25,5 @@ export const ExternalLink: React.FC<Props> = ({ children, ...props }) =>
         rel="noopener noreferrer"
     >
         {children}
-    </a>;
+    </a>
+);

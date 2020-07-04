@@ -9,8 +9,8 @@ import { Token } from "../../../lib/ethereum/tokens";
 import { classNames } from "../../../lib/react/className";
 import { ReactComponent as FlameIcon } from "../../../styles/images/icon-flame.svg";
 import { ReactComponent as RewardsIcon } from "../../../styles/images/icon-rewards-white.svg";
-import { DarknodeID } from "../DarknodeID";
-import { StatusDot, StatusDotColor } from "../StatusDot";
+import { DarknodeID } from "../../../views/DarknodeID";
+import { StatusDot, StatusDotColor } from "../../../views/StatusDot";
 import { TokenBalance } from "../TokenBalance";
 
 interface Props {
