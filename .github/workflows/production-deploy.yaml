@@ -1,0 +1,31 @@
+name: CD
+
+# Run when tags are pushed
+on:
+  push:
+    tags:
+    - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2.1.0
+    - name: Install dependencies
+      run: yarn --network-concurrency 1
+    - run: CI=false yarn build
+    - uses: netlify/actions/cli@master
+      with:
+        args: deploy --dir=./build
+      env:
+        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_TESTNET_SITE_ID }}      
+    - run: REACT_APP_NETWORK="mainnet" CI=false yarn build
+    - uses: netlify/actions/cli@master
+      with:
+        args: deploy --dir=./build
+      env:
+        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_MAINNET_SITE_ID }}      
