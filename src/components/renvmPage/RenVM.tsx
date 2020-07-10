@@ -103,7 +103,7 @@ export const RenVM = withRouter(({ match: { params }, history }) => {
         firstBlock.prevState.map((state) => {
             if (state.type === RenVMType.ExtTypeBtcCompatUTXOs) {
                 const token = state.name.replace("UTXOs", "").toUpperCase();
-                lockedBalances[token] = <Stat message={`Locked ${token}`} big>
+                lockedBalances[token] = <Stat key={token} message={`Locked ${token}`} big>
                     <TokenBalance
                         token={token as Token}
                         amount={state && state.value ? state.value.reduce((sum, utxo) => sum.plus(utxo.amount || "0"), new BigNumber(0)).toFixed() : 0}

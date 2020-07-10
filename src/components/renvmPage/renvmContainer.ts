@@ -9,6 +9,7 @@ import { useState } from "react";
 import { createContainer } from "unstated-next";
 
 import { EncodedData, Encodings } from "../../lib/general/encodedData";
+import { DEFAULT_REQUEST_TIMEOUT } from "../../lib/react/environmentVariables";
 import { extractError } from "../../lib/react/errors";
 import { Web3Container } from "../../store/web3Store";
 import { getLightnode } from "../networkDarknodesPage/mapContainer";
@@ -88,7 +89,7 @@ const getBlocks = async (network: RenNetworkDetails): Promise<List<Block>> => {
     let response;
     let i = 0;
     do {
-        response = (await retryNTimes(async () => await Axios.post<RPCResponse<ResponseQueryBlocks>>(lightnode, request), 2)).data.result;
+        response = (await retryNTimes(async () => await Axios.post<RPCResponse<ResponseQueryBlocks>>(lightnode, request, { timeout: DEFAULT_REQUEST_TIMEOUT }), 2)).data.result;
         i++;
     } while ((response.blocks === null || response.blocks.length === 0) && i < 5);
     return response.blocks ? List(response.blocks).sort((a, b) => b.header.height - a.header.height) : List();
@@ -145,7 +146,7 @@ const useRenVMContainer = () => {
         // Fetch the block from the lightnode.
         if (!newCurrentBlock) {
             const request = { jsonrpc: "2.0", method: "ren_queryBlock", params: { n: 5, blockHeight: blockNumber }, id: 67 };
-            const response = (await retryNTimes(async () => await Axios.post<RPCResponse<ResponseQueryBlock>>(lightnode, request), 2)).data.result;
+            const response = (await retryNTimes(async () => await Axios.post<RPCResponse<ResponseQueryBlock>>(lightnode, request, { timeout: DEFAULT_REQUEST_TIMEOUT }), 2)).data.result;
             newCurrentBlock = response.block;
         }
 

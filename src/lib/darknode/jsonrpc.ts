@@ -2,6 +2,7 @@ import { Record } from "@renproject/react-components";
 import Axios from "axios";
 
 import { retryNTimes, RPCResponse } from "../../components/renvmPage/renvmContainer";
+import { DEFAULT_REQUEST_TIMEOUT } from "../react/environmentVariables";
 
 interface ResponseQueryStat {
     version: string;
@@ -39,7 +40,7 @@ export class NodeStatistics extends Record({
 
 export const queryStat = async (lightnode: string, darknodeID: string) => {
     const request = { jsonrpc: "2.0", method: "ren_queryStat", params: {}, id: 67 };
-    const result = (await retryNTimes(async () => await Axios.post<RPCResponse<ResponseQueryStat>>(`${lightnode}?id=${darknodeID}`, request), 2)).data.result;
+    const result = (await retryNTimes(async () => await Axios.post<RPCResponse<ResponseQueryStat>>(`${lightnode}?id=${darknodeID}`, request, { timeout: DEFAULT_REQUEST_TIMEOUT }), 2)).data.result;
     return new NodeStatistics({
         version: result.version,
         multiAddress: result.multiAddress,

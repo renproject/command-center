@@ -7,6 +7,7 @@ import { useState } from "react";
 import { Point } from "react-simple-maps";
 import { createContainer } from "unstated-next";
 
+import { DEFAULT_REQUEST_TIMEOUT } from "../../lib/react/environmentVariables";
 import { Web3Container } from "../../store/web3Store";
 import { retryNTimes } from "../renvmPage/renvmContainer";
 
@@ -69,7 +70,7 @@ const fetchLocationFromAPI = async (ip: string): Promise<Location> => {
             const apiResponse = (await Axios.get<{
                 latitude: number;
                 longitude: number;
-            }>(`https://ipapi.co/${ip}/json`)).data;
+            }>(`https://ipapi.co/${ip}/json`, { timeout: DEFAULT_REQUEST_TIMEOUT })).data;
             return { longitude: apiResponse.longitude, latitude: apiResponse.latitude };
         } catch (error) {
             try {
@@ -77,7 +78,7 @@ const fetchLocationFromAPI = async (ip: string): Promise<Location> => {
                     lat: number;
                     lon: number;
                     // tslint:disable-next-line: no-http-string
-                }>(`http://ip-api.com/json/${ip}`)).data;
+                }>(`http://ip-api.com/json/${ip}`, { timeout: DEFAULT_REQUEST_TIMEOUT })).data;
                 return { longitude: apiResponse.lon || 0, latitude: apiResponse.lat || 0 };
 
                 // Seems to share a rate-limiter with https://ipapi.co.
@@ -107,7 +108,7 @@ const getAllDarknodes = async (network: RenNetworkDetails) => {
         throw new Error(`No lightnode to fetch darknode locations.`);
     }
     const request = { jsonrpc: "2.0", method: "ren_queryPeers", params: {}, id: 67 };
-    const response = (await retryNTimes(async () => await Axios.post<QueryResponse>(lightnode, request), 2)).data;
+    const response = (await retryNTimes(async () => await Axios.post<QueryResponse>(lightnode, request, { timeout: DEFAULT_REQUEST_TIMEOUT }), 2)).data;
     return response.result.peers;
     // return darknodeIDs.map(parseMultiAddress);
 };

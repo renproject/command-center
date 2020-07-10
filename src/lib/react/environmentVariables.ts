@@ -12,3 +12,5 @@ export const SENTRY_DSN = process.env.REACT_APP_SENTRY_DSN || "";
 export const DEFAULT_REN_NETWORK = (process.env.REACT_APP_NETWORK as RenNetwork) || RenNetwork.Testnet;
 export const BLOCKNATIVE_INFURA_KEY = process.env.REACT_APP_BLOCKNATIVE_INFURA_KEY || "";
 export const BLOCKNATIVE_KEY = process.env.REACT_APP_BLOCKNATIVE_KEY || "";
+
+export const DEFAULT_REQUEST_TIMEOUT = 60 * 1000;

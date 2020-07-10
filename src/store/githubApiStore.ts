@@ -7,6 +7,7 @@ import { createContainer } from "unstated-next";
 
 import { retryNTimes } from "../components/renvmPage/renvmContainer";
 import { useTaskSchedule } from "../hooks/useTaskSchedule";
+import { DEFAULT_REQUEST_TIMEOUT } from "../lib/react/environmentVariables";
 import { catchBackgroundException } from "../lib/react/errors";
 
 const DARKNODE_ENDPOINT = "https://api.github.com/repos/renproject/darknode-release/releases/latest";
@@ -28,7 +29,7 @@ const useGithubAPIContainer = () => {
     const updater = async () => {
         let interval = 0.5 * HOUR;
         try {
-            const response = await retryNTimes(() => Axios.get<VersionResponse | VersionError>(DARKNODE_ENDPOINT), 2);
+            const response = await retryNTimes(() => Axios.get<VersionResponse | VersionError>(DARKNODE_ENDPOINT, { timeout: DEFAULT_REQUEST_TIMEOUT }), 2);
             if (!response.data || response.data.message) {
                 throw new Error(response.data ? response.data.message : "No data returned from Github API.");
             }
@@ -49,7 +50,7 @@ const useGithubAPIContainer = () => {
             }
         }
         try {
-            const response = await retryNTimes(() => Axios.get<VersionResponse | VersionError>(DARKNODE_CLI_ENDPOINT), 2);
+            const response = await retryNTimes(() => Axios.get<VersionResponse | VersionError>(DARKNODE_CLI_ENDPOINT, { timeout: DEFAULT_REQUEST_TIMEOUT }), 2);
             if (!response.data || response.data.message) {
                 throw new Error(response.data ? response.data.message : "No data returned from Github API.");
             }
