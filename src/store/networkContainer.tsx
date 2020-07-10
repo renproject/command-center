@@ -9,7 +9,7 @@ import { PromiEvent } from "web3-core";
 import { MultiStepPopup } from "../components/common/popups/MultiStepPopup";
 import { WithdrawPopup } from "../components/common/popups/WithdrawPopup";
 import { TokenBalance } from "../components/common/TokenBalance";
-import { retryNTimes } from "../components/renvmPage/renvmContainer";
+import { retryNTimes } from "../components/statsPages/renvmStatsPage/renvmContainer";
 import { NodeStatistics } from "../lib/darknode/jsonrpc";
 import { getDarknodePayment } from "../lib/ethereum/contract";
 import {

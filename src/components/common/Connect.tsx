@@ -8,10 +8,10 @@ import { NetworkContainer } from "../../store/networkContainer";
 import { PopupContainer } from "../../store/popupStore";
 import { UIContainer } from "../../store/uiStore";
 import { Web3Container } from "../../store/web3Store";
-import { IntegratorsContainer } from "../integratorsPage/integratorsContainer";
-import { MapContainer } from "../networkDarknodesPage/mapContainer";
-import { NetworkStatsContainer } from "../networkStatsPage/networkStatsContainer";
-import { RenVMContainer } from "../renvmPage/renvmContainer";
+import { MapContainer } from "../statsPages/darknodeStatsPage/mapContainer";
+import { IntegratorsContainer } from "../statsPages/integratorStatsPage/integratorsContainer";
+import { NetworkStatsContainer } from "../statsPages/networkStatsPage/networkStatsContainer";
+import { RenVMContainer } from "../statsPages/renvmStatsPage/renvmContainer";
 
 export const Connect: React.FC = ({ children }) => (
     <PopupContainer.Provider>

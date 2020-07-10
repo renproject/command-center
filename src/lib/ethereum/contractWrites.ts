@@ -7,7 +7,7 @@ import { TransactionReceipt } from "web3-core";
 import { AbiCoder } from "web3-eth-abi";
 import { sha3, toChecksumAddress } from "web3-utils";
 
-import { retryNTimes } from "../../components/renvmPage/renvmContainer";
+import { retryNTimes } from "../../components/statsPages/renvmStatsPage/renvmContainer";
 import { WaitForTX } from "../../store/networkContainer";
 import { catchInteractionException, noCapture } from "../react/errors";
 import { getDarknodePayment, getDarknodeRegistry, getRenToken } from "./contract";

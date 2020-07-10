@@ -1,7 +1,9 @@
 import { Record } from "@renproject/react-components";
 import Axios from "axios";
 
-import { retryNTimes, RPCResponse } from "../../components/renvmPage/renvmContainer";
+import {
+    retryNTimes, RPCResponse,
+} from "../../components/statsPages/renvmStatsPage/renvmContainer";
 import { DEFAULT_REQUEST_TIMEOUT } from "../react/environmentVariables";
 
 interface ResponseQueryStat {

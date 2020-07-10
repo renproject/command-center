@@ -7,7 +7,7 @@ import { catchBackgroundException } from "../../lib/react/errors";
 import { GraphContainer } from "../../store/graphStore";
 import { NetworkContainer } from "../../store/networkContainer";
 import { Web3Container } from "../../store/web3Store";
-import { getDarknodeParam } from "../darknodePage/DarknodePage";
+import { getDarknodeParam } from "../operatorPages/darknodePage/DarknodePage";
 
 export const SECONDS = 1000;
 
