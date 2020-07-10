@@ -40,7 +40,7 @@ export const pageLoadedAt = (): string => {
 // Determines whether or not this is a common network error (too many of these
 // are being logged to Sentry)
 const isNetworkError = (error: Error | any): boolean => {
-    const message: string = ((error || {}).message || error).toString();
+    const message: string = String(((error || {}).message || error));
 
     if (
         message.match(/Network ?Error/i) ||

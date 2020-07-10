@@ -1,15 +1,15 @@
-import React from "react";
-import { useLocation, withRouter } from "react-router-dom";
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 // Component that attaches scroll to top handler on router change
 // renders nothing, just attaches side effects
-export const ScrollToTop = withRouter(() => {
+export const ScrollToTop = () => {
     // this assumes that current router state is accessed via hook
     // but it does not matter, pathname and search (or that ever) may come from props, context, etc.
     const location = useLocation();
 
     // just run the effect on pathname and/or search change
-    React.useEffect(() => {
+    useEffect(() => {
         try {
             // trying to use new API - https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollTo
             window.scroll({
@@ -25,4 +25,4 @@ export const ScrollToTop = withRouter(() => {
 
     // renders nothing, since nothing is needed
     return null;
-});
+};

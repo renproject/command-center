@@ -4,7 +4,7 @@ import { gql } from "apollo-boost";
 import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
 import moment from "moment";
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createContainer } from "unstated-next";
 
 import {
@@ -38,7 +38,7 @@ const useIntegratorsContainer = () => {
 
     const [integrators, setIntegrators] = useState<OrderedMap<number, Array<{ now: Integrator, day: Integrator | null }> | null | undefined | string>>(OrderedMap());
     const currentPage = useMemo(() => integrators.get(page), [integrators, page]);
-    // const allIntegrators = React.useMemo(() =>
+    // const allIntegrators = useMemo(() =>
     //     (([] as Integrator[]).concat(...integrators.filter(Array.isArray).valueSeq().toArray())),
     //     [integrators],
     // );
@@ -120,20 +120,20 @@ const useIntegratorsContainer = () => {
         });
     }, [integrators, page, apollo, renNetwork]);
 
-    // const onSearchChange = React.useCallback((event: React.FormEvent<HTMLInputElement>): void => {
+    // const onSearchChange = useCallback((event: React.FormEvent<HTMLInputElement>): void => {
     //     const element = (event.target as HTMLInputElement);
     //     setSearch(String(element.value));
     // }, [setSearch]);
 
     // Filter pages based on search
-    const filteredPage = React.useMemo(() =>
+    const filteredPage = useMemo(() =>
         currentPage && Array.isArray(currentPage) && search ?
             currentPage.filter((integrator) => !search || resolveIntegrator(renNetwork, integrator.now.contractAddress).name.toLowerCase().includes(search.toLowerCase())) :
             currentPage,
         [currentPage, search, renNetwork]
     );
 
-    const [activeIntegrator, setActiveIntegrator] = React.useState(null as string | null);
+    const [activeIntegrator, setActiveIntegrator] = useState(null as string | null);
 
     return { setPage, filteredPage, page, currentPage, ROWS_PER_PAGE, activeIntegrator, setActiveIntegrator };
 };

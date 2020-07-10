@@ -1,5 +1,4 @@
-import * as React from "react";
-
+import React from "react";
 import { Blocky } from "@renproject/react-components";
 
 import { isDefined } from "../../../lib/general/isDefined";

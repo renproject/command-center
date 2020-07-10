@@ -76,7 +76,7 @@ export const Collateral: React.FC<Props> = ({ minted, l, b, bRen, quoteCurrency 
                                     null
                                 }
                             </div>
-                        </div> : <></>}
+                        </div> : null}
                         <div className={classNames("collateral-table", GREYCORE_ACTIVE ? "collateral-table-greycore" : "")}>
                             <div className="collateral-table--row">
                                 <div className={classNames("collateral-table--row--left", "row--l", overCollateralized ? "row--l--over" : "row--l--under")}><RowBullet /> Value Locked (L)</div>

@@ -1,6 +1,6 @@
 import { CurrencyIcon, Loading, naturalTime } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { buildStyles, CircularProgressbar } from "react-circular-progressbar";
 
 import { Token } from "../../../lib/ethereum/tokens";
@@ -33,8 +33,8 @@ export const DarknodeStatsPage = () => {
     const currentSummed = current && numberOfDarknodes ? current.times(numberOfDarknodes) : undefined;
     const previousSummed = previous && numberOfDarknodesLastEpoch ? previous.times(numberOfDarknodesLastEpoch) : undefined;
 
-    const [currentTime, setCurrentTime] = React.useState<BigNumber | null>(null);
-    React.useEffect(() => {
+    const [currentTime, setCurrentTime] = useState<BigNumber | null>(null);
+    useEffect(() => {
         setCurrentTime(new BigNumber(new Date().getTime() / SECONDS));
     }, [timeSinceLastEpoch]);
 
@@ -47,7 +47,7 @@ export const DarknodeStatsPage = () => {
                     <Stats>
                         <Stat message="Registered" big>{isDefined(numberOfDarknodes) ? <>
                             {numberOfDarknodes.toNumber()}
-                            {isDefined(numberOfDarknodesLastEpoch) ? <Change className="stat--children--diff" change={numberOfDarknodes.minus(numberOfDarknodesLastEpoch).toNumber()} /> : <></>}
+                            {isDefined(numberOfDarknodesLastEpoch) ? <Change className="stat--children--diff" change={numberOfDarknodes.minus(numberOfDarknodesLastEpoch).toNumber()} /> : null}
                         </> : <Loading alt={true} />}</Stat>
                         <Stat message="Change next epoch" big>{isDefined(numberOfDarknodesNextEpoch) && isDefined(numberOfDarknodes) ? <>
                             <Change change={numberOfDarknodesNextEpoch.minus(numberOfDarknodes).toNumber()} />

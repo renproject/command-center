@@ -1,7 +1,7 @@
 
 import { Loading } from "@renproject/react-components";
 import React, { useCallback, useEffect } from "react";
-import { withRouter } from "react-router-dom";
+import { useHistory, useRouteMatch } from "react-router-dom";
 
 import { ReactComponent as RemoteBack } from "../../../styles/images/remote-back.svg";
 import { ReactComponent as RemoteForward } from "../../../styles/images/remote-forward.svg";
@@ -9,7 +9,7 @@ import { ReactComponent as RemoteStart } from "../../../styles/images/remote-sta
 import { IntegratorRow } from "./IntegratorRow";
 import { IntegratorsContainer } from "./integratorsContainer";
 
-const EmptyRow: React.FunctionComponent<{}> = ({ children }) =>
+const EmptyRow: React.FC<{}> = ({ children }) =>
     <>
         <tr className="empty-row">
             <td colSpan={5}>{children}</td>
@@ -17,20 +17,23 @@ const EmptyRow: React.FunctionComponent<{}> = ({ children }) =>
         <tr className="integrator-extra integrator-extra-closed" />
     </>;
 
-export const IntegratorStatsPage = withRouter(({ match: { params }, history }) => {
+export const IntegratorStatsPage = () => {
+
+    const history = useHistory();
+    const { params }: { params: { page?: string } } = useRouteMatch();
 
     const { setPage, filteredPage, page, currentPage, ROWS_PER_PAGE, activeIntegrator, setActiveIntegrator } = IntegratorsContainer.useContainer();
 
     // Load page from URL
     useEffect(() => {
-        const paramsPage = Math.max(params.page && ((parseInt(params.page, 10) || 1) - 1), 0);
+        const paramsPage = Math.max(params.page ? ((parseInt(params.page, 10) || 1) - 1) : 0, 0);
         if (params.page && paramsPage !== page) {
             setPage(paramsPage);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [params.page]);
 
-    const changePage = React.useCallback((nextPage: number) => {
+    const changePage = useCallback((nextPage: number) => {
         // Add page to URL
         history.push(`/integrators/${nextPage + 1}`);
         setPage(nextPage);
@@ -85,4 +88,4 @@ export const IntegratorStatsPage = withRouter(({ match: { params }, history }) =
             </div>
         </div>
     );
-});
+};

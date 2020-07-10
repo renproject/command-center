@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 
 import { ApolloWithNetwork } from "../../lib/graphQL/ApolloWithNetwork";
 import { DEFAULT_REN_NETWORK } from "../../lib/react/environmentVariables";

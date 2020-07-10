@@ -1,6 +1,5 @@
-import * as React from "react";
-
-import { RouteComponentProps, withRouter } from "react-router-dom";
+import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
 
 import { darknodeIDBase58ToHex, darknodeIDHexToBase58 } from "../../lib/darknode/darknodeID";
 import { Ox } from "../../lib/ethereum/contractReads";
@@ -30,20 +29,22 @@ const isBlock = (search: string): number | undefined => {
     return !!search.match(regex) ? parseInt(search, 10) : undefined;
 };
 
-interface Props extends RouteComponentProps {
+interface Props {
     className?: string;
 }
 
-export const Search = withRouter(({ history, className }: Props) => {
-    const [searchInput, setSearchInput] = React.useState("");
-    const [loadingSearch, setLoadingSearch] = React.useState(false);
-    const [notFound, setNotFound] = React.useState(false);
+export const Search: React.FC<Props> = ({ className }) => {
+    const [searchInput, setSearchInput] = useState("");
+    const [loadingSearch, setLoadingSearch] = useState(false);
+    const [notFound, setNotFound] = useState(false);
 
     const handleInput = (event: React.FormEvent<HTMLInputElement>): void => {
         setNotFound(false);
         const element = (event.target as HTMLInputElement);
         setSearchInput(String(element.value));
     };
+
+    const history = useHistory();
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
         setLoadingSearch(true);
@@ -72,4 +73,4 @@ export const Search = withRouter(({ history, className }: Props) => {
             </form>
         </div>
     );
-});
+};

@@ -1,8 +1,8 @@
 import { RenVMType } from "@renproject/interfaces";
 import { Loading, naturalTime } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
-import React, { useCallback } from "react";
-import { withRouter } from "react-router-dom";
+import React, { useCallback, useEffect } from "react";
+import { useHistory, useRouteMatch } from "react-router-dom";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 
 import { Token } from "../../../lib/ethereum/tokens";
@@ -14,16 +14,18 @@ import { RenVMBlock } from "./RenVMBlock";
 import { Block, RenVMContainer } from "./renvmContainer";
 import { RenVMTransaction, TransactionPreview } from "./RenVMTransaction";
 
-export const RenVMStatsPage = withRouter(({ match: { params }, history }) => {
+export const RenVMStatsPage = () => {
+
     const container = RenVMContainer.useContainer();
 
+    const history = useHistory();
+    const { params }: { params: { txHash?: string, blockNumber?: string } } = useRouteMatch();
     const txHash: string | undefined = params.txHash;
-
     const blockNumber = params.blockNumber
         ? parseInt(params.blockNumber, 10)
         : null;
 
-    React.useEffect(() => {
+    useEffect(() => {
         container.updateBlocks().catch(console.error);
         const interval = setInterval(() => {
             container.updateBlocks().catch(console.error);
@@ -32,7 +34,7 @@ export const RenVMStatsPage = withRouter(({ match: { params }, history }) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (txHash) { container.getTransaction(txHash).catch(console.error); }
         const interval = setInterval(() => {
             if (txHash) { container.getTransaction(txHash, { skipCache: true }).catch(console.error); }
@@ -41,7 +43,7 @@ export const RenVMStatsPage = withRouter(({ match: { params }, history }) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [txHash]);
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (blockNumber) {
             container.getBlock(blockNumber).catch(console.error);
         }
@@ -132,16 +134,16 @@ export const RenVMStatsPage = withRouter(({ match: { params }, history }) => {
                 <Stat message="Block height" big>{firstBlock ? firstBlock.header.height : 0}</Stat>
                 {lockedBTC}
                 {lockedZEC}
-                {remainingLockedBalances ? Object.values(remainingLockedBalances) : <></>}
+                {remainingLockedBalances ? Object.values(remainingLockedBalances) : null}
             </Stats>
             <div className="no-medium">{search}</div>
             {txHash ?
                 <RenVMTransaction network={container.network} txHash={txHash} transaction={container.currentTransactionHash === txHash ? container.currentTransaction : undefined} onClose={onClose} /> :
-                <></>
+                null
             }
             {blockNumber || blockNumber === 0 ?
                 <RenVMBlock blockNumber={blockNumber} block={container.currentBlockNumber === blockNumber ? container.currentBlock : undefined} onClose={onClose} onTxClick={onTxClick} onBlockClick={onClick} /> :
-                <></>
+                null
             }
             <Stat message="Latest blocks">
                 <table>
@@ -162,4 +164,4 @@ export const RenVMStatsPage = withRouter(({ match: { params }, history }) => {
             </Stat>
         </div>
     );
-});
+};

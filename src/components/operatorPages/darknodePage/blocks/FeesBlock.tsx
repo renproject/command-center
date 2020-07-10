@@ -1,8 +1,7 @@
-import * as React from "react";
-
 import { Currency, CurrencyIcon, Loading, TokenIcon } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import { DarknodeFeeStatus, RegistrationStatus } from "../../../../lib/ethereum/contractReads";
 import { AllTokenDetails, Token } from "../../../../lib/ethereum/tokens";
@@ -65,7 +64,7 @@ const FeesBlockRow: React.FC<RowProps> = ({ token, quoteCurrency, balance, isOpe
                     <span className="fees-block--table--usd-symbol">
                         {quoteCurrency.toUpperCase()}
                     </span>
-                </> : <></>}
+                </> : null}
             </td>
             {tab === Tab.Withdrawable && isOperator && (darknodeDetails.registrationStatus === RegistrationStatus.Registered || darknodeDetails.registrationStatus === RegistrationStatus.DeregistrationPending) ? <td>
                 <FeesItem
@@ -74,7 +73,7 @@ const FeesBlockRow: React.FC<RowProps> = ({ token, quoteCurrency, balance, isOpe
                     amount={balance || new BigNumber(0)}
                     darknodeID={darknodeDetails.ID}
                 />
-            </td> : <></>}
+            </td> : null}
         </tr>
         <tr>
             <td colSpan={3} style={{ padding: 0, margin: 0, height: 4 }}>
@@ -90,14 +89,14 @@ export const FeesBlock: React.FC<Props> = ({ darknodeDetails, isOperator }) => {
     const { renVM } = GraphContainer.useContainer();
     const { currentCycle, previousCycle } = renVM || {};
 
-    const [tab, setTab] = React.useState(Tab.Withdrawable);
-    const [disableClaim, setDisableClaim] = React.useState(false);
+    const [tab, setTab] = useState(Tab.Withdrawable);
+    const [disableClaim, setDisableClaim] = useState(false);
 
-    const [currentCycleStatus, setCurrentCycleStatus] = React.useState<string | null>(null);
+    const [currentCycleStatus, setCurrentCycleStatus] = useState<string | null>(null);
 
-    const cycleStatus: string | null = React.useMemo(() => darknodeDetails && darknodeDetails.cycleStatus.keySeq().first(), [darknodeDetails]);
+    const cycleStatus: string | null = useMemo(() => darknodeDetails && darknodeDetails.cycleStatus.keySeq().first(), [darknodeDetails]);
 
-    React.useEffect(() => {
+    useEffect(() => {
         setCurrentCycleStatus(cycleStatus);
         if (disableClaim && cycleStatus !== currentCycleStatus) {
             setDisableClaim(false);
@@ -138,7 +137,7 @@ export const FeesBlock: React.FC<Props> = ({ darknodeDetails, isOperator }) => {
                 );
     }
 
-    const onTab = React.useCallback((newTab: string) => {
+    const onTab = useCallback((newTab: string) => {
         setTab(newTab as Tab);
     }, [setTab]);
 
@@ -161,10 +160,10 @@ export const FeesBlock: React.FC<Props> = ({ darknodeDetails, isOperator }) => {
                 <Tabs
                     selected={tab}
                     tabs={darknodeDetails.registrationStatus === RegistrationStatus.Registered || darknodeDetails.registrationStatus === RegistrationStatus.DeregistrationPending ? {
-                        Withdrawable: <></>,
-                        Pending: <></>,
+                        Withdrawable: null,
+                        Pending: null,
                     } : {
-                            Withdrawable: <></>,
+                            Withdrawable: null,
                         }}
                     onTab={onTab}
                 >

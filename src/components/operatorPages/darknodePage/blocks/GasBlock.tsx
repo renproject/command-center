@@ -1,6 +1,5 @@
-import * as React from "react";
-
 import BigNumber from "bignumber.js";
+import React, { useCallback, useState } from "react";
 
 import { DarknodesState, NetworkContainer } from "../../../../store/networkContainer";
 import { ReactComponent as FlameIcon } from "../../../../styles/images/icon-flame.svg";
@@ -19,11 +18,11 @@ export const GasBlock: React.FC<Props> = ({ darknodeDetails }) => {
 
     const { updateDarknodeDetails } = NetworkContainer.useContainer();
 
-    const [loading, setLoading] = React.useState(false);
+    const [loading, setLoading] = useState(false);
 
     const darknodeID = darknodeDetails && darknodeDetails.ID;
 
-    const reloadDetails = React.useCallback(async (): Promise<void> => {
+    const reloadDetails = useCallback(async (): Promise<void> => {
         setLoading(true);
         try {
             if (darknodeID) {

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useCallback, useState } from "react";
 
 import { Tabs } from "../../../../views/Tabs";
 import { BlockBody } from "../blocks/Block";
@@ -20,11 +20,11 @@ enum Tab {
 }
 
 export const TopUp: React.FC<Props> = ({ value, resultMessage, pending, disabled, handleChange, handleBlur, sendFunds }) => {
-    const handleChangeEvent = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChangeEvent = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         handleChange(event.target.value);
     }, [handleChange]);
 
-    const [tab, setTab] = React.useState<string>(Tab.Add);
+    const [tab, setTab] = useState<string>(Tab.Add);
 
     return <div className="topup">
         <Tabs

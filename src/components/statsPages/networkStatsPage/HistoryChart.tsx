@@ -1,7 +1,7 @@
 import { Currency, Loading } from "@renproject/react-components";
 import HighchartsReact from "highcharts-react-official";
 import Highcharts from "highcharts/highstock";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 import { QuotePeriodResponse } from "../../../lib/graphQL/volumes";
 
@@ -94,7 +94,7 @@ interface Props {
 export const HistoryChart: React.FC<Props> = ({ periodSeries, graphType, quoteCurrency }) => {
 
     // tslint:disable-next-line: no-any
-    const [options, setOptions] = React.useState<any | null>(null);
+    const [options, setOptions] = useState<any | null>(null);
 
     const cachedSeries = periodSeries && periodSeries.historic;
 

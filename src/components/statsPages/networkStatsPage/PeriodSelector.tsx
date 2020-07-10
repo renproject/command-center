@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useCallback } from "react";
 
 import { PeriodType } from "../../../lib/graphQL/volumes";
 
 const PeriodOption = ({ value, selected, onChange }: { value: PeriodType, selected: PeriodType, onChange: (value: PeriodType) => void }) => {
-    const onClick = React.useCallback(() => {
+    const onClick = useCallback(() => {
         onChange(value);
     }, [onChange, value]);
     return <div className={`period-option ${selected === value ? "period-option--selected" : ""}`} role="button" onClick={onClick}>{value.slice(0, 1).toUpperCase()}</div>;

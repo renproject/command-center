@@ -1,6 +1,5 @@
-import * as React from "react";
-
 import { Loading } from "@renproject/react-components";
+import React, { useEffect, useState } from "react";
 
 import { NULL, RegistrationStatus } from "../../../lib/ethereum/contractReads";
 import { classNames } from "../../../lib/react/className";
@@ -33,10 +32,10 @@ export const Registration: React.FC<Props> = ({ darknodeID, darknodeDetails, reg
     const { renVM } = GraphContainer.useContainer();
     const { tokenPrices, unhideDarknode, updateDarknodeDetails, updateOperatorDarknodes, showRegisterPopup, showDeregisterPopup, showRefundPopup } = NetworkContainer.useContainer();
 
-    const [initialRegistrationStatus,] = React.useState(registrationStatus);
-    const [active, setActive] = React.useState(false);
+    const [initialRegistrationStatus,] = useState(registrationStatus);
+    const [active, setActive] = useState(false);
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (registrationStatus !== initialRegistrationStatus) {
             setActive(false);
         }

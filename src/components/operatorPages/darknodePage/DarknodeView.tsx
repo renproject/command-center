@@ -1,6 +1,5 @@
-import * as React from "react";
-
 import { Blocky, InfoLabel } from "@renproject/react-components";
+import React, { useEffect, useRef, useState } from "react";
 
 import { NULL, RegistrationStatus } from "../../../lib/ethereum/contractReads";
 import { DarknodesState, NetworkContainer } from "../../../store/networkContainer";
@@ -30,10 +29,10 @@ export const DarknodeView: React.FC<Props> = ({ darknodeDetails, darknodeID, nam
     const { renNetwork } = Web3Container.useContainer();
     const { storeDarknodeName: setDarknodeName } = NetworkContainer.useContainer();
 
-    const [renaming, setRenaming] = React.useState(false);
-    const [newName, setNewName] = React.useState<string | undefined>(name);
+    const [renaming, setRenaming] = useState(false);
+    const [newName, setNewName] = useState<string | undefined>(name);
 
-    const focusInputRef = React.useRef<HTMLInputElement | null>(null);
+    const focusInputRef = useRef<HTMLInputElement | null>(null);
 
     const handleInput = (event: React.FormEvent<HTMLInputElement>): void => {
         const element = (event.target as HTMLInputElement);
@@ -46,7 +45,7 @@ export const DarknodeView: React.FC<Props> = ({ darknodeDetails, darknodeID, nam
         setRenaming(true);
     };
 
-    React.useEffect(() => {
+    useEffect(() => {
         // Focus input field when renaming is set to true
         if (renaming && focusInputRef) {
             const current = focusInputRef.current;
@@ -71,7 +70,7 @@ export const DarknodeView: React.FC<Props> = ({ darknodeDetails, darknodeID, nam
         setDarknodeName(darknodeID, newName);
     };
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (newName === undefined && name !== undefined) {
             setNewName(name);
         }

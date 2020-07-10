@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useCallback, useState } from "react";
 
 import { darknodeIDHexToBase58 } from "../../../../lib/darknode/darknodeID";
 import { RegistrationStatus } from "../../../../lib/ethereum/contractReads";
@@ -17,7 +17,7 @@ export const DarknodeCard: React.FC<Props> = ({ darknodeID, darknodeDetails, nam
     const { address } = Web3Container.useContainer();
     const { quoteCurrency, hideDarknode, removeRegisteringDarknode } = NetworkContainer.useContainer();
 
-    const [confirmedRemove, setConfirmedRemove] = React.useState(false);
+    const [confirmedRemove, setConfirmedRemove] = useState(false);
 
     // If we have the public key and the status is unregistered (or the status is not available yet), then link to
     // the registration page
@@ -26,7 +26,7 @@ export const DarknodeCard: React.FC<Props> = ({ darknodeID, darknodeDetails, nam
         darknodeDetails.registrationStatus === RegistrationStatus.Unregistered
     )) || false;
 
-    const handleRemoveDarknode = React.useCallback((): void => {
+    const handleRemoveDarknode = useCallback((): void => {
         if (!confirmedRemove) {
             setConfirmedRemove(true);
             return;

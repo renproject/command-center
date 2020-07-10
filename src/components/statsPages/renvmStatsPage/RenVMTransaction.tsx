@@ -110,9 +110,9 @@ export const RenVMTransaction: React.FC<Props> = ({ network, txHash, transaction
                 <br />
                 <RenVMArgsTable network={network} renContract={transaction.tx.to} title="Inputs" args={transaction.tx.in} />
                 <br />
-                {transaction.tx.autogen && transaction.tx.autogen.length > 0 ? <RenVMArgsTable network={network} renContract={transaction.tx.to} title="Generated values" args={transaction.tx.autogen} /> : <></>}
+                {transaction.tx.autogen && transaction.tx.autogen.length > 0 ? <RenVMArgsTable network={network} renContract={transaction.tx.to} title="Generated values" args={transaction.tx.autogen} /> : null}
                 <br />
-                {transaction.tx.out && transaction.tx.out.length > 0 ? <RenVMArgsTable network={network} renContract={transaction.tx.to} title="Outputs" args={transaction.tx.out} /> : <></>}
+                {transaction.tx.out && transaction.tx.out.length > 0 ? <RenVMArgsTable network={network} renContract={transaction.tx.to} title="Outputs" args={transaction.tx.out} /> : null}
                 <br />
 
                 <details>

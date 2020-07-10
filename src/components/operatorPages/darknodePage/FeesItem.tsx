@@ -1,11 +1,11 @@
-import * as React from "react";
-
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon, FontAwesomeIconProps } from "@fortawesome/react-fontawesome";
 import { Loading } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
+import React, { useCallback, useState } from "react";
 
 import { AllTokenDetails, Token } from "../../../lib/ethereum/tokens";
+import { classNames } from "../../../lib/react/className";
 import { NetworkContainer } from "../../../store/networkContainer";
 import { Web3Container } from "../../../store/web3Store";
 
@@ -22,13 +22,13 @@ export const FeesItem: React.FC<Props> = ({ darknodeID, token, amount, disabled 
     const { withdrawReward, updateDarknodeDetails } = NetworkContainer.useContainer();
     const { address } = Web3Container.useContainer();
 
-    const [loading, setLoading] = React.useState(false);
+    const [loading, setLoading] = useState(false);
 
     const tokenDetails = AllTokenDetails.get(token);
     const wrapped = tokenDetails ? tokenDetails.wrapped : false;
     const decimals = tokenDetails ? tokenDetails.decimals : 8;
 
-    const handleWithdraw = React.useCallback(async (): Promise<void> => {
+    const handleWithdraw = useCallback(async (): Promise<void> => {
         setLoading(true);
 
         if (address && tokenDetails) {
@@ -61,7 +61,7 @@ export const FeesItem: React.FC<Props> = ({ darknodeID, token, amount, disabled 
     return (
         <button
             title={title}
-            className={["withdraw-fees", isDisabled ? "withdraw-fees-disabled" : ""].join(" ")}
+            className={classNames("withdraw-fees", isDisabled ? "withdraw-fees-disabled" : "")}
             disabled={isDisabled || !tokenDetails || !tokenDetails.feesToken}
             onClick={isDisabled ? undefined : handleWithdraw}
         >

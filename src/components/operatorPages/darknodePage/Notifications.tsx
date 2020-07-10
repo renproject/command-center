@@ -1,5 +1,3 @@
-import * as React from "react";
-
 import {
     faExclamationTriangle, faInfoCircle, faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons";
@@ -7,6 +5,7 @@ import { FontAwesomeIcon, FontAwesomeIconProps } from "@fortawesome/react-fontaw
 import { RenNetworkDetails } from "@renproject/contracts";
 import { naturalTime } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
+import React, { useEffect, useState } from "react";
 
 import { RegistrationStatus } from "../../../lib/ethereum/contractReads";
 import { isDefined } from "../../../lib/general/isDefined";
@@ -39,8 +38,8 @@ export const Notifications: React.FC<Props> = ({ isOperator, darknodeDetails, re
     const { renVM } = GraphContainer.useContainer();
     const { timeUntilNextEpoch, timeSinceLastEpoch } = renVM || { timeUntilNextEpoch: null, timeSinceLastEpoch: null };
 
-    const [currentTime, setCurrentTime] = React.useState<number | null>(null);
-    React.useEffect(() => {
+    const [currentTime, setCurrentTime] = useState<number | null>(null);
+    useEffect(() => {
         setCurrentTime(new Date().getTime() / SECONDS);
     }, [timeSinceLastEpoch]);
 

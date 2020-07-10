@@ -1,7 +1,6 @@
-import * as React from "react";
-
 import { Blocky, Currency, CurrencyIcon } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
+import React from "react";
 import { Link } from "react-router-dom";
 
 import { darknodeIDHexToBase58 } from "../../../lib/darknode/darknodeID";

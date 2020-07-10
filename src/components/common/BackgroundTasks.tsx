@@ -1,6 +1,5 @@
-import * as React from "react";
-
-import { RouteComponentProps, withRouter } from "react-router-dom";
+import { useCallback } from "react";
+import { useRouteMatch } from "react-router-dom";
 
 import { useTaskSchedule } from "../../hooks/useTaskSchedule";
 import { catchBackgroundException } from "../../lib/react/errors";
@@ -11,22 +10,21 @@ import { getDarknodeParam } from "../operatorPages/darknodePage/DarknodePage";
 
 export const SECONDS = 1000;
 
-interface Props extends RouteComponentProps {
-}
-
 /**
  * BackgroundTasks is the main visual component responsible for displaying different routes
  * and running background app loops
  */
-export const BackgroundTasks = withRouter(({ match }: Props) => {
+export const BackgroundTasks = () => {
     const { address, lookForLogout } = Web3Container.useContainer();
     const { tokenPrices, updateTokenPrices, updateCycleAndPendingRewards, updateOperatorDarknodes, updateDarknodeDetails } = NetworkContainer.useContainer();
     const { renVM } = GraphContainer.useContainer();
 
-    const darknodeID = getDarknodeParam(match.params);
+
+    const { params }: { params: { darknodeID?: string } } = useRouteMatch();
+    const darknodeID = getDarknodeParam(params);
 
     // Update token prices every 60 seconds
-    const priceUpdater = React.useCallback(async () => {
+    const priceUpdater = useCallback(async () => {
         try {
             await updateTokenPrices();
             return 60; // seconds
@@ -38,7 +36,7 @@ export const BackgroundTasks = withRouter(({ match }: Props) => {
     useTaskSchedule(priceUpdater);
 
     // Update rewards every 120 seconds
-    const rewardsUpdater = React.useCallback(async () => {
+    const rewardsUpdater = useCallback(async () => {
         try {
             if (renVM && tokenPrices) {
                 await updateCycleAndPendingRewards();
@@ -52,7 +50,7 @@ export const BackgroundTasks = withRouter(({ match }: Props) => {
     }, [renVM, tokenPrices, address, updateCycleAndPendingRewards]);
     useTaskSchedule(rewardsUpdater);
 
-    const loggedOutUpdater = React.useCallback(async () => {
+    const loggedOutUpdater = useCallback(async () => {
         if (address) {
             try {
                 await (lookForLogout() as unknown as Promise<void>).catch((error) => {
@@ -66,7 +64,7 @@ export const BackgroundTasks = withRouter(({ match }: Props) => {
     }, [address, lookForLogout]);
     useTaskSchedule(loggedOutUpdater);
 
-    const operatorStatsUpdater = React.useCallback(async () => {
+    const operatorStatsUpdater = useCallback(async () => {
         if (tokenPrices && address) {
             try {
                 await updateOperatorDarknodes(darknodeID);
@@ -80,7 +78,7 @@ export const BackgroundTasks = withRouter(({ match }: Props) => {
     }, [tokenPrices, address, darknodeID, updateOperatorDarknodes]);
     useTaskSchedule(operatorStatsUpdater, [address]);
 
-    const selectedDarknodeUpdater = React.useCallback(async () => {
+    const selectedDarknodeUpdater = useCallback(async () => {
         if (tokenPrices && darknodeID) {
             try {
                 await updateDarknodeDetails(darknodeID);
@@ -94,5 +92,5 @@ export const BackgroundTasks = withRouter(({ match }: Props) => {
     }, [tokenPrices, darknodeID, updateDarknodeDetails]);
     useTaskSchedule(selectedDarknodeUpdater, [darknodeID]);
 
-    return <></>;
-});
+    return null;
+};

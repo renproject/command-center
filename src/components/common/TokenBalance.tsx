@@ -1,7 +1,6 @@
-import * as React from "react";
-
 import { Currency } from "@renproject/react-components";
 import { BigNumber } from "bignumber.js";
+import React from "react";
 
 import { AllTokenDetails, Token, TokenPrices } from "../../lib/ethereum/tokens";
 import { NetworkContainer } from "../../store/networkContainer";

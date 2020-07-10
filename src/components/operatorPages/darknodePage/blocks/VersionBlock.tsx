@@ -1,7 +1,6 @@
-import * as React from "react";
-
 import { faBolt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon, FontAwesomeIconProps } from "@fortawesome/react-fontawesome";
+import React from "react";
 
 import { RegistrationStatus } from "../../../../lib/ethereum/contractReads";
 import { isDefined } from "../../../../lib/general/isDefined";

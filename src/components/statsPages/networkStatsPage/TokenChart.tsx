@@ -20,7 +20,7 @@ interface Props {
     graphType: "Volume" | "Locked";
 }
 
-export const TokenChart: React.FunctionComponent<Props> = ({ periodSeries, quoteCurrency, graphType }) => {
+export const TokenChart: React.FC<Props> = ({ periodSeries, quoteCurrency, graphType }) => {
     const tokens = ["BTC", "ZEC", "BCH"];
 
     return <div className="overview--chart--outer" style={{ maxWidth: "calc(100vw - 80px)" }}>
@@ -91,7 +91,7 @@ export const TokenChart: React.FunctionComponent<Props> = ({ periodSeries, quote
                                     {/* /> */}
                                 </div>
                             </div>;
-                        }) : <></>}
+                        }) : null}
                     </div>
                 </div>
             </> : <Loading alt />}

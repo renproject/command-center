@@ -1,9 +1,8 @@
-import * as React from "react";
-
 import { faCopy, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon, FontAwesomeIconProps } from "@fortawesome/react-fontawesome";
 import { Loading } from "@renproject/react-components";
 import { List } from "immutable";
+import React, { useState } from "react";
 
 import { copyToClipboard } from "../../../lib/copyToClipboard";
 import { AllTokenDetails, Token } from "../../../lib/ethereum/tokens";
@@ -19,7 +18,7 @@ enum Stage {
     Error,
 }
 
-const ColoredBanner: React.FunctionComponent<{ token: Token }> = ({ token }) => {
+const ColoredBanner: React.FC<{ token: Token }> = ({ token }) => {
     return <div className={`colored-banner colored-banner--${token.toLowerCase()}`} />;
 };
 
@@ -27,11 +26,11 @@ export const WithdrawPopup: React.FC<Props> = ({ token, withdraw, onDone, onCanc
     const { renNetwork } = Web3Container.useContainer();
     const { withdrawAddresses, addToWithdrawAddresses, removeFromWithdrawAddresses } = NetworkContainer.useContainer();
 
-    const [error, setError] = React.useState(null as string | null);
-    const [stage, setStage] = React.useState(Stage.Pending);
-    const [selectedAddress, setSelectedAddress] = React.useState(null as string | null);
-    const [newAddress, setNewAddress] = React.useState(null as string | null);
-    const [newAddressValid, setNewAddressValid] = React.useState(false);
+    const [error, setError] = useState(null as string | null);
+    const [stage, setStage] = useState(Stage.Pending);
+    const [selectedAddress, setSelectedAddress] = useState(null as string | null);
+    const [newAddress, setNewAddress] = useState(null as string | null);
+    const [newAddressValid, setNewAddressValid] = useState(false);
 
     const tokenDetails = AllTokenDetails.get(token);
 

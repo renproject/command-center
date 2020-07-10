@@ -1,8 +1,7 @@
-import * as React from "react";
-
 import { faServer } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon, FontAwesomeIconProps } from "@fortawesome/react-fontawesome";
 import { naturalTime } from "@renproject/react-components";
+import React from "react";
 
 import { darknodeIDHexToBase58 } from "../../../../lib/darknode/darknodeID";
 import { DarknodesState } from "../../../../store/networkContainer";

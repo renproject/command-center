@@ -1,8 +1,7 @@
-import * as React from "react";
-
 import { faServer } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon, FontAwesomeIconProps } from "@fortawesome/react-fontawesome";
 import filesize from "filesize";
+import React from "react";
 import { Doughnut } from "react-chartjs-2";
 
 import { DarknodesState } from "../../../../store/networkContainer";

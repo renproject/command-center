@@ -3,6 +3,7 @@ import { createContainer } from "unstated-next";
 
 const useUIContainer = () => {
     const [mobileMenuActive, setMobileMenuActive] = useState(false);
+    const [selectedDarknodeID, setSelectedDarknodeID] = useState<string | undefined>(undefined);
 
     const showMobileMenu = useCallback(() => {
         setMobileMenuActive(true);
@@ -12,7 +13,7 @@ const useUIContainer = () => {
         setMobileMenuActive(false);
     }, [setMobileMenuActive]);
 
-    return { mobileMenuActive, showMobileMenu, hideMobileMenu };
+    return { mobileMenuActive, showMobileMenu, hideMobileMenu, selectedDarknodeID, setSelectedDarknodeID };
 };
 
 export const UIContainer = createContainer(useUIContainer);

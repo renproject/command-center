@@ -1,6 +1,6 @@
 import { Currency, CurrencyIcon } from "@renproject/react-components";
 import { BigNumber } from "bignumber.js";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import { Token } from "../../../../lib/ethereum/tokens";
 import { catchBackgroundException } from "../../../../lib/react/errors";
@@ -15,11 +15,11 @@ export const TopUpController: React.FC<Props> = ({ darknodeID }) => {
     const { address, web3 } = Web3Container.useContainer();
     const { updateDarknodeDetails, showFundPopup } = NetworkContainer.useContainer();
 
-    const [value, setValue] = React.useState("");
-    const [resultMessage, setResultMessage] = React.useState<React.ReactNode>(null);
-    const [pending, setPending] = React.useState(false);
-    const [disabled, setDisabled] = React.useState(false);
-    const [accountBalance, setAccountBalance] = React.useState(new BigNumber(0));
+    const [value, setValue] = useState("");
+    const [resultMessage, setResultMessage] = useState<React.ReactNode>(null);
+    const [pending, setPending] = useState(false);
+    const [disabled, setDisabled] = useState(false);
+    const [accountBalance, setAccountBalance] = useState(new BigNumber(0));
 
     const handleChange = (newValue: string): void => {
         setValue(newValue.toString());
@@ -96,7 +96,7 @@ export const TopUpController: React.FC<Props> = ({ darknodeID }) => {
         showFundPopup(darknodeID, value, onCancel, onDone);
     };
 
-    React.useEffect(() => {
+    useEffect(() => {
         updateTraderBalance().catch((error) => {
             catchBackgroundException(error, "Error in TopUpController > updateTraderBalance");
         });

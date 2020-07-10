@@ -1,6 +1,6 @@
 // tslint:disable: react-a11y-anchors
 
-import * as React from "react";
+import React from "react";
 
 import { getWeb3BrowserIcon, Web3Browser } from "../../../lib/ethereum/browsers";
 import { ReactComponent as Brave } from "../../../styles/images/browsers/login/brave.svg";

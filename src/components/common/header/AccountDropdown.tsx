@@ -1,6 +1,5 @@
-import * as React from "react";
-
 import { Blocky, Loading } from "@renproject/react-components";
+import React, { useRef, useState } from "react";
 
 import { copyToClipboard } from "../../../lib/copyToClipboard";
 import { classNames } from "../../../lib/react/className";
@@ -9,13 +8,13 @@ import { Web3Container } from "../../../store/web3Store";
 import { ExternalLink } from "../../../views/ExternalLink";
 
 export const AccountDropdown: React.FC = () => {
-    const [shown, setShown] = React.useState(false);
-    const [copied, setCopied] = React.useState(false);
+    const [shown, setShown] = useState(false);
+    const [copied, setCopied] = useState(false);
 
     const { address, web3BrowserName, renNetwork, promptLogin, logout } = Web3Container.useContainer();
     const { transactions, confirmations } = NetworkContainer.useContainer();
 
-    const ref = React.useRef(null as HTMLDivElement | null);
+    const ref = useRef(null as HTMLDivElement | null);
 
     const handleLogin = async (): Promise<void> => {
         setShown(false);
@@ -78,7 +77,7 @@ export const AccountDropdown: React.FC = () => {
                     <Blocky address={address} />
                     <div className="header--account--right header--account--connected">
                         <div className="header--account--type">
-                            {web3BrowserName} {pendingTXs ? <Loading alt className="header--account--spinner" /> : <></>}
+                            {web3BrowserName} {pendingTXs ? <Loading alt className="header--account--spinner" /> : null}
                         </div>
                         <div className="header--account--address">
                             {address.substring(0, 8)}...{address.slice(-5)}
@@ -101,7 +100,7 @@ export const AccountDropdown: React.FC = () => {
 
         {address && shown ?
             <div className="header--dropdown--spacing header--dropdown--options header--dropdown--accounts">
-                <ul className={["header--dropdown", !address ? "header--dropdown--login" : ""].join(" ")}>
+                <ul className={classNames("header--dropdown", !address ? "header--dropdown--login" : "")}>
                     <li role="button" onClick={onClickCopy} className="header--dropdown--option">
                         <span data-addr={address}>
                             {copied ?
@@ -123,16 +122,16 @@ export const AccountDropdown: React.FC = () => {
                             {transactions.map((_tx, txHash) => {
                                 const txConfirmations = confirmations.get(txHash, 0);
                                 return <li key={txHash} className="transaction">
-                                    {txConfirmations === 0 ? <Loading /> : <></>}
-                                    {txConfirmations === -1 ? <span className="red">(ERR) {" "}</span> : <></>}
+                                    {txConfirmations === 0 ? <Loading /> : null}
+                                    {txConfirmations === -1 ? <span className="red">(ERR) {" "}</span> : null}
                                     <ExternalLink className="transaction--hash" href={`${renNetwork.etherscan}/tx/${txHash}`}>{txHash.substring(0, 10)}...</ExternalLink>
                                     {txConfirmations > 0 ? <>{" "}({txConfirmations} conf.)</> : ""}
                                 </li>;
                             }).valueSeq().toArray()}
-                        </> : <></>
+                        </> : null
                     }
                 </ul>
-            </div> : <></>
+            </div> : null
         }
     </div>;
 };

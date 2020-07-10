@@ -1,10 +1,9 @@
-import * as React from "react";
-
 import { Loading } from "@renproject/react-components";
 import { Map, OrderedSet } from "immutable";
+import React from "react";
 
 import { DarknodesState } from "../../../../store/networkContainer";
-import { _catch_ } from "../../../common/ErrorBoundary";
+import { ErrorBoundary } from "../../../common/ErrorBoundary";
 import { DarknodeCard } from "./DarknodeCard";
 import { EmptyDarknodeCard } from "./EmptyDarknodeCard";
 import { EmptyDarknodeList } from "./EmptyDarknodeList";
@@ -27,19 +26,19 @@ export const DarknodeList: React.FC<Props> = ({
     return <div className="darknode-list">
         {darknodeList === null ? <div className="darknode-list--loading">
             <Loading alt />
-            <p>Syncing Darknode Registry {registrySync.target !== 0 ? <>({registrySync.progress}/{registrySync.target})</> : <></>}</p>
+            <p>Syncing Darknode Registry {registrySync.target !== 0 ? <>({registrySync.progress}/{registrySync.target})</> : null}</p>
         </div> : <>
                 {darknodeList && darknodeList.map((darknodeID: string) => {
                     const details = darknodeDetails.get(darknodeID) || null;
                     const name = darknodeNames.get(darknodeID);
 
-                    return _catch_(<DarknodeCard
+                    return <ErrorBoundary key={darknodeID}><DarknodeCard
                         key={darknodeID}
                         name={name}
                         darknodeID={darknodeID}
                         darknodeDetails={details}
                         publicKey={darknodeRegisteringList.get(darknodeID)}
-                    />, { key: darknodeID });
+                    /></ErrorBoundary>;
                 }).toArray()}
                 {darknodeList.size === 0 ? <EmptyDarknodeList /> : <>
                     {darknodeList.size < 2 ? <EmptyDarknodeCard className="second" /> : null}

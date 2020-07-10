@@ -1,12 +1,12 @@
-import * as React from "react";
-
 import { faStar } from "@fortawesome/free-regular-svg-icons";
 import { faFire, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon, FontAwesomeIconProps } from "@fortawesome/react-fontawesome";
 import { Blocky, Currency, CurrencyIcon } from "@renproject/react-components";
+import React, { useCallback } from "react";
 import { Link } from "react-router-dom";
 
 import { Token } from "../../../../lib/ethereum/tokens";
+import { classNames } from "../../../../lib/react/className";
 import { DarknodesState } from "../../../../store/networkContainer";
 import { DarknodeID } from "../../../../views/DarknodeID";
 import { TokenBalance } from "../../../common/TokenBalance";
@@ -26,14 +26,14 @@ interface Props {
 }
 
 export const CardView: React.FC<Props> = ({ darknodeID, darknodeDetails, name, quoteCurrency, url, faded, hidable, confirmedRemove, removeDarknode, continuable }) => {
-    const handleRemoveDarknode = React.useCallback((e: React.MouseEvent<HTMLDivElement>): void => {
+    const handleRemoveDarknode = useCallback((e: React.MouseEvent<HTMLDivElement>): void => {
         e.stopPropagation();
         e.preventDefault();
         removeDarknode();
     }, [removeDarknode]);
 
     return <Link className="no-underline" to={url}>
-        <div className={["darknode-card", faded ? "darknode-card--faded" : ""].join(" ")}>
+        <div className={classNames("darknode-card", faded ? "darknode-card--faded" : "")}>
             <div className="darknode-card--top">
                 {hidable ? <div role="button" className="card--hide" onClick={handleRemoveDarknode}>
                     {confirmedRemove ? "Are you sure?" : <FontAwesomeIcon icon={faTimes as FontAwesomeIconProps["icon"]} pull="left" />}

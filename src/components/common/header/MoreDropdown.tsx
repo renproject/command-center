@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useRef, useState } from "react";
 
 import { classNames } from "../../../lib/react/className";
 import { ReactComponent as IconDropdown } from "../../../styles/images/icon-dropdown.svg";
@@ -10,9 +10,9 @@ const Option: React.FC<{ href: string }> = ({ href, children }) =>
     </li></ExternalLink>;
 
 export const MoreDropdown: React.FC<{}> = () => {
-    const [shown, setShown] = React.useState(false);
+    const [shown, setShown] = useState(false);
 
-    const ref = React.useRef(null as HTMLDivElement | null);
+    const ref = useRef(null as HTMLDivElement | null);
 
     // tslint:disable-next-line: no-any
     const clickAway = (event: any) => {
@@ -49,7 +49,7 @@ export const MoreDropdown: React.FC<{}> = () => {
                     <Option href={URLs.wiki}>RenVM Wiki</Option>
                     <Option href={URLs.gitbookDevelopers}>Developer Docs</Option>
                 </ul>
-            </div> : <></>
+            </div> : null
         }
     </div>;
 };

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
 import ReactTooltip from "react-tooltip";
@@ -13,9 +13,9 @@ import MapJSON from "./world-50m.json";
 export const DarknodeMap = () => {
     const { renNetwork: network } = Web3Container.useContainer();
     const container = MapContainer.useContainer();
-    const [tooltipContent, setTooltipContent] = React.useState("");
+    const [tooltipContent, setTooltipContent] = useState("");
 
-    React.useEffect(() => {
+    useEffect(() => {
         const fetchIPs = () => {
             container.fetchDarknodes().catch(console.error);
         };

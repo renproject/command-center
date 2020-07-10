@@ -1,15 +1,16 @@
 import * as qs from "query-string";
-import * as React from "react";
 
-import { RouteComponentProps, withRouter } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useLocation, useRouteMatch } from "react-router-dom";
 import { toChecksumAddress } from "web3-utils";
 
 import { darknodeIDBase58ToHex } from "../../../lib/darknode/darknodeID";
 import { RegistrationStatus } from "../../../lib/ethereum/contractReads";
 import { NetworkContainer } from "../../../store/networkContainer";
+import { UIContainer } from "../../../store/uiStore";
 import { Web3Container } from "../../../store/web3Store";
 import { NotFound } from "../../../views/404";
-import { _catch_ } from "../../common/ErrorBoundary";
+import { ErrorBoundary } from "../../common/ErrorBoundary";
 import { DarknodeView } from "./DarknodeView";
 
 export enum DarknodeAction {
@@ -18,8 +19,8 @@ export enum DarknodeAction {
     Deregister = "deregister",
 }
 
-export const getDarknodeParam = (params: unknown): string | undefined => {
-    const { darknodeID: darknodeID58 } = params as { darknodeID: string | undefined };
+export const getDarknodeParam = (params: { darknodeID?: string }): string | undefined => {
+    const { darknodeID: darknodeID58 } = params;
     let darknodeID;
     if (darknodeID58) {
         try {
@@ -42,26 +43,34 @@ export const getDarknodeParam = (params: unknown): string | undefined => {
  *     1) action: either "register" or "deregister"
  *     2) public_key: only used if action is "register"
  */
-export const DarknodePage = withRouter(({ match, location }: Props) => {
+export const DarknodePage = () => {
     const { address } = Web3Container.useContainer();
+    const { selectedDarknodeID, setSelectedDarknodeID } = UIContainer.useContainer();
     const { darknodeDetails, darknodeNames, storeDarknodeName: setDarknodeName, addRegisteringDarknode } = NetworkContainer.useContainer();
 
-    const [darknodeID, setDarknodeID] = React.useState<string | undefined>(undefined);
-    const [action, setAction] = React.useState<string | undefined>(undefined);
-    const [publicKey, setPublicKey] = React.useState<string | undefined>(undefined);
-    // const [providedName, setProvidedName] = React.useState<string | undefined>(undefined);
+    // const [darknodeID, setDarknodeID] = useState<string | undefined>(undefined);
+    const [action, setAction] = useState<string | undefined>(undefined);
+    const [publicKey, setPublicKey] = useState<string | undefined>(undefined);
+    // const [providedName, setProvidedName] = useState<string | undefined>(undefined);
 
-    const urlDarknodeID: string | undefined = getDarknodeParam(match.params);
+    const location = useLocation();
+    const { params }: { params: { darknodeID?: string } } = useRouteMatch();
+    const urlDarknodeID: string | undefined = getDarknodeParam(params);
 
-    const [firstTime, setFirstTime] = React.useState(true);
+    const [firstTime, setFirstTime] = useState(true);
 
-    React.useEffect(() => {
-        setDarknodeID(urlDarknodeID);
-    }, [urlDarknodeID]);
+    useEffect(() => {
+        setSelectedDarknodeID(urlDarknodeID);
 
-    const darknodeOrURL = darknodeID || urlDarknodeID;
+        // Clear selected darknode when the page is un-mounted.
+        return () => {
+            setSelectedDarknodeID(undefined);
+        };
+    }, [urlDarknodeID, setSelectedDarknodeID]);
 
-    React.useEffect(() => {
+    const darknodeOrURL = selectedDarknodeID || urlDarknodeID;
+
+    useEffect(() => {
         const queryParams = qs.parse(location.search);
         const urlAction = typeof queryParams.action === "string" ? queryParams.action : undefined;
         const urlPublicKey = typeof queryParams.public_key === "string" ? queryParams.public_key : undefined;
@@ -112,7 +121,7 @@ export const DarknodePage = withRouter(({ match, location }: Props) => {
         return <NotFound />;
     }
 
-    return _catch_(<DarknodeView
+    return <ErrorBoundary><DarknodeView
         key={darknodeOrURL}
         action={darknodeAction}
         publicKey={publicKey}
@@ -120,8 +129,5 @@ export const DarknodePage = withRouter(({ match, location }: Props) => {
         darknodeID={darknodeOrURL}
         isOperator={!readOnly}
         darknodeDetails={details}
-    />);
-});
-
-interface Props extends RouteComponentProps {
-}
+    /></ErrorBoundary>;
+};

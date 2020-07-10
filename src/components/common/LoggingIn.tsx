@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useCallback, useEffect } from "react";
 
 import { catchBackgroundException } from "../../lib/react/errors";
 import { Web3Container } from "../../store/web3Store";
@@ -13,13 +13,13 @@ import {
 export const LoggingIn: React.FC<{}> = () => {
     const { address, promptLogin } = Web3Container.useContainer();
 
-    const handleLogin = React.useCallback(async (): Promise<void> => {
+    const handleLogin = useCallback(async (): Promise<void> => {
         if (!address) {
             await promptLogin({ manual: false });
         }
     }, [promptLogin, address]);
 
-    React.useEffect(() => {
+    useEffect(() => {
         handleLogin().catch((error) => catchBackgroundException(error, "Error in LoggingIn > handleLogin"));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);

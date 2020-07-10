@@ -1,11 +1,10 @@
 import "react-circular-progressbar/dist/styles.css";
 
-import * as React from "react";
-
 import { faServer } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon, FontAwesomeIconProps } from "@fortawesome/react-fontawesome";
 import { naturalTime } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
+import React, { useEffect, useState } from "react";
 import { buildStyles, CircularProgressbar } from "react-circular-progressbar";
 
 import { isDefined } from "../../../../lib/general/isDefined";
@@ -23,8 +22,8 @@ export const EpochBlock: React.FC<Props> = ({ darknodeDetails }) => {
     const { renVM } = GraphContainer.useContainer();
     const { timeUntilNextEpoch, timeSinceLastEpoch, minimumEpochInterval } = renVM || {};
 
-    const [currentTime, setCurrentTime] = React.useState<BigNumber | null>(null);
-    React.useEffect(() => {
+    const [currentTime, setCurrentTime] = useState<BigNumber | null>(null);
+    useEffect(() => {
         setCurrentTime(new BigNumber(new Date().getTime() / SECONDS));
     }, [timeSinceLastEpoch]);
 

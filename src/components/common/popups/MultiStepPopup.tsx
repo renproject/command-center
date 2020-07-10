@@ -1,6 +1,5 @@
-import * as React from "react";
-
 import { Loading } from "@renproject/react-components";
+import React, { useEffect, useState } from "react";
 
 import { ErrorCanceledByUser } from "../../../lib/ethereum/getWeb3";
 import { classNames } from "../../../lib/react/className";
@@ -23,13 +22,13 @@ const MultiStepPopupClass: React.FC<Props> = ({ steps,
 
     const { clearPopup } = PopupContainer.useContainer();
 
-    const [running, setRunning] = React.useState(false);
-    const [complete, setComplete] = React.useState(false);
-    const [rejected, setRejected] = React.useState(false);
+    const [running, setRunning] = useState(false);
+    const [complete, setComplete] = useState(false);
+    const [rejected, setRejected] = useState(false);
     // tslint:disable-next-line: prefer-const
-    let [currentStep, setCurrentStep] = React.useState(0);
-    const [runError, setRunError] = React.useState(null as Error | null);
-    const [warningIgnored, setWarningIgnored] = React.useState(false);
+    let [currentStep, setCurrentStep] = useState(0);
+    const [runError, setRunError] = useState(null as Error | null);
+    const [warningIgnored, setWarningIgnored] = useState(false);
 
     const notStarted = !running && !complete && !runError;
 
@@ -85,7 +84,7 @@ const MultiStepPopupClass: React.FC<Props> = ({ steps,
     };
 
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (!confirm) {
             run()
                 .catch((error) => {
