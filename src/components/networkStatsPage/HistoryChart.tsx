@@ -32,7 +32,12 @@ export const textCurrencyIcon = (currency: Currency) => {
     }
 };
 
-const getOptions = (data: Array<[number, number]>, quoteCurrency: Currency) => ({
+export enum GraphType {
+    TotalVolume = "TotalVolume",
+    TotalLocked = "TotalLocked",
+}
+
+const getOptions = (data: Array<[number, number]>, quoteCurrency: Currency, graphType: GraphType) => ({
     rangeSelector: {
         // selected: 1
         enabled: false,
@@ -70,19 +75,19 @@ const getOptions = (data: Array<[number, number]>, quoteCurrency: Currency) => (
     }],
 
     series: [{
-        name: `Value Locked (${quoteCurrency.toUpperCase()})`,
+        name: `${graphType === GraphType.TotalLocked ? "Value minted" : "Volume"} (${quoteCurrency.toUpperCase()})`,
         data,
         tooltip: {
             valueDecimals: 2
         },
         color: "#006FE8",
-        lineWidth: 4,
+        lineWidth: 3,
     }]
 });
 
 interface Props {
     periodSeries: QuotePeriodResponse | null | undefined;
-    graphType: "TotalVolume" | "TotalLocked";
+    graphType: GraphType;
     quoteCurrency: Currency;
 }
 
@@ -100,15 +105,16 @@ export const HistoryChart: React.FC<Props> = ({ periodSeries, graphType, quoteCu
                     item.date * 1000,
                     parseInt(item[`quote${graphType}`], 10)
                 ]
-            ), quoteCurrency));
+            ), quoteCurrency, graphType));
         }
-    }, [cachedSeries, quoteCurrency]);
+    }, [graphType, cachedSeries, quoteCurrency]);
 
-    return <div className="overview--chart--outer" style={{ maxWidth: "calc(100vw - 80px)" }}>
+    return <div className="overview--chart--outer" style={{ maxWidth: "100%" }}>
         <div className="volume--chart">
-            {cachedSeries ? <><div className="overview--chart--canvas" style={{ maxWidth: "calc(100vw - 80px)" }}>
+            {cachedSeries ? <><div className="overview--chart--canvas" style={{ maxWidth: "100%" }}>
                 {options ?
                     <HighchartsReact
+                        className={"highcharts--outer"}
                         highcharts={Highcharts}
                         constructorType={"stockChart"}
                         options={options}

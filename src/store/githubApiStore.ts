@@ -32,7 +32,7 @@ const useGithubAPIContainer = () => {
             if (!response.data || response.data.message) {
                 throw new Error(response.data ? response.data.message : "No data returned from Github API.");
             }
-            setLatestDarknodeVersionFull(response.data.tag_name);
+            setLatestDarknodeVersionFull(response.data.tag_name.replace(/-testnet/, " (prerelease)"));
             setLatestDarknodeVersion(response.data.tag_name);
             setLatestDarknodeVersionDaysAgo(naturalTime(moment(response.data.published_at).unix(), {
                 suffix: "ago",

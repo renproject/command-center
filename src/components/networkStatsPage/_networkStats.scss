@@ -32,7 +32,7 @@
         .overview--chart--outer {
             width: 100%;
             border-radius: 4px;
-            height: 400px;
+            height: 500px;
 
             flex: 1 1 0px;
 
@@ -319,6 +319,10 @@
         padding-top: 0;
     }
 
+    .info-label--message {
+        text-transform: none;
+    }
+
     background: #001327;
 }
 
@@ -397,8 +401,11 @@
     &,
     >span {
         font-family: "Courier New", Courier, monospace;
+        text-align: right;
     }
 
+    display: flex;
+    justify-content: flex-end;
     font-weight: 500;
     font-size: 12px;
     line-height: 29px;
@@ -447,7 +454,9 @@
         margin-left: 5px;
     }
 
-
+    &:hover {
+    opacity: 0.8;
+}
     &.period-option--selected {
         opacity: 1;
         border: 2px solid #006FE8;
@@ -459,6 +468,15 @@
     flex-basis: 0;
     display: flex;
     flex-direction: column;
+
+    @media (max-width: $max-md) {
+        min-width: calc(100vw - 80px);
+        width: 100%;
+    }
+
+    @media (min-width: $min-lg) {
+        max-width: calc(calc(100% - 20px) / 2);
+    }
 
     &+.stat-with-period {
         margin-left: 20px;
@@ -482,7 +500,7 @@
     width: 100%;
     display: flex;
     justify-content: flex-start;
-    margin-bottom: 100px;
+    margin-bottom: 50px;
     border-bottom: 1px solid #1A2E46;
 }
 
@@ -536,3 +554,11 @@
         display: none;
     }
 }
+
+// .highcharts-container {
+//     max-width: 100%;
+
+//     svg {
+//         max-width: 100%;
+//     }
+// }

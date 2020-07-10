@@ -7,7 +7,7 @@ import { ReactComponent as IconValueLocked } from "../../styles/images/icon-valu
 import { ReactComponent as IconVolume } from "../../styles/images/icon-volume.svg";
 import { Stat, Stats } from "../../views/Stat";
 import { Collateral } from "./Collateral";
-import { HistoryChart } from "./HistoryChart";
+import { GraphType, HistoryChart } from "./HistoryChart";
 import { NetworkStatsContainer } from "./networkStatsContainer";
 import { PeriodSelector } from "./PeriodSelector";
 import { StatTab, StatTabs } from "./StatTabs";
@@ -48,7 +48,7 @@ export const NetworkStats = () => {
                             <div className="overview--bottom">
                                 <StatTabs selected={volumeTab} onChange={setVolumeTab} volumePeriod={volumePeriod} assetsPeriod={volumePeriod} />
                                 {volumeTab === StatTab.History ?
-                                    <HistoryChart graphType={"TotalVolume"} periodSeries={quotePeriodSeries.get(volumePeriod)} quoteCurrency={quoteCurrency} /> :
+                                    <HistoryChart graphType={GraphType.TotalVolume} periodSeries={quotePeriodSeries.get(volumePeriod)} quoteCurrency={quoteCurrency} /> :
                                     <TokenChart graphType={"Volume"} quoteCurrency={quoteCurrency} periodSeries={quotePeriodSeries.get(volumePeriod)} />
                                 }
                             </div>
@@ -57,9 +57,9 @@ export const NetworkStats = () => {
                     <div className="stat-with-period">
                         <PeriodSelector selected={lockedPeriod} onChange={setLockedPeriod} />
                         <Stat
-                            message="Value locked"
+                            message="Value minted"
                             icon={<IconValueLocked />}
-                            infoLabel={lockedPeriod === PeriodType.ALL ? <>The total value (TVL) of all digital assets currently locked in RenVM.</> : <>The 1 {lockedPeriod.toLowerCase()} change in RenVM's locked digital assets.</>}
+                            infoLabel={lockedPeriod === PeriodType.ALL ? <>The total value (TVL) of all digital assets currently minted on Ethereum by RenVM.</> : <>The 1 {lockedPeriod.toLowerCase()} change in RenVM's locked digital assets.</>}
                             big={true}
                             className="stat--extra-big"
                         >
@@ -75,7 +75,7 @@ export const NetworkStats = () => {
                             <div className="overview--bottom">
                                 <StatTabs selected={lockedTab} onChange={setLockedTab} volumePeriod={lockedPeriod} assetsPeriod={null} />
                                 {lockedTab === StatTab.History ?
-                                    <HistoryChart graphType={"TotalLocked"} periodSeries={quotePeriodSeries.get(lockedPeriod)} quoteCurrency={quoteCurrency} /> :
+                                    <HistoryChart graphType={GraphType.TotalLocked} periodSeries={quotePeriodSeries.get(lockedPeriod)} quoteCurrency={quoteCurrency} /> :
                                     <TokenChart graphType={"Locked"} quoteCurrency={quoteCurrency} periodSeries={quotePeriodSeries.get(lockedPeriod)} />
                                 }
                             </div>

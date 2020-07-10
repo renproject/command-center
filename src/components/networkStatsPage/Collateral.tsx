@@ -80,19 +80,19 @@ export const Collateral: React.FC<Props> = ({ minted, l, b, bRen, quoteCurrency 
                         <div className={classNames("collateral-table", GREYCORE_ACTIVE ? "collateral-table-greycore" : "")}>
                             <div className="collateral-table--row">
                                 <div className={classNames("collateral-table--row--left", "row--l", overCollateralized ? "row--l--over" : "row--l--under")}><RowBullet /> Value Locked (L)</div>
-                                <div className="collateral-table--row--right"><CurrencyIcon currency={quoteCurrency} />{l.toFormat(2)}</div>
+                                <div className="collateral-table--row--right"><CurrencyIcon currency={quoteCurrency} />{l.toFormat(2)} <InfoLabel>The total value (TVL) of all digital assets currently locked in RenVM.</InfoLabel></div>
                             </div>
                             <div className="collateral-table--row">
-                                <div className="collateral-table--row--left row--b"><RowBullet /> Value Minted</div>
-                                <div className="collateral-table--row--right">{minted ? <span className="collateral-chart--bow--small"><CurrencyIcon currency={quoteCurrency} />{minted.toFormat(2)}</span> : null}</div>
+                                <div className="collateral-table--row--left row--b"><RowBullet /> Value in motion</div>
+                                <div className="collateral-table--row--right">{(l && minted && minted.gt(0)) ? <span className="collateral-chart--bow--small"><CurrencyIcon currency={quoteCurrency} />{BigNumber.max(l.minus(minted), 0).toFormat(2)}</span> : null} <InfoLabel>The value of digital assets currently being minted or burned through RenVM. Equal to the value locked minus the value minted.</InfoLabel></div>
                             </div>
                             {/* <div className="collateral-table--row">
                                 <div className="collateral-table--row--left row--b3"><RowBullet /> Ceiling (R/3)</div>
-                                <div className="collateral-table--row--right"><CurrencyIcon currency={quoteCurrency} />{(r || new BigNumber(0)).div(3).toFormat(2)}</div>
+                                <div className="collateral-table--row--right"><CurrencyIcon currency={quoteCurrency} />{(r || new BigNumber(0)).div(3).toFormat(2)} <InfoLabel>Locked</InfoLabel></div>
                             </div> */}
                             <div className="collateral-table--row">
                                 <div className="collateral-table--row--left row--b"><RowBullet /> Value Bonded (B)</div>
-                                <div className="collateral-table--row--right">{bRen.toFormat(0)} REN {b ? <span className="collateral-chart--bow--small">(<CurrencyIcon currency={quoteCurrency} />{b.toFormat(2)})</span> : null}</div>
+                                <div className="collateral-table--row--right"><span>{bRen.toFormat(0)} REN {b ? <span className="collateral-chart--bow--small">(<CurrencyIcon currency={quoteCurrency} />{b.toFormat(2)})</span> : null}</span> <InfoLabel>The collective value bonded by darknodes. Each node is required to bond 100,000 REN.</InfoLabel></div>
                             </div>
                         </div>
                     </div>

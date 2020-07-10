@@ -35,11 +35,18 @@ $icon-size: 12px;
     }
 }
 
+.info-label--fading {
+    .info-label--message {
+        opacity: 0;
+        transition: opacity 200ms;
+    }
+}
+
 .info-label--message {
     line-height: initial;
     text-align: center;
     background-color: white;
-    color: #333;
+    color: #3F3F48;
     padding: 15px;
     border-radius: 4px;
     position: absolute;

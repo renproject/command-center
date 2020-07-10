@@ -115,6 +115,10 @@
         font-size: 16.2px;
         line-height: 19px;
         margin-left: 10px;
+
+        &::after {
+            font-size: 14px !important;
+        }
     }
 }
 
@@ -134,6 +138,10 @@
             content: "\25bc";
             ;
         }
+    }
+
+    &::after {
+        font-size: 24px;
     }
 }
 

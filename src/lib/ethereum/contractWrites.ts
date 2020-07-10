@@ -263,7 +263,7 @@ export const refundNode = async (
  * @param darknodeID Hexadecimal ID of the darknode to register.
  * @param address Ethereum address to send Ethereum transactions from.
  * @param token The token to withdraw fees for.
- * @param amount The amount to be burnt in the smallest unit of the token.
+ * @param amount The amount to be burned in the smallest unit of the token.
  * @param recipient The address on the native blockchain to receive funds.
  * @param waitForTX Returns the txHash of a PromiEvent.
  */

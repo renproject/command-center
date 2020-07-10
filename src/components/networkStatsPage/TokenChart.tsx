@@ -46,7 +46,7 @@ export const TokenChart: React.FunctionComponent<Props> = ({ periodSeries, quote
                             callbacks: {
                                 // tslint:disable-next-line: no-any
                                 title: (tooltipItem: any, data: any) => {
-                                    return (graphType === "Volume" ? "Volume - " : "Value locked - ") + data.labels[tooltipItem[0].index];
+                                    return (graphType === "Volume" ? "Volume - " : "Value minted - ") + data.labels[tooltipItem[0].index];
                                 },
                                 // tslint:disable-next-line: no-any
                                 label: (tooltipItem: any, data: any) => {
