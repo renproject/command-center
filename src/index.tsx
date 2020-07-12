@@ -5,9 +5,9 @@ import * as ReactDOM from "react-dom";
 import React from "react";
 import { Router } from "react-router-dom";
 
-import { App } from "./components/App";
-import { Connect } from "./components/common/Connect";
-import { ErrorBoundary } from "./components/common/ErrorBoundary";
+import { App } from "./controllers/App";
+import { Connect } from "./controllers/common/Connect";
+import { ErrorBoundary } from "./controllers/common/ErrorBoundary";
 import { DEFAULT_REN_NETWORK, NODE_ENV } from "./lib/react/environmentVariables";
 import { history } from "./lib/react/history";
 import { onLoad } from "./lib/react/onLoad";
@@ -45,8 +45,8 @@ render(App);
 // tslint:disable-next-line: no-any
 if ((module as any).hot) {
     // tslint:disable-next-line: no-any
-    (module as any).hot.accept("./components/App", () => {
-        const NextApp = require("./components/App").App;
+    (module as any).hot.accept("./controllers/App", () => {
+        const NextApp = require("./controllers/App").App;
         render(NextApp);
     });
 }

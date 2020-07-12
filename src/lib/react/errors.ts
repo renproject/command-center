@@ -5,7 +5,7 @@ import * as Sentry from "@sentry/browser";
 import { RenNetwork } from "@renproject/contracts";
 import { naturalTime } from "@renproject/react-components";
 
-import { SECONDS } from "../../components/common/BackgroundTasks";
+import { SECONDS } from "../../controllers/common/BackgroundTasks";
 import { DEFAULT_REN_NETWORK, NODE_ENV, SENTRY_DSN } from "./environmentVariables";
 
 interface Details {

@@ -1,7 +1,7 @@
 import { ApolloClient, gql } from "apollo-boost";
 import BigNumber from "bignumber.js";
 
-import { SECONDS } from "../../../components/common/BackgroundTasks";
+import { SECONDS } from "../../../controllers/common/BackgroundTasks";
 import { Ox } from "../../ethereum/contractReads";
 
 export interface Epoch {

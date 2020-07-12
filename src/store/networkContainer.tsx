@@ -6,10 +6,10 @@ import React, { useState } from "react";
 import { createContainer } from "unstated-next";
 import { PromiEvent } from "web3-core";
 
-import { MultiStepPopup } from "../components/common/popups/MultiStepPopup";
-import { WithdrawPopup } from "../components/common/popups/WithdrawPopup";
-import { TokenBalance } from "../components/common/TokenBalance";
-import { retryNTimes } from "../components/statsPages/renvmStatsPage/renvmContainer";
+import { MultiStepPopup } from "../controllers/common/popups/MultiStepPopup";
+import { WithdrawPopup } from "../controllers/common/popups/WithdrawPopup";
+import { TokenBalance } from "../controllers/common/TokenBalance";
+import { retryNTimes } from "../controllers/statsPages/renvmStatsPage/renvmContainer";
 import { NodeStatistics } from "../lib/darknode/jsonrpc";
 import { getDarknodePayment } from "../lib/ethereum/contract";
 import {
@@ -19,17 +19,15 @@ import {
 import {
     approveNode, deregisterNode, fundNode, refundNode, registerNode, withdrawToken,
 } from "../lib/ethereum/contractWrites";
-import {
-    AllTokenDetails, getPrices, NewTokenDetails, Token, TokenPrices,
-} from "../lib/ethereum/tokens";
+import { AllTokenDetails, FeeTokens, getPrices, Token, TokenPrices } from "../lib/ethereum/tokens";
 import { isDefined } from "../lib/general/isDefined";
 import { safePromiseAllMap } from "../lib/general/promiseAll";
 import { RenVM } from "../lib/graphQL/queries/renVM";
 import { catchBackgroundException, catchInteractionException } from "../lib/react/errors";
-import { GraphContainer } from "./graphStore";
-import { PopupContainer } from "./popupStore";
+import { GraphContainer } from "./graphContainer";
+import { PopupContainer } from "./popupContainer";
 import useStorageState from "./useStorageState/useStorageState";
-import { Web3Container } from "./web3Store";
+import { Web3Container } from "./web3Container";
 
 export class DarknodesState extends Record({
     ID: "",
@@ -243,7 +241,7 @@ const useNetworkContainer = () => {
         let newPendingRewards = OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber | null>>();
 
         const πPrevious = safePromiseAllMap(
-            NewTokenDetails.map(async (_tokenDetails, token) => {
+            FeeTokens.map(async (_tokenDetails, token) => {
                 try {
                     const tokenAddress = token === Token.ETH ? "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" : renNetwork.addresses.tokens[token].address;
                     if (renVM && token === Token.BTC) return renVM.currentEpoch.rewardShareBTC.decimalPlaces(0);
@@ -260,7 +258,7 @@ const useNetworkContainer = () => {
         );
 
         const πCurrent = safePromiseAllMap(
-            NewTokenDetails.map(async (_tokenDetails, token) => {
+            FeeTokens.map(async (_tokenDetails, token) => {
                 if (latestRenVM.numberOfDarknodes.isZero()) {
                     return new BigNumber(0);
                 }
