@@ -20,13 +20,14 @@ import { PopupContainer } from "./popupContainer";
 import useStorageState from "./useStorageState/useStorageState";
 
 const stringToNetwork = (network: RenNetwork): RenNetworkDetails => {
-    switch (network) {
+    switch (network.toLowerCase()) {
         case RenNetwork.Mainnet: return mainnet;
         case RenNetwork.Chaosnet: return chaosnet;
         case RenNetwork.Testnet: return testnet;
         case RenNetwork.Devnet: return devnet;
         case RenNetwork.Localnet: return localnet;
     }
+    throw new Error(`Unknown network ${network}.`);
 };
 
 const useOnboard = (networkID: number) => {
@@ -57,7 +58,7 @@ const useOnboard = (networkID: number) => {
     return { onboard };
 };
 
-const useWeb3Container = (initialState = "testnet" as RenNetwork) => {
+const useWeb3Container = (initialState = RenNetwork.Testnet) => {
     const { setPopup, clearPopup } = PopupContainer.useContainer();
 
     const [renNetwork,] = useState<RenNetworkDetails>(stringToNetwork(initialState));
