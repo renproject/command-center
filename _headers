@@ -1,0 +1,14 @@
+/*
+# Not allowed in iframes
+  X-Frame-Options: DENY
+# Helps prevent loding external scripts if inline scripting is allwoed
+  X-XSS-Protection: 1; mode=block
+# Restrict js scripts to only load from the same host
+# unsafe-inline largely makes this moot,
+# but is required for metamask to work in Firefox,
+# this should be tracked until resolved
+  Content-Security-Policy: script-src 'self' 'unsafe-inline'
+# Always follow mime-types provided from server
+  X-Content-Type-Options: "nosniff" always
+# Don't include referrer headers to external links
+  Referrer-Policy: no-referrer
