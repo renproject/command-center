@@ -21,7 +21,12 @@ jobs:
         args: deploy --dir=./build
       env:
         NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_TESTNET_SITE_ID }}      
+        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_TESTNET_SITE_ID }}
+        REACT_APP_BLOCKNATIVE_INFURA_KEY: ${{ secrets.REACT_APP_BLOCKNATIVE_INFURA_KEY }} 
+        REACT_APP_BLOCKNATIVE_KEY: ${{ secrets.REACT_APP_BLOCKNATIVE_KEY }} 
+        REACT_APP_DEV_INFURA_KEY: ${{ secrets.REACT_APP_DEV_INFURA_KEY }} 
+        REACT_APP_INFURA_KEY: ${{ secrets.REACT_APP_INFURA_KEY }} 
+        REACT_APP_SENTRY_DSN: ${{ secrets.REACT_APP_SENTRY_DSN }} 
     - run: REACT_APP_NETWORK="mainnet" CI=false yarn build
     - uses: netlify/actions/cli@master
       with:
@@ -29,3 +34,8 @@ jobs:
       env:
         NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
         NETLIFY_SITE_ID: ${{ secrets.NETLIFY_MAINNET_SITE_ID }}      
+        REACT_APP_BLOCKNATIVE_INFURA_KEY: ${{ secrets.REACT_APP_BLOCKNATIVE_INFURA_KEY }} 
+        REACT_APP_BLOCKNATIVE_KEY: ${{ secrets.REACT_APP_BLOCKNATIVE_KEY }} 
+        REACT_APP_DEV_INFURA_KEY: ${{ secrets.REACT_APP_DEV_INFURA_KEY }} 
+        REACT_APP_INFURA_KEY: ${{ secrets.REACT_APP_INFURA_KEY }} 
+        REACT_APP_SENTRY_DSN: ${{ secrets.REACT_APP_SENTRY_DSN }} 
