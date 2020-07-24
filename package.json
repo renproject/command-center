@@ -93,6 +93,7 @@
     "darknode-sol": "https://github.com/renproject/darknode-sol#f692da1b99a88d7691d80d6e28337a9dedfbe501",
     "node-fetch": "^2.6.0",
     "npm-check-updates": "^7.0.1",
+    "prettier": "^2.0.5",
     "ts-mocha": "^7.0.0",
     "ts-unused-exports": "^6.2.1",
     "tslint": "^6.1.2",
