@@ -135,10 +135,6 @@ button:not(:disabled):hover {
     box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
 }
 
-// button:not(:disabled):active {
-//     background-color: $off-white;
-// }
-
 button .loading:after {
     height: 12px;
     width: 12px;
@@ -204,18 +200,6 @@ $spacing: 90px;
     }
 }
 
-// .without-account .container {
-//     padding: 0 $spacing+10px;
-
-//     @media (max-width: $max-xl) {
-//         padding-right: 0 $spacing+10px;
-//     }
-
-//     @media (max-width: $max-md) {
-//         padding: 0 10px;
-//     }
-// }
-
 svg.icon {
     margin-right: 5px;
 }
@@ -253,7 +237,7 @@ svg.icon {
 }
 
 .blue {
-    color: $blue-bright;
+    color: $primary;
 }
 
 .orange {
@@ -463,5 +447,29 @@ label {
         >span {
             background: $green;
         }
+    }
+}
+
+.ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.text-button {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    height: initial;
+    width: initial;
+    color: $primary;
+
+    :hover {
+        margin-top: -1px;
+    }
+
+    :active {
+        margin-top: 0px;
     }
 }

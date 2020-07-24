@@ -4,6 +4,8 @@ import { isMainnetAddress, isTestnetAddress } from "bchaddrjs";
 import { Map, OrderedMap } from "immutable";
 import { validate } from "wallet-address-validator";
 
+import { DEFAULT_REQUEST_TIMEOUT } from "../react/environmentVariables";
+
 export enum Token {
     DAI = "DAI",
     ETH = "ETH",
@@ -116,7 +118,8 @@ export const getPrices = (previousTokenPrices: TokenPrices | null): Promise<Toke
     AllTokenDetails.toArray().map(([token, tokenDetails]) =>
         ({
             token, responsePromise: Axios.get(
-                `${coinGeckoURL}/coins/${tokenDetails.coinGeckoID}?${coinGeckoParams}`
+                `${coinGeckoURL}/coins/${tokenDetails.coinGeckoID}?${coinGeckoParams}`,
+                { timeout: DEFAULT_REQUEST_TIMEOUT }
             )
         }))
         .reduce(async (pricesPromise, { token, responsePromise }) => {

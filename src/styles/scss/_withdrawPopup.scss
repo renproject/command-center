@@ -28,16 +28,13 @@
     .popup--buttons {
         height: 100%;
         align-items: flex-end;
+        margin-top: 10px;
     }
 }
 
 .withdraw--addresses {
     margin: 0;
     padding: 20px 0;
-
-    &.withdraw--addresses--empty {
-        // margin-bottom: 50px;
-    }
 }
 
 .withdraw--address--outer {
@@ -48,11 +45,11 @@
 
     &:not(:last-child) {
         margin-bottom: 5px;
-        // border-bottom: 1px solid #aaa;
     }
 }
 
 .withdraw--address {
+    @extend .ellipsis;
     cursor: pointer;
     width: 100%;
     display: flex;
@@ -123,15 +120,14 @@
 }
 
 .withdraw--selected {
-    background-color: $blue-bright !important;
-    border-color: $blue-bright;
+    background-color: $primary !important;
+    border-color: $primary;
 
     >* {
         color: white;
     }
 
     font-weight: 900;
-    // border: 1px solid $blue-bright;
 }
 
 .withdraw--address--remove {
@@ -140,6 +136,14 @@
     min-width: initial;
     padding: 0 10px;
     color: white;
+
+    :hover {
+        margin-top: -2px
+    }
+
+    :active {
+        margin-top: 0px;
+    }
 }
 
 .input--valid {
@@ -152,7 +156,7 @@
     margin-bottom: 10px;
     position: relative;
     background: #09203B;
-    border: 1.6px solid $blue-bright;
+    border: 1.6px solid $primary;
     box-sizing: border-box;
     border-radius: 4px;
     height: 40px;
@@ -193,8 +197,6 @@
 .input-label {
     transform: translate3d(0, -2px, 0);
     opacity: 1;
-    // background: $background;
-    // color: var($primaryColor);
     background: #09203B;
     height: 2px;
 
@@ -207,9 +209,7 @@
     font-size: 14px;
     line-height: 16px;
 
-    /* identical to box height */
-
-    color: $blue-bright;
+    color: $primary;
 
     position: absolute;
     top: 0;
@@ -237,6 +237,7 @@
 .withdraw--loading {
     display: flex;
     align-items: center;
+    font-size: 14px;
 
     .loading {
         margin-left: 10px;

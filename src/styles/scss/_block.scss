@@ -12,9 +12,6 @@
     display: flex;
     flex-direction: column;
 
-    // box-shadow: 2px 2px 14px rgba(0, 0, 0, 0.1);
-    // box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
-
     &.basic {
         cursor: pointer;
     }
@@ -50,7 +47,6 @@
         font-style: normal;
         font-weight: bold;
 
-        /* identical to box height */
         letter-spacing: 1.75px;
         text-transform: uppercase;
 
@@ -68,7 +64,6 @@
     flex-grow: 2;
     margin: 10px 0;
 
-    // height: 100%;
     display: flex;
     flex-direction: column;
 }
@@ -89,7 +84,6 @@
 
 .gas-block {
     flex-grow: 1 !important;
-    // color: $red;
 }
 
 .gas-block--advanced--value {
@@ -109,7 +103,6 @@
     .block--advanced--bottom {
         border-top: 2px solid $blue-darker;
         background: #001F41;
-        // height: 100%;
     }
 
     .block--advanced--top {
@@ -286,7 +279,6 @@
     .fees-block--table--usd {
         font-size: 14px;
         text-align: right;
-        // color: $green;
     }
 
     .fees-block--table--usd-symbol {
@@ -421,9 +413,6 @@
 
 .network-block--info {
     padding: 0 22px;
-    // display: flex;
-    // justify-content: center;
-    // align-items: center;
 }
 
 .gas-block .block--body {

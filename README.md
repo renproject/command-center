@@ -41,7 +41,7 @@ To configure the network or add an Infura key, create a `.env` file:
 
 ```sh
 REACT_APP_INFURA_KEY="" # Optional
-REACT_APP_NETWORK="mainnet" # Options are "testnet" (default) or "mainnet
+REACT_APP_NETWORK="mainnet" # Options are "testnet" (default) or "mainnet"
 ```
 
 If you don't have an Infura key, you should make sure to connect your Web3 wallet when the page is loaded. You may see some errors until the wallet is connected. A free Infura key can generated at [https://infura.io](https://infura.io/).

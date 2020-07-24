@@ -2,7 +2,9 @@ import * as React from "react";
 
 import { catchBackgroundException } from "../../lib/react/errors";
 import { Web3Container } from "../../store/web3Store";
-import { EmptyDarknodeList } from "../allDarknodesPage/darknodeList/EmptyDarknodeList";
+import {
+    EmptyDarknodeList,
+} from "../operatorPages/allDarknodesPage/darknodeList/EmptyDarknodeList";
 
 /**
  * LoggingIn is a page whose principal components are wallet selection to allow users
@@ -13,7 +15,7 @@ export const LoggingIn: React.FC<{}> = () => {
 
     const handleLogin = React.useCallback(async (): Promise<void> => {
         if (!address) {
-            await promptLogin({ manual: false, redirect: false, showPopup: true, immediatePopup: false });
+            await promptLogin({ manual: false });
         }
     }, [promptLogin, address]);
 

@@ -5,7 +5,6 @@ import BigNumber from "bignumber.js";
 import { List, Map } from "immutable";
 import moment from "moment";
 
-import { SECONDS } from "../../components/common/BackgroundTasks";
 import { Token, TokenPrices } from "../ethereum/tokens";
 import { PeriodData, QUERY_BLOCK } from "./queries";
 import { QUERY_RENVM_HISTORY, RawRenVMHistoric } from "./queries/renVM";
@@ -31,7 +30,7 @@ const getNetworkStart = (renNetwork: RenNetworkDetails) => {
     }
 };
 
-const getPeriodTimespan = (type: string, renNetwork: RenNetworkDetails = mainnet): number => {
+export const getPeriodTimespan = (type: string, renNetwork: RenNetworkDetails = mainnet): number => {
     const minutes = 60; // 60 seconds
     const hours = 60 * minutes;
     const days = 24 * hours;
@@ -200,7 +199,7 @@ export const getVolumes = async (renNetwork: RenNetworkDetails, client: ApolloCl
     };
 };
 
-export interface QuotePeriodData extends PeriodData {
+interface QuotePeriodData extends PeriodData {
     // Total
     quoteTotalLocked: string;
     quoteTotalVolume: string;
@@ -270,11 +269,4 @@ export const normalizeSeriesVolumes = (periodResponse: PeriodResponse, tokenPric
         historic: periodResponse.historic.map(item => normalizeVolumes(item, tokenPrices, quoteCurrency)),
         average: normalizeVolumes(periodResponse.average, tokenPrices, quoteCurrency),
     };
-};
-
-
-export const getCurrent24HourPeriod = () => {
-    const currentTimestamp = Math.floor(new Date().getTime() / SECONDS);
-    const periodTimespan = getPeriodTimespan(PeriodType.DAY);
-    return Math.floor(currentTimestamp / periodTimespan) * periodTimespan;
 };

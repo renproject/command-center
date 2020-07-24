@@ -1,6 +1,3 @@
-// .sidebar ul {
-//     padding: 0;
-// }
 $collapsed-width: 80px;
 $full-width: 360px;
 $mobile-full-width: 100vw;
@@ -30,7 +27,7 @@ $min-header: $min-lg;
     justify-content: flex-start;
 
     &:hover {
-        border-left: 4px solid transparentize($blue-bright, 1 - 0.5);
+        border-left: 4px solid transparentize($primary, 1 - 0.5);
         background-color: $blue-dark;
     }
 }
@@ -117,7 +114,7 @@ $min-header: $min-lg;
 }
 
 .sidebar--row.sidebar--active {
-    border-left: 4px solid $blue-bright;
+    border-left: 4px solid $primary;
 }
 
 .sidebar--row.sidebar--faded {
@@ -162,11 +159,6 @@ $min-header: $min-lg;
         width: 0px;
     }
 
-    // @media(max-width: $max-sidebar) {
-    //     // This sets the faTimes symbol to be aligned with the faBars symbol
-    //     padding-top: 17px;
-    // }
-
     overflow-x: hidden;
     -webkit-transition: width .1s linear;
     transition: width .1s linear;
@@ -175,7 +167,8 @@ $min-header: $min-lg;
 }
 
 .sidebar::-webkit-scrollbar {
-    width: 0px; // remove scrollbar
+    width: 0px;
+    /* remove scrollbar */
     background: transparent;
 }
 
@@ -188,7 +181,6 @@ $min-header: $min-lg;
     width: $full-width - 2px;
 
     @media(max-width: $max-sidebar) {
-        // $mobile-full-width
         width: calc(100vw - 2px);
     }
 }
@@ -213,7 +205,6 @@ $min-header: $min-lg;
     width: $full-width - $collapsed-width;
 
     @media(max-width: $max-sidebar) {
-        // $mobile-full-width - $collapsed-width
         width: calc(100vw - 80px);
     }
 
@@ -294,8 +285,6 @@ nav li {
 
 
 .sidebar--search {
-    // position: fixed !important;
-    // bottom: 0;
     background: #002247CC;
 
     @media(max-width: $max-sidebar) {
@@ -339,7 +328,6 @@ input[type="text"].sidebar--search--input {
 
 .sidebar--connect {
     background: #002B5C;
-    // box-shadow: -2px 2px 4px #000000;
     border-bottom-left-radius: 12px;
     border-bottom-right-radius: 12px;
     transform: rotate(-90deg);
@@ -368,8 +356,6 @@ input[type="text"].sidebar--search--input {
         font-size: 14px;
         line-height: 16px;
 
-        /* identical to box height */
-
         color: #F9F9F9;
     }
 
@@ -385,7 +371,7 @@ input[type="text"].sidebar--search--input {
     .wallet-icon--inner {
         background: url('../../styles/images/wallet.svg') no-repeat;
         background-size: 12px 14px;
-        background-color: $blue-bright;
+        background-color: $primary;
         margin: 0;
         height: 14px;
         width: 12px;

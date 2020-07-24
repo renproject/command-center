@@ -4,7 +4,7 @@ import { Currency } from "@renproject/react-components";
 import { BigNumber } from "bignumber.js";
 
 import { AllTokenDetails, Token, TokenPrices } from "../../lib/ethereum/tokens";
-import { NetworkStateContainer } from "../../store/networkStateContainer";
+import { NetworkContainer } from "../../store/networkContainer";
 
 interface Props {
     token: Token;
@@ -52,7 +52,7 @@ export const tokenToQuote = (amount: number | string | BigNumber, token: Token, 
 };
 
 export const TokenBalance: React.FC<Props> = ({ amount, token, convertTo, digits }) => {
-    const { tokenPrices } = NetworkStateContainer.useContainer();
+    const { tokenPrices } = NetworkContainer.useContainer();
 
     const tokenDetails = AllTokenDetails.get(token, undefined);
     const decimals = tokenDetails ? new BigNumber(tokenDetails.decimals.toString()).toNumber() : 0;

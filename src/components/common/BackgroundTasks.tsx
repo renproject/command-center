@@ -2,12 +2,12 @@ import * as React from "react";
 
 import { RouteComponentProps, withRouter } from "react-router-dom";
 
+import { useTaskSchedule } from "../../hooks/useTaskSchedule";
 import { catchBackgroundException } from "../../lib/react/errors";
 import { GraphContainer } from "../../store/graphStore";
-import { NetworkStateContainer } from "../../store/networkStateContainer";
+import { NetworkContainer } from "../../store/networkContainer";
 import { Web3Container } from "../../store/web3Store";
-import { getDarknodeParam } from "../darknodePage/DarknodePage";
-import { useTaskSchedule } from "./ScheduleTask";
+import { getDarknodeParam } from "../operatorPages/darknodePage/DarknodePage";
 
 export const SECONDS = 1000;
 
@@ -20,7 +20,7 @@ interface Props extends RouteComponentProps {
  */
 export const BackgroundTasks = withRouter(({ match }: Props) => {
     const { address, lookForLogout } = Web3Container.useContainer();
-    const { tokenPrices, updateTokenPrices, updateCycleAndPendingRewards, updateOperatorDarknodes, updateDarknodeDetails } = NetworkStateContainer.useContainer();
+    const { tokenPrices, updateTokenPrices, updateCycleAndPendingRewards, updateOperatorDarknodes, updateDarknodeDetails } = NetworkContainer.useContainer();
     const { renVM } = GraphContainer.useContainer();
 
     const darknodeID = getDarknodeParam(match.params);
@@ -29,7 +29,7 @@ export const BackgroundTasks = withRouter(({ match }: Props) => {
     const priceUpdater = React.useCallback(async () => {
         try {
             await updateTokenPrices();
-            return 60;
+            return 60; // seconds
         } catch (error) {
             catchBackgroundException(error, "Error in BackgroundTasks > priceUpdater");
             return 15;
@@ -42,12 +42,12 @@ export const BackgroundTasks = withRouter(({ match }: Props) => {
         try {
             if (renVM && tokenPrices) {
                 await updateCycleAndPendingRewards();
-                return address ? 120 : 240;
+                return address ? 120 : 300; // seconds
             }
-            return 1;
+            return 1; // second
         } catch (error) {
             catchBackgroundException(error, "Error in BackgroundTasks > rewardsUpdater");
-            return 15;
+            return 15; // seconds
         }
     }, [renVM, tokenPrices, address, updateCycleAndPendingRewards]);
     useTaskSchedule(rewardsUpdater);
@@ -62,7 +62,7 @@ export const BackgroundTasks = withRouter(({ match }: Props) => {
                 catchBackgroundException(error, "Error in BackgroundTasks > loggedOutUpdater");
             }
         }
-        return 5;
+        return 5; // seconds
     }, [address, lookForLogout]);
     useTaskSchedule(loggedOutUpdater);
 
@@ -70,13 +70,13 @@ export const BackgroundTasks = withRouter(({ match }: Props) => {
         if (tokenPrices && address) {
             try {
                 await updateOperatorDarknodes(darknodeID);
-                return 120;
+                return 120; // seconds
             } catch (error) {
                 catchBackgroundException(error, "Error in BackgroundTasks > operatorStatsUpdater");
-                return 10;
+                return 10; // seconds
             }
         }
-        return 1;
+        return 1; // second
     }, [tokenPrices, address, darknodeID, updateOperatorDarknodes]);
     useTaskSchedule(operatorStatsUpdater, [address]);
 
@@ -84,10 +84,10 @@ export const BackgroundTasks = withRouter(({ match }: Props) => {
         if (tokenPrices && darknodeID) {
             try {
                 await updateDarknodeDetails(darknodeID);
-                return 60;
+                return 60; // seconds
             } catch (error) {
                 catchBackgroundException(error, "Error in BackgroundTasks > selectedDarknodeUpdater");
-                return 15; // try again in half the time
+                return 15; // seconds
             }
         }
         return 1;

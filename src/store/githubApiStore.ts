@@ -5,12 +5,15 @@ import { useCallback, useState } from "react";
 import semver from "semver";
 import { createContainer } from "unstated-next";
 
-import { useTaskSchedule } from "../components/common/ScheduleTask";
-import { retryNTimes } from "../components/renvmPage/renvmContainer";
+import { retryNTimes } from "../components/statsPages/renvmStatsPage/renvmContainer";
+import { useTaskSchedule } from "../hooks/useTaskSchedule";
+import { DEFAULT_REQUEST_TIMEOUT } from "../lib/react/environmentVariables";
 import { catchBackgroundException } from "../lib/react/errors";
 
 const DARKNODE_ENDPOINT = "https://api.github.com/repos/renproject/darknode-release/releases/latest";
 const DARKNODE_CLI_ENDPOINT = "https://api.github.com/repos/renproject/darknode-cli/releases/latest";
+
+const API_LIMIT_ERROR = /API rate limit exceeded/;
 
 const useGithubAPIContainer = () => {
     const [latestDarknodeVersionFull, setLatestDarknodeVersionFull] = useState(null as string | null);
@@ -21,14 +24,16 @@ const useGithubAPIContainer = () => {
     const [latestCLIVersion, setLatestCLIVersion] = useState(null as string | null);
     const [latestCLIVersionDaysAgo, setLatestCLIVersionDaysAgo] = useState(null as string | null);
 
+    const HOUR = 60 * 60;
+
     const updater = async () => {
-        let interval = 200;
+        let interval = 0.5 * HOUR;
         try {
-            const response = await retryNTimes(() => Axios.get<VersionResponse | VersionError>(DARKNODE_ENDPOINT), 2);
+            const response = await retryNTimes(() => Axios.get<VersionResponse | VersionError>(DARKNODE_ENDPOINT, { timeout: DEFAULT_REQUEST_TIMEOUT }), 2);
             if (!response.data || response.data.message) {
                 throw new Error(response.data ? response.data.message : "No data returned from Github API.");
             }
-            setLatestDarknodeVersionFull(response.data.tag_name);
+            setLatestDarknodeVersionFull(response.data.tag_name.replace(/-testnet/, " (prerelease)"));
             setLatestDarknodeVersion(response.data.tag_name);
             setLatestDarknodeVersionDaysAgo(naturalTime(moment(response.data.published_at).unix(), {
                 suffix: "ago",
@@ -37,11 +42,15 @@ const useGithubAPIContainer = () => {
                 showingSeconds: false
             }));
         } catch (error) {
-            catchBackgroundException(error, "Error in GithubAPIContainer: fetchEpoch");
-            interval = 10;
+            if (error && error.message && error.message.match && error.message.match(API_LIMIT_ERROR)) {
+                interval = 2 * HOUR;
+            } else {
+                catchBackgroundException(error, "Error in GithubAPIContainer: fetchEpoch");
+                interval = 30;
+            }
         }
         try {
-            const response = await retryNTimes(() => Axios.get<VersionResponse | VersionError>(DARKNODE_CLI_ENDPOINT), 2);
+            const response = await retryNTimes(() => Axios.get<VersionResponse | VersionError>(DARKNODE_CLI_ENDPOINT, { timeout: DEFAULT_REQUEST_TIMEOUT }), 2);
             if (!response.data || response.data.message) {
                 throw new Error(response.data ? response.data.message : "No data returned from Github API.");
             }
@@ -54,8 +63,12 @@ const useGithubAPIContainer = () => {
                 showingSeconds: false
             }));
         } catch (error) {
-            catchBackgroundException(error, "Error in GithubAPIContainer: fetchEpoch");
-            interval = 10;
+            if (error && error.message && error.message.match && error.message.match(API_LIMIT_ERROR)) {
+                interval = 2 * HOUR;
+            } else {
+                catchBackgroundException(error, "Error in GithubAPIContainer: fetchEpoch");
+                interval = 30;
+            }
         }
         return interval;
     };

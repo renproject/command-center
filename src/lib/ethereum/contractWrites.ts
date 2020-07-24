@@ -7,8 +7,8 @@ import { TransactionReceipt } from "web3-core";
 import { AbiCoder } from "web3-eth-abi";
 import { sha3, toChecksumAddress } from "web3-utils";
 
-import { retryNTimes } from "../../components/renvmPage/renvmContainer";
-import { WaitForTX } from "../../store/networkStateContainer";
+import { retryNTimes } from "../../components/statsPages/renvmStatsPage/renvmContainer";
+import { WaitForTX } from "../../store/networkContainer";
 import { catchInteractionException, noCapture } from "../react/errors";
 import { getDarknodePayment, getDarknodeRegistry, getRenToken } from "./contract";
 import { AllTokenDetails, Token } from "./tokens";
@@ -263,7 +263,7 @@ export const refundNode = async (
  * @param darknodeID Hexadecimal ID of the darknode to register.
  * @param address Ethereum address to send Ethereum transactions from.
  * @param token The token to withdraw fees for.
- * @param amount The amount to be burnt in the smallest unit of the token.
+ * @param amount The amount to be burned in the smallest unit of the token.
  * @param recipient The address on the native blockchain to receive funds.
  * @param waitForTX Returns the txHash of a PromiEvent.
  */
@@ -351,17 +351,23 @@ export const withdrawToken = (
             throw new Error("Invalid withdraw address");
         }
 
+        /**
+         * Find burn details in previous transaction.
+         */
+
         let receipt: TransactionReceipt | undefined;
 
-        while (!receipt || !receipt.logs) {
+        // tslint:disable-next-line: no-constant-condition
+        while (true) {
             try {
                 receipt = await web3.eth.getTransactionReceipt(tx);
             } catch (error) {
                 // Ignore error
             }
-            if (!receipt) {
-                await sleep(1000);
+            if (receipt && receipt.logs && receipt.blockHash) {
+                break;
             }
+            await sleep(1000);
         }
 
         const abiCoder = new AbiCoder();
@@ -374,6 +380,10 @@ export const withdrawToken = (
                     value = value.plus(event.value);
                 }
             }
+        }
+
+        if (value.isZero()) {
+            throw new Error(`Unable to detect burn event in transaction receipt.`);
         }
 
         await burn(web3, renNetwork, address, token, value, withdrawAddress, waitForTX);

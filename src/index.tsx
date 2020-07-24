@@ -30,8 +30,6 @@ onLoad(`Command Center${DEFAULT_REN_NETWORK !== "mainnet" ? " (" + DEFAULT_REN_N
 ReactDOM.render(
     _catch_(
         <Router history={history}>
-            {/* <Provider store={store}> */}
-            {/* <PersistGate loading={null} persistor={persistor}> */}
             <Connect>
                 <Switch>
                     {/* We add the routes here as well as in App so that App has access to the URL parameters */}
@@ -40,8 +38,6 @@ ReactDOM.render(
                     {/* Don't add extra routes here - add them in App */}
                 </Switch>
             </Connect>
-            {/* </PersistGate> */}
-            {/* </Provider> */}
         </Router>,
         { popup: true },
     ),

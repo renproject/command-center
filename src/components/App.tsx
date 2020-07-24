@@ -6,21 +6,21 @@ import { Route, RouteComponentProps, Switch, withRouter } from "react-router-dom
 import { DEFAULT_REN_NETWORK } from "../lib/react/environmentVariables";
 import { catchBackgroundException } from "../lib/react/errors";
 import { Web3Container } from "../store/web3Store";
-import { AllDarknodes } from "./allDarknodesPage/AllDarknodes";
-import { NotFound } from "./common/404";
+import { NotFound } from "../views/404";
+import { URLs } from "../views/ExternalLink";
 import { BackgroundTasks } from "./common/BackgroundTasks";
 import { _catch_ } from "./common/ErrorBoundary";
-import { URLs } from "./common/ExternalLink";
-import { Header } from "./common/Header";
+import { Header } from "./common/header/Header";
 import { LoggingIn } from "./common/LoggingIn";
 import { PopupController } from "./common/popups/PopupController";
 import { Sidebar } from "./common/sidebar/Sidebar";
-import { DarknodePage, getDarknodeParam } from "./darknodePage/DarknodePage";
-import { IntegratorsPage } from "./integratorsPage/IntegratorsPage";
-import { NetworkDarknodesPage } from "./networkDarknodesPage/NetworkDarknodesPage";
-import { NetworkStats } from "./networkStatsPage/NetworkStats";
-import { RenVM } from "./renvmPage/RenVM";
+import { AllDarknodes } from "./operatorPages/allDarknodesPage/AllDarknodes";
+import { DarknodePage, getDarknodeParam } from "./operatorPages/darknodePage/DarknodePage";
 import { ScrollToTop } from "./ScrollToTop";
+import { DarknodeStatsPage } from "./statsPages/darknodeStatsPage/DarknodeStatsPage";
+import { IntegratorStatsPage } from "./statsPages/integratorStatsPage/IntegratorStatsPage";
+import { NetworkStats } from "./statsPages/networkStatsPage/NetworkStats";
+import { RenVMStatsPage } from "./statsPages/renvmStatsPage/RenVMStatsPage";
 
 /**
  * App is the main visual component responsible for displaying different routes
@@ -40,7 +40,7 @@ export const App = withRouter(({ match: { params } }: RouteComponentProps) => {
 
     React.useEffect(() => {
         if (loggedInBefore) { // && darknodeID) {
-            promptLogin({ manual: false, redirect: false, showPopup: false, immediatePopup: false })
+            promptLogin({ manual: false })
                 .catch((error) => catchBackgroundException(error, "Error in App > promptLogin"));
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -59,26 +59,28 @@ export const App = withRouter(({ match: { params } }: RouteComponentProps) => {
                 <div className="app--body">
                     {_catch_(<Switch>
                         <Route path="/" exact component={NetworkStats} />
-                        <Route path="/integrators" exact component={IntegratorsPage} />
-                        <Route path="/integrators/:page" exact component={IntegratorsPage} />
-                        <Route path="/darknode-stats" exact component={NetworkDarknodesPage} />
+                        <Route path="/network" exact component={NetworkStats} />
+                        <Route path="/integrators" exact component={IntegratorStatsPage} />
+                        <Route path="/integrators/:page" exact component={IntegratorStatsPage} />
+                        <Route path="/darknode-stats" exact component={DarknodeStatsPage} />
+                        <Route path="/darknodes" exact component={DarknodeStatsPage} />
                         <Route path="/all" exact component={withAccount(AllDarknodes)} />
                         <Route path="/darknode/:darknodeID" exact component={DarknodePage} />
 
                         {/* Old hyperdrive URLs */}
-                        <Route path="/hyperdrive" exact component={RenVM} />
-                        <Route path="/hyperdrive/:blockNumber" exact component={RenVM} />
+                        <Route path="/hyperdrive" exact component={RenVMStatsPage} />
+                        <Route path="/hyperdrive/:blockNumber" exact component={RenVMStatsPage} />
 
-                        <Route path="/renvm" exact component={RenVM} />
+                        <Route path="/renvm" exact component={RenVMStatsPage} />
 
                         {/* RenVM TX */}
-                        <Route path="/tx/:txHash" exact component={RenVM} />
-                        <Route path="/renvm/tx/:txHash" exact component={RenVM} />
+                        <Route path="/tx/:txHash" exact component={RenVMStatsPage} />
+                        <Route path="/renvm/tx/:txHash" exact component={RenVMStatsPage} />
 
                         {/* RenVM Block */}
-                        <Route path="/block/:blockNumber" exact component={RenVM} />
-                        <Route path="/renvm/:blockNumber" exact component={RenVM} />
-                        <Route path="/renvm/block/:blockNumber" exact component={RenVM} />
+                        <Route path="/block/:blockNumber" exact component={RenVMStatsPage} />
+                        <Route path="/renvm/:blockNumber" exact component={RenVMStatsPage} />
+                        <Route path="/renvm/block/:blockNumber" exact component={RenVMStatsPage} />
 
                         {/* 404 */}
                         <Route component={NotFound} />

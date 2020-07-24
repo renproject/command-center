@@ -27,8 +27,8 @@
 
     .error-boundary--feedback {
         @extend .monospace;
-        border: 2px solid $blue-bright;
-        color: $blue-bright;
+        border: 2px solid $primary;
+        color: $primary;
     }
 
     &.error-boundary--standard {
