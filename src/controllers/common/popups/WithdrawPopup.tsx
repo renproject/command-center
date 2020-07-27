@@ -14,6 +14,8 @@ import { ReactComponent as CheckImage } from "../../../styles/images/check.svg";
 enum Stage {
     Pending,
     Withdrawing,
+    WithdrawingToken,
+    DoneToken,
     Done,
     Error,
 }
@@ -102,19 +104,34 @@ export const WithdrawPopup: React.FC<Props> = ({ token, withdraw, onDone, onCanc
         }
     };
 
+    const callWithdrawToken = async () => {
+        setStage(Stage.WithdrawingToken);
+        setError(null);
+
+        try {
+            await withdraw("", { asERC20: true });
+            setStage(Stage.DoneToken);
+        } catch (error) {
+            setStage(Stage.Error);
+            setError(error.message || String(error));
+        }
+    };
+
     const renderButtons = () => {
         // eslint-disable-next-line
         switch (stage) {
             case Stage.Pending:
                 return <div className="popup--buttons">
                     <button className="sign--button button--white" onClick={onCancel}>Cancel</button>
-                    <button className="sign--button button" disabled={selectedAddress === null && !newAddressValid} onClick={callWithdraw}>Submit</button>
+                    <button className="sign--button button" disabled={selectedAddress === null && !newAddressValid} onClick={callWithdraw}>Withdraw</button>
                 </div>;
             case Stage.Withdrawing:
+            case Stage.WithdrawingToken:
                 return <div className="popup--buttons">
                     {/* <Loading alt={true} /> */}
                 </div>;
             case Stage.Done:
+            case Stage.DoneToken:
                 return <div className="popup--buttons">
                     <button className="sign--button button" onClick={onDone}>Close</button>
                 </div>;
@@ -137,15 +154,19 @@ export const WithdrawPopup: React.FC<Props> = ({ token, withdraw, onDone, onCanc
         <ColoredBanner token={token} />
         <div className="popup--body">
             <div className="popup--top">
+                <div style={{display: "flex", justifyContent: "space-between"}}>
+                    <h3>Withdraw {token} tokens</h3>
+                    {stage === Stage.Pending || stage === Stage.Error ? <button className="withdraw--as-token-link" onClick={callWithdrawToken}>Withdraw as ren{token}</button> : null}
+                </div>
+                <h2>{stage === Stage.Withdrawing ? <>Withdrawing {token}</> :
+                        stage === Stage.WithdrawingToken ? <>Withdrawing ren{token}</> :
+                            stage === Stage.Done ? <>{token} withdrawn</> :
+                                stage === Stage.DoneToken ? <>ren{token} withdrawn</> :
+                                <>Enter your {tokenDetails ? tokenDetails.name : token} withdraw address</>}
+                </h2>
                 {stage === Stage.Error ? <>
                     {error ? <p className="red popup--error">{error}</p> : null}
-                </> : <>
-                        <h3>Withdraw {token} tokens</h3>
-                        <h2>{stage === Stage.Withdrawing ? <>Withdrawing {token}</> :
-                            stage === Stage.Done ? <>{token} withdrawn</> :
-                                <>Enter your {tokenDetails ? tokenDetails.name : token} withdraw address</>}
-                        </h2>
-                    </>}
+                </> : null}
                 {stage === Stage.Pending || stage === Stage.Error ?
                     <>
                         <div className={`withdraw--addresses ${withdrawAddresses.size === 0 ? "withdraw--addresses--empty" : ""}`}>
@@ -172,8 +193,15 @@ export const WithdrawPopup: React.FC<Props> = ({ token, withdraw, onDone, onCanc
                     <p>Waiting for two Ethereum transactions</p>
                     <Loading alt={true} />
                 </div> : null}
+                {stage === Stage.WithdrawingToken ? <div className="withdraw--loading">
+                    <p>Waiting for Ethereum transaction</p>
+                    <Loading alt={true} />
+                </div> : null}
                 {stage === Stage.Done ? <div className="withdraw--loading">
                     <p>{token} withdrawn. It will be deposited to your address after 30 Ethereum confirmations.</p>
+                </div> : null}
+                {stage === Stage.DoneToken ? <div className="withdraw--loading">
+                    <p>ren{token} withdrawn to your Ethereum wallet.</p>
                 </div> : null}
             </div>
             <div className="popup--bottom">
@@ -200,7 +228,7 @@ export const WithdrawPopup: React.FC<Props> = ({ token, withdraw, onDone, onCanc
 
 interface Props {
     token: Token;
-    withdraw(address: string): Promise<void>;
+    withdraw(address: string, options?: { asERC20: boolean }): Promise<void>;
     onDone(): void;
     onCancel(): void;
 }

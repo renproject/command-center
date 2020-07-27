@@ -11,6 +11,7 @@ import { Token } from "../../../lib/ethereum/tokens";
 import { EncodedData } from "../../../lib/general/encodedData";
 import { classNames } from "../../../lib/react/className";
 import { ExternalLink } from "../../../views/ExternalLink";
+import { TitledSection } from "../../../views/TitledSection";
 import { Tx } from "./renvmContainer";
 
 export const TransactionPreview = ({ tx }: { tx: Tx }) => {
@@ -98,9 +99,11 @@ export const RenVMTransaction: React.FC<Props> = ({ network, txHash, transaction
     const txHash64 = txHash ? new EncodedData(txHash, EncodedData.Encodings.HEX).toBase64() : undefined;
 
     return (
-        <div className="selected-block renvm--transaction">
-            <div role="button" className="popup--x popup--x--white" onClick={onClose} />
+        <TitledSection
+        onClose={onClose}
+        top={<>
             <h1>Transaction <span className="monospace">{txHash64}</span></h1>
+        </>}>
             {transaction ? <>
                 <div className="block--txs">
                     <div className="block--tx"><TransactionPreview tx={transaction.tx} /></div>
@@ -127,6 +130,6 @@ export const RenVMTransaction: React.FC<Props> = ({ network, txHash, transaction
                         </> :
                     <Loading alt={true} />
             }
-        </div>
+        </TitledSection>
     );
 };

@@ -28,7 +28,7 @@ interface Props {
 }
 
 export const Registration: React.FC<Props> = ({ darknodeID, darknodeDetails, registrationStatus, isOperator, publicKey }) => {
-    const { address, promptLogin } = Web3Container.useContainer();
+    const { address, promptLogin, web3BrowserName } = Web3Container.useContainer();
     const { renVM } = GraphContainer.useContainer();
     const { tokenPrices, unhideDarknode, updateDarknodeDetails, updateOperatorDarknodes, showRegisterPopup, showDeregisterPopup, showRefundPopup } = NetworkContainer.useContainer();
 
@@ -55,29 +55,29 @@ export const Registration: React.FC<Props> = ({ darknodeID, darknodeDetails, reg
         setActive(false);
     };
 
+    const login = async () => {
+        // If the user is not logged in, prompt login. On mobile, it may not be
+        // obvious to the user that they need to login.
+        if (!address) {
+            await promptLogin({ manual: true });
+        }
+    };
+
     const handleRegister = async (): Promise<void> => {
         if (!publicKey) {
             return; // TODO: Show error.
         }
 
-        let account: string | null | undefined = address;
-
-        // If the user is not logged in, prompt login. On mobile, it may not be
-        // obvious to the user that they need to login.
-        if (!account) {
-            account = await promptLogin({ manual: true });
-        }
-
-        if (!account) {
+        if (!address) {
             return; // TODO: Show error.
         }
 
         setActive(true);
         try {
             await showRegisterPopup(
-                account, darknodeID, publicKey, onCancel, onDoneRegister,
+                address, darknodeID, publicKey, onCancel, onDoneRegister,
             );
-            unhideDarknode(darknodeID, account);
+            unhideDarknode(darknodeID, address);
         } catch (error) {
             catchInteractionException(error, "Error in Registration > handleRegister > showRegisterPopup");
             onCancel();
@@ -126,6 +126,10 @@ export const Registration: React.FC<Props> = ({ darknodeID, darknodeDetails, reg
                 </span> : null}
             {isOperator ? <>
                 {registrationStatus === RegistrationStatus.Unregistered ?
+                    !address ?
+                    <button disabled={registrationDisabled} className="status--button" onClick={login}>
+                    {active ? <>Registering <Loading className="status--button--spinner" alt /></> : <>Connect {web3BrowserName}</>}
+                </button> :
                     <button disabled={registrationDisabled} className="status--button" onClick={handleRegister}>
                         {active ? <>Registering <Loading className="status--button--spinner" alt /></> : `Register darknode${registrationDisabled && !publicKey ? " (public key required)" : ""}`}
                     </button> :
