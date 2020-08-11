@@ -5,7 +5,7 @@ import * as Sentry from "@sentry/browser";
 import { RenNetwork } from "@renproject/contracts";
 import { naturalTime } from "@renproject/react-components";
 
-import { SECONDS } from "../../components/common/BackgroundTasks";
+import { SECONDS } from "../../controllers/common/BackgroundTasks";
 import { DEFAULT_REN_NETWORK, NODE_ENV, SENTRY_DSN } from "./environmentVariables";
 
 interface Details {
@@ -40,7 +40,7 @@ export const pageLoadedAt = (): string => {
 // Determines whether or not this is a common network error (too many of these
 // are being logged to Sentry)
 const isNetworkError = (error: Error | any): boolean => {
-    const message: string = ((error || {}).message || error).toString();
+    const message: string = String(((error || {}).message || error));
 
     if (
         message.match(/Network ?Error/i) ||

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 
 import { darknodeIDHexToBase58 } from "../lib/darknode/darknodeID";
 

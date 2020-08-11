@@ -6,8 +6,8 @@ import { OrderedMap, OrderedSet } from "immutable";
 import Web3 from "web3";
 import { sha3, toChecksumAddress } from "web3-utils";
 
-import { getLightnode } from "../../components/statsPages/darknodeStatsPage/mapContainer";
-import { retryNTimes } from "../../components/statsPages/renvmStatsPage/renvmContainer";
+import { getLightnode } from "../../controllers/statsPages/darknodeStatsPage/mapContainer";
+import { retryNTimes } from "../../controllers/statsPages/renvmStatsPage/renvmContainer";
 import { DarknodesState } from "../../store/networkContainer";
 import { darknodeIDHexToBase58 } from "../darknode/darknodeID";
 import { queryStat } from "../darknode/jsonrpc";
@@ -18,7 +18,7 @@ import { RenVM } from "../graphQL/queries/renVM";
 import { catchBackgroundException } from "../react/errors";
 import { getDarknodePayment, getDarknodeRegistry } from "./contract";
 import { getDarknodeStatus, isRegisteredInEpoch } from "./darknodeStatus";
-import { NewTokenDetails, Token, TokenPrices } from "./tokens";
+import { FeeTokens, Token, TokenPrices } from "./tokens";
 
 export const NULL = "0x0000000000000000000000000000000000000000";
 
@@ -219,7 +219,7 @@ export const sumUpFeeMap = (
 
     // let totalEth: BigNumber | null = null;
 
-    const feesEarnedInEth = NewTokenDetails.map((tokenDetails, token) => {
+    const feesEarnedInEth = FeeTokens.map((tokenDetails, token) => {
         const price = tokenPrices.get(token, undefined);
         const decimals = tokenDetails ? new BigNumber(tokenDetails.decimals.toString()).toNumber() : 0;
         const tokenFees = feesEarned.get(token, new BigNumber(0));
@@ -264,7 +264,7 @@ const getBalances = async (
     // const address = (await web3.eth.getAccounts())[0];
 
     const balances = await safePromiseAllList(
-        NewTokenDetails.map(async (_tokenDetails, token) => {
+        FeeTokens.map(async (_tokenDetails, token) => {
             let tokenBalance;
             try {
                 if (darknode && token === Token.BTC) return { balance: darknode.balanceBTC, token };

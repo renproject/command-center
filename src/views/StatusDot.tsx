@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React from "react";
 
 import { classNames } from "../lib/react/className";
 
@@ -8,7 +8,7 @@ export enum StatusDotColor {
     Green = "green",
 }
 
-export const StatusDot: FC<{ color: StatusDotColor, size: number }> = ({ color, size }) => (
+export const StatusDot: React.FC<{ color: StatusDotColor, size: number }> = ({ color, size }) => (
     <span
         style={{ width: size, height: size, minWidth: size, minHeight: size }}
         className={classNames("status-dot", `status-dot--${color}`)}

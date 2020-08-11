@@ -109,8 +109,7 @@ export const AllTokenDetails = OrderedMap<Token, TokenDetail<Token>>()
         })
     ;
 
-// tslint:disable-next-line:  no-unnecessary-type-assertion
-export const NewTokenDetails = AllTokenDetails.filter((details) => details.feesToken) as OrderedMap<Token, TokenDetail<Token>>;
+export const FeeTokens: OrderedMap<Token, TokenDetail<Token>> = AllTokenDetails.filter((details) => details.feesToken);
 
 const coinGeckoURL = `https://api.coingecko.com/api/v3`;
 const coinGeckoParams = `localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`;

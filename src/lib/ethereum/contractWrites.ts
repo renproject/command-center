@@ -7,7 +7,7 @@ import { TransactionReceipt } from "web3-core";
 import { AbiCoder } from "web3-eth-abi";
 import { sha3, toChecksumAddress } from "web3-utils";
 
-import { retryNTimes } from "../../components/statsPages/renvmStatsPage/renvmContainer";
+import { retryNTimes } from "../../controllers/statsPages/renvmStatsPage/renvmContainer";
 import { WaitForTX } from "../../store/networkContainer";
 import { catchInteractionException, noCapture } from "../react/errors";
 import { getDarknodePayment, getDarknodeRegistry, getRenToken } from "./contract";
@@ -286,11 +286,18 @@ const burn = async (
 
     const sdk = new RenSDK(renNetwork.name);
 
-    await waitForTX(contract.methods.burn(
+    const txPromiEvent = contract.methods.burn(
         (sdk.utils[token].addressToHex || RenSDK.Tokens[token].addressToHex)(recipient), // _to
         amount.decimalPlaces(0).toFixed(), // _amount in Satoshis
-    ).send({ from: address })
-    );
+    ).send({ from: address });
+
+    await waitForTX(txPromiEvent);
+
+    await new Promise((resolve, reject) => {
+        txPromiEvent
+            .on("confirmation", resolve)
+            .catch(reject);
+    });
 };
 
 const TransferEventABI = [
@@ -327,7 +334,7 @@ export const withdrawToken = (
     darknodeID: string,
     token: Token,
     waitForTX: WaitForTX,
-) => async (withdrawAddress?: string) => {
+) => async (withdrawAddress?: string, options?: { asERC20: boolean }) => {
 
     const tokenDetails = AllTokenDetails.get(token);
     if (tokenDetails === undefined) {
@@ -344,9 +351,17 @@ export const withdrawToken = (
         throw new Error("Unknown token");
     }
 
-    const tx = await waitForTX(darknodePayment.methods.withdraw(darknodeID, renNetwork.addresses.tokens[token].address).send({ from: address }));
+    const txPromiEvent = darknodePayment.methods.withdraw(darknodeID, renNetwork.addresses.tokens[token].address).send({ from: address });
 
-    if (tokenDetails.wrapped) {
+    const tx = await waitForTX(txPromiEvent);
+
+    await new Promise((resolve, reject) => {
+        txPromiEvent
+            .on("confirmation", resolve)
+            .catch(reject);
+    });
+
+    if (tokenDetails.wrapped && !(options && options.asERC20)) {
         if (!withdrawAddress) {
             throw new Error("Invalid withdraw address");
         }

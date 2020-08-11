@@ -29,11 +29,11 @@
 @import 'scss/withdrawPopup';
 
 // Styles in src/components
-@import '../components/statsPages/renvmStatsPage/renvm';
-@import '../components/statsPages/darknodeStatsPage/overview';
-@import '../components/statsPages/darknodeStatsPage/darknodeMap/darknodeMap';
-@import '../components/statsPages/networkStatsPage/networkStats';
-@import '../components/statsPages/integratorStatsPage/integratorStatsPage';
+@import '../controllers/statsPages/renvmStatsPage/renvm';
+@import '../controllers/statsPages/darknodeStatsPage/overview';
+@import '../controllers/statsPages/darknodeStatsPage/darknodeMap/darknodeMap';
+@import '../controllers/statsPages/networkStatsPage/networkStats';
+@import '../controllers/statsPages/integratorStatsPage/integratorStatsPage';
 
 // Styles for html, body, anchors etc. should go in _general
 @import 'scss/_general';

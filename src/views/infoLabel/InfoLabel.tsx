@@ -1,5 +1,6 @@
-import * as React from "react";
+import React, { useRef, useState } from "react";
 
+import { classNames } from "../../lib/react/className";
 import { ReactComponent as Info } from "./info.svg";
 import "./styles.scss";
 import { ReactComponent as Warning } from "./warning.svg";
@@ -22,10 +23,10 @@ const HIDE_LABEL_TIMEOUT = 200; // ms
  * InfoLabel is a visual component for displaying an information message for
  * another component
  */
-export const InfoLabel = ({ level, children, direction, align, className, ...props }: Props) => {
-    const timeout = React.useRef<NodeJS.Timeout | null>(null);
-    const [fade, setFade] = React.useState(false);
-    const [hover, setHover] = React.useState(false);
+export const InfoLabel = ({ level, children, direction, align, className, defaultValue, ...props }: Props) => {
+    const timeout = useRef<NodeJS.Timeout | null>(null);
+    const [fade, setFade] = useState(false);
+    const [hover, setHover] = useState(false);
     const onMouseEnter = () => {
         if (timeout.current) clearTimeout(timeout.current);
         setFade(false);
@@ -36,7 +37,20 @@ export const InfoLabel = ({ level, children, direction, align, className, ...pro
         timeout.current = setTimeout(() => setHover(false), HIDE_LABEL_TIMEOUT);
     };
 
-    return <div {...props} className={[`info-label`, `info-label-${direction || "bottom"}`, `info-label-${align || "center"}`, hover ? `info-label--active` : "", fade ? `info-label--fading` : "", className].join(" ")} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
+    return <div
+        defaultValue={defaultValue as string[]}
+        {...props}
+        className={classNames(
+            `info-label`,
+            `info-label-${direction || "bottom"}`,
+            `info-label-${align || "center"}`,
+            hover ? `info-label--active` : "",
+            fade ? `info-label--fading` : "",
+            className
+        )}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+    >
         {level === LabelLevel.Warning ? <Warning className="info-label--icon" /> : <Info className="info-label--icon" />}
         <div className="info-label--message">{children ? children : ""}</div>
     </div>;
