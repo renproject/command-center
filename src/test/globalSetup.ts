@@ -20,8 +20,8 @@ export type Provider = { engine: { stop: () => void; } };
 const ganache = (buildPath: string, networkID: number): RenNetworkDetails => {
     // tslint:disable: non-literal-require
     const ProtocolProxy = require(join(buildPath, "ProtocolProxy.json"));
-    const ProtocolLogic = require(join(buildPath, "ProtocolLogic.json"));
-    const GatewayLogic = require(join(buildPath, "GatewayLogic.json"));
+    const ProtocolLogic = require(join(buildPath, "ProtocolLogicV1.json"));
+    const GatewayLogic = require(join(buildPath, "GatewayLogicV1.json"));
     const RenBTC = require(join(buildPath, "RenBTC.json"));
     const BTCGateway = require(join(buildPath, "BTCGateway.json"));
     const RenZEC = require(join(buildPath, "RenZEC.json"));
@@ -33,7 +33,7 @@ const ganache = (buildPath: string, networkID: number): RenNetworkDetails => {
     const DarknodeSlasher = require(join(buildPath, "DarknodeSlasher.json"));
     const DarknodeRegistryStore = require(join(buildPath, "DarknodeRegistryStore.json"));
     const DarknodeRegistryProxy = require(join(buildPath, "DarknodeRegistryProxy.json"));
-    const DarknodeRegistryLogic = require(join(buildPath, "DarknodeRegistryLogic.json"));
+    const DarknodeRegistryLogic = require(join(buildPath, "DarknodeRegistryLogicV1.json"));
     const DarknodePaymentStore = require(join(buildPath, "DarknodePaymentStore.json"));
     const DarknodePayment = require(join(buildPath, "DarknodePayment.json"));
     const BasicAdapter = require(join(buildPath, "BasicAdapter.json"));
