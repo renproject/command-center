@@ -7,7 +7,7 @@ version: 2.1
 executors:
   default:
     docker:
-      - image: circleci/node:10.16
+      - image: circleci/node:10.22
     working_directory: ~/command-center
 
 commands:
@@ -22,21 +22,21 @@ commands:
       - run:
           name: Install dependencies
           command: sudo npm install --global yarn && yarn version && yarn cache clean && (yarn install --network-concurrency 1 || yarn install --network-concurrency 1)
-      - run:
-          name: Install darknode-sol dependencies
-          command: cd ./node_modules/darknode-sol && (yarn install --network-concurrency 1 || yarn install --network-concurrency 1)
+      # - run:
+      #     name: Install darknode-sol dependencies
+      #     command: cd ./node_modules/darknode-sol && (yarn install --network-concurrency 1 || yarn install --network-concurrency 1)
       - save_cache:
           name: Save node_modules
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "yarn.lock" }}
 
-  test_on_local_network:
-    description: "Test on local network"
-    steps:
-      - run:
-          name: Migrate contracts
-          command: cd ./node_modules/darknode-sol && (yarn ganache-cli -d  > /dev/null &) && sleep 5 && yarn truffle migrate && cd ../../ && yarn run test
+  # test_on_local_network:
+  #   description: "Test on local network"
+  #   steps:
+  #     - run:
+  #         name: Migrate contracts
+  #         command: cd ./node_modules/darknode-sol && (yarn ganache-cli -d  > /dev/null &) && sleep 5 && yarn truffle migrate && cd ../../ && yarn run test
 
 jobs:
   build:
