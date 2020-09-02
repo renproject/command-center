@@ -65,6 +65,7 @@ export const DarknodeStatsPage = () => {
                                 token={Token.ETH}
                                 convertTo={quoteCurrency}
                                 amount={previousSummed}
+                                format
                             /></> : <Loading alt />}
                         </Stat>
                         <Stat message="Current cycle" highlight={true} big={true} icon={<RewardsIcon />}>
@@ -74,6 +75,7 @@ export const DarknodeStatsPage = () => {
                                     token={Token.ETH}
                                     convertTo={quoteCurrency}
                                     amount={currentSummed}
+                                    format
                                 /></> : <Loading alt />}
                         </Stat>
                     </Stats>
