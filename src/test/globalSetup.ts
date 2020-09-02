@@ -187,7 +187,7 @@ export const createWeb3 = async () => {
     const provider = new HDWalletProvider(mnemonic, "http://localhost:8545");
     const web3: Web3 = new Web3(provider);
     const networkID: number = await web3.eth.net.getId();
-    const network: RenNetworkDetails = ganache(join(process.cwd(), "./node_modules/darknode-sol/build/devnet/"), networkID);
+    const network: RenNetworkDetails = ganache(join(process.cwd(), "./node_modules/darknode-sol/build/testnet/"), networkID);
     const address: string = (await web3.eth.getAccounts())[0];
 
     return { web3, networkID, network, address, provider };
