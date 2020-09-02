@@ -21,7 +21,8 @@ commands:
                       - v1-dependencies-{{ checksum "yarn.lock" }}
             - run:
                   name: Install dependencies
-                  command: yarn version && yarn cache clean && (yarn install --network-concurrency 1 || yarn install --network-concurrency 1)
+                  # Run twice as a workaround to corrupt tar error.
+                  command: yarn install --network-concurrency 1 || yarn install --network-concurrency 1
             # - run:
             #     name: Install darknode-sol dependencies
             #     command: cd ./node_modules/darknode-sol && (yarn install --network-concurrency 1 || yarn install --network-concurrency 1)
@@ -45,9 +46,9 @@ jobs:
             - checkout
             - install_deps
             # - test_on_local_network
-            # - run:
-            #     name: Build
-            #     command: yarn run build
+            - run:
+                  name: Build
+                  command: yarn run build
             - run:
                   name: Lint
                   command: yarn run lint
