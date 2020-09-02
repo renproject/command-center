@@ -21,7 +21,7 @@ commands:
                       - v1-dependencies-{{ checksum "yarn.lock" }}
             - run:
                   name: Install dependencies
-                  command: sudo npm install --global yarn && yarn version && yarn cache clean && (yarn install --network-concurrency 1 || yarn install --network-concurrency 1)
+                  command: yarn version && yarn cache clean && (yarn install --network-concurrency 1 || yarn install --network-concurrency 1)
             # - run:
             #     name: Install darknode-sol dependencies
             #     command: cd ./node_modules/darknode-sol && (yarn install --network-concurrency 1 || yarn install --network-concurrency 1)
