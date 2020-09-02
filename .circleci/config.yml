@@ -44,10 +44,10 @@ jobs:
     steps:
       - checkout
       - install_deps
-      - test_on_local_network
-      # - run:
-      #     name: Build
-      #     command: yarn run build
+      # - test_on_local_network
+      - run:
+           name: Build
+           command: yarn run build
       - run:
           name: Lint
           command: yarn run lint
