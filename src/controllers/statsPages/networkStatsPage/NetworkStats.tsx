@@ -40,11 +40,7 @@ export const NetworkStats = () => {
                             infoLabel={<>Total amount of volume transacted via RenVM.</>}
                             className="stat--extra-big"
                         >
-                            {volumePeriodSeries ? <><CurrencyIcon currency={quoteCurrency} />{new BigNumber(volumePeriodSeries.average.quotePeriodVolume).toFormat(2)}{/*<TokenBalance
-                            token={Token.ETH}
-                            convertTo={quoteCurrency}
-                            amount={previousSummed}
-                        />*/}</> : <Loading alt />}
+                            {volumePeriodSeries ? <div className="stat-amount"><CurrencyIcon currency={quoteCurrency} />{new BigNumber(volumePeriodSeries.average.quotePeriodVolume).toFormat(2)}</div> : <Loading alt />}
                             <div className="overview--bottom">
                                 <StatTabs selected={volumeTab} onChange={setVolumeTab} volumePeriod={volumePeriod} assetsPeriod={volumePeriod} />
                                 {volumeTab === StatTab.History ?
@@ -63,15 +59,7 @@ export const NetworkStats = () => {
                             big={true}
                             className="stat--extra-big"
                         >
-                            {lockedPeriodSeries ? <><CurrencyIcon currency={quoteCurrency} />{new BigNumber(lockedPeriodSeries.average.quotePeriodLocked).toFormat(2)}
-                                {/* {total ? <> */}
-                                {/* <CurrencyIcon currency={quoteCurrency} /> */}
-                                {/* {total.toFormat(2)}{/*<TokenBalance */}
-                                {/* token={Token.ETH} */}
-                                {/* convertTo={quoteCurrency} */}
-                                {/* amount={currentSummed} */}
-                                {/* />*/}
-                            </> : <Loading alt />}
+                            {lockedPeriodSeries ? <div className="stat-amount"><CurrencyIcon currency={quoteCurrency} />{new BigNumber(lockedPeriodSeries.average.quotePeriodLocked).toFormat(2)}</div> : <Loading alt />}
                             <div className="overview--bottom">
                                 <StatTabs selected={lockedTab} onChange={setLockedTab} volumePeriod={lockedPeriod} assetsPeriod={null} />
                                 {lockedTab === StatTab.History ?

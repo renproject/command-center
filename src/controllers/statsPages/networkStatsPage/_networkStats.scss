@@ -528,7 +528,7 @@
     padding-top: 3px;
 
     border-bottom: 1px solid $light-grey;
-    padding: 10px 20px;
+    padding: 10px 20px; // TODO: duplicated, investigate
 
     &+.stat-tab-option {
         border-left: 1px solid $light-grey;
@@ -544,6 +544,11 @@
         padding-bottom: 8px;
         margin-bottom: -1px;
     }
+}
+
+.stat-amount {
+    display: block;
+    white-space: nowrap;
 }
 
 .collateral-padding {
