@@ -19,7 +19,7 @@ export const Stat = ({ icon, message, big, nested, highlight, infoLabel, childre
         className={classNames("stat", highlight ? "stat--highlight" : "", nested ? "stat--nested" : "", className)}
     >
         <div className="hr" />
-        <div className="stat--title--outer"><h2 className="stat--title">{icon ? <span className="stat--title--icon">{icon}</span> : null} {message}</h2>{infoLabel ? <InfoLabel direction={"bottom"}>{infoLabel}</InfoLabel> : null}</div>
+        <div className="stat--title--outer"><h2 className="stat--title">{icon ? <span className="stat--title--icon">{icon}</span> : null}<span>{message}</span></h2>{infoLabel ? <InfoLabel direction={"bottom"}>{infoLabel}</InfoLabel> : null}</div>
         <div className={classNames("stat--children", big ? "stat--children--big" : "")}>{children}</div>
     </div>
 );

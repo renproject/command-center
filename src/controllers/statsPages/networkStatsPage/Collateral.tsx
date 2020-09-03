@@ -80,7 +80,7 @@ export const Collateral: React.FC<Props> = ({ minted, l, b, bRen, quoteCurrency 
                         <div className={classNames("collateral-table", GREYCORE_ACTIVE ? "collateral-table-greycore" : "")}>
                             <div className="collateral-table--row">
                                 <div className={classNames("collateral-table--row--left", "row--l", overCollateralized ? "row--l--over" : "row--l--under")}><RowBullet /> Value Locked (L)</div>
-                                <div className="collateral-table--row--right"><CurrencyIcon currency={quoteCurrency} />{l.toFormat(2)} <InfoLabel>The total value (TVL) of all digital assets currently locked in RenVM.</InfoLabel></div>
+                                <div className="collateral-table--row--right"><span><CurrencyIcon currency={quoteCurrency} />{l.toFormat(2)}</span><InfoLabel>The total value (TVL) of all digital assets currently locked in RenVM.</InfoLabel></div>
                             </div>
                             <div className="collateral-table--row">
                                 <div className="collateral-table--row--left row--b"><RowBullet /> Value in motion</div>

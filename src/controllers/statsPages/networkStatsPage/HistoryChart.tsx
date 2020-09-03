@@ -110,7 +110,7 @@ export const HistoryChart: React.FC<Props> = ({ periodSeries, graphType, quoteCu
     }, [graphType, cachedSeries, quoteCurrency]);
 
     return <div className="overview--chart--outer" style={{ maxWidth: "100%" }}>
-        <div className="volume--chart">
+        <div className="volume--chart highcharts--with-outside-tooltip">
             {cachedSeries ? <><div className="overview--chart--canvas" style={{ maxWidth: "100%" }}>
                 {options ?
                     <HighchartsReact
