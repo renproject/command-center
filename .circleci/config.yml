@@ -46,15 +46,15 @@ jobs:
             - checkout
             - install_deps
             # - test_on_local_network
-            # - run:
-            #       name: Build
-            #       command: yarn run build
             - run:
                   name: Lint
                   command: yarn run lint
             - run:
                   name: Lint with warnings
                   command: yarn run lint:extra || true # FIXME
+            - run:
+                name: Build
+                command: yarn run build
 
 workflows:
     build:
