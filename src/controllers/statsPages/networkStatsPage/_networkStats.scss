@@ -525,10 +525,9 @@
 
 
     text-align: center;
-    padding-top: 3px;
 
     border-bottom: 1px solid $light-grey;
-    padding: 10px 20px; // TODO: duplicated, investigate
+    padding: 10px 20px;
 
     &+.stat-tab-option {
         border-left: 1px solid $light-grey;
@@ -547,7 +546,6 @@
 }
 
 .stat-amount {
-    display: block;
     white-space: nowrap;
 }
 
