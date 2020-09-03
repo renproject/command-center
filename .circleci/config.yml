@@ -54,7 +54,7 @@ jobs:
                   command: yarn run lint:extra || true # FIXME
             - run:
                 name: Build
-                command: yarn run build
+                command: DEBUG=babel yarn run build
 
 workflows:
     build:
