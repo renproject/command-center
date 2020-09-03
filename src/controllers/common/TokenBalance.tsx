@@ -10,6 +10,7 @@ interface Props {
     amount: number | string | BigNumber;
     convertTo?: Currency;
     digits?: number; // Always shows this many digits (e.g. for 3 d.p.: 0.100, 0.111)
+    format?: boolean; // determines digit grouping (e.g. for 3000.01 => 3,000.01)
 }
 
 const defaultDigits = (quoteCurrency: Currency | Token) => {
@@ -50,7 +51,7 @@ export const tokenToQuote = (amount: number | string | BigNumber, token: Token, 
     return new BigNumber(0);
 };
 
-export const TokenBalance: React.FC<Props> = ({ amount, token, convertTo, digits }) => {
+export const TokenBalance: React.FC<Props> = ({ amount, token, convertTo, digits, format }) => {
     const { tokenPrices } = NetworkContainer.useContainer();
 
     const tokenDetails = AllTokenDetails.get(token, undefined);
@@ -77,10 +78,10 @@ export const TokenBalance: React.FC<Props> = ({ amount, token, convertTo, digits
         return <i>ERR</i>;
     }
 
+    const resolvedAmount = amountBN
+      .multipliedBy(price)
+      .decimalPlaces(digits === undefined ? defaultDigits(convertTo) : digits, BigNumber.ROUND_FLOOR);
     return <>{
-        amountBN
-            .multipliedBy(price)
-            .decimalPlaces(digits === undefined ? defaultDigits(convertTo) : digits, BigNumber.ROUND_FLOOR)
-            .toFixed(digits === undefined ? defaultDigits(convertTo) : digits)
+        format ? resolvedAmount.toFormat() : resolvedAmount.toFixed()
     }</>;
 };
