@@ -14,7 +14,9 @@ jobs:
     - name: Setup Node.js environment
       uses: actions/setup-node@v2.1.0
     - name: Install dependencies
-      run: yarn --network-concurrency 1
+      run: yarn --skip-integrity-check
+    - name: Verify dependencies
+      run: yarn check --integrity
     - name: lint
       run: yarn lint
   test:
