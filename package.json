@@ -5,7 +5,7 @@
   "scripts": {
     "lint:unused-exports": "ts-unused-exports ./tsconfig.json",
     "lint:outdated-imports": "ncu",
-    "lint:ts": "tslint --project ./ -t stylish --quiet && prettier -c './src/**/*.ts*'",
+    "lint:ts": "tslint --project ./ --quiet && prettier -c './src/**/*.ts*'",
     "lint:extra": "$npm_execpath run --silent lint:unused-exports; $npm_execpath run --silent lint:outdated-imports",
     "lint:all": "$npm_execpath run --silent lint:ts && $npm_execpath run --silent lint:extra",
     "lint": "$npm_execpath run --silent lint:ts",
