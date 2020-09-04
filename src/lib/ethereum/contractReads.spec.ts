@@ -10,7 +10,8 @@ beforeAll(async () => ({ web3, network, provider } = await createWeb3()));
 afterAll(() => provider.engine.stop());
 
 test("getDarknodeStatus", async () => {
-    const darknodeID = darknodeIDBase58ToHex("8MJpA1rXYMPTeJoYjsFBHJcuYBe7zP");
-    (await getDarknodeStatus(web3, network, darknodeID))
-        .should.equal(RegistrationStatus.Unregistered);
+  const darknodeID = darknodeIDBase58ToHex("8MJpA1rXYMPTeJoYjsFBHJcuYBe7zP");
+  (await getDarknodeStatus(web3, network, darknodeID)).should.equal(
+    RegistrationStatus.Unregistered
+  );
 });
