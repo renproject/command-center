@@ -1,6 +1,7 @@
 .map {
     flex: 2 2 465px;
     display: flex;
+    min-height: 280px;
     max-height: 600px;
 
     @media (max-width: $max-md) {
