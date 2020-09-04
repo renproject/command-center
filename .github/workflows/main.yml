@@ -24,6 +24,6 @@ jobs:
     - name: Setup Node.js environment
       uses: actions/setup-node@v2.1.0
     - name: Install dependencies
-      run: yarn --network-concurrency 1 && cd ./node_modules/darknode-sol && yarn --network-concurrency 1
+      run: yarn --network-concurrency 1 || yarn install --network-concurrency 1 && cd ./node_modules/darknode-sol && yarn --network-concurrency 1
     - name: Test
       run: cd ./node_modules/darknode-sol && (yarn ganache-cli -d  > /dev/null &) && sleep 5 && yarn truffle migrate && cd ../../ && yarn run test
