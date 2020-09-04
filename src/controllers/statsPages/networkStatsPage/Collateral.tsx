@@ -78,14 +78,7 @@ export const Collateral: React.FC<Props> = ({
             <div className="collateral-pre-status">
               RenVM is currently{loadingCollateralization ? <>...</> : null}
             </div>
-            <div
-              className={classNames(
-                "collateral-status",
-                overCollateralized
-                  ? "collateral-status--over"
-                  : "collateral-status--under"
-              )}
-            >
+            <div className="collateral-status">
               {loadingCollateralization ? <Loading /> : null}
               <span
                 style={{ display: "flex", alignItems: "center" }}
@@ -95,7 +88,16 @@ export const Collateral: React.FC<Props> = ({
               >
                 {GREYCORE_ACTIVE ? (
                   <>
-                    secure. <IconCheckCircle />
+                    <span
+                      className={
+                        overCollateralized
+                          ? "collateral-status--over"
+                          : "collateral-status--under"
+                      }
+                    >
+                      secure.{" "}
+                    </span>
+                    <IconCheckCircle />
                     <InfoLabel direction={"bottom"}>
                       During RenVM phases Subzero and Zero, there is a
                       semi-decentralized network of Darknodes called the
