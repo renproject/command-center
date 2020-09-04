@@ -158,19 +158,11 @@
 .collateral-status {
 
     .info-label {
-        height: 22px;
         margin-left: 5px;
     }
 
     .info-label--message {
         left: 5px;
-    }
-
-    .info-label--icon {
-        width: 22px;
-        height: 22px;
-        margin-left: 0;
-        margin-top: 0;
     }
 }
 
@@ -397,20 +389,18 @@
 }
 
 .collateral-table--row--right {
-
-    &,
-    >span {
-        font-family: "Courier New", Courier, monospace;
-        text-align: right;
-    }
-
     display: flex;
     justify-content: flex-end;
+    align-items: center;
     font-weight: 500;
     font-size: 12px;
     line-height: 29px;
     letter-spacing: 1.5px;
     color: #FFFFFF;
+
+    > span {
+        font-family: "Courier New", Courier, monospace;
+    }
 }
 
 .collateral-table--row+.collateral-table--row {
@@ -525,7 +515,6 @@
 
 
     text-align: center;
-    padding-top: 3px;
 
     border-bottom: 1px solid $light-grey;
     padding: 10px 20px;
@@ -546,6 +535,10 @@
     }
 }
 
+.stat-amount {
+    white-space: nowrap;
+}
+
 .collateral-padding {
     height: 35px;
     width: 100%;
@@ -554,11 +547,3 @@
         display: none;
     }
 }
-
-// .highcharts-container {
-//     max-width: 100%;
-
-//     svg {
-//         max-width: 100%;
-//     }
-// }
