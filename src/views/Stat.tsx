@@ -12,19 +12,27 @@ interface StatProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDiv
     infoLabel?: React.ReactNode;
 }
 
-export const Stat = ({ icon, message, big, nested, highlight, infoLabel, children, className, ...props }: StatProps) => (
-    <div {...props} className={["stat", highlight ? "stat--highlight" : "", nested ? "stat--nested" : "", className].join(" ")}>
+export const Stat = ({ icon, message, big, nested, highlight, infoLabel, children, className, defaultValue, ...props }: StatProps) => (
+    <div
+        defaultValue={defaultValue as string[]}
+        {...props}
+        className={classNames("stat", highlight ? "stat--highlight" : "", nested ? "stat--nested" : "", className)}
+    >
         <div className="hr" />
-        <div className="stat--title--outer"><h2 className="stat--title">{icon ? <span className="stat--title--icon">{icon}</span> : <></>} {message}</h2>{infoLabel ? <InfoLabel direction={"bottom"}>{infoLabel}</InfoLabel> : null}</div>
-        <div className={["stat--children", big ? "stat--children--big" : ""].join(" ")}>{children}</div>
+        <div className="stat--title--outer"><h2 className="stat--title">{icon ? <span className="stat--title--icon">{icon}</span> : null} {message}</h2>{infoLabel ? <InfoLabel direction={"bottom"}>{infoLabel}</InfoLabel> : null}</div>
+        <div className={classNames("stat--children", big ? "stat--children--big" : "")}>{children}</div>
     </div>
 );
 
 interface StatsProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
 }
 
-export const Stats = ({ children, className, ...props }: StatsProps) => (
-    <div {...props} className={classNames("statistic--row", className)}>
+export const Stats = ({ children, className, defaultValue, ...props }: StatsProps) => (
+    <div
+        defaultValue={defaultValue as string[]}
+        {...props}
+        className={classNames("statistic--row", className)}
+    >
         {children}
     </div>
 );
