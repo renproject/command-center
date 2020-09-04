@@ -60,8 +60,7 @@ export const Collateral: React.FC<Props> = ({
           message="Collateralization"
           icon={<IconCollateralization />}
           infoLabel={
-            GREYCORE_ACTIVE ? // <>During RenVM phases Subzero and Zero, there is a semi-decentralized network of Darknodes called the Greycore. These Darknodes are responsible for execution and whilst they are in operation, RenVM does not need to be over-collateralized to remain secure. Over time, once the economics are safe, the Ren team will phase out the Greycore. <ExternalLink href="https://github.com/renproject/ren/wiki/Greycore">Read more</ExternalLink></> :
-            undefined : (
+            GREYCORE_ACTIVE ? undefined : ( // <>During RenVM phases Subzero and Zero, there is a semi-decentralized network of Darknodes called the Greycore. These Darknodes are responsible for execution and whilst they are in operation, RenVM does not need to be over-collateralized to remain secure. Over time, once the economics are safe, the Ren team will phase out the Greycore. <ExternalLink href="https://github.com/renproject/ren/wiki/Greycore">Read more</ExternalLink></> :
               <>
                 To ensure maximum security, the amount of value locked should
                 not exceed the value of REN bonded in the Darknode contract. For
