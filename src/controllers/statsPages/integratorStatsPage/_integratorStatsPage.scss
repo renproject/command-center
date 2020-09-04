@@ -124,9 +124,14 @@ $table-radius: 4px;
             font-weight: bold;
             font-size: 13px;
             line-height: 15px;
-
             color: #F9F9F9;
-            background-color: #00000000 !important;
+
+            // reset bootstrap styling
+            background-color: transparent;
+            &:nth-child(odd) {
+                background-color: transparent;
+            }
+
             &:not(:first-child) {
                 border-top: 2px solid #001B3A;
             }
@@ -153,9 +158,12 @@ $table-radius: 4px;
 
             &.integrator,
             &.empty-row {
-                background: #002148 !important;
+                td {
+                    background: #002148;
+                }
 
-                &:nth-of-type(4n + 1)>td {
+
+                &:nth-of-type(4n + 1) td {
                     background: #002044;
                 }
 
@@ -163,9 +171,9 @@ $table-radius: 4px;
 
             &.integrator {
 
-                &:hover:nth-child(odd)>td,
-                &:hover>td {
-                    background: #012450 !important;
+                &:hover:nth-child(odd) td,
+                &:hover td {
+                    background: #012450;
                 }
             }
 
@@ -261,7 +269,6 @@ $table-radius: 4px;
             }
 
             &.integrator-extra-closed {
-                border-top: 0;
                 height: 0;
                 border-top-width: 0;
                 max-height: 0;
