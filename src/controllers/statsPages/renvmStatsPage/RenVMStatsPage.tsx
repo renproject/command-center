@@ -14,6 +14,25 @@ import { RenVMBlock } from "./RenVMBlock";
 import { Block, RenVMContainer } from "./renvmContainer";
 import { RenVMTransaction, TransactionPreview } from "./RenVMTransaction";
 
+const lockedBtcInfoLabel = `The amount of BTC currently locked in RenVM. Note that this sometimes lags behind the
+ amount present in the smart contract. This is because users might have locked BTC in RenVM but are yet to mint renBTC
+ on Ethereum (usually because they are awaiting confirmations on the host chain).
+`;
+
+const lockedZecInfoLabel = `The amount of ZEC currently locked in RenVM. Note that this sometimes lags behind the amount
+ present in the smart contract. This is because users might have locked ZEC in RenVM but are yet to mint renBTC on
+ Ethereum (usually because they are awaiting confirmations on the host chain).`;
+
+const lockedBchInfoLabel = `The amount of BCH currently locked in RenVM. Note that this sometimes lags behind the amount
+ present in the smart contract. This is because users might have locked BCH in RenVM but are yet to mint renBTC on
+ Ethereum (usually because they are awaiting confirmations on the host chain).`;
+
+const infoLabels = {
+  BTC: lockedBtcInfoLabel,
+  ZEC: lockedZecInfoLabel,
+  BCH: lockedBchInfoLabel,
+};
+
 export const RenVMStatsPage = () => {
   const {
     updateBlocks,
@@ -255,23 +274,4 @@ export const RenVMStatsPage = () => {
       </Stat>
     </div>
   );
-};
-
-const lockedBtcInfoLabel = `The amount of BTC currently locked in RenVM. Note that this sometimes lags behind the
- amount present in the smart contract. This is because users might have locked BTC in RenVM but are yet to mint renBTC
- on Ethereum (usually because they are awaiting confirmations on the host chain).
-`;
-
-const lockedZecInfoLabel = `The amount of ZEC currently locked in RenVM. Note that this sometimes lags behind the amount
- present in the smart contract. This is because users might have locked ZEC in RenVM but are yet to mint renBTC on
- Ethereum (usually because they are awaiting confirmations on the host chain).`;
-
-const lockedBchInfoLabel = `The amount of BCH currently locked in RenVM. Note that this sometimes lags behind the amount
- present in the smart contract. This is because users might have locked BCH in RenVM but are yet to mint renBTC on
- Ethereum (usually because they are awaiting confirmations on the host chain).`;
-
-const infoLabels = {
-  BTC: lockedBtcInfoLabel,
-  ZEC: lockedZecInfoLabel,
-  BCH: lockedBchInfoLabel,
 };
