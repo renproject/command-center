@@ -1837,6 +1837,11 @@
   resolved "https://registry.yarnpkg.com/@renproject/fonts/-/fonts-1.0.1.tgz#5eb052638eec862760044b4367f062f8a890c5b8"
   integrity sha512-OWk811Ay63UdPxY5nEg4N99Goz6K9HLaeGfUN2q0uehhQ70hJDqDQq/vYl5rtE07mv7MYX7GYTpj5POlPbZNRg==
 
+"@renproject/fonts@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@renproject/fonts/-/fonts-1.0.2.tgz#306ea985610b559fb6147f091efce567cbb25d35"
+  integrity sha512-mAU1JnrE0u3g+103baJwZf81Zz5s6MvO8zDoFtpE3qJQ9zNEssCdgTA57Jjvk1WNLTIY/JDSWPLYcpmrVlGiCQ==
+
 "@renproject/interfaces@^1.0.3":
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@renproject/interfaces/-/interfaces-1.0.3.tgz#dd7f067aef494cfdb86b126c46ebf19a59540dae"
