@@ -1,11 +1,15 @@
 .map {
     flex: 2 2 465px;
     display: flex;
-    min-height: 280px;
     max-height: 600px;
 
     @media (max-width: $max-md) {
+        min-height: 50vw;
         flex: 2 2 600px;
+    }
+
+    @media (min-width: $max-md) {
+        min-height: 32vw;
     }
 
     .map--world {
