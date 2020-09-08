@@ -63,7 +63,11 @@ export const DarknodeStatsPage = () => {
       <Stats>
         <Stat icon={<IconDarknodesOnline />} message="Darknodes online">
           <Stats>
-            <Stat message="Registered" big>
+            <Stat
+              message="Registered"
+              big
+              infoLabel="The current number of registered Darknodes. The smaller number indicates the change in registrations last Epoch."
+            >
               {isDefined(numberOfDarknodes) ? (
                 <>
                   {numberOfDarknodes.toNumber()}
@@ -80,7 +84,11 @@ export const DarknodeStatsPage = () => {
                 <Loading alt={true} />
               )}
             </Stat>
-            <Stat message="Change next epoch" big>
+            <Stat
+              message="Change next epoch"
+              big
+              infoLabel="The change in registrations at the beginning of the next Epoch."
+            >
               {isDefined(numberOfDarknodesNextEpoch) &&
               isDefined(numberOfDarknodes) ? (
                 <>
@@ -94,7 +102,11 @@ export const DarknodeStatsPage = () => {
                 <Loading alt={true} />
               )}
             </Stat>
-            <Stat message="% Ren Bonded" big>
+            <Stat
+              message="% Ren Bonded"
+              big
+              infoLabel="Each Darknode is required to bond 100,000K REN to encourage good behaviour. This number represents the percentage of the total amount of REN (1B) which is currently bonded."
+            >
               {isDefined(percent) ? <>{percent}%</> : <Loading alt={true} />}
             </Stat>
           </Stats>
@@ -108,7 +120,11 @@ export const DarknodeStatsPage = () => {
                                 amount={0}
                             /></> : <Loading alt />}
                         </Stat> */}
-            <Stat message="Last cycle" big>
+            <Stat
+              message="Last cycle"
+              big
+              infoLabel="The amount of rewards earned by the entire network of Darknodes in the last epoch. "
+            >
               {previousSummed ? (
                 <>
                   <CurrencyIcon currency={quoteCurrency} />
@@ -128,6 +144,7 @@ export const DarknodeStatsPage = () => {
               highlight={true}
               big={true}
               icon={<RewardsIcon />}
+              infoLabel="Rewards earned in this current epoch so far by the entire Darknode network."
             >
               {currentSummed ? (
                 <>

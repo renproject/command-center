@@ -306,33 +306,52 @@
     margin-top: -30px;
     padding-top: 60px;
     border-radius: 4px;
+    background: #001327;
 
     &.collateral-table-greycore {
         padding-top: 0;
+    }
+
+    .info-label {
+        align-self: flex-start;
+        margin-top: 4px;
     }
 
     .info-label--message {
         text-transform: none;
     }
 
-    background: #001327;
 }
 
 .collateral-table--row {
     width: 100%;
     display: flex;
     justify-content: space-between;
+    padding: 4px 0;
 }
 
 .collateral-table--row--left {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     font-weight: 500;
     font-size: 12px;
-    line-height: 29px;
+    line-height: 20px;
     letter-spacing: 1.5px;
     color: #FFFFFF;
 }
+
+.collateral-table--row--right {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 20px;
+    text-align: right;
+    letter-spacing: 1.5px;
+    color: #FFFFFF;
+}
+
 
 .collateral-table--bullet {
     width: 19px;
@@ -385,21 +404,6 @@
 
     .collateral-table--bullet--inner {
         background: #192D42;
-    }
-}
-
-.collateral-table--row--right {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    font-weight: 500;
-    font-size: 12px;
-    line-height: 29px;
-    letter-spacing: 1.5px;
-    color: #FFFFFF;
-
-    > span {
-        font-family: "Courier New", Courier, monospace;
     }
 }
 

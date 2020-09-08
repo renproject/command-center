@@ -78,14 +78,7 @@ export const Collateral: React.FC<Props> = ({
             <div className="collateral-pre-status">
               RenVM is currently{loadingCollateralization ? <>...</> : null}
             </div>
-            <div
-              className={classNames(
-                "collateral-status",
-                overCollateralized
-                  ? "collateral-status--over"
-                  : "collateral-status--under"
-              )}
-            >
+            <div className="collateral-status">
               {loadingCollateralization ? <Loading /> : null}
               <span
                 style={{ display: "flex", alignItems: "center" }}
@@ -95,8 +88,17 @@ export const Collateral: React.FC<Props> = ({
               >
                 {GREYCORE_ACTIVE ? (
                   <>
-                    secure. <IconCheckCircle />
-                    <InfoLabel direction={"bottom"}>
+                    <span
+                      className={
+                        overCollateralized
+                          ? "collateral-status--over"
+                          : "collateral-status--under"
+                      }
+                    >
+                      secure.{" "}
+                    </span>
+                    <IconCheckCircle />
+                    <InfoLabel direction="bottom">
                       During RenVM phases Subzero and Zero, there is a
                       semi-decentralized network of Darknodes called the
                       Greycore. These Darknodes are responsible for execution
@@ -182,7 +184,7 @@ export const Collateral: React.FC<Props> = ({
                   <RowBullet /> Value Locked (L)
                 </div>
                 <div className="collateral-table--row--right">
-                  <span>
+                  <span className="monospace nowrap">
                     <CurrencyIcon currency={quoteCurrency} />
                     {l.toFormat(2)}
                   </span>
@@ -198,7 +200,7 @@ export const Collateral: React.FC<Props> = ({
                 </div>
                 <div className="collateral-table--row--right">
                   {l && minted && minted.gt(0) ? (
-                    <span className="collateral-chart--bow--small">
+                    <span className="collateral-chart--bow--small monospace nowrap">
                       <CurrencyIcon currency={quoteCurrency} />
                       {BigNumber.max(l.minus(minted), 0).toFormat(2)}
                     </span>
@@ -216,13 +218,13 @@ export const Collateral: React.FC<Props> = ({
                             </div> */}
               <div className="collateral-table--row">
                 <div className="collateral-table--row--left row--b">
-                  <RowBullet /> Value Bonded (B)
+                  <RowBullet /> Value Bonded&nbsp;(B)
                 </div>
                 <div className="collateral-table--row--right">
-                  <span>
+                  <span className="monospace">
                     {bRen.toFormat(0)} REN{" "}
                     {b ? (
-                      <span className="collateral-chart--bow--small">
+                      <span className="collateral-chart--bow--small monospace nowrap">
                         (<CurrencyIcon currency={quoteCurrency} />
                         {b.toFormat(2)})
                       </span>
