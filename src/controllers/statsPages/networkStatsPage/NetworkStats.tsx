@@ -1,10 +1,11 @@
 import { CurrencyIcon, Loading } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
-import React from "react";
+import React, { useMemo } from "react";
 
-import { PeriodType } from "../../../lib/graphQL/volumes";
+import { PeriodType, QuotePeriodResponse } from "../../../lib/graphQL/volumes";
 import { ReactComponent as IconValueLocked } from "../../../styles/images/icon-value-locked.svg";
 import { ReactComponent as IconVolume } from "../../../styles/images/icon-volume.svg";
+import { Change } from "../../../views/Change";
 import { Stat, Stats } from "../../../views/Stat";
 import { Collateral } from "./Collateral";
 import { GraphType, HistoryChart } from "./HistoryChart";
@@ -12,6 +13,27 @@ import { NetworkStatsContainer } from "./networkStatsContainer";
 import { PeriodSelector } from "./PeriodSelector";
 import { StatTab, StatTabs } from "./StatTabs";
 import { TokenChart } from "./TokenChart";
+
+export const getPeriodPercentChange = (
+  periodType: PeriodType,
+  property: "quoteTotalVolume" | "quoteTotalLocked",
+  periodData?: QuotePeriodResponse
+) => {
+  if (
+    periodType !== PeriodType.ALL &&
+    periodData?.historic &&
+    periodData?.historic.length > 1
+  ) {
+    const historic = periodData?.historic;
+    const prev = historic[0];
+    const curr = historic[historic.length - 1];
+    return new BigNumber(curr[property])
+      .minus(prev[property])
+      .dividedBy(curr[property])
+      .multipliedBy(100);
+  }
+  return null;
+};
 
 export const NetworkStats = () => {
   const {
@@ -32,6 +54,21 @@ export const NetworkStats = () => {
     b,
     numberOfDarknodes,
   } = NetworkStatsContainer.useContainer();
+  const quoteVolumePeriod = quotePeriodSeries.get(volumePeriod);
+  const quoteLockedPeriod = quotePeriodSeries.get(lockedPeriod);
+  const [totalVolumePercentChange, totalLockedPercentChange] = useMemo(() => {
+    const volumeChange = getPeriodPercentChange(
+      volumePeriod,
+      "quoteTotalVolume",
+      quoteVolumePeriod
+    );
+    const lockedChange = getPeriodPercentChange(
+      lockedPeriod,
+      "quoteTotalLocked",
+      quoteLockedPeriod
+    );
+    return [volumeChange, lockedChange];
+  }, [volumePeriod, quoteVolumePeriod, lockedPeriod, quoteLockedPeriod]);
 
   return (
     <div className="network-stats container">
@@ -66,11 +103,23 @@ export const NetworkStats = () => {
               className="stat--extra-big"
             >
               {volumePeriodSeries ? (
-                <div className="stat-amount">
-                  <CurrencyIcon currency={quoteCurrency} />
-                  {new BigNumber(
-                    volumePeriodSeries.average.quotePeriodVolume
-                  ).toFormat(2)}
+                <div>
+                  <span className="stat-amount">
+                    <CurrencyIcon currency={quoteCurrency} />
+                    <span className="stat-amount--value">
+                      {new BigNumber(
+                        volumePeriodSeries.average.quotePeriodVolume
+                      ).toFormat(2)}
+                    </span>
+                  </span>
+                  {totalVolumePercentChange !== null && (
+                    <Change
+                      className="stat--children--diff"
+                      change={totalVolumePercentChange.toFormat(2)}
+                    >
+                      %
+                    </Change>
+                  )}
                 </div>
               ) : (
                 <Loading alt />
@@ -85,14 +134,14 @@ export const NetworkStats = () => {
                 {volumeTab === StatTab.History ? (
                   <HistoryChart
                     graphType={GraphType.TotalVolume}
-                    periodSeries={quotePeriodSeries.get(volumePeriod)}
+                    periodSeries={quoteVolumePeriod}
                     quoteCurrency={quoteCurrency}
                   />
                 ) : (
                   <TokenChart
-                    graphType={"Volume"}
+                    graphType="Volume"
                     quoteCurrency={quoteCurrency}
-                    periodSeries={quotePeriodSeries.get(volumePeriod)}
+                    periodSeries={quoteVolumePeriod}
                   />
                 )}
               </div>
@@ -123,11 +172,23 @@ export const NetworkStats = () => {
               className="stat--extra-big"
             >
               {lockedPeriodSeries ? (
-                <div className="stat-amount">
-                  <CurrencyIcon currency={quoteCurrency} />
-                  {new BigNumber(
-                    lockedPeriodSeries.average.quotePeriodLocked
-                  ).toFormat(2)}
+                <div>
+                  <span className="stat-amount">
+                    <CurrencyIcon currency={quoteCurrency} />
+                    <span className="stat-amount--value">
+                      {new BigNumber(
+                        lockedPeriodSeries.average.quotePeriodLocked
+                      ).toFormat(2)}
+                    </span>
+                  </span>
+                  {totalLockedPercentChange !== null && (
+                    <Change
+                      className="stat--children--diff"
+                      change={totalLockedPercentChange.toFormat(2)}
+                    >
+                      %
+                    </Change>
+                  )}
                 </div>
               ) : (
                 <Loading alt />
@@ -142,14 +203,14 @@ export const NetworkStats = () => {
                 {lockedTab === StatTab.History ? (
                   <HistoryChart
                     graphType={GraphType.TotalLocked}
-                    periodSeries={quotePeriodSeries.get(lockedPeriod)}
+                    periodSeries={quoteLockedPeriod}
                     quoteCurrency={quoteCurrency}
                   />
                 ) : (
                   <TokenChart
                     graphType={"Locked"}
                     quoteCurrency={quoteCurrency}
-                    periodSeries={quotePeriodSeries.get(lockedPeriod)}
+                    periodSeries={quoteLockedPeriod}
                   />
                 )}
               </div>

@@ -114,7 +114,6 @@
         font-weight: 500;
         font-size: 16.2px;
         line-height: 19px;
-        margin-left: 10px;
 
         &::after {
             font-size: 14px !important;
@@ -123,6 +122,7 @@
 }
 
 .change-indicator {
+    display:inline-block;
     &.positive {
         color: $green;
 
