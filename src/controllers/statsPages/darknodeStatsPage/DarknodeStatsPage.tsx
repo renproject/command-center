@@ -171,6 +171,7 @@ export const DarknodeStatsPage = () => {
         <Stats className="overview--bottom--right">
           {/* <Stat message="All time total" big>$?</Stat> */}
           <Stat
+            className="darknode-cli"
             message="Reward Period/EPOCH Ends"
             highlight={true}
             nested={true}

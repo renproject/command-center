@@ -81,13 +81,15 @@ export const EpochProgress: React.FC<Props> = ({
                 showingSeconds: false,
               })}
             </p>
-            <p className="epoch--end-date">
-              Ends{" "}
-              {moment
-                .unix(currentTime.plus(timeUntilNextEpoch).toNumber())
-                .utc()
-                .format("HH:mm Do MMMM, YYYY [UTC]")}
-            </p>
+            {timeUntilNextEpoch.gt(0) && (
+              <p className="epoch--end-date">
+                Ends{" "}
+                {moment
+                  .unix(currentTime.plus(timeUntilNextEpoch).toNumber())
+                  .utc()
+                  .format("HH:mm Do MMMM, YYYY [UTC]")}
+              </p>
+            )}
           </>
         )}
       </div>
