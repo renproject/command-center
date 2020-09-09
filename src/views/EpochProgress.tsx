@@ -2,6 +2,7 @@ import "react-circular-progressbar/dist/styles.css";
 
 import { naturalTime } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
+import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { buildStyles, CircularProgressbar } from "react-circular-progressbar";
 
@@ -70,26 +71,25 @@ export const EpochProgress: React.FC<Props> = ({
         </div>
       </div>
       <div className="epoch-right">
-        <p>
-          {isDefined(currentTime) && isDefined(timeUntilNextEpoch)
-            ? naturalTime(currentTime.plus(timeUntilNextEpoch).toNumber(), {
+        {isDefined(currentTime) && isDefined(timeUntilNextEpoch) && (
+          <>
+            <p>
+              {naturalTime(currentTime.plus(timeUntilNextEpoch).toNumber(), {
                 suffix: "until next epoch",
                 message: "New epoch will be called shortly",
                 countDown: true,
                 showingSeconds: false,
-              })
-            : ""}
-        </p>
-        <p>
-          {isDefined(currentTime) && isDefined(timeSinceLastEpoch)
-            ? naturalTime(currentTime.minus(timeSinceLastEpoch).toNumber(), {
-                suffix: "since last epoch",
-                message: "Epoch called just now",
-                countDown: false,
-                showingSeconds: false,
-              })
-            : ""}
-        </p>
+              })}
+            </p>
+            <p className="epoch--end-date">
+              Ends{" "}
+              {moment
+                .unix(currentTime.plus(timeUntilNextEpoch).toNumber())
+                .utc()
+                .format("HH:mm Do MMMM, YYYY [UTC]")}
+            </p>
+          </>
+        )}
       </div>
     </div>
   );
