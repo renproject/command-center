@@ -70,7 +70,9 @@ export const DarknodeStatsPage = () => {
             >
               {isDefined(numberOfDarknodes) ? (
                 <>
-                  {numberOfDarknodes.toNumber()}
+                  <span className="stat-amount--value">
+                    {numberOfDarknodes.toNumber()}
+                  </span>
                   {isDefined(numberOfDarknodesLastEpoch) ? (
                     <Change
                       className="stat--children--diff"
