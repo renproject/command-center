@@ -20,10 +20,10 @@ import { ReactComponent as RenVMIcon } from "../../../styles/images/Icon-HyperDr
 import { ReactComponent as IntegratorsIcon } from "../../../styles/images/icon-integrators.svg";
 import { ReactComponent as NetworkIcon } from "../../../styles/images/icon-network.svg";
 import { ReactComponent as OverviewIcon } from "../../../styles/images/Icon-Overview.svg";
-import { ExternalLink, URLs } from "../../../views/ExternalLink";
 import { StatusDot, StatusDotColor } from "../../../views/StatusDot";
 import { AccountDropdown } from "./AccountDropdown";
 import { MoreDropdown } from "./MoreDropdown";
+import { NewsBanner } from "./NewsBanner";
 
 const getCurrencyOptions = () => {
   const options = new Map<string, React.ReactNode>();
@@ -101,10 +101,9 @@ export const Header = () => {
         <div className="header--logo" />
       </Link>
       {renNetwork.name === "mainnet" ? (
-        <ExternalLink href={URLs.welcomeToCommandCenter} className="new">
-          <span className="new-new xl-or-larger">New</span>
-          <span className="new-blue">Mainnet is live. →</span>
-        </ExternalLink>
+        <div className="header--news">
+            <NewsBanner />
+        </div>
       ) : (
         <div className="new">
           <div className="header--network">
