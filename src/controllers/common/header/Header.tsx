@@ -78,37 +78,6 @@ export const Header = () => {
     setQuoteCurrency(currency as Currency);
   };
 
-  // const setNetwork = (network: string): void => {
-  //     setRenNetwork(RenNetworks[network]);
-  //     setInterval(() => {
-  //         window.location.reload();
-  //     }, 100);
-  // };
-
-  // const setLanguage = (language: string): void => {
-  //     // NOT IMPLEMENTED
-  // }
-
-  // const languageDropdownNode = <Dropdown
-  //     key="languageDropdown"
-  //     selected={{
-  //         value: "EN",
-  //         render: "English",
-  //     }}
-  //     options={languageOptions}
-  //     setValue={setLanguage}
-  // />;
-
-  // const networkDropdownNode = <Dropdown
-  //     key="networkDropdown"
-  //     selected={{
-  //         value: renNetwork.name,
-  //         render: networkOptions.get(renNetwork.name),
-  //     }}
-  //     options={networkOptions}
-  //     setValue={setNetwork}
-  // />;
-
   const currencyDropdownNode = (
     <Dropdown
       key="currencyDropdown"
