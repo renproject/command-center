@@ -71,7 +71,7 @@ const isRefunded = (darknode: Darknode): boolean => {
 };
 
 /// @notice Returns if a darknode is refundable. This is true for darknodes
-/// that have been in the deregistered state for one full epoch.
+/// that have been in the deregistered state for one full Epoch.
 const isRefundable = (darknode: Darknode, renVM: RenVM): boolean => {
   return (
     isDeregistered(darknode, renVM) &&

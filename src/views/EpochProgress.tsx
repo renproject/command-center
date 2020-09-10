@@ -75,8 +75,8 @@ export const EpochProgress: React.FC<Props> = ({
           <>
             <p>
               {naturalTime(currentTime.plus(timeUntilNextEpoch).toNumber(), {
-                suffix: "until next epoch",
-                message: "New epoch will be called shortly",
+                suffix: "until next Epoch",
+                message: "New Epoch will be called shortly",
                 countDown: true,
                 showingSeconds: false,
               })}

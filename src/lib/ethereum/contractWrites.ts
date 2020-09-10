@@ -151,7 +151,7 @@ export const approveNode = async (
 /**
  * Register node in the DarknodeRegistry contract. Must have called
  * [[approveNode]] first. The darknode will then have the status
- * "Registration Pending" until the next epoch.
+ * "Registration Pending" until the next Epoch.
  *
  * @param web3 Web3 provider with `address` unlocked.
  * @param darknodeID Hexadecimal ID of the darknode to register.
@@ -225,7 +225,7 @@ export const registerNode = async (
 
 /**
  * Deregister a node in the DarknodeRegistry contract. The node will then have
- * the status "Pending Deregistration" until the next epoch. The bond won't
+ * the status "Pending Deregistration" until the next Epoch. The bond won't
  * be returned yet.
  *
  * @param renNetwork The details of the selected Ren network.

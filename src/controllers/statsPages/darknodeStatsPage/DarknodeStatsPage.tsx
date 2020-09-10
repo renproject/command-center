@@ -87,7 +87,7 @@ export const DarknodeStatsPage = () => {
               )}
             </Stat>
             <Stat
-              message="Change next epoch"
+              message="Change next Epoch"
               big
               infoLabel="The change in registrations at the beginning of the next Epoch."
             >
@@ -125,7 +125,7 @@ export const DarknodeStatsPage = () => {
             <Stat
               message="Last cycle"
               big
-              infoLabel="The amount of rewards earned by the entire network of Darknodes in the last epoch. "
+              infoLabel="The amount of rewards earned by the entire network of Darknodes in the last Epoch. "
             >
               {previousSummed ? (
                 <>
@@ -146,7 +146,7 @@ export const DarknodeStatsPage = () => {
               highlight={true}
               big={true}
               icon={<RewardsIcon />}
-              infoLabel="Rewards earned in this current epoch so far by the entire Darknode network."
+              infoLabel="Rewards earned in this current Epoch so far by the entire Darknode network."
             >
               {currentSummed ? (
                 <>
@@ -177,9 +177,9 @@ export const DarknodeStatsPage = () => {
             nested={true}
             infoLabel={
               <>
-                An epoch is a recurring period of 30 days used for Darknode
+                An Epoch is a recurring period of 30 days used for Darknode
                 registration and for distributing rewards to Darknodes that have
-                been active for that entire epoch.
+                been active for that entire Epoch.
               </>
             }
           >
