@@ -14,9 +14,11 @@ export const NewsBanner: React.FC = () => {
   const [mediumPosts, setMediumPosts] = useState<MediumPost[]>([]);
 
   useEffect(() => {
-    fetchMediumPosts("renproject").then((posts) => {
-      setMediumPosts(posts.slice(0, take));
-    });
+    fetchMediumPosts("renproject")
+      .then((posts) => {
+        setMediumPosts(posts.slice(0, take));
+      })
+      .catch(console.error);
   }, []);
 
   const isNew = (timestamp: number): boolean => {

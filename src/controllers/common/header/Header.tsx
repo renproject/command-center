@@ -102,7 +102,7 @@ export const Header = () => {
       </Link>
       {renNetwork.name === "mainnet" ? (
         <div className="header--news">
-            <NewsBanner />
+          <NewsBanner />
         </div>
       ) : (
         <div className="new">
