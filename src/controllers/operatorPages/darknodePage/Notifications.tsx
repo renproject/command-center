@@ -55,7 +55,7 @@ export const Notifications: React.FC<Props> = ({
     isDefined(currentTime) && isDefined(timeUntilNextEpoch)
       ? naturalTime(currentTime + timeUntilNextEpoch.toNumber(), {
           prefix: "in",
-          message: "next epoch",
+          message: "next Epoch",
           countDown: true,
           showingSeconds: false,
         })
@@ -81,7 +81,7 @@ export const Notifications: React.FC<Props> = ({
   ) {
     notification = {
       title: "Deregistration in progress.",
-      detail: `Your darknode will be deregistered ${nextEpochReadable}. Your bond will be locked for another epoch after that.`,
+      detail: `Your darknode will be deregistered ${nextEpochReadable}. Your bond will be locked for another Epoch after that.`,
       type: NotificationType.Information,
     };
   } else if (
