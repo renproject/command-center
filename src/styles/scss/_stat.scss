@@ -93,6 +93,7 @@
     margin-top: -5px;
     // Bottom
     margin-bottom: 0px;
+
 }
 
 .stat--children--big {
@@ -114,7 +115,6 @@
         font-weight: 500;
         font-size: 16.2px;
         line-height: 19px;
-        margin-left: 10px;
 
         &::after {
             font-size: 14px !important;
@@ -123,6 +123,7 @@
 }
 
 .change-indicator {
+    display:inline-block;
     &.positive {
         color: $green;
 
@@ -142,6 +143,8 @@
 
     &::after {
         font-size: 24px;
+        display:inline-block;
+        transform: scaleY(0.8) translateY(1px);
     }
 }
 

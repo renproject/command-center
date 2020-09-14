@@ -1,3 +1,5 @@
+$table-radius: 4px;
+
 .integrators-page {
 
     &.container {
@@ -116,27 +118,52 @@
             color: #F9F9F9;
         }
 
-        &.integrators-top>tbody {
-            border-radius: 4px;
-        }
-
         &.integrators-top>tbody>tr {
             height: 60px;
             border: none;
-
             font-weight: bold;
             font-size: 13px;
             line-height: 15px;
+            color: #F9F9F9;
+
+            // reset bootstrap styling
+            background-color: transparent;
+            &:nth-child(odd) {
+                background-color: transparent;
+            }
+
+            &:not(:first-child) {
+                border-top: 2px solid #001B3A;
+            }
 
             &.integrator {
                 cursor: pointer;
+                &:first-child {
+                    td:first-child {
+                        border-top-left-radius: $table-radius;
+                    }
+                    td:last-child {
+                        border-top-right-radius: $table-radius;
+                    }
+                }
+                &:nth-last-child(2) {
+                    td:first-child {
+                        border-bottom-left-radius: $table-radius;
+                    }
+                    td:last-child {
+                        border-bottom-right-radius: $table-radius;
+                    }
+                }
             }
 
             &.integrator,
             &.empty-row {
-                background: #002148 !important;
+                td {
+                    background: #002148;
+                }
 
-                &:nth-of-type(4n + 1)>td {
+
+                &:nth-of-type(4n + 1) td {
                     background: #002044;
                 }
 
@@ -144,21 +171,10 @@
 
             &.integrator {
 
-                &:hover:nth-child(odd)>td,
-                &:hover>td {
-                    background: #012450 !important;
+                &:hover:nth-child(odd) td,
+                &:hover td {
+                    background: #012450;
                 }
-            }
-
-
-            /* identical to box height */
-
-            color: #F9F9F9;
-
-            background-color: #00000000 !important;
-
-            &:not(:first-child) {
-                border-top: 2px solid #001B3A;
             }
 
             &.integrator-extra {
@@ -253,7 +269,6 @@
             }
 
             &.integrator-extra-closed {
-                border-top: 0;
                 height: 0;
                 border-top-width: 0;
                 max-height: 0;

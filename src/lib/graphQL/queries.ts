@@ -37,7 +37,7 @@ export interface PeriodData {
 }
 
 export interface Integrator {
-  "__typename": "Integrator";
+  __typename: "Integrator";
   id: string; // "0x3973b2acdfac17171315e49ef19a0758b8b6f104";
   contractAddress: string; // "0x3973b2acdfac17171315e49ef19a0758b8b6f104";
   txCountBTC: string; // "12";
@@ -52,24 +52,33 @@ export interface Integrator {
 }
 
 export const QUERY_INTEGRATORS = gql`
-query getIntegrators($offset: Int, $count: Int) {
-    integrators(orderBy: volumeBTC, orderDirection: desc, first: $count, skip: $offset, where: { date: 0 }) {
-    id
-    contractAddress
-    txCountBTC
-    lockedBTC
-    volumeBTC
-    txCountZEC
-    lockedZEC
-    volumeZEC
-    txCountBCH
-    lockedBCH
-    volumeBCH
+  query getIntegrators($offset: Int, $count: Int) {
+    integrators(
+      orderBy: volumeBTC
+      orderDirection: desc
+      first: $count
+      skip: $offset
+      where: { date: 0 }
+    ) {
+      id
+      contractAddress
+      txCountBTC
+      lockedBTC
+      volumeBTC
+      txCountZEC
+      lockedZEC
+      volumeZEC
+      txCountBCH
+      lockedBCH
+      volumeBCH
+    }
   }
-}
 `;
 
-export const QUERY_INTEGRATORS_HISTORY = (id: string, block: number) => `  integrator_${id}: integrator(id: "${id}", block: { number: ${block} }) {
+export const QUERY_INTEGRATORS_HISTORY = (
+  id: string,
+  block: number
+) => `  integrator_${id}: integrator(id: "${id}", block: { number: ${block} }) {
   id
   contractAddress
   txCountBTC
@@ -83,12 +92,11 @@ export const QUERY_INTEGRATORS_HISTORY = (id: string, block: number) => `  integ
   volumeBCH
 }`;
 
-
 export const QUERY_BLOCK = gql`
-{
-  renVM(id: "1") {
-    activeBlock
-    activeTimestamp
+  {
+    renVM(id: "1") {
+      activeBlock
+      activeTimestamp
+    }
   }
-}
 `;
