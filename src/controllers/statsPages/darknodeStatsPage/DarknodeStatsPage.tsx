@@ -88,7 +88,7 @@ export const DarknodeStatsPage = () => {
                         message="Reward Period/EPOCH Ends"
                         highlight={true}
                         nested={true}
-                        infoLabel={<>An epoch is a recurring period of 30 days used for Darknode registration and for distributing rewards to Darknodes that have been active for that entire epoch.</>}
+                        infoLabel={<>An epoch is a recurring period of 28 days used for Darknode registration and for distributing rewards to Darknodes that have been active for that entire epoch.</>}
                     >
                         <EpochProgress small={true} timeSinceLastEpoch={timeSinceLastEpoch} timeUntilNextEpoch={timeUntilNextEpoch} minimumEpochInterval={minimumEpochInterval} />
                     </Stat>
