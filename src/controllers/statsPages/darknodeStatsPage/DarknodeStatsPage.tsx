@@ -202,7 +202,6 @@ export const DarknodeStatsPage = () => {
               <p>
                 Version published <b>{latestCLIVersionDaysAgo}</b>
               </p>
-
             </div>
             <ExternalLink href="https://github.com/renproject/darknode-cli">
               <button className="darknode-cli--button button">
