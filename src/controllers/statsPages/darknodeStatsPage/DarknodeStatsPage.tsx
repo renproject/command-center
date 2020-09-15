@@ -165,7 +165,6 @@ export const DarknodeStatsPage = () => {
           </Stats>
         </Stat>
       </Stats>
-
       <div className="overview--bottom">
         <DarknodeMap />
         <Stats className="overview--bottom--right">
@@ -177,7 +176,7 @@ export const DarknodeStatsPage = () => {
             nested={true}
             infoLabel={
               <>
-                An Epoch is a recurring period of 30 days used for Darknode
+                An Epoch is a recurring period of 28 days used for Darknode
                 registration and for distributing rewards to Darknodes that have
                 been active for that entire Epoch.
               </>
