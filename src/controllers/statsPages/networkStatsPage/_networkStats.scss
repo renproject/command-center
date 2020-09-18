@@ -154,6 +154,12 @@
 .collateral-status {
   .info-label {
     margin-left: 5px;
+    .info-label--icon {
+      width: 22px;
+      height: 22px;
+      margin-bottom: 0;
+      margin-left:0;
+    }
   }
 
   .info-label--message {
