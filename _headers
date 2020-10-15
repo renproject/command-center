@@ -7,7 +7,7 @@
 # unsafe-inline largely makes this moot,
 # but is required for metamask to work in Firefox,
 # this should be tracked until resolved
-  Content-Security-Policy: script-src 'self' 'unsafe-inline'
+# Content-Security-Policy: script-src 'self' 'unsafe-inline'
 # Always follow mime-types provided from server
   X-Content-Type-Options: "nosniff" always
 # Don't include referrer headers to external links
