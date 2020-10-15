@@ -1,45 +1,59 @@
 import "./styles/index.scss";
 
-import * as React from "react";
 import * as ReactDOM from "react-dom";
 
-import { Route, Router, Switch } from "react-router-dom";
+import React from "react";
+import { Router } from "react-router-dom";
 
-import { App } from "./components/App";
-import { Connect } from "./components/common/Connect";
-import { _catch_ } from "./components/common/ErrorBoundary";
-import { DEFAULT_REN_NETWORK, NODE_ENV } from "./lib/react/environmentVariables";
+import { App } from "./controllers/App";
+import { Connect } from "./controllers/common/Connect";
+import { ErrorBoundary } from "./controllers/common/ErrorBoundary";
+import {
+  DEFAULT_REN_NETWORK,
+  NODE_ENV,
+} from "./lib/react/environmentVariables";
 import { history } from "./lib/react/history";
 import { onLoad } from "./lib/react/onLoad";
 
-// import { persistor, store } from "./store/configureStore";
-
 // Redirect to https if we aren't serving locally
 if (NODE_ENV !== "development") {
-    const loc = window.location.href + "";
+  const loc = window.location.href + "";
+  // tslint:disable-next-line: no-http-string
+  if (loc.indexOf("http://") === 0) {
+    console.warn("Redirecting to use TLS");
     // tslint:disable-next-line: no-http-string
-    if (loc.indexOf("http://") === 0) {
-        console.warn("Redirecting to use TLS");
-        // tslint:disable-next-line: no-http-string
-        window.location.href = loc.replace("http://", "https://");
-    }
+    window.location.href = loc.replace("http://", "https://");
+  }
 }
 
-onLoad(`Command Center${DEFAULT_REN_NETWORK !== "mainnet" ? " (" + DEFAULT_REN_NETWORK + ")" : ""}`);
-
-ReactDOM.render(
-    _catch_(
-        <Router history={history}>
-            <Connect>
-                <Switch>
-                    {/* We add the routes here as well as in App so that App has access to the URL parameters */}
-                    <Route path="/darknode/:darknodeID" exact component={App} />
-                    <Route component={App} />
-                    {/* Don't add extra routes here - add them in App */}
-                </Switch>
-            </Connect>
-        </Router>,
-        { popup: true },
-    ),
-    document.getElementById("root") as HTMLElement
+onLoad(
+  `Command Center${
+    DEFAULT_REN_NETWORK !== "mainnet" ? " (" + DEFAULT_REN_NETWORK + ")" : ""
+  }`
 );
+
+const render = (Component: () => JSX.Element) => {
+  ReactDOM.render(
+    <ErrorBoundary popup={true}>
+      <Router history={history}>
+        <Connect>
+          <Component />
+        </Connect>
+      </Router>
+    </ErrorBoundary>,
+    document.getElementById("root") as HTMLElement
+  );
+};
+
+render(App);
+
+// Enable hot-reloading in development environment.
+
+// tslint:disable-next-line: no-any
+if ((module as any).hot) {
+  // tslint:disable-next-line: no-any
+  (module as any).hot.accept("./controllers/App", () => {
+    const NextApp = require("./controllers/App").App;
+    render(NextApp);
+  });
+}

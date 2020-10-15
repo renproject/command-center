@@ -1,0 +1,349 @@
+$table-radius: 4px;
+
+.integrators-page {
+
+    &.container {
+        margin-top: 60px;
+    }
+
+    >div {
+        width: 100%;
+        padding: 10px;
+    }
+
+    &.container {
+        max-width: 2200px;
+        display: flex;
+        flex-flow: wrap;
+    }
+
+    .integrators-bottom {
+        display: flex;
+        justify-content: space-between;
+
+        .integrators-bottom-left {
+            display: flex;
+
+            input {
+                border: none;
+                background: none;
+                border-bottom: 1px solid #979797;
+                color: white;
+
+                &::placeholder {
+                    font-weight: 500;
+                    font-size: 14px;
+
+                    color: #FFFFFF;
+
+                    mix-blend-mode: normal;
+                    opacity: 0.6;
+                }
+            }
+        }
+
+        .integrators-bottom-right {
+
+            button {
+                background: none;
+                border: 1px solid #006FE8;
+                border-radius: 4px;
+                width: 30px;
+                min-width: 30px;
+                height: 30px;
+
+                &+button {
+                    margin-left: 5px;
+                }
+
+                &:disabled {
+                    opacity: 0.5;
+                }
+            }
+        }
+    }
+
+    .integrators-large {
+        @media (max-width: $max-xs) {
+            display: none;
+        }
+    }
+
+    table {
+
+        a {
+            font-weight: normal;
+            font-size: 13px;
+
+            text-decoration: none;
+
+            color: #F9F9F9;
+
+            mix-blend-mode: normal;
+            opacity: 0.8;
+
+            border: 1px solid transparent;
+
+            border-radius: 4px;
+            padding: 4px;
+            margin-left: -4px;
+
+            &:hover,
+            &:active {
+                border: 1px dashed $primary;
+            }
+        }
+
+        .col-0 {
+            @media (min-width: $min-lg) {
+                width: 60px;
+            }
+
+            text-align: center;
+        }
+
+        .col-2 {
+            width: 540px;
+        }
+
+
+        thead,
+        thead>tr,
+        thead>tr>th {
+            border: none;
+            text-transform: uppercase;
+            font-weight: bold;
+            font-size: 13px;
+
+            color: #F9F9F9;
+        }
+
+        &.integrators-top>tbody>tr {
+            height: 60px;
+            border: none;
+            font-weight: bold;
+            font-size: 13px;
+            line-height: 15px;
+            color: #F9F9F9;
+
+            // reset bootstrap styling
+            background-color: transparent;
+            &:nth-child(odd) {
+                background-color: transparent;
+            }
+
+            &:not(:first-child) {
+                border-top: 2px solid #001B3A;
+            }
+
+            &.integrator {
+                cursor: pointer;
+                &:first-child {
+                    td:first-child {
+                        border-top-left-radius: $table-radius;
+                    }
+                    td:last-child {
+                        border-top-right-radius: $table-radius;
+                    }
+                }
+                &:nth-last-child(2) {
+                    td:first-child {
+                        border-bottom-left-radius: $table-radius;
+                    }
+                    td:last-child {
+                        border-bottom-right-radius: $table-radius;
+                    }
+                }
+            }
+
+            &.integrator,
+            &.empty-row {
+                td {
+                    background: #002148;
+                }
+
+
+                &:nth-of-type(4n + 1) td {
+                    background: #002044;
+                }
+
+            }
+
+            &.integrator {
+
+                &:hover:nth-child(odd) td,
+                &:hover td {
+                    background: #012450;
+                }
+            }
+
+            &.integrator-extra {
+
+                .titled-block {
+                    margin: 10px 0;
+                }
+
+                >td {
+                    padding: 0;
+                }
+
+                .integrators-extra--stats {
+                    display: flex;
+                    flex-wrap: wrap;
+                    flex: 1;
+
+                    @media (min-width: $min-lg) {
+                        .integrators-extra--stats {
+                            margin: 5px;
+                            margin-right: 0;
+
+                            .titled-block {
+                                margin: 5px;
+                                margin-right: 0;
+                            }
+                        }
+                    }
+
+                    .titled-block {
+                        margin: 10px 0;
+                        min-width: calc(100% - 10px);
+
+                        @media (min-width: $min-lg) {
+                            min-width: 400px;
+                        }
+
+                        @media (min-width: $min-xl) {
+                            min-width: 500px;
+                        }
+
+                        flex: 1;
+                    }
+                }
+
+                .integrator-extra--title {
+                    display: flex;
+                    align-items: center;
+
+                    h1 {
+                        margin: 0;
+                        margin-left: 20px;
+                    }
+                }
+
+                td {
+                    transition: height 200ms;
+
+                    @media (max-width: $max-md) {
+                        max-width: 180px;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                    }
+                }
+
+
+                overflow: hidden;
+
+                table {
+                    @media (min-width: $min-md) {
+                        margin: 0 10px;
+                    }
+                }
+
+                table,
+                table tr,
+                table td {
+                    background: transparent;
+                    border: none;
+                }
+
+                table td {
+                    white-space: nowrap;
+                    font-weight: 600;
+
+                    &:last-child {
+                        width: 99%;
+                        font-weight: 500;
+                    }
+                }
+            }
+
+            &.integrator-extra-closed {
+                height: 0;
+                border-top-width: 0;
+                max-height: 0;
+
+                * {
+                    height: 0;
+                    overflow: hidden;
+                }
+            }
+
+            img {
+                max-height: 33px;
+                max-width: 33px;
+            }
+
+            .img-wrapper {
+                width: 33px;
+                height: 33px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .integrator-name {
+                height: 35px;
+                margin-top: 3px;
+
+
+                span {
+                    font-family: monospace;
+                }
+
+                p {
+                    margin-top: 4px;
+                }
+            }
+
+            &.empty-row td {
+                padding: 0 20px;
+                text-align: center;
+                font-weight: 500;
+            }
+        }
+
+
+        @media (max-width: $max-sm) {
+
+            .integrator-name,
+            .integrator-name p {
+                max-width: 150px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+        }
+
+        @media (max-width: $max-xs) {
+
+            .col-0,
+            .col-3 {
+                display: none;
+            }
+
+            .col-1 {
+                max-width: 53px;
+            }
+
+            .integrator-name {
+                max-width: 100px;
+            }
+
+            &.integrators-top>tbody>tr {
+                border-top-width: 1px;
+            }
+        }
+
+    }
+}

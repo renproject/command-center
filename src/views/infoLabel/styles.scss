@@ -1,21 +1,19 @@
-$icon-size: 12px;
+$icon-size: 14px;
+$tooltip-width: 260px;
 
 .info-label {
     margin-left: 5px;
     position: relative;
-
-    &,
-    * {
-        font-size: 13px;
-    }
+    display: flex;
+    align-items: center;
+    align-self: center;
 
     &.info-label-bottom {
         .info-label--message:after {
-            border-bottom-color: #ffffff;
             border-width: 7px;
             margin-left: -1px;
             bottom: 100%;
-            border-color: transparent transparent white transparent;
+            border-bottom-color: #ffffff;
         }
     }
 }
@@ -23,10 +21,10 @@ $icon-size: 12px;
 .info-label--icon {
     background-size: contain;
     background-repeat: no-repeat;
-    height: $icon-size;
     width: $icon-size;
-    margin-top: 4px;
+    height: $icon-size;
     cursor: pointer;
+    margin-bottom: 2px; // hoist by 2 px to be visually centered for uppercased labels
 }
 
 .info-label--active {
@@ -43,22 +41,23 @@ $icon-size: 12px;
 }
 
 .info-label--message {
+    font-size: 13px;
     line-height: initial;
+    letter-spacing: normal;
     text-align: center;
     background-color: white;
     color: #3F3F48;
     padding: 15px;
     border-radius: 4px;
     position: absolute;
-    width: 260px;
     display: none;
     transition: all 0.2s;
     z-index: 100;
 
     top: 100%;
-    margin-top: 7px;
-
-    margin-left: -130px;
+    margin-top: $icon-size / 2 + 1;
+    width: $tooltip-width;
+    margin-left: -$tooltip-width / 2;
 
     &::after {
         left: 50%;

@@ -1,13 +1,12 @@
 import { ApolloClient, gql } from "apollo-boost";
 import BigNumber from "bignumber.js";
 
-import { SECONDS } from "../../../components/common/BackgroundTasks";
+import { SECONDS } from "../../../controllers/common/BackgroundTasks";
 import { Ox } from "../../ethereum/contractReads";
 
 export interface Epoch {
   epochhash: string;
   timestamp: BigNumber;
-
 
   rewardShareBTC: BigNumber;
   rewardShareZEC: BigNumber;
@@ -15,7 +14,7 @@ export interface Epoch {
 }
 
 interface RawRenVM {
-  "__typename": "Integrator";
+  __typename: "Integrator";
   numberOfDarknodes: string;
   numberOfDarknodesLastEpoch: string;
   numberOfDarknodesNextEpoch: string;
@@ -83,7 +82,7 @@ const QUERY_RENVM = gql`
       numberOfDarknodesNextEpoch
       minimumBond
       minimumEpochInterval
-    #   currentCyclePayoutPercent
+      #   currentCyclePayoutPercent
       deregistrationInterval
       totalTxCountBTC
       totalLockedBTC
@@ -112,42 +111,69 @@ const QUERY_RENVM = gql`
       previousCycle
     }
   }
-  `;
+`;
 
-export const queryRenVM = async (client: ApolloClient<object>): Promise<RenVM> => {
-  const response = await client
-    .query<{ renVM: RawRenVM }>({
-      query: QUERY_RENVM,
-    });
+export const queryRenVM = async (
+  client: ApolloClient<object>
+): Promise<RenVM> => {
+  const response = await client.query<{ renVM: RawRenVM }>({
+    query: QUERY_RENVM,
+  });
 
-  const newMinimumEpochInterval = new BigNumber(response.data.renVM.minimumEpochInterval);
+  const newMinimumEpochInterval = new BigNumber(
+    response.data.renVM.minimumEpochInterval
+  );
 
   const currentEpoch = {
     epochhash: Ox(new BigNumber(response.data.renVM.currentEpoch.epochhash)),
     timestamp: new BigNumber(response.data.renVM.currentEpoch.timestamp),
-    rewardShareBTC: new BigNumber(response.data.renVM.currentEpoch.rewardShareBTC),
-    rewardShareZEC: new BigNumber(response.data.renVM.currentEpoch.rewardShareZEC),
-    rewardShareBCH: new BigNumber(response.data.renVM.currentEpoch.rewardShareBCH),
+    rewardShareBTC: new BigNumber(
+      response.data.renVM.currentEpoch.rewardShareBTC
+    ),
+    rewardShareZEC: new BigNumber(
+      response.data.renVM.currentEpoch.rewardShareZEC
+    ),
+    rewardShareBCH: new BigNumber(
+      response.data.renVM.currentEpoch.rewardShareBCH
+    ),
   };
 
   const previousEpoch = {
     epochhash: Ox(new BigNumber(response.data.renVM.previousEpoch.epochhash)),
     timestamp: new BigNumber(response.data.renVM.previousEpoch.timestamp),
-    rewardShareBTC: new BigNumber(response.data.renVM.currentEpoch.rewardShareBTC),
-    rewardShareZEC: new BigNumber(response.data.renVM.currentEpoch.rewardShareZEC),
-    rewardShareBCH: new BigNumber(response.data.renVM.currentEpoch.rewardShareBCH),
+    rewardShareBTC: new BigNumber(
+      response.data.renVM.currentEpoch.rewardShareBTC
+    ),
+    rewardShareZEC: new BigNumber(
+      response.data.renVM.currentEpoch.rewardShareZEC
+    ),
+    rewardShareBCH: new BigNumber(
+      response.data.renVM.currentEpoch.rewardShareBCH
+    ),
   };
 
   const now = Math.floor(new Date().getTime() / SECONDS);
-  const timeUntilNextEpoch = BigNumber.max(newMinimumEpochInterval.minus((new BigNumber(now).minus(currentEpoch.timestamp))), 0);
-  const timeSinceLastEpoch = BigNumber.max(new BigNumber(now).minus(currentEpoch.timestamp), 0);
+  const timeUntilNextEpoch = BigNumber.max(
+    newMinimumEpochInterval.minus(
+      new BigNumber(now).minus(currentEpoch.timestamp)
+    ),
+    0
+  );
+  const timeSinceLastEpoch = BigNumber.max(
+    new BigNumber(now).minus(currentEpoch.timestamp),
+    0
+  );
 
   return {
     minimumBond: new BigNumber(response.data.renVM.minimumBond),
     minimumEpochInterval: newMinimumEpochInterval,
     numberOfDarknodes: new BigNumber(response.data.renVM.numberOfDarknodes),
-    numberOfDarknodesLastEpoch: new BigNumber(response.data.renVM.numberOfDarknodesLastEpoch),
-    numberOfDarknodesNextEpoch: new BigNumber(response.data.renVM.numberOfDarknodesNextEpoch),
+    numberOfDarknodesLastEpoch: new BigNumber(
+      response.data.renVM.numberOfDarknodesLastEpoch
+    ),
+    numberOfDarknodesNextEpoch: new BigNumber(
+      response.data.renVM.numberOfDarknodesNextEpoch
+    ),
     // currentCyclePayoutPercent: new BigNumber(response.data.renVM.currentCyclePayoutPercent),
     totalLockedBCH: new BigNumber(response.data.renVM.totalLockedBCH),
     totalLockedBTC: new BigNumber(response.data.renVM.totalLockedBTC),
@@ -164,13 +190,14 @@ export const queryRenVM = async (client: ApolloClient<object>): Promise<RenVM> =
     previousEpoch,
     currentCycle: Ox(new BigNumber(response.data.renVM.currentCycle)),
     previousCycle: Ox(new BigNumber(response.data.renVM.previousCycle)),
-    deregistrationInterval: new BigNumber(response.data.renVM.deregistrationInterval),
+    deregistrationInterval: new BigNumber(
+      response.data.renVM.deregistrationInterval
+    ),
   };
 };
 
-
 export interface RawRenVMHistoric {
-  "__typename": "RenVM";
+  __typename: "RenVM";
   totalTxCountBTC: string;
   totalLockedBTC: string;
   totalVolumeBTC: string;
@@ -182,7 +209,9 @@ export interface RawRenVMHistoric {
   totalVolumeBCH: string;
 }
 
-export const QUERY_RENVM_HISTORY = (block: number) => `  block_${block}: renVM(id: "1", block: { number: ${block} }) {
+export const QUERY_RENVM_HISTORY = (
+  block: number
+) => `  block_${block}: renVM(id: "1", block: { number: ${block} }) {
     totalTxCountBTC
     totalLockedBTC
     totalVolumeBTC
