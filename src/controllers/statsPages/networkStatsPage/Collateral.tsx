@@ -258,7 +258,7 @@ export const Collateral: React.FC<Props> = ({
           }
           big={true}
         >
-          0.1%
+          0.2%
         </Stat>
         <Stat
           className="collateral-stat stat--extra-big"
