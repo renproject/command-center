@@ -56,7 +56,7 @@ export const NetworkStats = () => {
   } = NetworkStatsContainer.useContainer();
   const quoteVolumePeriod = quotePeriodSeries.get(volumePeriod);
   const quoteLockedPeriod = quotePeriodSeries.get(lockedPeriod);
-  const [totalVolumePercentChange, totalLockedPercentChange] = useMemo(() => {
+  const [, totalLockedPercentChange] = useMemo(() => {
     const volumeChange = getPeriodPercentChange(
       volumePeriod,
       "quoteTotalVolume",
@@ -112,14 +112,14 @@ export const NetworkStats = () => {
                       ).toFormat(2)}
                     </span>
                   </span>
-                  {totalVolumePercentChange !== null && (
-                    <Change
-                      className="stat--children--diff"
-                      change={totalVolumePercentChange.toFormat(2)}
-                    >
-                      %
-                    </Change>
-                  )}
+                  {/*{totalVolumePercentChange !== null && (*/}
+                  {/*  <Change*/}
+                  {/*    className="stat--children--diff hidden"*/}
+                  {/*    change={totalVolumePercentChange.toFormat(2)}*/}
+                  {/*  >*/}
+                  {/*    %*/}
+                  {/*  </Change>*/}
+                  {/*)}*/}
                 </div>
               ) : (
                 <Loading alt />
