@@ -1,7 +1,8 @@
 import { Currency, Loading } from "@renproject/react-components";
 import HighchartsReact from "highcharts-react-official";
 import Highcharts from "highcharts/highstock";
-import React, { useEffect, useState } from "react";
+import React, { Ref, useEffect, useState } from "react";
+import useResizeObserver from "use-resize-observer";
 
 import { QuotePeriodResponse } from "../../../lib/graphQL/volumes";
 
@@ -40,7 +41,8 @@ export enum GraphType {
 const getOptions = (
   data: Array<[number, number]>,
   quoteCurrency: Currency,
-  graphType: GraphType
+  graphType: GraphType,
+  width: number = 400
 ) => ({
   rangeSelector: {
     // selected: 1
@@ -55,7 +57,7 @@ const getOptions = (
 
   chart: {
     backgroundColor: null,
-    width: 400,
+    width,
   },
 
   yAxis: [
@@ -110,6 +112,7 @@ export const HistoryChart: React.FC<Props> = ({
 }) => {
   // tslint:disable-next-line: no-any
   const [options, setOptions] = useState<any | null>(null);
+  const { ref, width = 400 } = useResizeObserver();
 
   const cachedSeries = periodSeries && periodSeries.historic;
 
@@ -122,14 +125,19 @@ export const HistoryChart: React.FC<Props> = ({
             parseInt(item[`quote${graphType}`], 10),
           ]),
           quoteCurrency,
-          graphType
+          graphType,
+          width
         )
       );
     }
-  }, [graphType, cachedSeries, quoteCurrency]);
+  }, [graphType, cachedSeries, quoteCurrency, width]);
 
   return (
-    <div className="overview--chart--outer" style={{ maxWidth: "100%" }}>
+    <div
+      className="overview--chart--outer"
+      style={{ maxWidth: "100%" }}
+      ref={ref as Ref<HTMLDivElement>}
+    >
       <div className="volume--chart highcharts--with-outside-tooltip">
         {cachedSeries ? (
           <>
