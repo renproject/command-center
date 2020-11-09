@@ -8,11 +8,11 @@ import { createContainer } from "unstated-next";
 import { AllTokenDetails, Token } from "../../../lib/ethereum/tokens";
 import { isDefined } from "../../../lib/general/isDefined";
 import {
-  getVolumes,
-  normalizeSeriesVolumes,
-  PeriodResponse,
-  PeriodType,
-  QuotePeriodResponse,
+    getVolumes,
+    normalizeSeriesVolumes,
+    PeriodType,
+    QuoteSeriesData,
+    SeriesData,
 } from "../../../lib/graphQL/volumes";
 import { GraphContainer } from "../../../store/graphContainer";
 import { NetworkContainer } from "../../../store/networkContainer";
@@ -81,10 +81,10 @@ const useNetworkStatsContainer = () => {
               ? state.value
                   .reduce(
                     (sum, utxo) => sum.plus(utxo.amount || "0"),
-                    new BigNumber(0)
+                    new BigNumber(0),
                   )
                   .toFixed()
-              : 0
+              : 0,
           ).div(new BigNumber(Math.pow(10, decimals)));
 
           lockedBalances = lockedBalances.set(token, amount.times(price));
@@ -96,7 +96,7 @@ const useNetworkStatsContainer = () => {
   }
 
   lockedBalances = lockedBalances.sortBy((_value, key) =>
-    Object.keys(Token).indexOf(key)
+    Object.keys(Token).indexOf(key),
   );
 
   const renTokenPriceMap = tokenPrices && tokenPrices.get(Token.REN, null);
@@ -111,12 +111,12 @@ const useNetworkStatsContainer = () => {
   const [volumePeriod, setVolumePeriod] = useState<PeriodType>(PeriodType.ALL);
   const [lockedPeriod, setLockedPeriod] = useState<PeriodType>(PeriodType.ALL);
 
-  const [volumeTab, setVolumeTab] = useState<StatTab>(StatTab.DigitalAssets);
+  const [volumeTab, setVolumeTab] = useState<StatTab>(StatTab.History);
   const [lockedTab, setLockedTab] = useState<StatTab>(StatTab.History);
 
   const [periodSeries, setPeriodSeries] = useState<
-    Map<PeriodType, PeriodResponse | null | undefined>
-  >(Map<PeriodType, PeriodResponse | null | undefined>());
+    Map<PeriodType, SeriesData | null | undefined>
+  >(Map<PeriodType, SeriesData | null | undefined>());
   // periodSeriesUpdated indicated whether the quote values should be
   // recalculated for the period series.
   const [periodSeriesUpdated, setPeriodSeriesUpdated] = useState<
@@ -133,13 +133,13 @@ const useNetworkStatsContainer = () => {
       for (const period of [volumePeriod, lockedPeriod]) {
         if (periodSeries.get(period) === undefined) {
           setPeriodSeries((currentPeriodSeries) =>
-            currentPeriodSeries.set(period, null)
+            currentPeriodSeries.set(period, null),
           );
           setPeriodSeriesUpdated((currentPeriodSeriesUpdated) =>
-            currentPeriodSeriesUpdated.set(period, true)
+            currentPeriodSeriesUpdated.set(period, true),
           );
 
-          let response: PeriodResponse;
+          let response: SeriesData;
           try {
             response = await getVolumes(renNetwork, client, period);
           } catch (error) {
@@ -148,10 +148,10 @@ const useNetworkStatsContainer = () => {
 
           // periodSeries = ;
           setPeriodSeries((currentPeriodSeries) =>
-            currentPeriodSeries.set(period, response)
+            currentPeriodSeries.set(period, response),
           );
           setPeriodSeriesUpdated((currentPeriodSeriesUpdated) =>
-            currentPeriodSeriesUpdated.set(period, true)
+            currentPeriodSeriesUpdated.set(period, true),
           );
         }
       }
@@ -160,8 +160,8 @@ const useNetworkStatsContainer = () => {
   }, [volumePeriod, lockedPeriod]);
 
   const [quotePeriodSeries, setQuotePeriodSeries] = useState<
-    Map<PeriodType, QuotePeriodResponse>
-  >(Map<PeriodType, QuotePeriodResponse>());
+    Map<PeriodType, QuoteSeriesData>
+  >(Map<PeriodType, QuoteSeriesData>());
   useEffect(() => {
     for (const period of [
       PeriodType.DAY,
@@ -183,12 +183,12 @@ const useNetworkStatsContainer = () => {
             normalizeSeriesVolumes(
               individualPeriodSeries,
               tokenPrices,
-              quoteCurrency
-            )
-          )
+              quoteCurrency,
+            ),
+          ),
         );
         setPeriodSeriesUpdated((currentPeriodSeriesUpdated) =>
-          currentPeriodSeriesUpdated.set(period, false)
+          currentPeriodSeriesUpdated.set(period, false),
         );
       }
     }
@@ -199,24 +199,18 @@ const useNetworkStatsContainer = () => {
   const allPeriod = quotePeriodSeries.get(PeriodType.ALL);
   let mintedTotal = new BigNumber(0);
   if (allPeriod) {
-    mintedTotal = new BigNumber(allPeriod.average.quoteTotalLocked);
+    mintedTotal = new BigNumber(allPeriod.difference.quoteLockedTotal || "0");
   }
-
-  const volumePeriodSeries = quotePeriodSeries.get(volumePeriod);
-  const lockedPeriodSeries = quotePeriodSeries.get(lockedPeriod);
-  // const valueLockedOrAll = lockedPeriodSeries || quotePeriodSeries.get(PeriodType.ALL);
 
   return {
     volumePeriod,
     setVolumePeriod,
-    volumePeriodSeries,
     quoteCurrency,
     volumeTab,
     lockedPeriod,
     setLockedPeriod,
     setVolumeTab,
     quotePeriodSeries,
-    lockedPeriodSeries,
     lockedTab,
     setLockedTab,
     total,

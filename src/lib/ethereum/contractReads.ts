@@ -1,6 +1,6 @@
+import { ApolloClient } from "@apollo/react-hooks";
 import { RenNetworkDetails } from "@renproject/contracts";
 import { Currency } from "@renproject/react-components";
-import { ApolloClient } from "apollo-boost";
 import BigNumber from "bignumber.js";
 import { OrderedMap, OrderedSet } from "immutable";
 import Web3 from "web3";
@@ -80,7 +80,7 @@ const retrieveDarknodesInLogs = async (
   web3: Web3,
   renNetwork: RenNetworkDetails,
   fromBlock: string | number,
-  operatorAddress: string
+  operatorAddress: string,
 ) => {
   let darknodes = OrderedSet();
 
@@ -125,7 +125,7 @@ const retrieveDarknodesInLogs = async (
     ],
   });
   recentRegistrationEvents = recentRegistrationEvents.concat(
-    recentRegistrationEvents2
+    recentRegistrationEvents2,
   );
   for (const event of recentRegistrationEvents) {
     // The log data returns back like this:
@@ -140,14 +140,14 @@ const retrieveDarknodesInLogs = async (
     let operator;
     if (event.topics.length === 3) {
       darknodeID = toChecksumAddress(
-        `0x${(event.topics[2] as string).substr(start, addressLength)}`
+        `0x${(event.topics[2] as string).substr(start, addressLength)}`,
       );
       operator = toChecksumAddress(
-        `0x${(event.topics[1] as string).substr(start, addressLength)}`
+        `0x${(event.topics[1] as string).substr(start, addressLength)}`,
       );
     } else {
       darknodeID = toChecksumAddress(
-        `0x${event.data.substr(start, addressLength)}`
+        `0x${event.data.substr(start, addressLength)}`,
       );
     }
     darknodes = darknodes.add({ darknodeID, operator });
@@ -187,7 +187,7 @@ export const getOperatorDarknodes = async (
   renNetwork: RenNetworkDetails,
   operatorAddress: string,
   reportProgress?: (progress: number, total: number) => void,
-  onDarknode?: (darknodeID: string) => void
+  onDarknode?: (darknodeID: string) => void,
 ): Promise<OrderedSet<string>> => {
   let darknodes = OrderedSet();
 
@@ -198,7 +198,7 @@ export const getOperatorDarknodes = async (
   const fromBlock = renNetwork.addresses.ren.DarknodeRegistry.block || "0x00";
 
   darknodes = darknodes.concat(
-    await retrieveDarknodesInLogs(web3, renNetwork, fromBlock, operatorAddress)
+    await retrieveDarknodesInLogs(web3, renNetwork, fromBlock, operatorAddress),
   );
 
   const operatorPromises = darknodes
@@ -221,11 +221,11 @@ export const getOperatorDarknodes = async (
                 await darknodeRegistry.methods
                   .getDarknodeOperator(darknodeID)
                   .call(/**/),
-              2
+              2,
             ),
           ] as [string, string];
         }
-      }
+      },
     )
     .toArray();
 
@@ -261,7 +261,7 @@ export const getOperatorDarknodes = async (
 // Sum up fees into the total ETH value (in wei).
 export const sumUpFeeMap = (
   feesEarned: OrderedMap<Token, BigNumber | null>,
-  tokenPrices: TokenPrices
+  tokenPrices: TokenPrices,
 ): [BigNumber | null, OrderedMap<Token, BigNumber | null>] => {
   // let totalEth: BigNumber | null = null;
 
@@ -306,7 +306,7 @@ const getBalances = async (
   web3: Web3,
   renNetwork: RenNetworkDetails,
   darknode: Darknode | null,
-  darknodeID: string
+  darknodeID: string,
 ): Promise<OrderedMap<Token, BigNumber>> => {
   const darknodePayment = getDarknodePayment(web3, renNetwork);
 
@@ -329,16 +329,16 @@ const getBalances = async (
             await darknodePayment.methods
               .darknodeBalances(
                 darknodeID,
-                renNetwork.addresses.tokens[token].address
+                renNetwork.addresses.tokens[token].address,
               )
               .call(/**/),
-          2
+          2,
         );
         tokenBalance = new BigNumber((balance1Call || "0").toString());
       } catch (error) {
         catchBackgroundException(
           error,
-          "Error in contractReads > darknodeBalances"
+          "Error in contractReads > darknodeBalances",
         );
         tokenBalance = new BigNumber(0);
       }
@@ -352,7 +352,7 @@ const getBalances = async (
     {
       balance: new BigNumber(0),
       token: null,
-    }
+    },
   );
 
   for (const { balance, token } of balances.toArray()) {
@@ -374,7 +374,7 @@ export enum DarknodeFeeStatus {
 const getDarknodeCycleRewards = async (
   renVM: RenVM,
   darknode: Darknode | null,
-  registrationStatus: RegistrationStatus
+  registrationStatus: RegistrationStatus,
 ) => {
   // Cycle status ////////////////////////////////////////////////////////////
 
@@ -407,7 +407,7 @@ const getDarknodeCycleRewards = async (
   if (isDefined(renVM.previousCycle)) {
     cycleStatus = cycleStatus.set(
       renVM.previousCycle.toString(),
-      previousStatus
+      previousStatus,
     );
   }
 
@@ -435,7 +435,7 @@ export const fetchDarknodeDetails = async (
   web3: Web3,
   renNetwork: RenNetworkDetails,
   darknodeID: string,
-  tokenPrices: TokenPrices | null
+  tokenPrices: TokenPrices | null,
 ): Promise<DarknodesState> => {
   darknodeID = toChecksumAddress(darknodeID.toLowerCase());
 
@@ -450,20 +450,20 @@ export const fetchDarknodeDetails = async (
   const πEthBalance = web3.eth
     .getBalance(darknodeID)
     .then((ethBalanceBN) =>
-      ethBalanceBN ? new BigNumber(ethBalanceBN.toString()) : new BigNumber(0)
+      ethBalanceBN ? new BigNumber(ethBalanceBN.toString()) : new BigNumber(0),
     )
     .catch(() => null);
 
   // Call queryStats
   const πNodeStatistics = queryStat(
     getLightnode(renNetwork),
-    darknodeIDHexToBase58(darknodeID)
+    darknodeIDHexToBase58(darknodeID),
   ).catch((error) => /* ignore */ null);
 
   const πCycleStatuses = getDarknodeCycleRewards(
     renVM,
     darknode,
-    registrationStatus
+    registrationStatus,
   );
 
   // Get earned fees

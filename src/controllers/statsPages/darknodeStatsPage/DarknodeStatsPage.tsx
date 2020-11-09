@@ -71,7 +71,7 @@ export const DarknodeStatsPage = () => {
               {isDefined(numberOfDarknodes) ? (
                 <>
                   <span className="stat-amount--value">
-                    {numberOfDarknodes.toNumber()}
+                    {numberOfDarknodes.toFormat(0)}
                   </span>
                   {isDefined(numberOfDarknodesLastEpoch) ? (
                     <Change

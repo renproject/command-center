@@ -1,15 +1,13 @@
 import {
-  Currency,
-  CurrencyIcon,
-  Loading,
-  TokenIcon,
+    Currency,
+    CurrencyIcon,
+    Loading,
+    textCurrencyIcon,
+    TokenIcon,
 } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import React from "react";
 import { Doughnut } from "react-chartjs-2";
-
-import { QuotePeriodResponse } from "../../../lib/graphQL/volumes";
-import { textCurrencyIcon } from "./HistoryChart";
 
 const colors = [
   "#004CA0",
@@ -20,17 +18,17 @@ const colors = [
 ];
 
 interface Props {
-  periodSeries: QuotePeriodResponse | null | undefined;
+  data: { [token: string]: BigNumber } | null | undefined;
   quoteCurrency: Currency;
-  graphType: "Volume" | "Locked";
+  title: string;
 }
 
-export const TokenChart: React.FC<Props> = ({
-  periodSeries,
+export const DoughnutChart: React.FC<Props> = ({
+  data,
   quoteCurrency,
-  graphType,
+  title,
 }) => {
-  const tokens = ["BTC", "ZEC", "BCH"];
+  const tokens = data ? Object.keys(data) : undefined;
 
   return (
     <div
@@ -38,7 +36,7 @@ export const TokenChart: React.FC<Props> = ({
       style={{ maxWidth: "calc(100vw - 80px)" }}
     >
       <div className="overview--chart">
-        {periodSeries ? (
+        {data && tokens ? (
           <>
             <div
               className="overview--chart--canvas"
@@ -53,14 +51,7 @@ export const TokenChart: React.FC<Props> = ({
                   labels: tokens,
                   datasets: [
                     {
-                      data: tokens.map(
-                        (token) =>
-                          periodSeries.average[
-                            `quote${
-                              graphType === "Locked" ? "Total" : "Period"
-                            }${graphType}${token}`
-                          ]
-                      ),
+                      data: tokens.map((token) => data[token]),
                       backgroundColor: colors,
                       borderColor: "#001A38",
                       maintainAspectRation: true,
@@ -72,28 +63,25 @@ export const TokenChart: React.FC<Props> = ({
                   tooltips: {
                     callbacks: {
                       // tslint:disable-next-line: no-any
-                      title: (tooltipItem: any, data: any) => {
+                      title: (tooltipItem: any, line: any) => {
                         return (
-                          (graphType === "Volume"
-                            ? "Volume - "
-                            : "Value minted - ") +
-                          data.labels[tooltipItem[0].index]
+                          title + " - " + line.labels[tooltipItem[0].index]
                         );
                       },
                       // tslint:disable-next-line: no-any
-                      label: (tooltipItem: any, data: any) => {
-                        const dataset = data.datasets[0];
+                      label: (tooltipItem: any, line: any) => {
+                        const dataset = line.datasets[0];
                         const percent = dataset._meta[0]
                           ? Math.round(
                               (dataset.data[tooltipItem.index] /
                                 dataset._meta[0].total) *
-                                100
+                                100,
                             )
                           : undefined;
                         return `${textCurrencyIcon(
-                          quoteCurrency
+                          quoteCurrency,
                         )}${new BigNumber(
-                          data.datasets[0].data[tooltipItem.index]
+                          line.datasets[0].data[tooltipItem.index],
                         ).toFormat()} ${quoteCurrency.toUpperCase()}${
                           percent !== undefined ? ` - ${percent}%` : ""
                         }`;
@@ -120,7 +108,7 @@ export const TokenChart: React.FC<Props> = ({
             </div>
             <div className="overview--chart--legend">
               <div className="overview--chart--legend--table">
-                {periodSeries
+                {data && tokens
                   ? tokens.map((token) => {
                       return (
                         <div key={token}>
@@ -132,13 +120,7 @@ export const TokenChart: React.FC<Props> = ({
                             <CurrencyIcon currency={quoteCurrency} />
                             {/* <TokenBalance */}
                             {/* token={Token.ETH} */}
-                            {new BigNumber(
-                              periodSeries.average[
-                                `quote${
-                                  graphType === "Locked" ? "Total" : "Period"
-                                }${graphType}${token}`
-                              ]
-                            ).toFormat()}
+                            {data[token].toFormat()}
                             {/* convertTo={quoteCurrency} */}
                             {/* /> */}
                           </div>

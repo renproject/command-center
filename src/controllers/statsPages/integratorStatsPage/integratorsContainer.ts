@@ -1,6 +1,7 @@
-import { useApolloClient } from "@apollo/react-hooks";
+// tslint:disable: ordered-imports
+
+import { gql, useApolloClient } from "@apollo/react-hooks";
 import { RenNetworkDetails } from "@renproject/contracts";
-import { gql } from "apollo-boost";
 import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
 import moment from "moment";
@@ -8,10 +9,11 @@ import { useEffect, useMemo, useState } from "react";
 import { createContainer } from "unstated-next";
 
 import {
-  Integrator,
-  QUERY_BLOCK,
-  QUERY_INTEGRATORS,
-  QUERY_INTEGRATORS_HISTORY,
+    Integrator,
+    QUERY_BLOCK,
+    QUERY_INTEGRATORS,
+    QUERY_INTEGRATORS_HISTORY,
+    QueryBlockResponse,
 } from "../../../lib/graphQL/queries";
 import { getPeriodTimespan, PeriodType } from "../../../lib/graphQL/volumes";
 import { extractError } from "../../../lib/react/errors";
@@ -22,7 +24,7 @@ const DefaultLogo = require("../../../styles/images/integrators/default.png");
 
 const resolveIntegrator = (
   networkDetails: RenNetworkDetails,
-  address: string
+  address: string,
 ): { name: string; logo: string; urlHref: string; url: string } => {
   const details =
     (Integrators[networkDetails.name] &&
@@ -70,9 +72,11 @@ const useIntegratorsContainer = () => {
 
       if (integrators.get(page) === undefined) {
         setIntegrators((currentIntegrators) =>
-          currentIntegrators.set(page, null)
+          currentIntegrators.set(page, null),
         );
-        const response = await apollo.query<{ integrators: Integrator[] }>({
+        const response = await apollo.query<{
+          integrators: Integrator[];
+        }>({
           query: QUERY_INTEGRATORS,
           variables: {
             count: ROWS_PER_PAGE,
@@ -82,20 +86,15 @@ const useIntegratorsContainer = () => {
 
         const now = moment().unix();
 
-        const latestBlockResponse = await apollo.query<{
-          renVM: {
-            activeBlock: string;
-            activeTimestamp: string;
-          };
-        }>({
+        const latestBlockResponse = await apollo.query<QueryBlockResponse>({
           query: QUERY_BLOCK,
         });
 
         const activeBlock = new BigNumber(
-          latestBlockResponse.data.renVM.activeBlock
+          latestBlockResponse.data.renVM.activeBlock,
         ).toNumber();
         const activeTimestamp = new BigNumber(
-          latestBlockResponse.data.renVM.activeTimestamp
+          latestBlockResponse.data.renVM.activeTimestamp,
         ).toNumber();
 
         // TODO: Calculate dynamically or search for date in subgraph.
@@ -110,11 +109,11 @@ const useIntegratorsContainer = () => {
         // the first segment.
         const periodSecondsCount = getPeriodTimespan(
           PeriodType.DAY,
-          renNetwork
+          renNetwork,
         );
         const startingBlock = Math.floor(
           activeBlock -
-            (periodSecondsCount - (now - activeTimestamp)) / blockTime
+            (periodSecondsCount - (now - activeTimestamp)) / blockTime,
         );
 
         let integratorsWithDay: Array<{
@@ -130,8 +129,8 @@ const useIntegratorsContainer = () => {
                                   .map((integratorData) =>
                                     QUERY_INTEGRATORS_HISTORY(
                                       integratorData.id,
-                                      startingBlock
-                                    )
+                                      startingBlock,
+                                    ),
                                   )
                                   .join("\n")}
                         }
@@ -146,7 +145,7 @@ const useIntegratorsContainer = () => {
           integratorsWithDay = response.data.integrators.map((integrator) => {
             const integratorDay =
               Object.values(responseDay.data).filter(
-                (iDay: Integrator | null) => iDay && iDay.id === integrator.id
+                (iDay: Integrator | null) => iDay && iDay.id === integrator.id,
               )[0] || null;
             return { now: integrator, day: integratorDay };
           });
@@ -155,7 +154,7 @@ const useIntegratorsContainer = () => {
         // response.data.integrators
 
         setIntegrators((currentIntegrators) =>
-          currentIntegrators.set(page, integratorsWithDay)
+          currentIntegrators.set(page, integratorsWithDay),
         );
       }
     })().catch((error) => {
@@ -177,14 +176,14 @@ const useIntegratorsContainer = () => {
               !search ||
               resolveIntegrator(renNetwork, integrator.now.contractAddress)
                 .name.toLowerCase()
-                .includes(search.toLowerCase())
+                .includes(search.toLowerCase()),
           )
         : currentPage,
-    [currentPage, search, renNetwork]
+    [currentPage, search, renNetwork],
   );
 
   const [activeIntegrator, setActiveIntegrator] = useState(
-    null as string | null
+    null as string | null,
   );
 
   return {

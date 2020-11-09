@@ -1,13 +1,21 @@
-import { mainnet, RenNetwork, RenNetworkDetails } from "@renproject/contracts";
+import { ApolloClient, gql } from "@apollo/react-hooks";
+import {
+    renMainnet,
+    RenNetwork,
+    RenNetworkDetails,
+} from "@renproject/contracts";
 import { Currency } from "@renproject/react-components";
-import { ApolloClient, gql } from "apollo-boost";
 import BigNumber from "bignumber.js";
-import { List, Map } from "immutable";
+import { List, Map, OrderedMap } from "immutable";
 import moment from "moment";
 
 import { Token, TokenPrices } from "../ethereum/tokens";
-import { PeriodData, QUERY_BLOCK } from "./queries";
-import { QUERY_RENVM_HISTORY, RawRenVMHistoric } from "./queries/renVM";
+import {
+    PeriodData,
+    QUERY_BLOCK,
+    QUERY_RENVM_HISTORY,
+    RawRenVM,
+} from "./queries";
 
 export enum PeriodType {
   HOUR = "HOUR",
@@ -32,7 +40,7 @@ const getNetworkStart = (renNetwork: RenNetworkDetails) => {
 
 export const getPeriodTimespan = (
   type: string,
-  renNetwork: RenNetworkDetails = mainnet
+  renNetwork: RenNetworkDetails = renMainnet,
 ): number => {
   const minutes = 60; // 60 seconds
   const hours = 60 * minutes;
@@ -61,16 +69,16 @@ export const getPeriodTimespan = (
   }
 };
 
-export interface PeriodResponse {
-  historic: PeriodData[];
-  average: PeriodData;
+export interface SeriesData {
+  series: Array<Partial<PeriodData>>;
+  difference: Partial<PeriodData>;
 }
 
 export const getVolumes = async (
   renNetwork: RenNetworkDetails,
   client: ApolloClient<unknown>,
-  periodType: PeriodType
-): Promise<PeriodResponse> => {
+  periodType: PeriodType,
+): Promise<SeriesData> => {
   const now = moment().unix();
 
   const latestBlockResponse = await client.query<{
@@ -83,14 +91,14 @@ export const getVolumes = async (
   });
 
   const activeBlock = new BigNumber(
-    latestBlockResponse.data.renVM.activeBlock
+    latestBlockResponse.data.renVM.activeBlock,
   ).toNumber();
   const activeTimestamp = new BigNumber(
-    latestBlockResponse.data.renVM.activeTimestamp
+    latestBlockResponse.data.renVM.activeTimestamp,
   ).toNumber();
 
   // TODO: Calculate dynamically or search for date in subgraph.
-  const blockTime = renNetwork.isTestnet ? 4 : 13; // seconds
+  const blockTime = 13; // seconds
 
   // Allow 30 blocks for the subgraph to sync blocks. This also matches the
   // time for burns to be considered final in RenVM on mainnet.
@@ -103,27 +111,32 @@ export const getVolumes = async (
   const startingBlock =
     activeBlock - (periodSecondsCount - (now - activeTimestamp)) / blockTime;
   // currentBlock - (periodSecondsCount / blockTime);
-  const segmentCount = 30;
+  const segmentCount = 50;
   const segmentLength = Math.ceil((activeBlock - startingBlock) / segmentCount);
   const blocks = Array.from(new Array(segmentCount + 1)).map(
-    (_, i) => activeBlock - (segmentCount - i) * segmentLength
+    (_, i) => activeBlock - (segmentCount - i) * segmentLength,
   );
 
   // Build GraphQL query containing a request for each of the blocks.
   const query = gql(`
 {
-        ${blocks.map((block) => QUERY_RENVM_HISTORY(block)).join("\n")}
+      ${blocks.map((block) => QUERY_RENVM_HISTORY(block)).join("\n")}
 }
-    `);
+  `);
 
   const responseAlt = await client.query<{
-    [block: string]: RawRenVMHistoric | null;
+    [block: string]: RawRenVM | null;
   }>({
     query,
   });
 
+  interface Row extends Partial<RawRenVM> {
+    id: string;
+    blockNumber: number;
+  }
+
   // Add block number to each result.
-  const responseRows = List(
+  const responseRows = List<Row>(
     Object.keys(responseAlt.data).map((rowID) => {
       const blockData = responseAlt.data[rowID];
       let blockNumber = 0;
@@ -137,359 +150,240 @@ export const getVolumes = async (
       }
 
       return {
+        ...blockData,
         id: rowID,
         blockNumber,
-        blockData,
       };
-    })
+    }),
   ).sortBy((item) => item.blockNumber);
+
+  const getFieldDifference = <K extends string>(
+    first: { [key in K]?: string | undefined } | undefined,
+    last: { [key in K]?: string | undefined } | undefined,
+    field: K,
+  ): string => {
+    const endF = (last && last[field] ? last[field] : "0") as string;
+    const startF = (first && first[field] ? first[field] : "0") as string;
+    return new BigNumber(endF).minus(startF).toFixed();
+  };
+
+  const tokenArrayToMap = <T extends { symbol: string }>(
+    array: T[],
+  ): OrderedMap<string, T> =>
+    array.reduce(
+      (acc, tokenLocked) =>
+        acc.set(tokenLocked.symbol.replace(/^ren/, ""), tokenLocked),
+      OrderedMap<string, T>(),
+    );
 
   // Calculate period volume by subtracting total volume between each
   // consecutive segment.
-  const graphPeriods = Array.from(new Array(segmentCount)).map(
-    (_, i): PeriodData => {
+  const series = Array.from(new Array(segmentCount)).map(
+    (_, i): Partial<PeriodData> => {
       // tslint:disable-next-line: no-non-null-assertion
-      const start = responseRows.get(i)!;
+      const first = responseRows.get(i)!;
       // tslint:disable-next-line: no-non-null-assertion
-      const end = responseRows.get(i + 1)!;
+      const last = responseRows.get(i + 1)!;
 
-      const isFirstRow = periodType === PeriodType.ALL && i === 0;
+      //   const isFirstRow = periodType === PeriodType.ALL && i === 0;
+
+      //   const getFieldDiff = (field: string) =>
+      //     new BigNumber(end ? end[field] : "0")
+      //       .minus(start && !isFirstRow ? start[field] : "0")
+      //       .toFixed();
 
       return {
-        id: end.id, // "HOUR441028";
-        type: "HOUR", // "HOUR";
-        date: activeTimestamp - (activeBlock - end.blockNumber) * blockTime, // 1587700800;
+        ...last,
 
-        // total
+        currentEpoch:
+          (first && first.currentEpoch) ||
+          (last && last.currentEpoch) ||
+          (null as any),
+        previousEpoch:
+          (first && first.previousEpoch) ||
+          (last && last.previousEpoch) ||
+          (null as any),
 
-        totalTxCountBTC: end.blockData ? end.blockData.totalTxCountBTC : "0",
-        totalLockedBTC: end.blockData ? end.blockData.totalLockedBTC : "0",
-        totalVolumeBTC: end.blockData ? end.blockData.totalVolumeBTC : "0",
+        id: last.id, // "HOUR441028";
+        date:
+          (activeTimestamp - (activeBlock - last.blockNumber) * blockTime) *
+          1000, // 1587700800;,
 
-        totalTxCountZEC: end.blockData ? end.blockData.totalTxCountZEC : "0",
-        totalLockedZEC: end.blockData ? end.blockData.totalLockedZEC : "0",
-        totalVolumeZEC: end.blockData ? end.blockData.totalVolumeZEC : "0",
-
-        totalTxCountBCH: end.blockData ? end.blockData.totalTxCountBCH : "0",
-        totalLockedBCH: end.blockData ? end.blockData.totalLockedBCH : "0",
-        totalVolumeBCH: end.blockData ? end.blockData.totalVolumeBCH : "0",
-
-        // period
-
-        periodTxCountBTC: new BigNumber(
-          end.blockData ? end.blockData.totalTxCountBTC : "0"
-        )
-          .minus(
-            start.blockData && !isFirstRow
-              ? start.blockData.totalTxCountBTC
-              : "0"
-          )
-          .toFixed(),
-        periodLockedBTC: new BigNumber(
-          end.blockData ? end.blockData.totalLockedBTC : "0"
-        )
-          .minus(
-            start.blockData && !isFirstRow
-              ? start.blockData.totalLockedBTC
-              : "0"
-          )
-          .toFixed(),
-        periodVolumeBTC: new BigNumber(
-          end.blockData ? end.blockData.totalVolumeBTC : "0"
-        )
-          .minus(
-            start.blockData && !isFirstRow
-              ? start.blockData.totalVolumeBTC
-              : "0"
-          )
-          .toFixed(),
-
-        periodTxCountZEC: new BigNumber(
-          end.blockData ? end.blockData.totalTxCountZEC : "0"
-        )
-          .minus(
-            start.blockData && !isFirstRow
-              ? start.blockData.totalTxCountZEC
-              : "0"
-          )
-          .toFixed(),
-        periodLockedZEC: new BigNumber(
-          end.blockData ? end.blockData.totalLockedZEC : "0"
-        )
-          .minus(
-            start.blockData && !isFirstRow
-              ? start.blockData.totalLockedZEC
-              : "0"
-          )
-          .toFixed(),
-        periodVolumeZEC: new BigNumber(
-          end.blockData ? end.blockData.totalVolumeZEC : "0"
-        )
-          .minus(
-            start.blockData && !isFirstRow
-              ? start.blockData.totalVolumeZEC
-              : "0"
-          )
-          .toFixed(),
-
-        periodTxCountBCH: new BigNumber(
-          end.blockData ? end.blockData.totalTxCountBCH : "0"
-        )
-          .minus(
-            start.blockData && !isFirstRow
-              ? start.blockData.totalTxCountBCH
-              : "0"
-          )
-          .toFixed(),
-        periodLockedBCH: new BigNumber(
-          end.blockData ? end.blockData.totalLockedBCH : "0"
-        )
-          .minus(
-            start.blockData && !isFirstRow
-              ? start.blockData.totalLockedBCH
-              : "0"
-          )
-          .toFixed(),
-        periodVolumeBCH: new BigNumber(
-          end.blockData ? end.blockData.totalVolumeBCH : "0"
-        )
-          .minus(
-            start.blockData && !isFirstRow
-              ? start.blockData.totalVolumeBCH
-              : "0"
-          )
-          .toFixed(),
-
-        __typename: "PeriodData",
+        volume: tokenArrayToMap(last.volume || first.volume || []),
+        locked: tokenArrayToMap(last.locked || first.locked || []),
       };
-    }
+    },
   );
 
-  // Add up volumes and locked values for the entire period.
-  const average = graphPeriods
-    .slice(0, graphPeriods.length - 1)
-    .reduce((sum, period) => {
-      return {
-        ...sum,
-        date: Math.max(sum.date, period.date),
-        periodTxCountBTC: new BigNumber(sum.periodTxCountBTC)
-          .plus(period.periodTxCountBTC)
-          .toFixed(0),
-        periodVolumeBTC: new BigNumber(sum.periodVolumeBTC)
-          .plus(period.periodVolumeBTC)
-          .toFixed(0),
-        periodLockedBTC: new BigNumber(sum.periodLockedBTC)
-          .plus(period.periodLockedBTC)
-          .toFixed(0),
+  const start = responseRows.first(undefined);
+  const end = responseRows.last(undefined);
 
-        periodTxCountZEC: new BigNumber(sum.periodTxCountZEC)
-          .plus(period.periodTxCountZEC)
-          .toFixed(0),
-        periodVolumeZEC: new BigNumber(sum.periodVolumeZEC)
-          .plus(period.periodVolumeZEC)
-          .toFixed(0),
-        periodLockedZEC: new BigNumber(sum.periodLockedZEC)
-          .plus(period.periodLockedZEC)
-          .toFixed(0),
+  const difference: PeriodData = {
+    currentEpoch:
+      (start && start.currentEpoch) ||
+      (end && end.currentEpoch) ||
+      (null as any),
+    previousEpoch:
+      (start && start.previousEpoch) ||
+      (end && end.previousEpoch) ||
+      (null as any),
 
-        periodTxCountBCH: new BigNumber(sum.periodTxCountBCH)
-          .plus(period.periodTxCountBCH)
-          .toFixed(0),
-        periodVolumeBCH: new BigNumber(sum.periodVolumeBCH)
-          .plus(period.periodVolumeBCH)
-          .toFixed(0),
-        periodLockedBCH: new BigNumber(sum.periodLockedBCH)
-          .plus(period.periodLockedBCH)
-          .toFixed(0),
-      };
-    }, graphPeriods[graphPeriods.length - 1]);
+    id: end ? end.id : "", // "HOUR441028";
+    date:
+      (activeTimestamp -
+        (activeBlock - (end ? end.blockNumber : 0)) * blockTime) *
+      1000, // 1587700800;
+
+    numberOfDarknodes: getFieldDifference(start, end, "numberOfDarknodes"),
+    numberOfDarknodesLastEpoch: getFieldDifference(
+      start,
+      end,
+      "numberOfDarknodesLastEpoch",
+    ),
+    numberOfDarknodesNextEpoch: getFieldDifference(
+      start,
+      end,
+      "numberOfDarknodesNextEpoch",
+    ),
+    minimumBond: getFieldDifference(start, end, "minimumBond"),
+    minimumEpochInterval: getFieldDifference(
+      start,
+      end,
+      "minimumEpochInterval",
+    ),
+    currentCycle: getFieldDifference(start, end, "currentCycle"),
+    previousCycle: getFieldDifference(start, end, "previousCycle"),
+    deregistrationInterval: getFieldDifference(
+      start,
+      end,
+      "deregistrationInterval",
+    ),
+
+    btcMintFee: getFieldDifference(start, end, "btcMintFee"),
+    btcBurnFee: getFieldDifference(start, end, "btcBurnFee"),
+    zecMintFee: getFieldDifference(start, end, "zecMintFee"),
+    zecBurnFee: getFieldDifference(start, end, "zecBurnFee"),
+    bchMintFee: getFieldDifference(start, end, "bchMintFee"),
+    bchBurnFee: getFieldDifference(start, end, "bchBurnFee"),
+
+    volume: tokenArrayToMap((end && end.volume) || []).map(
+      (endTokenVolume, symbol) => ({
+        symbol,
+        amountInUsd: getFieldDifference(
+          tokenArrayToMap((start && start.volume) || []).get(symbol),
+          endTokenVolume,
+          "amountInUsd",
+        ),
+      }),
+    ),
+
+    locked: tokenArrayToMap((end && end.locked) || []).map(
+      (endTokenLocked, symbol) => ({
+        symbol,
+        amountInUsd: getFieldDifference(
+          tokenArrayToMap((start && start.locked) || []).get(symbol),
+          endTokenLocked,
+          "amountInUsd",
+        ),
+      }),
+    ),
+  };
 
   return {
-    historic: graphPeriods,
-    average,
+    series,
+    difference,
   };
 };
 
-interface QuotePeriodData extends PeriodData {
+export interface QuotePeriodData extends PeriodData {
   // Total
-  quoteTotalLocked: string;
-  quoteTotalVolume: string;
+  quoteLockedTotal: string;
+  quoteVolumeTotal: string;
 
-  quoteTotalLockedBTC: number;
-  quoteTotalVolumeBTC: number;
-  quoteTotalLockedZEC: number;
-  quoteTotalVolumeZEC: number;
-  quoteTotalLockedBCH: number;
-  quoteTotalVolumeBCH: number;
+  quoteLocked: {
+    [token: string]: BigNumber;
+  };
 
-  // period
-  quotePeriodLocked: string;
-  quotePeriodVolume: string;
-
-  quotePeriodLockedBTC: number;
-  quotePeriodVolumeBTC: number;
-  quotePeriodLockedZEC: number;
-  quotePeriodVolumeZEC: number;
-  quotePeriodLockedBCH: number;
-  quotePeriodVolumeBCH: number;
+  quoteVolume: {
+    [token: string]: BigNumber;
+  };
 }
-
-export interface QuotePeriodResponse {
-  historic: QuotePeriodData[];
-  average: QuotePeriodData;
-}
-
-const normalizeValue = (
-  amount: string | BigNumber,
-  digits: number
-): BigNumber => {
-  return new BigNumber(amount).div(new BigNumber(10).exponentiatedBy(digits));
-};
 
 const normalizeVolumes = (
-  periodData: PeriodData,
+  periodData: Partial<PeriodData>,
   tokenPrices: TokenPrices,
-  quoteCurrency: Currency
-): QuotePeriodData => {
+  quoteCurrency: Currency,
+): Partial<QuotePeriodData> => {
   const data = {
     ...periodData,
-    // total
-    quoteTotalLockedBTC: normalizeValue(periodData.totalLockedBTC, 8)
-      .times(
-        tokenPrices
-          .get(Token.BTC, Map<Currency, number>())
-          .get(quoteCurrency) || 0
-      )
-      .decimalPlaces(2)
-      .toNumber(),
-    quoteTotalVolumeBTC: normalizeValue(periodData.totalVolumeBTC, 8)
-      .times(
-        tokenPrices
-          .get(Token.BTC, Map<Currency, number>())
-          .get(quoteCurrency) || 0
-      )
-      .decimalPlaces(2)
-      .toNumber(),
-    quoteTotalLockedZEC: normalizeValue(periodData.totalLockedZEC, 8)
-      .times(
-        tokenPrices
-          .get(Token.ZEC, Map<Currency, number>())
-          .get(quoteCurrency) || 0
-      )
-      .decimalPlaces(2)
-      .toNumber(),
-    quoteTotalVolumeZEC: normalizeValue(periodData.totalVolumeZEC, 8)
-      .times(
-        tokenPrices
-          .get(Token.ZEC, Map<Currency, number>())
-          .get(quoteCurrency) || 0
-      )
-      .decimalPlaces(2)
-      .toNumber(),
-    quoteTotalLockedBCH: normalizeValue(periodData.totalLockedBCH, 8)
-      .times(
-        tokenPrices
-          .get(Token.BCH, Map<Currency, number>())
-          .get(quoteCurrency) || 0
-      )
-      .decimalPlaces(2)
-      .toNumber(),
-    quoteTotalVolumeBCH: normalizeValue(periodData.totalVolumeBCH, 8)
-      .times(
-        tokenPrices
-          .get(Token.BCH, Map<Currency, number>())
-          .get(quoteCurrency) || 0
-      )
-      .decimalPlaces(2)
-      .toNumber(),
-    // period
-    quotePeriodLockedBTC: normalizeValue(periodData.periodLockedBTC, 8)
-      .times(
-        tokenPrices
-          .get(Token.BTC, Map<Currency, number>())
-          .get(quoteCurrency) || 0
-      )
-      .decimalPlaces(2)
-      .toNumber(),
-    quotePeriodVolumeBTC: normalizeValue(periodData.periodVolumeBTC, 8)
-      .times(
-        tokenPrices
-          .get(Token.BTC, Map<Currency, number>())
-          .get(quoteCurrency) || 0
-      )
-      .decimalPlaces(2)
-      .toNumber(),
-    quotePeriodLockedZEC: normalizeValue(periodData.periodLockedZEC, 8)
-      .times(
-        tokenPrices
-          .get(Token.ZEC, Map<Currency, number>())
-          .get(quoteCurrency) || 0
-      )
-      .decimalPlaces(2)
-      .toNumber(),
-    quotePeriodVolumeZEC: normalizeValue(periodData.periodVolumeZEC, 8)
-      .times(
-        tokenPrices
-          .get(Token.ZEC, Map<Currency, number>())
-          .get(quoteCurrency) || 0
-      )
-      .decimalPlaces(2)
-      .toNumber(),
-    quotePeriodLockedBCH: normalizeValue(periodData.periodLockedBCH, 8)
-      .times(
-        tokenPrices
-          .get(Token.BCH, Map<Currency, number>())
-          .get(quoteCurrency) || 0
-      )
-      .decimalPlaces(2)
-      .toNumber(),
-    quotePeriodVolumeBCH: normalizeValue(periodData.periodVolumeBCH, 8)
-      .times(
-        tokenPrices
-          .get(Token.BCH, Map<Currency, number>())
-          .get(quoteCurrency) || 0
-      )
-      .decimalPlaces(2)
-      .toNumber(),
+    quoteLockedTotal: new BigNumber(0),
+    quoteVolumeTotal: new BigNumber(0),
+    quoteLocked: {},
+    quoteVolume: {},
   };
+
+  if (periodData.locked) {
+    periodData.locked.forEach(({ amountInUsd }, symbol) => {
+      const tokenLocked = new BigNumber(amountInUsd || "0")
+        .dividedBy(
+          tokenPrices
+            .get(Token.BTC, Map<Currency, number>())
+            .get(Currency.USD) || 0,
+        )
+        .times(
+          tokenPrices
+            .get(Token.BTC, Map<Currency, number>())
+            .get(quoteCurrency) || 0,
+        )
+        .decimalPlaces(2);
+      data.quoteLocked[symbol] = tokenLocked;
+      data.quoteLockedTotal = data.quoteLockedTotal.plus(tokenLocked);
+    });
+  }
+
+  if (periodData.volume) {
+    periodData.volume.forEach(({ amountInUsd }, symbol) => {
+      const tokenVolume = new BigNumber(amountInUsd || "0")
+        .dividedBy(
+          tokenPrices
+            .get(Token.BTC, Map<Currency, number>())
+            .get(Currency.USD) || 0,
+        )
+        .times(
+          tokenPrices
+            .get(Token.BTC, Map<Currency, number>())
+            .get(quoteCurrency) || 0,
+        )
+        .decimalPlaces(2);
+      data.quoteVolume[symbol] = tokenVolume;
+      data.quoteVolumeTotal = data.quoteVolumeTotal.plus(tokenVolume);
+    });
+  }
 
   return {
     ...data,
     // total
-    quoteTotalLocked: new BigNumber(data.quoteTotalLockedBTC)
-      .plus(data.quoteTotalLockedZEC)
-      .plus(data.quoteTotalLockedBCH)
-      .toFixed(2),
-    quoteTotalVolume: new BigNumber(data.quoteTotalVolumeBTC)
-      .plus(data.quoteTotalVolumeZEC)
-      .plus(data.quoteTotalVolumeBCH)
-      .toFixed(2),
-    // period
-    quotePeriodLocked: new BigNumber(data.quotePeriodLockedBTC)
-      .plus(data.quotePeriodLockedZEC)
-      .plus(data.quotePeriodLockedBCH)
-      .toFixed(2),
-    quotePeriodVolume: new BigNumber(data.quotePeriodVolumeBTC)
-      .plus(data.quotePeriodVolumeZEC)
-      .plus(data.quotePeriodVolumeBCH)
-      .toFixed(2),
+    quoteLockedTotal: data.quoteLockedTotal.toFixed(2),
+    quoteVolumeTotal: data.quoteVolumeTotal.toFixed(2),
   };
 };
 
+export interface QuoteSeriesData {
+  series: Array<Partial<QuotePeriodData>>;
+  difference: Partial<QuotePeriodData>;
+}
+
 export const normalizeSeriesVolumes = (
-  periodResponse: PeriodResponse,
+  seriesData: SeriesData,
   tokenPrices: TokenPrices,
-  quoteCurrency: Currency
-) => {
-  return {
-    ...periodResponse,
-    historic: periodResponse.historic.map((item) =>
-      normalizeVolumes(item, tokenPrices, quoteCurrency)
-    ),
-    average: normalizeVolumes(
-      periodResponse.average,
-      tokenPrices,
-      quoteCurrency
-    ),
-  };
-};
+  quoteCurrency: Currency,
+): QuoteSeriesData => ({
+  difference: normalizeVolumes(
+    seriesData.difference,
+    tokenPrices,
+    quoteCurrency,
+  ),
+  series: seriesData.series.map((item) =>
+    normalizeVolumes(item, tokenPrices, quoteCurrency),
+  ),
+});

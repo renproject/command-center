@@ -15,7 +15,7 @@ import { Block, RenVMContainer } from "./renvmContainer";
 import { RenVMTransaction, TransactionPreview } from "./RenVMTransaction";
 
 const getInfoLabel = (
-  token: string
+  token: string,
 ) => `The amount of ${token} currently locked in RenVM. Note that this sometimes lags behind the amount present in the
 smart contract. This is because users might have locked ${token} in RenVM but are yet to mint ren${token} on Ethereum
 (usually because they are awaiting confirmations on the host chain).
@@ -76,18 +76,18 @@ export const RenVMStatsPage = () => {
     (txHash64: string) => {
       const txHashHex = new EncodedData(
         txHash64,
-        EncodedData.Encodings.BASE64
+        EncodedData.Encodings.BASE64,
       ).toHex();
       history.push(`/renvm/tx/${txHashHex}`);
     },
-    [history]
+    [history],
   );
 
   const onClick = useCallback(
     (clickedBlockNumber: number | string) => {
       history.push(`/renvm/block/${clickedBlockNumber}`);
     },
-    [history]
+    [history],
   );
 
   const onClose = useCallback(() => {
@@ -166,7 +166,7 @@ export const RenVMStatsPage = () => {
                   ? state.value
                       .reduce(
                         (sum, utxo) => sum.plus(utxo.amount || "0"),
-                        new BigNumber(0)
+                        new BigNumber(0),
                       )
                       .toFixed()
                   : 0
@@ -205,7 +205,9 @@ export const RenVMStatsPage = () => {
           big
           infoLabel="The number of blocks in RenVM's consensus blockchain, Hyperdrive."
         >
-          {firstBlock ? firstBlock.header.height : 0}
+          {firstBlock
+            ? new BigNumber(firstBlock.header.height).toFormat(0)
+            : "0"}
         </Stat>
         {lockedBTC}
         {lockedZEC}

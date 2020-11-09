@@ -18,7 +18,7 @@ const DefaultLogo = require("../../../styles/images/integrators/default.png");
 const resolveIntegrator = (
   networkDetails: RenNetworkDetails,
   id: string,
-  address: string
+  address: string,
 ): { name: string; logo: string; urlHref: string; url: string } => {
   const details =
     (Integrators[networkDetails.name] &&
@@ -53,7 +53,7 @@ export const IntegratorRow: React.FC<Props> = ({
   const { name, logo, url, urlHref } = resolveIntegrator(
     renNetwork,
     integrator.now.id,
-    integrator.now.contractAddress
+    integrator.now.contractAddress,
   );
   const toggleExpanded = useCallback(() => {
     isActive
@@ -64,38 +64,38 @@ export const IntegratorRow: React.FC<Props> = ({
   // Day volume in token quantity
 
   const dayVolumeBTCRaw = new BigNumber(integrator.now.volumeBTC).minus(
-    integrator.day ? integrator.day.volumeBTC : new BigNumber(0)
+    integrator.day ? integrator.day.volumeBTC : new BigNumber(0),
   );
   const dayVolumeZECRaw = new BigNumber(integrator.now.volumeZEC).minus(
-    integrator.day ? integrator.day.volumeZEC : new BigNumber(0)
+    integrator.day ? integrator.day.volumeZEC : new BigNumber(0),
   );
   const dayVolumeBCHRaw = new BigNumber(integrator.now.volumeBCH).minus(
-    integrator.day ? integrator.day.volumeBCH : new BigNumber(0)
+    integrator.day ? integrator.day.volumeBCH : new BigNumber(0),
   );
 
   const dayVolumeBTCReadable = useMemo(
     () =>
       tokenToReadable(
         dayVolumeBTCRaw ? dayVolumeBTCRaw : new BigNumber(0),
-        Token.BTC
+        Token.BTC,
       ),
-    [dayVolumeBTCRaw]
+    [dayVolumeBTCRaw],
   );
   const dayVolumeZECReadable = useMemo(
     () =>
       tokenToReadable(
         dayVolumeZECRaw ? dayVolumeZECRaw : new BigNumber(0),
-        Token.ZEC
+        Token.ZEC,
       ),
-    [dayVolumeZECRaw]
+    [dayVolumeZECRaw],
   );
   const dayVolumeBCHReadable = useMemo(
     () =>
       tokenToReadable(
         dayVolumeBCHRaw ? dayVolumeBCHRaw : new BigNumber(0),
-        Token.BCH
+        Token.BCH,
       ),
-    [dayVolumeBCHRaw]
+    [dayVolumeBCHRaw],
   );
 
   // Day volume in quote currency
@@ -105,7 +105,7 @@ export const IntegratorRow: React.FC<Props> = ({
       dayVolumeBTCRaw && tokenPrices
         ? tokenToQuote(dayVolumeBTCRaw, Token.BTC, quoteCurrency, tokenPrices)
         : new BigNumber(0),
-    [dayVolumeBTCRaw, tokenPrices, quoteCurrency]
+    [dayVolumeBTCRaw, tokenPrices, quoteCurrency],
   );
 
   const dayVolumeZECQuote = useMemo(
@@ -113,7 +113,7 @@ export const IntegratorRow: React.FC<Props> = ({
       dayVolumeZECRaw && tokenPrices
         ? tokenToQuote(dayVolumeZECRaw, Token.ZEC, quoteCurrency, tokenPrices)
         : new BigNumber(0),
-    [dayVolumeZECRaw, tokenPrices, quoteCurrency]
+    [dayVolumeZECRaw, tokenPrices, quoteCurrency],
   );
 
   const dayVolumeBCHQuote = useMemo(
@@ -121,7 +121,7 @@ export const IntegratorRow: React.FC<Props> = ({
       dayVolumeBCHRaw && tokenPrices
         ? tokenToQuote(dayVolumeBCHRaw, Token.BCH, quoteCurrency, tokenPrices)
         : new BigNumber(0),
-    [dayVolumeBCHRaw, tokenPrices, quoteCurrency]
+    [dayVolumeBCHRaw, tokenPrices, quoteCurrency],
   );
 
   // Day volume total
@@ -132,22 +132,22 @@ export const IntegratorRow: React.FC<Props> = ({
         .plus(dayVolumeZECQuote)
         .plus(dayVolumeBCHQuote)
         .toFormat(),
-    [dayVolumeBCHQuote, dayVolumeBTCQuote, dayVolumeZECQuote]
+    [dayVolumeBCHQuote, dayVolumeBTCQuote, dayVolumeZECQuote],
   );
 
   // All-time volume in token quantity
 
   const allVolumeBTCReadable = useMemo(
     () => tokenToReadable(integrator.now.volumeBTC, Token.BTC),
-    [integrator.now.volumeBTC]
+    [integrator.now.volumeBTC],
   );
   const allVolumeZECReadable = useMemo(
     () => tokenToReadable(integrator.now.volumeZEC, Token.ZEC),
-    [integrator.now.volumeZEC]
+    [integrator.now.volumeZEC],
   );
   const allVolumeBCHReadable = useMemo(
     () => tokenToReadable(integrator.now.volumeBCH, Token.BCH),
-    [integrator.now.volumeBCH]
+    [integrator.now.volumeBCH],
   );
 
   // All-time volume in quote currency
@@ -159,10 +159,10 @@ export const IntegratorRow: React.FC<Props> = ({
             integrator.now.volumeBTC,
             Token.BTC,
             quoteCurrency,
-            tokenPrices
+            tokenPrices,
           )
         : new BigNumber(0),
-    [tokenPrices, quoteCurrency, integrator.now.volumeBTC]
+    [tokenPrices, quoteCurrency, integrator.now.volumeBTC],
   );
 
   const allVolumeZEC = useMemo(
@@ -172,10 +172,10 @@ export const IntegratorRow: React.FC<Props> = ({
             integrator.now.volumeZEC,
             Token.ZEC,
             quoteCurrency,
-            tokenPrices
+            tokenPrices,
           )
         : new BigNumber(0),
-    [tokenPrices, quoteCurrency, integrator.now.volumeZEC]
+    [tokenPrices, quoteCurrency, integrator.now.volumeZEC],
   );
 
   const allVolumeBCH = useMemo(
@@ -185,17 +185,17 @@ export const IntegratorRow: React.FC<Props> = ({
             integrator.now.volumeBCH,
             Token.BCH,
             quoteCurrency,
-            tokenPrices
+            tokenPrices,
           )
         : new BigNumber(0),
-    [tokenPrices, quoteCurrency, integrator.now.volumeBCH]
+    [tokenPrices, quoteCurrency, integrator.now.volumeBCH],
   );
 
   // All-time volume total
 
   const allVolume = useMemo(
     () => allVolumeBTC.plus(allVolumeZEC).plus(allVolumeBCH).toFormat(),
-    [allVolumeBTC, allVolumeZEC, allVolumeBCH]
+    [allVolumeBTC, allVolumeZEC, allVolumeBCH],
   );
   const stopPropagation = useCallback((e) => e.stopPropagation(), []);
 
@@ -230,7 +230,7 @@ export const IntegratorRow: React.FC<Props> = ({
       <tr
         className={classNames(
           `integrator-extra`,
-          isActive ? "integrator-extra-open" : "integrator-extra-closed"
+          isActive ? "integrator-extra-open" : "integrator-extra-closed",
         )}
       >
         <td colSpan={5}>
