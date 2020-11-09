@@ -107,7 +107,7 @@ export const DarknodeStatsPage = () => {
             <Stat
               message="% Ren Bonded"
               big
-              infoLabel="Each Darknode is required to bond 100,000K REN to encourage good behaviour. This number represents the percentage of the total amount of REN (1B) which is currently bonded."
+              infoLabel="Each Darknode is required to bond 100,000K REN to encourage good behavior. This number represents the percentage of the total amount of REN (1B) which is currently bonded."
             >
               {isDefined(percent) ? <>{percent}%</> : <Loading alt={true} />}
             </Stat>

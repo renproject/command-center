@@ -1,6 +1,6 @@
 {
   "name": "command-center",
-  "version": "0.1.0",
+  "version": "0.1.3",
   "private": true,
   "scripts": {
     "lint:unused-exports": "ts-unused-exports ./tsconfig.json",
@@ -80,6 +80,7 @@
     "slick-carousel": "^1.8.1",
     "typescript": "^4.0.5",
     "unstated-next": "^1.1.0",
+    "use-resize-observer": "^6.1.0",
     "wallet-address-validator": "^0.2.4",
     "web3": "2.0.0-alpha.1",
     "web3-core": "2.0.0-alpha.1",

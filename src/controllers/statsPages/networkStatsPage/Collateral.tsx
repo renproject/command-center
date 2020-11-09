@@ -250,7 +250,7 @@ export const Collateral: React.FC<Props> = ({
               The current RenVM minting fee. It is a dynamic fee which
               fluctuates based on the amount of value locked within in RenVM.
               For more information,{" "}
-              <ExternalLink href="https://github.com/renproject/ren/wiki/Safety-and-Liveliness#fees">
+              <ExternalLink href="https://github.com/renproject/ren/wiki/Fees-and-Economics#minting-and-burning-fee">
                 see here
               </ExternalLink>
               .
@@ -269,7 +269,7 @@ export const Collateral: React.FC<Props> = ({
               The current RenVM burning fee. It is a dynamic fee which
               fluctuates based on the amount of value locked within in RenVM.
               For more information,{" "}
-              <ExternalLink href="https://github.com/renproject/ren/wiki/Safety-and-Liveliness#fees">
+              <ExternalLink href="https://github.com/renproject/ren/wiki/Fees-and-Economics#minting-and-burning-fee">
                 see here
               </ExternalLink>
               .
