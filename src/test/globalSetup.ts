@@ -33,19 +33,19 @@ const ganache = (buildPath: string, networkID: number): RenNetworkDetails => {
   const DarknodeSlasher = require(join(buildPath, "DarknodeSlasher.json"));
   const DarknodeRegistryStore = require(join(
     buildPath,
-    "DarknodeRegistryStore.json"
+    "DarknodeRegistryStore.json",
   ));
   const DarknodeRegistryProxy = require(join(
     buildPath,
-    "DarknodeRegistryProxy.json"
+    "DarknodeRegistryProxy.json",
   ));
   const DarknodeRegistryLogic = require(join(
     buildPath,
-    "DarknodeRegistryLogicV1.json"
+    "DarknodeRegistryLogicV1.json",
   ));
   const DarknodePaymentStore = require(join(
     buildPath,
-    "DarknodePaymentStore.json"
+    "DarknodePaymentStore.json",
   ));
   const DarknodePayment = require(join(buildPath, "DarknodePayment.json"));
   const BasicAdapter = require(join(buildPath, "BasicAdapter.json"));
@@ -202,7 +202,7 @@ export const createWeb3 = async () => {
   const networkID: number = await web3.eth.net.getId();
   const network: RenNetworkDetails = ganache(
     join(process.cwd(), "./node_modules/darknode-sol/build/testnet/"),
-    networkID
+    networkID,
   );
   const address: string = (await web3.eth.getAccounts())[0];
 

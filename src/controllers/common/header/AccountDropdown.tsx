@@ -68,7 +68,7 @@ export const AccountDropdown: React.FC = () => {
     (reduction: boolean, _value, key: string) => {
       return reduction || confirmations.get(key, 0) === 0;
     },
-    false
+    false,
   );
 
   return (
@@ -77,7 +77,9 @@ export const AccountDropdown: React.FC = () => {
         className={classNames(
           "header--account",
           "header--selected",
-          address ? "header--account--logged-in" : "header--account--logged-out"
+          address
+            ? "header--account--logged-in"
+            : "header--account--logged-out",
         )}
         role="menuitem"
         onClick={address ? toggle : handleLogin}
@@ -119,7 +121,7 @@ export const AccountDropdown: React.FC = () => {
           <ul
             className={classNames(
               "header--dropdown",
-              !address ? "header--dropdown--login" : ""
+              !address ? "header--dropdown--login" : "",
             )}
           >
             <li

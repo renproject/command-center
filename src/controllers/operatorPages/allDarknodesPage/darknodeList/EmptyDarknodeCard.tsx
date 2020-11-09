@@ -17,7 +17,7 @@ export const EmptyDarknodeCard: React.FC<Props> = ({
     className={classNames(
       props.className,
       "darknode-card",
-      "darknode-card--empty"
+      "darknode-card--empty",
     )}
   >
     <div className="darknode-card--top" />

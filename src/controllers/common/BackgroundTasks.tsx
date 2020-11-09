@@ -33,7 +33,7 @@ export const BackgroundTasks = () => {
     } catch (error) {
       catchBackgroundException(
         error,
-        "Error in BackgroundTasks > priceUpdater"
+        "Error in BackgroundTasks > priceUpdater",
       );
       return 15;
     }
@@ -51,7 +51,7 @@ export const BackgroundTasks = () => {
     } catch (error) {
       catchBackgroundException(
         error,
-        "Error in BackgroundTasks > rewardsUpdater"
+        "Error in BackgroundTasks > rewardsUpdater",
       );
       return 15; // seconds
     }
@@ -64,13 +64,13 @@ export const BackgroundTasks = () => {
         await ((lookForLogout() as unknown) as Promise<void>).catch((error) => {
           catchBackgroundException(
             error,
-            "Error in BackgroundTasks > loggedOutUpdater"
+            "Error in BackgroundTasks > loggedOutUpdater",
           );
         });
       } catch (error) {
         catchBackgroundException(
           error,
-          "Error in BackgroundTasks > loggedOutUpdater"
+          "Error in BackgroundTasks > loggedOutUpdater",
         );
       }
     }
@@ -86,7 +86,7 @@ export const BackgroundTasks = () => {
       } catch (error) {
         catchBackgroundException(
           error,
-          "Error in BackgroundTasks > operatorStatsUpdater"
+          "Error in BackgroundTasks > operatorStatsUpdater",
         );
         return 10; // seconds
       }
@@ -103,7 +103,7 @@ export const BackgroundTasks = () => {
       } catch (error) {
         catchBackgroundException(
           error,
-          "Error in BackgroundTasks > selectedDarknodeUpdater"
+          "Error in BackgroundTasks > selectedDarknodeUpdater",
         );
         return 15; // seconds
       }

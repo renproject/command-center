@@ -59,7 +59,7 @@ export const InfoLabel = ({
         `info-label-${align || "center"}`,
         hover ? `info-label--active` : "",
         fade ? `info-label--fading` : "",
-        className
+        className,
       )}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}

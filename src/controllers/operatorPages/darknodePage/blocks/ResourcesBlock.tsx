@@ -40,12 +40,12 @@ export const ResourcesBlock: React.FC<Props> = ({ darknodeDetails }) => (
                   labels: [
                     darknodeDetails.nodeStatistics
                       ? `Used: ${filesize(
-                          darknodeDetails.nodeStatistics.memoryUsed
+                          darknodeDetails.nodeStatistics.memoryUsed,
                         )} -`
                       : "Used: Unknown -",
                     darknodeDetails.nodeStatistics
                       ? `Free: ${filesize(
-                          darknodeDetails.nodeStatistics.memoryFree
+                          darknodeDetails.nodeStatistics.memoryFree,
                         )} -`
                       : "Free: Unknown -",
                   ],
@@ -79,12 +79,12 @@ export const ResourcesBlock: React.FC<Props> = ({ darknodeDetails }) => (
                   labels: [
                     darknodeDetails.nodeStatistics
                       ? `Used: ${filesize(
-                          darknodeDetails.nodeStatistics.diskUsed
+                          darknodeDetails.nodeStatistics.diskUsed,
                         )} -`
                       : "Used: Unknown -",
                     darknodeDetails.nodeStatistics
                       ? `Free: ${filesize(
-                          darknodeDetails.nodeStatistics.diskFree
+                          darknodeDetails.nodeStatistics.diskFree,
                         )} -`
                       : "Free: Unknown -",
                   ],

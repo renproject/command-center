@@ -54,9 +54,9 @@ export const queryStat = async (lightnode: string, darknodeID: string) => {
         await Axios.post<RPCResponse<ResponseQueryStat>>(
           `${lightnode}?id=${darknodeID}`,
           request,
-          { timeout: DEFAULT_REQUEST_TIMEOUT }
+          { timeout: DEFAULT_REQUEST_TIMEOUT },
         ),
-      2
+      2,
     )
   ).data.result;
   return new NodeStatistics({

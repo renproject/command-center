@@ -32,7 +32,7 @@ export const TopUp: React.FC<Props> = ({
     (event: React.ChangeEvent<HTMLInputElement>) => {
       handleChange(event.target.value);
     },
-    [handleChange]
+    [handleChange],
   );
 
   const [tab, setTab] = useState<string>(Tab.Add);

@@ -33,7 +33,7 @@ enum Tab {
 
 const mergeFees = (
   left: OrderedMap<Token, BigNumber | null>,
-  right: OrderedMap<Token, BigNumber | null>
+  right: OrderedMap<Token, BigNumber | null>,
 ) => {
   let newFees = OrderedMap<Token, BigNumber | null>();
   for (const token of left.keySeq().concat(right.keySeq()).toArray()) {
@@ -143,12 +143,12 @@ export const FeesBlock: React.FC<Props> = ({ darknodeDetails, isOperator }) => {
   const [disableClaim, setDisableClaim] = useState(false);
 
   const [currentCycleStatus, setCurrentCycleStatus] = useState<string | null>(
-    null
+    null,
   );
 
   const cycleStatus: string | null = useMemo(
     () => darknodeDetails && darknodeDetails.cycleStatus.keySeq().first(),
-    [darknodeDetails]
+    [darknodeDetails],
   );
 
   useEffect(() => {
@@ -196,7 +196,7 @@ export const FeesBlock: React.FC<Props> = ({ darknodeDetails, isOperator }) => {
   ) {
     summedPendingRewards = mergeFees(
       pendingRewards.get(previousCycle, OrderedMap()),
-      pendingRewards.get(currentCycle, OrderedMap())
+      pendingRewards.get(currentCycle, OrderedMap()),
     );
   }
 
@@ -214,7 +214,7 @@ export const FeesBlock: React.FC<Props> = ({ darknodeDetails, isOperator }) => {
     (newTab: string) => {
       setTab(newTab as Tab);
     },
-    [setTab]
+    [setTab],
   );
 
   const tabTotal = darknodeDetails
@@ -297,13 +297,13 @@ export const FeesBlock: React.FC<Props> = ({ darknodeDetails, isOperator }) => {
                                     new BigNumber(10).exponentiatedBy(
                                       AllTokenDetails.get(token, {
                                         decimals: 0,
-                                      }).decimals
-                                    )
+                                      }).decimals,
+                                    ),
                                   )
                                   .times(
                                     tokenPrices
                                       ?.get(token)
-                                      ?.get(Currency.ETH) || 0
+                                      ?.get(Currency.ETH) || 0,
                                   )
                                   .times(new BigNumber(10).exponentiatedBy(18))
                                   .div(tabTotal)
@@ -319,9 +319,9 @@ export const FeesBlock: React.FC<Props> = ({ darknodeDetails, isOperator }) => {
                         (
                           [token, { balance, percent }]: [
                             Token,
-                            { balance: BigNumber | null; percent: number }
+                            { balance: BigNumber | null; percent: number },
                           ],
-                          i
+                          i,
                         ) => {
                           return (
                             <FeesBlockRow
@@ -335,7 +335,7 @@ export const FeesBlock: React.FC<Props> = ({ darknodeDetails, isOperator }) => {
                               quoteCurrency={quoteCurrency}
                             />
                           );
-                        }
+                        },
                       )}
                   </tbody>
                 </table>

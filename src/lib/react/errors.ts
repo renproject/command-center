@@ -161,7 +161,7 @@ const catchException = <X extends Details>(error: any, details: X) => {
 // Background exceptions are thrown in background loops and actions
 export const catchBackgroundException = <X extends Details & Described>(
   error: any,
-  details: X | string
+  details: X | string,
 ) => {
   catchException(error, {
     ignoreNetwork: true,
@@ -175,7 +175,7 @@ export const catchInteractionException = <
   X extends Details & Described & ShownToUser
 >(
   error: any,
-  details: X | string
+  details: X | string,
 ) => {
   catchException(error, {
     ...(typeof details === "string" ? { description: details } : details),
@@ -186,7 +186,7 @@ export const catchInteractionException = <
 // Component exceptions are thrown from an ErrorBoundary
 export const catchComponentException = (
   error: any,
-  errorInfo: React.ErrorInfo
+  errorInfo: React.ErrorInfo,
 ) => {
   catchException(error, {
     ...errorInfo,

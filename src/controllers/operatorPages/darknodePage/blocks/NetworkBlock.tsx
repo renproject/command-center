@@ -69,7 +69,7 @@ export const NetworkBlock: React.FC<Props> = ({ darknodeDetails }) => {
                             message: "Just now",
                             countDown: false,
                             showingSeconds: false,
-                          }
+                          },
                         )
                       : ""}
                   </td>
@@ -86,7 +86,7 @@ export const NetworkBlock: React.FC<Props> = ({ darknodeDetails }) => {
                             message: "Just now",
                             countDown: false,
                             showingSeconds: false,
-                          }
+                          },
                         )
                       : ""}
                   </td>

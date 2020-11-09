@@ -17,7 +17,7 @@ export class DarknodeRegistryLogicV1 extends Contract {
   constructor(
     jsonInterface: any[],
     address?: string,
-    options?: ContractOptions
+    options?: ContractOptions,
   );
   clone(): DarknodeRegistryLogicV1;
   address: string;
@@ -53,12 +53,12 @@ export class DarknodeRegistryLogicV1 extends Contract {
 
     getDarknodes(
       _start: string,
-      _count: number | string
+      _count: number | string,
     ): TransactionObject<string[]>;
 
     getPreviousDarknodes(
       _start: string,
-      _count: number | string
+      _count: number | string,
     ): TransactionObject<string[]>;
 
     initialize(
@@ -68,7 +68,7 @@ export class DarknodeRegistryLogicV1 extends Contract {
       _minimumBond: number | string,
       _minimumPodSize: number | string,
       _minimumEpochIntervalSeconds: number | string,
-      _deregistrationIntervalSeconds: number | string
+      _deregistrationIntervalSeconds: number | string,
     ): TransactionObject<void>;
 
     isDeregisterable(_darknodeID: string): TransactionObject<boolean>;
@@ -88,7 +88,7 @@ export class DarknodeRegistryLogicV1 extends Contract {
     isRegistered(_darknodeID: string): TransactionObject<boolean>;
 
     isRegisteredInPreviousEpoch(
-      _darknodeID: string
+      _darknodeID: string,
     ): TransactionObject<boolean>;
 
     minimumBond(): TransactionObject<string>;
@@ -128,7 +128,7 @@ export class DarknodeRegistryLogicV1 extends Contract {
 
     register(
       _darknodeID: string,
-      _publicKey: string | number[]
+      _publicKey: string | number[],
     ): TransactionObject<void>;
 
     ren(): TransactionObject<string>;
@@ -138,7 +138,7 @@ export class DarknodeRegistryLogicV1 extends Contract {
     slash(
       _guilty: string,
       _challenger: string,
-      _percentage: number | string
+      _percentage: number | string,
     ): TransactionObject<void>;
 
     slasher(): TransactionObject<string>;
@@ -152,15 +152,15 @@ export class DarknodeRegistryLogicV1 extends Contract {
     updateDarknodePayment(_darknodePayment: string): TransactionObject<void>;
 
     updateMinimumBond(
-      _nextMinimumBond: number | string
+      _nextMinimumBond: number | string,
     ): TransactionObject<void>;
 
     updateMinimumEpochInterval(
-      _nextMinimumEpochInterval: number | string
+      _nextMinimumEpochInterval: number | string,
     ): TransactionObject<void>;
 
     updateMinimumPodSize(
-      _nextMinimumPodSize: number | string
+      _nextMinimumPodSize: number | string,
     ): TransactionObject<void>;
 
     updateSlasher(_slasher: string): TransactionObject<void>;
@@ -237,7 +237,7 @@ export class DarknodeRegistryLogicV1 extends Contract {
     }>;
     allEvents: (
       options?: EventOptions,
-      cb?: Callback<EventLog>
+      cb?: Callback<EventLog>,
     ) => EventEmitter;
   };
 }

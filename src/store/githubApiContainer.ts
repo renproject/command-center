@@ -19,10 +19,10 @@ const API_LIMIT_ERROR = /API rate limit exceeded/;
 
 const useGithubAPIContainer = () => {
   const [latestDarknodeVersionFull, setLatestDarknodeVersionFull] = useState(
-    null as string | null
+    null as string | null,
   );
   const [latestDarknodeVersion, setLatestDarknodeVersion] = useState(
-    null as string | null
+    null as string | null,
   );
   const [
     latestDarknodeVersionDaysAgo,
@@ -30,13 +30,13 @@ const useGithubAPIContainer = () => {
   ] = useState(null as string | null);
 
   const [latestCLIVersionFull, setLatestCLIVersionFull] = useState(
-    null as string | null
+    null as string | null,
   );
   const [latestCLIVersion, setLatestCLIVersion] = useState(
-    null as string | null
+    null as string | null,
   );
   const [latestCLIVersionDaysAgo, setLatestCLIVersionDaysAgo] = useState(
-    null as string | null
+    null as string | null,
   );
 
   const HOUR = 60 * 60;
@@ -50,19 +50,19 @@ const useGithubAPIContainer = () => {
           Axios.get<VersionResponse | VersionError>(DARKNODE_ENDPOINT, {
             timeout: DEFAULT_REQUEST_TIMEOUT,
           }),
-        2
+        2,
       );
 
       if (!response.data || response.data.message) {
         throw new Error(
           response.data
             ? response.data.message
-            : "No data returned from Github API."
+            : "No data returned from Github API.",
         );
       }
 
       setLatestDarknodeVersionFull(
-        response.data.tag_name.replace(/-testnet/, " (prerelease)")
+        response.data.tag_name.replace(/-testnet/, " (prerelease)"),
       );
       setLatestDarknodeVersion(response.data.tag_name);
 
@@ -72,7 +72,7 @@ const useGithubAPIContainer = () => {
           message: "Just now",
           countDown: false,
           showingSeconds: false,
-        })
+        }),
       );
     } catch (error) {
       if (
@@ -85,7 +85,7 @@ const useGithubAPIContainer = () => {
       } else {
         catchBackgroundException(
           error,
-          "Error in GithubAPIContainer: fetchEpoch"
+          "Error in GithubAPIContainer: fetchEpoch",
         );
         interval = 30;
       }
@@ -97,14 +97,14 @@ const useGithubAPIContainer = () => {
           Axios.get<VersionResponse | VersionError>(DARKNODE_CLI_ENDPOINT, {
             timeout: DEFAULT_REQUEST_TIMEOUT,
           }),
-        2
+        2,
       );
 
       if (!response.data || response.data.message) {
         throw new Error(
           response.data
             ? response.data.message
-            : "No data returned from Github API."
+            : "No data returned from Github API.",
         );
       }
 
@@ -117,7 +117,7 @@ const useGithubAPIContainer = () => {
           message: "Just now",
           countDown: false,
           showingSeconds: false,
-        })
+        }),
       );
     } catch (error) {
       if (
@@ -130,7 +130,7 @@ const useGithubAPIContainer = () => {
       } else {
         catchBackgroundException(
           error,
-          "Error in GithubAPIContainer: fetchEpoch"
+          "Error in GithubAPIContainer: fetchEpoch",
         );
         interval = 30;
       }
@@ -147,7 +147,7 @@ const useGithubAPIContainer = () => {
         return latestDarknodeVersionFull
           ? semver.gte(
               darknodeVersionFull.split("-")[0],
-              latestDarknodeVersionFull
+              latestDarknodeVersionFull,
             )
           : null;
       } catch (error) {
@@ -156,7 +156,7 @@ const useGithubAPIContainer = () => {
       }
     },
 
-    [latestDarknodeVersionFull]
+    [latestDarknodeVersionFull],
   );
 
   const isCLIUpToDate = useCallback(
@@ -171,7 +171,7 @@ const useGithubAPIContainer = () => {
       }
     },
 
-    [latestCLIVersionFull]
+    [latestCLIVersionFull],
   );
 
   return {

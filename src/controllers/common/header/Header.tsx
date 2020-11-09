@@ -33,7 +33,7 @@ const getCurrencyOptions = () => {
       currency.currency,
       <>
         <CurrencyIcon currency={currency.currency} /> {currency.description}
-      </>
+      </>,
     );
   }
 
@@ -54,7 +54,7 @@ const MenuItem: React.FC<{
         "header--group",
         activePath && activePath.split("/")[1] === path.split("/")[1]
           ? "header--group--active"
-          : ""
+          : "",
       )}
     >
       <div className="header--selected">

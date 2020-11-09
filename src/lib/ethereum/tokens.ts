@@ -112,21 +112,21 @@ export const FeeTokens: OrderedMap<
 const coinGeckoURL = `https://api.coingecko.com/api/v3`;
 const coinGeckoParams = `localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`;
 export const getPrices = (
-  previousTokenPrices: TokenPrices | null
+  previousTokenPrices: TokenPrices | null,
 ): Promise<TokenPrices> =>
   AllTokenDetails.toArray()
     .map(([token, tokenDetails]) => ({
       token,
       responsePromise: Axios.get(
         `${coinGeckoURL}/coins/${tokenDetails.coinGeckoID}?${coinGeckoParams}`,
-        { timeout: DEFAULT_REQUEST_TIMEOUT }
+        { timeout: DEFAULT_REQUEST_TIMEOUT },
       ),
     }))
     .reduce(async (pricesPromise, { token, responsePromise }) => {
       let prices = await pricesPromise;
       try {
         const price = Map<Currency, number>(
-          (await responsePromise).data.market_data.current_price
+          (await responsePromise).data.market_data.current_price,
         );
         prices = prices.set(token, price);
       } catch (error) {

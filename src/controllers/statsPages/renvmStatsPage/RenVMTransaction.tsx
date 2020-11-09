@@ -55,7 +55,7 @@ export const TransactionPreview = ({ tx }: { tx: Tx }) => {
 const txUrl = (
   txHash: string,
   token: Asset,
-  network: RenNetworkDetails
+  network: RenNetworkDetails,
 ): string => {
   const isTx = txHash && txHash.slice && txHash.match(/^(0x)?[a-fA-F0-9]+$/);
   switch (token) {
@@ -99,7 +99,7 @@ const RenVMArgValue = ({
       ];
       const txHashHex = new EncodedData(
         utxo.txHash,
-        EncodedData.Encodings.BASE64
+        EncodedData.Encodings.BASE64,
       ).toHex("");
       return (
         <>
@@ -200,7 +200,7 @@ export const RenVMTransaction: React.FC<Props> = ({
                   "block--tx--span",
                   transaction.txStatus === TxStatus.TxStatusDone
                     ? "green"
-                    : "orange"
+                    : "orange",
                 )}
               >
                 {(transaction.txStatus || "").toUpperCase()}

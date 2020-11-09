@@ -70,7 +70,7 @@ export class DarknodesState extends Record({
 
 export type WaitForTX = <T>(
   promiEvent: PromiEvent<T>,
-  onConfirmation?: (confirmations?: number) => void
+  onConfirmation?: (confirmations?: number) => void,
 ) => Promise<string>;
 
 const useNetworkContainer = () => {
@@ -84,27 +84,27 @@ const useNetworkContainer = () => {
   const [registrySync, setRegistrySync] = useState({ progress: 0, target: 0 });
 
   const [darknodeDetails, setDarknodeDetails] = useState(
-    Map<string, DarknodesState>()
+    Map<string, DarknodesState>(),
   );
 
   // const [balanceHistories, setBalanceHistories] = useState(Map<string, OrderedMap<number, BigNumber>>());
 
   // tslint:disable-next-line: no-any
   const [transactions, setTransactions] = useState(
-    OrderedMap<string, PromiEvent<any>>()
+    OrderedMap<string, PromiEvent<any>>(),
   );
   const [confirmations, setConfirmations] = useState(
-    OrderedMap<string, number>()
+    OrderedMap<string, number>(),
   );
 
   const [pendingRewards, setPendingRewards] = useState(
-    OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber | null>>()
+    OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber | null>>(),
   );
   const [pendingTotalInEth, setPendingTotalInEth] = useState(
-    OrderedMap<string /* cycle */, BigNumber | null>()
+    OrderedMap<string /* cycle */, BigNumber | null>(),
   );
   const [pendingRewardsInEth, setPendingRewardsInEth] = useState(
-    OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber | null>>()
+    OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber | null>>(),
   );
 
   ///////////////////////////////////////////////////////////
@@ -113,13 +113,13 @@ const useNetworkContainer = () => {
   const [quoteCurrency, setQuoteCurrency] = useStorageState(
     localStorage,
     "quoteCurrency",
-    Currency.USD
+    Currency.USD,
   );
   const [darknodeNames, setDarknodeNames] = useStorageState(
     localStorage,
     "darknodeNames",
     Map<string, string>(),
-    (s) => Map<string, string>(JSON.parse(s as string))
+    (s) => Map<string, string>(JSON.parse(s as string)),
   );
   const [
     darknodeRegisteringList,
@@ -128,7 +128,7 @@ const useNetworkContainer = () => {
     localStorage,
     "darknodeRegisteringList",
     Map<string, string>(),
-    (s) => Map<string, string>(JSON.parse(s as string))
+    (s) => Map<string, string>(JSON.parse(s as string)),
   );
   // Map from operator-address to list of darknodes.
   const [darknodeList, setDarknodeList] = useStorageState(
@@ -137,8 +137,8 @@ const useNetworkContainer = () => {
     Map<string, OrderedSet<string>>(),
     (s) =>
       Map<string, OrderedSet<string>>(JSON.parse(s as string)).map((x) =>
-        OrderedSet<string>(x)
-      )
+        OrderedSet<string>(x),
+      ),
   );
   const [hiddenDarknodes, setHiddenDarknodes] = useStorageState(
     localStorage,
@@ -146,8 +146,8 @@ const useNetworkContainer = () => {
     Map<string, OrderedSet<string>>(),
     (s) =>
       Map<string, OrderedSet<string>>(JSON.parse(s as string)).map((x) =>
-        OrderedSet<string>(x)
-      )
+        OrderedSet<string>(x),
+      ),
   );
   const [
     withdrawAddresses,
@@ -158,8 +158,8 @@ const useNetworkContainer = () => {
     Map<Token, List<string>>(),
     (s) =>
       Map<Token, List<string>>(JSON.parse(s as string)).map((x) =>
-        List<string>(x)
-      )
+        List<string>(x),
+      ),
   );
   ///////////////////////////////////////////////////////
 
@@ -169,7 +169,7 @@ const useNetworkContainer = () => {
     } catch (error) {
       catchBackgroundException(
         error,
-        "Error in networkActions > updateTokenPrices"
+        "Error in networkActions > updateTokenPrices",
       );
     }
   };
@@ -182,12 +182,12 @@ const useNetworkContainer = () => {
       operatorHiddenDarknodes = operatorHiddenDarknodes.add(darknodeID);
 
       setHiddenDarknodes((latestHiddenDarknodes) =>
-        (latestHiddenDarknodes || Map()).set(operator, operatorHiddenDarknodes)
+        (latestHiddenDarknodes || Map()).set(operator, operatorHiddenDarknodes),
       );
     } catch (error) {
       catchInteractionException(
         error,
-        "Error in networkReducer > removeDarknode"
+        "Error in networkReducer > removeDarknode",
       );
     }
   };
@@ -200,12 +200,12 @@ const useNetworkContainer = () => {
       operatorHiddenDarknodes = operatorHiddenDarknodes.remove(darknodeID);
 
       setHiddenDarknodes((latestHiddenDarknodes) =>
-        (latestHiddenDarknodes || Map()).set(operator, operatorHiddenDarknodes)
+        (latestHiddenDarknodes || Map()).set(operator, operatorHiddenDarknodes),
       );
     } catch (error) {
       catchInteractionException(
         error,
-        "Error in networkReducer > removeDarknode"
+        "Error in networkReducer > removeDarknode",
       );
     }
   };
@@ -224,18 +224,18 @@ const useNetworkContainer = () => {
       if (!newNames.has(darknodeID)) {
         newNames = newNames.set(
           darknodeID,
-          `Darknode ${newList.toList().indexOf(darknodeID) + 1}`
+          `Darknode ${newList.toList().indexOf(darknodeID) + 1}`,
         );
       }
       return null;
     });
 
     const newDarknodeRegisteringList = darknodeRegisteringList.filter(
-      (_: string, darknodeID: string) => !newList.contains(darknodeID)
+      (_: string, darknodeID: string) => !newList.contains(darknodeID),
     );
 
     setDarknodeList((latestDarknodeList) =>
-      (latestDarknodeList || Map()).set(address, newList)
+      (latestDarknodeList || Map()).set(address, newList),
     );
     setDarknodeNames(newNames);
     setDarknodeRegisteringList(newDarknodeRegisteringList);
@@ -244,20 +244,20 @@ const useNetworkContainer = () => {
   const storeEmptyDarknodeList = () => {
     if (address) {
       setDarknodeList((latestDarknodeList) =>
-        (latestDarknodeList || Map()).set(address, OrderedSet())
+        (latestDarknodeList || Map()).set(address, OrderedSet()),
       );
     }
   };
 
   const addRegisteringDarknode = (darknodeID: string, publicKey: string) => {
     setDarknodeRegisteringList((latestDarknodeRegisteringList) =>
-      (latestDarknodeRegisteringList || Map()).set(darknodeID, publicKey)
+      (latestDarknodeRegisteringList || Map()).set(darknodeID, publicKey),
     );
   };
 
   const removeRegisteringDarknode = (darknodeID: string) => {
     return setDarknodeRegisteringList((latestDarknodeRegisteringList) =>
-      (latestDarknodeRegisteringList || Map()).remove(darknodeID)
+      (latestDarknodeRegisteringList || Map()).remove(darknodeID),
     );
   };
 
@@ -269,13 +269,13 @@ const useNetworkContainer = () => {
     return setWithdrawAddresses((latestWithdrawAddresses) =>
       (latestWithdrawAddresses || Map()).set(
         token,
-        foundList.push(withdrawAddress)
-      )
+        foundList.push(withdrawAddress),
+      ),
     );
   };
   const removeFromWithdrawAddresses = (
     token: Token,
-    withdrawAddress: string
+    withdrawAddress: string,
   ) => {
     const list = withdrawAddresses.get(token);
     if (!list) {
@@ -286,40 +286,40 @@ const useNetworkContainer = () => {
       return;
     }
     return setWithdrawAddresses((latestWithdrawAddresses) =>
-      (latestWithdrawAddresses || Map()).set(token, list.remove(foundIndex))
+      (latestWithdrawAddresses || Map()).set(token, list.remove(foundIndex)),
     );
   };
 
   const storeDarknodeDetails = (details: DarknodesState) => {
     return setDarknodeDetails((latestDarknodeDetails) =>
-      latestDarknodeDetails.set(details.ID, details)
+      latestDarknodeDetails.set(details.ID, details),
     );
   };
 
   const storeDarknodeName = (darknodeID: string, name: string) => {
     return setDarknodeNames((latestDarknodeNames) =>
-      (latestDarknodeNames || Map()).set(darknodeID, name)
+      (latestDarknodeNames || Map()).set(darknodeID, name),
     );
   };
 
   // tslint:disable-next-line: no-any
   const addTransaction = (txHash: string, tx: PromiEvent<any>) => {
     return setTransactions((latestTransactions) =>
-      latestTransactions.set(txHash, tx)
+      latestTransactions.set(txHash, tx),
     );
   };
   const storeTxConfirmations = (
     txHash: string,
-    numberOfConfirmations: number
+    numberOfConfirmations: number,
   ) => {
     return setConfirmations((latestConfirmations) =>
-      latestConfirmations.set(txHash, numberOfConfirmations)
+      latestConfirmations.set(txHash, numberOfConfirmations),
     );
   };
 
   const waitForTX = async <T extends {}>(
     promiEvent: PromiEvent<T>,
-    onConfirmation?: (confirmations?: number) => void
+    onConfirmation?: (confirmations?: number) => void,
   ) =>
     new Promise<string>((resolve, reject) => {
       promiEvent
@@ -380,17 +380,17 @@ const useNetworkContainer = () => {
               await darknodePayment.methods
                 .previousCycleRewardShare(tokenAddress)
                 .call(/**/),
-            2
+            2,
           );
           return new BigNumber(
-            (previousCycleRewardShareBN || new BigNumber(0)).toString()
+            (previousCycleRewardShareBN || new BigNumber(0)).toString(),
           ).decimalPlaces(0);
         } catch (error) {
           console.error(`Error fetching rewards for ${token}`, error);
           return new BigNumber(0);
         }
       }).toOrderedMap(),
-      new BigNumber(0)
+      new BigNumber(0),
     );
 
     const πCurrent = safePromiseAllMap(
@@ -408,7 +408,7 @@ const useNetworkContainer = () => {
               await darknodePayment.methods
                 .currentCycleRewardPool(tokenAddress)
                 .call(),
-            2
+            2,
           );
           if (currentCycleRewardPool === null) {
             return new BigNumber(0);
@@ -422,14 +422,14 @@ const useNetworkContainer = () => {
           return null;
         }
       }).toOrderedMap(),
-      null
+      null,
     );
 
     const previous = await πPrevious;
     if (isDefined(latestRenVM)) {
       newPendingRewards = newPendingRewards.set(
         latestRenVM.previousCycle,
-        previous
+        previous,
       );
     }
 
@@ -437,7 +437,7 @@ const useNetworkContainer = () => {
     if (isDefined(latestRenVM)) {
       newPendingRewards = newPendingRewards.set(
         latestRenVM.currentCycle,
-        current
+        current,
       );
     }
 
@@ -454,19 +454,19 @@ const useNetworkContainer = () => {
       if (isDefined(latestRenVM)) {
         newPendingTotalInEth = newPendingTotalInEth.set(
           latestRenVM.previousCycle,
-          previousTotal
+          previousTotal,
         );
         newPendingRewardsInEth = newPendingRewardsInEth.set(
           latestRenVM.previousCycle,
-          previousInEth
+          previousInEth,
         );
         newPendingTotalInEth = newPendingTotalInEth.set(
           latestRenVM.currentCycle,
-          currentTotal
+          currentTotal,
         );
         newPendingRewardsInEth = newPendingRewardsInEth.set(
           latestRenVM.currentCycle,
-          currentInEth
+          currentInEth,
         );
       }
     }
@@ -483,7 +483,7 @@ const useNetworkContainer = () => {
       return;
     }
     const fetchCycleAndPendingRewardsPromise = fetchCycleAndPendingRewards(
-      renVM
+      renVM,
     );
 
     const {
@@ -503,7 +503,7 @@ const useNetworkContainer = () => {
 
   const updateDarknodeDetails = async (
     darknodeID: string,
-    latestRenVM?: RenVM
+    latestRenVM?: RenVM,
   ) => {
     const latestRenVMOrNull = latestRenVM || (await fetchRenVM());
     if (latestRenVMOrNull) {
@@ -513,14 +513,14 @@ const useNetworkContainer = () => {
         web3,
         renNetwork,
         darknodeID,
-        tokenPrices
+        tokenPrices,
       );
       storeDarknodeDetails(details);
     }
   };
 
   const updateOperatorDarknodes = async (
-    selectedDarknode?: string | undefined
+    selectedDarknode?: string | undefined,
   ) => {
     if (!address) {
       return;
@@ -529,7 +529,7 @@ const useNetworkContainer = () => {
     let newDarknodeList = OrderedSet<string>();
     if (darknodeRegisteringList.size > 0) {
       newDarknodeList = newDarknodeList.merge(
-        darknodeRegisteringList.keySeq().toOrderedSet()
+        darknodeRegisteringList.keySeq().toOrderedSet(),
       );
     }
     const accountDarknodeList = darknodeList.get(address);
@@ -545,7 +545,7 @@ const useNetworkContainer = () => {
         if (darknodeList.size === 0) {
           setRegistrySync({ progress, target });
         }
-      }
+      },
     ); /* , (darknodeID) => {
                             addDarknode({ darknodeID, address, network: renNetwork.name });
                     }, ); */
@@ -575,7 +575,7 @@ const useNetworkContainer = () => {
           }
           return updateDarknodeDetails(darknodeID, latestRenVM);
         })
-        .toArray()
+        .toArray(),
     );
 
     await Promise.all(
@@ -596,7 +596,7 @@ const useNetworkContainer = () => {
           }
           return;
         })
-        .toArray()
+        .toArray(),
     );
 
     if (newDarknodeList.size === 0) {
@@ -621,7 +621,7 @@ const useNetworkContainer = () => {
         address,
         darknodeID,
         token,
-        waitForTX
+        waitForTX,
       );
       const onCancel = () => {
         clearPopup();
@@ -659,7 +659,7 @@ const useNetworkContainer = () => {
     darknodeID: string,
     publicKey: string,
     onCancel: () => void,
-    onDone: () => void
+    onDone: () => void,
   ) => {
     if (!web3Address) {
       throw new Error(`Unable to retrieve account address.`);
@@ -674,7 +674,7 @@ const useNetworkContainer = () => {
         renNetwork,
         web3Address,
         renVM.minimumBond,
-        waitForTX
+        waitForTX,
       );
     };
 
@@ -688,7 +688,7 @@ const useNetworkContainer = () => {
         renVM.minimumBond,
         onCancel,
         onDone,
-        waitForTX
+        waitForTX,
       );
 
       if (tokenPrices) {
@@ -697,7 +697,7 @@ const useNetworkContainer = () => {
         } catch (error) {
           catchBackgroundException(
             error,
-            "Error in operatorPopupActions > showRegisterPopup > updateDarknodeDetails"
+            "Error in operatorPopupActions > showRegisterPopup > updateDarknodeDetails",
           );
         }
       }
@@ -735,7 +735,7 @@ const useNetworkContainer = () => {
     darknodeID: string,
     remainingFees: BigNumber | null,
     onCancel: () => void,
-    onDone: () => void
+    onDone: () => void,
   ) => {
     if (!address) {
       throw new Error(`Unable to retrieve account address.`);
@@ -749,7 +749,7 @@ const useNetworkContainer = () => {
         darknodeID,
         onCancel,
         onDone,
-        waitForTX
+        waitForTX,
       );
     };
 
@@ -797,7 +797,7 @@ const useNetworkContainer = () => {
   const showRefundPopup = (
     darknodeID: string,
     onCancel: () => void,
-    onDone: () => void
+    onDone: () => void,
   ) => {
     if (!address) {
       throw new Error(`Unable to retrieve account address.`);
@@ -811,7 +811,7 @@ const useNetworkContainer = () => {
         darknodeID,
         onCancel,
         onDone,
-        waitForTX
+        waitForTX,
       );
     };
 
@@ -838,7 +838,7 @@ const useNetworkContainer = () => {
     darknodeID: string,
     ethAmountStr: string,
     onCancel: () => void,
-    onDone: () => void
+    onDone: () => void,
   ) => {
     if (!address) {
       throw new Error(`Unable to retrieve account address.`);
@@ -852,7 +852,7 @@ const useNetworkContainer = () => {
         ethAmountStr,
         onCancel,
         onDone,
-        waitForTX
+        waitForTX,
       );
     };
 

@@ -33,7 +33,7 @@ export const EpochProgress: React.FC<Props> = ({
     <div
       className={classNames(
         "epoch--block--charts",
-        small ? "epoch--block--charts--small" : null
+        small ? "epoch--block--charts--small" : null,
       )}
     >
       <div className="resources--chart--and--label">
@@ -43,7 +43,7 @@ export const EpochProgress: React.FC<Props> = ({
               (timeSinceLastEpoch || new BigNumber(0))
                 .div(minimumEpochInterval || new BigNumber(1))
                 .times(100),
-              100
+              100,
             ).toNumber()}
             text={
               isDefined(currentTime) && isDefined(timeUntilNextEpoch)

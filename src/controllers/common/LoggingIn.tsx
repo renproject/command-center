@@ -19,7 +19,7 @@ export const LoggingIn: React.FC<{}> = () => {
 
   useEffect(() => {
     handleLogin().catch((error) =>
-      catchBackgroundException(error, "Error in LoggingIn > handleLogin")
+      catchBackgroundException(error, "Error in LoggingIn > handleLogin"),
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

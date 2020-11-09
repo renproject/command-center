@@ -31,7 +31,7 @@ const darknodeID = darknodeIDBase58ToHex("8MJpA1rXYMPTeJoYjsFBHJcuYBe7zQ");
 
 const simpleWaitForTX: WaitForTX = async <T extends {}>(
   promiEvent: PromiEvent<T>,
-  onConfirmation?: (confirmations?: number) => void
+  onConfirmation?: (confirmations?: number) => void,
 ) =>
   new Promise<string>((resolve, reject) => {
     promiEvent
@@ -51,12 +51,12 @@ const callEpoch = async (
   renNetwork: RenNetworkDetails,
   fromAddress: string,
   waitForTX: WaitForTX,
-  txConfig?: TransactionConfig
+  txConfig?: TransactionConfig,
 ) => {
   const darknodeRegistry = getDarknodeRegistry(web3Object, renNetwork);
 
   return await waitForTX(
-    darknodeRegistry.methods.epoch().send({ ...txConfig, from: fromAddress })
+    darknodeRegistry.methods.epoch().send({ ...txConfig, from: fromAddress }),
   );
 };
 
@@ -64,11 +64,11 @@ test("registering darknode", async () => {
   jest.setTimeout(20000);
 
   const bond = new BigNumber(100000).times(
-    new BigNumber(10).exponentiatedBy(18)
+    new BigNumber(10).exponentiatedBy(18),
   );
 
   (await getDarknodeStatus(web3, network, darknodeID)).should.equal(
-    RegistrationStatus.Unregistered
+    RegistrationStatus.Unregistered,
   );
 
   // Register
@@ -84,12 +84,12 @@ test("registering darknode", async () => {
       bond,
       () => null,
       resolve,
-      simpleWaitForTX
-    )
+      simpleWaitForTX,
+    ),
   );
 
   (await getDarknodeStatus(web3, network, darknodeID)).should.equal(
-    RegistrationStatus.RegistrationPending
+    RegistrationStatus.RegistrationPending,
   );
 
   (await getOperatorDarknodes(web3, network, address))
@@ -99,7 +99,7 @@ test("registering darknode", async () => {
   await callEpoch(web3, network, address, simpleWaitForTX);
 
   (await getDarknodeStatus(web3, network, darknodeID)).should.equal(
-    RegistrationStatus.Registered
+    RegistrationStatus.Registered,
   );
 
   (await getOperatorDarknodes(web3, network, address))
@@ -113,7 +113,7 @@ const triggerBlock = async () => {
     // tslint:disable-next-line: no-any
     (getDarknodeRegistry(web3, network).methods.minimumBond() as any).send({
       from: address,
-    })
+    }),
   );
 };
 
@@ -127,12 +127,12 @@ test("deregistering darknode", async () => {
       darknodeID,
       () => null,
       resolve,
-      simpleWaitForTX
-    )
+      simpleWaitForTX,
+    ),
   );
 
   (await getDarknodeStatus(web3, network, darknodeID)).should.equal(
-    RegistrationStatus.DeregistrationPending
+    RegistrationStatus.DeregistrationPending,
   );
 
   await callEpoch(web3, network, address, simpleWaitForTX);
@@ -140,7 +140,7 @@ test("deregistering darknode", async () => {
   await callEpoch(web3, network, address, simpleWaitForTX);
 
   (await getDarknodeStatus(web3, network, darknodeID)).should.equal(
-    RegistrationStatus.Refundable
+    RegistrationStatus.Refundable,
   );
 
   // Refund
@@ -152,11 +152,11 @@ test("deregistering darknode", async () => {
       darknodeID,
       () => null,
       resolve,
-      simpleWaitForTX
-    )
+      simpleWaitForTX,
+    ),
   );
 
   (await getDarknodeStatus(web3, network, darknodeID)).should.equal(
-    RegistrationStatus.Unregistered
+    RegistrationStatus.Unregistered,
   );
 });

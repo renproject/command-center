@@ -33,7 +33,7 @@ const defaultDigits = (quoteCurrency: Currency | Token) => {
 
 export const tokenToReadable = (
   amount: number | string | BigNumber,
-  token: Token
+  token: Token,
 ): BigNumber => {
   const tokenDetails = AllTokenDetails.get(token, undefined);
   const decimals = tokenDetails
@@ -49,7 +49,7 @@ export const tokenToQuote = (
   amount: number | string | BigNumber,
   token: Token,
   quoteCurrency: Currency,
-  tokenPrices: TokenPrices
+  tokenPrices: TokenPrices,
 ): BigNumber => {
   const tokenDetails = AllTokenDetails.get(token, undefined);
   const decimals = tokenDetails
@@ -84,7 +84,7 @@ export const TokenBalance: React.FC<Props> = ({
     : 0;
 
   const amountBN = new BigNumber(amount).div(
-    new BigNumber(Math.pow(10, decimals))
+    new BigNumber(Math.pow(10, decimals)),
   );
 
   if (!convertTo) {
@@ -113,7 +113,7 @@ export const TokenBalance: React.FC<Props> = ({
     .multipliedBy(price)
     .decimalPlaces(
       digits === undefined ? defaultDigits(convertTo) : digits,
-      BigNumber.ROUND_FLOOR
+      BigNumber.ROUND_FLOOR,
     );
   return <>{format ? resolvedAmount.toFormat() : resolvedAmount.toFixed()}</>;
 };

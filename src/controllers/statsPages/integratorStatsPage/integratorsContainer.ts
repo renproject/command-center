@@ -9,11 +9,11 @@ import { useEffect, useMemo, useState } from "react";
 import { createContainer } from "unstated-next";
 
 import {
-    Integrator,
-    QUERY_BLOCK,
-    QUERY_INTEGRATORS,
-    QUERY_INTEGRATORS_HISTORY,
-    QueryBlockResponse,
+  Integrator,
+  QUERY_BLOCK,
+  QUERY_INTEGRATORS,
+  QUERY_INTEGRATORS_HISTORY,
+  QueryBlockResponse,
 } from "../../../lib/graphQL/queries";
 import { getPeriodTimespan, PeriodType } from "../../../lib/graphQL/volumes";
 import { extractError } from "../../../lib/react/errors";

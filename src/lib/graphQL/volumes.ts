@@ -1,8 +1,8 @@
 import { ApolloClient, gql } from "@apollo/react-hooks";
 import {
-    renMainnet,
-    RenNetwork,
-    RenNetworkDetails,
+  renMainnet,
+  RenNetwork,
+  RenNetworkDetails,
 } from "@renproject/contracts";
 import { Currency } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
@@ -11,10 +11,10 @@ import moment from "moment";
 
 import { Token, TokenPrices } from "../ethereum/tokens";
 import {
-    PeriodData,
-    QUERY_BLOCK,
-    QUERY_RENVM_HISTORY,
-    RawRenVM,
+  PeriodData,
+  QUERY_BLOCK,
+  QUERY_RENVM_HISTORY,
+  RawRenVM,
 } from "./queries";
 
 export enum PeriodType {

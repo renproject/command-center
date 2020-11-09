@@ -17,7 +17,7 @@ export class DarknodePayment extends Contract {
   constructor(
     jsonInterface: any[],
     address?: string,
-    options?: ContractOptions
+    options?: ContractOptions,
   );
   clone(): DarknodePayment;
   address: string;
@@ -46,7 +46,7 @@ export class DarknodePayment extends Contract {
 
     darknodeBalances(
       _darknodeID: string,
-      _token: string
+      _token: string,
     ): TransactionObject<string>;
 
     darknodeRegistry(): TransactionObject<string>;
@@ -83,7 +83,7 @@ export class DarknodePayment extends Contract {
 
     rewardClaimed(
       arg0: string,
-      arg1: number | string
+      arg1: number | string,
     ): TransactionObject<boolean>;
 
     store(): TransactionObject<string>;
@@ -106,7 +106,7 @@ export class DarknodePayment extends Contract {
 
     withdrawMultiple(
       _darknodes: string[],
-      _tokens: string[]
+      _tokens: string[],
     ): TransactionObject<void>;
   };
   events: {
@@ -162,7 +162,7 @@ export class DarknodePayment extends Contract {
     }>;
     allEvents: (
       options?: EventOptions,
-      cb?: Callback<EventLog>
+      cb?: Callback<EventLog>,
     ) => EventEmitter;
   };
 }

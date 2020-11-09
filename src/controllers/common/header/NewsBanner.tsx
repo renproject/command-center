@@ -56,7 +56,7 @@ export const NewsBanner: React.FC = () => {
     <div
       className={classNames(
         "news--slider--container",
-        mediumPosts.length ? "loaded" : ""
+        mediumPosts.length ? "loaded" : "",
       )}
     >
       <Slider

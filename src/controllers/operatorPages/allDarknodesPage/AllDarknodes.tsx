@@ -22,17 +22,17 @@ export const AllDarknodes: React.FC<{}> = () => {
 
   const accountDarknodeList = useMemo(
     () => (address ? darknodeList.get(address, null) : null),
-    [address, darknodeList]
+    [address, darknodeList],
   );
   const accountHiddenDarknodes = useMemo(
     () => (address ? hiddenDarknodes.get(address, null) : null),
-    [address, hiddenDarknodes]
+    [address, hiddenDarknodes],
   );
 
   const shownDarknodeList = !accountDarknodeList
     ? accountDarknodeList
     : accountDarknodeList.filter(
-        (d) => !accountHiddenDarknodes || !accountHiddenDarknodes.contains(d)
+        (d) => !accountHiddenDarknodes || !accountHiddenDarknodes.contains(d),
       );
 
   return (

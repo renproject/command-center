@@ -29,7 +29,7 @@ interface QueryResponse {
 // tslint:disable-next-line: no-any
 const parallelLimit = <T>(
   promiseFactories: Array<() => Promise<T>>,
-  limit: number
+  limit: number,
 ): any => {
   const result: T[] = [];
   let cnt = 0;
@@ -120,7 +120,7 @@ const fetchLocationFromAPI = async (ip: string): Promise<Location> => {
 };
 
 const parseMultiAddress = (
-  multiAddress: string
+  multiAddress: string,
 ): { ip: string; darknodeID: string } => {
   const [, , ip, , , , darknodeID] = multiAddress.split("/");
   return { ip, darknodeID };
@@ -143,7 +143,7 @@ const getAllDarknodes = async (network: RenNetworkDetails) => {
         await Axios.post<QueryResponse>(lightnode, request, {
           timeout: DEFAULT_REQUEST_TIMEOUT,
         }),
-      2
+      2,
     )
   ).data;
   return response.result.peers;
@@ -177,7 +177,7 @@ const useMapContainer = () => {
 
   // tslint:disable-next-line: prefer-const
   let [darknodes, setDarknodes] = useState<Map<string, DarknodeLocation>>(
-    Map()
+    Map(),
   );
   // tslint:disable-next-line: prefer-const
   let [darknodeCount, setDarknodeCount] = useState<number | null>(null);
@@ -223,7 +223,7 @@ const useMapContainer = () => {
             longitude + random(darknodeID),
             latitude + random(darknodeID),
           ],
-        })
+        }),
       );
     } catch (error) {
       // Ignore errors
@@ -237,7 +237,7 @@ const useMapContainer = () => {
         darknodeCount = darknodeIDs.length;
         setDarknodeCount(darknodeCount);
         const updateDarknodes = darknodeIDs.map((darknodeID: string) => () =>
-          addDarknodeID(darknodeID)
+          addDarknodeID(darknodeID),
         );
         await parallelLimit(updateDarknodes, 4);
       } catch (error) {

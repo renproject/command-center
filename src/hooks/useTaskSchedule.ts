@@ -9,7 +9,7 @@ type ReturnResult<T> = number | { timeout: number; result: T };
 export const useTaskSchedule = <T = undefined>(
   task: () => ReturnResult<T> | Promise<ReturnResult<T>>,
   extraDependencies: any[] = [],
-  errorTimeout = 1
+  errorTimeout = 1,
 ) => {
   const now = time();
   const [, rerender] = useState(true);
@@ -24,10 +24,10 @@ export const useTaskSchedule = <T = undefined>(
       setLoopTimeout(nextTimeout);
       setTimeout(
         () => rerender((currentR) => !currentR),
-        nextTimeout * SECONDS
+        nextTimeout * SECONDS,
       );
     },
-    [setLastUpdated, setLoopTimeout, rerender]
+    [setLastUpdated, setLoopTimeout, rerender],
   );
 
   const runTask = useCallback(async (): Promise<T> => {

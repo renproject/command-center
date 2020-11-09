@@ -46,7 +46,7 @@ export const CardView: React.FC<Props> = ({
       e.preventDefault();
       removeDarknode();
     },
-    [removeDarknode]
+    [removeDarknode],
   );
 
   return (
@@ -54,7 +54,7 @@ export const CardView: React.FC<Props> = ({
       <div
         className={classNames(
           "darknode-card",
-          faded ? "darknode-card--faded" : ""
+          faded ? "darknode-card--faded" : "",
         )}
       >
         <div className="darknode-card--top">

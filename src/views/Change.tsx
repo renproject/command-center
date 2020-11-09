@@ -33,7 +33,7 @@ export const Change: React.FC<Props> = ({
   const resolvedClassName = classNames(
     className,
     "change-indicator",
-    diractionClassName
+    diractionClassName,
   );
   return (
     <span

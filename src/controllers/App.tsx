@@ -38,7 +38,7 @@ export const App = () => {
   const withAccount = useCallback(
     <T extends React.ComponentClass | React.StatelessComponent>(component: T) =>
       address ? component : LoggingIn,
-    [address]
+    [address],
   );
 
   const showNetworkBanner = renNetwork.name !== DEFAULT_REN_NETWORK;
@@ -46,7 +46,7 @@ export const App = () => {
   useEffect(() => {
     if (loggedInBefore) {
       promptLogin({ manual: false }).catch((error) =>
-        catchBackgroundException(error, "Error in App > promptLogin")
+        catchBackgroundException(error, "Error in App > promptLogin"),
       );
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -60,7 +60,7 @@ export const App = () => {
           address ? "with-account" : "without-account",
           showNetworkBanner
             ? `with-banner with-banner--${renNetwork.chain}`
-            : ""
+            : "",
         )}
       >
         {showNetworkBanner ? <NetworkBanner renNetwork={renNetwork} /> : null}

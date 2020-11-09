@@ -43,7 +43,7 @@ export const TopUpController: React.FC<Props> = ({ darknodeID }) => {
             amount={accountBalance.times(new BigNumber(10).pow(18))}
             digits={3}
           />
-        </>
+        </>,
       );
       setDisabled(true);
     } else if (resultMessage || disabled) {
@@ -58,7 +58,7 @@ export const TopUpController: React.FC<Props> = ({ darknodeID }) => {
       traderBalance = new BigNumber(0);
     } else {
       traderBalance = new BigNumber(
-        (await web3.eth.getBalance(address)).toString()
+        (await web3.eth.getBalance(address)).toString(),
       ).div(new BigNumber(10).exponentiatedBy(18));
     }
     setAccountBalance(traderBalance);
@@ -113,7 +113,7 @@ export const TopUpController: React.FC<Props> = ({ darknodeID }) => {
     updateTraderBalance().catch((error) => {
       catchBackgroundException(
         error,
-        "Error in TopUpController > updateTraderBalance"
+        "Error in TopUpController > updateTraderBalance",
       );
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps

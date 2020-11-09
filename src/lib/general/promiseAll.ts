@@ -6,7 +6,7 @@ import { List, OrderedMap } from "immutable";
 // provided default value instead of throwing the entire promise.
 export const safePromiseAllList = async <b>(
   orderedMap: List<Promise<b>>,
-  defaultValue: b
+  defaultValue: b,
 ): Promise<List<b>> => {
   let newOrderedMap = List<b>();
   for (const valueP of orderedMap.toArray()) {
@@ -25,7 +25,7 @@ export const safePromiseAllList = async <b>(
 // This variation maps over an OrderedMap instead of an array.
 export const safePromiseAllMap = async <a, b>(
   orderedMap: OrderedMap<a, Promise<b>>,
-  defaultValue: b
+  defaultValue: b,
 ): Promise<OrderedMap<a, b>> => {
   let newOrderedMap = OrderedMap<a, b>();
   for (const [key, valueP] of orderedMap.toArray()) {

@@ -6,7 +6,7 @@ export const darknodeIDBase58ToHex = (darknodeID: string): string =>
   toChecksumAddress(
     `0x${new EncodedData(darknodeID, Encodings.BASE58)
       .toHex("")
-      .slice(4)}`.toLowerCase()
+      .slice(4)}`.toLowerCase(),
   );
 
 export const darknodeIDHexToBase58 = (darknodeID: string): string =>

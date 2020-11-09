@@ -29,7 +29,7 @@ if (NODE_ENV !== "development") {
 onLoad(
   `Command Center${
     DEFAULT_REN_NETWORK !== "mainnet" ? " (" + DEFAULT_REN_NETWORK + ")" : ""
-  }`
+  }`,
 );
 
 const render = (Component: () => JSX.Element) => {
@@ -41,7 +41,7 @@ const render = (Component: () => JSX.Element) => {
         </Connect>
       </Router>
     </ErrorBoundary>,
-    document.getElementById("root") as HTMLElement
+    document.getElementById("root") as HTMLElement,
   );
 };
 

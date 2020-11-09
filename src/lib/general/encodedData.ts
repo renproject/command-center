@@ -18,7 +18,7 @@ const DefaultEncodedData = {
 
 const parse = (
   param: string | Buffer | typeof DefaultEncodedData,
-  encoding?: Encodings
+  encoding?: Encodings,
 ) => {
   if (encoding !== undefined) {
     if (typeof param === "string" && encoding !== Encodings.BUFFER) {
@@ -95,7 +95,7 @@ export class EncodedData extends Record(DefaultEncodedData) {
 
   constructor(
     param: EncodedData | string | Buffer | typeof DefaultEncodedData,
-    encoding?: Encodings
+    encoding?: Encodings,
   ) {
     if (param instanceof EncodedData) {
       param = { value: param.value, encoding: param.encoding };

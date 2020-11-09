@@ -74,7 +74,7 @@ export class ErrorBoundary extends React.Component<Props, typeof defaultState> {
           className={classNames(
             this.props.popup ? "popup" : "error-boundary--standard",
             "error-boundary",
-            className
+            className,
           )}
         >
           <div className="error-boundary--header">

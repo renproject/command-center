@@ -53,7 +53,7 @@ export const SidebarIcon: React.FC<Props> = ({
         className={classNames(
           "sidebar--row",
           active ? "sidebar--active" : "",
-          faded ? "sidebar--faded" : ""
+          faded ? "sidebar--faded" : "",
         )}
       >
         <div className="sidebar--icon">

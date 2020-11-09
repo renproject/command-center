@@ -9,7 +9,7 @@ const fromStorage = <T>(value: string | null) => {
 const readItem = <T>(
   storage: StorageObj,
   key: string,
-  unmarshalFromStorage: (value: string | null) => T | null = fromStorage
+  unmarshalFromStorage: (value: string | null) => T | null = fromStorage,
 ) => {
   try {
     const storedValue = storage.getItem(key);
@@ -27,7 +27,7 @@ const writeItem = async <T>(
   storage: StorageObj,
   key: string,
   value: T | null,
-  marshalToStorage: (value: T | null) => string = toStorage
+  marshalToStorage: (value: T | null) => string = toStorage,
 ) => {
   try {
     if (value !== null) {
@@ -45,7 +45,7 @@ export const useInitialState = <S>(
   storage: StorageObj,
   key: string,
   defaultState: S,
-  unmarshalFromStorage: (value: string | null) => S | null = fromStorage
+  unmarshalFromStorage: (value: string | null) => S | null = fromStorage,
 ) => {
   const defaultStateRef = useRef(defaultState);
 
@@ -53,7 +53,7 @@ export const useInitialState = <S>(
     () =>
       readItem<S>(storage, key, unmarshalFromStorage) ??
       defaultStateRef.current,
-    [key, storage, unmarshalFromStorage]
+    [key, storage, unmarshalFromStorage],
   );
 };
 
@@ -61,7 +61,7 @@ export const useStorageWriter = <S>(
   storage: StorageObj,
   key: string,
   state: S | null,
-  marshalToStorage: (value: S | null) => string = toStorage
+  marshalToStorage: (value: S | null) => string = toStorage,
 ) => {
   const [writeError, setWriteError] = useState<Error | undefined>(undefined);
 
@@ -89,7 +89,7 @@ export const useStorageListener = <S>(
   key: string,
   defaultState: S,
   onChange: (newValue: S) => void,
-  unmarshalFromStorage: (value: string | null) => S | null = fromStorage
+  unmarshalFromStorage: (value: string | null) => S | null = fromStorage,
 ) => {
   const defaultStateRef = useRef(defaultState);
   const onChangeRef = useRef(onChange);
@@ -102,7 +102,8 @@ export const useStorageListener = <S>(
     }
 
     onChangeRef.current(
-      readItem<S>(storage, key, unmarshalFromStorage) ?? defaultStateRef.current
+      readItem<S>(storage, key, unmarshalFromStorage) ??
+        defaultStateRef.current,
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key, storage]);
@@ -111,7 +112,7 @@ export const useStorageListener = <S>(
     const onStorageChange = (event: StorageEvent) => {
       if (event.key === key) {
         onChangeRef.current(
-          unmarshalFromStorage(event.newValue) ?? defaultStateRef.current
+          unmarshalFromStorage(event.newValue) ?? defaultStateRef.current,
         );
       }
     };

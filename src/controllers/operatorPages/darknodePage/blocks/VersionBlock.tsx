@@ -50,7 +50,7 @@ export const VersionBlock: React.FC<Props> = ({ darknodeDetails }) => {
           "version-block--status",
           darknodeDetails && darknodeDetails.nodeStatistics
             ? "version-block--status--operational"
-            : ""
+            : "",
         )}
       >
         <StatusDot

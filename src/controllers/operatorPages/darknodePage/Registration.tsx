@@ -100,13 +100,13 @@ export const Registration: React.FC<Props> = ({
         darknodeID,
         publicKey,
         onCancel,
-        onDoneRegister
+        onDoneRegister,
       );
       unhideDarknode(darknodeID, address);
     } catch (error) {
       catchInteractionException(
         error,
-        "Error in Registration > handleRegister > showRegisterPopup"
+        "Error in Registration > handleRegister > showRegisterPopup",
       );
       onCancel();
     }
@@ -122,7 +122,7 @@ export const Registration: React.FC<Props> = ({
       darknodeID,
       darknodeDetails && darknodeDetails.feesEarnedTotalEth,
       onCancel,
-      onDone
+      onDone,
     );
   };
 
@@ -155,7 +155,7 @@ export const Registration: React.FC<Props> = ({
             "status--title",
             registrationStatus === RegistrationStatus.Registered
               ? "status--registered"
-              : ""
+              : "",
           )}
         >
           <StatusDot

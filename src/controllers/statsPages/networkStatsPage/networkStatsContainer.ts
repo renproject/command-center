@@ -8,11 +8,11 @@ import { createContainer } from "unstated-next";
 import { AllTokenDetails, Token } from "../../../lib/ethereum/tokens";
 import { isDefined } from "../../../lib/general/isDefined";
 import {
-    getVolumes,
-    normalizeSeriesVolumes,
-    PeriodType,
-    QuoteSeriesData,
-    SeriesData,
+  getVolumes,
+  normalizeSeriesVolumes,
+  PeriodType,
+  QuoteSeriesData,
+  SeriesData,
 } from "../../../lib/graphQL/volumes";
 import { GraphContainer } from "../../../store/graphContainer";
 import { NetworkContainer } from "../../../store/networkContainer";

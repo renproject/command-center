@@ -1,9 +1,9 @@
 import {
-    Currency,
-    CurrencyIcon,
-    Loading,
-    textCurrencyIcon,
-    TokenIcon,
+  Currency,
+  CurrencyIcon,
+  Loading,
+  textCurrencyIcon,
+  TokenIcon,
 } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import React from "react";

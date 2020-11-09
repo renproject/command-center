@@ -35,7 +35,7 @@ export const Stat = ({
       "stat",
       highlight ? "stat--highlight" : "",
       nested ? "stat--nested" : "",
-      className
+      className,
     )}
   >
     <div className="hr" />

@@ -70,7 +70,7 @@ export const WithdrawPopup: React.FC<Props> = ({
   };
 
   const handleSelectAddress = (
-    event: React.FormEvent<HTMLInputElement | HTMLButtonElement>
+    event: React.FormEvent<HTMLInputElement | HTMLButtonElement>,
   ) => {
     const element = event.target as HTMLInputElement | HTMLButtonElement;
     if (selectedAddress === element.value) {
@@ -81,7 +81,7 @@ export const WithdrawPopup: React.FC<Props> = ({
   };
 
   const handleAddressInput = (
-    event: React.FormEvent<HTMLInputElement | HTMLButtonElement>
+    event: React.FormEvent<HTMLInputElement | HTMLButtonElement>,
   ) => {
     const element = event.target as HTMLInputElement | HTMLButtonElement;
     const address = element.value;
@@ -93,7 +93,7 @@ export const WithdrawPopup: React.FC<Props> = ({
       return;
     }
     setNewAddressValid(
-      tokenDetails.validator(address, renNetwork.networkID !== 1)
+      tokenDetails.validator(address, renNetwork.networkID !== 1),
     );
   };
 
@@ -247,7 +247,7 @@ export const WithdrawPopup: React.FC<Props> = ({
                           "withdraw--address--outer",
                           selectedAddress === withdrawAddress
                             ? `withdraw--selected`
-                            : ""
+                            : "",
                         )}
                       >
                         <button

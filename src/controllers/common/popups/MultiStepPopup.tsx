@@ -91,7 +91,7 @@ const MultiStepPopupClass: React.FC<Props> = ({
       run().catch((error) => {
         catchBackgroundException(
           error,
-          "Error in MultiStepPopup > running steps"
+          "Error in MultiStepPopup > running steps",
         );
       });
     }
@@ -154,7 +154,7 @@ const MultiStepPopupClass: React.FC<Props> = ({
             {steps.map(
               (
                 step: { name: string; call(): Promise<void> },
-                index: number
+                index: number,
               ) => {
                 const checked =
                   currentStep > index || (currentStep === index && !!runError);
@@ -165,7 +165,7 @@ const MultiStepPopupClass: React.FC<Props> = ({
                         "checkbox",
                         currentStep === index && runError
                           ? "checkbox--error"
-                          : ""
+                          : "",
                       )}
                       type="checkbox"
                       value="None"
@@ -179,7 +179,7 @@ const MultiStepPopupClass: React.FC<Props> = ({
                     </h2>
                   </li>
                 );
-              }
+              },
             )}
           </ul>
         ) : null}
@@ -223,7 +223,7 @@ const MultiStepPopupClass: React.FC<Props> = ({
             <button
               className={classNames(
                 "button",
-                warning ? "button--red" : "button--blue"
+                warning ? "button--red" : "button--blue",
               )}
               onClick={run}
             >

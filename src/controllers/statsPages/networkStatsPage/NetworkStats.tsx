@@ -3,9 +3,9 @@ import BigNumber from "bignumber.js";
 import React, { useMemo } from "react";
 
 import {
-    PeriodType,
-    QuotePeriodData,
-    SeriesData,
+  PeriodType,
+  QuotePeriodData,
+  SeriesData,
 } from "../../../lib/graphQL/volumes";
 import { ReactComponent as IconValueLocked } from "../../../styles/images/icon-value-locked.svg";
 import { ReactComponent as IconVolume } from "../../../styles/images/icon-volume.svg";

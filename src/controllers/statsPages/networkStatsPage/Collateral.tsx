@@ -133,7 +133,7 @@ export const Collateral: React.FC<Props> = ({
                       "collateral-chart--l",
                       overCollateralized
                         ? "collateral-chart--l--over"
-                        : "collateral-chart--l--under"
+                        : "collateral-chart--l--under",
                     )}
                   >
                     <span className="collateral-chart--label">L</span>
@@ -157,7 +157,7 @@ export const Collateral: React.FC<Props> = ({
                             ? "collateral-chart--label--down"
                             : bDivL < 3
                             ? "collateral-chart--label--right"
-                            : ""
+                            : "",
                         )}
                       >
                         B
@@ -170,7 +170,7 @@ export const Collateral: React.FC<Props> = ({
             <div
               className={classNames(
                 "collateral-table",
-                GREYCORE_ACTIVE ? "collateral-table-greycore" : ""
+                GREYCORE_ACTIVE ? "collateral-table-greycore" : "",
               )}
             >
               <div className="collateral-table--row">
@@ -178,7 +178,7 @@ export const Collateral: React.FC<Props> = ({
                   className={classNames(
                     "collateral-table--row--left",
                     "row--l",
-                    overCollateralized ? "row--l--over" : "row--l--under"
+                    overCollateralized ? "row--l--over" : "row--l--under",
                   )}
                 >
                   <RowBullet /> Value Locked (L)

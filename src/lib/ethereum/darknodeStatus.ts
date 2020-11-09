@@ -36,7 +36,7 @@ const isDeregistered = (darknode: Darknode, renVM: RenVM): boolean => {
 /// @param _epoch One of currentEpoch, previousEpoch.
 export const isRegisteredInEpoch = (
   darknode: Darknode,
-  epoch: Epoch
+  epoch: Epoch,
 ): boolean => {
   const registeredAt = darknode.registeredAt;
   const deregisteredAt = darknode.deregisteredAt;
@@ -76,7 +76,7 @@ const isRefundable = (darknode: Darknode, renVM: RenVM): boolean => {
   return (
     isDeregistered(darknode, renVM) &&
     darknode.deregisteredAt.lte(
-      renVM.previousEpoch.timestamp.minus(renVM.deregistrationInterval)
+      renVM.previousEpoch.timestamp.minus(renVM.deregistrationInterval),
     )
   );
 };
@@ -94,7 +94,7 @@ const isRefundable = (darknode: Darknode, renVM: RenVM): boolean => {
  */
 export const getDarknodeStatus = (
   darknode: Darknode,
-  renVM: RenVM
+  renVM: RenVM,
 ): RegistrationStatus => {
   const pendingRegistration = isPendingRegistration(darknode, renVM);
   const pendingDeregistration = isPendingDeregistration(darknode, renVM);

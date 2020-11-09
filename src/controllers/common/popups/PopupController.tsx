@@ -27,7 +27,7 @@ export const PopupController: React.FC = ({ children }) => {
       <div
         className={classNames(
           "popup--container",
-          popup && overlay ? "popup--blur" : ""
+          popup && overlay ? "popup--blur" : "",
         )}
       >
         {children}

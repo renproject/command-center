@@ -74,8 +74,8 @@ export const FeesItem: React.FC<Props> = ({
     wrapped &&
     new BigNumber(amount).lte(
       new BigNumber(MINIMUM_SHIFTED_AMOUNT).times(
-        new BigNumber(10).exponentiatedBy(decimals)
-      )
+        new BigNumber(10).exponentiatedBy(decimals),
+      ),
     )
   ) {
     isDisabled = true;
@@ -87,7 +87,7 @@ export const FeesItem: React.FC<Props> = ({
       title={title}
       className={classNames(
         "withdraw-fees",
-        isDisabled ? "withdraw-fees-disabled" : ""
+        isDisabled ? "withdraw-fees-disabled" : "",
       )}
       disabled={isDisabled || !tokenDetails || !tokenDetails.feesToken}
       onClick={isDisabled ? undefined : handleWithdraw}

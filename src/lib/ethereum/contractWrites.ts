@@ -35,7 +35,7 @@ export const fundNode = async (
   ethAmountStr: string,
   onCancel: () => void,
   onDone: () => void,
-  waitForTX: WaitForTX
+  waitForTX: WaitForTX,
 ): Promise<string> => {
   // Convert eth to wei
   const ethAmount = new BigNumber(ethAmountStr);
@@ -85,7 +85,7 @@ export const approveNode = async (
   renNetwork: RenNetworkDetails,
   address: string,
   bond: BigNumber,
-  waitForTX: WaitForTX
+  waitForTX: WaitForTX,
 ) => {
   const ercContract = getRenToken(web3, renNetwork);
 
@@ -95,19 +95,19 @@ export const approveNode = async (
     ercBalance = new BigNumber(
       await retryNTimes(
         async () => await ercContract.methods.balanceOf(address).call(),
-        2
-      )
+        2,
+      ),
     );
   } catch (error) {
     ercBalance = bond;
     catchInteractionException(
       error,
-      "Error in contractWrites.ts: approveNode > balanceOf"
+      "Error in contractWrites.ts: approveNode > balanceOf",
     );
   }
   if (ercBalance.lt(bond)) {
     throw noCapture(
-      new Error("You have insufficient REN to register a darknode.")
+      new Error("You have insufficient REN to register a darknode."),
     );
   }
 
@@ -120,16 +120,16 @@ export const approveNode = async (
           await ercContract.methods
             .allowance(
               address,
-              renNetwork.addresses.ren.DarknodeRegistry.address
+              renNetwork.addresses.ren.DarknodeRegistry.address,
             )
             .call(),
-        2
-      )
+        2,
+      ),
     );
   } catch (error) {
     catchInteractionException(
       error,
-      "Error in contractWrites.ts: approveNode > allowance"
+      "Error in contractWrites.ts: approveNode > allowance",
     );
     ercAllowance = new BigNumber(0);
   }
@@ -142,9 +142,9 @@ export const approveNode = async (
     ercContract.methods
       .approve(
         renNetwork.addresses.ren.DarknodeRegistry.address,
-        bond.toFixed()
+        bond.toFixed(),
       )
-      .send({ from: address })
+      .send({ from: address }),
   );
 };
 
@@ -170,7 +170,7 @@ export const registerNode = async (
   bond: BigNumber,
   onCancel: () => void,
   onDone: () => void,
-  waitForTX: WaitForTX
+  waitForTX: WaitForTX,
 ): Promise<string> => {
   const hardCodedGas = 500000;
 
@@ -184,17 +184,17 @@ export const registerNode = async (
           await ercContract.methods
             .allowance(
               address,
-              renNetwork.addresses.ren.DarknodeRegistry.address
+              renNetwork.addresses.ren.DarknodeRegistry.address,
             )
             .call(),
-        2
-      )
+        2,
+      ),
     );
   } catch (error) {
     ercAllowance = new BigNumber(0);
     catchInteractionException(
       error,
-      "Error in contractWrites.ts: registerNode > allowance"
+      "Error in contractWrites.ts: registerNode > allowance",
     );
   }
 
@@ -211,7 +211,7 @@ export const registerNode = async (
       darknodeRegistry.methods
         .register(darknodeID, publicKey)
         .send({ from: address, gas }),
-      onDone
+      onDone,
     );
     resolved = true;
     return res;
@@ -241,19 +241,19 @@ export const deregisterNode = async (
   darknodeID: string,
   onCancel: () => void,
   onDone: () => void,
-  waitForTX: WaitForTX
+  waitForTX: WaitForTX,
 ): Promise<string> => {
   // The node has been registered and can be deregistered.
 
   let resolved = false;
   const darknodeRegistry = new web3.eth.Contract(
     renNetwork.addresses.ren.DarknodeRegistry.abi,
-    renNetwork.addresses.ren.DarknodeRegistry.address
+    renNetwork.addresses.ren.DarknodeRegistry.address,
   );
   try {
     const res = await waitForTX(
       darknodeRegistry.methods.deregister(darknodeID).send({ from: address }),
-      onDone
+      onDone,
     );
     resolved = true;
     return res;
@@ -282,7 +282,7 @@ export const refundNode = async (
   darknodeID: string,
   onCancel: () => void,
   onDone: () => void,
-  waitForTX: WaitForTX
+  waitForTX: WaitForTX,
 ): Promise<string> => {
   // The node is awaiting refund.
 
@@ -292,7 +292,7 @@ export const refundNode = async (
   try {
     const res = await waitForTX(
       darknodeRegistry.methods.refund(darknodeID).send({ from: address }),
-      onDone
+      onDone,
     );
     resolved = true;
     return res;
@@ -326,7 +326,7 @@ const burn = async (
   token: Token,
   amount: BigNumber,
   recipient: string,
-  waitForTX: WaitForTX
+  waitForTX: WaitForTX,
 ) => {
   const contractDetails =
     token === Token.BTC
@@ -341,7 +341,7 @@ const burn = async (
   }
   const contract = new web3.eth.Contract(
     contractDetails.abi,
-    contractDetails._address
+    contractDetails._address,
   );
 
   const sdk = new RenSDK(renNetwork.name);
@@ -349,9 +349,9 @@ const burn = async (
   const txPromiEvent = contract.methods
     .burn(
       (sdk.utils[token].addressToHex || RenSDK.Tokens[token].addressToHex)(
-        recipient
+        recipient,
       ), // _to
-      amount.decimalPlaces(0).toFixed() // _amount in Satoshis
+      amount.decimalPlaces(0).toFixed(), // _amount in Satoshis
     )
     .send({ from: address });
 
@@ -397,7 +397,7 @@ export const withdrawToken = (
   address: string | null,
   darknodeID: string,
   token: Token,
-  waitForTX: WaitForTX
+  waitForTX: WaitForTX,
 ) => async (withdrawAddress?: string, options?: { asERC20: boolean }) => {
   const tokenDetails = AllTokenDetails.get(token);
   if (tokenDetails === undefined) {
@@ -456,12 +456,12 @@ export const withdrawToken = (
         const event = abiCoder.decodeLog(
           TransferEventABI,
           log.data,
-          (log.topics as string[]).slice(1)
+          (log.topics as string[]).slice(1),
         );
         if (
           toChecksumAddress(event.from) ===
             toChecksumAddress(
-              renNetwork.addresses.ren.DarknodePaymentStore.address
+              renNetwork.addresses.ren.DarknodePaymentStore.address,
             ) &&
           toChecksumAddress(event.to) === toChecksumAddress(address)
         ) {
@@ -481,7 +481,7 @@ export const withdrawToken = (
       token,
       value,
       withdrawAddress,
-      waitForTX
+      waitForTX,
     );
   }
 };

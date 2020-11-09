@@ -33,7 +33,7 @@ export interface Block {
   prevState: [
     RenVMArg<"bch", RenVMType.ExtTypeBtcCompatUTXOs>,
     RenVMArg<"btc", RenVMType.ExtTypeBtcCompatUTXOs>,
-    RenVMArg<"zec", RenVMType.ExtTypeBtcCompatUTXOs>
+    RenVMArg<"zec", RenVMType.ExtTypeBtcCompatUTXOs>,
   ];
 }
 
@@ -57,7 +57,7 @@ const N = 8;
 
 export const retryNTimes = async <T>(
   fnCall: () => Promise<T>,
-  retries: number
+  retries: number,
 ) => {
   let returnError;
   // tslint:disable-next-line: no-constant-condition
@@ -103,9 +103,9 @@ const getBlocks = async (network: RenNetworkDetails): Promise<List<Block>> => {
           await Axios.post<RPCResponse<ResponseQueryBlocks>>(
             lightnode,
             request,
-            { timeout: DEFAULT_REQUEST_TIMEOUT }
+            { timeout: DEFAULT_REQUEST_TIMEOUT },
           ),
-        2
+        2,
       )
     ).data.result;
     i++;
@@ -124,7 +124,7 @@ const useRenVMContainer = () => {
   let [currentBlock, setCurrentBlock] = useState<null | Block>(null);
   // tslint:disable-next-line: prefer-const
   let [currentBlockNumber, setCurrentBlockNumber] = useState<null | number>(
-    null
+    null,
   );
   // tslint:disable-next-line: prefer-const
   let [currentTransaction, setCurrentTransaction] = useState<
@@ -190,9 +190,9 @@ const useRenVMContainer = () => {
             await Axios.post<RPCResponse<ResponseQueryBlock>>(
               lightnode,
               request,
-              { timeout: DEFAULT_REQUEST_TIMEOUT }
+              { timeout: DEFAULT_REQUEST_TIMEOUT },
             ),
-          2
+          2,
         )
       ).data.result;
       newCurrentBlock = response.block;
@@ -206,7 +206,7 @@ const useRenVMContainer = () => {
 
   const getTransaction = async (
     txHashHex: string,
-    options?: { skipCache?: boolean }
+    options?: { skipCache?: boolean },
   ) => {
     if (
       options &&
@@ -219,7 +219,7 @@ const useRenVMContainer = () => {
       if (network) {
         try {
           currentTransaction = await new RenJS(network.name).renVM.queryTx(
-            new EncodedData(txHashHex, Encodings.HEX).toBase64()
+            new EncodedData(txHashHex, Encodings.HEX).toBase64(),
           );
         } catch (error) {
           console.error(error);

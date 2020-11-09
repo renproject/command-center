@@ -35,7 +35,7 @@ export const IntegratorStatsPage = () => {
   useEffect(() => {
     const paramsPage = Math.max(
       params.page ? (parseInt(params.page, 10) || 1) - 1 : 0,
-      0
+      0,
     );
     if (params.page && paramsPage !== page) {
       setPage(paramsPage);
@@ -49,7 +49,7 @@ export const IntegratorStatsPage = () => {
       history.push(`/integrators/${nextPage + 1}`);
       setPage(nextPage);
     },
-    [history, setPage]
+    [history, setPage],
   );
 
   // Handle changing page

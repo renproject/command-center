@@ -40,7 +40,7 @@ const MenuItem: React.FC<{
       className={classNames(
         "sidebar--row sidebar--nav",
         activePath && activePath === path ? "sidebar--active" : "",
-        className
+        className,
       )}
     >
       <div className="sidebar--nav--icon sidebar--icon">{icon}</div>
@@ -80,17 +80,17 @@ export const Sidebar = () => {
 
   const accountDarknodeList = useMemo(
     () => (address ? darknodeList.get(address, null) : null),
-    [darknodeList, address]
+    [darknodeList, address],
   );
   const accountHiddenDarknodes = useMemo(
     () => (address ? hiddenDarknodes.get(address, null) : null),
-    [hiddenDarknodes, address]
+    [hiddenDarknodes, address],
   );
 
   const shownDarknodeList = !accountDarknodeList
     ? accountDarknodeList
     : accountDarknodeList.filter(
-        (d) => !accountHiddenDarknodes || !accountHiddenDarknodes.contains(d)
+        (d) => !accountHiddenDarknodes || !accountHiddenDarknodes.contains(d),
       );
 
   const [searchFilter, setSearchFilter] = useState("");
@@ -118,7 +118,7 @@ export const Sidebar = () => {
         className={classNames(
           "sidebar",
           address ? "sidebar--logged-in" : "",
-          mobileMenuActive ? "sidebar--mobile--active" : ""
+          mobileMenuActive ? "sidebar--mobile--active" : "",
         )}
       >
         <div className="sidebar--top">
