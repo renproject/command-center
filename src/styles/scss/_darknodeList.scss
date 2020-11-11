@@ -4,7 +4,7 @@
     justify-content: center;
 
     // Make up for 10px margin of each card
-    @media(min-width: $min-md) {
+    @media (min-width: $min-md) {
         margin-left: -10px;
         margin-right: -10px;
     }
@@ -30,8 +30,7 @@ $darknode-card-margin: 10px;
 
     text-align: center;
 
-    color: #FFFFFF;
-
+    color: #ffffff;
 
     cursor: pointer;
 }
@@ -54,8 +53,8 @@ $darknode-card-margin: 10px;
     $border: 10px;
     $width: 64px;
     border-radius: 50%;
-    width: $width + 2*$border;
-    height: $width + 2*$border;
+    width: $width + 2 * $border;
+    height: $width + 2 * $border;
     border: $border solid $blue-dark;
 
     background-color: $blue-dark;
@@ -76,7 +75,7 @@ $darknode-card-margin: 10px;
 .darknode-card--status {
     font-size: 15px;
 
-    color: #FFFFFF;
+    color: #ffffff;
     mix-blend-mode: normal;
     opacity: 0.4;
 }
@@ -85,9 +84,8 @@ $darknode-card-margin: 10px;
     height: $card-bottom-height;
     display: flex;
 
-
-    >div {
-        border-top: 2px solid #001B3A;
+    > div {
+        border-top: 2px solid #001b3a;
         flex-grow: 1;
 
         display: flex;
@@ -95,15 +93,15 @@ $darknode-card-margin: 10px;
         align-items: center;
     }
 
-    >div+div {
-        border-left: 2px solid #001B3A;
+    > div + div {
+        border-left: 2px solid #001b3a;
     }
 
-    >div>svg {
+    > div > svg {
         margin-right: 10px;
     }
 
-    >div>span {
+    > div > span {
         margin-bottom: -3px;
     }
 
@@ -129,7 +127,6 @@ $darknode-card-margin: 10px;
     }
 
     .sidebar--nav--icon {
-
         svg,
         img {
             font-size: 2em;
@@ -141,7 +138,6 @@ $darknode-card-margin: 10px;
         }
     }
 }
-
 
 // The outer div allows us to set "overflow: hidden;" so that only the first row
 // is shown
@@ -180,13 +176,13 @@ $darknode-card-margin: 10px;
     }
 
     &.third {
-        @media(max-width: 1186px) {
+        @media (max-width: 1186px) {
             display: none;
         }
     }
 
     &.second {
-        @media(max-width: 741px) {
+        @media (max-width: 741px) {
             display: none;
         }
     }
@@ -203,7 +199,7 @@ $darknode-card-margin: 10px;
     align-items: center;
     flex-direction: column;
 
-    >p {
+    > p {
         margin-top: 20px;
         opacity: 0.5;
     }

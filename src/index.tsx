@@ -9,40 +9,42 @@ import { App } from "./controllers/App";
 import { Connect } from "./controllers/common/Connect";
 import { ErrorBoundary } from "./controllers/common/ErrorBoundary";
 import {
-  DEFAULT_REN_NETWORK,
-  NODE_ENV,
+    DEFAULT_REN_NETWORK,
+    NODE_ENV,
 } from "./lib/react/environmentVariables";
 import { history } from "./lib/react/history";
 import { onLoad } from "./lib/react/onLoad";
 
 // Redirect to https if we aren't serving locally
 if (NODE_ENV !== "development") {
-  const loc = window.location.href + "";
-  // tslint:disable-next-line: no-http-string
-  if (loc.indexOf("http://") === 0) {
-    console.warn("Redirecting to use TLS");
+    const loc = window.location.href + "";
     // tslint:disable-next-line: no-http-string
-    window.location.href = loc.replace("http://", "https://");
-  }
+    if (loc.indexOf("http://") === 0) {
+        console.warn("Redirecting to use TLS");
+        // tslint:disable-next-line: no-http-string
+        window.location.href = loc.replace("http://", "https://");
+    }
 }
 
 onLoad(
-  `Command Center${
-    DEFAULT_REN_NETWORK !== "mainnet" ? " (" + DEFAULT_REN_NETWORK + ")" : ""
-  }`,
+    `Command Center${
+        DEFAULT_REN_NETWORK !== "mainnet"
+            ? " (" + DEFAULT_REN_NETWORK + ")"
+            : ""
+    }`,
 );
 
 const render = (Component: () => JSX.Element) => {
-  ReactDOM.render(
-    <ErrorBoundary popup={true}>
-      <Router history={history}>
-        <Connect>
-          <Component />
-        </Connect>
-      </Router>
-    </ErrorBoundary>,
-    document.getElementById("root") as HTMLElement,
-  );
+    ReactDOM.render(
+        <ErrorBoundary popup={true}>
+            <Router history={history}>
+                <Connect>
+                    <Component />
+                </Connect>
+            </Router>
+        </ErrorBoundary>,
+        document.getElementById("root") as HTMLElement,
+    );
 };
 
 render(App);
@@ -51,9 +53,9 @@ render(App);
 
 // tslint:disable-next-line: no-any
 if ((module as any).hot) {
-  // tslint:disable-next-line: no-any
-  (module as any).hot.accept("./controllers/App", () => {
-    const NextApp = require("./controllers/App").App;
-    render(NextApp);
-  });
+    // tslint:disable-next-line: no-any
+    (module as any).hot.accept("./controllers/App", () => {
+        const NextApp = require("./controllers/App").App;
+        render(NextApp);
+    });
 }
