@@ -116,5 +116,14 @@
   "jest": {
     "globalSetup": "./src/test/globalSetup.ts",
     "globalTeardown": "./src/test/globalTeardown.ts"
+  },
+  "prettier": {
+    "printWidth": 80,
+    "semi": true,
+    "singleQuote": false,
+    "tabWidth": 4,
+    "trailingComma": "all",
+    "endOfLine": "lf",
+    "arrowParens": "always"
   }
 }

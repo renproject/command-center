@@ -7,8 +7,8 @@ import { describe, it } from "mocha";
 require("chai").should();
 
 describe("GraphQL", () => {
-  it("works", async () => {
-    // const client = apolloClient(chaosnet);
-    true.should.equal(true);
-  });
+    it("works", async () => {
+        // const client = apolloClient(chaosnet);
+        true.should.equal(true);
+    });
 });

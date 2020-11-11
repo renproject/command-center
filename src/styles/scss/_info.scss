@@ -11,10 +11,9 @@
     cursor: pointer;
 }
 
-.label--icon:hover+.label--message {
+.label--icon:hover + .label--message {
     display: block;
 }
-
 
 .label--message {
     display: none;

@@ -3,19 +3,19 @@ import React from "react";
 import { classNames } from "../lib/react/className";
 
 export enum StatusDotColor {
-  Red = "red",
-  Yellow = "yellow",
-  Green = "green",
+    Red = "red",
+    Yellow = "yellow",
+    Green = "green",
 }
 
 export const StatusDot: React.FC<{ color: StatusDotColor; size: number }> = ({
-  color,
-  size,
+    color,
+    size,
 }) => (
-  <span
-    style={{ width: size, height: size, minWidth: size, minHeight: size }}
-    className={classNames("status-dot", `status-dot--${color}`)}
-  >
-    <span />
-  </span>
+    <span
+        style={{ width: size, height: size, minWidth: size, minHeight: size }}
+        className={classNames("status-dot", `status-dot--${color}`)}
+    >
+        <span />
+    </span>
 );
