@@ -15,7 +15,6 @@
         ]
     },
     "rules": {
-        // Disabled
         "interface-name": false,
         "jsx-boolean-value": false,
         "max-classes-per-file": false,
@@ -47,8 +46,6 @@
         "no-return-await": false,
         "interface-over-type-literal": false,
         "no-void-expression": false,
-        // "ter-indent": false,
-        // Warnings
         "no-unnecessary-type-assertion": {
             "severity": "warning"
         },
@@ -66,15 +63,13 @@
         "strict-type-predicates": {
             "severity": "warning"
         },
-        // Enabled
         "ordered-imports": true,
         "no-object-literal-type-assertion": true,
-        "semicolon": true,
         "eofline": true,
+        "no-single-line-block-comment": false,
         "no-non-null-assertion": true,
         "no-floating-promises": true,
         "typedef": true,
-        "no-any": true,
         "no-angle-bracket-type-assertion": true,
         "no-use-before-declare": true,
         "promise-function-async": true,
@@ -89,12 +84,6 @@
             }
         ],
         "only-arrow-functions": true,
-        // Configured
-        "quotemark": [
-            true,
-            "double",
-            "jsx-double"
-        ],
         "indent": [
             true,
             "spaces",
@@ -134,8 +123,6 @@
             true,
             "array-simple"
         ],
-        // Temporarily disabled - some work is required to get the project to
-        // abide by these
         "no-unsafe-any": false,
         "max-line-length": false,
         "max-func-body-length": false,
