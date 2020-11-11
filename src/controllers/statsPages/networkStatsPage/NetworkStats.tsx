@@ -130,11 +130,9 @@ export const NetworkStats = () => {
                             direction={"bottom"}
                             style={{ display: "inline-block" }}
                           >
-                            <span>
-                              The volume statistic has been updated
-                              <br />
-                              to use historical asset prices.
-                            </span>
+                            From 11/11/2020 the volume statistic has been
+                            updated to use historical asset prices (the price
+                            the asset was when it moved through RenVM).
                           </InfoLabel>
                         </>
                       ) : (
