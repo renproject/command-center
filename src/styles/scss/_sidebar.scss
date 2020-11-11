@@ -42,9 +42,9 @@ $min-header: $min-lg;
 }
 
 .sidebar--darknodes {
-    background: url('../../styles/images/sidebar-empty.svg') repeat-y;
+    background: url("../../styles/images/sidebar-empty.svg") repeat-y;
 
-    @media(max-width: $max-sidebar) {
+    @media (max-width: $max-sidebar) {
         background: none;
     }
 
@@ -63,7 +63,7 @@ $min-header: $min-lg;
 }
 
 .sidebar--nav--icon svg {
-    color: #FFFFFF;
+    color: #ffffff;
     mix-blend-mode: normal;
     opacity: 0.4;
     font-size: 30px;
@@ -101,13 +101,13 @@ $min-header: $min-lg;
 }
 
 .sidebar.sidebar--mobile--active {
-    @media(max-width: $max-sidebar) {
+    @media (max-width: $max-sidebar) {
         width: $mobile-full-width;
     }
 }
 
 .sidebar--logged-in:hover {
-    @media(min-width: $min-header) {
+    @media (min-width: $min-header) {
         width: $full-width;
         overflow-x: visible;
     }
@@ -118,7 +118,7 @@ $min-header: $min-lg;
 }
 
 .sidebar--row.sidebar--faded {
-    >* {
+    > * {
         opacity: 0.4;
     }
 }
@@ -142,26 +142,26 @@ $min-header: $min-lg;
     @extend .no-scrollbar;
     position: fixed;
     background-color: $blue-darker;
-    border-right: 2px solid transparentize(#58585B, 1 - 0.2);
+    border-right: 2px solid transparentize(#58585b, 1 - 0.2);
     padding: 0;
     top: 0;
     bottom: 0;
     left: 0;
     font-weight: normal;
     font-size: 14px;
-    color: #FFFFFF;
+    color: #ffffff;
     height: 100vh;
     width: $collapsed-width;
     display: flex;
     flex-flow: column;
 
-    @media(max-width: $max-sidebar) {
+    @media (max-width: $max-sidebar) {
         width: 0px;
     }
 
     overflow-x: hidden;
-    -webkit-transition: width .1s linear;
-    transition: width .1s linear;
+    -webkit-transition: width 0.1s linear;
+    transition: width 0.1s linear;
     -webkit-transform: translateZ(0) scale(1, 1);
     z-index: 20;
 }
@@ -180,7 +180,7 @@ $min-header: $min-lg;
     position: relative;
     width: $full-width - 2px;
 
-    @media(max-width: $max-sidebar) {
+    @media (max-width: $max-sidebar) {
         width: calc(100vw - 2px);
     }
 }
@@ -192,19 +192,19 @@ $min-header: $min-lg;
     border-spacing: 0;
     font-weight: normal;
     font-size: 14px;
-    color: #FFFFFF;
+    color: #ffffff;
 
     -webkit-transform: translateZ(0) scale(1, 1);
     transform: translateZ(0) scale(1, 1);
 
-    -webkit-transition: all .1s linear;
-    transition: all .1s linear;
+    -webkit-transition: all 0.1s linear;
+    transition: all 0.1s linear;
 }
 
 .sidebar .sidebar--text {
     width: $full-width - $collapsed-width;
 
-    @media(max-width: $max-sidebar) {
+    @media (max-width: $max-sidebar) {
         width: calc(100vw - 80px);
     }
 
@@ -213,7 +213,7 @@ $min-header: $min-lg;
     display: flex;
     flex-flow: column;
     justify-content: center;
-    color: #FFFFFF;
+    color: #ffffff;
 
     .sidebar--name {
         white-space: nowrap;
@@ -225,11 +225,11 @@ $min-header: $min-lg;
         font-size: 12px;
         display: flex;
 
-        >div {
+        > div {
             display: flex;
         }
 
-        >div+div {
+        > div + div {
             margin-left: 20px;
         }
 
@@ -283,17 +283,16 @@ nav li {
     padding: 0;
 }
 
-
 .sidebar--search {
-    background: #002247CC;
+    background: #002247cc;
 
-    @media(max-width: $max-sidebar) {
+    @media (max-width: $max-sidebar) {
         display: none;
     }
 }
 
 input[type="text"].sidebar--search--input {
-    background: #F5F5F5;
+    background: #f5f5f5;
     border-radius: 15.5px;
 
     font-size: 12px;
@@ -319,7 +318,7 @@ input[type="text"].sidebar--search--input {
 }
 
 .sidebar:hover {
-    @media(min-width: $min-header) {
+    @media (min-width: $min-header) {
         .search--filter--feedback {
             visibility: initial;
         }
@@ -327,7 +326,7 @@ input[type="text"].sidebar--search--input {
 }
 
 .sidebar--connect {
-    background: #002B5C;
+    background: #002b5c;
     border-bottom-left-radius: 12px;
     border-bottom-right-radius: 12px;
     transform: rotate(-90deg);
@@ -342,7 +341,7 @@ input[type="text"].sidebar--search--input {
 
     font-size: 14px;
     line-height: 16px;
-    color: #F9F9F9;
+    color: #f9f9f9;
 
     display: flex;
     justify-content: center;
@@ -350,13 +349,12 @@ input[type="text"].sidebar--search--input {
 
     padding: 0 20px;
 
-
     span {
         font-weight: normal;
         font-size: 14px;
         line-height: 16px;
 
-        color: #F9F9F9;
+        color: #f9f9f9;
     }
 
     .wallet-icon {
@@ -369,7 +367,7 @@ input[type="text"].sidebar--search--input {
     }
 
     .wallet-icon--inner {
-        background: url('../../styles/images/wallet.svg') no-repeat;
+        background: url("../../styles/images/wallet.svg") no-repeat;
         background-size: 12px 14px;
         background-color: $primary;
         margin: 0;
@@ -377,11 +375,10 @@ input[type="text"].sidebar--search--input {
         width: 12px;
     }
 
-    @media(max-width: $max-sidebar) {
+    @media (max-width: $max-sidebar) {
         display: none;
     }
 }
-
 
 .sidebar--close {
     cursor: pointer;

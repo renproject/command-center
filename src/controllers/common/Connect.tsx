@@ -14,27 +14,27 @@ import { NetworkStatsContainer } from "../statsPages/networkStatsPage/networkSta
 import { RenVMContainer } from "../statsPages/renvmStatsPage/renvmContainer";
 
 export const Connect: React.FC = ({ children }) => (
-  <PopupContainer.Provider>
-    <Web3Container.Provider initialState={DEFAULT_REN_NETWORK}>
-      <ApolloWithNetwork>
-        <GraphContainer.Provider>
-          <NetworkContainer.Provider>
-            <UIContainer.Provider>
-              <MapContainer.Provider>
-                <RenVMContainer.Provider>
-                  <GithubAPIContainer.Provider>
-                    <NetworkStatsContainer.Provider>
-                      <IntegratorsContainer.Provider>
-                        {children}
-                      </IntegratorsContainer.Provider>
-                    </NetworkStatsContainer.Provider>
-                  </GithubAPIContainer.Provider>
-                </RenVMContainer.Provider>
-              </MapContainer.Provider>
-            </UIContainer.Provider>
-          </NetworkContainer.Provider>
-        </GraphContainer.Provider>
-      </ApolloWithNetwork>
-    </Web3Container.Provider>
-  </PopupContainer.Provider>
+    <PopupContainer.Provider>
+        <Web3Container.Provider initialState={DEFAULT_REN_NETWORK}>
+            <ApolloWithNetwork>
+                <GraphContainer.Provider>
+                    <NetworkContainer.Provider>
+                        <UIContainer.Provider>
+                            <MapContainer.Provider>
+                                <RenVMContainer.Provider>
+                                    <GithubAPIContainer.Provider>
+                                        <NetworkStatsContainer.Provider>
+                                            <IntegratorsContainer.Provider>
+                                                {children}
+                                            </IntegratorsContainer.Provider>
+                                        </NetworkStatsContainer.Provider>
+                                    </GithubAPIContainer.Provider>
+                                </RenVMContainer.Provider>
+                            </MapContainer.Provider>
+                        </UIContainer.Provider>
+                    </NetworkContainer.Provider>
+                </GraphContainer.Provider>
+            </ApolloWithNetwork>
+        </Web3Container.Provider>
+    </PopupContainer.Provider>
 );

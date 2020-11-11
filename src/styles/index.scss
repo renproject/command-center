@@ -1,40 +1,40 @@
 @import "~@renproject/fonts/fonts";
 
-@import 'scss/variables';
-@import 'scss/animations';
-@import 'scss/grid';
+@import "scss/variables";
+@import "scss/animations";
+@import "scss/grid";
 
 // Page and component styles
-@import 'scss/block';
-@import 'scss/button';
-@import 'scss/chart';
-@import 'scss/console';
-@import 'scss/darknodeList';
-@import 'scss/errorBoundary';
-@import 'scss/header';
-@import 'scss/heading';
-@import 'scss/home';
-@import 'scss/info';
-@import 'scss/loading';
-@import 'scss/loggingOut';
-@import 'scss/notFound';
-@import 'scss/onboard';
-@import 'scss/operatorStatistics';
-@import 'scss/popup';
-@import 'scss/section';
-@import 'scss/sidebar';
-@import 'scss/stat';
-@import 'scss/darknodePage';
-@import 'scss/titledSection';
-@import 'scss/view';
-@import 'scss/withdrawPopup';
+@import "scss/block";
+@import "scss/button";
+@import "scss/chart";
+@import "scss/console";
+@import "scss/darknodeList";
+@import "scss/errorBoundary";
+@import "scss/header";
+@import "scss/heading";
+@import "scss/home";
+@import "scss/info";
+@import "scss/loading";
+@import "scss/loggingOut";
+@import "scss/notFound";
+@import "scss/onboard";
+@import "scss/operatorStatistics";
+@import "scss/popup";
+@import "scss/section";
+@import "scss/sidebar";
+@import "scss/stat";
+@import "scss/darknodePage";
+@import "scss/titledSection";
+@import "scss/view";
+@import "scss/withdrawPopup";
 
 // Styles in src/components
-@import '../controllers/statsPages/renvmStatsPage/renvm';
-@import '../controllers/statsPages/darknodeStatsPage/overview';
-@import '../controllers/statsPages/darknodeStatsPage/darknodeMap/darknodeMap';
-@import '../controllers/statsPages/networkStatsPage/networkStats';
-@import '../controllers/statsPages/integratorStatsPage/integratorStatsPage';
+@import "../controllers/statsPages/renvmStatsPage/renvm";
+@import "../controllers/statsPages/darknodeStatsPage/overview";
+@import "../controllers/statsPages/darknodeStatsPage/darknodeMap/darknodeMap";
+@import "../controllers/statsPages/networkStatsPage/networkStats";
+@import "../controllers/statsPages/integratorStatsPage/integratorStatsPage";
 
 // Styles for html, body, anchors etc. should go in _general
-@import 'scss/_general';
+@import "scss/_general";

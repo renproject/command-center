@@ -8,7 +8,7 @@
         align-items: center;
         flex-wrap: wrap;
 
-        >* {
+        > * {
             flex-grow: 1;
         }
 
@@ -18,7 +18,7 @@
             }
         }
 
-        >canvas {
+        > canvas {
             width: 200px !important;
             height: 200px !important;
         }
@@ -27,12 +27,12 @@
             display: flex;
             flex-flow: column;
 
-            >div {
+            > div {
                 background: #001327;
                 border-radius: 4px;
                 margin: 0;
 
-                &+div {
+                & + div {
                     margin-top: 10px;
                 }
             }
@@ -43,7 +43,11 @@
         }
 
         .overview--chart--outer {
-            background: linear-gradient(-180deg, #00457F -1080.14%, #002148 85.91%);
+            background: linear-gradient(
+                -180deg,
+                #00457f -1080.14%,
+                #002148 85.91%
+            );
             border-radius: 4px;
             height: 400px;
 
@@ -72,9 +76,9 @@
             line-height: 16px;
             text-align: center;
 
-            color: #9195A0;
+            color: #9195a0;
 
-            >span {
+            > span {
                 opacity: 0.5;
             }
 
@@ -85,17 +89,16 @@
             border-bottom: 2px solid #001b39;
         }
 
-
-        .chart--tab+.chart--tab {
+        .chart--tab + .chart--tab {
             border-left: 2px solid #001b39;
         }
 
         .chart--tab--selected {
             border-bottom: 2px solid transparent;
             box-shadow: none;
-            color: #E0E3EB;
+            color: #e0e3eb;
 
-            >span {
+            > span {
                 opacity: 1;
             }
         }
@@ -117,9 +120,8 @@
 
                 letter-spacing: 1.5px;
 
-
-                >div {
-                    >:first-child {
+                > div {
+                    > :first-child {
                         display: flex;
                         align-items: center;
                         font-weight: 900;
@@ -138,7 +140,6 @@
                     justify-content: space-between;
                     padding: 10px 0;
                 }
-
             }
         }
     }
@@ -149,7 +150,7 @@
 }
 
 .darknode-cli--button {
-    background: #006FE8;
+    background: #006fe8;
     box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.3);
     border-radius: 4px !important;
     width: 216px !important;

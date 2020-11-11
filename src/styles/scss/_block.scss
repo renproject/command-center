@@ -20,13 +20,13 @@
 .block--title .svg-inline--fa {
     margin-top: -2px;
     margin-right: 10px;
-    font-size: 1.5em
+    font-size: 1.5em;
 }
 
 .block--title svg {
     margin-bottom: -3px;
     margin-right: 10px;
-    font-size: 1.5em
+    font-size: 1.5em;
 }
 
 .block--body {
@@ -38,7 +38,7 @@
     justify-content: flex-start;
     margin: 18px 20px;
 
-    >h3 {
+    > h3 {
         text-transform: uppercase;
         font-size: 14px;
         font-weight: 500;
@@ -50,9 +50,7 @@
         letter-spacing: 1.75px;
         text-transform: uppercase;
 
-        color: #FFFFFF;
-
-
+        color: #ffffff;
 
         svg {
             height: 18px;
@@ -96,13 +94,12 @@
     opacity: 0.6;
 }
 
-
 /**** FEES BLOCK *****/
 
 .fees-block {
     .block--advanced--bottom {
         border-top: 2px solid $blue-darker;
-        background: #001F41;
+        background: #001f41;
     }
 
     .block--advanced--top {
@@ -170,7 +167,6 @@
 }
 
 .fees-block--table {
-
     thead {
         tr {
             border: none;
@@ -205,23 +201,23 @@
 
     .percent-bar {
         &.BTC {
-            background: #F2A900;
+            background: #f2a900;
         }
 
         &.ZEC {
-            background: #FABB00;
+            background: #fabb00;
         }
 
         &.BCH {
-            background: #44C43E;
+            background: #44c43e;
         }
 
         &.ETH {
-            background: #4A45AD;
+            background: #4a45ad;
         }
 
         &.DAI {
-            background: #006FE8;
+            background: #006fe8;
         }
     }
 
@@ -234,7 +230,6 @@
     }
 
     .tr {
-
         &,
         td {
             padding-top: 30px;
@@ -293,7 +288,7 @@
 
 .resources-block {
     margin-top: 0 !important;
-    border: 2px solid #001B3A;
+    border: 2px solid #001b3a;
 }
 
 .epoch--block--charts {
@@ -332,7 +327,7 @@
 
         /* identical to box height */
 
-        color: #F9F9F9;
+        color: #f9f9f9;
     }
 
     .epoch--end-date {
@@ -343,7 +338,6 @@
 
 .network-block {
     flex-grow: 1 !important;
-
 
     .network-block--info {
         @extend .no-scrollbar;
@@ -360,7 +354,7 @@
             border: none;
         }
 
-        td+td {
+        td + td {
             @extend .monospace;
             max-width: 200px;
             white-space: nowrap;
@@ -383,7 +377,6 @@
         font-weight: bold;
         margin-bottom: 5px;
     }
-
 }
 
 .version-block {
@@ -393,7 +386,7 @@
 
     .block--advanced--bottom {
         border-top: 2px solid $blue-darker;
-        background: #001F41;
+        background: #001f41;
         height: 100%;
         padding: 30px 0;
     }
@@ -423,9 +416,6 @@
 .fees-block .block--body {
     display: flex;
 }
-
-
-
 
 /* Gas Graph */
 
@@ -477,7 +467,7 @@
 .tabs {
     @extend .no-scrollbar;
 
-    border-bottom: 2px solid #001B3A;
+    border-bottom: 2px solid #001b3a;
     display: flex;
     flex-flow: row;
     width: 100%;
@@ -505,11 +495,11 @@
         /* identical to box height */
         text-transform: uppercase;
 
-        color: #FFFFFF66;
+        color: #ffffff66;
 
         &.selected {
             color: white;
-            border-bottom: 2px solid #006FE8;
+            border-bottom: 2px solid #006fe8;
         }
 
         &:focus {
@@ -526,7 +516,7 @@
         width: 300px;
         content: attr(title);
         padding: 5px;
-        background-color: #19324E;
+        background-color: #19324e;
         border-radius: 4px;
         line-height: 1.4em;
         color: $red;

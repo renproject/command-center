@@ -8,236 +8,240 @@ import { EventEmitter } from "events";
 import { ContractEvent, Callback, TransactionObject, BlockType } from "./types";
 
 interface EventOptions {
-  filter?: object;
-  fromBlock?: BlockType;
-  topics?: string[];
+    filter?: object;
+    fromBlock?: BlockType;
+    topics?: string[];
 }
 
 export class DarknodeRegistryLogicV1 extends Contract {
-  constructor(
-    jsonInterface: any[],
-    address?: string,
-    options?: ContractOptions
-  );
-  clone(): DarknodeRegistryLogicV1;
-  address: string;
-  methods: {
-    VERSION(): TransactionObject<string>;
+    constructor(
+        jsonInterface: any[],
+        address?: string,
+        options?: ContractOptions,
+    );
+    clone(): DarknodeRegistryLogicV1;
+    address: string;
+    methods: {
+        VERSION(): TransactionObject<string>;
 
-    blacklistRecoverableToken(_token: string): TransactionObject<void>;
+        blacklistRecoverableToken(_token: string): TransactionObject<void>;
 
-    claimOwnership(): TransactionObject<void>;
+        claimOwnership(): TransactionObject<void>;
 
-    claimStoreOwnership(): TransactionObject<void>;
+        claimStoreOwnership(): TransactionObject<void>;
 
-    currentEpoch(): TransactionObject<{
-      epochhash: string;
-      blocktime: string;
-      0: string;
-      1: string;
-    }>;
+        currentEpoch(): TransactionObject<{
+            epochhash: string;
+            blocktime: string;
+            0: string;
+            1: string;
+        }>;
 
-    darknodePayment(): TransactionObject<string>;
+        darknodePayment(): TransactionObject<string>;
 
-    deregister(_darknodeID: string): TransactionObject<void>;
+        deregister(_darknodeID: string): TransactionObject<void>;
 
-    deregistrationInterval(): TransactionObject<string>;
+        deregistrationInterval(): TransactionObject<string>;
 
-    epoch(): TransactionObject<void>;
+        epoch(): TransactionObject<void>;
 
-    getDarknodeBond(_darknodeID: string): TransactionObject<string>;
+        getDarknodeBond(_darknodeID: string): TransactionObject<string>;
 
-    getDarknodeOperator(_darknodeID: string): TransactionObject<string>;
+        getDarknodeOperator(_darknodeID: string): TransactionObject<string>;
 
-    getDarknodePublicKey(_darknodeID: string): TransactionObject<string>;
+        getDarknodePublicKey(_darknodeID: string): TransactionObject<string>;
 
-    getDarknodes(
-      _start: string,
-      _count: number | string
-    ): TransactionObject<string[]>;
+        getDarknodes(
+            _start: string,
+            _count: number | string,
+        ): TransactionObject<string[]>;
 
-    getPreviousDarknodes(
-      _start: string,
-      _count: number | string
-    ): TransactionObject<string[]>;
+        getPreviousDarknodes(
+            _start: string,
+            _count: number | string,
+        ): TransactionObject<string[]>;
 
-    initialize(
-      _VERSION: string,
-      _renAddress: string,
-      _storeAddress: string,
-      _minimumBond: number | string,
-      _minimumPodSize: number | string,
-      _minimumEpochIntervalSeconds: number | string,
-      _deregistrationIntervalSeconds: number | string
-    ): TransactionObject<void>;
+        initialize(
+            _VERSION: string,
+            _renAddress: string,
+            _storeAddress: string,
+            _minimumBond: number | string,
+            _minimumPodSize: number | string,
+            _minimumEpochIntervalSeconds: number | string,
+            _deregistrationIntervalSeconds: number | string,
+        ): TransactionObject<void>;
 
-    isDeregisterable(_darknodeID: string): TransactionObject<boolean>;
+        isDeregisterable(_darknodeID: string): TransactionObject<boolean>;
 
-    isDeregistered(_darknodeID: string): TransactionObject<boolean>;
+        isDeregistered(_darknodeID: string): TransactionObject<boolean>;
 
-    isOwner(): TransactionObject<boolean>;
+        isOwner(): TransactionObject<boolean>;
 
-    isPendingDeregistration(_darknodeID: string): TransactionObject<boolean>;
+        isPendingDeregistration(
+            _darknodeID: string,
+        ): TransactionObject<boolean>;
 
-    isPendingRegistration(_darknodeID: string): TransactionObject<boolean>;
+        isPendingRegistration(_darknodeID: string): TransactionObject<boolean>;
 
-    isRefundable(_darknodeID: string): TransactionObject<boolean>;
+        isRefundable(_darknodeID: string): TransactionObject<boolean>;
 
-    isRefunded(_darknodeID: string): TransactionObject<boolean>;
+        isRefunded(_darknodeID: string): TransactionObject<boolean>;
 
-    isRegistered(_darknodeID: string): TransactionObject<boolean>;
+        isRegistered(_darknodeID: string): TransactionObject<boolean>;
 
-    isRegisteredInPreviousEpoch(
-      _darknodeID: string
-    ): TransactionObject<boolean>;
+        isRegisteredInPreviousEpoch(
+            _darknodeID: string,
+        ): TransactionObject<boolean>;
 
-    minimumBond(): TransactionObject<string>;
+        minimumBond(): TransactionObject<string>;
 
-    minimumEpochInterval(): TransactionObject<string>;
+        minimumEpochInterval(): TransactionObject<string>;
 
-    minimumPodSize(): TransactionObject<string>;
+        minimumPodSize(): TransactionObject<string>;
 
-    nextMinimumBond(): TransactionObject<string>;
+        nextMinimumBond(): TransactionObject<string>;
 
-    nextMinimumEpochInterval(): TransactionObject<string>;
+        nextMinimumEpochInterval(): TransactionObject<string>;
 
-    nextMinimumPodSize(): TransactionObject<string>;
+        nextMinimumPodSize(): TransactionObject<string>;
 
-    nextSlasher(): TransactionObject<string>;
+        nextSlasher(): TransactionObject<string>;
 
-    numDarknodes(): TransactionObject<string>;
+        numDarknodes(): TransactionObject<string>;
 
-    numDarknodesNextEpoch(): TransactionObject<string>;
+        numDarknodesNextEpoch(): TransactionObject<string>;
 
-    numDarknodesPreviousEpoch(): TransactionObject<string>;
+        numDarknodesPreviousEpoch(): TransactionObject<string>;
 
-    owner(): TransactionObject<string>;
+        owner(): TransactionObject<string>;
 
-    pendingOwner(): TransactionObject<string>;
+        pendingOwner(): TransactionObject<string>;
 
-    previousEpoch(): TransactionObject<{
-      epochhash: string;
-      blocktime: string;
-      0: string;
-      1: string;
-    }>;
+        previousEpoch(): TransactionObject<{
+            epochhash: string;
+            blocktime: string;
+            0: string;
+            1: string;
+        }>;
 
-    recoverTokens(_token: string): TransactionObject<void>;
+        recoverTokens(_token: string): TransactionObject<void>;
 
-    refund(_darknodeID: string): TransactionObject<void>;
+        refund(_darknodeID: string): TransactionObject<void>;
 
-    register(
-      _darknodeID: string,
-      _publicKey: string | number[]
-    ): TransactionObject<void>;
+        register(
+            _darknodeID: string,
+            _publicKey: string | number[],
+        ): TransactionObject<void>;
 
-    ren(): TransactionObject<string>;
+        ren(): TransactionObject<string>;
 
-    renounceOwnership(): TransactionObject<void>;
+        renounceOwnership(): TransactionObject<void>;
 
-    slash(
-      _guilty: string,
-      _challenger: string,
-      _percentage: number | string
-    ): TransactionObject<void>;
+        slash(
+            _guilty: string,
+            _challenger: string,
+            _percentage: number | string,
+        ): TransactionObject<void>;
 
-    slasher(): TransactionObject<string>;
+        slasher(): TransactionObject<string>;
 
-    store(): TransactionObject<string>;
+        store(): TransactionObject<string>;
 
-    transferOwnership(newOwner: string): TransactionObject<void>;
+        transferOwnership(newOwner: string): TransactionObject<void>;
 
-    transferStoreOwnership(_newOwner: string): TransactionObject<void>;
+        transferStoreOwnership(_newOwner: string): TransactionObject<void>;
 
-    updateDarknodePayment(_darknodePayment: string): TransactionObject<void>;
+        updateDarknodePayment(
+            _darknodePayment: string,
+        ): TransactionObject<void>;
 
-    updateMinimumBond(
-      _nextMinimumBond: number | string
-    ): TransactionObject<void>;
+        updateMinimumBond(
+            _nextMinimumBond: number | string,
+        ): TransactionObject<void>;
 
-    updateMinimumEpochInterval(
-      _nextMinimumEpochInterval: number | string
-    ): TransactionObject<void>;
+        updateMinimumEpochInterval(
+            _nextMinimumEpochInterval: number | string,
+        ): TransactionObject<void>;
 
-    updateMinimumPodSize(
-      _nextMinimumPodSize: number | string
-    ): TransactionObject<void>;
+        updateMinimumPodSize(
+            _nextMinimumPodSize: number | string,
+        ): TransactionObject<void>;
 
-    updateSlasher(_slasher: string): TransactionObject<void>;
-  };
-  events: {
-    LogDarknodeDeregistered: ContractEvent<{
-      _darknodeOperator: string;
-      _darknodeID: string;
-      0: string;
-      1: string;
-    }>;
-    LogDarknodePaymentUpdated: ContractEvent<{
-      _previousDarknodePayment: string;
-      _nextDarknodePayment: string;
-      0: string;
-      1: string;
-    }>;
-    LogDarknodeRefunded: ContractEvent<{
-      _darknodeOperator: string;
-      _darknodeID: string;
-      _amount: string;
-      0: string;
-      1: string;
-      2: string;
-    }>;
-    LogDarknodeRegistered: ContractEvent<{
-      _darknodeOperator: string;
-      _darknodeID: string;
-      _bond: string;
-      0: string;
-      1: string;
-      2: string;
-    }>;
-    LogDarknodeSlashed: ContractEvent<{
-      _darknodeOperator: string;
-      _darknodeID: string;
-      _challenger: string;
-      _percentage: string;
-      0: string;
-      1: string;
-      2: string;
-      3: string;
-    }>;
-    LogMinimumBondUpdated: ContractEvent<{
-      _previousMinimumBond: string;
-      _nextMinimumBond: string;
-      0: string;
-      1: string;
-    }>;
-    LogMinimumEpochIntervalUpdated: ContractEvent<{
-      _previousMinimumEpochInterval: string;
-      _nextMinimumEpochInterval: string;
-      0: string;
-      1: string;
-    }>;
-    LogMinimumPodSizeUpdated: ContractEvent<{
-      _previousMinimumPodSize: string;
-      _nextMinimumPodSize: string;
-      0: string;
-      1: string;
-    }>;
-    LogNewEpoch: ContractEvent<string>;
-    LogSlasherUpdated: ContractEvent<{
-      _previousSlasher: string;
-      _nextSlasher: string;
-      0: string;
-      1: string;
-    }>;
-    OwnershipTransferred: ContractEvent<{
-      previousOwner: string;
-      newOwner: string;
-      0: string;
-      1: string;
-    }>;
-    allEvents: (
-      options?: EventOptions,
-      cb?: Callback<EventLog>
-    ) => EventEmitter;
-  };
+        updateSlasher(_slasher: string): TransactionObject<void>;
+    };
+    events: {
+        LogDarknodeDeregistered: ContractEvent<{
+            _darknodeOperator: string;
+            _darknodeID: string;
+            0: string;
+            1: string;
+        }>;
+        LogDarknodePaymentUpdated: ContractEvent<{
+            _previousDarknodePayment: string;
+            _nextDarknodePayment: string;
+            0: string;
+            1: string;
+        }>;
+        LogDarknodeRefunded: ContractEvent<{
+            _darknodeOperator: string;
+            _darknodeID: string;
+            _amount: string;
+            0: string;
+            1: string;
+            2: string;
+        }>;
+        LogDarknodeRegistered: ContractEvent<{
+            _darknodeOperator: string;
+            _darknodeID: string;
+            _bond: string;
+            0: string;
+            1: string;
+            2: string;
+        }>;
+        LogDarknodeSlashed: ContractEvent<{
+            _darknodeOperator: string;
+            _darknodeID: string;
+            _challenger: string;
+            _percentage: string;
+            0: string;
+            1: string;
+            2: string;
+            3: string;
+        }>;
+        LogMinimumBondUpdated: ContractEvent<{
+            _previousMinimumBond: string;
+            _nextMinimumBond: string;
+            0: string;
+            1: string;
+        }>;
+        LogMinimumEpochIntervalUpdated: ContractEvent<{
+            _previousMinimumEpochInterval: string;
+            _nextMinimumEpochInterval: string;
+            0: string;
+            1: string;
+        }>;
+        LogMinimumPodSizeUpdated: ContractEvent<{
+            _previousMinimumPodSize: string;
+            _nextMinimumPodSize: string;
+            0: string;
+            1: string;
+        }>;
+        LogNewEpoch: ContractEvent<string>;
+        LogSlasherUpdated: ContractEvent<{
+            _previousSlasher: string;
+            _nextSlasher: string;
+            0: string;
+            1: string;
+        }>;
+        OwnershipTransferred: ContractEvent<{
+            previousOwner: string;
+            newOwner: string;
+            0: string;
+            1: string;
+        }>;
+        allEvents: (
+            options?: EventOptions,
+            cb?: Callback<EventLog>,
+        ) => EventEmitter;
+    };
 }

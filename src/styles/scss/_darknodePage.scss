@@ -1,5 +1,4 @@
 .darknodePage {
-
     &.container {
         padding-top: 20px;
         max-width: unset;
@@ -10,10 +9,10 @@
         color: white;
         flex-wrap: wrap;
 
-        >.block--column+.block--column {
+        > .block--column + .block--column {
             margin-left: 22px;
 
-            @media(max-width: $max-lg) {
+            @media (max-width: $max-lg) {
                 margin-top: 22px;
                 margin-left: 0;
             }
@@ -24,7 +23,7 @@
         $border: 10px;
         $width: 80px;
         border-radius: 50%;
-        width: $width + 2*$border;
+        width: $width + 2 * $border;
         border: $border solid $blue-dark;
     }
 
@@ -35,14 +34,13 @@
         justify-content: space-between;
         margin-left: 10px;
 
-        @media(max-width: $max-sm) {
+        @media (max-width: $max-sm) {
             margin-left: 10px;
         }
 
-
         min-width: 0;
 
-        >div {
+        > div {
             display: flex;
             align-items: center;
         }
@@ -63,8 +61,8 @@
         }
 
         button {
-            border: 1px solid #007BFF66;
-            color: #007BFF;
+            border: 1px solid #007bff66;
+            color: #007bff;
             background: none;
             height: 25px;
             border-radius: 2px;
@@ -72,7 +70,7 @@
             font-weight: bold;
             margin-top: 10px;
 
-            @media(max-width: $max-sm) {
+            @media (max-width: $max-sm) {
                 display: none;
             }
         }
@@ -83,7 +81,7 @@
         align-items: center;
         z-index: 1;
 
-        >:not(:first-child) {
+        > :not(:first-child) {
             margin-left: 20px;
         }
 
@@ -113,7 +111,6 @@
     }
 
     .darknodePage--bottom {
-
         @media screen and (min-width: $min-xl) {
             display: flex;
         }
@@ -122,10 +119,10 @@
         color: white;
         margin-top: 20px;
 
-        >.block+.block {
+        > .block + .block {
             margin-left: 22px;
 
-            @media(max-width: $max-lg) {
+            @media (max-width: $max-lg) {
                 margin-top: 22px;
                 margin-left: 0;
             }
@@ -141,13 +138,13 @@
         flex-flow: row;
         padding-bottom: 13px;
 
-        @media(max-width: $max-sm) {
+        @media (max-width: $max-sm) {
             justify-content: flex-start;
         }
     }
 
-    .status>* {
-        background: #19324E;
+    .status > * {
+        background: #19324e;
         border: 1px solid white;
         padding: 0px 20px;
         white-space: nowrap;
@@ -164,7 +161,7 @@
             border-bottom-right-radius: 100px;
         }
 
-        &+span {
+        & + span {
             border: 1px solid #fff6;
             border-left: 0;
             margin-left: 0px;
@@ -173,7 +170,7 @@
     }
 
     &.darknodePage--focused {
-        .status *+* {
+        .status * + * {
             margin-left: 10px;
         }
 
@@ -205,7 +202,6 @@
     }
 
     &.darknodePage--renaming {
-
         .darknodePage--bottom,
         .blocky,
         .status,
@@ -216,11 +212,11 @@
         }
     }
 
-    @media(max-width: $max-md) {
+    @media (max-width: $max-md) {
         flex-direction: column;
     }
 
-    .fees+.fees {
+    .fees + .fees {
         margin-top: 10px;
     }
 
@@ -231,7 +227,7 @@
 
     .status--title {
         // background-color: transparentize($primary, 1 - 0.28);
-        background: #19324E;
+        background: #19324e;
         text-transform: uppercase;
         line-height: 30px;
         border-radius: 15px;
@@ -251,7 +247,7 @@
         height: 32px;
         text-transform: uppercase;
         font-size: 12px;
-        color: #FC4343;
+        color: #fc4343;
 
         padding: 0 20px;
 
@@ -278,7 +274,7 @@
     }
 
     .status--error {
-        color: rgba(255, 130, 130, 1.0);
+        color: rgba(255, 130, 130, 1);
         line-height: 30px;
         border-radius: 15px;
         font-weight: 500;
@@ -296,7 +292,7 @@
 
         /* identical to box height, or 257% */
 
-        color: #FFFFFF;
+        color: #ffffff;
 
         mix-blend-mode: normal;
         opacity: 0.6;
@@ -333,7 +329,7 @@
         box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
     }
 
-    .topup--input>input[type=number] {
+    .topup--input > input[type="number"] {
         @extend .no-spin-button;
         border: none;
         height: 42px;
@@ -341,29 +337,28 @@
         font-weight: 500;
         font-size: 16px;
 
-        background: #F5F5F5;
+        background: #f5f5f5;
         border-radius: 4px;
         height: 40px;
 
         width: 0;
         flex-grow: 2;
 
-
         &::placeholder {
             color: #979797;
             font-size: 14px;
-            color: #00162E;
+            color: #00162e;
             opacity: 0.4;
         }
     }
 
-    .topup--input>span {
+    .topup--input > span {
         display: inline-block;
         width: 35px;
         text-align: center;
     }
 
-    .topup--input>button {
+    .topup--input > button {
         height: 40px;
         background: $primary;
         border: none;
@@ -380,11 +375,11 @@
         /* identical to box height */
         text-align: center;
 
-        color: #F9F9F9;
+        color: #f9f9f9;
         transition: opacity 0.2s ease-in-out;
 
         &:disabled {
-            background: #667A91;
+            background: #667a91;
             color: white;
         }
     }
@@ -403,14 +398,14 @@
         padding: 0 !important;
 
         &.block {
-            >div {
+            > div {
                 flex-grow: 1;
                 background-color: $blue-dark;
                 border-radius: 4px;
                 flex-basis: 0;
             }
 
-            >:not(:first-child) {
+            > :not(:first-child) {
                 margin-top: 20px;
             }
         }
@@ -440,14 +435,14 @@
     display: flex;
     align-items: flex-end;
 
-    @media(max-width: $max-lg) {
+    @media (max-width: $max-lg) {
         width: 100%;
 
-        >* {
+        > * {
             margin-top: 20px;
         }
 
-        >div>div {
+        > div > div {
             width: 100%;
         }
     }
@@ -486,7 +481,7 @@
         line-height: 23px;
         font-size: 14px;
 
-        color: #FFFFFF;
+        color: #ffffff;
 
         margin-left: 0;
         margin-bottom: 5px;
@@ -497,7 +492,7 @@
         line-height: 23px;
         font-size: 14px;
 
-        color: #FFFFFF;
+        color: #ffffff;
         margin-left: 0;
     }
 
@@ -529,7 +524,7 @@
 }
 
 .blocky--loading {
-    >div {
+    > div {
         @extend .lds-dual-ring;
 
         &:after {
@@ -537,7 +532,8 @@
             position: relative;
             top: 0;
             left: 0;
-            border-color: rgba(0, 111, 232, 0.28) #00000000 rgba(0, 111, 232, 0.28) #00000000;
+            border-color: rgba(0, 111, 232, 0.28) #00000000
+                rgba(0, 111, 232, 0.28) #00000000;
             border-width: 10px;
             animation: lds-dual-ring 2s linear infinite;
             width: 80px;
@@ -561,7 +557,7 @@
     justify-content: center;
     align-items: center;
 
-    >div {
+    > div {
         padding: 0;
         margin-left: 10px;
         height: 16px;
@@ -578,7 +574,7 @@
     padding: 0 22px;
     justify-content: center;
 
-    >*+* {
+    > * + * {
         margin-left: 40px;
     }
 }
@@ -602,12 +598,12 @@
     flex-flow: column;
     align-items: center;
 
-    >canvas {
+    > canvas {
         height: 150px;
         width: 150px;
     }
 
-    >p {
+    > p {
         margin-top: 8px;
         font-weight: 900;
         text-transform: uppercase;

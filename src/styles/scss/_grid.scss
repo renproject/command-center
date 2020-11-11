@@ -3358,7 +3358,6 @@ $max-xl: ($min-xxl - 1px) !default;
 }
 
 @media screen and (min-width: $min-sm) and (max-width: $max-sm) {
-
     .hidden-xs,
     .hidden-sm {
         display: none !important;
@@ -3372,7 +3371,6 @@ $max-xl: ($min-xxl - 1px) !default;
 }
 
 @media screen and (min-width: $min-md) and (max-width: $max-md) {
-
     .hidden-xs,
     .hidden-sm,
     .hidden-md {
@@ -3386,7 +3384,6 @@ $max-xl: ($min-xxl - 1px) !default;
 }
 
 @media screen and (min-width: $min-lg) and (max-width: $max-lg) {
-
     .hidden-xs,
     .hidden-sm,
     .hidden-md,
@@ -3400,7 +3397,6 @@ $max-xl: ($min-xxl - 1px) !default;
 }
 
 @media screen and (min-width: $min-xl) {
-
     .hidden-xs,
     .hidden-sm,
     .hidden-md,

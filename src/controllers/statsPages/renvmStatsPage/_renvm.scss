@@ -1,5 +1,4 @@
 .renvm {
-
     h1,
     h2 {
         font-style: normal;
@@ -65,15 +64,15 @@
                 color: #f9f9f9;
                 width: auto;
 
-                @media(min-width: $min-sm) {
+                @media (min-width: $min-sm) {
                     min-width: 100px;
                 }
 
-                @media(min-width: $min-md) {
+                @media (min-width: $min-md) {
                     min-width: 150px;
                 }
 
-                @media(min-width: $min-lg) {
+                @media (min-width: $min-lg) {
                     min-width: 200px;
                 }
             }
@@ -83,18 +82,18 @@
             width: 100%;
         }
 
-        tbody>tr {
+        tbody > tr {
             cursor: pointer;
             height: 40px;
             border: none;
             background-color: #00000000 !important;
 
-            &:hover:nth-child(odd)>td,
-            &:hover>td {
+            &:hover:nth-child(odd) > td,
+            &:hover > td {
                 background: rgba(255, 255, 255, 0.05);
             }
 
-            &:nth-child(odd)>td {
+            &:nth-child(odd) > td {
                 background: rgba(100, 100, 255, 0.025);
             }
         }
@@ -105,7 +104,7 @@
         margin-bottom: 30px;
         flex-wrap: wrap;
 
-        >div {
+        > div {
             flex-grow: 1;
             min-width: 250px;
 
@@ -117,7 +116,7 @@
         .renvm--stat {
             font-size: 32px;
             line-height: 37px;
-            color: #F9F9F9;
+            color: #f9f9f9;
         }
     }
 
@@ -152,7 +151,7 @@
             }
         }
 
-        .token--icon>path {
+        .token--icon > path {
             width: 10px;
             height: 10px;
         }
@@ -170,7 +169,6 @@
         }
 
         .titled-block--bottom {
-
             tr,
             thead,
             td {
@@ -192,7 +190,7 @@
     top: ((55px - $size) / 2);
     height: $size;
     width: $size;
-    background: url('../../../styles/images/exit-black.svg');
+    background: url("../../../styles/images/exit-black.svg");
     background-size: 12px 12px;
     background-repeat: no-repeat;
     background-position: center center;
@@ -206,7 +204,7 @@
 
 .popup--x.popup--x--white {
     margin-top: 0px;
-    background-image: url('../../../styles/images/exit.svg');
+    background-image: url("../../../styles/images/exit.svg");
 }
 
 .renvm--transaction {
