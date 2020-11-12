@@ -28,118 +28,141 @@ import { RenVMStatsPage } from "./statsPages/renvmStatsPage/RenVMStatsPage";
  * and running background app loops.
  */
 export const App = () => {
-  const {
-    address,
-    loggedInBefore,
-    promptLogin,
-    renNetwork,
-  } = Web3Container.useContainer();
+    const {
+        address,
+        loggedInBefore,
+        promptLogin,
+        renNetwork,
+    } = Web3Container.useContainer();
 
-  const withAccount = useCallback(
-    <T extends React.ComponentClass | React.StatelessComponent>(component: T) =>
-      address ? component : LoggingIn,
-    [address]
-  );
+    const withAccount = useCallback(
+        <T extends React.ComponentClass | React.StatelessComponent>(
+            component: T,
+        ) => (address ? component : LoggingIn),
+        [address],
+    );
 
-  const showNetworkBanner = renNetwork.name !== DEFAULT_REN_NETWORK;
+    const showNetworkBanner = renNetwork.name !== DEFAULT_REN_NETWORK;
 
-  useEffect(() => {
-    if (loggedInBefore) {
-      promptLogin({ manual: false }).catch((error) =>
-        catchBackgroundException(error, "Error in App > promptLogin")
-      );
-    }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    useEffect(() => {
+        if (loggedInBefore) {
+            promptLogin({ manual: false }).catch((error) =>
+                catchBackgroundException(error, "Error in App > promptLogin"),
+            );
+        }
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  return (
-    <div className="app">
-      <BackgroundTasks />
-      <ScrollToTop />
-      <div
-        className={classNames(
-          address ? "with-account" : "without-account",
-          showNetworkBanner
-            ? `with-banner with-banner--${renNetwork.chain}`
-            : ""
-        )}
-      >
-        {showNetworkBanner ? <NetworkBanner renNetwork={renNetwork} /> : null}
-        <PopupController>
-          <ErrorBoundary>
-            <Sidebar />
-          </ErrorBoundary>
-          <div className="app--body">
-            <ErrorBoundary popup={true}>
-              <Switch>
-                {/* Stats pages */}
-                <Route path="/" exact component={NetworkStats} />
-                <Route path="/network" exact component={NetworkStats} />
-                <Route
-                  path="/integrators"
-                  exact
-                  component={IntegratorStatsPage}
-                />
-                <Route
-                  path="/integrators/:page"
-                  exact
-                  component={IntegratorStatsPage}
-                />
-                <Route
-                  path="/darknode-stats"
-                  exact
-                  component={DarknodeStatsPage}
-                />
-                <Route path="/darknodes" exact component={DarknodeStatsPage} />
-                <Route path="/renvm" exact component={RenVMStatsPage} />
+    return (
+        <div className="app">
+            <BackgroundTasks />
+            <ScrollToTop />
+            <div
+                className={classNames(
+                    address ? "with-account" : "without-account",
+                    showNetworkBanner
+                        ? `with-banner with-banner--${renNetwork.chain}`
+                        : "",
+                )}
+            >
+                {showNetworkBanner ? (
+                    <NetworkBanner renNetwork={renNetwork} />
+                ) : null}
+                <PopupController>
+                    <ErrorBoundary>
+                        <Sidebar />
+                    </ErrorBoundary>
+                    <div className="app--body">
+                        <ErrorBoundary popup={true}>
+                            <Switch>
+                                {/* Stats pages */}
+                                <Route
+                                    path="/"
+                                    exact
+                                    component={NetworkStats}
+                                />
+                                <Route
+                                    path="/network"
+                                    exact
+                                    component={NetworkStats}
+                                />
+                                <Route
+                                    path="/integrators"
+                                    exact
+                                    component={IntegratorStatsPage}
+                                />
+                                <Route
+                                    path="/integrators/:page"
+                                    exact
+                                    component={IntegratorStatsPage}
+                                />
+                                <Route
+                                    path="/darknode-stats"
+                                    exact
+                                    component={DarknodeStatsPage}
+                                />
+                                <Route
+                                    path="/darknodes"
+                                    exact
+                                    component={DarknodeStatsPage}
+                                />
+                                <Route
+                                    path="/renvm"
+                                    exact
+                                    component={RenVMStatsPage}
+                                />
 
-                {/* Operator pages */}
-                <Route
-                  path="/all"
-                  exact
-                  component={withAccount(AllDarknodes)}
-                />
-                <Route
-                  path="/darknode/:darknodeID"
-                  exact
-                  component={DarknodePage}
-                />
+                                {/* Operator pages */}
+                                <Route
+                                    path="/all"
+                                    exact
+                                    component={withAccount(AllDarknodes)}
+                                />
+                                <Route
+                                    path="/darknode/:darknodeID"
+                                    exact
+                                    component={DarknodePage}
+                                />
 
-                {/* RenVM TX */}
-                <Route path="/tx/:txHash" exact component={RenVMStatsPage} />
-                <Route
-                  path="/renvm/tx/:txHash"
-                  exact
-                  component={RenVMStatsPage}
-                />
+                                {/* RenVM TX */}
+                                <Route
+                                    path="/tx/:txHash"
+                                    exact
+                                    component={RenVMStatsPage}
+                                />
+                                <Route
+                                    path="/renvm/tx/:txHash"
+                                    exact
+                                    component={RenVMStatsPage}
+                                />
 
-                {/* RenVM Block */}
-                <Route
-                  path="/block/:blockNumber"
-                  exact
-                  component={RenVMStatsPage}
-                />
-                <Route
-                  path="/renvm/:blockNumber"
-                  exact
-                  component={RenVMStatsPage}
-                />
-                <Route
-                  path="/renvm/block/:blockNumber"
-                  exact
-                  component={RenVMStatsPage}
-                />
+                                {/* RenVM Block */}
+                                <Route
+                                    path="/block/:blockNumber"
+                                    exact
+                                    component={RenVMStatsPage}
+                                />
+                                <Route
+                                    path="/renvm/:blockNumber"
+                                    exact
+                                    component={RenVMStatsPage}
+                                />
+                                <Route
+                                    path="/renvm/block/:blockNumber"
+                                    exact
+                                    component={RenVMStatsPage}
+                                />
 
-                {/* 404 */}
-                <Route component={NotFound} />
-              </Switch>
-            </ErrorBoundary>
-            <FeedbackButton url={URLs.feedbackButton} />
-          </div>
-        </PopupController>
-        <ErrorBoundary>
-          <Header />
-        </ErrorBoundary>
-      </div>
-    </div>
-  );
+                                {/* 404 */}
+                                <Route component={NotFound} />
+                            </Switch>
+                        </ErrorBoundary>
+                        <FeedbackButton url={URLs.feedbackButton} />
+                    </div>
+                </PopupController>
+                <ErrorBoundary>
+                    <Header />
+                </ErrorBoundary>
+            </div>
+        </div>
+    );
 };

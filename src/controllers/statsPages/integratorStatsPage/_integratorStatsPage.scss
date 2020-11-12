@@ -1,12 +1,11 @@
 $table-radius: 4px;
 
 .integrators-page {
-
     &.container {
         margin-top: 60px;
     }
 
-    >div {
+    > div {
         width: 100%;
         padding: 10px;
     }
@@ -34,7 +33,7 @@ $table-radius: 4px;
                     font-weight: 500;
                     font-size: 14px;
 
-                    color: #FFFFFF;
+                    color: #ffffff;
 
                     mix-blend-mode: normal;
                     opacity: 0.6;
@@ -43,16 +42,15 @@ $table-radius: 4px;
         }
 
         .integrators-bottom-right {
-
             button {
                 background: none;
-                border: 1px solid #006FE8;
+                border: 1px solid #006fe8;
                 border-radius: 4px;
                 width: 30px;
                 min-width: 30px;
                 height: 30px;
 
-                &+button {
+                & + button {
                     margin-left: 5px;
                 }
 
@@ -70,14 +68,13 @@ $table-radius: 4px;
     }
 
     table {
-
         a {
             font-weight: normal;
             font-size: 13px;
 
             text-decoration: none;
 
-            color: #F9F9F9;
+            color: #f9f9f9;
 
             mix-blend-mode: normal;
             opacity: 0.8;
@@ -106,25 +103,24 @@ $table-radius: 4px;
             width: 540px;
         }
 
-
         thead,
-        thead>tr,
-        thead>tr>th {
+        thead > tr,
+        thead > tr > th {
             border: none;
             text-transform: uppercase;
             font-weight: bold;
             font-size: 13px;
 
-            color: #F9F9F9;
+            color: #f9f9f9;
         }
 
-        &.integrators-top>tbody>tr {
+        &.integrators-top > tbody > tr {
             height: 60px;
             border: none;
             font-weight: bold;
             font-size: 13px;
             line-height: 15px;
-            color: #F9F9F9;
+            color: #f9f9f9;
 
             // reset bootstrap styling
             background-color: transparent;
@@ -133,7 +129,7 @@ $table-radius: 4px;
             }
 
             &:not(:first-child) {
-                border-top: 2px solid #001B3A;
+                border-top: 2px solid #001b3a;
             }
 
             &.integrator {
@@ -162,15 +158,12 @@ $table-radius: 4px;
                     background: #002148;
                 }
 
-
                 &:nth-of-type(4n + 1) td {
                     background: #002044;
                 }
-
             }
 
             &.integrator {
-
                 &:hover:nth-child(odd) td,
                 &:hover td {
                     background: #012450;
@@ -178,12 +171,11 @@ $table-radius: 4px;
             }
 
             &.integrator-extra {
-
                 .titled-block {
                     margin: 10px 0;
                 }
 
-                >td {
+                > td {
                     padding: 0;
                 }
 
@@ -241,7 +233,6 @@ $table-radius: 4px;
                     }
                 }
 
-
                 overflow: hidden;
 
                 table {
@@ -296,7 +287,6 @@ $table-radius: 4px;
                 height: 35px;
                 margin-top: 3px;
 
-
                 span {
                     font-family: monospace;
                 }
@@ -313,9 +303,7 @@ $table-radius: 4px;
             }
         }
 
-
         @media (max-width: $max-sm) {
-
             .integrator-name,
             .integrator-name p {
                 max-width: 150px;
@@ -326,7 +314,6 @@ $table-radius: 4px;
         }
 
         @media (max-width: $max-xs) {
-
             .col-0,
             .col-3 {
                 display: none;
@@ -340,10 +327,9 @@ $table-radius: 4px;
                 max-width: 100px;
             }
 
-            &.integrators-top>tbody>tr {
+            &.integrators-top > tbody > tr {
                 border-top-width: 1px;
             }
         }
-
     }
 }

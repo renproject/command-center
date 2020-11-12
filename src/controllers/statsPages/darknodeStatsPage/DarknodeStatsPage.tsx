@@ -20,197 +20,210 @@ import { DarknodeMap } from "./darknodeMap/DarknodeMap";
 const REN_TOTAL_SUPPLY = new BigNumber(1000000000);
 
 export const DarknodeStatsPage = () => {
-  const { renVM } = GraphContainer.useContainer();
-  const {
-    currentCycle,
-    previousCycle,
-    numberOfDarknodes,
-    numberOfDarknodesLastEpoch,
-    numberOfDarknodesNextEpoch,
-    minimumBond,
-    timeUntilNextEpoch,
-    timeSinceLastEpoch,
-    minimumEpochInterval,
-  } = renVM || {};
-  const { pendingTotalInEth, quoteCurrency } = NetworkContainer.useContainer();
-  const {
-    latestCLIVersion,
-    latestCLIVersionDaysAgo,
-  } = GithubAPIContainer.useContainer();
+    const { renVM } = GraphContainer.useContainer();
+    const {
+        currentCycle,
+        previousCycle,
+        numberOfDarknodes,
+        numberOfDarknodesLastEpoch,
+        numberOfDarknodesNextEpoch,
+        minimumBond,
+        timeUntilNextEpoch,
+        timeSinceLastEpoch,
+        minimumEpochInterval,
+    } = renVM || {};
+    const {
+        pendingTotalInEth,
+        quoteCurrency,
+    } = NetworkContainer.useContainer();
+    const {
+        latestCLIVersion,
+        latestCLIVersionDaysAgo,
+    } = GithubAPIContainer.useContainer();
 
-  const current =
-    currentCycle && pendingTotalInEth.get(currentCycle, undefined);
-  const previous =
-    previousCycle && pendingTotalInEth.get(previousCycle, undefined);
-  const currentSummed =
-    current && numberOfDarknodes ? current.times(numberOfDarknodes) : undefined;
-  const previousSummed =
-    previous && numberOfDarknodesLastEpoch
-      ? previous.times(numberOfDarknodesLastEpoch)
-      : undefined;
+    const current =
+        currentCycle && pendingTotalInEth.get(currentCycle, undefined);
+    const previous =
+        previousCycle && pendingTotalInEth.get(previousCycle, undefined);
+    const currentSummed =
+        current && numberOfDarknodes
+            ? current.times(numberOfDarknodes)
+            : undefined;
+    const previousSummed =
+        previous && numberOfDarknodesLastEpoch
+            ? previous.times(numberOfDarknodesLastEpoch)
+            : undefined;
 
-  const percent =
-    numberOfDarknodes && minimumBond
-      ? numberOfDarknodes
-          .times(minimumBond.div(new BigNumber(10).exponentiatedBy(18)))
-          .div(REN_TOTAL_SUPPLY)
-          .times(100)
-          .toNumber()
-      : null;
+    const percent =
+        numberOfDarknodes && minimumBond
+            ? numberOfDarknodes
+                  .times(minimumBond.div(new BigNumber(10).exponentiatedBy(18)))
+                  .div(REN_TOTAL_SUPPLY)
+                  .times(100)
+                  .toNumber()
+            : null;
 
-  return (
-    <div className="overview container">
-      <Stats>
-        <Stat icon={<IconDarknodesOnline />} message="Darknodes online">
-          <Stats>
-            <Stat
-              message="Registered"
-              big
-              infoLabel="The current number of registered Darknodes. The smaller number indicates the change in registrations last Epoch."
-            >
-              {isDefined(numberOfDarknodes) ? (
-                <>
-                  <span className="stat-amount--value">
-                    {numberOfDarknodes.toNumber()}
-                  </span>
-                  {isDefined(numberOfDarknodesLastEpoch) ? (
-                    <Change
-                      className="stat--children--diff"
-                      change={numberOfDarknodes
-                        .minus(numberOfDarknodesLastEpoch)
-                        .toNumber()}
-                    />
-                  ) : null}
-                </>
-              ) : (
-                <Loading alt={true} />
-              )}
-            </Stat>
-            <Stat
-              message="Change next Epoch"
-              big
-              infoLabel="The change in registrations at the beginning of the next Epoch."
-            >
-              {isDefined(numberOfDarknodesNextEpoch) &&
-              isDefined(numberOfDarknodes) ? (
-                <>
-                  <Change
-                    change={numberOfDarknodesNextEpoch
-                      .minus(numberOfDarknodes)
-                      .toNumber()}
-                  />
-                </>
-              ) : (
-                <Loading alt={true} />
-              )}
-            </Stat>
-            <Stat
-              message="% Ren Bonded"
-              big
-              infoLabel="Each Darknode is required to bond 100,000K REN to encourage good behaviour. This number represents the percentage of the total amount of REN (1B) which is currently bonded."
-            >
-              {isDefined(percent) ? <>{percent}%</> : <Loading alt={true} />}
-            </Stat>
-          </Stats>
-        </Stat>
-        <Stat icon={<IconIncome />} message="Darknode rewards">
-          <Stats>
-            {/* <Stat message="All time total" big>
+    return (
+        <div className="overview container">
+            <Stats>
+                <Stat icon={<IconDarknodesOnline />} message="Darknodes online">
+                    <Stats>
+                        <Stat
+                            message="Registered"
+                            big
+                            infoLabel="The current number of registered Darknodes. The smaller number indicates the change in registrations last Epoch."
+                        >
+                            {isDefined(numberOfDarknodes) ? (
+                                <>
+                                    <span className="stat-amount--value">
+                                        {numberOfDarknodes.toFormat(0)}
+                                    </span>
+                                    {isDefined(numberOfDarknodesLastEpoch) ? (
+                                        <Change
+                                            className="stat--children--diff"
+                                            change={numberOfDarknodes
+                                                .minus(
+                                                    numberOfDarknodesLastEpoch,
+                                                )
+                                                .toNumber()}
+                                        />
+                                    ) : null}
+                                </>
+                            ) : (
+                                <Loading alt={true} />
+                            )}
+                        </Stat>
+                        <Stat
+                            message="Change next Epoch"
+                            big
+                            infoLabel="The change in registrations at the beginning of the next Epoch."
+                        >
+                            {isDefined(numberOfDarknodesNextEpoch) &&
+                            isDefined(numberOfDarknodes) ? (
+                                <>
+                                    <Change
+                                        change={numberOfDarknodesNextEpoch
+                                            .minus(numberOfDarknodes)
+                                            .toNumber()}
+                                    />
+                                </>
+                            ) : (
+                                <Loading alt={true} />
+                            )}
+                        </Stat>
+                        <Stat
+                            message="% Ren Bonded"
+                            big
+                            infoLabel="Each Darknode is required to bond 100,000K REN to encourage good behavior. This number represents the percentage of the total amount of REN (1B) which is currently bonded."
+                        >
+                            {isDefined(percent) ? (
+                                <>{percent}%</>
+                            ) : (
+                                <Loading alt={true} />
+                            )}
+                        </Stat>
+                    </Stats>
+                </Stat>
+                <Stat icon={<IconIncome />} message="Darknode rewards">
+                    <Stats>
+                        {/* <Stat message="All time total" big>
                             {previousSummed ? <><CurrencyIcon currency={quoteCurrency} /><TokenBalance
                                 token={Token.ETH}
                                 convertTo={quoteCurrency}
                                 amount={0}
                             /></> : <Loading alt />}
                         </Stat> */}
-            <Stat
-              message="Last cycle"
-              big
-              infoLabel="The amount of rewards earned by the entire network of Darknodes in the last Epoch. "
-            >
-              {previousSummed ? (
-                <>
-                  <CurrencyIcon currency={quoteCurrency} />
-                  <TokenBalance
-                    token={Token.ETH}
-                    convertTo={quoteCurrency}
-                    amount={previousSummed}
-                    format
-                  />
-                </>
-              ) : (
-                <Loading alt />
-              )}
-            </Stat>
-            <Stat
-              message="Current cycle"
-              highlight={true}
-              big={true}
-              icon={<RewardsIcon />}
-              infoLabel="Rewards earned in this current Epoch so far by the entire Darknode network."
-            >
-              {currentSummed ? (
-                <>
-                  <CurrencyIcon currency={quoteCurrency} />
-                  <TokenBalance
-                    token={Token.ETH}
-                    convertTo={quoteCurrency}
-                    amount={currentSummed}
-                    format
-                  />
-                </>
-              ) : (
-                <Loading alt />
-              )}
-            </Stat>
-          </Stats>
-        </Stat>
-      </Stats>
-      <div className="overview--bottom">
-        <DarknodeMap />
-        <Stats className="overview--bottom--right">
-          {/* <Stat message="All time total" big>$?</Stat> */}
-          <Stat
-            className="darknode-cli"
-            message="Reward Period/Epoch Ends"
-            highlight={true}
-            nested={true}
-            infoLabel={
-              <>
-                An Epoch is a recurring period of 28 days used for Darknode
-                registration and for distributing rewards to Darknodes that have
-                been active for that entire Epoch.
-              </>
-            }
-          >
-            <EpochProgress
-              small={true}
-              timeSinceLastEpoch={timeSinceLastEpoch}
-              timeUntilNextEpoch={timeUntilNextEpoch}
-              minimumEpochInterval={minimumEpochInterval}
-            />
-          </Stat>
-          <Stat
-            message="Darknode CLI Information"
-            className="darknode-cli"
-            highlight={true}
-            nested={true}
-          >
-            <div className="darknode-cli--top">
-              <p>
-                Latest CLI Version <b>{latestCLIVersion}</b>
-              </p>
-              <p>
-                Version published <b>{latestCLIVersionDaysAgo}</b>
-              </p>
+                        <Stat
+                            message="Last cycle"
+                            big
+                            infoLabel="The amount of rewards earned by the entire network of Darknodes in the last Epoch. "
+                        >
+                            {previousSummed ? (
+                                <>
+                                    <CurrencyIcon currency={quoteCurrency} />
+                                    <TokenBalance
+                                        token={Token.ETH}
+                                        convertTo={quoteCurrency}
+                                        amount={previousSummed}
+                                        format
+                                    />
+                                </>
+                            ) : (
+                                <Loading alt />
+                            )}
+                        </Stat>
+                        <Stat
+                            message="Current cycle"
+                            highlight={true}
+                            big={true}
+                            icon={<RewardsIcon />}
+                            infoLabel="Rewards earned in this current Epoch so far by the entire Darknode network."
+                        >
+                            {currentSummed ? (
+                                <>
+                                    <CurrencyIcon currency={quoteCurrency} />
+                                    <TokenBalance
+                                        token={Token.ETH}
+                                        convertTo={quoteCurrency}
+                                        amount={currentSummed}
+                                        format
+                                    />
+                                </>
+                            ) : (
+                                <Loading alt />
+                            )}
+                        </Stat>
+                    </Stats>
+                </Stat>
+            </Stats>
+            <div className="overview--bottom">
+                <DarknodeMap />
+                <Stats className="overview--bottom--right">
+                    {/* <Stat message="All time total" big>$?</Stat> */}
+                    <Stat
+                        className="darknode-cli"
+                        message="Reward Period/Epoch Ends"
+                        highlight={true}
+                        nested={true}
+                        infoLabel={
+                            <>
+                                An Epoch is a recurring period of 28 days used
+                                for Darknode registration and for distributing
+                                rewards to Darknodes that have been active for
+                                that entire Epoch.
+                            </>
+                        }
+                    >
+                        <EpochProgress
+                            small={true}
+                            timeSinceLastEpoch={timeSinceLastEpoch}
+                            timeUntilNextEpoch={timeUntilNextEpoch}
+                            minimumEpochInterval={minimumEpochInterval}
+                        />
+                    </Stat>
+                    <Stat
+                        message="Darknode CLI Information"
+                        className="darknode-cli"
+                        highlight={true}
+                        nested={true}
+                    >
+                        <div className="darknode-cli--top">
+                            <p>
+                                Latest CLI Version <b>{latestCLIVersion}</b>
+                            </p>
+                            <p>
+                                Version published{" "}
+                                <b>{latestCLIVersionDaysAgo}</b>
+                            </p>
+                        </div>
+                        <ExternalLink href="https://github.com/renproject/darknode-cli">
+                            <button className="darknode-cli--button button">
+                                Download CLI
+                            </button>
+                        </ExternalLink>
+                    </Stat>
+                </Stats>
             </div>
-            <ExternalLink href="https://github.com/renproject/darknode-cli">
-              <button className="darknode-cli--button button">
-                Download CLI
-              </button>
-            </ExternalLink>
-          </Stat>
-        </Stats>
-      </div>
-    </div>
-  );
+        </div>
+    );
 };

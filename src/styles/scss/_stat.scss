@@ -9,16 +9,15 @@
 }
 
 .stat {
-
     .hr {
-        border-bottom: 1px solid #1A2E46;
+        border-bottom: 1px solid #1a2e46;
         height: 1px;
         width: 100%;
-        border-color: #1A2E46;
+        border-color: #1a2e46;
         margin-bottom: 15px;
         border-width: 1px;
 
-        @media(min-width: $min-lg) {
+        @media (min-width: $min-lg) {
             margin-bottom: 25px;
         }
     }
@@ -43,7 +42,7 @@
         line-height: 14px;
         letter-spacing: 1.5px;
         height: 28px;
-        color: #F9F9F9;
+        color: #f9f9f9;
         margin-bottom: 0px;
     }
 
@@ -61,7 +60,7 @@
     letter-spacing: 1.75px;
     text-transform: uppercase;
 
-    color: #FFFFFF;
+    color: #ffffff;
     display: flex;
     align-items: center;
     padding-bottom: 0;
@@ -93,15 +92,14 @@
     margin-top: -5px;
     // Bottom
     margin-bottom: 0px;
-
 }
 
 .stat--children--big {
     font-size: 32px;
     line-height: 37px;
-    color: #F9F9F9;
+    color: #f9f9f9;
 
-    @media(max-width: $max-md) {
+    @media (max-width: $max-md) {
         font-size: 28px;
     }
 
@@ -123,7 +121,7 @@
 }
 
 .change-indicator {
-    display:inline-block;
+    display: inline-block;
     &.positive {
         color: $green;
 
@@ -133,22 +131,21 @@
     }
 
     &.negative {
-        color: #FF4545;
+        color: #ff4545;
 
         &::after {
             content: "\25bc";
-            ;
         }
     }
 
     &::after {
         font-size: 24px;
-        display:inline-block;
+        display: inline-block;
         transform: scaleY(0.8) translateY(1px);
     }
 }
 
 .stat--subtitle {
     margin-left: 4px;
-    color: #FFFFFF66;
+    color: #ffffff66;
 }

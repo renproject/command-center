@@ -14,22 +14,22 @@
     .titled-block--top {
         display: flex;
         justify-content: space-between;
-        border-bottom: 2px solid #001B3A;
+        border-bottom: 2px solid #001b3a;
         background: #002247;
         margin-bottom: 2px;
         padding: 20px 20px 0;
 
-        >* {
+        > * {
             font-size: 16px;
             line-height: 18px;
             font-weight: 500;
-            color: #F9F9F9;
+            color: #f9f9f9;
             text-transform: none;
         }
     }
 
     .titled-block--bottom {
-        background: #001F41;
+        background: #001f41;
         padding: 20px;
         height: 100%;
     }

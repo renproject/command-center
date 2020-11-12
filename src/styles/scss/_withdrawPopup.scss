@@ -12,7 +12,7 @@
         font-weight: 500;
         font-size: 16px;
         line-height: 18px;
-        color: #FFFFFF;
+        color: #ffffff;
         mix-blend-mode: normal;
         opacity: 0.8;
     }
@@ -22,7 +22,7 @@
         font-weight: 500;
         font-size: 24px;
         line-height: 32px;
-        color: #FFFFFF;
+        color: #ffffff;
     }
 
     .popup--buttons {
@@ -92,15 +92,15 @@
 }
 
 .colored-banner--btc {
-    background-color: #F2A900;
+    background-color: #f2a900;
 }
 
 .colored-banner--bch {
-    background-color: #44C43E;
+    background-color: #44c43e;
 }
 
 .colored-banner--zec {
-    background-color: #FABB00;
+    background-color: #fabb00;
 }
 
 .new-address {
@@ -115,7 +115,7 @@
     }
 
     &.new-address--faded {
-        color: #AAA;
+        color: #aaa;
     }
 }
 
@@ -123,7 +123,7 @@
     background-color: $primary !important;
     border-color: $primary;
 
-    >* {
+    > * {
         color: white;
     }
 
@@ -138,7 +138,7 @@
     color: white;
 
     :hover {
-        margin-top: -2px
+        margin-top: -2px;
     }
 
     :active {
@@ -155,13 +155,13 @@
     flex-flow: row;
     margin-bottom: 10px;
     position: relative;
-    background: #09203B;
+    background: #09203b;
     border: 1.6px solid $primary;
     box-sizing: border-box;
     border-radius: 4px;
     height: 40px;
 
-    input[type=text] {
+    input[type="text"] {
         border: none;
     }
 }
@@ -197,7 +197,7 @@
 .input-label {
     transform: translate3d(0, -2px, 0);
     opacity: 1;
-    background: #09203B;
+    background: #09203b;
     height: 2px;
 
     span {
@@ -215,7 +215,7 @@
     top: 0;
     left: 20px;
     padding: 0 5px;
-    transition: all .5s;
+    transition: all 0.5s;
 }
 
 .new-address--check {
@@ -231,7 +231,7 @@
 
     /* identical to box height, or 150% */
 
-    color: #FFFFFF;
+    color: #ffffff;
 }
 
 .withdraw--loading {

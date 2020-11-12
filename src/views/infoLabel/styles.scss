@@ -46,13 +46,14 @@ $tooltip-width: 260px;
     letter-spacing: normal;
     text-align: center;
     background-color: white;
-    color: #3F3F48;
+    color: #3f3f48;
     padding: 15px;
     border-radius: 4px;
     position: absolute;
     display: none;
     transition: all 0.2s;
     z-index: 100;
+    white-space: normal;
 
     top: 100%;
     margin-top: $icon-size / 2 + 1;
