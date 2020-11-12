@@ -146,7 +146,7 @@ export const NetworkStats = () => {
                                                         volume statistic has
                                                         been updated to use
                                                         historical asset prices
-                                                        (the price the asset was
+                                                        (the price of the asset
                                                         when it moved through
                                                         RenVM).
                                                     </InfoLabel>
@@ -196,7 +196,7 @@ export const NetworkStats = () => {
                                                 quoteCurrency={quoteCurrency}
                                                 data={
                                                     quoteVolumeSeries.difference
-                                                        .quoteLocked
+                                                        .quoteVolume
                                                 }
                                             />
                                         )

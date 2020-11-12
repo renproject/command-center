@@ -6,6 +6,7 @@ import {
     TokenIcon,
 } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
+import { OrderedMap } from "immutable";
 import React from "react";
 import { Doughnut } from "react-chartjs-2";
 
@@ -28,7 +29,17 @@ export const DoughnutChart: React.FC<Props> = ({
     quoteCurrency,
     title,
 }) => {
-    const tokens = data ? Object.keys(data) : undefined;
+    const tokens = React.useMemo(
+        () =>
+            data
+                ? OrderedMap<string, BigNumber>(Object.entries(data))
+                      .sortBy((value) => value.toNumber())
+                      .reverse()
+                      .keySeq()
+                      .toArray()
+                : undefined,
+        [data],
+    );
 
     return (
         <div
@@ -51,8 +62,8 @@ export const DoughnutChart: React.FC<Props> = ({
                                     labels: tokens,
                                     datasets: [
                                         {
-                                            data: tokens.map(
-                                                (token) => data[token],
+                                            data: tokens.map((token) =>
+                                                data[token].toNumber(),
                                             ),
                                             backgroundColor: colors,
                                             borderColor: "#001A38",
