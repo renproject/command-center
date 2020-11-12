@@ -9,7 +9,7 @@ import BigNumber from "bignumber.js";
 import { List, Map, OrderedMap } from "immutable";
 import moment from "moment";
 
-import { Token, TokenPrices } from "../ethereum/tokens";
+import { AllTokenDetails, Token, TokenPrices } from "../ethereum/tokens";
 import {
     PeriodData,
     QUERY_BLOCK,
@@ -286,11 +286,17 @@ export const getVolumes = async (
         locked: tokenArrayToMap((end && end.locked) || []).map(
             (endTokenLocked, symbol) => ({
                 symbol,
+                amount: getFieldDifference(
+                    tokenArrayToMap((start && start.locked) || []).get(symbol),
+                    endTokenLocked,
+                    "amount",
+                ),
                 amountInUsd: getFieldDifference(
                     tokenArrayToMap((start && start.locked) || []).get(symbol),
                     endTokenLocked,
                     "amountInUsd",
                 ),
+                // asset: endTokenLocked.asset,
             }),
         ),
     };
@@ -304,6 +310,7 @@ export const getVolumes = async (
 export interface QuotePeriodData extends PeriodData {
     // Total
     quoteLockedTotal: string;
+    quoteLockedTotalHistoric: string;
     quoteVolumeTotal: string;
 
     quoteLocked: {
@@ -323,29 +330,11 @@ const normalizeVolumes = (
     const data = {
         ...periodData,
         quoteLockedTotal: new BigNumber(0),
+        quoteLockedTotalHistoric: new BigNumber(0),
         quoteVolumeTotal: new BigNumber(0),
         quoteLocked: {},
         quoteVolume: {},
     };
-
-    if (periodData.locked) {
-        periodData.locked.forEach(({ amountInUsd }, symbol) => {
-            const tokenLocked = new BigNumber(amountInUsd || "0")
-                .dividedBy(
-                    tokenPrices
-                        .get(Token.BTC, Map<Currency, number>())
-                        .get(Currency.USD) || 0,
-                )
-                .times(
-                    tokenPrices
-                        .get(Token.BTC, Map<Currency, number>())
-                        .get(quoteCurrency) || 0,
-                )
-                .decimalPlaces(2);
-            data.quoteLocked[symbol] = tokenLocked;
-            data.quoteLockedTotal = data.quoteLockedTotal.plus(tokenLocked);
-        });
-    }
 
     if (periodData.volume) {
         periodData.volume.forEach(({ amountInUsd }, symbol) => {
@@ -366,11 +355,48 @@ const normalizeVolumes = (
         });
     }
 
+    if (periodData.locked) {
+        periodData.locked.forEach(({ amount, amountInUsd }, symbol) => {
+            // TODO: Fix subgraph to return asset decimals.
+            const details = AllTokenDetails.get(symbol as Token);
+            const tokenLocked = new BigNumber(amount || "0")
+                .div(
+                    new BigNumber(10).exponentiatedBy(
+                        details ? details.decimals : 18,
+                    ),
+                )
+                .times(
+                    tokenPrices
+                        .get(symbol as Token, Map<Currency, number>())
+                        .get(quoteCurrency) || 0,
+                )
+                .decimalPlaces(2);
+            const tokenLockedHistoric = new BigNumber(amountInUsd || "0")
+                .dividedBy(
+                    tokenPrices
+                        .get(Token.BTC, Map<Currency, number>())
+                        .get(Currency.USD) || 0,
+                )
+                .times(
+                    tokenPrices
+                        .get(Token.BTC, Map<Currency, number>())
+                        .get(quoteCurrency) || 0,
+                )
+                .decimalPlaces(2);
+            data.quoteLocked[symbol] = tokenLocked;
+            data.quoteLockedTotal = data.quoteLockedTotal.plus(tokenLocked);
+            data.quoteLockedTotalHistoric = data.quoteLockedTotalHistoric.plus(
+                tokenLockedHistoric,
+            );
+        });
+    }
+
     return {
         ...data,
         // total
         quoteLockedTotal: data.quoteLockedTotal.toFixed(2),
         quoteVolumeTotal: data.quoteVolumeTotal.toFixed(2),
+        quoteLockedTotalHistoric: data.quoteLockedTotalHistoric.toFixed(2),
     };
 };
 

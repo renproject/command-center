@@ -70,7 +70,10 @@ export const NetworkStats = () => {
     } = NetworkStatsContainer.useContainer();
     const quoteVolumeSeries = quotePeriodSeries.get(volumePeriod);
     const quoteLockedSeries = quotePeriodSeries.get(lockedPeriod);
-    const [, totalLockedPercentChange] = useMemo(() => {
+    const [, totalLockedPercentChange]: [
+        BigNumber | null,
+        BigNumber | null,
+    ] = useMemo(() => {
         const volumeChange = getPeriodPercentChange(
             volumePeriod,
             "quoteVolumeTotal",
@@ -247,16 +250,17 @@ export const NetworkStats = () => {
                                                 : "..."}
                                         </span>
                                     </span>
-                                    {totalLockedPercentChange !== null && (
-                                        <Change
-                                            className="stat--children--diff"
-                                            change={totalLockedPercentChange.toFormat(
-                                                2,
-                                            )}
-                                        >
-                                            %
-                                        </Change>
-                                    )}
+                                    {totalLockedPercentChange !== null &&
+                                        !totalLockedPercentChange.isNaN && (
+                                            <Change
+                                                className="stat--children--diff"
+                                                change={totalLockedPercentChange.toFormat(
+                                                    2,
+                                                )}
+                                            >
+                                                %
+                                            </Change>
+                                        )}
                                 </div>
                             ) : (
                                 <Loading alt={true} />
@@ -276,7 +280,7 @@ export const NetworkStats = () => {
                                                     name: `Locked (${quoteCurrency.toUpperCase()})`,
                                                     data: timeSeries(
                                                         quoteLockedSeries,
-                                                        "quoteLockedTotal",
+                                                        "quoteLockedTotalHistoric",
                                                     ),
                                                     axis: VOLUME_AXIS,
                                                 },
