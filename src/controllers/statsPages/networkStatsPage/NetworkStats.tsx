@@ -2,44 +2,59 @@ import { CurrencyIcon, Loading } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import React, { useMemo } from "react";
 
-import { PeriodType, QuotePeriodResponse } from "../../../lib/graphQL/volumes";
+import {
+    PeriodType,
+    QuotePeriodData,
+    SeriesData,
+} from "../../../lib/graphQL/volumes";
 import { ReactComponent as IconValueLocked } from "../../../styles/images/icon-value-locked.svg";
 import { ReactComponent as IconVolume } from "../../../styles/images/icon-volume.svg";
 import { Change } from "../../../views/Change";
+import { InfoLabel } from "../../../views/infoLabel/InfoLabel";
 import { Stat, Stats } from "../../../views/Stat";
 import { Collateral } from "./Collateral";
-import { GraphType, HistoryChart } from "./HistoryChart";
+import { DoughnutChart } from "./DoughnutChart";
+import { Graph } from "./Graph";
 import { NetworkStatsContainer } from "./networkStatsContainer";
 import { PeriodSelector } from "./PeriodSelector";
 import { StatTab, StatTabs } from "./StatTabs";
-import { TokenChart } from "./TokenChart";
 
-export const getPeriodPercentChange = (
+export const getPeriodPercentChange = <K extends string>(
     periodType: PeriodType,
-    property: "quoteTotalVolume" | "quoteTotalLocked",
-    periodData?: QuotePeriodResponse,
+    property: K,
+    seriesData?: Array<{ [key in K]?: string }> | undefined,
 ) => {
-    if (
-        periodType !== PeriodType.ALL &&
-        periodData?.historic &&
-        periodData?.historic.length > 1
-    ) {
-        const historic = periodData?.historic;
+    if (periodType !== PeriodType.ALL && seriesData && seriesData.length > 1) {
+        const historic = seriesData;
         const prev = historic[0];
         const curr = historic[historic.length - 1];
-        return new BigNumber(curr[property])
-            .minus(prev[property])
-            .dividedBy(curr[property])
+        return new BigNumber((curr[property] || "0") as string)
+            .minus((prev[property] || "0") as string)
+            .dividedBy((curr[property] || "0") as string)
             .multipliedBy(100);
     }
     return null;
 };
 
+const timeSeries = (
+    quoteLockedPeriod: SeriesData,
+    field: keyof QuotePeriodData,
+): Array<[number, number]> =>
+    quoteLockedPeriod.series.map((item) => [
+        item.date || 0,
+        BigNumber.isBigNumber(item[field])
+            ? item[field].toNumber()
+            : typeof item[field] === "number"
+            ? (item[field] as number)
+            : parseInt(String(item[field]), 10),
+    ]);
+
+const VOLUME_AXIS = 0;
+
 export const NetworkStats = () => {
     const {
         volumePeriod,
         setVolumePeriod,
-        volumePeriodSeries,
         quoteCurrency,
         volumeTab,
         lockedPeriod,
@@ -48,27 +63,29 @@ export const NetworkStats = () => {
         quotePeriodSeries,
         lockedTab,
         setLockedTab,
-        lockedPeriodSeries,
         total,
         mintedTotal,
         b,
         numberOfDarknodes,
     } = NetworkStatsContainer.useContainer();
-    const quoteVolumePeriod = quotePeriodSeries.get(volumePeriod);
-    const quoteLockedPeriod = quotePeriodSeries.get(lockedPeriod);
-    const [, totalLockedPercentChange] = useMemo(() => {
+    const quoteVolumeSeries = quotePeriodSeries.get(volumePeriod);
+    const quoteLockedSeries = quotePeriodSeries.get(lockedPeriod);
+    const [, totalLockedPercentChange]: [
+        BigNumber | null,
+        BigNumber | null,
+    ] = useMemo(() => {
         const volumeChange = getPeriodPercentChange(
             volumePeriod,
-            "quoteTotalVolume",
-            quoteVolumePeriod,
+            "quoteVolumeTotal",
+            quoteVolumeSeries && quoteVolumeSeries.series,
         );
         const lockedChange = getPeriodPercentChange(
             lockedPeriod,
-            "quoteTotalLocked",
-            quoteLockedPeriod,
+            "quoteLockedTotal",
+            quoteLockedSeries && quoteLockedSeries.series,
         );
         return [volumeChange, lockedChange];
-    }, [volumePeriod, quoteVolumePeriod, lockedPeriod, quoteLockedPeriod]);
+    }, [volumePeriod, quoteVolumeSeries, lockedPeriod, quoteLockedSeries]);
 
     return (
         <div className="network-stats container">
@@ -108,16 +125,38 @@ export const NetworkStats = () => {
                             }
                             className="stat--extra-big"
                         >
-                            {volumePeriodSeries ? (
+                            {quoteVolumeSeries ? (
                                 <div>
                                     <span className="stat-amount">
                                         <CurrencyIcon
                                             currency={quoteCurrency}
                                         />
                                         <span className="stat-amount--value">
-                                            {new BigNumber(
-                                                volumePeriodSeries.average.quotePeriodVolume,
-                                            ).toFormat(2)}
+                                            {quoteVolumeSeries.difference
+                                                .quoteVolumeTotal ? (
+                                                <>
+                                                    {new BigNumber(
+                                                        quoteVolumeSeries.difference.quoteVolumeTotal,
+                                                    ).toFormat(2)}
+                                                    <InfoLabel
+                                                        direction={"bottom"}
+                                                        style={{
+                                                            display:
+                                                                "inline-block",
+                                                        }}
+                                                    >
+                                                        From 11/11/2020 the
+                                                        volume statistic has
+                                                        been updated to use
+                                                        historical asset prices
+                                                        (the price of the asset
+                                                        when it moved through
+                                                        RenVM).
+                                                    </InfoLabel>
+                                                </>
+                                            ) : (
+                                                "..."
+                                            )}
                                         </span>
                                     </span>
                                     {/*{totalVolumePercentChange !== null && (*/}
@@ -139,19 +178,35 @@ export const NetworkStats = () => {
                                     volumePeriod={volumePeriod}
                                     assetsPeriod={volumePeriod}
                                 />
-                                {volumeTab === StatTab.History ? (
-                                    <HistoryChart
-                                        graphType={GraphType.TotalVolume}
-                                        periodSeries={quoteVolumePeriod}
-                                        quoteCurrency={quoteCurrency}
-                                    />
-                                ) : (
-                                    <TokenChart
-                                        graphType="Volume"
-                                        quoteCurrency={quoteCurrency}
-                                        periodSeries={quoteVolumePeriod}
-                                    />
-                                )}
+                                <>
+                                    {quoteVolumeSeries ? (
+                                        volumeTab === StatTab.History ? (
+                                            <Graph
+                                                lines={[
+                                                    {
+                                                        name: `Accumulative Volume (${quoteCurrency.toUpperCase()})`,
+                                                        data: timeSeries(
+                                                            quoteVolumeSeries,
+                                                            "quoteVolumeTotal",
+                                                        ),
+                                                        axis: VOLUME_AXIS,
+                                                    },
+                                                ]}
+                                            />
+                                        ) : (
+                                            <DoughnutChart
+                                                title="Volume"
+                                                quoteCurrency={quoteCurrency}
+                                                data={
+                                                    quoteVolumeSeries.difference
+                                                        .quoteVolume
+                                                }
+                                            />
+                                        )
+                                    ) : (
+                                        <Loading alt={true} />
+                                    )}
+                                </>
                             </div>
                         </Stat>
                     </div>
@@ -180,31 +235,35 @@ export const NetworkStats = () => {
                             big={true}
                             className="stat--extra-big"
                         >
-                            {lockedPeriodSeries ? (
+                            {quoteLockedSeries ? (
                                 <div>
                                     <span className="stat-amount">
                                         <CurrencyIcon
                                             currency={quoteCurrency}
                                         />
                                         <span className="stat-amount--value">
-                                            {new BigNumber(
-                                                lockedPeriodSeries.average.quotePeriodLocked,
-                                            ).toFormat(2)}
+                                            {quoteLockedSeries.difference
+                                                .quoteLockedTotal
+                                                ? new BigNumber(
+                                                      quoteLockedSeries.difference.quoteLockedTotal,
+                                                  ).toFormat(2)
+                                                : "..."}
                                         </span>
                                     </span>
-                                    {totalLockedPercentChange !== null && (
-                                        <Change
-                                            className="stat--children--diff"
-                                            change={totalLockedPercentChange.toFormat(
-                                                2,
-                                            )}
-                                        >
-                                            %
-                                        </Change>
-                                    )}
+                                    {totalLockedPercentChange !== null &&
+                                        !totalLockedPercentChange.isNaN && (
+                                            <Change
+                                                className="stat--children--diff"
+                                                change={totalLockedPercentChange.toFormat(
+                                                    2,
+                                                )}
+                                            >
+                                                %
+                                            </Change>
+                                        )}
                                 </div>
                             ) : (
-                                <Loading alt />
+                                <Loading alt={true} />
                             )}
                             <div className="overview--bottom">
                                 <StatTabs
@@ -213,18 +272,32 @@ export const NetworkStats = () => {
                                     volumePeriod={lockedPeriod}
                                     assetsPeriod={null}
                                 />
-                                {lockedTab === StatTab.History ? (
-                                    <HistoryChart
-                                        graphType={GraphType.TotalLocked}
-                                        periodSeries={quoteLockedPeriod}
-                                        quoteCurrency={quoteCurrency}
-                                    />
+                                {quoteLockedSeries ? (
+                                    lockedTab === StatTab.History ? (
+                                        <Graph
+                                            lines={[
+                                                {
+                                                    name: `Locked (${quoteCurrency.toUpperCase()})`,
+                                                    data: timeSeries(
+                                                        quoteLockedSeries,
+                                                        "quoteLockedTotalHistoric",
+                                                    ),
+                                                    axis: VOLUME_AXIS,
+                                                },
+                                            ]}
+                                        />
+                                    ) : (
+                                        <DoughnutChart
+                                            title="Locked"
+                                            quoteCurrency={quoteCurrency}
+                                            data={
+                                                quoteLockedSeries.difference
+                                                    .quoteLocked || {}
+                                            }
+                                        />
+                                    )
                                 ) : (
-                                    <TokenChart
-                                        graphType={"Locked"}
-                                        quoteCurrency={quoteCurrency}
-                                        periodSeries={quoteLockedPeriod}
-                                    />
+                                    <Loading alt={true} />
                                 )}
                             </div>
                         </Stat>

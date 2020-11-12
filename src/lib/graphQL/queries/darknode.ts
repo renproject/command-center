@@ -1,4 +1,4 @@
-import { ApolloClient, gql } from "apollo-boost";
+import { ApolloClient, gql } from "@apollo/react-hooks";
 import BigNumber from "bignumber.js";
 import { toChecksumAddress } from "web3-utils";
 

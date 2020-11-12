@@ -1,6 +1,7 @@
-import { useApolloClient } from "@apollo/react-hooks";
+// tslint:disable: ordered-imports
+
+import { gql, useApolloClient } from "@apollo/react-hooks";
 import { RenNetworkDetails } from "@renproject/contracts";
-import { gql } from "apollo-boost";
 import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
 import moment from "moment";
@@ -12,6 +13,7 @@ import {
     QUERY_BLOCK,
     QUERY_INTEGRATORS,
     QUERY_INTEGRATORS_HISTORY,
+    QueryBlockResponse,
 } from "../../../lib/graphQL/queries";
 import { getPeriodTimespan, PeriodType } from "../../../lib/graphQL/volumes";
 import { extractError } from "../../../lib/react/errors";
@@ -87,12 +89,9 @@ const useIntegratorsContainer = () => {
 
                 const now = moment().unix();
 
-                const latestBlockResponse = await apollo.query<{
-                    renVM: {
-                        activeBlock: string;
-                        activeTimestamp: string;
-                    };
-                }>({
+                const latestBlockResponse = await apollo.query<
+                    QueryBlockResponse
+                >({
                     query: QUERY_BLOCK,
                 });
 

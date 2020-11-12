@@ -1,4 +1,4 @@
-import { ApolloClient, gql } from "apollo-boost";
+import { ApolloClient, gql } from "@apollo/react-hooks";
 import BigNumber from "bignumber.js";
 
 import { SECONDS } from "../../../controllers/common/BackgroundTasks";
@@ -21,15 +21,6 @@ interface RawRenVM {
     minimumBond: string;
     minimumEpochInterval: string;
     // currentCyclePayoutPercent: string;
-    totalTxCountBTC: string;
-    totalLockedBTC: string;
-    totalVolumeBTC: string;
-    totalTxCountZEC: string;
-    totalLockedZEC: string;
-    totalVolumeZEC: string;
-    totalTxCountBCH: string;
-    totalLockedBCH: string;
-    totalVolumeBCH: string;
     currentEpoch: {
         epochhash: string;
         timestamp: string;
@@ -56,15 +47,6 @@ export interface RenVM {
     minimumBond: BigNumber;
     minimumEpochInterval: BigNumber;
     // currentCyclePayoutPercent: BigNumber;
-    totalTxCountBTC: BigNumber;
-    totalLockedBTC: BigNumber;
-    totalVolumeBTC: BigNumber;
-    totalTxCountZEC: BigNumber;
-    totalLockedZEC: BigNumber;
-    totalVolumeZEC: BigNumber;
-    totalTxCountBCH: BigNumber;
-    totalLockedBCH: BigNumber;
-    totalVolumeBCH: BigNumber;
     currentEpoch: Epoch;
     previousEpoch: Epoch;
     timeUntilNextEpoch: BigNumber;
@@ -84,15 +66,6 @@ const QUERY_RENVM = gql`
             minimumEpochInterval
             #   currentCyclePayoutPercent
             deregistrationInterval
-            totalTxCountBTC
-            totalLockedBTC
-            totalVolumeBTC
-            totalTxCountZEC
-            totalLockedZEC
-            totalVolumeZEC
-            totalTxCountBCH
-            totalLockedBCH
-            totalVolumeBCH
             currentEpoch {
                 epochhash
                 timestamp
@@ -178,16 +151,6 @@ export const queryRenVM = async (
         numberOfDarknodesNextEpoch: new BigNumber(
             response.data.renVM.numberOfDarknodesNextEpoch,
         ),
-        // currentCyclePayoutPercent: new BigNumber(response.data.renVM.currentCyclePayoutPercent),
-        totalLockedBCH: new BigNumber(response.data.renVM.totalLockedBCH),
-        totalLockedBTC: new BigNumber(response.data.renVM.totalLockedBTC),
-        totalLockedZEC: new BigNumber(response.data.renVM.totalLockedZEC),
-        totalTxCountBCH: new BigNumber(response.data.renVM.totalTxCountBCH),
-        totalTxCountBTC: new BigNumber(response.data.renVM.totalTxCountBTC),
-        totalTxCountZEC: new BigNumber(response.data.renVM.totalTxCountZEC),
-        totalVolumeBCH: new BigNumber(response.data.renVM.totalVolumeBCH),
-        totalVolumeBTC: new BigNumber(response.data.renVM.totalVolumeBTC),
-        totalVolumeZEC: new BigNumber(response.data.renVM.totalVolumeZEC),
         timeUntilNextEpoch,
         timeSinceLastEpoch,
         currentEpoch,
@@ -199,65 +162,3 @@ export const queryRenVM = async (
         ),
     };
 };
-
-export interface RawRenVMHistoric {
-    __typename: "RenVM";
-    totalTxCountBTC: string;
-    totalLockedBTC: string;
-    totalVolumeBTC: string;
-    totalTxCountZEC: string;
-    totalLockedZEC: string;
-    totalVolumeZEC: string;
-    totalTxCountBCH: string;
-    totalLockedBCH: string;
-    totalVolumeBCH: string;
-}
-
-export const QUERY_RENVM_HISTORY = (
-    block: number,
-) => `  block_${block}: renVM(id: "1", block: { number: ${block} }) {
-    totalTxCountBTC
-    totalLockedBTC
-    totalVolumeBTC
-    totalTxCountZEC
-    totalLockedZEC
-    totalVolumeZEC
-    totalTxCountBCH
-    totalLockedBCH
-    totalVolumeBCH
-  }`;
-
-/*
- * # numberOfDarknodes
-      # numberOfDarknodesLastEpoch
-      # numberOfDarknodesNextEpoch
-      # minimumBond
-      # minimumEpochInterval
-      # currentCyclePayoutPercent
-      # deregistrationInterval
-      totalTxCountBTC
-      totalLockedBTC
-      totalVolumeBTC
-      totalTxCountZEC
-      totalLockedZEC
-      totalVolumeZEC
-      totalTxCountBCH
-      totalLockedBCH
-      totalVolumeBCH
-      # currentEpoch {
-      #   epochhash
-      #   timestamp
-      #   rewardShareBTC
-      #   rewardShareZEC
-      #   rewardShareBCH
-      # }
-      # previousEpoch {
-      #   epochhash
-      #   timestamp
-      #   rewardShareBTC
-      #   rewardShareZEC
-      #   rewardShareBCH
-      # }
-      # currentCycle
-      # previousCycle
- */

@@ -211,7 +211,9 @@ export const RenVMStatsPage = () => {
                     big
                     infoLabel="The number of blocks in RenVM's consensus blockchain, Hyperdrive."
                 >
-                    {firstBlock ? firstBlock.header.height : 0}
+                    {firstBlock
+                        ? new BigNumber(firstBlock.header.height).toFormat(0)
+                        : "0"}
                 </Stat>
                 {lockedBTC}
                 {lockedZEC}

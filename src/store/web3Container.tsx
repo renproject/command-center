@@ -1,13 +1,10 @@
 import * as Sentry from "@sentry/browser";
 
 import {
-    chaosnet,
-    devnet,
-    localnet,
-    mainnet,
+    renMainnet,
     RenNetwork,
     RenNetworkDetails,
-    testnet,
+    renTestnet,
 } from "@renproject/contracts";
 import Onboard from "bnc-onboard";
 import { API } from "bnc-onboard/dist/src/interfaces";
@@ -30,15 +27,9 @@ import useStorageState from "./useStorageState/useStorageState";
 const stringToNetwork = (network: RenNetwork): RenNetworkDetails => {
     switch (network.toLowerCase()) {
         case RenNetwork.Mainnet:
-            return mainnet;
-        case RenNetwork.Chaosnet:
-            return chaosnet;
+            return renMainnet;
         case RenNetwork.Testnet:
-            return testnet;
-        case RenNetwork.Devnet:
-            return devnet;
-        case RenNetwork.Localnet:
-            return localnet;
+            return renTestnet;
     }
     throw new Error(`Unknown network ${network}.`);
 };

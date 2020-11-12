@@ -1,6 +1,6 @@
+import { ApolloClient } from "@apollo/react-hooks";
 import { RenNetworkDetails } from "@renproject/contracts";
 import { Currency } from "@renproject/react-components";
-import { ApolloClient } from "apollo-boost";
 import BigNumber from "bignumber.js";
 import { OrderedMap, OrderedSet } from "immutable";
 import Web3 from "web3";

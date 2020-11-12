@@ -1,3 +1,4 @@
+import { ApolloClient as ApolloClientInterface } from "@apollo/react-hooks";
 import { RenNetworkDetails } from "@renproject/contracts";
 import ApolloClient from "apollo-boost";
 import fetch from "node-fetch";
@@ -15,5 +16,5 @@ export const apolloClient = (renNetwork: RenNetworkDetails) => {
     client.defaultOptions.query = {
         fetchPolicy: "no-cache",
     };
-    return client;
+    return (client as unknown) as ApolloClientInterface<object>;
 };
