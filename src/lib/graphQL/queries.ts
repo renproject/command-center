@@ -57,12 +57,15 @@ export const QUERY_RENVM_HISTORY = (
 
     volume {
       symbol
+      amount
+      amountInEth
       amountInUsd
     }
 
     locked {
       symbol
       amount
+      amountInEth
       amountInUsd
     }
   }`;
@@ -102,12 +105,15 @@ export interface RawRenVM {
 
     volume: Array<{
         symbol: string;
+        amount: string;
+        amountInEth: string;
         amountInUsd: string;
     }>;
 
     locked: Array<{
         symbol: string;
         amount: string;
+        amountInEth: string;
         amountInUsd: string;
         // asset: {
         //     decimals: string;
@@ -123,6 +129,8 @@ export interface PeriodData extends Omit<Omit<RawRenVM, "volume">, "locked"> {
         string,
         {
             symbol: string;
+            amount: string;
+            amountInEth: string;
             amountInUsd: string;
         }
     >;
@@ -132,6 +140,7 @@ export interface PeriodData extends Omit<Omit<RawRenVM, "volume">, "locked"> {
         {
             symbol: string;
             amount: string;
+            amountInEth: string;
             amountInUsd: string;
             // asset: {
             //     decimals: string;
