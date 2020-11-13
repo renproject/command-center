@@ -301,11 +301,6 @@ export const getVolumes = async (
                     endTokenLocked,
                     "amount",
                 ),
-                amountInEth: getFieldDifference(
-                    tokenArrayToMap((start && start.locked) || []).get(symbol),
-                    endTokenLocked,
-                    "amountInEth",
-                ),
                 amountInUsd: getFieldDifference(
                     tokenArrayToMap((start && start.locked) || []).get(symbol),
                     endTokenLocked,
@@ -397,63 +392,41 @@ const normalizeVolumes = (
     }
 
     if (periodData.locked) {
-        periodData.locked.forEach(
-            ({ amount, amountInEth, amountInUsd }, symbol) => {
-                // TODO: Fix subgraph to return asset decimals.
-                const details = AllTokenDetails.get(symbol as Token);
-                let tokenLocked: BigNumber;
-                if (quoteCurrency === Currency.BTC) {
-                    tokenLocked = new BigNumber(amount || "0")
-                        .div(
-                            new BigNumber(10).exponentiatedBy(
-                                details ? details.decimals : 18,
-                            ),
-                        )
-                        .times(
-                            // Price should be 1 for BTC, variable for other
-                            // assets.
-                            tokenPrices
-                                .get(symbol as Token, Map<Currency, number>())
-                                .get(quoteCurrency) || 0,
-                        )
-                        .decimalPlaces(2);
-                } else if (quoteCurrency === Currency.ETH) {
-                    tokenLocked = new BigNumber(
-                        amountInEth || "0",
-                    ).decimalPlaces(2);
-                } else {
-                    tokenLocked = new BigNumber(amountInUsd || "0")
-                        .dividedBy(
-                            tokenPrices
-                                .get(Token.BTC, Map<Currency, number>())
-                                .get(Currency.USD) || 0,
-                        )
-                        .times(
-                            tokenPrices
-                                .get(Token.BTC, Map<Currency, number>())
-                                .get(quoteCurrency) || 0,
-                        )
-                        .decimalPlaces(2);
-                }
-                const tokenLockedHistoric = new BigNumber(amountInUsd || "0")
-                    .dividedBy(
-                        tokenPrices
-                            .get(Token.BTC, Map<Currency, number>())
-                            .get(Currency.USD) || 0,
-                    )
-                    .times(
-                        tokenPrices
-                            .get(Token.BTC, Map<Currency, number>())
-                            .get(quoteCurrency) || 0,
-                    )
-                    .decimalPlaces(2);
-                data.quoteLocked[symbol] = tokenLocked;
-                data.quoteLockedTotal = data.quoteLockedTotal.plus(tokenLocked);
-                data.quoteLockedTotalHistoric = data.quoteLockedTotalHistoric.plus(
-                    tokenLockedHistoric,
-                );
-            },
-        );
+        periodData.locked.forEach(({ amount, amountInUsd }, symbol) => {
+            // TODO: Fix subgraph to return asset decimals.
+            const details = AllTokenDetails.get(symbol as Token);
+            const tokenLocked: BigNumber = new BigNumber(amount || "0")
+                .div(
+                    new BigNumber(10).exponentiatedBy(
+                        details ? details.decimals : 18,
+                    ),
+                )
+                .times(
+                    // Price should be 1 for BTC, variable for other
+                    // assets.
+                    tokenPrices
+                        .get(symbol as Token, Map<Currency, number>())
+                        .get(quoteCurrency) || 0,
+                )
+                .decimalPlaces(2);
+            const tokenLockedHistoric = new BigNumber(amountInUsd || "0")
+                .dividedBy(
+                    tokenPrices
+                        .get(Token.BTC, Map<Currency, number>())
+                        .get(Currency.USD) || 0,
+                )
+                .times(
+                    tokenPrices
+                        .get(Token.BTC, Map<Currency, number>())
+                        .get(quoteCurrency) || 0,
+                )
+                .decimalPlaces(2);
+            data.quoteLocked[symbol] = tokenLocked;
+            data.quoteLockedTotal = data.quoteLockedTotal.plus(tokenLocked);
+            data.quoteLockedTotalHistoric = data.quoteLockedTotalHistoric.plus(
+                tokenLockedHistoric,
+            );
+        });
     }
 
     return {
