@@ -20,6 +20,8 @@ interface RawRenVM {
     numberOfDarknodesNextEpoch: string;
     minimumBond: string;
     minimumEpochInterval: string;
+    btcMintFee: string;
+    btcBurnFee: string;
     // currentCyclePayoutPercent: string;
     currentEpoch: {
         epochhash: string;
@@ -46,6 +48,8 @@ export interface RenVM {
     numberOfDarknodesNextEpoch: BigNumber;
     minimumBond: BigNumber;
     minimumEpochInterval: BigNumber;
+    btcMintFee: number;
+    btcBurnFee: number;
     // currentCyclePayoutPercent: BigNumber;
     currentEpoch: Epoch;
     previousEpoch: Epoch;
@@ -64,6 +68,8 @@ const QUERY_RENVM = gql`
             numberOfDarknodesNextEpoch
             minimumBond
             minimumEpochInterval
+            btcMintFee
+            btcBurnFee
             #   currentCyclePayoutPercent
             deregistrationInterval
             currentEpoch {
@@ -153,6 +159,8 @@ export const queryRenVM = async (
         ),
         timeUntilNextEpoch,
         timeSinceLastEpoch,
+        btcMintFee: parseInt(response.data.renVM.btcMintFee, 10),
+        btcBurnFee: parseInt(response.data.renVM.btcBurnFee, 10),
         currentEpoch,
         previousEpoch,
         currentCycle: Ox(new BigNumber(response.data.renVM.currentCycle)),

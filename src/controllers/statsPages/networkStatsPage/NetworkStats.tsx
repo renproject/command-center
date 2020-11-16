@@ -7,6 +7,7 @@ import {
     QuotePeriodData,
     SeriesData,
 } from "../../../lib/graphQL/volumes";
+import { GraphContainer } from "../../../store/graphContainer";
 import { ReactComponent as IconValueLocked } from "../../../styles/images/icon-value-locked.svg";
 import { ReactComponent as IconVolume } from "../../../styles/images/icon-volume.svg";
 import { Change } from "../../../views/Change";
@@ -52,6 +53,9 @@ const timeSeries = (
 const VOLUME_AXIS = 0;
 
 export const NetworkStats = () => {
+    const { renVM } = GraphContainer.useContainer();
+    const { btcMintFee, btcBurnFee } = renVM || {};
+
     const {
         volumePeriod,
         setVolumePeriod,
@@ -313,6 +317,8 @@ export const NetworkStats = () => {
                     b={b}
                     bRen={(numberOfDarknodes || new BigNumber(0)).times(100000)}
                     quoteCurrency={quoteCurrency}
+                    mintFee={btcMintFee}
+                    burnFee={btcBurnFee}
                 />
             </div>
         </div>

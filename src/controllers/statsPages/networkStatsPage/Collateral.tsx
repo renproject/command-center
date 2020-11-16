@@ -17,6 +17,8 @@ interface Props {
     b: BigNumber | null;
     bRen: BigNumber;
     quoteCurrency: Currency;
+    mintFee: number | undefined;
+    burnFee: number | undefined;
 }
 
 const RowBullet = () => (
@@ -34,6 +36,8 @@ export const Collateral: React.FC<Props> = ({
     b,
     bRen,
     quoteCurrency,
+    mintFee,
+    burnFee,
 }) => {
     const lDivB =
         b === null || l.isZero()
@@ -80,7 +84,9 @@ export const Collateral: React.FC<Props> = ({
                             {loadingCollateralization ? <>...</> : null}
                         </div>
                         <div className="collateral-status">
-                            {loadingCollateralization ? <Loading /> : null}
+                            {loadingCollateralization ? (
+                                <Loading alt={true} />
+                            ) : null}
                             <span
                                 style={{
                                     display: "flex",
@@ -287,7 +293,11 @@ export const Collateral: React.FC<Props> = ({
                     }
                     big={true}
                 >
-                    0.2%
+                    {mintFee === undefined ? (
+                        <Loading alt={true} />
+                    ) : (
+                        <>{mintFee / 100}%</>
+                    )}
                 </Stat>
                 <Stat
                     className="collateral-stat stat--extra-big"
@@ -306,7 +316,11 @@ export const Collateral: React.FC<Props> = ({
                     }
                     big={true}
                 >
-                    0.1%
+                    {burnFee === undefined ? (
+                        <Loading alt={true} />
+                    ) : (
+                        <>{burnFee / 100}%</>
+                    )}
                 </Stat>
             </Stats>
         </div>
