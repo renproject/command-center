@@ -61,4 +61,25 @@
     .bn-onboard-modal-content-header-icon {
         background: $blue-darker !important;
     }
+
+    .bn-onboard-modal-select-wallets {
+        & > div {
+            margin-bottom: -40px !important;
+            justify-content: flex-end !important;
+
+            & > .bn-onboard-prepare-button {
+                color: transparent !important;
+                font-size: 0px !important;
+                border: none !important;
+                right: 0;
+
+                &:after {
+                    content: "Show disabled wallets";
+                    color: #aaa;
+                    font-size: 12px;
+                    margin: 0 10px;
+                }
+            }
+        }
+    }
 }

@@ -17,9 +17,10 @@ import { LoggedOut } from "../controllers/common/popups/LoggedOut";
 import { getWeb3BrowserName, Web3Browser } from "../lib/ethereum/browsers";
 import { getReadOnlyWeb3 } from "../lib/ethereum/getWeb3";
 import {
-    BLOCKNATIVE_INFURA_KEY,
     BLOCKNATIVE_KEY,
+    EXTRA_WALLETS_INFURA_KEY,
     INFURA_KEY,
+    PORTIS_KEY,
 } from "../lib/react/environmentVariables";
 import { PopupContainer } from "./popupContainer";
 import useStorageState from "./useStorageState/useStorageState";
@@ -38,6 +39,13 @@ const useOnboard = (networkID: number) => {
     const [onboard, setOnboard] = useState<API | undefined>();
 
     useEffect(() => {
+        const appName = "Command Center";
+        const appUrl =
+            networkID === 1 ? "mainnet.renproject.io" : "testnet.renproject.io";
+        const supportEmail = "support@renproject.io";
+
+        const rpcUrl = EXTRA_WALLETS_INFURA_KEY;
+
         setOnboard(
             Onboard({
                 dappId: BLOCKNATIVE_KEY,
@@ -45,10 +53,75 @@ const useOnboard = (networkID: number) => {
                 darkMode: true,
                 walletSelect: {
                     wallets: [
-                        { walletName: "metamask" },
+                        // Preferred ///////////////////////////////////////////
+
+                        { walletName: "metamask", preferred: true },
                         {
                             walletName: "walletConnect",
-                            infuraKey: BLOCKNATIVE_INFURA_KEY,
+                            infuraKey: EXTRA_WALLETS_INFURA_KEY,
+                            preferred: true,
+                        },
+
+                        // Not officially supported ////////////////////////////
+
+                        { walletName: "coinbase" },
+                        { walletName: "trust", rpcUrl },
+                        { walletName: "dapper" },
+                        {
+                            walletName: "trezor",
+                            appUrl,
+                            email: supportEmail,
+                            rpcUrl,
+                        },
+                        { walletName: "ledger", rpcUrl },
+                        {
+                            walletName: "lattice",
+                            rpcUrl,
+                            appName,
+                        },
+                        // Fortmatic requires a paid key
+                        // {
+                        //   walletName: "fortmatic",
+                        //   apiKey: FORTMATIC_KEY,
+                        //   preferred: true
+                        // },
+                        {
+                            walletName: "portis",
+                            apiKey: PORTIS_KEY,
+                        },
+                        // Squarelink's registration page is broken
+                        // {
+                        //   walletName: "squarelink",
+                        //   apiKey: SQUARELINK_KEY
+                        // },
+                        { walletName: "authereum" },
+                        { walletName: "opera" },
+                        { walletName: "operaTouch" },
+                        { walletName: "torus" },
+                        { walletName: "status" },
+                        { walletName: "unilogin" },
+                        {
+                            walletName: "walletLink",
+                            rpcUrl,
+                            appName,
+                        },
+                        {
+                            walletName: "imToken",
+                            rpcUrl,
+                        },
+                        { walletName: "meetone" },
+                        {
+                            walletName: "mykey",
+                            rpcUrl,
+                        },
+                        {
+                            walletName: "huobiwallet",
+                            rpcUrl,
+                        },
+                        { walletName: "hyperpay" },
+                        {
+                            walletName: "wallet.io",
+                            rpcUrl,
                         },
                     ],
                 },
