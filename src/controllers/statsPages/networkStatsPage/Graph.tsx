@@ -22,6 +22,9 @@ const colors = [
     "#FF8C94 ",
 ];
 
+/**
+ * DOCS: https://api.highcharts.com/highstock/
+ */
 const getOptions = (seriesData: Line[]) => ({
     rangeSelector: {
         // selected: 1
@@ -57,14 +60,14 @@ const getOptions = (seriesData: Line[]) => ({
             ),
         ),
     ).map((_) => ({
-        gridLineColor: null,
+        gridLineColor: "#1A2E46",
+        opposite: false,
         labels: {
             enabled: true,
             style: {
                 color: "white",
             },
         },
-        min: 0,
     })),
 
     xAxis: [
@@ -79,18 +82,12 @@ const getOptions = (seriesData: Line[]) => ({
     ],
 
     series: seriesData.map(({ name, data, axis, hidden }, i) => ({
-        // type: "area",
-        // fillOpacity: 0.02,
         name,
         data,
         color: colors[i % colors.length],
         yAxis: axis || 0,
         visible: !hidden,
         lineWidth: 3,
-        // tooltip: {
-        // valueDecimals: 2,
-        // },
-        // visible: false,
     })),
 });
 
