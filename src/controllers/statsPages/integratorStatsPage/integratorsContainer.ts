@@ -18,9 +18,8 @@ import {
 import { getPeriodTimespan, PeriodType } from "../../../lib/graphQL/volumes";
 import { extractError } from "../../../lib/react/errors";
 import { Web3Container } from "../../../store/web3Container";
+import DefaultLogo from "../../../styles/images/default-integrator.png";
 import Integrators from "./integrators.json";
-
-const DefaultLogo = require("../../../styles/images/integrators/default.png");
 
 const resolveIntegrator = (
     networkDetails: RenNetworkDetails,

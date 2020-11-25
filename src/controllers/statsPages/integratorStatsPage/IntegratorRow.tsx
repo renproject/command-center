@@ -8,12 +8,11 @@ import { Integrator } from "../../../lib/graphQL/queries";
 import { classNames } from "../../../lib/react/className";
 import { NetworkContainer } from "../../../store/networkContainer";
 import { Web3Container } from "../../../store/web3Container";
+import DefaultLogo from "../../../styles/images/default-integrator.png";
 import { ExternalLink } from "../../../views/ExternalLink";
 import { TitledSection } from "../../../views/TitledSection";
 import { tokenToQuote, tokenToReadable } from "../../common/TokenBalance";
 import Integrators from "./integrators.json";
-
-const DefaultLogo = require("../../../styles/images/integrators/default.png");
 
 const resolveIntegrator = (
     networkDetails: RenNetworkDetails,
