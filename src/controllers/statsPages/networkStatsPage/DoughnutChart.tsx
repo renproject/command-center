@@ -3,12 +3,13 @@ import {
     CurrencyIcon,
     Loading,
     textCurrencyIcon,
-    TokenIcon,
 } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
 import React from "react";
 import { Doughnut } from "react-chartjs-2";
+
+import { TokenIcon } from "../../../views/tokenIcon/TokenIcon";
 
 const colors = [
     "#004CA0",

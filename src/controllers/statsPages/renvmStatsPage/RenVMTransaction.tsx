@@ -7,7 +7,7 @@ import {
     RenVMType,
     TxStatus,
 } from "@renproject/interfaces";
-import { Loading, TokenIcon } from "@renproject/react-components";
+import { Loading } from "@renproject/react-components";
 import { ResponseQueryTx } from "@renproject/rpc";
 import React from "react";
 
@@ -17,6 +17,7 @@ import { EncodedData } from "../../../lib/general/encodedData";
 import { classNames } from "../../../lib/react/className";
 import { ExternalLink } from "../../../views/ExternalLink";
 import { TitledSection } from "../../../views/TitledSection";
+import { TokenIcon } from "../../../views/tokenIcon/TokenIcon";
 import { Tx } from "./renvmContainer";
 
 export const TransactionPreview = ({ tx }: { tx: Tx }) => {

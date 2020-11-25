@@ -1,9 +1,4 @@
-import {
-    Currency,
-    CurrencyIcon,
-    Loading,
-    TokenIcon,
-} from "@renproject/react-components";
+import { Currency, CurrencyIcon, Loading } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -22,6 +17,7 @@ import {
 import { ReactComponent as RewardsIcon } from "../../../../styles/images/icon-rewards-white.svg";
 // import { ReactComponent as WithdrawIcon } from "../../../../styles/images/icon-withdraw.svg";
 import { Tabs } from "../../../../views/Tabs";
+import { TokenIcon } from "../../../../views/tokenIcon/TokenIcon";
 import { TokenBalance } from "../../../common/TokenBalance";
 import { FeesItem } from "../FeesItem";
 import { Block, BlockBody, BlockTitle } from "./Block";
