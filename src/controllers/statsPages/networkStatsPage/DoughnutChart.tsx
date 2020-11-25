@@ -23,12 +23,14 @@ interface Props {
     data: { [token: string]: BigNumber } | null | undefined;
     quoteCurrency: Currency;
     title: string;
+    altData: { [token: string]: BigNumber } | undefined | null;
 }
 
 export const DoughnutChart: React.FC<Props> = ({
     data,
     quoteCurrency,
     title,
+    altData,
 }) => {
     const tokens = React.useMemo(
         () =>
@@ -152,16 +154,26 @@ export const DoughnutChart: React.FC<Props> = ({
                                                       <span>{token}</span>
                                                   </div>
                                                   <div>
-                                                      <CurrencyIcon
-                                                          currency={
-                                                              quoteCurrency
-                                                          }
-                                                      />
-                                                      {/* <TokenBalance */}
-                                                      {/* token={Token.ETH} */}
-                                                      {data[token].toFormat()}
-                                                      {/* convertTo={quoteCurrency} */}
-                                                      {/* /> */}
+                                                      {!data[token].isZero() ||
+                                                      !altData ? (
+                                                          <>
+                                                              <CurrencyIcon
+                                                                  currency={
+                                                                      quoteCurrency
+                                                                  }
+                                                              />
+                                                              {data[
+                                                                  token
+                                                              ].toFormat()}
+                                                          </>
+                                                      ) : (
+                                                          <span className="overview--chart--legend--faded">
+                                                              {altData[
+                                                                  token
+                                                              ].toFormat()}{" "}
+                                                              {token}
+                                                          </span>
+                                                      )}
                                                   </div>
                                               </div>
                                           );

@@ -64,6 +64,7 @@ export const NetworkStats = () => {
         lockedPeriod,
         setLockedPeriod,
         setVolumeTab,
+        periodSeries,
         quotePeriodSeries,
         lockedTab,
         setLockedTab,
@@ -205,6 +206,28 @@ export const NetworkStats = () => {
                                                     quoteVolumeSeries.difference
                                                         .quoteVolume
                                                 }
+                                                altData={
+                                                    periodSeries &&
+                                                    periodSeries
+                                                        .get(volumePeriod)
+                                                        ?.difference.volume?.map(
+                                                            (x) =>
+                                                                new BigNumber(
+                                                                    x.amount,
+                                                                ).div(
+                                                                    new BigNumber(
+                                                                        10,
+                                                                    ).exponentiatedBy(
+                                                                        x.asset
+                                                                            ? x
+                                                                                  .asset
+                                                                                  .decimals
+                                                                            : 0,
+                                                                    ),
+                                                                ),
+                                                        )
+                                                        .toObject()
+                                                }
                                             />
                                         )
                                     ) : (
@@ -297,6 +320,28 @@ export const NetworkStats = () => {
                                             data={
                                                 quoteLockedSeries.difference
                                                     .quoteLocked || {}
+                                            }
+                                            altData={
+                                                periodSeries &&
+                                                periodSeries
+                                                    .get(lockedPeriod)
+                                                    ?.difference.locked?.map(
+                                                        (x) =>
+                                                            new BigNumber(
+                                                                x.amount,
+                                                            ).div(
+                                                                new BigNumber(
+                                                                    10,
+                                                                ).exponentiatedBy(
+                                                                    x.asset
+                                                                        ? x
+                                                                              .asset
+                                                                              .decimals
+                                                                        : 0,
+                                                                ),
+                                                            ),
+                                                    )
+                                                    .toObject()
                                             }
                                         />
                                     )

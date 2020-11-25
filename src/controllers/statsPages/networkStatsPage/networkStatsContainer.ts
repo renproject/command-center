@@ -235,6 +235,7 @@ const useNetworkStatsContainer = () => {
         lockedPeriod,
         setLockedPeriod,
         setVolumeTab,
+        periodSeries,
         quotePeriodSeries,
         lockedTab,
         setLockedTab,

@@ -290,6 +290,7 @@ export const getVolumes = async (
                     endTokenVolume,
                     "amountInUsd",
                 ),
+                asset: endTokenVolume.asset,
             }),
         ),
 
@@ -306,7 +307,7 @@ export const getVolumes = async (
                     endTokenLocked,
                     "amountInUsd",
                 ),
-                // asset: endTokenLocked.asset,
+                asset: endTokenLocked.asset,
             }),
         ),
     };
