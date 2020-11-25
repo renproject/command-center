@@ -77,8 +77,19 @@
             "urlHref": "https://bridge.renproject.io",
             "url": "bridge.renproject.io"
         },
-        "0x493d490d84053fed122035d8889d88a9c492f7fa": {
+        "RenEscrow": {
+            "name": "RenEscrow",
             "url": "Etherscan - RenEscrow"
+        },
+        "0x98133009242724c031d80bce2d4f9f86a04a9290": {
+            "name": "Farmland renBTC",
+            "url": "Etherscan - VaultRenbtc"
+        },
+        "0xA30B9C9BC2294c26Ee350f1C879380B416FF89c2": {
+            "url": "Etherscan - SimpleMintAdapter"
+        },
+        "0x10aa7bbcb29cf100fe0f25819d11499e43caaea5": {
+            "name": "MyEtherWallet"
         }
     }
 }
