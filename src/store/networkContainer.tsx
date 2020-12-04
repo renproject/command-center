@@ -8,7 +8,7 @@ import { PromiEvent } from "web3-core";
 
 import { MultiStepPopup } from "../controllers/common/popups/MultiStepPopup";
 import { WithdrawPopup } from "../controllers/common/popups/WithdrawPopup";
-import { TokenBalance } from "../controllers/common/TokenBalance";
+import { ConvertCurrency, TokenBalance } from "../controllers/common/TokenBalance";
 import { retryNTimes } from "../controllers/statsPages/renvmStatsPage/renvmContainer";
 import { NodeStatistics } from "../lib/darknode/jsonrpc";
 import { getDarknodePayment } from "../lib/ethereum/contract";
@@ -18,7 +18,6 @@ import {
     getOperatorDarknodes,
     NULL,
     RegistrationStatus,
-    sumUpFeeMap,
 } from "../lib/ethereum/contractReads";
 import {
     approveNode,
@@ -29,14 +28,15 @@ import {
     withdrawToken,
 } from "../lib/ethereum/contractWrites";
 import {
-    AllTokenDetails,
     FeeTokens,
     getPrices,
     Token,
     TokenPrices,
+    TokenString,
 } from "../lib/ethereum/tokens";
 import { isDefined } from "../lib/general/isDefined";
 import { safePromiseAllMap } from "../lib/general/promiseAll";
+import { TokenAmount } from "../lib/graphQL/queries";
 import { RenVM } from "../lib/graphQL/queries/renVM";
 import {
     catchBackgroundException,
@@ -52,8 +52,9 @@ export class DarknodesState extends Record({
     multiAddress: "",
     publicKey: "",
     ethBalance: null as BigNumber | null,
-    feesEarned: OrderedMap<Token, BigNumber>(),
-    feesEarnedTotalEth: null as BigNumber | null,
+    feesEarned: OrderedMap<TokenString, TokenAmount | null>(),
+    feesEarnedInEth: null as BigNumber | null,
+    feesEarnedInUsd: null as BigNumber | null,
 
     cycleStatus: OrderedMap<string, DarknodeFeeStatus>(),
 
@@ -101,15 +102,12 @@ const useNetworkContainer = () => {
     );
 
     const [pendingRewards, setPendingRewards] = useState(
-        OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber | null>>(),
+        OrderedMap<string /* cycle */, OrderedMap<string, TokenAmount | null>>(),
     );
-    const [pendingTotalInEth, setPendingTotalInEth] = useState(
+    const [pendingTotalInUsd, setPendingTotalInUsd] = useState(
         OrderedMap<string /* cycle */, BigNumber | null>(),
     );
-    const [pendingRewardsInEth, setPendingRewardsInEth] = useState(
-        OrderedMap<string /* cycle */, OrderedMap<Token, BigNumber | null>>(),
-    );
-
+    
     ///////////////////////////////////////////////////////////
     // If these change, localstorage migration may be needed //
     ///////////////////////////////////////////////////////////
@@ -365,7 +363,7 @@ const useNetworkContainer = () => {
      *     currentCycle: The current cycle (as a block number)
      *     previousCycle: The previous cycle (as a block number)
      *     cycleTimeout: The earliest the current cycle could end (as a block number)
-     *     pendingTotalInEth: For each cycle, The pending rewards added up as ETH
+     *     pendingTotalInUsd: For each cycle, The pending rewards added up as ETH
      * }`
      */
     const fetchCycleAndPendingRewards = async (latestRenVM: RenVM) => {
@@ -373,52 +371,20 @@ const useNetworkContainer = () => {
 
         let newPendingRewards = OrderedMap<
             string /* cycle */,
-            OrderedMap<Token, BigNumber | null>
+            OrderedMap<string, TokenAmount | null>
         >();
 
-        const πPrevious = safePromiseAllMap(
-            FeeTokens.map(async (_tokenDetails, token) => {
-                try {
-                    const tokenAddress =
-                        token === Token.ETH
-                            ? "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
-                            : renNetwork.addresses.tokens[token].address;
-                    if (renVM && token === Token.BTC)
-                        return renVM.currentEpoch.rewardShareBTC.decimalPlaces(
-                            0,
-                        );
-                    if (renVM && token === Token.ZEC)
-                        return renVM.currentEpoch.rewardShareZEC.decimalPlaces(
-                            0,
-                        );
-                    if (renVM && token === Token.BCH)
-                        return renVM.currentEpoch.rewardShareBCH.decimalPlaces(
-                            0,
-                        );
-                    const previousCycleRewardShareBN = await retryNTimes(
-                        async () =>
-                            await darknodePayment.methods
-                                .previousCycleRewardShare(tokenAddress)
-                                .call(/**/),
-                        2,
-                    );
-                    return new BigNumber(
-                        (
-                            previousCycleRewardShareBN || new BigNumber(0)
-                        ).toString(),
-                    ).decimalPlaces(0);
-                } catch (error) {
-                    console.error(`Error fetching rewards for ${token}`, error);
-                    return new BigNumber(0);
-                }
-            }).toOrderedMap(),
-            new BigNumber(0),
-        );
+        let previous = OrderedMap<string, TokenAmount | null>();
+        if (isDefined(latestRenVM)) {
+            previous = latestRenVM.currentEpoch.rewardShares.filter(asset => asset.asset !== null).reduce((map, asset, symbol) =>
+                map.set(symbol, asset)
+            , previous);
+        }
 
         const πCurrent = safePromiseAllMap(
-            FeeTokens.map(async (_tokenDetails, token) => {
+            FeeTokens.map(async (tokenDetails, token) => {
                 if (latestRenVM.numberOfDarknodes.isZero()) {
-                    return new BigNumber(0);
+                    return null;
                 }
                 try {
                     const tokenAddress =
@@ -433,12 +399,39 @@ const useNetworkContainer = () => {
                         2,
                     );
                     if (currentCycleRewardPool === null) {
-                        return new BigNumber(0);
+                        return null;
                     }
-                    return new BigNumber(currentCycleRewardPool.toString())
-                        .decimalPlaces(0)
-                        .div(latestRenVM.numberOfDarknodes)
-                        .decimalPlaces(0);
+
+                    const amount = new BigNumber(currentCycleRewardPool.toString())
+                    .decimalPlaces(0)
+                    .div(latestRenVM.numberOfDarknodes)
+                    .decimalPlaces(0);
+
+                    let amountInEth: BigNumber | undefined;
+                    let amountInUsd: BigNumber | undefined;
+
+                    if (tokenPrices) {
+                    const price = tokenPrices.get(token, undefined);
+                    const decimals = tokenDetails
+                        ? new BigNumber(tokenDetails.decimals.toString()).toNumber()
+                        : 0;
+                    amountInEth = amount
+                        .div(Math.pow(10, decimals))
+                        .multipliedBy(price ? price.get(Currency.ETH, 0) : 0);
+                    amountInUsd = amount
+                        .div(Math.pow(10, decimals))
+                        .multipliedBy(price ? price.get(Currency.USD, 0) : 0);
+                    }
+
+                    return {
+                        symbol: token,
+                        amount: amount,
+                        amountInEth: amountInEth || new BigNumber(0),
+                        amountInUsd: amountInUsd || new BigNumber(0),
+                        asset: {
+                            decimals: tokenDetails.decimals,
+                        },
+                    };
                 } catch (error) {
                     console.error(`Error fetching rewards for ${token}`, error);
                     return null;
@@ -447,7 +440,6 @@ const useNetworkContainer = () => {
             null,
         );
 
-        const previous = await πPrevious;
         if (isDefined(latestRenVM)) {
             newPendingRewards = newPendingRewards.set(
                 latestRenVM.previousCycle,
@@ -463,49 +455,29 @@ const useNetworkContainer = () => {
             );
         }
 
-        let newPendingTotalInEth = null;
-        let newPendingRewardsInEth = null;
+        let newPendingTotalInUsd = null;
         if (tokenPrices) {
-            const [previousTotal, previousInEth] = sumUpFeeMap(
-                previous,
-                tokenPrices,
-            );
-            const [currentTotal, currentInEth] = sumUpFeeMap(
-                current,
-                tokenPrices,
-            );
-            newPendingTotalInEth = OrderedMap<
+            const previousTotalInUsd = previous ? previous.reduce((sum, asset) => sum.plus(asset ? asset.amountInUsd : 0), new BigNumber(0)) : null;
+            const currentTotalInUsd = current ? current.reduce((sum, asset) => sum.plus(asset ? asset.amountInUsd : 0), new BigNumber(0)) : null;
+            newPendingTotalInUsd = OrderedMap<
                 string /* cycle */,
                 BigNumber | null
             >();
-            newPendingRewardsInEth = OrderedMap<
-                string /* cycle */,
-                OrderedMap<Token, BigNumber | null>
-            >();
             if (isDefined(latestRenVM)) {
-                newPendingTotalInEth = newPendingTotalInEth.set(
+                newPendingTotalInUsd = newPendingTotalInUsd.set(
                     latestRenVM.previousCycle,
-                    previousTotal,
+                    previousTotalInUsd,
                 );
-                newPendingRewardsInEth = newPendingRewardsInEth.set(
-                    latestRenVM.previousCycle,
-                    previousInEth,
-                );
-                newPendingTotalInEth = newPendingTotalInEth.set(
+                newPendingTotalInUsd = newPendingTotalInUsd.set(
                     latestRenVM.currentCycle,
-                    currentTotal,
-                );
-                newPendingRewardsInEth = newPendingRewardsInEth.set(
-                    latestRenVM.currentCycle,
-                    currentInEth,
+                    currentTotalInUsd,
                 );
             }
         }
 
         return {
             newPendingRewards,
-            newPendingTotalInEth,
-            newPendingRewardsInEth,
+            newPendingTotalInUsd,
         };
     };
 
@@ -519,15 +491,12 @@ const useNetworkContainer = () => {
 
         const {
             newPendingRewards,
-            newPendingTotalInEth,
-            newPendingRewardsInEth,
+            newPendingTotalInUsd,
         } = await fetchCycleAndPendingRewardsPromise;
 
-        if (isDefined(newPendingRewardsInEth)) {
-            setPendingRewardsInEth(newPendingRewardsInEth);
-        }
-        if (isDefined(newPendingTotalInEth)) {
-            setPendingTotalInEth(newPendingTotalInEth);
+
+        if (isDefined(newPendingTotalInUsd)) {
+            setPendingTotalInUsd(newPendingTotalInUsd);
         }
         setPendingRewards(newPendingRewards);
     };
@@ -639,13 +608,8 @@ const useNetworkContainer = () => {
         }
     };
 
-    const withdrawReward = async (darknodeID: string, token: Token) =>
-        new Promise(async (resolve, reject) => {
-            const tokenDetails = AllTokenDetails.get(token);
-            if (tokenDetails === undefined) {
-                throw new Error("Unknown token");
-            }
-
+    const withdrawReward = async (darknodeID: string, token: TokenString) =>
+        new Promise(async (resolve, reject) => {            
             if (!address) {
                 throw new Error(`Unable to retrieve account address.`);
             }
@@ -666,27 +630,18 @@ const useNetworkContainer = () => {
                 clearPopup();
                 resolve();
             };
-            if (tokenDetails.wrapped) {
-                setPopup({
-                    popup: (
-                        <WithdrawPopup
-                            token={token}
-                            withdraw={withdraw}
-                            onDone={onDone}
-                            onCancel={onCancel}
-                        />
-                    ),
-                    onCancel,
-                    overlay: true,
-                });
-            } else {
-                try {
-                    await withdraw();
-                    resolve();
-                } catch (error) {
-                    onCancel();
-                }
-            }
+            setPopup({
+                popup: (
+                    <WithdrawPopup
+                        token={token}
+                        withdraw={withdraw}
+                        onDone={onDone}
+                        onCancel={onCancel}
+                    />
+                ),
+                onCancel,
+                overlay: true,
+            });
         });
 
     const showRegisterPopup = async (
@@ -772,7 +727,7 @@ const useNetworkContainer = () => {
 
     const showDeregisterPopup = (
         darknodeID: string,
-        remainingFees: BigNumber | null,
+        remainingFeesInUsd: BigNumber | null,
         onCancel: () => void,
         onDone: () => void,
     ) => {
@@ -795,17 +750,18 @@ const useNetworkContainer = () => {
         const steps = [{ call: step1, name: "Deregister darknode" }];
 
         let warning;
-        if (remainingFees && remainingFees.gt(0.00001)) {
+        if (remainingFeesInUsd && remainingFeesInUsd.gt(1)) {
             warning = (
                 <>
                     You have earned{" "}
                     <span style={{ fontWeight: 900 }}>
                         <CurrencyIcon currency={quoteCurrency} />
-                        <TokenBalance
-                            token={Token.ETH}
-                            convertTo={quoteCurrency}
-                            amount={remainingFees}
+                        <ConvertCurrency
+                            from={Currency.USD}
+                            to={quoteCurrency}
+                            amount={remainingFeesInUsd}
                         />
+                        {" "}
                         {quoteCurrency.toUpperCase()}
                     </span>{" "}
                     in fees. Please withdraw them before continuing.
@@ -922,8 +878,7 @@ const useNetworkContainer = () => {
         setTransactions,
         confirmations,
         pendingRewards,
-        pendingTotalInEth,
-        pendingRewardsInEth,
+        pendingTotalInUsd,
         quoteCurrency,
         setQuoteCurrency,
         darknodeNames,

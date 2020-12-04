@@ -109,7 +109,7 @@ export const RenVMStatsPage = () => {
                     onClick={trOnClick}
                     className="block--row"
                 >
-                    <td>{block.header.height}</td>
+                    <td>{new BigNumber(block.header.height).toFormat(0)}</td>
                     <td>
                         {naturalTime(block.header.timestamp, {
                             message: "Just now",

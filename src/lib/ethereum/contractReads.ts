@@ -13,6 +13,7 @@ import { darknodeIDHexToBase58 } from "../darknode/darknodeID";
 import { queryStat } from "../darknode/jsonrpc";
 import { isDefined } from "../general/isDefined";
 import { safePromiseAllList } from "../general/promiseAll";
+import { TokenAmount } from "../graphQL/queries";
 import { Darknode, queryDarknode } from "../graphQL/queries/darknode";
 import { RenVM } from "../graphQL/queries/renVM";
 import { catchBackgroundException } from "../react/errors";
@@ -265,9 +266,9 @@ export const getOperatorDarknodes = async (
 
 // Sum up fees into the total ETH value (in wei).
 export const sumUpFeeMap = (
-    feesEarned: OrderedMap<Token, BigNumber | null>,
+    feesEarned: OrderedMap<Token, TokenAmount | null>,
     tokenPrices: TokenPrices,
-): [BigNumber | null, OrderedMap<Token, BigNumber | null>] => {
+): [BigNumber | null] => {
     // let totalEth: BigNumber | null = null;
 
     const feesEarnedInEth = FeeTokens.map((tokenDetails, token) => {
@@ -275,9 +276,9 @@ export const sumUpFeeMap = (
         const decimals = tokenDetails
             ? new BigNumber(tokenDetails.decimals.toString()).toNumber()
             : 0;
-        const tokenFees = feesEarned.get(token, new BigNumber(0));
+        const tokenFees = feesEarned.get(token, null);
         return tokenFees
-            ? tokenFees
+            ? tokenFees.amount
                   .div(Math.pow(10, decimals))
                   .multipliedBy(price ? price.get(Currency.ETH, 0) : 0)
             : tokenFees;
@@ -290,7 +291,6 @@ export const sumUpFeeMap = (
     // Convert to wei
     return [
         totalEth ? totalEth.multipliedBy(new BigNumber(10).pow(18)) : totalEth,
-        feesEarnedInEth,
     ];
 };
 
@@ -312,61 +312,15 @@ const getBalances = async (
     renNetwork: RenNetworkDetails,
     darknode: Darknode | null,
     darknodeID: string,
-): Promise<OrderedMap<Token, BigNumber>> => {
-    const darknodePayment = getDarknodePayment(web3, renNetwork);
-
-    let feesEarned = OrderedMap<Token, BigNumber>();
-
-    // const address = (await web3.eth.getAccounts())[0];
-
-    const balances = await safePromiseAllList(
-        FeeTokens.map(async (_tokenDetails, token) => {
-            let tokenBalance;
-            try {
-                if (darknode && token === Token.BTC)
-                    return { balance: darknode.balanceBTC, token };
-                if (darknode && token === Token.ZEC)
-                    return { balance: darknode.balanceZEC, token };
-                if (darknode && token === Token.BCH)
-                    return { balance: darknode.balanceBCH, token };
-                const balance1Call = await retryNTimes(
-                    async () =>
-                        await darknodePayment.methods
-                            .darknodeBalances(
-                                darknodeID,
-                                renNetwork.addresses.tokens[token].address,
-                            )
-                            .call(/**/),
-                    2,
-                );
-                tokenBalance = new BigNumber((balance1Call || "0").toString());
-            } catch (error) {
-                catchBackgroundException(
-                    error,
-                    "Error in contractReads > darknodeBalances",
-                );
-                tokenBalance = new BigNumber(0);
-            }
-            return {
-                balance: tokenBalance, // .plus(balance2),
-                token: token as Token | null,
-            };
-        })
-            .valueSeq()
-            .toList(),
-        {
-            balance: new BigNumber(0),
-            token: null,
-        },
-    );
-
-    for (const { balance, token } of balances.toArray()) {
-        if (token) {
-            feesEarned = feesEarned.set(token, balance);
-        }
+): Promise<OrderedMap<string, TokenAmount | null>> => {
+    let balances = OrderedMap<string, TokenAmount | null>();
+    if (isDefined(darknode)) {
+        balances = darknode.balances
+            .filter((asset) => asset.asset !== null)
+            .reduce((map, asset, token) => map.set(token, asset), balances);
     }
 
-    return feesEarned;
+    return balances;
 };
 
 export enum DarknodeFeeStatus {
@@ -483,9 +437,18 @@ export const fetchDarknodeDetails = async (
         darknode,
         darknodeID,
     );
-    let feesEarnedTotalEth: BigNumber | null = null;
+    let feesEarnedInEth: BigNumber | null = null;
     if (tokenPrices) {
-        [feesEarnedTotalEth] = sumUpFeeMap(feesEarned, tokenPrices);
+        feesEarnedInEth = feesEarned
+            .map((fee) => (fee ? fee.amountInEth : new BigNumber(0)))
+            .reduce((acc, fee) => acc.plus(fee), new BigNumber(0));
+    }
+
+    let feesEarnedInUsd: BigNumber | null = null;
+    if (tokenPrices) {
+        feesEarnedInUsd = feesEarned
+            .map((fee) => (fee ? fee.amountInUsd : new BigNumber(0)))
+            .reduce((acc, fee) => acc.plus(fee), new BigNumber(0));
     }
 
     return new DarknodesState({
@@ -494,7 +457,8 @@ export const fetchDarknodeDetails = async (
         publicKey: darknode ? darknode.publicKey : undefined,
         ethBalance: await πEthBalance,
         feesEarned,
-        feesEarnedTotalEth,
+        feesEarnedInEth,
+        feesEarnedInUsd,
 
         cycleStatus: await πCycleStatuses,
         averageGasUsage: 0,

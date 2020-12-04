@@ -6,49 +6,49 @@
             "urlHref": "https://curve.fi",
             "url": "curve.fi"
         },
-        "0xad81fdc92e2ecb43e6207647b17f6d5075e6a1fd": {
+        "integrator-0xad81fdc92e2ecb43e6207647b17f6d5075e6a1fd": {
             "name": "Uniswap Adapter",
             "logo": "/integrators/uniswap.png"
         },
-        "0x7ddfa2e5435027f6e13ca8db2f32ebd5551158bb": {
+        "integrator-0x7ddfa2e5435027f6e13ca8db2f32ebd5551158bb": {
             "name": "RenVM Demo Page",
             "logo": "/integrators/ren.svg",
             "urlHref": "https://renproject.github.io/gateway-staging/?network=testnet",
             "url": "Gateway Staging"
         },
-        "0x40f41fd6f5fb0dd1bf7e05e3a07a2ac56ac6fe11": {
+        "integrator-0x40f41fd6f5fb0dd1bf7e05e3a07a2ac56ac6fe11": {
             "url": "Etherscan - WBTCCDPProxy"
         },
-        "0x3aa969d343bd6ae66c4027bb61a382dc96e88150": {
+        "integrator-0x3aa969d343bd6ae66c4027bb61a382dc96e88150": {
             "url": "Etherscan - Basic"
         },
-        "0xb9b0442de9bc214a23b434ee2ec7af8a4e1b3eee": {
+        "integrator-0xb9b0442de9bc214a23b434ee2ec7af8a4e1b3eee": {
             "url": "Etherscan - Basic"
         },
-        "0x7262337b576cecbf9febb6b8fbb5210b98d43139": {
+        "integrator-0x7262337b576cecbf9febb6b8fbb5210b98d43139": {
             "url": "Etherscan - CurveExchangeAdapter"
         },
-        "0xc896813996330ab852f2f27f27bf4523abf80b27": {
+        "integrator-0xc896813996330ab852f2f27f27bf4523abf80b27": {
             "url": "Etherscan - Vesting"
         },
-        "0x43f0dc6f2b65260753fd73c429e54be7af920f9d": {
+        "integrator-0x43f0dc6f2b65260753fd73c429e54be7af920f9d": {
             "url": "Etherscan - CurveExchangeAdapter"
         },
-        "0x795a46daab5389d01b45ff6c68029c248b22999a": {
+        "integrator-0x795a46daab5389d01b45ff6c68029c248b22999a": {
             "name": "RenBridge",
             "logo": "/integrators/ren.svg",
             "urlHref": "https://bridge.renproject.io",
             "url": "bridge.renproject.io"
         },
-        "0x853fd00e802c2186bd2a1ba5dc94c07ef74b16c3": {
+        "integrator-0x853fd00e802c2186bd2a1ba5dc94c07ef74b16c3": {
             "name": "BTC to Aave",
             "logo": "/integrators/aave.svg"
         },
-        "0x3b4353d80464af08cc0787ea9c45bbc50f8c5cce": {
+        "integrator-0x3b4353d80464af08cc0787ea9c45bbc50f8c5cce": {
             "name": "BTC to Aave",
             "logo": "/integrators/aave.svg"
         },
-        "0xb005bb5e58878318d559561a49f0b67c616d11f0": {
+        "integrator-0xb005bb5e58878318d559561a49f0b67c616d11f0": {
             "name": "BTC to Aave",
             "logo": "/integrators/aave.svg"
         }
@@ -62,7 +62,7 @@
         }
     },
     "mainnet": {
-        "0xc633576775ab431ff627746d2c4af6686c4c719c": {
+        "integrator-0xc633576775ab431ff627746d2c4af6686c4c719c": {
             "url": "Etherscan - WBTCCDPProxy"
         },
         "curve": {
@@ -71,7 +71,7 @@
             "urlHref": "https://curve.fi",
             "url": "curve.fi"
         },
-        "0x32666b64e9fd0f44916e1378efb2cfa3b3b96e80": {
+        "integrator-0x32666b64e9fd0f44916e1378efb2cfa3b3b96e80": {
             "name": "RenBridge",
             "logo": "/integrators/ren.svg",
             "urlHref": "https://bridge.renproject.io",
@@ -81,14 +81,14 @@
             "name": "RenEscrow",
             "url": "Etherscan - RenEscrow"
         },
-        "0x98133009242724c031d80bce2d4f9f86a04a9290": {
+        "integrator-0x98133009242724c031d80bce2d4f9f86a04a9290": {
             "name": "Farmland renBTC",
             "url": "Etherscan - VaultRenbtc"
         },
-        "0xa30b9c9bc2294c26ee350f1c879380b416ff89c2": {
+        "integrator-0xa30b9c9bc2294c26ee350f1c879380b416ff89c2": {
             "url": "Etherscan - SimpleMintAdapter"
         },
-        "0x10aa7bbcb29cf100fe0f25819d11499e43caaea5": {
+        "integrator-0x10aa7bbcb29cf100fe0f25819d11499e43caaea5": {
             "name": "MyEtherWallet",
             "logo": "/integrators/mew.svg"
         }

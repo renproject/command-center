@@ -6,7 +6,7 @@ import { Token } from "../../../../lib/ethereum/tokens";
 import { catchBackgroundException } from "../../../../lib/react/errors";
 import { NetworkContainer } from "../../../../store/networkContainer";
 import { Web3Container } from "../../../../store/web3Container";
-import { TokenBalance } from "../../../common/TokenBalance";
+import { AnyTokenBalance, TokenBalance } from "../../../common/TokenBalance";
 import { TopUp } from "./TopUp";
 
 export const CONFIRMATION_MESSAGE = "Transaction confirmed.";
@@ -38,10 +38,10 @@ export const TopUpController: React.FC<Props> = ({ darknodeID }) => {
                 <>
                     Insufficient balance. Maximum deposit:{" "}
                     <CurrencyIcon currency={Currency.ETH} />
-                    <TokenBalance
-                        token={Token.ETH}
-                        amount={accountBalance.times(new BigNumber(10).pow(18))}
+                    <AnyTokenBalance
+                        amount={accountBalance}
                         digits={3}
+                        decimals={0}
                     />
                 </>,
             );

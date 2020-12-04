@@ -1,8 +1,6 @@
 import { Currency } from "@renproject/react-components";
 import Axios from "axios";
-import { isMainnetAddress, isTestnetAddress } from "bchaddrjs";
 import { Map, OrderedMap } from "immutable";
-import { validate } from "wallet-address-validator";
 
 import { DEFAULT_REQUEST_TIMEOUT } from "../react/environmentVariables";
 
@@ -15,101 +13,56 @@ export enum Token {
     REN = "REN",
 }
 
-interface TokenDetail<T extends Token> {
-    name: string;
-    // tslint:disable-next-line: no-reserved-keywords
-    symbol: T;
+export type TokenString = string;
+
+interface TokenDetail {
+    symbol: string;
     decimals: number;
-    wrapped: boolean;
     coinGeckoID: string;
     feesToken: boolean;
-
-    blockchain: Token; // Used for address validation
-    validator: (address: string, isTestnet: boolean) => boolean;
 }
 
-const btcValidator = (address: string, isTestnet: boolean) =>
-    validate(address, "btc", isTestnet ? "testnet" : "prod");
-const zecValidator = (address: string, isTestnet: boolean) =>
-    validate(address, "zec", isTestnet ? "testnet" : "prod");
-const bchValidator = (address: string, isTestnet: boolean) => {
-    try {
-        return isTestnet
-            ? isTestnetAddress(address)
-            : isMainnetAddress(address);
-    } catch (error) {
-        return false;
-    }
-};
-const ethValidator = (address: string, isTestnet: boolean) =>
-    validate(address, "eth", isTestnet ? "testnet" : "prod");
-
-export const AllTokenDetails = OrderedMap<Token, TokenDetail<Token>>()
+export const AllTokenDetails = OrderedMap<Token, TokenDetail>()
     .set(Token.BTC, {
-        symbol: Token.BTC,
-        name: "Bitcoin",
+        symbol: "renBTC",
         decimals: 8,
-        wrapped: true,
         coinGeckoID: "bitcoin",
         feesToken: true,
-        blockchain: Token.BTC,
-        validator: btcValidator,
     })
     .set(Token.ZEC, {
-        symbol: Token.ZEC,
-        name: "ZCash",
+        symbol: "renZEC",
         decimals: 8,
-        wrapped: true,
         coinGeckoID: "zcash",
         feesToken: true,
-        blockchain: Token.ZEC,
-        validator: zecValidator,
     })
     .set(Token.BCH, {
-        symbol: Token.BCH,
-        name: "Bitcoin Cash",
+        symbol: "renBCH",
         decimals: 8,
-        wrapped: true,
         coinGeckoID: "bitcoin-cash",
         feesToken: true,
-        blockchain: Token.BCH,
-        validator: bchValidator,
     })
     .set(Token.DAI, {
-        symbol: Token.DAI,
-        name: "Dai",
+        symbol: "SAI",
         decimals: 18,
-        wrapped: false,
         coinGeckoID: "dai",
         feesToken: false,
-        blockchain: Token.ETH,
-        validator: ethValidator,
     })
     .set(Token.ETH, {
-        symbol: Token.ETH,
-        name: "Ethereum",
+        symbol: "ETH",
         decimals: 18,
-        wrapped: false,
         coinGeckoID: "ethereum",
         feesToken: false,
-        blockchain: Token.ETH,
-        validator: ethValidator,
     })
     .set(Token.REN, {
-        symbol: Token.REN,
-        name: "Ren",
+        symbol: "REN",
         decimals: 18,
-        wrapped: false,
         coinGeckoID: "republic-protocol",
         feesToken: false,
-        blockchain: Token.ETH,
-        validator: ethValidator,
     });
 
-export const FeeTokens: OrderedMap<
-    Token,
-    TokenDetail<Token>
-> = AllTokenDetails.filter((details) => details.feesToken);
+export const FeeTokens: OrderedMap<Token, TokenDetail> = AllTokenDetails.filter(
+    (details) => details.feesToken,
+);
 
 const coinGeckoURL = `https://api.coingecko.com/api/v3`;
 const coinGeckoParams = `localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`;

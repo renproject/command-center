@@ -1,8 +1,12 @@
 import { ApolloClient, gql } from "@apollo/react-hooks";
 import BigNumber from "bignumber.js";
+import { OrderedMap } from "immutable";
 import { toChecksumAddress } from "web3-utils";
 
 import { Ox } from "../../ethereum/contractReads";
+import { TokenString } from "../../ethereum/tokens";
+import { parseTokenAmount, RawTokenAmount, TokenAmount } from "../queries";
+import { tokenArrayToMap } from "../volumes";
 
 interface RawDarknode {
     __typename: "Darknode";
@@ -13,9 +17,7 @@ interface RawDarknode {
     registeredAt: string;
     lastClaimedEpoch: string;
     previousLastClaimedEpoch: string;
-    balanceBTC: string;
-    balanceZEC: string;
-    balanceBCH: string;
+    balances: Array<RawTokenAmount>;
 }
 
 export interface Darknode {
@@ -26,9 +28,7 @@ export interface Darknode {
     deregisteredAt: BigNumber;
     lastClaimedEpoch: string;
     previousLastClaimedEpoch: string;
-    balanceBTC: BigNumber;
-    balanceZEC: BigNumber;
-    balanceBCH: BigNumber;
+    balances: OrderedMap<TokenString, TokenAmount>;
 }
 
 const QUERY_DARKNODE = gql`
@@ -41,9 +41,15 @@ const QUERY_DARKNODE = gql`
             deregisteredAt
             lastClaimedEpoch
             previousLastClaimedEpoch
-            balanceBTC
-            balanceZEC
-            balanceBCH
+            balances {
+                symbol
+                amount
+                amountInEth
+                amountInUsd
+                asset {
+                    decimals
+                }
+            }
         }
     }
 `;
@@ -76,8 +82,8 @@ export const queryDarknode = async (
             new BigNumber(response.data.darknode.previousLastClaimedEpoch),
         ),
 
-        balanceBTC: new BigNumber(response.data.darknode.balanceBTC),
-        balanceZEC: new BigNumber(response.data.darknode.balanceZEC),
-        balanceBCH: new BigNumber(response.data.darknode.balanceBCH),
+        balances: tokenArrayToMap(response.data.darknode.balances).map(
+            parseTokenAmount,
+        ),
     };
 };

@@ -180,9 +180,12 @@ $table-radius: 4px;
                 }
 
                 .integrators-extra--stats {
-                    display: flex;
-                    flex-wrap: wrap;
-                    flex: 1;
+                    > div {
+                        display: flex;
+                        flex-wrap: wrap;
+                        flex: 1;
+                        margin: 5px;
+                    }
 
                     @media (min-width: $min-lg) {
                         .integrators-extra--stats {

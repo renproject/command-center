@@ -120,7 +120,7 @@ export const Registration: React.FC<Props> = ({
         setActive(true);
         showDeregisterPopup(
             darknodeID,
-            darknodeDetails && darknodeDetails.feesEarnedTotalEth,
+            darknodeDetails && darknodeDetails.feesEarnedInUsd,
             onCancel,
             onDone,
         );
@@ -255,7 +255,7 @@ export const Registration: React.FC<Props> = ({
                 </>
             ) : noOperator ? (
                 <span className="status--operator">NOT REGISTERED</span>
-            ) : darknodeDetails ? (
+            ) : darknodeDetails && darknodeDetails.operator ? (
                 <span className="status--operator">
                     Operator:{" "}
                     <span className="monospace">

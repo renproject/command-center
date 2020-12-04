@@ -232,9 +232,9 @@ export const Sidebar = () => {
                                                         RegistrationStatus.Unregistered) ||
                                                 false
                                             }
-                                            feesEarnedTotalEth={
+                                            feesEarnedInUsd={
                                                 details &&
-                                                details.feesEarnedTotalEth
+                                                details.feesEarnedInUsd
                                             }
                                             ethBalance={
                                                 details && details.ethBalance

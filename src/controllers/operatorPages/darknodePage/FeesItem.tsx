@@ -7,16 +7,16 @@ import { Loading } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import React, { useCallback, useState } from "react";
 
-import { AllTokenDetails, Token } from "../../../lib/ethereum/tokens";
+import { TokenString } from "../../../lib/ethereum/tokens";
+import { TokenAmount } from "../../../lib/graphQL/queries";
 import { classNames } from "../../../lib/react/className";
-import { MINIMUM_SHIFTED_AMOUNT } from "../../../lib/react/environmentVariables";
 import { NetworkContainer } from "../../../store/networkContainer";
 import { Web3Container } from "../../../store/web3Container";
 
 interface Props {
     disabled: boolean;
-    token: Token;
-    amount: string | BigNumber;
+    token: TokenString;
+    amount: TokenAmount | null;
     darknodeID: string;
 }
 
@@ -34,14 +34,10 @@ export const FeesItem: React.FC<Props> = ({
 
     const [loading, setLoading] = useState(false);
 
-    const tokenDetails = AllTokenDetails.get(token);
-    const wrapped = tokenDetails ? tokenDetails.wrapped : false;
-    const decimals = tokenDetails ? tokenDetails.decimals : 8;
-
     const handleWithdraw = useCallback(async (): Promise<void> => {
         setLoading(true);
 
-        if (address && tokenDetails) {
+        if (address) {
             try {
                 await withdrawReward(darknodeID, token);
             } catch (error) {
@@ -59,7 +55,6 @@ export const FeesItem: React.FC<Props> = ({
         darknodeID,
         address,
         token,
-        tokenDetails,
     ]);
 
     let isDisabled = false;
@@ -67,19 +62,9 @@ export const FeesItem: React.FC<Props> = ({
     if (disabled) {
         isDisabled = true;
         title = "Must be operator to withdraw";
-    } else if (new BigNumber(amount).lte(0)) {
+    } else if (!amount || new BigNumber(amount.amount).lte(0)) {
         isDisabled = true;
         title = "No fees to withdraw";
-    } else if (
-        wrapped &&
-        new BigNumber(amount).lte(
-            new BigNumber(MINIMUM_SHIFTED_AMOUNT).times(
-                new BigNumber(10).exponentiatedBy(decimals),
-            ),
-        )
-    ) {
-        isDisabled = true;
-        title = `Minimum withdraw is ${MINIMUM_SHIFTED_AMOUNT} ${token}`;
     }
 
     return (
@@ -89,7 +74,7 @@ export const FeesItem: React.FC<Props> = ({
                 "withdraw-fees",
                 isDisabled ? "withdraw-fees-disabled" : "",
             )}
-            disabled={isDisabled || !tokenDetails || !tokenDetails.feesToken}
+            disabled={isDisabled}
             onClick={isDisabled ? undefined : handleWithdraw}
         >
             {loading ? (

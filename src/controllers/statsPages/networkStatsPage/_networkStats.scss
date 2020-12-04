@@ -606,3 +606,28 @@
         display: none;
     }
 }
+
+.network-fees {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    > div {
+        display: flex;
+        font-size: 14px;
+        align-items: center;
+        justify-content: center;
+        padding: 5px;
+
+        img,
+        svg {
+            margin-right: 10px;
+        }
+    }
+}
+
+.stat.network-fees-stat {
+    .stat--title--outer {
+        margin-bottom: 10px;
+    }
+}

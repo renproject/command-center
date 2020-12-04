@@ -13,6 +13,7 @@ interface StatProps
     big?: boolean;
     nested?: boolean;
     highlight?: boolean;
+    dark?: boolean;
     infoLabel?: React.ReactNode;
 }
 
@@ -22,6 +23,7 @@ export const Stat = ({
     big,
     nested,
     highlight,
+    dark,
     infoLabel,
     children,
     className,
@@ -34,6 +36,7 @@ export const Stat = ({
         className={classNames(
             "stat",
             highlight ? "stat--highlight" : "",
+            dark ? "stat--dark" : "",
             nested ? "stat--nested" : "",
             className,
         )}

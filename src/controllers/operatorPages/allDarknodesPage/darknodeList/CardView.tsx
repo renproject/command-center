@@ -12,7 +12,7 @@ import { Token } from "../../../../lib/ethereum/tokens";
 import { classNames } from "../../../../lib/react/className";
 import { DarknodesState } from "../../../../store/networkContainer";
 import { DarknodeID } from "../../../../views/DarknodeID";
-import { TokenBalance } from "../../../common/TokenBalance";
+import { ConvertCurrency, TokenBalance } from "../../../common/TokenBalance";
 import { statusText } from "../../darknodePage/Registration";
 
 interface Props {
@@ -104,12 +104,12 @@ export const CardView: React.FC<Props> = ({
                             />
                             <span className="currency-value">
                                 <CurrencyIcon currency={quoteCurrency} />
-                                {darknodeDetails.feesEarnedTotalEth ? (
-                                    <TokenBalance
-                                        token={Token.ETH}
-                                        convertTo={quoteCurrency}
+                                {darknodeDetails.feesEarnedInUsd ? (
+                                    <ConvertCurrency
+                                        from={Currency.USD}
+                                        to={quoteCurrency}
                                         amount={
-                                            darknodeDetails.feesEarnedTotalEth
+                                            darknodeDetails.feesEarnedInUsd
                                         }
                                     />
                                 ) : (

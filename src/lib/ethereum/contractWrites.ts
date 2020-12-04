@@ -1,11 +1,6 @@
 import { RenNetworkDetails } from "@renproject/contracts";
-import { sleep } from "@renproject/react-components";
-import RenSDK from "@renproject/ren";
 import BigNumber from "bignumber.js";
 import Web3 from "web3";
-import { TransactionReceipt } from "web3-core";
-import { AbiCoder } from "web3-eth-abi";
-import { sha3, toChecksumAddress } from "web3-utils";
 
 import { retryNTimes } from "../../controllers/statsPages/renvmStatsPage/renvmContainer";
 import { WaitForTX } from "../../store/networkContainer";
@@ -15,7 +10,7 @@ import {
     getDarknodeRegistry,
     getRenToken,
 } from "./contract";
-import { AllTokenDetails, Token } from "./tokens";
+import { TokenString } from "./tokens";
 
 /**
  * Top-up the ETH balance of a darknode.
@@ -308,83 +303,6 @@ export const refundNode = async (
     }
 };
 
-///////////////////////////////
-// Darknode Payment contract //
-///////////////////////////////
-
-/**
- * Burn a Ren token to its native blockchain.
- *
- * @param web3 Web3 provider with `address` unlocked.
- * @param darknodeID Hexadecimal ID of the darknode to register.
- * @param address Ethereum address to send Ethereum transactions from.
- * @param token The token to withdraw fees for.
- * @param amount The amount to be burned in the smallest unit of the token.
- * @param recipient The address on the native blockchain to receive funds.
- * @param waitForTX Returns the txHash of a PromiEvent.
- */
-const burn = async (
-    web3: Web3,
-    renNetwork: RenNetworkDetails,
-    address: string,
-    token: Token,
-    amount: BigNumber,
-    recipient: string,
-    waitForTX: WaitForTX,
-) => {
-    const contractDetails =
-        token === Token.BTC
-            ? renNetwork.addresses.gateways.BTCGateway
-            : token === Token.ZEC
-            ? renNetwork.addresses.gateways.ZECGateway
-            : token === Token.BCH
-            ? renNetwork.addresses.gateways.BCHGateway
-            : undefined;
-    if (!contractDetails) {
-        throw new Error(`Unable to shift out token ${token}`);
-    }
-    const contract = new web3.eth.Contract(
-        contractDetails.abi,
-        contractDetails._address,
-    );
-
-    const sdk = new RenSDK(renNetwork.name);
-
-    const txPromiEvent = contract.methods
-        .burn(
-            (
-                sdk.utils[token].addressToHex ||
-                RenSDK.Tokens[token].addressToHex
-            )(recipient), // _to
-            amount.decimalPlaces(0).toFixed(), // _amount in Satoshis
-        )
-        .send({ from: address });
-
-    await waitForTX(txPromiEvent);
-
-    await new Promise((resolve, reject) => {
-        txPromiEvent.on("confirmation", resolve).catch(reject);
-    });
-};
-
-const TransferEventABI = [
-    {
-        indexed: true,
-        name: "from",
-        type: "address",
-    },
-    {
-        indexed: true,
-        name: "to",
-        type: "address",
-    },
-    {
-        indexed: false,
-        name: "value",
-        type: "uint256",
-    },
-];
-
 /**
  * Withdraw a darknode's fees for a single token from the DarknodePayment
  * contract.
@@ -401,95 +319,33 @@ export const withdrawToken = (
     renNetwork: RenNetworkDetails,
     address: string | null,
     darknodeID: string,
-    token: Token,
+    token: TokenString,
     waitForTX: WaitForTX,
-) => async (withdrawAddress?: string, options?: { asERC20: boolean }) => {
-    const tokenDetails = AllTokenDetails.get(token);
-    if (tokenDetails === undefined) {
-        throw new Error("Unknown token");
-    }
-
+) => async () => {
     if (!address) {
         throw new Error(`Unable to retrieve account address.`);
     }
 
     const darknodePayment = getDarknodePayment(web3, renNetwork);
 
-    if (!tokenDetails) {
-        throw new Error("Unknown token");
-    }
-
     const txPromiEvent = darknodePayment.methods
-        .withdraw(darknodeID, renNetwork.addresses.tokens[token].address)
+        .withdraw(
+            darknodeID,
+            (
+                renNetwork.addresses.tokens[token] ||
+                renNetwork.addresses.tokens[
+                    token
+                        .replace(/^ren/, "")
+                        .replace(/^test/, "")
+                        .replace(/^dev/, "")
+                ]
+            ).address,
+        )
         .send({ from: address });
 
-    const tx = await waitForTX(txPromiEvent);
+    await waitForTX(txPromiEvent);
 
     await new Promise((resolve, reject) => {
         txPromiEvent.on("confirmation", resolve).catch(reject);
     });
-
-    if (tokenDetails.wrapped && !(options && options.asERC20)) {
-        if (!withdrawAddress) {
-            throw new Error("Invalid withdraw address");
-        }
-
-        /**
-         * Find burn details in previous transaction.
-         */
-
-        let receipt: TransactionReceipt | undefined;
-
-        // tslint:disable-next-line: no-constant-condition
-        while (true) {
-            try {
-                receipt = await web3.eth.getTransactionReceipt(tx);
-            } catch (error) {
-                // Ignore error
-            }
-            if (receipt && receipt.logs && receipt.blockHash) {
-                break;
-            }
-            await sleep(1000);
-        }
-
-        const abiCoder = new AbiCoder();
-
-        let value = new BigNumber(0);
-        for (const log of receipt.logs) {
-            if (log.topics[0] === sha3("Transfer(address,address,uint256)")) {
-                const event = abiCoder.decodeLog(
-                    TransferEventABI,
-                    log.data,
-                    (log.topics as string[]).slice(1),
-                );
-                if (
-                    toChecksumAddress(event.from) ===
-                        toChecksumAddress(
-                            renNetwork.addresses.ren.DarknodePaymentStore
-                                .address,
-                        ) &&
-                    toChecksumAddress(event.to) === toChecksumAddress(address)
-                ) {
-                    value = value.plus(event.value);
-                }
-            }
-        }
-
-        if (value.isZero()) {
-            throw new Error(
-                `Unable to detect burn event in transaction receipt.`,
-            );
-        }
-
-        await burn(
-            web3,
-            renNetwork,
-            address,
-            token,
-            value,
-            withdrawAddress,
-            waitForTX,
-        );
-    }
 };

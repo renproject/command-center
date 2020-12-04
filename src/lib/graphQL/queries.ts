@@ -1,5 +1,36 @@
 import { gql } from "@apollo/react-hooks";
+import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
+import { TokenString } from "../ethereum/tokens";
+
+/* TokenAmount */
+
+export interface RawTokenAmount {
+    symbol: string;
+    amount: string;
+    amountInEth: string;
+    amountInUsd: string;
+    asset: {
+        decimals: number;
+    } | null;
+}
+
+export interface TokenAmount {
+    symbol: string;
+    amount: BigNumber;
+    amountInEth: BigNumber;
+    amountInUsd: BigNumber;
+    asset: {
+        decimals: number;
+    } | null;
+}
+
+export const parseTokenAmount = (amount: RawTokenAmount): TokenAmount => ({
+    ...amount,
+    amount: new BigNumber(amount.amount),
+    amountInUsd: new BigNumber(amount.amountInUsd),
+    amountInEth: new BigNumber(amount.amountInEth),
+});
 
 /* QUERY_BLOCK **/
 
@@ -34,26 +65,34 @@ export const QUERY_RENVM_HISTORY = (
     currentEpoch {
         epochhash
         timestamp
-        rewardShareBTC
-        rewardShareZEC
-        rewardShareBCH
+        rewardShares {
+            symbol
+            amount
+            amountInEth
+            amountInUsd
+            asset {
+                decimals
+            }
+        }
     }
     previousEpoch {
         epochhash
         timestamp
-        rewardShareBTC
-        rewardShareZEC
-        rewardShareBCH
+        rewardShares {
+            symbol
+            amount
+            amountInEth
+            amountInUsd
+            asset {
+                decimals
+            }
+        }
     }
     currentCycle
     previousCycle
 
     btcMintFee
     btcBurnFee
-    zecMintFee
-    zecBurnFee
-    bchMintFee
-    bchBurnFee
 
     volume {
       symbol
@@ -86,16 +125,12 @@ export interface RawRenVM {
     currentEpoch: {
         epochhash: string;
         timestamp: string;
-        rewardShareBTC: string;
-        rewardShareZEC: string;
-        rewardShareBCH: string;
+        rewardShares: Array<RawTokenAmount>;
     };
     previousEpoch: {
         epochhash: string;
         timestamp: string;
-        rewardShareBTC: string;
-        rewardShareZEC: string;
-        rewardShareBCH: string;
+        rewardShares: Array<RawTokenAmount>;
     };
     currentCycle: string;
     previousCycle: string;
@@ -103,59 +138,16 @@ export interface RawRenVM {
 
     btcMintFee: string;
     btcBurnFee: string;
-    zecMintFee: string;
-    zecBurnFee: string;
-    bchMintFee: string;
-    bchBurnFee: string;
 
-    volume: Array<{
-        symbol: string;
-        amount: string;
-        amountInEth: string;
-        amountInUsd: string;
-        asset: {
-            decimals: string;
-        };
-    }>;
-
-    locked: Array<{
-        symbol: string;
-        amount: string;
-        amountInUsd: string;
-        asset: {
-            decimals: string;
-        };
-    }>;
+    volume: Array<RawTokenAmount>;
+    locked: Array<Omit<RawTokenAmount, "amountInEth">>;
 }
 
 export interface PeriodData extends Omit<Omit<RawRenVM, "volume">, "locked"> {
     id: string; // "HOUR441028";
     date: number; // 1587700800;
-
-    volume: OrderedMap<
-        string,
-        {
-            symbol: string;
-            amount: string;
-            amountInEth: string;
-            amountInUsd: string;
-            asset: {
-                decimals: string;
-            };
-        }
-    >;
-
-    locked: OrderedMap<
-        string,
-        {
-            symbol: string;
-            amount: string;
-            amountInUsd: string;
-            asset: {
-                decimals: string;
-            };
-        }
-    >;
+    volume: OrderedMap<string, RawTokenAmount>;
+    locked: OrderedMap<string, Omit<RawTokenAmount, "amountInEth">>;
 }
 
 /* INTEGRATOR */
@@ -163,32 +155,58 @@ export interface PeriodData extends Omit<Omit<RawRenVM, "volume">, "locked"> {
 export const QUERY_INTEGRATORS_HISTORY = (
     id: string,
     block: number,
-) => `  integrator_${id}: integrator(id: "${id}", block: { number: ${block} }) {
+) => `  integrator_${id.replace(
+    /-/,
+    "_",
+)}: integrator(id: "${id}", block: { number: ${block} }) {
   id
   contractAddress
-  txCountBTC
-  lockedBTC
-  volumeBTC
-  txCountZEC
-  lockedZEC
-  volumeZEC
-  txCountBCH
-  lockedBCH
-  volumeBCH
+
+  txCount {
+      symbol
+      value
+  }
+
+  volume {
+    symbol
+    amount
+    amountInEth
+    amountInUsd
+    asset {
+      decimals
+    }
+  }
+
+  locked {
+    symbol
+    amount
+    amountInUsd
+    asset {
+      decimals
+    }
+  }
 }`;
 
 export interface Integrator {
     id: string; // "0x3973b2acdfac17171315e49ef19a0758b8b6f104";
     contractAddress: string; // "0x3973b2acdfac17171315e49ef19a0758b8b6f104";
-    txCountBTC: string; // "12";
-    lockedBTC: string; // "49469981";
-    volumeBTC: string; // "49469981";
-    txCountZEC: string; // "0";
-    lockedZEC: string; // "0";
-    volumeZEC: string; // "0";
-    txCountBCH: string; // "0";
-    lockedBCH: string; // "0";
-    volumeBCH: string; // "0";
+    txCount: OrderedMap<TokenString, number>;
+    locked: OrderedMap<TokenString, TokenAmount>;
+    volume: OrderedMap<TokenString, TokenAmount>;
+}
+
+export interface IntegratorRaw {
+    id: string; // "0x3973b2acdfac17171315e49ef19a0758b8b6f104";
+    contractAddress: string; // "0x3973b2acdfac17171315e49ef19a0758b8b6f104";
+
+    txCount: Array<{
+        symbol: string;
+        value: number;
+    }>;
+
+    locked: Array<RawTokenAmount>;
+
+    volume: Array<RawTokenAmount>;
 }
 
 export const QUERY_INTEGRATORS = gql`
@@ -202,15 +220,30 @@ export const QUERY_INTEGRATORS = gql`
         ) {
             id
             contractAddress
-            txCountBTC
-            lockedBTC
-            volumeBTC
-            txCountZEC
-            lockedZEC
-            volumeZEC
-            txCountBCH
-            lockedBCH
-            volumeBCH
+
+            txCount {
+                symbol
+                value
+            }
+
+            volume {
+                symbol
+                amount
+                amountInEth
+                amountInUsd
+                asset {
+                    decimals
+                }
+            }
+
+            locked {
+                symbol
+                amount
+                amountInUsd
+                asset {
+                    decimals
+                }
+            }
         }
     }
 `;

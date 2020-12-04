@@ -1,16 +1,18 @@
 import { ApolloClient, gql } from "@apollo/react-hooks";
 import BigNumber from "bignumber.js";
+import { OrderedMap } from "immutable";
 
 import { SECONDS } from "../../../controllers/common/BackgroundTasks";
 import { Ox } from "../../ethereum/contractReads";
+import { TokenString } from "../../ethereum/tokens";
+import { parseTokenAmount, RawTokenAmount, TokenAmount } from "../queries";
+import { tokenArrayToMap } from "../volumes";
 
 export interface Epoch {
     epochhash: string;
     timestamp: BigNumber;
 
-    rewardShareBTC: BigNumber;
-    rewardShareZEC: BigNumber;
-    rewardShareBCH: BigNumber;
+    rewardShares: OrderedMap<TokenString, TokenAmount>;
 }
 
 interface RawRenVM {
@@ -26,20 +28,17 @@ interface RawRenVM {
     currentEpoch: {
         epochhash: string;
         timestamp: string;
-        rewardShareBTC: string;
-        rewardShareZEC: string;
-        rewardShareBCH: string;
+        rewardShares: Array<RawTokenAmount>;
     };
     previousEpoch: {
         epochhash: string;
         timestamp: string;
-        rewardShareBTC: string;
-        rewardShareZEC: string;
-        rewardShareBCH: string;
+        rewardShares: Array<RawTokenAmount>;
     };
     currentCycle: string;
     previousCycle: string;
     deregistrationInterval: string;
+    fees: Array<RawTokenAmount>;
 }
 
 export interface RenVM {
@@ -58,6 +57,7 @@ export interface RenVM {
     currentCycle: string;
     previousCycle: string;
     deregistrationInterval: BigNumber;
+    fees: OrderedMap<TokenString, TokenAmount>;
 }
 
 const QUERY_RENVM = gql`
@@ -75,19 +75,41 @@ const QUERY_RENVM = gql`
             currentEpoch {
                 epochhash
                 timestamp
-                rewardShareBTC
-                rewardShareZEC
-                rewardShareBCH
+                rewardShares {
+                    symbol
+                    amount
+                    amountInEth
+                    amountInUsd
+                    asset {
+                        decimals
+                    }
+                }
             }
             previousEpoch {
                 epochhash
                 timestamp
-                rewardShareBTC
-                rewardShareZEC
-                rewardShareBCH
+                rewardShares {
+                    symbol
+                    amount
+                    amountInEth
+                    amountInUsd
+                    asset {
+                        decimals
+                    }
+                }
             }
             currentCycle
             previousCycle
+
+            fees {
+                symbol
+                amount
+                amountInEth
+                amountInUsd
+                asset {
+                    decimals
+                }
+            }
         }
     }
 `;
@@ -108,15 +130,10 @@ export const queryRenVM = async (
             new BigNumber(response.data.renVM.currentEpoch.epochhash),
         ),
         timestamp: new BigNumber(response.data.renVM.currentEpoch.timestamp),
-        rewardShareBTC: new BigNumber(
-            response.data.renVM.currentEpoch.rewardShareBTC,
-        ),
-        rewardShareZEC: new BigNumber(
-            response.data.renVM.currentEpoch.rewardShareZEC,
-        ),
-        rewardShareBCH: new BigNumber(
-            response.data.renVM.currentEpoch.rewardShareBCH,
-        ),
+
+        rewardShares: tokenArrayToMap(
+            response.data.renVM.currentEpoch.rewardShares,
+        ).map(parseTokenAmount),
     };
 
     const previousEpoch = {
@@ -124,15 +141,10 @@ export const queryRenVM = async (
             new BigNumber(response.data.renVM.previousEpoch.epochhash),
         ),
         timestamp: new BigNumber(response.data.renVM.previousEpoch.timestamp),
-        rewardShareBTC: new BigNumber(
-            response.data.renVM.currentEpoch.rewardShareBTC,
-        ),
-        rewardShareZEC: new BigNumber(
-            response.data.renVM.currentEpoch.rewardShareZEC,
-        ),
-        rewardShareBCH: new BigNumber(
-            response.data.renVM.currentEpoch.rewardShareBCH,
-        ),
+
+        rewardShares: tokenArrayToMap(
+            response.data.renVM.previousEpoch.rewardShares,
+        ).map(parseTokenAmount),
     };
 
     const now = Math.floor(new Date().getTime() / SECONDS);
@@ -168,5 +180,6 @@ export const queryRenVM = async (
         deregistrationInterval: new BigNumber(
             response.data.renVM.deregistrationInterval,
         ),
+        fees: tokenArrayToMap(response.data.renVM.fees).map(parseTokenAmount),
     };
 };

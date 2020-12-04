@@ -10,14 +10,14 @@ import { ReactComponent as FlameIcon } from "../../../styles/images/icon-flame.s
 import { ReactComponent as RewardsIcon } from "../../../styles/images/icon-rewards-white.svg";
 import { DarknodeID } from "../../../views/DarknodeID";
 import { StatusDot, StatusDotColor } from "../../../views/StatusDot";
-import { TokenBalance } from "../TokenBalance";
+import { ConvertCurrency, TokenBalance } from "../TokenBalance";
 
 interface Props {
     darknodeID: string;
     storedName: string | undefined;
     active: boolean;
     faded: boolean;
-    feesEarnedTotalEth: BigNumber | string | null | undefined;
+    feesEarnedInUsd: BigNumber | string | null | undefined;
     ethBalance: BigNumber | string | null | undefined;
     quoteCurrency: Currency;
     connected: boolean;
@@ -34,7 +34,7 @@ export const SidebarIcon: React.FC<Props> = ({
     active,
     faded,
     quoteCurrency,
-    feesEarnedTotalEth,
+    feesEarnedInUsd,
     ethBalance,
     connected,
     hideMobileMenu,
@@ -79,17 +79,17 @@ export const SidebarIcon: React.FC<Props> = ({
                     <div className="sidebar--name">{name}</div>
                     <div className="sidebar--text--details">
                         <div className="sidebar--text--rewards">
-                            {feesEarnedTotalEth ? (
+                            {feesEarnedInUsd ? (
                                 <>
                                     <RewardsIcon className="sidebar--text--icon" />
                                     <span className="currency-value">
                                         <CurrencyIcon
                                             currency={quoteCurrency}
                                         />
-                                        <TokenBalance
-                                            token={Token.ETH}
-                                            convertTo={quoteCurrency}
-                                            amount={feesEarnedTotalEth}
+                                        <ConvertCurrency
+                                            from={Currency.USD}
+                                            to={quoteCurrency}
+                                            amount={new BigNumber(feesEarnedInUsd)}
                                         />
                                     </span>{" "}
                                     <span className="currency-symbol">

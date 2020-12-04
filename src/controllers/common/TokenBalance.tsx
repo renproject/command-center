@@ -10,7 +10,7 @@ interface Props {
     amount: number | string | BigNumber;
     convertTo?: Currency;
     digits?: number; // Always shows this many digits (e.g. for 3 d.p.: 0.100, 0.111)
-    format?: boolean; // determines digit grouping (e.g. for 3000.01 => 3,000.01)
+    shifted?: boolean; // determines whether the input has already been converted into its readable unit
 }
 
 const defaultDigits = (quoteCurrency: Currency | Token) => {
@@ -69,12 +69,14 @@ export const tokenToQuote = (
     return new BigNumber(0);
 };
 
+const ERR = <>...</>;
+
 export const TokenBalance: React.FC<Props> = ({
     amount,
     token,
     convertTo,
     digits,
-    format,
+    shifted,
 }) => {
     const { tokenPrices } = NetworkContainer.useContainer();
 
@@ -83,9 +85,9 @@ export const TokenBalance: React.FC<Props> = ({
         ? new BigNumber(tokenDetails.decimals.toString()).toNumber()
         : 0;
 
-    const amountBN = new BigNumber(amount).div(
-        new BigNumber(Math.pow(10, decimals)),
-    );
+    const amountBN = shifted
+        ? new BigNumber(amount)
+        : new BigNumber(amount).div(new BigNumber(Math.pow(10, decimals)));
 
     if (!convertTo) {
         return (
@@ -98,17 +100,17 @@ export const TokenBalance: React.FC<Props> = ({
     }
 
     if (!tokenPrices) {
-        return <>...</>;
+        return ERR;
     }
 
     const tokenPriceMap = tokenPrices.get(token, undefined);
     if (!tokenPriceMap) {
-        return <>...</>;
+        return ERR;
     }
 
     const price = tokenPriceMap.get(convertTo, undefined);
     if (!price) {
-        return <i>ERR</i>;
+        return ERR;
     }
 
     const resolvedAmount = amountBN
@@ -117,5 +119,65 @@ export const TokenBalance: React.FC<Props> = ({
             digits === undefined ? defaultDigits(convertTo) : digits,
             BigNumber.ROUND_FLOOR,
         );
-    return <>{format ? resolvedAmount.toFormat() : resolvedAmount.toFixed()}</>;
+    return <>{resolvedAmount.toFormat()}</>;
+};
+
+export const ConvertCurrency: React.FC<{
+    amount: BigNumber;
+    from: Currency;
+    to: Currency;
+}> = ({ amount, from, to }) => {
+    const { tokenPrices } = NetworkContainer.useContainer();
+
+    if (!tokenPrices) {
+        return ERR;
+    }
+
+    const tokenPriceMap = tokenPrices.first(undefined);
+    if (!tokenPriceMap) {
+        return ERR;
+    }
+
+    const fromPrice = tokenPriceMap.get(from, undefined);
+    const toPrice = tokenPriceMap.get(to, undefined);
+    if (!fromPrice || !toPrice) {
+        return ERR;
+    }
+
+    const resolvedAmount = amount
+        .dividedBy(fromPrice)
+        .multipliedBy(toPrice)
+        .decimalPlaces(2, BigNumber.ROUND_FLOOR);
+
+    // let digits = amount.gt(100000) ? 0 : 2
+    const digits = amount.eq(0) ? 0 : 2;
+
+    let formatted = resolvedAmount.toFormat(digits, BigNumber.ROUND_FLOOR);
+
+    return <>{formatted}</>;
+};
+
+export const AnyTokenBalance: React.FC<{
+    amount: number | string | BigNumber;
+    decimals: number;
+    digits?: number; // Always shows this many digits (e.g. for 3 d.p.: 0.100, 0.111)
+}> = ({ amount, decimals, digits }) => {
+    const amountBN = new BigNumber(amount).div(
+        new BigNumber(Math.pow(10, decimals)),
+    );
+
+    const resolvedAmount = amountBN.decimalPlaces(
+        digits === undefined ? 3 : digits,
+        BigNumber.ROUND_FLOOR,
+    );
+
+    let formatted =
+        amountBN.gt(0) && resolvedAmount.isZero()
+            ? resolvedAmount.toFormat(
+                  digits === undefined ? 3 : digits,
+                  BigNumber.ROUND_FLOOR,
+              )
+            : resolvedAmount.toFormat();
+
+    return <>{formatted}</>;
 };

@@ -7,19 +7,94 @@ import { OrderedMap } from "immutable";
 import moment from "moment";
 import { useEffect, useMemo, useState } from "react";
 import { createContainer } from "unstated-next";
+import { TokenString } from "../../../lib/ethereum/tokens";
 
 import {
-    Integrator,
+    IntegratorRaw,
     QUERY_BLOCK,
     QUERY_INTEGRATORS,
     QUERY_INTEGRATORS_HISTORY,
     QueryBlockResponse,
+    Integrator,
+    parseTokenAmount,
 } from "../../../lib/graphQL/queries";
-import { getPeriodTimespan, PeriodType } from "../../../lib/graphQL/volumes";
+import {
+    getPeriodTimespan,
+    PeriodType,
+    tokenArrayToMap,
+} from "../../../lib/graphQL/volumes";
 import { extractError } from "../../../lib/react/errors";
 import { Web3Container } from "../../../store/web3Container";
 import DefaultLogo from "../../../styles/images/default-integrator.png";
 import Integrators from "./integrators.json";
+
+const rawToIntegrator = (raw: IntegratorRaw): Integrator => {
+    const {
+        txCount: txCountRaw,
+        volume: volumeRaw,
+        locked: lockedRaw,
+        ...remaining
+    } = raw;
+
+    const txCount = tokenArrayToMap(txCountRaw).map((count) => count.value);
+    const locked = tokenArrayToMap(lockedRaw).map(parseTokenAmount);
+    const volume = tokenArrayToMap(volumeRaw).map(parseTokenAmount);
+
+    return {
+        ...remaining,
+        txCount,
+        locked,
+        volume,
+    };
+};
+
+const integratorDifference = (
+    now: Integrator,
+    before: Integrator | null,
+): Integrator => {
+    return {
+        ...now,
+        txCount: before
+            ? now.txCount.map(
+                  (value, asset) => value - before.txCount.get(asset, 0),
+              )
+            : now.txCount,
+        locked: before
+            ? now.locked.map((value, asset) => {
+                  let beforeValue = before.locked.get(asset);
+                  return beforeValue
+                      ? {
+                            ...value,
+                            amount: value.amount.minus(beforeValue.amount),
+                            amountInEth: value.amountInEth.minus(
+                                beforeValue.amountInEth,
+                            ),
+                            amountInUsd: value.amountInUsd.minus(
+                                beforeValue.amountInUsd,
+                            ),
+                        }
+                      : value;
+              })
+            : now.locked,
+        volume: before
+            ? now.volume.map((value, asset) => {
+                  let beforeValue = before.volume.get(asset);
+                  return beforeValue
+                      ? {
+                            ...value,
+                            amount: value.amount.minus(beforeValue.amount),
+                            amountInEth: value.amountInEth.minus(
+                                beforeValue.amountInEth,
+                            ),
+                            amountInUsd: value.amountInUsd.minus(
+                                beforeValue.amountInUsd,
+                            ),
+                        }
+                      : value;
+              })
+            : now.volume,
+    };
+};
 
 const resolveIntegrator = (
     networkDetails: RenNetworkDetails,
@@ -50,7 +125,7 @@ const useIntegratorsContainer = () => {
     const [integrators, setIntegrators] = useState<
         OrderedMap<
             number,
-            | Array<{ now: Integrator; day: Integrator | null }>
+            | Array<{ now: Integrator; day: Integrator }>
             | null
             | undefined
             | string
@@ -77,7 +152,7 @@ const useIntegratorsContainer = () => {
                     currentIntegrators.set(page, null),
                 );
                 const response = await apollo.query<{
-                    integrators: Integrator[];
+                    integrators: IntegratorRaw[];
                 }>({
                     query: QUERY_INTEGRATORS,
                     variables: {
@@ -123,11 +198,12 @@ const useIntegratorsContainer = () => {
 
                 let integratorsWithDay: Array<{
                     now: Integrator;
-                    day: Integrator | null;
+                    day: Integrator;
                 }> = [];
 
                 if (response.data.integrators.length) {
                     // Build GraphQL query containing a request for each of the blocks.
+
                     const query = gql(`
                         {
                                 ${response.data.integrators
@@ -142,7 +218,7 @@ const useIntegratorsContainer = () => {
                     `);
 
                     const responseDay = await apollo.query<{
-                        [block: string]: Integrator | null;
+                        [block: string]: IntegratorRaw | null;
                     }>({
                         query,
                     });
@@ -151,10 +227,19 @@ const useIntegratorsContainer = () => {
                         (integrator) => {
                             const integratorDay =
                                 Object.values(responseDay.data).filter(
-                                    (iDay: Integrator | null) =>
+                                    (iDay: IntegratorRaw | null) =>
                                         iDay && iDay.id === integrator.id,
                                 )[0] || null;
-                            return { now: integrator, day: integratorDay };
+                            const now = rawToIntegrator(integrator);
+                            return {
+                                now,
+                                day: integratorDifference(
+                                    now,
+                                    integratorDay
+                                        ? rawToIntegrator(integratorDay)
+                                        : integratorDay,
+                                ),
+                            };
                         },
                     );
                 }
@@ -166,6 +251,7 @@ const useIntegratorsContainer = () => {
                 );
             }
         })().catch((error) => {
+            console.error(error);
             setIntegrators(integrators.set(page, extractError(error)));
         });
     }, [integrators, page, apollo, renNetwork]);

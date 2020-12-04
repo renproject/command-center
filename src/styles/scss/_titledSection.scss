@@ -14,7 +14,6 @@
     .titled-block--top {
         display: flex;
         justify-content: space-between;
-        border-bottom: 2px solid #001b3a;
         background: #002247;
         margin-bottom: 2px;
         padding: 20px 20px 0;
@@ -29,8 +28,57 @@
     }
 
     .titled-block--bottom {
+        border-top: 2px solid #001b3a;
+
         background: #001f41;
         padding: 20px;
         height: 100%;
     }
+}
+
+.token-block {
+    margin: 10px;
+    background: $blue-dark;
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+
+    height: 70px;
+
+    display: flex;
+
+    .token-block--icon {
+        width: 70px;
+        min-width: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-right: 2px solid #001b3a;
+
+        svg {
+            height: 30px;
+            max-width: unset;
+        }
+    }
+
+    .token-block--body {
+        display: flex;
+        justify-content: center;
+        background: #002247;
+        padding: 0 20px;
+        flex-flow: column;
+
+        > * {
+            font-size: 14px;
+            line-height: 18px;
+            font-weight: 500;
+            color: #f9f9f9;
+            text-transform: none;
+            margin: 2px 0;
+        }
+    }
+}
+
+.lighter {
+    opacity: 0.6;
 }

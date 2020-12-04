@@ -9,7 +9,7 @@ import BigNumber from "bignumber.js";
 import { List, Map, OrderedMap } from "immutable";
 import moment from "moment";
 
-import { AllTokenDetails, Token, TokenPrices } from "../ethereum/tokens";
+import { Token, TokenPrices, TokenString } from "../ethereum/tokens";
 import {
     PeriodData,
     QUERY_BLOCK,
@@ -37,6 +37,21 @@ const getNetworkStart = (renNetwork: RenNetworkDetails) => {
             return "2020-05-27T00+00";
     }
 };
+
+export const tokenArrayToMap = <T extends { symbol: string }>(
+    array: T[],
+): OrderedMap<TokenString, T> =>
+    array.reduce(
+        (acc, tokenLocked) =>
+            acc.set(
+                tokenLocked.symbol
+                    .replace(/^ren/, "")
+                    .replace(/^test/, "")
+                    .replace(/^dev/, ""),
+                tokenLocked,
+            ),
+        OrderedMap<TokenString, T>(),
+    );
 
 export const getPeriodTimespan = (
     type: string,
@@ -172,15 +187,6 @@ export const getVolumes = async (
         return new BigNumber(endF).minus(startF).toFixed();
     };
 
-    const tokenArrayToMap = <T extends { symbol: string }>(
-        array: T[],
-    ): OrderedMap<string, T> =>
-        array.reduce(
-            (acc, tokenLocked) =>
-                acc.set(tokenLocked.symbol.replace(/^ren/, ""), tokenLocked),
-            OrderedMap<string, T>(),
-        );
-
     // Calculate period volume by subtracting total volume between each
     // consecutive segment.
     const series = Array.from(new Array(segmentCount)).map(
@@ -267,10 +273,6 @@ export const getVolumes = async (
 
         btcMintFee: getFieldDifference(start, end, "btcMintFee"),
         btcBurnFee: getFieldDifference(start, end, "btcBurnFee"),
-        zecMintFee: getFieldDifference(start, end, "zecMintFee"),
-        zecBurnFee: getFieldDifference(start, end, "zecBurnFee"),
-        bchMintFee: getFieldDifference(start, end, "bchMintFee"),
-        bchBurnFee: getFieldDifference(start, end, "bchBurnFee"),
 
         volume: tokenArrayToMap((end && end.volume) || []).map(
             (endTokenVolume, symbol) => ({
@@ -349,17 +351,11 @@ const normalizeVolumes = (
 
     if (periodData.volume) {
         periodData.volume.forEach(
-            ({ amount, amountInEth, amountInUsd }, symbol) => {
-                // TODO: Fix subgraph to return asset decimals.
-                const details = AllTokenDetails.get(symbol as Token);
+            ({ amount, amountInEth, amountInUsd, asset }, symbol) => {
                 let tokenVolume: BigNumber;
-                if (quoteCurrency === Currency.BTC) {
+                if (quoteCurrency === Currency.BTC && asset) {
                     tokenVolume = new BigNumber(amount || "0")
-                        .div(
-                            new BigNumber(10).exponentiatedBy(
-                                details ? details.decimals : 18,
-                            ),
-                        )
+                        .div(new BigNumber(10).exponentiatedBy(asset.decimals))
                         .times(
                             // Price should be 1 for BTC, variable for other
                             // assets.
@@ -393,23 +389,7 @@ const normalizeVolumes = (
     }
 
     if (periodData.locked) {
-        periodData.locked.forEach(({ amount, amountInUsd }, symbol) => {
-            // TODO: Fix subgraph to return asset decimals.
-            const details = AllTokenDetails.get(symbol as Token);
-            const tokenLocked: BigNumber = new BigNumber(amount || "0")
-                .div(
-                    new BigNumber(10).exponentiatedBy(
-                        details ? details.decimals : 18,
-                    ),
-                )
-                .times(
-                    // Price should be 1 for BTC, variable for other
-                    // assets.
-                    tokenPrices
-                        .get(symbol as Token, Map<Currency, number>())
-                        .get(quoteCurrency) || 0,
-                )
-                .decimalPlaces(2);
+        periodData.locked.forEach(({ amount, amountInUsd, asset }, symbol) => {
             const tokenLockedHistoric = new BigNumber(amountInUsd || "0")
                 .dividedBy(
                     tokenPrices
@@ -422,6 +402,19 @@ const normalizeVolumes = (
                         .get(quoteCurrency) || 0,
                 )
                 .decimalPlaces(2);
+
+            const tokenLocked: BigNumber = asset
+                ? new BigNumber(amount || "0")
+                      .div(new BigNumber(10).exponentiatedBy(asset.decimals))
+                      .times(
+                          // Price should be 1 for BTC, variable for other
+                          // assets.
+                          tokenPrices
+                              .get(symbol as Token, Map<Currency, number>())
+                              .get(quoteCurrency) || 0,
+                      )
+                      .decimalPlaces(2)
+                : tokenLockedHistoric;
             data.quoteLocked[symbol] = tokenLocked;
             data.quoteLockedTotal = data.quoteLockedTotal.plus(tokenLocked);
             data.quoteLockedTotalHistoric = data.quoteLockedTotalHistoric.plus(

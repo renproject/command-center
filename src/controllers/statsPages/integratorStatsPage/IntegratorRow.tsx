@@ -1,17 +1,18 @@
 import { RenNetworkDetails } from "@renproject/contracts";
-import { CurrencyIcon } from "@renproject/react-components";
+import { Currency, CurrencyIcon } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback } from "react";
+import { isDefined } from "../../../lib/general/isDefined";
 
-import { Token } from "../../../lib/ethereum/tokens";
-import { Integrator } from "../../../lib/graphQL/queries";
+import { Integrator, TokenAmount } from "../../../lib/graphQL/queries";
 import { classNames } from "../../../lib/react/className";
 import { NetworkContainer } from "../../../store/networkContainer";
 import { Web3Container } from "../../../store/web3Container";
 import DefaultLogo from "../../../styles/images/default-integrator.png";
 import { ExternalLink } from "../../../views/ExternalLink";
-import { TitledSection } from "../../../views/TitledSection";
-import { tokenToQuote, tokenToReadable } from "../../common/TokenBalance";
+import { TokenSection } from "../../../views/TitledSection";
+import { TokenIcon } from "../../../views/tokenIcon/TokenIcon";
+import { AnyTokenBalance, ConvertCurrency } from "../../common/TokenBalance";
 import Integrators from "./integrators.json";
 
 const resolveIntegrator = (
@@ -35,10 +36,60 @@ const resolveIntegrator = (
 
 interface Props {
     index: number;
-    integrator: { now: Integrator; day: Integrator | null };
+    integrator: { now: Integrator; day: Integrator };
     isActive: boolean;
     setActiveIntegrator: (id: string | null) => void;
 }
+
+const IntegratorTokenValue = ({
+    symbol,
+    volume,
+    title,
+    txCount,
+    quoteCurrency,
+}: {
+    symbol: string;
+    title: string;
+    volume: TokenAmount | undefined;
+    txCount: number | undefined;
+    quoteCurrency: Currency;
+}) => {
+    return (
+        <div>
+            <span className="lighter">{title}: </span>
+            {volume ? (
+                <AnyTokenBalance
+                    amount={volume.amount}
+                    decimals={volume.asset!.decimals}
+                />
+            ) : (
+                "..."
+            )}{" "}
+            {symbol}
+            <span className="lighter">{" - "}</span>
+            <CurrencyIcon currency={quoteCurrency} />
+            {volume && quoteCurrency === Currency.BTC && symbol === "BTC" ? (
+                <AnyTokenBalance
+                    amount={volume.amount}
+                    decimals={volume.asset!.decimals}
+                />
+            ) : volume ? (
+                <ConvertCurrency
+                    from={Currency.USD}
+                    to={quoteCurrency}
+                    amount={volume.amountInUsd}
+                />
+            ) : (
+                "..."
+            )}
+            {isDefined(txCount) ? (
+                <span className="lighter"> ({txCount} txs)</span>
+            ) : (
+                <></>
+            )}
+        </div>
+    );
+};
 
 export const IntegratorRow: React.FC<Props> = ({
     index,
@@ -47,7 +98,7 @@ export const IntegratorRow: React.FC<Props> = ({
     setActiveIntegrator,
 }) => {
     const { renNetwork } = Web3Container.useContainer();
-    const { quoteCurrency, tokenPrices } = NetworkContainer.useContainer();
+    const { quoteCurrency } = NetworkContainer.useContainer();
 
     const { name, logo, url, urlHref } = resolveIntegrator(
         renNetwork,
@@ -60,157 +111,17 @@ export const IntegratorRow: React.FC<Props> = ({
             : setActiveIntegrator(integrator.now.id);
     }, [isActive, setActiveIntegrator, integrator.now.id]);
 
-    // Day volume in token quantity
-
-    const dayVolumeBTCRaw = new BigNumber(integrator.now.volumeBTC).minus(
-        integrator.day ? integrator.day.volumeBTC : new BigNumber(0),
-    );
-    const dayVolumeZECRaw = new BigNumber(integrator.now.volumeZEC).minus(
-        integrator.day ? integrator.day.volumeZEC : new BigNumber(0),
-    );
-    const dayVolumeBCHRaw = new BigNumber(integrator.now.volumeBCH).minus(
-        integrator.day ? integrator.day.volumeBCH : new BigNumber(0),
-    );
-
-    const dayVolumeBTCReadable = useMemo(
-        () =>
-            tokenToReadable(
-                dayVolumeBTCRaw ? dayVolumeBTCRaw : new BigNumber(0),
-                Token.BTC,
-            ),
-        [dayVolumeBTCRaw],
-    );
-    const dayVolumeZECReadable = useMemo(
-        () =>
-            tokenToReadable(
-                dayVolumeZECRaw ? dayVolumeZECRaw : new BigNumber(0),
-                Token.ZEC,
-            ),
-        [dayVolumeZECRaw],
-    );
-    const dayVolumeBCHReadable = useMemo(
-        () =>
-            tokenToReadable(
-                dayVolumeBCHRaw ? dayVolumeBCHRaw : new BigNumber(0),
-                Token.BCH,
-            ),
-        [dayVolumeBCHRaw],
-    );
-
-    // Day volume in quote currency
-
-    const dayVolumeBTCQuote = useMemo(
-        () =>
-            dayVolumeBTCRaw && tokenPrices
-                ? tokenToQuote(
-                      dayVolumeBTCRaw,
-                      Token.BTC,
-                      quoteCurrency,
-                      tokenPrices,
-                  )
-                : new BigNumber(0),
-        [dayVolumeBTCRaw, tokenPrices, quoteCurrency],
-    );
-
-    const dayVolumeZECQuote = useMemo(
-        () =>
-            dayVolumeZECRaw && tokenPrices
-                ? tokenToQuote(
-                      dayVolumeZECRaw,
-                      Token.ZEC,
-                      quoteCurrency,
-                      tokenPrices,
-                  )
-                : new BigNumber(0),
-        [dayVolumeZECRaw, tokenPrices, quoteCurrency],
-    );
-
-    const dayVolumeBCHQuote = useMemo(
-        () =>
-            dayVolumeBCHRaw && tokenPrices
-                ? tokenToQuote(
-                      dayVolumeBCHRaw,
-                      Token.BCH,
-                      quoteCurrency,
-                      tokenPrices,
-                  )
-                : new BigNumber(0),
-        [dayVolumeBCHRaw, tokenPrices, quoteCurrency],
-    );
-
     // Day volume total
 
-    const dayVolumeQuote = useMemo(
-        () =>
-            dayVolumeBTCQuote
-                .plus(dayVolumeZECQuote)
-                .plus(dayVolumeBCHQuote)
-                .toFormat(),
-        [dayVolumeBCHQuote, dayVolumeBTCQuote, dayVolumeZECQuote],
+    const dayVolumeInUsd = integrator.day.volume.reduce(
+        (acc, value) => acc.plus(value.amountInUsd),
+        new BigNumber(0),
+    );
+    const allVolumeInUsd = integrator.now.volume.reduce(
+        (acc, value) => acc.plus(value.amountInUsd),
+        new BigNumber(0),
     );
 
-    // All-time volume in token quantity
-
-    const allVolumeBTCReadable = useMemo(
-        () => tokenToReadable(integrator.now.volumeBTC, Token.BTC),
-        [integrator.now.volumeBTC],
-    );
-    const allVolumeZECReadable = useMemo(
-        () => tokenToReadable(integrator.now.volumeZEC, Token.ZEC),
-        [integrator.now.volumeZEC],
-    );
-    const allVolumeBCHReadable = useMemo(
-        () => tokenToReadable(integrator.now.volumeBCH, Token.BCH),
-        [integrator.now.volumeBCH],
-    );
-
-    // All-time volume in quote currency
-
-    const allVolumeBTC = useMemo(
-        () =>
-            tokenPrices
-                ? tokenToQuote(
-                      integrator.now.volumeBTC,
-                      Token.BTC,
-                      quoteCurrency,
-                      tokenPrices,
-                  )
-                : new BigNumber(0),
-        [tokenPrices, quoteCurrency, integrator.now.volumeBTC],
-    );
-
-    const allVolumeZEC = useMemo(
-        () =>
-            tokenPrices
-                ? tokenToQuote(
-                      integrator.now.volumeZEC,
-                      Token.ZEC,
-                      quoteCurrency,
-                      tokenPrices,
-                  )
-                : new BigNumber(0),
-        [tokenPrices, quoteCurrency, integrator.now.volumeZEC],
-    );
-
-    const allVolumeBCH = useMemo(
-        () =>
-            tokenPrices
-                ? tokenToQuote(
-                      integrator.now.volumeBCH,
-                      Token.BCH,
-                      quoteCurrency,
-                      tokenPrices,
-                  )
-                : new BigNumber(0),
-        [tokenPrices, quoteCurrency, integrator.now.volumeBCH],
-    );
-
-    // All-time volume total
-
-    const allVolume = useMemo(
-        () => allVolumeBTC.plus(allVolumeZEC).plus(allVolumeBCH).toFormat(),
-        [allVolumeBTC, allVolumeZEC, allVolumeBCH],
-    );
     const stopPropagation = useCallback((e) => e.stopPropagation(), []);
 
     return (
@@ -237,11 +148,21 @@ export const IntegratorRow: React.FC<Props> = ({
                 </td>
                 <td className="col-3">
                     <CurrencyIcon currency={quoteCurrency} />
-                    {dayVolumeQuote} {quoteCurrency.toUpperCase()}
+                    <ConvertCurrency
+                        amount={dayVolumeInUsd}
+                        from={Currency.USD}
+                        to={quoteCurrency}
+                    />
+                    {quoteCurrency.toUpperCase()}
                 </td>
                 <td className="col-4">
                     <CurrencyIcon currency={quoteCurrency} />
-                    {allVolume} {quoteCurrency.toUpperCase()}
+                    <ConvertCurrency
+                        amount={allVolumeInUsd}
+                        from={Currency.USD}
+                        to={quoteCurrency}
+                    />
+                    {quoteCurrency.toUpperCase()}
                 </td>
             </tr>
             <tr
@@ -254,147 +175,48 @@ export const IntegratorRow: React.FC<Props> = ({
             >
                 <td colSpan={5}>
                     <div className="integrators-extra--stats">
-                        <TitledSection top={<h2>{name} - details</h2>}>
-                            <table>
-                                <tbody>
-                                    <tr>
-                                        <td>Contract address</td>
-                                        <td className="monospace">
-                                            <ExternalLink
-                                                href={`${renNetwork.etherscan}/address/${integrator.now.contractAddress}`}
-                                            >
-                                                {integrator.now.contractAddress}
-                                            </ExternalLink>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>24 HR Volume</td>
-                                        <td>
-                                            <CurrencyIcon
-                                                currency={quoteCurrency}
+                        <div>
+                            {integrator.now.volume
+                                .sortBy((value) => value.amountInUsd.toNumber())
+                                .reverse()
+                                .filter((value) => value.asset)
+                                .keySeq()
+                                .map((symbol) => {
+                                    const nowTxCount = integrator.now.txCount.get(
+                                        symbol,
+                                    );
+                                    const nowVolume = integrator.now.volume.get(
+                                        symbol,
+                                    );
+                                    const dayTxCount = integrator.day.txCount.get(
+                                        symbol,
+                                    );
+                                    const dayVolume = integrator.day.volume.get(
+                                        symbol,
+                                    );
+
+                                    return (
+                                        <TokenSection
+                                            icon={<TokenIcon token={symbol} />}
+                                        >
+                                            <IntegratorTokenValue
+                                                symbol={symbol}
+                                                volume={nowVolume}
+                                                title={"All time"}
+                                                txCount={nowTxCount}
+                                                quoteCurrency={quoteCurrency}
                                             />
-                                            {dayVolumeQuote}{" "}
-                                            {quoteCurrency.toUpperCase()}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>All Time Volume</td>
-                                        <td>
-                                            <CurrencyIcon
-                                                currency={quoteCurrency}
+                                            <IntegratorTokenValue
+                                                symbol={symbol}
+                                                volume={dayVolume}
+                                                title={"24 hour"}
+                                                txCount={dayTxCount}
+                                                quoteCurrency={quoteCurrency}
                                             />
-                                            {allVolume}{" "}
-                                            {quoteCurrency.toUpperCase()}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>BTC Transaction count</td>
-                                        <td>{integrator.now.txCountBTC}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>ZEC Transaction count</td>
-                                        <td>{integrator.now.txCountZEC}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>BCH Transaction count</td>
-                                        <td>{integrator.now.txCountBCH}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </TitledSection>
-                        <div className="integrators-extra--stats">
-                            <TitledSection top={<h2>24 HR Volume Details</h2>}>
-                                <table>
-                                    <tbody>
-                                        <tr>
-                                            <td>Daily BTC Volume</td>
-                                            <td>
-                                                {dayVolumeBTCReadable.toFormat()}{" "}
-                                                BTC
-                                                {" - "}
-                                                <CurrencyIcon
-                                                    currency={quoteCurrency}
-                                                />
-                                                {dayVolumeBTCQuote.toFormat()}{" "}
-                                                {quoteCurrency.toUpperCase()}
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Daily ZEC Volume</td>
-                                            <td>
-                                                {dayVolumeZECReadable.toFormat()}{" "}
-                                                ZEC
-                                                {" - "}
-                                                <CurrencyIcon
-                                                    currency={quoteCurrency}
-                                                />
-                                                {dayVolumeZECQuote.toFormat()}{" "}
-                                                {quoteCurrency.toUpperCase()}
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Daily BCH Volume</td>
-                                            <td>
-                                                {dayVolumeBCHReadable.toFormat()}{" "}
-                                                BCH
-                                                {" - "}
-                                                <CurrencyIcon
-                                                    currency={quoteCurrency}
-                                                />
-                                                {dayVolumeBCHQuote.toFormat()}{" "}
-                                                {quoteCurrency.toUpperCase()}
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </TitledSection>
-                            <TitledSection
-                                top={<h2>All Time Volume Details</h2>}
-                            >
-                                <table>
-                                    <tbody>
-                                        <tr>
-                                            <td>All Time BTC Volume</td>
-                                            <td>
-                                                {allVolumeBTCReadable.toFormat()}{" "}
-                                                BTC
-                                                {" - "}
-                                                <CurrencyIcon
-                                                    currency={quoteCurrency}
-                                                />
-                                                {allVolumeBTC.toFormat()}{" "}
-                                                {quoteCurrency.toUpperCase()}
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>All Time ZEC Volume</td>
-                                            <td>
-                                                {allVolumeZECReadable.toFormat()}{" "}
-                                                ZEC
-                                                {" - "}
-                                                <CurrencyIcon
-                                                    currency={quoteCurrency}
-                                                />
-                                                {allVolumeZEC.toFormat()}{" "}
-                                                {quoteCurrency.toUpperCase()}
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>All Time BCH Volume</td>
-                                            <td>
-                                                {allVolumeBCHReadable.toFormat()}{" "}
-                                                BCH
-                                                {" - "}
-                                                <CurrencyIcon
-                                                    currency={quoteCurrency}
-                                                />
-                                                {allVolumeBCH.toFormat()}{" "}
-                                                {quoteCurrency.toUpperCase()}
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </TitledSection>
+                                        </TokenSection>
+                                    );
+                                })
+                                .toArray()}
                         </div>
                     </div>
                 </td>
