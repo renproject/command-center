@@ -6,6 +6,7 @@ import {
 } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import React from "react";
+import { Token } from "../../../lib/ethereum/tokens";
 
 import { isDefined } from "../../../lib/general/isDefined";
 import { GithubAPIContainer } from "../../../store/githubApiContainer";
@@ -148,7 +149,7 @@ export const DarknodeStatsPage = () => {
                             message="Total network fees"
                             big
                             infoLabel="The fees paid to the network across all epochs."
-                            style={{ flexBasis: "0", flexGrow: 0 }}
+                            style={{ flexBasis: "0", flexGrow: 3 }}
                         >
                             {isDefined(totalFees) ? (
                                 <>
@@ -167,7 +168,7 @@ export const DarknodeStatsPage = () => {
                             className="network-fees-stat"
                             message="Last cycle"
                             big
-                            style={{ flexBasis: "0" }}
+                            style={{ flexBasis: "0", flexGrow: 5 }}
                             infoLabel="The amount of rewards earned by the entire network of Darknodes in the last Epoch. "
                             dark={true}
                         >
@@ -179,11 +180,26 @@ export const DarknodeStatsPage = () => {
                                         <CurrencyIcon
                                             currency={quoteCurrency}
                                         />
-                                        <ConvertCurrency
-                                            from={Currency.USD}
-                                            to={quoteCurrency}
-                                            amount={previousNetworkInUsd}
-                                        />
+                                        {quoteCurrency === Currency.BTC ? (
+                                            <AnyTokenBalance
+                                                amount={previous
+                                                    .get(Token.BTC, {
+                                                        amount: new BigNumber(
+                                                            0,
+                                                        ),
+                                                    })!
+                                                    .amount.times(
+                                                        numberOfDarknodesLastEpoch,
+                                                    )}
+                                                decimals={8}
+                                            />
+                                        ) : (
+                                            <ConvertCurrency
+                                                from={Currency.USD}
+                                                to={quoteCurrency}
+                                                amount={previousNetworkInUsd}
+                                            />
+                                        )}
                                         <InfoLabel direction={"bottom"}>
                                             Based on the assets' USD price at
                                             the end of the reward period.
@@ -236,7 +252,7 @@ export const DarknodeStatsPage = () => {
                             message="Current cycle"
                             dark={true}
                             big={true}
-                            style={{ flexBasis: "0" }}
+                            style={{ flexBasis: "0", flexGrow: 5 }}
                             icon={<RewardsIcon />}
                             infoLabel="Rewards earned in this current Epoch so far by the entire Darknode network."
                         >
@@ -248,11 +264,26 @@ export const DarknodeStatsPage = () => {
                                         <CurrencyIcon
                                             currency={quoteCurrency}
                                         />
-                                        <ConvertCurrency
-                                            from={Currency.USD}
-                                            to={quoteCurrency}
-                                            amount={currentNetworkInUsd}
-                                        />
+                                        {quoteCurrency === Currency.BTC ? (
+                                            <AnyTokenBalance
+                                                amount={current
+                                                    .get(Token.BTC, {
+                                                        amount: new BigNumber(
+                                                            0,
+                                                        ),
+                                                    })!
+                                                    .amount.times(
+                                                        numberOfDarknodes,
+                                                    )}
+                                                decimals={8}
+                                            />
+                                        ) : (
+                                            <ConvertCurrency
+                                                from={Currency.USD}
+                                                to={quoteCurrency}
+                                                amount={currentNetworkInUsd}
+                                            />
+                                        )}
                                     </span>
                                     <div className="network-fees">
                                         {current
