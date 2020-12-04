@@ -94,9 +94,11 @@
     margin-bottom: 0px;
 }
 
-.stat--dark {
+.stat.stat--dark {
     @extend .stat--highlight;
     background: darken($color: #001327, $amount: 2);
+    margin: 10px;
+    margin-top: 0;
 }
 
 .stat--children--big {
