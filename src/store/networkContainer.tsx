@@ -7,8 +7,10 @@ import { createContainer } from "unstated-next";
 import { PromiEvent } from "web3-core";
 
 import { MultiStepPopup } from "../controllers/common/popups/MultiStepPopup";
-import { WithdrawPopup } from "../controllers/common/popups/WithdrawPopup";
-import { ConvertCurrency, TokenBalance } from "../controllers/common/TokenBalance";
+import {
+    ConvertCurrency,
+    updatePrices,
+} from "../controllers/common/TokenBalance";
 import { retryNTimes } from "../controllers/statsPages/renvmStatsPage/renvmContainer";
 import { NodeStatistics } from "../lib/darknode/jsonrpc";
 import { getDarknodePayment } from "../lib/ethereum/contract";
@@ -28,7 +30,6 @@ import {
     withdrawToken,
 } from "../lib/ethereum/contractWrites";
 import {
-    FeeTokens,
     getPrices,
     Token,
     TokenPrices,
@@ -36,8 +37,9 @@ import {
 } from "../lib/ethereum/tokens";
 import { isDefined } from "../lib/general/isDefined";
 import { safePromiseAllMap } from "../lib/general/promiseAll";
-import { TokenAmount } from "../lib/graphQL/queries";
+import { TokenAmount } from "../lib/graphQL/queries/queries";
 import { RenVM } from "../lib/graphQL/queries/renVM";
+import { tokenArrayToMap } from "../lib/graphQL/volumes";
 import {
     catchBackgroundException,
     catchInteractionException,
@@ -75,7 +77,7 @@ export type WaitForTX = <T>(
 ) => Promise<string>;
 
 const useNetworkContainer = () => {
-    const { web3, renNetwork, address } = Web3Container.useContainer();
+    const { web3, renNetwork, address, notify } = Web3Container.useContainer();
     const { setPopup, clearPopup } = PopupContainer.useContainer();
     const { renVM, fetchRenVM } = GraphContainer.useContainer();
     const client = useApolloClient();
@@ -93,21 +95,16 @@ const useNetworkContainer = () => {
 
     // const [balanceHistories, setBalanceHistories] = useState(Map<string, OrderedMap<number, BigNumber>>());
 
-    // tslint:disable-next-line: no-any
-    const [transactions, setTransactions] = useState(
-        OrderedMap<string, PromiEvent<any>>(),
-    );
-    const [confirmations, setConfirmations] = useState(
-        OrderedMap<string, number>(),
-    );
-
     const [pendingRewards, setPendingRewards] = useState(
-        OrderedMap<string /* cycle */, OrderedMap<string, TokenAmount | null>>(),
+        OrderedMap<
+            string /* cycle */,
+            OrderedMap<string, TokenAmount | null>
+        >(),
     );
     const [pendingTotalInUsd, setPendingTotalInUsd] = useState(
         OrderedMap<string /* cycle */, BigNumber | null>(),
     );
-    
+
     ///////////////////////////////////////////////////////////
     // If these change, localstorage migration may be needed //
     ///////////////////////////////////////////////////////////
@@ -314,42 +311,14 @@ const useNetworkContainer = () => {
         );
     };
 
-    // tslint:disable-next-line: no-any
-    const addTransaction = (txHash: string, tx: PromiEvent<any>) => {
-        return setTransactions((latestTransactions) =>
-            latestTransactions.set(txHash, tx),
-        );
-    };
-    const storeTxConfirmations = (
-        txHash: string,
-        numberOfConfirmations: number,
-    ) => {
-        return setConfirmations((latestConfirmations) =>
-            latestConfirmations.set(txHash, numberOfConfirmations),
-        );
-    };
-
-    const waitForTX = async <T extends {}>(
-        promiEvent: PromiEvent<T>,
-        onConfirmation?: (confirmations?: number) => void,
-    ) =>
+    const waitForTX = async <T extends {}>(promiEvent: PromiEvent<T>) =>
         new Promise<string>((resolve, reject) => {
             promiEvent
                 .on("transactionHash", (txHash) => {
                     resolve(txHash);
-                    addTransaction(txHash, promiEvent);
-                    promiEvent.on("confirmation", (numberOfConfirmations) => {
-                        storeTxConfirmations(txHash, numberOfConfirmations);
-                    });
-                    promiEvent.once("confirmation", (numberOfConfirmations) => {
-                        if (onConfirmation) {
-                            onConfirmation(numberOfConfirmations);
-                        }
-                    });
-                    promiEvent.on("error", (error) => {
-                        storeTxConfirmations(txHash, -1);
-                        reject(error);
-                    });
+                    if (notify) {
+                        notify.hash(txHash);
+                    }
                 })
                 .catch(reject);
         });
@@ -376,69 +345,13 @@ const useNetworkContainer = () => {
 
         let previous = OrderedMap<string, TokenAmount | null>();
         if (isDefined(latestRenVM)) {
-            previous = latestRenVM.currentEpoch.rewardShares.filter(asset => asset.asset !== null).reduce((map, asset, symbol) =>
-                map.set(symbol, asset)
-            , previous);
+            previous = latestRenVM.currentEpoch.rewardShares
+                .filter((asset) => asset.asset !== null)
+                .reduce(
+                    (map, asset, symbol) => map.set(symbol, asset),
+                    previous,
+                );
         }
-
-        const πCurrent = safePromiseAllMap(
-            FeeTokens.map(async (tokenDetails, token) => {
-                if (latestRenVM.numberOfDarknodes.isZero()) {
-                    return null;
-                }
-                try {
-                    const tokenAddress =
-                        token === Token.ETH
-                            ? "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
-                            : renNetwork.addresses.tokens[token].address;
-                    const currentCycleRewardPool = await retryNTimes(
-                        async () =>
-                            await darknodePayment.methods
-                                .currentCycleRewardPool(tokenAddress)
-                                .call(),
-                        2,
-                    );
-                    if (currentCycleRewardPool === null) {
-                        return null;
-                    }
-
-                    const amount = new BigNumber(currentCycleRewardPool.toString())
-                    .decimalPlaces(0)
-                    .div(latestRenVM.numberOfDarknodes)
-                    .decimalPlaces(0);
-
-                    let amountInEth: BigNumber | undefined;
-                    let amountInUsd: BigNumber | undefined;
-
-                    if (tokenPrices) {
-                    const price = tokenPrices.get(token, undefined);
-                    const decimals = tokenDetails
-                        ? new BigNumber(tokenDetails.decimals.toString()).toNumber()
-                        : 0;
-                    amountInEth = amount
-                        .div(Math.pow(10, decimals))
-                        .multipliedBy(price ? price.get(Currency.ETH, 0) : 0);
-                    amountInUsd = amount
-                        .div(Math.pow(10, decimals))
-                        .multipliedBy(price ? price.get(Currency.USD, 0) : 0);
-                    }
-
-                    return {
-                        symbol: token,
-                        amount: amount,
-                        amountInEth: amountInEth || new BigNumber(0),
-                        amountInUsd: amountInUsd || new BigNumber(0),
-                        asset: {
-                            decimals: tokenDetails.decimals,
-                        },
-                    };
-                } catch (error) {
-                    console.error(`Error fetching rewards for ${token}`, error);
-                    return null;
-                }
-            }).toOrderedMap(),
-            null,
-        );
 
         if (isDefined(latestRenVM)) {
             newPendingRewards = newPendingRewards.set(
@@ -447,7 +360,84 @@ const useNetworkContainer = () => {
             );
         }
 
-        const current = await πCurrent;
+        const assets = tokenArrayToMap(latestRenVM.assets);
+
+        let current = await safePromiseAllMap(
+            assets
+                .filter((_, asset) => asset !== "ETH" && asset !== "SAI")
+                .map(async (tokenDetails, token) => {
+                    if (latestRenVM.numberOfDarknodes.isZero()) {
+                        return null;
+                    }
+                    try {
+                        const tokenAddress = tokenDetails.tokenAddress;
+                        const currentCycleRewardPool = await retryNTimes(
+                            async () =>
+                                await darknodePayment.methods
+                                    .currentCycleRewardPool(tokenAddress)
+                                    .call(),
+                            2,
+                        );
+
+                        if (currentCycleRewardPool === null) {
+                            return null;
+                        }
+
+                        const amount = new BigNumber(
+                            currentCycleRewardPool.toString(),
+                        )
+                            .decimalPlaces(0)
+                            .div(latestRenVM.numberOfDarknodes)
+                            .decimalPlaces(0);
+
+                        let amountInEth: BigNumber | undefined;
+                        let amountInUsd: BigNumber | undefined;
+
+                        if (tokenPrices) {
+                            const price = tokenPrices.get(
+                                token as Token,
+                                undefined,
+                            );
+                            const decimals = tokenDetails
+                                ? new BigNumber(
+                                      tokenDetails.decimals.toString(),
+                                  ).toNumber()
+                                : 0;
+                            amountInEth = amount
+                                .div(Math.pow(10, decimals))
+                                .multipliedBy(
+                                    price ? price.get(Currency.ETH, 0) : 0,
+                                );
+                            amountInUsd = amount
+                                .div(Math.pow(10, decimals))
+                                .multipliedBy(
+                                    price ? price.get(Currency.USD, 0) : 0,
+                                );
+                        }
+
+                        return {
+                            symbol: token,
+                            amount: amount,
+                            amountInEth: amountInEth || new BigNumber(0),
+                            amountInUsd: amountInUsd || new BigNumber(0),
+                            asset: {
+                                decimals: tokenDetails.decimals,
+                            } as { decimals: number } | null,
+                        };
+                    } catch (error) {
+                        console.error(
+                            `Error fetching rewards for ${token}`,
+                            error,
+                        );
+                        return null;
+                    }
+                })
+                .toOrderedMap(),
+            null,
+        );
+
+        current = updatePrices(current, tokenPrices);
+
         if (isDefined(latestRenVM)) {
             newPendingRewards = newPendingRewards.set(
                 latestRenVM.currentCycle,
@@ -457,8 +447,18 @@ const useNetworkContainer = () => {
 
         let newPendingTotalInUsd = null;
         if (tokenPrices) {
-            const previousTotalInUsd = previous ? previous.reduce((sum, asset) => sum.plus(asset ? asset.amountInUsd : 0), new BigNumber(0)) : null;
-            const currentTotalInUsd = current ? current.reduce((sum, asset) => sum.plus(asset ? asset.amountInUsd : 0), new BigNumber(0)) : null;
+            const previousTotalInUsd = previous
+                ? updatePrices(previous, tokenPrices).reduce(
+                      (sum, asset) => sum.plus(asset ? asset.amountInUsd : 0),
+                      new BigNumber(0),
+                  )
+                : null;
+            const currentTotalInUsd = current
+                ? updatePrices(current, tokenPrices).reduce(
+                      (sum, asset) => sum.plus(asset ? asset.amountInUsd : 0),
+                      new BigNumber(0),
+                  )
+                : null;
             newPendingTotalInUsd = OrderedMap<
                 string /* cycle */,
                 BigNumber | null
@@ -493,7 +493,6 @@ const useNetworkContainer = () => {
             newPendingRewards,
             newPendingTotalInUsd,
         } = await fetchCycleAndPendingRewardsPromise;
-
 
         if (isDefined(newPendingTotalInUsd)) {
             setPendingTotalInUsd(newPendingTotalInUsd);
@@ -608,38 +607,42 @@ const useNetworkContainer = () => {
         }
     };
 
-    const withdrawReward = async (darknodeID: string, token: TokenString) =>
-        new Promise(async (resolve, reject) => {            
+    const withdrawReward = async (
+        darknodeID: string,
+        tokenSymbol: string,
+        tokenAddress: string,
+    ) =>
+        new Promise(async (resolve, reject) => {
             if (!address) {
                 throw new Error(`Unable to retrieve account address.`);
             }
 
-            const withdraw = withdrawToken(
-                web3,
-                renNetwork,
-                address,
-                darknodeID,
-                token,
-                waitForTX,
-            );
+            const withdraw = () =>
+                withdrawToken(
+                    web3,
+                    renNetwork,
+                    address,
+                    darknodeID,
+                    tokenAddress,
+                );
             const onCancel = () => {
                 clearPopup();
                 reject();
             };
-            const onDone = () => {
-                clearPopup();
-                resolve();
-            };
+
+            const steps = [{ call: withdraw, name: `Withdraw ${tokenSymbol}` }];
+
             setPopup({
                 popup: (
-                    <WithdrawPopup
-                        token={token}
-                        withdraw={withdraw}
-                        onDone={onDone}
+                    <MultiStepPopup
+                        steps={steps}
                         onCancel={onCancel}
+                        title={`Withdraw ${tokenSymbol}`}
+                        confirm={false}
                     />
                 ),
                 onCancel,
+                dismissible: true,
                 overlay: true,
             });
         });
@@ -660,40 +663,18 @@ const useNetworkContainer = () => {
             );
         }
 
-        const step1 = async () => {
-            await approveNode(
-                web3,
-                renNetwork,
-                web3Address,
-                renVM.minimumBond,
-                waitForTX,
-            );
-        };
+        const step1 = () =>
+            approveNode(web3, renNetwork, web3Address, renVM.minimumBond);
 
-        const step2 = async () => {
-            await registerNode(
+        const step2 = () =>
+            registerNode(
                 web3,
                 renNetwork,
                 web3Address,
                 darknodeID,
                 publicKey,
                 renVM.minimumBond,
-                onCancel,
-                onDone,
-                waitForTX,
             );
-
-            if (tokenPrices) {
-                try {
-                    await updateDarknodeDetails(darknodeID);
-                } catch (error) {
-                    catchBackgroundException(
-                        error,
-                        "Error in operatorPopupActions > showRegisterPopup > updateDarknodeDetails",
-                    );
-                }
-            }
-        };
 
         const steps = [
             {
@@ -714,6 +695,7 @@ const useNetworkContainer = () => {
                 <MultiStepPopup
                     steps={steps}
                     onCancel={onCancel}
+                    onComplete={onDone}
                     title={title}
                     // warning={warning}
                     confirm={false}
@@ -735,17 +717,8 @@ const useNetworkContainer = () => {
             throw new Error(`Unable to retrieve account address.`);
         }
 
-        const step1 = async () => {
-            await deregisterNode(
-                web3,
-                renNetwork,
-                address,
-                darknodeID,
-                onCancel,
-                onDone,
-                waitForTX,
-            );
-        };
+        const step1 = () =>
+            deregisterNode(web3, renNetwork, address, darknodeID);
 
         const steps = [{ call: step1, name: "Deregister darknode" }];
 
@@ -760,8 +733,7 @@ const useNetworkContainer = () => {
                             from={Currency.USD}
                             to={quoteCurrency}
                             amount={remainingFeesInUsd}
-                        />
-                        {" "}
+                        />{" "}
                         {quoteCurrency.toUpperCase()}
                     </span>{" "}
                     in fees. Please withdraw them before continuing.
@@ -777,6 +749,7 @@ const useNetworkContainer = () => {
                 <MultiStepPopup
                     steps={steps}
                     onCancel={onCancel}
+                    onComplete={onDone}
                     title={title}
                     ignoreWarning={ignoreWarning}
                     warning={warning}
@@ -798,17 +771,7 @@ const useNetworkContainer = () => {
             throw new Error(`Unable to retrieve account address.`);
         }
 
-        const step1 = async () => {
-            await refundNode(
-                web3,
-                renNetwork,
-                address,
-                darknodeID,
-                onCancel,
-                onDone,
-                waitForTX,
-            );
-        };
+        const step1 = () => refundNode(web3, renNetwork, address, darknodeID);
 
         const steps = [{ call: step1, name: "Refund REN" }];
 
@@ -819,6 +782,7 @@ const useNetworkContainer = () => {
                 <MultiStepPopup
                     steps={steps}
                     onCancel={onCancel}
+                    onComplete={onDone}
                     title={title}
                     confirm={false}
                 />
@@ -839,17 +803,7 @@ const useNetworkContainer = () => {
             throw new Error(`Unable to retrieve account address.`);
         }
 
-        const step1 = async () => {
-            await fundNode(
-                web3,
-                address,
-                darknodeID,
-                ethAmountStr,
-                onCancel,
-                onDone,
-                waitForTX,
-            );
-        };
+        const step1 = () => fundNode(web3, address, darknodeID, ethAmountStr);
 
         const steps = [{ call: step1, name: "Fund darknode" }];
 
@@ -860,12 +814,13 @@ const useNetworkContainer = () => {
                 <MultiStepPopup
                     steps={steps}
                     onCancel={onCancel}
+                    onComplete={onDone}
                     title={title}
                     confirm={false}
                 />
             ),
             onCancel,
-            dismissible: false,
+            dismissible: true,
             overlay: true,
         });
     };
@@ -874,9 +829,6 @@ const useNetworkContainer = () => {
         tokenPrices,
         registrySync,
         darknodeDetails,
-        transactions,
-        setTransactions,
-        confirmations,
         pendingRewards,
         pendingTotalInUsd,
         quoteCurrency,

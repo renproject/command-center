@@ -1,8 +1,7 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 
 import { Tabs } from "../../../../views/Tabs";
 import { BlockBody } from "../blocks/Block";
-import { CONFIRMATION_MESSAGE } from "./TopUpController";
 
 interface Props {
     value: string;
@@ -37,6 +36,14 @@ export const TopUp: React.FC<Props> = ({
 
     const [tab, setTab] = useState<string>(Tab.Add);
 
+    const onSubmit = useMemo(
+        () => (event: React.MouseEvent<HTMLFormElement, MouseEvent>) => {
+            event.preventDefault();
+            sendFunds();
+        },
+        [sendFunds],
+    );
+
     return (
         <div className="topup">
             <Tabs
@@ -47,14 +54,7 @@ export const TopUp: React.FC<Props> = ({
                         <BlockBody>
                             <label>
                                 {resultMessage ? (
-                                    <p
-                                        className={`${
-                                            resultMessage ===
-                                            CONFIRMATION_MESSAGE
-                                                ? "topup--input--success success"
-                                                : "topup--input--warning warning"
-                                        }`}
-                                    >
+                                    <p className="topup--input--warning warning">
                                         {resultMessage}
                                     </p>
                                 ) : (
@@ -63,10 +63,13 @@ export const TopUp: React.FC<Props> = ({
                                         to deposit.
                                     </p>
                                 )}
-                                <span className="topup--input">
+                                <form
+                                    className="topup--input"
+                                    onSubmit={onSubmit}
+                                >
                                     <input
                                         disabled={pending}
-                                        type="number"
+                                        type="text"
                                         value={value}
                                         min={0}
                                         onChange={handleChangeEvent}
@@ -77,14 +80,14 @@ export const TopUp: React.FC<Props> = ({
                                         <button disabled>Depositing...</button>
                                     ) : (
                                         <button
+                                            type="submit"
                                             className="hover green"
-                                            onClick={sendFunds}
                                             disabled={disabled}
                                         >
                                             <span>Deposit</span>
                                         </button>
                                     )}
-                                </span>
+                                </form>
                             </label>
                         </BlockBody>
                     ),

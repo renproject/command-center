@@ -1,16 +1,15 @@
 import { RenNetworkDetails } from "@renproject/contracts";
 import BigNumber from "bignumber.js";
 import Web3 from "web3";
+import { PromiEvent, TransactionReceipt } from "web3-core";
 
 import { retryNTimes } from "../../controllers/statsPages/renvmStatsPage/renvmContainer";
-import { WaitForTX } from "../../store/networkContainer";
 import { catchInteractionException, noCapture } from "../react/errors";
 import {
     getDarknodePayment,
     getDarknodeRegistry,
     getRenToken,
 } from "./contract";
-import { TokenString } from "./tokens";
 
 /**
  * Top-up the ETH balance of a darknode.
@@ -19,19 +18,13 @@ import { TokenString } from "./tokens";
  * @param address Ethereum address to send ETH from.
  * @param darknodeID Hexadecimal ID of the darknode to fund.
  * @param ethAmountStr Amount as a string.
- * @param onCancel Callback if the user cancels or an error is thrown.
- * @param onDone Callback after the transaction's txHash is available.
- * @param waitForTX Returns the txHash of a PromiEvent.
  */
-export const fundNode = async (
+export const fundNode = (
     web3: Web3,
     address: string,
     darknodeID: string,
     ethAmountStr: string,
-    onCancel: () => void,
-    onDone: () => void,
-    waitForTX: WaitForTX,
-): Promise<string> => {
+): PromiEvent<TransactionReceipt> => {
     // Convert eth to wei
     const ethAmount = new BigNumber(ethAmountStr);
     const weiAmount = ethAmount
@@ -44,24 +37,11 @@ export const fundNode = async (
     }
 
     // Simple ETH transaction with no data.
-    const call = () =>
-        web3.eth.sendTransaction({
-            to: darknodeID,
-            value: weiAmount.toFixed(),
-            from: address,
-        });
-
-    let resolved = false;
-    try {
-        const res = await waitForTX(call(), onDone);
-        resolved = true;
-        return res;
-    } catch (error) {
-        if (resolved) {
-            onCancel();
-        }
-        throw error;
-    }
+    return web3.eth.sendTransaction({
+        to: darknodeID,
+        value: weiAmount.toFixed(),
+        from: address,
+    });
 };
 
 ////////////////////////////////
@@ -75,15 +55,13 @@ export const fundNode = async (
  * @param renNetwork The details of the selected Ren network.
  * @param address Ethereum address to send Ethereum transactions from.
  * @param bond The bond amount in REN's smallest unit (1e-18 REN).
- * @param waitForTX Returns the txHash of a PromiEvent.
  */
 export const approveNode = async (
     web3: Web3,
     renNetwork: RenNetworkDetails,
     address: string,
     bond: BigNumber,
-    waitForTX: WaitForTX,
-) => {
+): Promise<{ promiEvent: PromiEvent<TransactionReceipt> | null }> => {
     const ercContract = getRenToken(web3, renNetwork);
 
     // Check that the user has sufficient REN for bond
@@ -132,17 +110,17 @@ export const approveNode = async (
     }
     if (ercAllowance.gte(bond)) {
         // Already approved
-        return;
+        return { promiEvent: null };
     }
 
-    return waitForTX(
-        ercContract.methods
+    return {
+        promiEvent: ercContract.methods
             .approve(
                 renNetwork.addresses.ren.DarknodeRegistry.address,
                 bond.toFixed(),
             )
             .send({ from: address }),
-    );
+    };
 };
 
 /**
@@ -151,12 +129,10 @@ export const approveNode = async (
  * "Registration Pending" until the next Epoch.
  *
  * @param web3 Web3 provider with `address` unlocked.
+ * @param renNetwork The details of the selected Ren network.
  * @param darknodeID Hexadecimal ID of the darknode to register.
  * @param publicKey Hexadecimal public key of the darknode.
  * @param bond The bond amount in REN's smallest unit (1e-18 REN).
- * @param onCancel Callback if the user cancels or an error is thrown.
- * @param onDone Callback after the transaction's txHash is available.
- * @param waitForTX Returns the txHash of a PromiEvent.
  */
 export const registerNode = async (
     web3: Web3,
@@ -165,10 +141,7 @@ export const registerNode = async (
     darknodeID: string,
     publicKey: string,
     bond: BigNumber,
-    onCancel: () => void,
-    onDone: () => void,
-    waitForTX: WaitForTX,
-): Promise<string> => {
+): Promise<{ promiEvent: PromiEvent<TransactionReceipt> }> => {
     const hardCodedGas = 500000;
 
     const ercContract = getRenToken(web3, renNetwork);
@@ -200,24 +173,13 @@ export const registerNode = async (
         gas = undefined;
     }
 
-    let resolved = false;
     const darknodeRegistry = getDarknodeRegistry(web3, renNetwork);
 
-    try {
-        const res = await waitForTX(
-            darknodeRegistry.methods
-                .register(darknodeID, publicKey)
-                .send({ from: address, gas }),
-            onDone,
-        );
-        resolved = true;
-        return res;
-    } catch (error) {
-        if (resolved) {
-            onCancel();
-        }
-        throw error;
-    }
+    return {
+        promiEvent: darknodeRegistry.methods
+            .register(darknodeID, publicKey)
+            .send({ from: address, gas }),
+    };
 };
 
 /**
@@ -225,82 +187,48 @@ export const registerNode = async (
  * the status "Pending Deregistration" until the next Epoch. The bond won't
  * be returned yet.
  *
+ * @param web3 Web3 provider with `address` unlocked.
  * @param renNetwork The details of the selected Ren network.
+ * @param address Ethereum address to send Ethereum transactions from.
  * @param darknodeID Hexadecimal ID of the darknode to deregister.
- * @param onCancel Callback if the user cancels or an error is thrown.
- * @param onDone Callback after the transaction's txHash is available.
- * @param waitForTX Returns the txHash of a PromiEvent.
  */
-export const deregisterNode = async (
+export const deregisterNode = (
     web3: Web3,
     renNetwork: RenNetworkDetails,
     address: string,
     darknodeID: string,
-    onCancel: () => void,
-    onDone: () => void,
-    waitForTX: WaitForTX,
-): Promise<string> => {
+): PromiEvent<TransactionReceipt> => {
     // The node has been registered and can be deregistered.
 
-    let resolved = false;
     const darknodeRegistry = new web3.eth.Contract(
         renNetwork.addresses.ren.DarknodeRegistry.abi,
         renNetwork.addresses.ren.DarknodeRegistry.address,
     );
-    try {
-        const res = await waitForTX(
-            darknodeRegistry.methods
-                .deregister(darknodeID)
-                .send({ from: address }),
-            onDone,
-        );
-        resolved = true;
-        return res;
-    } catch (error) {
-        if (resolved) {
-            onCancel();
-        }
-        throw error;
-    }
+    return darknodeRegistry.methods
+        .deregister(darknodeID)
+        .send({ from: address });
 };
 
 /**
  * Return the REN bond of the darknode. This is the last step in deregistering
  * a darknode.
  *
+ * @param web3 Web3 provider with `address` unlocked.
+ * @param renNetwork The details of the selected Ren network.
  * @param address Ethereum address to send Ethereum transactions from.
  * @param darknodeID Hexadecimal ID of the darknode to refund.
- * @param onCancel Callback if the user cancels or an error is thrown.
- * @param onDone Callback after the transaction's txHash is available.
- * @param waitForTX Returns the txHash of a PromiEvent.
  */
-export const refundNode = async (
+export const refundNode = (
     web3: Web3,
     renNetwork: RenNetworkDetails,
     address: string,
     darknodeID: string,
-    onCancel: () => void,
-    onDone: () => void,
-    waitForTX: WaitForTX,
-): Promise<string> => {
+): PromiEvent<TransactionReceipt> => {
     // The node is awaiting refund.
 
-    let resolved = false;
     const darknodeRegistry = getDarknodeRegistry(web3, renNetwork);
 
-    try {
-        const res = await waitForTX(
-            darknodeRegistry.methods.refund(darknodeID).send({ from: address }),
-            onDone,
-        );
-        resolved = true;
-        return res;
-    } catch (error) {
-        if (resolved) {
-            onCancel();
-        }
-        throw error;
-    }
+    return darknodeRegistry.methods.refund(darknodeID).send({ from: address });
 };
 
 /**
@@ -312,40 +240,21 @@ export const refundNode = async (
  * @param address Ethereum address to send Ethereum transactions from.
  * @param darknodeID Hexadecimal ID of the darknode to refund.
  * @param token The token to withdraw fees for.
- * @param waitForTX Returns the txHash of a PromiEvent.
  */
 export const withdrawToken = (
     web3: Web3,
     renNetwork: RenNetworkDetails,
     address: string | null,
     darknodeID: string,
-    token: TokenString,
-    waitForTX: WaitForTX,
-) => async () => {
+    tokenAddress: string,
+): PromiEvent<TransactionReceipt> => {
     if (!address) {
         throw new Error(`Unable to retrieve account address.`);
     }
 
     const darknodePayment = getDarknodePayment(web3, renNetwork);
 
-    const txPromiEvent = darknodePayment.methods
-        .withdraw(
-            darknodeID,
-            (
-                renNetwork.addresses.tokens[token] ||
-                renNetwork.addresses.tokens[
-                    token
-                        .replace(/^ren/, "")
-                        .replace(/^test/, "")
-                        .replace(/^dev/, "")
-                ]
-            ).address,
-        )
+    return darknodePayment.methods
+        .withdraw(darknodeID, tokenAddress)
         .send({ from: address });
-
-    await waitForTX(txPromiEvent);
-
-    await new Promise((resolve, reject) => {
-        txPromiEvent.on("confirmation", resolve).catch(reject);
-    });
 };

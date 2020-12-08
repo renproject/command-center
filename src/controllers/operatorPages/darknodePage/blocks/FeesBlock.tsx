@@ -7,8 +7,8 @@ import {
     DarknodeFeeStatus,
     RegistrationStatus,
 } from "../../../../lib/ethereum/contractReads";
-import { Token, TokenString } from "../../../../lib/ethereum/tokens";
-import { TokenAmount } from "../../../../lib/graphQL/queries";
+import { TokenString } from "../../../../lib/ethereum/tokens";
+import { TokenAmount } from "../../../../lib/graphQL/queries/queries";
 import { classNames } from "../../../../lib/react/className";
 import { GraphContainer } from "../../../../store/graphContainer";
 import {
@@ -33,23 +33,42 @@ const mergeFees = (
     right: OrderedMap<TokenString, TokenAmount | null>,
 ) => {
     let newFees = OrderedMap<TokenString, TokenAmount | null>();
-    
+
     for (const token of left.keySeq().concat(right.keySeq()).toArray()) {
         const leftFee = left.get(token, null);
         const rightFee = right.get(token, null);
-        const newFee: TokenAmount | null = leftFee || rightFee ? {
-            symbol: (leftFee && leftFee.symbol) || (rightFee && rightFee.symbol) || "",
-            asset: (leftFee && leftFee.asset) || (rightFee && rightFee.asset) || {decimals: 0},
-            amount:  new BigNumber(0)
-            .plus(leftFee ? leftFee.amount : new BigNumber(0))
-            .plus(rightFee ? rightFee.amount : new BigNumber(0)),
-            amountInEth: new BigNumber(0)
-            .plus(leftFee ? leftFee.amountInEth : new BigNumber(0))
-            .plus(rightFee ? rightFee.amountInEth : new BigNumber(0)),
-            amountInUsd: new BigNumber(0)
-            .plus(leftFee ? leftFee.amountInUsd : new BigNumber(0))
-            .plus(rightFee ? rightFee.amountInUsd : new BigNumber(0)),
-        } : null;
+        const newFee: TokenAmount | null =
+            leftFee || rightFee
+                ? {
+                      symbol:
+                          (leftFee && leftFee.symbol) ||
+                          (rightFee && rightFee.symbol) ||
+                          "",
+                      asset: (leftFee && leftFee.asset) ||
+                          (rightFee && rightFee.asset) || { decimals: 0 },
+                      amount: new BigNumber(0)
+                          .plus(leftFee ? leftFee.amount : new BigNumber(0))
+                          .plus(rightFee ? rightFee.amount : new BigNumber(0)),
+                      amountInEth: new BigNumber(0)
+                          .plus(
+                              leftFee ? leftFee.amountInEth : new BigNumber(0),
+                          )
+                          .plus(
+                              rightFee
+                                  ? rightFee.amountInEth
+                                  : new BigNumber(0),
+                          ),
+                      amountInUsd: new BigNumber(0)
+                          .plus(
+                              leftFee ? leftFee.amountInUsd : new BigNumber(0),
+                          )
+                          .plus(
+                              rightFee
+                                  ? rightFee.amountInUsd
+                                  : new BigNumber(0),
+                          ),
+                  }
+                : null;
         newFees = newFees.set(token, newFee);
     }
     return newFees;
@@ -87,7 +106,12 @@ const FeesBlockRow: React.FC<RowProps> = ({
                 </td>
                 <td className="fees-block--table--value">
                     {balance && balance.asset ? (
-                        <AnyTokenBalance decimals={balance.asset.decimals} amount={balance.amount} />
+                        <AnyTokenBalance
+                            decimals={balance.asset.decimals}
+                            amount={balance.amount}
+                            // digits={null}
+                            digits={8}
+                        />
                     ) : (
                         <Loading alt={true} />
                     )}
@@ -124,7 +148,7 @@ const FeesBlockRow: React.FC<RowProps> = ({
                 ) : null}
             </tr>
             <tr>
-                <td colSpan={3} style={{ padding: 0, margin: 0, height: 4 }}>
+                <td colSpan={4} style={{ padding: 0, margin: 0, height: 4 }}>
                     <div
                         className={classNames("percent-bar", token)}
                         style={{
@@ -187,7 +211,9 @@ export const FeesBlock: React.FC<Props> = ({ darknodeDetails, isOperator }) => {
             return acc;
         }
         const cycleFeesInUsd = pendingTotalInUsd.get(cycle, null);
-        return cycleFeesInUsd ? (acc || new BigNumber(0)).plus(cycleFeesInUsd) : acc;
+        return cycleFeesInUsd
+            ? (acc || new BigNumber(0)).plus(cycleFeesInUsd)
+            : acc;
     }, null as BigNumber | null);
 
     let summedPendingRewards = OrderedMap<string, TokenAmount | null>();
@@ -215,7 +241,8 @@ export const FeesBlock: React.FC<Props> = ({ darknodeDetails, isOperator }) => {
             tab === Tab.Withdrawable
                 ? darknodeDetails.feesEarned
                 : tab === Tab.Pending
-                ? summedPendingRewards : OrderedMap()
+                ? summedPendingRewards
+                : OrderedMap();
     }
 
     const onTab = useCallback(
@@ -308,7 +335,9 @@ export const FeesBlock: React.FC<Props> = ({ darknodeDetails, isOperator }) => {
                                                     percent:
                                                         balance && tabTotalInUsd
                                                             ? balance.amountInUsd
-                                                                  .div(tabTotalInUsd)
+                                                                  .div(
+                                                                      tabTotalInUsd,
+                                                                  )
                                                                   .times(100)
                                                                   .decimalPlaces(
                                                                       2,
@@ -318,7 +347,10 @@ export const FeesBlock: React.FC<Props> = ({ darknodeDetails, isOperator }) => {
                                                             : 0,
                                                 };
                                             })
-                                            .sortBy((item) => -item.percent)
+                                            .sortBy((item) =>
+                                                item.balance?.amountInUsd.toNumber(),
+                                            )
+                                            .reverse()
                                             .toArray()
                                             .map(
                                                 (

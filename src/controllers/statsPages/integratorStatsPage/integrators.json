@@ -1,5 +1,11 @@
 {
     "testnet": {
+        "integrator-0x646972656374": {
+            "name": "Direct burns",
+            "url": "Direct burns including through RenBridge",
+            "urlHref": "",
+            "logo": "/integrators/burn.svg"
+        },
         "curve": {
             "name": "Curve",
             "logo": "/integrators/curve.svg",
@@ -62,6 +68,12 @@
         }
     },
     "mainnet": {
+        "integrator-0x646972656374": {
+            "name": "Direct burns",
+            "url": "Direct burns including through RenBridge",
+            "urlHref": "",
+            "logo": "/integrators/burn.svg"
+        },
         "integrator-0xc633576775ab431ff627746d2c4af6686c4c719c": {
             "url": "Etherscan - WBTCCDPProxy"
         },
@@ -91,6 +103,12 @@
         "integrator-0x10aa7bbcb29cf100fe0f25819d11499e43caaea5": {
             "name": "MyEtherWallet",
             "logo": "/integrators/mew.svg"
+        },
+        "integrator-0xae65b0f676313fd715f29d07538d1dc8557f2b1a": {
+            "name": "DeFi Bridge",
+            "url": "bridge.codefi.network",
+            "urlHref": "https://bridge.codefi.network",
+            "logo": "/integrators/defibridge.svg"
         }
     }
 }

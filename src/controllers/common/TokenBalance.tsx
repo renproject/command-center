@@ -1,8 +1,15 @@
 import { Currency } from "@renproject/react-components";
 import { BigNumber } from "bignumber.js";
+import { OrderedMap } from "immutable";
 import React from "react";
 
-import { AllTokenDetails, Token, TokenPrices } from "../../lib/ethereum/tokens";
+import {
+    AllTokenDetails,
+    Token,
+    TokenPrices,
+    TokenString,
+} from "../../lib/ethereum/tokens";
+import { TokenAmount } from "../../lib/graphQL/queries/queries";
 import { NetworkContainer } from "../../store/networkContainer";
 
 interface Props {
@@ -12,62 +19,6 @@ interface Props {
     digits?: number; // Always shows this many digits (e.g. for 3 d.p.: 0.100, 0.111)
     shifted?: boolean; // determines whether the input has already been converted into its readable unit
 }
-
-const defaultDigits = (quoteCurrency: Currency | Token) => {
-    let digits;
-    switch (quoteCurrency) {
-        case Currency.BTC:
-        case Currency.ETH:
-        case Token.BTC:
-        case Token.BCH:
-        case Token.ZEC:
-        case Token.ETH:
-            digits = 3;
-            break;
-
-        default:
-            digits = 2;
-    }
-    return digits;
-};
-
-export const tokenToReadable = (
-    amount: number | string | BigNumber,
-    token: Token,
-): BigNumber => {
-    const tokenDetails = AllTokenDetails.get(token, undefined);
-    const decimals = tokenDetails
-        ? new BigNumber(tokenDetails.decimals.toString()).toNumber()
-        : 0;
-
-    return new BigNumber(amount)
-        .div(new BigNumber(10).exponentiatedBy(decimals))
-        .decimalPlaces(defaultDigits(token));
-};
-
-export const tokenToQuote = (
-    amount: number | string | BigNumber,
-    token: Token,
-    quoteCurrency: Currency,
-    tokenPrices: TokenPrices,
-): BigNumber => {
-    const tokenDetails = AllTokenDetails.get(token, undefined);
-    const decimals = tokenDetails
-        ? new BigNumber(tokenDetails.decimals.toString()).toNumber()
-        : 0;
-    const prices = tokenPrices.get(token);
-
-    if (prices) {
-        const price = prices.get(quoteCurrency);
-        if (price) {
-            return new BigNumber(amount)
-                .div(new BigNumber(10).exponentiatedBy(decimals))
-                .times(price)
-                .decimalPlaces(defaultDigits(quoteCurrency));
-        }
-    }
-    return new BigNumber(0);
-};
 
 const ERR = <>...</>;
 
@@ -116,7 +67,7 @@ export const TokenBalance: React.FC<Props> = ({
     const resolvedAmount = amountBN
         .multipliedBy(price)
         .decimalPlaces(
-            digits === undefined ? defaultDigits(convertTo) : digits,
+            digits === undefined ? 3 : digits,
             BigNumber.ROUND_FLOOR,
         );
     return <>{resolvedAmount.toFormat()}</>;
@@ -160,24 +111,100 @@ export const ConvertCurrency: React.FC<{
 export const AnyTokenBalance: React.FC<{
     amount: number | string | BigNumber;
     decimals: number;
-    digits?: number; // Always shows this many digits (e.g. for 3 d.p.: 0.100, 0.111)
+
+    // Always shows this many digits (e.g. for 3 d.p.: 0.100, 0.111).
+    // Defaults to 3. Set to null to instead not truncate.
+    digits?: number | null;
 }> = ({ amount, decimals, digits }) => {
     const amountBN = new BigNumber(amount).div(
         new BigNumber(Math.pow(10, decimals)),
     );
 
-    const resolvedAmount = amountBN.decimalPlaces(
-        digits === undefined ? 3 : digits,
-        BigNumber.ROUND_FLOOR,
-    );
+    const resolvedAmount =
+        digits === null
+            ? amountBN
+            : amountBN.decimalPlaces(
+                  digits === undefined ? 3 : digits,
+                  BigNumber.ROUND_FLOOR,
+              );
 
     let formatted =
         amountBN.gt(0) && resolvedAmount.isZero()
-            ? resolvedAmount.toFormat(
-                  digits === undefined ? 3 : digits,
-                  BigNumber.ROUND_FLOOR,
-              )
+            ? digits === null
+                ? resolvedAmount.toFormat()
+                : resolvedAmount.toFormat(
+                      digits === undefined ? 3 : digits,
+                      BigNumber.ROUND_FLOOR,
+                  )
             : resolvedAmount.toFormat();
 
     return <>{formatted}</>;
+};
+
+/**
+ * Override token values using the latest prices.
+ */
+export const updatePrices = (
+    tokenAmounts: OrderedMap<TokenString, TokenAmount | null>,
+    tokenPrices: TokenPrices | null,
+): OrderedMap<TokenString, TokenAmount | null> => {
+    if (!tokenPrices) {
+        return tokenAmounts;
+    }
+    return tokenAmounts.map((amount, symbol) => {
+        let prices = tokenPrices.get(symbol as Token);
+        if (amount && prices && amount.asset) {
+            let usdPrice = prices.get(Currency.USD);
+            let ethPrice = prices.get(Currency.ETH);
+            let shiftedAmount = amount.amount.div(
+                new BigNumber(10).exponentiatedBy(amount.asset.decimals),
+            );
+
+            return {
+                ...amount,
+                amountInUsd: usdPrice
+                    ? shiftedAmount.times(usdPrice)
+                    : amount.amountInUsd,
+                amountInEth: ethPrice
+                    ? shiftedAmount.times(ethPrice)
+                    : amount.amountInEth,
+            };
+        }
+        return amount;
+    });
+};
+
+/**
+ * Only update token values that don't already have price information.
+ */
+export const missingPrices = (
+    tokenAmounts: OrderedMap<TokenString, TokenAmount | null>,
+    tokenPrices: TokenPrices | null,
+): OrderedMap<TokenString, TokenAmount | null> => {
+    if (!tokenPrices) {
+        return tokenAmounts;
+    }
+
+    return tokenAmounts.map((amount, symbol) => {
+        let prices = tokenPrices.get(symbol as Token);
+        if (
+            amount &&
+            amount.amount.gt(0) &&
+            amount.amountInUsd.eq(0) &&
+            prices
+        ) {
+            let usdPrice = prices.get(Currency.USD);
+            let ethPrice = prices.get(Currency.ETH);
+            return {
+                ...amount,
+                amountInUsd: usdPrice
+                    ? amount.amount.times(usdPrice)
+                    : amount.amountInUsd,
+                amountInEth: ethPrice
+                    ? amount.amount.times(ethPrice)
+                    : amount.amountInEth,
+            };
+        }
+        return amount;
+    });
 };

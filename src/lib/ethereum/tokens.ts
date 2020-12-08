@@ -5,12 +5,19 @@ import { Map, OrderedMap } from "immutable";
 import { DEFAULT_REQUEST_TIMEOUT } from "../react/environmentVariables";
 
 export enum Token {
-    DAI = "DAI",
     ETH = "ETH",
+
+    // Used to calculate REN bond value.
+    REN = "REN",
+
+    // Fee tokens.
     BTC = "BTC",
     ZEC = "ZEC",
     BCH = "BCH",
-    REN = "REN",
+    FIL = "FIL",
+    LUNA = "LUNA",
+    DOGE = "DOGE",
+    DGB = "DGB",
 }
 
 export type TokenString = string;
@@ -19,10 +26,20 @@ interface TokenDetail {
     symbol: string;
     decimals: number;
     coinGeckoID: string;
-    feesToken: boolean;
+    feesToken?: boolean;
 }
 
 export const AllTokenDetails = OrderedMap<Token, TokenDetail>()
+    .set(Token.ETH, {
+        symbol: "ETH",
+        decimals: 18,
+        coinGeckoID: "ethereum",
+    })
+    .set(Token.REN, {
+        symbol: "REN",
+        decimals: 18,
+        coinGeckoID: "republic-protocol",
+    })
     .set(Token.BTC, {
         symbol: "renBTC",
         decimals: 8,
@@ -41,23 +58,29 @@ export const AllTokenDetails = OrderedMap<Token, TokenDetail>()
         coinGeckoID: "bitcoin-cash",
         feesToken: true,
     })
-    .set(Token.DAI, {
-        symbol: "SAI",
+    .set(Token.FIL, {
+        symbol: "FIL",
         decimals: 18,
-        coinGeckoID: "dai",
-        feesToken: false,
+        coinGeckoID: "filecoin",
+        feesToken: true,
     })
-    .set(Token.ETH, {
-        symbol: "ETH",
-        decimals: 18,
-        coinGeckoID: "ethereum",
-        feesToken: false,
+    .set(Token.LUNA, {
+        symbol: "LUNA",
+        decimals: 6,
+        coinGeckoID: "terra-luna",
+        feesToken: true,
     })
-    .set(Token.REN, {
-        symbol: "REN",
+    .set(Token.DOGE, {
+        symbol: "DOGE",
         decimals: 18,
-        coinGeckoID: "republic-protocol",
-        feesToken: false,
+        coinGeckoID: "dogecoin",
+        feesToken: true,
+    })
+    .set(Token.DGB, {
+        symbol: "DGB",
+        decimals: 18,
+        coinGeckoID: "digibyte",
+        feesToken: true,
     });
 
 export const FeeTokens: OrderedMap<Token, TokenDetail> = AllTokenDetails.filter(

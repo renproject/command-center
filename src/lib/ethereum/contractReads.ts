@@ -13,13 +13,14 @@ import { darknodeIDHexToBase58 } from "../darknode/darknodeID";
 import { queryStat } from "../darknode/jsonrpc";
 import { isDefined } from "../general/isDefined";
 import { safePromiseAllList } from "../general/promiseAll";
-import { TokenAmount } from "../graphQL/queries";
+import { TokenAmount } from "../graphQL/queries/queries";
 import { Darknode, queryDarknode } from "../graphQL/queries/darknode";
 import { RenVM } from "../graphQL/queries/renVM";
 import { catchBackgroundException } from "../react/errors";
 import { getDarknodePayment, getDarknodeRegistry } from "./contract";
 import { getDarknodeStatus, isRegisteredInEpoch } from "./darknodeStatus";
 import { FeeTokens, Token, TokenPrices } from "./tokens";
+import { updatePrices } from "../../controllers/common/TokenBalance";
 
 export const NULL = "0x0000000000000000000000000000000000000000";
 
@@ -431,12 +432,9 @@ export const fetchDarknodeDetails = async (
     );
 
     // Get earned fees
-    const feesEarned = await getBalances(
-        web3,
-        renNetwork,
-        darknode,
-        darknodeID,
-    );
+    let feesEarned = await getBalances(web3, renNetwork, darknode, darknodeID);
+    feesEarned = updatePrices(feesEarned, tokenPrices);
+
     let feesEarnedInEth: BigNumber | null = null;
     if (tokenPrices) {
         feesEarnedInEth = feesEarned

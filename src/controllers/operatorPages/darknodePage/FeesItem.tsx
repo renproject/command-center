@@ -8,7 +8,7 @@ import BigNumber from "bignumber.js";
 import React, { useCallback, useState } from "react";
 
 import { TokenString } from "../../../lib/ethereum/tokens";
-import { TokenAmount } from "../../../lib/graphQL/queries";
+import { TokenAmount } from "../../../lib/graphQL/queries/queries";
 import { classNames } from "../../../lib/react/className";
 import { NetworkContainer } from "../../../store/networkContainer";
 import { Web3Container } from "../../../store/web3Container";
@@ -37,9 +37,13 @@ export const FeesItem: React.FC<Props> = ({
     const handleWithdraw = useCallback(async (): Promise<void> => {
         setLoading(true);
 
-        if (address) {
+        if (address && amount && amount.asset && amount.asset.tokenAddress) {
             try {
-                await withdrawReward(darknodeID, token);
+                await withdrawReward(
+                    darknodeID,
+                    amount.symbol || token,
+                    amount.asset.tokenAddress,
+                );
             } catch (error) {
                 console.error(error);
                 setLoading(false);
@@ -55,6 +59,7 @@ export const FeesItem: React.FC<Props> = ({
         darknodeID,
         address,
         token,
+        amount,
     ]);
 
     let isDisabled = false;
@@ -65,6 +70,9 @@ export const FeesItem: React.FC<Props> = ({
     } else if (!amount || new BigNumber(amount.amount).lte(0)) {
         isDisabled = true;
         title = "No fees to withdraw";
+    } else if (!amount.asset || !amount.asset.tokenAddress) {
+        isDisabled = true;
+        title = "Unable to look up token address";
     }
 
     return (

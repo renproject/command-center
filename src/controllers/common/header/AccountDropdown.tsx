@@ -1,11 +1,9 @@
-import { Blocky, Loading } from "@renproject/react-components";
+import { Blocky } from "@renproject/react-components";
 import React, { useRef, useState } from "react";
 
 import { copyToClipboard } from "../../../lib/copyToClipboard";
 import { classNames } from "../../../lib/react/className";
-import { NetworkContainer } from "../../../store/networkContainer";
 import { Web3Container } from "../../../store/web3Container";
-import { ExternalLink } from "../../../views/ExternalLink";
 
 export const AccountDropdown: React.FC = () => {
     const [shown, setShown] = useState(false);
@@ -14,11 +12,9 @@ export const AccountDropdown: React.FC = () => {
     const {
         address,
         web3BrowserName,
-        renNetwork,
         promptLogin,
         logout,
     } = Web3Container.useContainer();
-    const { transactions, confirmations } = NetworkContainer.useContainer();
 
     const ref = useRef(null as HTMLDivElement | null);
 
@@ -62,15 +58,6 @@ export const AccountDropdown: React.FC = () => {
         }
     };
 
-    // `pendingTXs` calculates whether or not the user has any ethereum
-    // transactions that haven't been confirmed yet.
-    const pendingTXs = transactions.reduce(
-        (reduction: boolean, _value, key: string) => {
-            return reduction || confirmations.get(key, 0) === 0;
-        },
-        false,
-    );
-
     return (
         <div className="header--group header--group--account" ref={ref}>
             <div
@@ -90,12 +77,6 @@ export const AccountDropdown: React.FC = () => {
                         <div className="header--account--right header--account--connected">
                             <div className="header--account--type">
                                 {web3BrowserName}{" "}
-                                {pendingTXs ? (
-                                    <Loading
-                                        alt
-                                        className="header--account--spinner"
-                                    />
-                                ) : null}
                             </div>
                             <div className="header--account--address">
                                 {address.substring(0, 8)}...{address.slice(-5)}
@@ -147,49 +128,6 @@ export const AccountDropdown: React.FC = () => {
                         >
                             Log out
                         </li>
-                        {transactions.size > 0 ? (
-                            <>
-                                {transactions
-                                    .map((_tx, txHash) => {
-                                        const txConfirmations = confirmations.get(
-                                            txHash,
-                                            0,
-                                        );
-                                        return (
-                                            <li
-                                                key={txHash}
-                                                className="transaction"
-                                            >
-                                                {txConfirmations === 0 ? (
-                                                    <Loading />
-                                                ) : null}
-                                                {txConfirmations === -1 ? (
-                                                    <span className="red">
-                                                        (ERR){" "}
-                                                    </span>
-                                                ) : null}
-                                                <ExternalLink
-                                                    className="transaction--hash"
-                                                    href={`${renNetwork.etherscan}/tx/${txHash}`}
-                                                >
-                                                    {txHash.substring(0, 10)}...
-                                                </ExternalLink>
-                                                {txConfirmations > 0 ? (
-                                                    <>
-                                                        {" "}
-                                                        ({txConfirmations}{" "}
-                                                        conf.)
-                                                    </>
-                                                ) : (
-                                                    ""
-                                                )}
-                                            </li>
-                                        );
-                                    })
-                                    .valueSeq()
-                                    .toArray()}
-                            </>
-                        ) : null}
                     </ul>
                 </div>
             ) : null}

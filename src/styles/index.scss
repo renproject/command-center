@@ -6,6 +6,8 @@
 
 // Page and component styles
 @import "scss/block";
+@import "scss/bnOnboard";
+@import "scss/bnNotify";
 @import "scss/button";
 @import "scss/chart";
 @import "scss/console";
@@ -18,7 +20,6 @@
 @import "scss/loading";
 @import "scss/loggingOut";
 @import "scss/notFound";
-@import "scss/onboard";
 @import "scss/operatorStatistics";
 @import "scss/popup";
 @import "scss/section";
@@ -27,7 +28,6 @@
 @import "scss/darknodePage";
 @import "scss/titledSection";
 @import "scss/view";
-@import "scss/withdrawPopup";
 
 // Styles in src/components
 @import "../controllers/statsPages/renvmStatsPage/renvm";

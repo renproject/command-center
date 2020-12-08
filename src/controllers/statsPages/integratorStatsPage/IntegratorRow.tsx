@@ -4,7 +4,7 @@ import BigNumber from "bignumber.js";
 import React, { useCallback } from "react";
 import { isDefined } from "../../../lib/general/isDefined";
 
-import { Integrator, TokenAmount } from "../../../lib/graphQL/queries";
+import { Integrator, TokenAmount } from "../../../lib/graphQL/queries/queries";
 import { classNames } from "../../../lib/react/className";
 import { NetworkContainer } from "../../../store/networkContainer";
 import { Web3Container } from "../../../store/web3Container";
@@ -25,12 +25,17 @@ const resolveIntegrator = (
             Integrators[networkDetails.name][id]) ||
         {};
 
+    // `||` alternative that only checks for `undefined` or `null`.
+    const or = <A, B>(a: A, b: B) => (isDefined(a) ? a : b);
+
     return {
-        name: details.name || address,
-        logo: details.logo || DefaultLogo,
-        urlHref:
-            details.urlHref || `${networkDetails.etherscan}/address/${address}`,
-        url: details.url || "Etherscan",
+        name: or(details.name, address),
+        logo: or(details.logo, DefaultLogo),
+        urlHref: or(
+            details.urlHref,
+            `${networkDetails.etherscan}/address/${address}`,
+        ),
+        url: or(details.url, "Etherscan"),
     };
 };
 
@@ -135,14 +140,28 @@ export const IntegratorRow: React.FC<Props> = ({
                 </td>
                 <td className="col-2">
                     <div className="integrator-name">
-                        <span>{name}</span>
+                        <span
+                            style={{
+                                fontStyle:
+                                    name === "Direct burns"
+                                        ? "italic"
+                                        : undefined,
+                            }}
+                        >
+                            {name}
+                        </span>
                         <p>
-                            <ExternalLink
-                                href={urlHref}
-                                onClick={stopPropagation}
-                            >
-                                {url}
-                            </ExternalLink>
+                            {urlHref ? (
+                                <ExternalLink
+                                    href={urlHref}
+                                    onClick={stopPropagation}
+                                    className="integrator-link"
+                                >
+                                    {url}
+                                </ExternalLink>
+                            ) : (
+                                <span className="integrator-link">{url}</span>
+                            )}
                         </p>
                     </div>
                 </td>

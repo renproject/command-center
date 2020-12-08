@@ -1,5 +1,8 @@
+import { Asset } from "@renproject/interfaces";
 import { Loading } from "@renproject/react-components";
+import { List, Map } from "immutable";
 import React, { useEffect, useState } from "react";
+import { PromiEvent, TransactionReceipt } from "web3-core";
 
 import { ErrorCanceledByUser } from "../../../lib/ethereum/getWeb3";
 import { classNames } from "../../../lib/react/className";
@@ -7,27 +10,58 @@ import {
     catchBackgroundException,
     catchInteractionException,
 } from "../../../lib/react/errors";
+import { NetworkContainer } from "../../../store/networkContainer";
 import { PopupContainer } from "../../../store/popupContainer";
+import { Web3Container } from "../../../store/web3Container";
 import Warn from "../../../styles/images/warn.svg";
+import { ExternalLink } from "../../../views/ExternalLink";
+import { txUrl } from "../../statsPages/renvmStatsPage/RenVMTransaction";
+import { Popup } from "./Popup";
 import { PopupError } from "./PopupController";
+
+interface Props {
+    steps: Array<{
+        name: string;
+        call():
+            | PromiEvent<TransactionReceipt>
+            | null
+            | Promise<{ promiEvent: PromiEvent<TransactionReceipt> | null }>;
+        waitForConfirmation?: boolean;
+    }>;
+
+    title: string;
+    confirm: boolean;
+    warning?: string | JSX.Element;
+    ignoreWarning?: string;
+
+    onComplete?: () => Promise<void> | void;
+    onCancel?: (() => void) | (() => Promise<void>);
+}
 
 /**
  * MultiStepPopup is a popup component that prompts the user to approve a
  * series of Ethereum transactions
  */
-const MultiStepPopupClass: React.FC<Props> = ({
+export const MultiStepPopup: React.FC<Props> = ({
     steps,
     title,
     confirm,
     warning,
     ignoreWarning,
+    onComplete,
     onCancel,
 }) => {
     const { clearPopup } = PopupContainer.useContainer();
+    const { waitForTX } = NetworkContainer.useContainer();
+    const { renNetwork } = Web3Container.useContainer();
+
+    const [txHashes, setTxHashes] = useState<Map<number, string | undefined>>(
+        () => List(new Array(steps.length)).toMap(),
+    );
 
     const [running, setRunning] = useState(false);
     const [complete, setComplete] = useState(false);
-    const [rejected, setRejected] = useState(false);
+    const [cancelled, setCancelled] = useState(false);
     // tslint:disable-next-line: prefer-const
     let [currentStep, setCurrentStep] = useState(0);
     const [runError, setRunError] = useState(null as Error | null);
@@ -63,16 +97,53 @@ const MultiStepPopupClass: React.FC<Props> = ({
     const run = async () => {
         setRunError(null);
         setRunning(true);
-        setRejected(false);
+        setCancelled(false);
 
         while (currentStep < steps.length) {
+            const { call, waitForConfirmation } = steps[currentStep];
             try {
-                await steps[currentStep].call();
+                // eslint-disable-next-line no-loop-func
+                setTxHashes((currentTxHashes) =>
+                    currentTxHashes.set(currentStep, undefined),
+                );
+
+                let callResult = call();
+
+                // If there's no `.on` property, then await normal promise.
+                if (!(callResult as PromiEvent<TransactionReceipt>).on) {
+                    callResult = (
+                        await (callResult as Promise<{
+                            promiEvent: PromiEvent<TransactionReceipt> | null;
+                        }>)
+                    ).promiEvent;
+                }
+
+                if (callResult !== null) {
+                    const promiEvent = callResult as PromiEvent<
+                        TransactionReceipt
+                    >;
+                    const txHash = await waitForTX(promiEvent);
+                    // eslint-disable-next-line no-loop-func
+                    setTxHashes((currentTxHashes) =>
+                        currentTxHashes.set(currentStep, txHash),
+                    );
+
+                    if (
+                        waitForConfirmation ||
+                        currentStep === steps.length - 1
+                    ) {
+                        await new Promise((resolve, reject) => {
+                            promiEvent
+                                .on("confirmation", () => resolve())
+                                .catch(reject);
+                        });
+                    }
+                }
             } catch (error) {
-                const isRejected = (error.message || "").match(
+                const isCancelled = (error.message || "").match(
                     ErrorCanceledByUser,
                 );
-                if (error && !isRejected) {
+                if (error && !isCancelled) {
                     catchInteractionException(error, {
                         description: "Error in MultiStepPopup > step.call",
                         shownToUser: "As message box in MultiStepPopup",
@@ -80,7 +151,7 @@ const MultiStepPopupClass: React.FC<Props> = ({
                 }
                 setRunError(error);
                 setRunning(false);
-                setRejected(isRejected);
+                setCancelled(isCancelled);
                 return;
             }
             currentStep += 1;
@@ -89,6 +160,13 @@ const MultiStepPopupClass: React.FC<Props> = ({
 
         setRunning(false);
         setComplete(true);
+
+        if (onComplete) {
+            const r = onComplete();
+            if (r) {
+                r.catch(console.error);
+            }
+        }
     };
 
     useEffect(() => {
@@ -106,7 +184,7 @@ const MultiStepPopupClass: React.FC<Props> = ({
     // Show a warning to the user
     if (warning && notStarted && !warningIgnored) {
         return (
-            <div className="popup multi-step">
+            <Popup className="multi-step" onCancel={callOnCancel}>
                 <div className="multi-step--top">
                     <img
                         alt=""
@@ -150,64 +228,94 @@ const MultiStepPopupClass: React.FC<Props> = ({
                         </button>
                     ) : null}
                 </div>
-            </div>
+            </Popup>
         );
     }
 
+    const lastTxHash = txHashes.get(steps.length - 1);
+
     return (
-        <div className="popup multi-step">
+        <Popup
+            className="multi-step"
+            onCancel={complete ? onDone : callOnCancel}
+        >
             <div className="multi-step--top">
-                <h3 className={rejected ? "red" : ""}>
-                    {rejected
-                        ? `${transactionS} rejected`
+                <h3 className={cancelled ? "red" : ""}>
+                    {cancelled
+                        ? `${transactionS} cancelled`
                         : complete
                         ? `${transactionS} submitted`
                         : title}
                 </h3>
                 {!notStarted && steps.length > 1 ? (
                     <ul className="multi-step--list">
-                        {steps.map(
-                            (
-                                step: { name: string; call(): Promise<void> },
-                                index: number,
-                            ) => {
-                                const checked =
-                                    currentStep > index ||
-                                    (currentStep === index && !!runError);
-                                return (
-                                    <li key={index}>
-                                        <input
-                                            className={classNames(
-                                                "checkbox",
-                                                currentStep === index &&
-                                                    runError
-                                                    ? "checkbox--error"
-                                                    : "",
-                                            )}
-                                            type="checkbox"
-                                            value="None"
-                                            id="slideThree"
-                                            name="check"
-                                            checked={checked}
-                                            readOnly
-                                        />
-                                        <h2
-                                            className={
-                                                index === currentStep
-                                                    ? "active"
-                                                    : ""
-                                            }
-                                        >
-                                            {step.name}
-                                        </h2>
-                                    </li>
-                                );
-                            },
-                        )}
-                    </ul>
-                ) : null}
+                        {steps.map((step, index) => {
+                            const checked =
+                                currentStep > index ||
+                                (currentStep === index && !!runError);
 
-                {!rejected && runError ? (
+                            const txHash = txHashes.get(index);
+                            return (
+                                <li key={index}>
+                                    <input
+                                        className={classNames(
+                                            "checkbox",
+                                            currentStep === index && runError
+                                                ? "checkbox--error"
+                                                : "",
+                                        )}
+                                        type="checkbox"
+                                        value="None"
+                                        id="slideThree"
+                                        name="check"
+                                        checked={checked}
+                                        readOnly
+                                    />
+                                    <h2
+                                        className={
+                                            index === currentStep
+                                                ? "active"
+                                                : ""
+                                        }
+                                    >
+                                        {step.name}
+                                    </h2>
+                                    {txHash ? (
+                                        <ExternalLink
+                                            style={{
+                                                right: 0,
+                                                position: "absolute",
+                                            }}
+                                            href={txUrl(
+                                                txHash,
+                                                Asset.ETH,
+                                                renNetwork,
+                                            )}
+                                        >
+                                            View in Explorer
+                                        </ExternalLink>
+                                    ) : (
+                                        <></>
+                                    )}
+                                </li>
+                            );
+                        })}
+                    </ul>
+                ) : (
+                    <>
+                        {lastTxHash ? (
+                            <ExternalLink
+                                href={txUrl(lastTxHash, Asset.ETH, renNetwork)}
+                            >
+                                View in Explorer
+                            </ExternalLink>
+                        ) : (
+                            <></>
+                        )}
+                    </>
+                )}
+
+                {!cancelled && runError ? (
                     <PopupError>
                         Unable to complete transaction: {runError.message}
                     </PopupError>
@@ -264,22 +372,6 @@ const MultiStepPopupClass: React.FC<Props> = ({
                     </>
                 )}
             </div>
-        </div>
+        </Popup>
     );
 };
-
-interface Props {
-    steps: Array<{
-        name: string;
-        call(): Promise<void>;
-    }>;
-
-    title: string;
-    confirm: boolean;
-    warning?: string | JSX.Element;
-    ignoreWarning?: string;
-
-    onCancel?: (() => void) | (() => Promise<void>);
-}
-
-export const MultiStepPopup = MultiStepPopupClass;

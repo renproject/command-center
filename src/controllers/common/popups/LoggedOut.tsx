@@ -3,6 +3,7 @@ import React from "react";
 
 import { isDefined } from "../../../lib/general/isDefined";
 import { Web3Container } from "../../../store/web3Container";
+import { Popup } from "./Popup";
 import { WalletIcons } from "./WalletIcons";
 
 interface Props {
@@ -22,7 +23,7 @@ export const LoggedOut: React.FC<Props> = ({
 }) => {
     const { web3BrowserName } = Web3Container.useContainer();
     return (
-        <div className="popup no-web3 popup--logged-out">
+        <Popup className="no-web3 popup--logged-out" onCancel={onCancel}>
             <WalletIcons web3BrowserName={web3BrowserName} />
 
             {isDefined(newAddress) ? (
@@ -53,6 +54,6 @@ export const LoggedOut: React.FC<Props> = ({
                     Connect
                 </button>
             </div>
-        </div>
+        </Popup>
     );
 };

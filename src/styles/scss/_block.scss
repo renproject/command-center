@@ -253,8 +253,9 @@
         font-size: 14px;
         font-weight: 100;
 
-        padding-right: 0;
-        margin-right: 0;
+        padding-right: 10px;
+        padding-left: 10px;
+        margin: 0;
         float: right;
 
         svg.svg-inline--fa {
@@ -506,6 +507,10 @@
             outline: 0;
         }
     }
+}
+
+.withdraw-fees {
+    height: initial;
 }
 
 .withdraw-fees-disabled {

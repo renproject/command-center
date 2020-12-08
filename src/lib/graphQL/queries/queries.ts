@@ -1,7 +1,7 @@
 import { gql } from "@apollo/react-hooks";
 import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
-import { TokenString } from "../ethereum/tokens";
+import { TokenString } from "../../ethereum/tokens";
 
 /* TokenAmount */
 
@@ -12,6 +12,7 @@ export interface RawTokenAmount {
     amountInUsd: string;
     asset: {
         decimals: number;
+        tokenAddress?: string;
     } | null;
 }
 
@@ -22,6 +23,7 @@ export interface TokenAmount {
     amountInUsd: BigNumber;
     asset: {
         decimals: number;
+        tokenAddress?: string;
     } | null;
 }
 

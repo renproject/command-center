@@ -3,7 +3,10 @@ import React, { useEffect, useState } from "react";
 
 import { NULL, RegistrationStatus } from "../../../lib/ethereum/contractReads";
 import { classNames } from "../../../lib/react/className";
-import { catchInteractionException } from "../../../lib/react/errors";
+import {
+    catchBackgroundException,
+    catchInteractionException,
+} from "../../../lib/react/errors";
 import { GraphContainer } from "../../../store/graphContainer";
 import {
     DarknodesState,
@@ -72,6 +75,17 @@ export const Registration: React.FC<Props> = ({
 
     const onDoneRegister = async () => {
         await updateOperatorDarknodes().catch(/* ignore error */);
+
+        if (tokenPrices) {
+            try {
+                await updateDarknodeDetails(darknodeID);
+            } catch (error) {
+                catchBackgroundException(
+                    error,
+                    "Error in operatorPopupActions > showRegisterPopup > updateDarknodeDetails",
+                );
+            }
+        }
 
         setActive(false);
     };

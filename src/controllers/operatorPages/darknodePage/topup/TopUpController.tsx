@@ -2,14 +2,11 @@ import { Currency, CurrencyIcon } from "@renproject/react-components";
 import { BigNumber } from "bignumber.js";
 import React, { useEffect, useState } from "react";
 
-import { Token } from "../../../../lib/ethereum/tokens";
 import { catchBackgroundException } from "../../../../lib/react/errors";
 import { NetworkContainer } from "../../../../store/networkContainer";
 import { Web3Container } from "../../../../store/web3Container";
-import { AnyTokenBalance, TokenBalance } from "../../../common/TokenBalance";
+import { AnyTokenBalance } from "../../../common/TokenBalance";
 import { TopUp } from "./TopUp";
-
-export const CONFIRMATION_MESSAGE = "Transaction confirmed.";
 
 export const TopUpController: React.FC<Props> = ({ darknodeID }) => {
     const { address, web3 } = Web3Container.useContainer();
@@ -102,7 +99,6 @@ export const TopUpController: React.FC<Props> = ({ darknodeID }) => {
                 // Ignore error
             }
 
-            setResultMessage(CONFIRMATION_MESSAGE);
             setPending(false);
 
             // If the user hasn't changed the value, set it to 0.

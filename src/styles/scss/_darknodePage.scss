@@ -329,7 +329,7 @@
         box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
     }
 
-    .topup--input > input[type="number"] {
+    .topup--input > input {
         @extend .no-spin-button;
         border: none;
         height: 42px;

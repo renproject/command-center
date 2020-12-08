@@ -59,7 +59,13 @@ export const TokenIcon = ({
     className,
     ...props
 }: Props): JSX.Element =>
-    React.createElement(icons[white ? "white" : "color"][token] || Info, {
-        ...props,
-        className: ["token--icon", className ? className : ""].join(" "),
-    });
+    React.createElement(
+        icons[white ? "white" : "color"][token] ||
+            // Try opposite color before falling back to default icon.
+            icons[white ? "color" : "white"][token] ||
+            Info,
+        {
+            ...props,
+            className: ["token--icon", className ? className : ""].join(" "),
+        },
+    );

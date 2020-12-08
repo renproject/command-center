@@ -64,6 +64,7 @@
     "localforage": "^1.9.0",
     "mocha": "^8.2.1",
     "moment": "^2.29.1",
+    "node-fetch": "^2.6.1",
     "node-sass": "^4.14.1",
     "query-string": "^6.13.7",
     "react": "^17.0.1",
@@ -87,8 +88,7 @@
     "web3-eth": "2.0.0-alpha.1",
     "web3-eth-contract": "2.0.0-alpha.1",
     "web3-providers": "2.0.0-alpha.1",
-    "web3-utils": "2.0.0-alpha.1",
-    "node-fetch": "^2.6.1"
+    "web3-utils": "2.0.0-alpha.1"
   },
   "devDependencies": {
     "@truffle/hdwallet-provider": "^1.1.1",

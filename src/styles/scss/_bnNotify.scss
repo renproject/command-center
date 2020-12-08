@@ -1,0 +1,10 @@
+.bn-notify-notifications {
+    @media (min-width: $min-md) {
+        margin-top: 50px !important;
+    }
+}
+
+.bn-notify-notification {
+    background: $blue-dark !important;
+    color: white !important;
+}

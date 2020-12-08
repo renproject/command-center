@@ -25,11 +25,11 @@ export const BackgroundTasks = () => {
     const { renVM } = GraphContainer.useContainer();
     const { selectedDarknodeID } = UIContainer.useContainer();
 
-    // Update token prices every 60 seconds
+    // Update token prices every 120 seconds
     const priceUpdater = useCallback(async () => {
         try {
             await updateTokenPrices();
-            return 60; // seconds
+            return 120; // seconds
         } catch (error) {
             catchBackgroundException(
                 error,

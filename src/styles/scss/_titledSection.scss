@@ -5,18 +5,13 @@
     position: relative;
     overflow: hidden;
 
-    .titled-block--close {
-        margin-top: -5px !important;
-        margin-right: -5px !important;
-        padding: 10px;
-    }
-
     .titled-block--top {
         display: flex;
         justify-content: space-between;
         background: #002247;
         margin-bottom: 2px;
         padding: 20px 20px 0;
+        margin-right: 20px;
 
         > * {
             font-size: 16px;

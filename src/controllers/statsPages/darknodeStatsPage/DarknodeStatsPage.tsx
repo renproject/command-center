@@ -1,9 +1,4 @@
-import {
-    Currency,
-    CurrencyIcon,
-    Loading,
-    TokenIcon,
-} from "@renproject/react-components";
+import { Currency, CurrencyIcon, Loading } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import React from "react";
 import { Token } from "../../../lib/ethereum/tokens";
@@ -20,6 +15,7 @@ import { EpochProgress } from "../../../views/EpochProgress";
 import { ExternalLink } from "../../../views/ExternalLink";
 import { InfoLabel } from "../../../views/infoLabel/InfoLabel";
 import { Stat, Stats } from "../../../views/Stat";
+import { TokenIcon } from "../../../views/tokenIcon/TokenIcon";
 import { AnyTokenBalance, ConvertCurrency } from "../../common/TokenBalance";
 import { DarknodeMap } from "./darknodeMap/DarknodeMap";
 
@@ -200,22 +196,19 @@ export const DarknodeStatsPage = () => {
                                                 amount={previousNetworkInUsd}
                                             />
                                         )}
-                                        <InfoLabel direction={"bottom"}>
-                                            Based on the assets' USD price at
-                                            the end of the reward period.
-                                        </InfoLabel>
                                     </span>
                                     <div className="network-fees">
                                         {previous
                                             .filter(
                                                 (reward) =>
-                                                    reward && reward.asset,
+                                                    reward &&
+                                                    reward.asset &&
+                                                    reward.amount.gt(0),
                                             )
-                                            .sortBy(
-                                                (reward) => reward!.amountInUsd,
+                                            .sortBy((reward) =>
+                                                reward!.amountInUsd.toNumber(),
                                             )
                                             .reverse()
-                                            .slice(0, 3)
                                             .map((reward, symbol) => {
                                                 return (
                                                     <div>
@@ -289,13 +282,14 @@ export const DarknodeStatsPage = () => {
                                         {current
                                             .filter(
                                                 (reward) =>
-                                                    reward && reward.asset,
+                                                    reward &&
+                                                    reward.asset &&
+                                                    reward.amount.gt(0),
                                             )
-                                            .sortBy(
-                                                (reward) => reward!.amountInUsd,
+                                            .sortBy((reward) =>
+                                                reward!.amountInUsd.toNumber(),
                                             )
                                             .reverse()
-                                            .slice(0, 3)
                                             .map((reward, symbol) => {
                                                 return (
                                                     <div>

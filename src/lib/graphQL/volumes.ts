@@ -15,7 +15,7 @@ import {
     QUERY_BLOCK,
     QUERY_RENVM_HISTORY,
     RawRenVM,
-} from "./queries";
+} from "./queries/queries";
 
 export enum PeriodType {
     HOUR = "HOUR",

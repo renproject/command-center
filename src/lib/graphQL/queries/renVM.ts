@@ -5,7 +5,7 @@ import { OrderedMap } from "immutable";
 import { SECONDS } from "../../../controllers/common/BackgroundTasks";
 import { Ox } from "../../ethereum/contractReads";
 import { TokenString } from "../../ethereum/tokens";
-import { parseTokenAmount, RawTokenAmount, TokenAmount } from "../queries";
+import { parseTokenAmount, RawTokenAmount, TokenAmount } from "./queries";
 import { tokenArrayToMap } from "../volumes";
 
 export interface Epoch {
@@ -58,10 +58,22 @@ export interface RenVM {
     previousCycle: string;
     deregistrationInterval: BigNumber;
     fees: OrderedMap<TokenString, TokenAmount>;
+
+    assets: Array<{
+        symbol: string;
+        tokenAddress: string;
+        decimals: number;
+    }>;
 }
 
 const QUERY_RENVM = gql`
     query getRenVM {
+        assets {
+            symbol
+            tokenAddress
+            decimals
+        }
+
         renVM(id: "1") {
             numberOfDarknodes
             numberOfDarknodesLastEpoch
@@ -117,7 +129,14 @@ const QUERY_RENVM = gql`
 export const queryRenVM = async (
     client: ApolloClient<object>,
 ): Promise<RenVM> => {
-    const response = await client.query<{ renVM: RawRenVM }>({
+    const response = await client.query<{
+        renVM: RawRenVM;
+        assets: Array<{
+            symbol: string;
+            tokenAddress: string;
+            decimals: number;
+        }>;
+    }>({
         query: QUERY_RENVM,
     });
 
@@ -181,5 +200,7 @@ export const queryRenVM = async (
             response.data.renVM.deregistrationInterval,
         ),
         fees: tokenArrayToMap(response.data.renVM.fees).map(parseTokenAmount),
+
+        assets: response.data.assets,
     };
 };

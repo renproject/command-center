@@ -7,7 +7,7 @@ import {
     renTestnet,
 } from "@renproject/contracts";
 import Onboard from "bnc-onboard";
-import { API } from "bnc-onboard/dist/src/interfaces";
+import { API as OnboardInstance } from "bnc-onboard/dist/src/interfaces";
 import React, { useEffect, useState } from "react";
 import { createContainer } from "unstated-next";
 import Web3 from "web3";
@@ -24,6 +24,7 @@ import {
 } from "../lib/react/environmentVariables";
 import { PopupContainer } from "./popupContainer";
 import useStorageState from "./useStorageState/useStorageState";
+import Notify, { API as NotifyInstance } from "bnc-notify";
 
 const stringToNetwork = (network: RenNetwork): RenNetworkDetails => {
     switch (network.toLowerCase()) {
@@ -36,7 +37,7 @@ const stringToNetwork = (network: RenNetwork): RenNetworkDetails => {
 };
 
 const useOnboard = (networkID: number) => {
-    const [onboard, setOnboard] = useState<API | undefined>();
+    const [onboard, setOnboard] = useState<OnboardInstance | undefined>();
 
     useEffect(() => {
         const appName = "Command Center";
@@ -137,6 +138,23 @@ const useOnboard = (networkID: number) => {
     return { onboard };
 };
 
+const useNotify = (networkID: number) => {
+    const [notify, setNotify] = useState<NotifyInstance | undefined>();
+
+    useEffect(() => {
+        setNotify(
+            Notify({
+                dappId: BLOCKNATIVE_KEY,
+                networkId: networkID,
+                darkMode: true,
+                desktopPosition: "topRight",
+            }),
+        );
+    }, [networkID]);
+
+    return { notify };
+};
+
 const useWeb3Container = (initialState = RenNetwork.Testnet) => {
     const { setPopup, clearPopup } = PopupContainer.useContainer();
 
@@ -144,6 +162,7 @@ const useWeb3Container = (initialState = RenNetwork.Testnet) => {
         stringToNetwork(initialState),
     );
     const { onboard } = useOnboard(renNetwork.networkID);
+    const { notify } = useNotify(renNetwork.networkID);
 
     const rpcUrl = `${renNetwork.infura}/v3/${INFURA_KEY}`;
     const [readonlyWeb3] = useState<Web3>(getReadOnlyWeb3(rpcUrl));
@@ -273,6 +292,7 @@ const useWeb3Container = (initialState = RenNetwork.Testnet) => {
         setLoggedInBefore,
         loggedOut,
         setLoggedOut,
+        notify,
 
         logout,
         promptLogin,

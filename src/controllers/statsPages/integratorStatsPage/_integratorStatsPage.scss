@@ -67,24 +67,26 @@ $table-radius: 4px;
         }
     }
 
+    .integrator-link {
+        font-weight: normal;
+        font-size: 13px;
+
+        text-decoration: none;
+
+        color: #f9f9f9;
+
+        mix-blend-mode: normal;
+        opacity: 0.8;
+
+        border: 1px solid transparent;
+
+        border-radius: 4px;
+        padding: 4px;
+        margin-left: -4px;
+    }
+
     table {
         a {
-            font-weight: normal;
-            font-size: 13px;
-
-            text-decoration: none;
-
-            color: #f9f9f9;
-
-            mix-blend-mode: normal;
-            opacity: 0.8;
-
-            border: 1px solid transparent;
-
-            border-radius: 4px;
-            padding: 4px;
-            margin-left: -4px;
-
             &:hover,
             &:active {
                 border: 1px dashed $primary;
@@ -273,9 +275,12 @@ $table-radius: 4px;
                 }
             }
 
-            img {
+            img,
+            svg {
                 max-height: 33px;
                 max-width: 33px;
+                height: 100%;
+                width: auto;
             }
 
             .img-wrapper {

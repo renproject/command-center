@@ -53,7 +53,7 @@ export const TransactionPreview = ({ tx }: { tx: Tx }) => {
     );
 };
 
-const txUrl = (
+export const txUrl = (
     txHash: string,
     token: Asset,
     network: RenNetworkDetails,

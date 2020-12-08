@@ -5,7 +5,7 @@ import { toChecksumAddress } from "web3-utils";
 
 import { Ox } from "../../ethereum/contractReads";
 import { TokenString } from "../../ethereum/tokens";
-import { parseTokenAmount, RawTokenAmount, TokenAmount } from "../queries";
+import { parseTokenAmount, RawTokenAmount, TokenAmount } from "./queries";
 import { tokenArrayToMap } from "../volumes";
 
 interface RawDarknode {
@@ -48,6 +48,7 @@ const QUERY_DARKNODE = gql`
                 amountInUsd
                 asset {
                     decimals
+                    tokenAddress
                 }
             }
         }

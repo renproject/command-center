@@ -17,7 +17,7 @@ import {
     QueryBlockResponse,
     Integrator,
     parseTokenAmount,
-} from "../../../lib/graphQL/queries";
+} from "../../../lib/graphQL/queries/queries";
 import {
     getPeriodTimespan,
     PeriodType,
