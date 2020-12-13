@@ -214,7 +214,7 @@ export interface IntegratorRaw {
 export const QUERY_INTEGRATORS = gql`
     query getIntegrators($offset: Int, $count: Int) {
         integrators(
-            orderBy: volumeBTC
+            orderBy: volumeTotalUSD
             orderDirection: desc
             first: $count
             skip: $offset
