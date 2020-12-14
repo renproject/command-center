@@ -70,7 +70,7 @@
     "mainnet": {
         "integrator-0x646972656374": {
             "name": "Direct burns",
-            "url": "Direct burns including through RenBridge",
+            "url": "Burns from non-contract accounts including through RenBridge",
             "urlHref": "",
             "logo": "/integrators/burn.svg"
         },
