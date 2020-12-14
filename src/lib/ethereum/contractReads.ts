@@ -2,7 +2,7 @@ import { ApolloClient } from "@apollo/react-hooks";
 import { RenNetworkDetails } from "@renproject/contracts";
 import { Currency } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
-import { OrderedMap, OrderedSet } from "immutable";
+import { List, OrderedMap, OrderedSet } from "immutable";
 import Web3 from "web3";
 import { sha3, toChecksumAddress } from "web3-utils";
 
@@ -19,7 +19,7 @@ import { RenVM } from "../graphQL/queries/renVM";
 import { catchBackgroundException } from "../react/errors";
 import { getDarknodePayment, getDarknodeRegistry } from "./contract";
 import { getDarknodeStatus, isRegisteredInEpoch } from "./darknodeStatus";
-import { FeeTokens, Token, TokenPrices } from "./tokens";
+import { FeeTokens, Token, TokenPrices, TokenString } from "./tokens";
 import { updatePrices } from "../../controllers/common/TokenBalance";
 
 export const NULL = "0x0000000000000000000000000000000000000000";
@@ -308,20 +308,109 @@ export const sumUpFeeMap = (
  * @returns Returns a promise to an immutable map from token codes to balances
  *          as BigNumbers.
  */
+// const getBalances = async (
+//     web3: Web3,
+//     renNetwork: RenNetworkDetails,
+//     darknode: Darknode | null,
+//     darknodeID: string,
+// ): Promise<OrderedMap<string, TokenAmount | null>> => {
+//     let balances = OrderedMap<string, TokenAmount | null>();
+//     if (isDefined(darknode)) {
+//         balances = darknode.balances
+//             .filter((asset) => asset.asset !== null)
+//             .reduce((map, asset, token) => map.set(token, asset), balances);
+//     }
+
+//     return balances;
+// };
 const getBalances = async (
     web3: Web3,
     renNetwork: RenNetworkDetails,
     darknode: Darknode | null,
     darknodeID: string,
-): Promise<OrderedMap<string, TokenAmount | null>> => {
-    let balances = OrderedMap<string, TokenAmount | null>();
-    if (isDefined(darknode)) {
-        balances = darknode.balances
-            .filter((asset) => asset.asset !== null)
-            .reduce((map, asset, token) => map.set(token, asset), balances);
+    renVM: RenVM,
+    tokenPrices: TokenPrices | null,
+): Promise<OrderedMap<TokenString, TokenAmount | null>> => {
+    const darknodePayment = getDarknodePayment(web3, renNetwork);
+
+    let feesEarned = OrderedMap<TokenString, TokenAmount | null>();
+
+    // const address = (await web3.eth.getAccounts())[0];
+
+    const balances = await safePromiseAllList(
+        List(
+            renVM.assets
+                .map(async (asset) => {
+                    const { symbol, tokenAddress, decimals } = asset;
+                    const token = symbol
+                        .replace(/^ren/, "")
+                        .replace(/^test/, "")
+                        .replace(/^dev/, "");
+                    let tokenBalance;
+                    try {
+                        const balance1Call = await retryNTimes(
+                            async () =>
+                                await darknodePayment.methods
+                                    .darknodeBalances(darknodeID, tokenAddress)
+                                    .call(/**/),
+                            2,
+                        );
+                        tokenBalance = new BigNumber(
+                            (balance1Call || "0").toString(),
+                        );
+                    } catch (error) {
+                        catchBackgroundException(
+                            error,
+                            "Error in contractReads > darknodeBalances",
+                        );
+                        tokenBalance = new BigNumber(0);
+                    }
+
+                    let amountInEth: BigNumber | undefined;
+                    let amountInUsd: BigNumber | undefined;
+
+                    if (tokenPrices) {
+                        const price = tokenPrices.get(
+                            token as Token,
+                            undefined,
+                        );
+                        amountInEth = tokenBalance
+                            .div(Math.pow(10, decimals))
+                            .multipliedBy(
+                                price ? price.get(Currency.ETH, 0) : 0,
+                            );
+                        amountInUsd = tokenBalance
+                            .div(Math.pow(10, decimals))
+                            .multipliedBy(
+                                price ? price.get(Currency.USD, 0) : 0,
+                            );
+                    }
+
+                    const balance = {
+                        symbol: token,
+                        amount: tokenBalance,
+                        amountInEth: amountInEth || new BigNumber(0),
+                        amountInUsd: amountInUsd || new BigNumber(0),
+                        asset,
+                    };
+
+                    return {
+                        balance, // .plus(balance2),
+                        token: token,
+                    };
+                })
+                .values(),
+        ),
+        null,
+    );
+
+    for (const balance of balances.toArray()) {
+        if (balance && balance.token && balance.balance.amount.gt(1)) {
+            feesEarned = feesEarned.set(balance.token, balance.balance);
+        }
     }
 
-    return balances;
+    return feesEarned;
 };
 
 export enum DarknodeFeeStatus {
@@ -432,7 +521,14 @@ export const fetchDarknodeDetails = async (
     );
 
     // Get earned fees
-    let feesEarned = await getBalances(web3, renNetwork, darknode, darknodeID);
+    let feesEarned = await getBalances(
+        web3,
+        renNetwork,
+        darknode,
+        darknodeID,
+        renVM,
+        tokenPrices,
+    );
     feesEarned = updatePrices(feesEarned, tokenPrices);
 
     let feesEarnedInEth: BigNumber | null = null;

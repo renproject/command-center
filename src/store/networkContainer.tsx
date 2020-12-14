@@ -343,26 +343,19 @@ const useNetworkContainer = () => {
             OrderedMap<string, TokenAmount | null>
         >();
 
-        let previous = OrderedMap<string, TokenAmount | null>();
-        if (isDefined(latestRenVM)) {
-            previous = latestRenVM.currentEpoch.rewardShares
-                .filter((asset) => asset.asset !== null)
-                .reduce(
-                    (map, asset, symbol) => map.set(symbol, asset),
-                    previous,
-                );
-        }
-
-        if (isDefined(latestRenVM)) {
-            newPendingRewards = newPendingRewards.set(
-                latestRenVM.previousCycle,
-                previous,
-            );
-        }
+        // let previous = OrderedMap<string, TokenAmount | null>();
+        // if (isDefined(latestRenVM)) {
+        //     previous = latestRenVM.currentEpoch.rewardShares
+        //         .filter((asset) => asset.asset !== null)
+        //         .reduce(
+        //             (map, asset, symbol) => map.set(symbol, asset),
+        //             previous,
+        //         );
+        // }
 
         const assets = tokenArrayToMap(latestRenVM.assets);
 
-        let current = await safePromiseAllMap(
+        const currentP = await safePromiseAllMap(
             assets
                 .filter((_, asset) => asset !== "ETH" && asset !== "SAI")
                 .map(async (tokenDetails, token) => {
@@ -436,7 +429,18 @@ const useNetworkContainer = () => {
             null,
         );
 
+        let current = await currentP;
         current = updatePrices(current, tokenPrices);
+
+        let previous = await OrderedMap<string, TokenAmount | null>();
+        previous = updatePrices(previous, tokenPrices);
+
+        if (isDefined(latestRenVM)) {
+            newPendingRewards = newPendingRewards.set(
+                latestRenVM.previousCycle,
+                previous,
+            );
+        }
 
         if (isDefined(latestRenVM)) {
             newPendingRewards = newPendingRewards.set(
