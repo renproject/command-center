@@ -308,11 +308,14 @@ export const sumUpFeeMap = (
  * @returns Returns a promise to an immutable map from token codes to balances
  *          as BigNumbers.
  */
+// TODO(noah)
 // const getBalances = async (
 //     web3: Web3,
 //     renNetwork: RenNetworkDetails,
 //     darknode: Darknode | null,
 //     darknodeID: string,
+//     renVM: RenVM,
+//     tokenPrices: TokenPrices | null,
 // ): Promise<OrderedMap<string, TokenAmount | null>> => {
 //     let balances = OrderedMap<string, TokenAmount | null>();
 //     if (isDefined(darknode)) {

@@ -218,7 +218,8 @@ export const FeesBlock: React.FC<Props> = ({ darknodeDetails, isOperator }) => {
 
     let summedPendingRewards = OrderedMap<string, TokenAmount | null>();
     if (previousCycle && showPreviousPending) {
-        summedPendingRewards = pendingRewards.get(previousCycle, OrderedMap());
+        // TODO(noah)
+        summedPendingRewards = OrderedMap(); // pendingRewards.get(previousCycle, OrderedMap());
     }
     if (currentCycle && showCurrentPending) {
         summedPendingRewards = pendingRewards.get(currentCycle, OrderedMap());
@@ -230,7 +231,9 @@ export const FeesBlock: React.FC<Props> = ({ darknodeDetails, isOperator }) => {
         showCurrentPending
     ) {
         summedPendingRewards = mergeFees(
-            pendingRewards.get(previousCycle, OrderedMap()),
+            // TODO(noah)
+            // pendingRewards.get(previousCycle, OrderedMap()),
+            OrderedMap(),
             pendingRewards.get(currentCycle, OrderedMap()),
         );
     }
