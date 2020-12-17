@@ -1,7 +1,9 @@
 // import { NODE_ENV } from "./environmentVariables";
 
-export const isDev = () => {
-    // return NODE_ENV === "development";
-    // tslint:disable-next-line: insecure-random
-    return Math.random() > 0.5;
-};
+// For local testing, allow swapping between valid and invalid keys:
+
+const pick = <T>(array: T[]): T =>
+    array[Math.floor(Math.random() * array.length)];
+
+export const loadKey = (key: string | undefined): string =>
+    key ? pick(key.split(",")) : "";
