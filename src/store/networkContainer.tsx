@@ -353,83 +353,105 @@ const useNetworkContainer = () => {
                 );
         }
 
-        const assets = tokenArrayToMap(latestRenVM.assets);
+        let current = OrderedMap<string, TokenAmount | null>();
+        if (isDefined(latestRenVM)) {
+            current = latestRenVM.cycleRewards
+                .filter((asset) => asset.asset !== null)
+                .map((asset) => ({
+                    ...asset,
+                    amount: asset.amount
+                        .dividedBy(latestRenVM.numberOfDarknodes)
+                        .decimalPlaces(0),
+                    amountInUsd: asset.amountInUsd
+                        .dividedBy(latestRenVM.numberOfDarknodes)
+                        .decimalPlaces(0),
+                    amountInEth: asset.amountInEth
+                        .dividedBy(latestRenVM.numberOfDarknodes)
+                        .decimalPlaces(0),
+                }))
+                .reduce(
+                    (map, asset, symbol) => map.set(symbol, asset),
+                    previous,
+                );
+        }
 
-        const currentP = await safePromiseAllMap(
-            assets
-                .filter((_, asset) => asset !== "ETH" && asset !== "SAI")
-                .map(async (tokenDetails, token) => {
-                    if (latestRenVM.numberOfDarknodes.isZero()) {
-                        return null;
-                    }
-                    try {
-                        const tokenAddress = tokenDetails.tokenAddress;
-                        const currentCycleRewardPool = await retryNTimes(
-                            async () =>
-                                await darknodePayment.methods
-                                    .currentCycleRewardPool(tokenAddress)
-                                    .call(),
-                            2,
-                        );
+        // const assets = tokenArrayToMap(latestRenVM.assets);
 
-                        if (currentCycleRewardPool === null) {
-                            return null;
-                        }
+        // const currentP = await safePromiseAllMap(
+        //     assets
+        //         .filter((_, asset) => asset !== "ETH" && asset !== "SAI")
+        //         .map(async (tokenDetails, token) => {
+        //             if (latestRenVM.numberOfDarknodes.isZero()) {
+        //                 return null;
+        //             }
+        //             try {
+        //                 const tokenAddress = tokenDetails.tokenAddress;
+        //                 const currentCycleRewardPool = await retryNTimes(
+        //                     async () =>
+        //                         await darknodePayment.methods
+        //                             .currentCycleRewardPool(tokenAddress)
+        //                             .call(),
+        //                     2,
+        //                 );
 
-                        const amount = new BigNumber(
-                            currentCycleRewardPool.toString(),
-                        )
-                            .decimalPlaces(0)
-                            .div(latestRenVM.numberOfDarknodes)
-                            .decimalPlaces(0);
+        //                 if (currentCycleRewardPool === null) {
+        //                     return null;
+        //                 }
 
-                        let amountInEth: BigNumber | undefined;
-                        let amountInUsd: BigNumber | undefined;
+        //                 const amount = new BigNumber(
+        //                     currentCycleRewardPool.toString(),
+        //                 )
+        //                     .decimalPlaces(0)
+        //                     .div(latestRenVM.numberOfDarknodes)
+        //                     .decimalPlaces(0);
 
-                        if (tokenPrices) {
-                            const price = tokenPrices.get(
-                                token as Token,
-                                undefined,
-                            );
-                            const decimals = tokenDetails
-                                ? new BigNumber(
-                                      tokenDetails.decimals.toString(),
-                                  ).toNumber()
-                                : 0;
-                            amountInEth = amount
-                                .div(Math.pow(10, decimals))
-                                .multipliedBy(
-                                    price ? price.get(Currency.ETH, 0) : 0,
-                                );
-                            amountInUsd = amount
-                                .div(Math.pow(10, decimals))
-                                .multipliedBy(
-                                    price ? price.get(Currency.USD, 0) : 0,
-                                );
-                        }
+        //                 let amountInEth: BigNumber | undefined;
+        //                 let amountInUsd: BigNumber | undefined;
 
-                        return {
-                            symbol: token,
-                            amount: amount,
-                            amountInEth: amountInEth || new BigNumber(0),
-                            amountInUsd: amountInUsd || new BigNumber(0),
-                            asset: {
-                                decimals: tokenDetails.decimals,
-                            } as { decimals: number } | null,
-                        };
-                    } catch (error) {
-                        console.error(
-                            `Error fetching rewards for ${token}`,
-                            error,
-                        );
-                        return null;
-                    }
-                })
-                .toOrderedMap(),
-            null,
-        );
+        //                 if (tokenPrices) {
+        //                     const price = tokenPrices.get(
+        //                         token as Token,
+        //                         undefined,
+        //                     );
+        //                     const decimals = tokenDetails
+        //                         ? new BigNumber(
+        //                               tokenDetails.decimals.toString(),
+        //                           ).toNumber()
+        //                         : 0;
+        //                     amountInEth = amount
+        //                         .div(Math.pow(10, decimals))
+        //                         .multipliedBy(
+        //                             price ? price.get(Currency.ETH, 0) : 0,
+        //                         );
+        //                     amountInUsd = amount
+        //                         .div(Math.pow(10, decimals))
+        //                         .multipliedBy(
+        //                             price ? price.get(Currency.USD, 0) : 0,
+        //                         );
+        //                 }
 
-        let current = await currentP;
+        //                 return {
+        //                     symbol: token,
+        //                     amount: amount,
+        //                     amountInEth: amountInEth || new BigNumber(0),
+        //                     amountInUsd: amountInUsd || new BigNumber(0),
+        //                     asset: {
+        //                         decimals: tokenDetails.decimals,
+        //                     } as { decimals: number } | null,
+        //                 };
+        //             } catch (error) {
+        //                 console.error(
+        //                     `Error fetching rewards for ${token}`,
+        //                     error,
+        //                 );
+        //                 return null;
+        //             }
+        //         })
+        //         .toOrderedMap(),
+        //     null,
+        // );
+
+        // let current = await currentP;
         current = updatePrices(current, tokenPrices);
 
         // let previous = await OrderedMap<string, TokenAmount | null>();

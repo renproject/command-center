@@ -39,6 +39,7 @@ interface RawRenVM {
     previousCycle: string;
     deregistrationInterval: string;
     fees: Array<RawTokenAmount>;
+    cycleRewards: Array<RawTokenAmount>;
 }
 
 export interface RenVM {
@@ -58,6 +59,7 @@ export interface RenVM {
     previousCycle: string;
     deregistrationInterval: BigNumber;
     fees: OrderedMap<TokenString, TokenAmount>;
+    cycleRewards: OrderedMap<TokenString, TokenAmount>;
 
     assets: Array<{
         symbol: string;
@@ -114,6 +116,16 @@ const QUERY_RENVM = gql`
             previousCycle
 
             fees {
+                symbol
+                amount
+                amountInEth
+                amountInUsd
+                asset {
+                    decimals
+                }
+            }
+
+            cycleRewards {
                 symbol
                 amount
                 amountInEth
@@ -200,6 +212,9 @@ export const queryRenVM = async (
             response.data.renVM.deregistrationInterval,
         ),
         fees: tokenArrayToMap(response.data.renVM.fees).map(parseTokenAmount),
+        cycleRewards: tokenArrayToMap(response.data.renVM.cycleRewards).map(
+            parseTokenAmount,
+        ),
 
         assets: response.data.assets,
     };
