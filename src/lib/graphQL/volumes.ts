@@ -14,7 +14,7 @@ import {
     PeriodData,
     QUERY_BLOCK,
     QUERY_RENVM_HISTORY,
-    RawRenVM,
+    HistoricalRawRenVM,
 } from "./queries/queries";
 
 export enum PeriodType {
@@ -145,12 +145,12 @@ export const getVolumes = async (
   `);
 
     const responseAlt = await client.query<{
-        [block: string]: RawRenVM | null;
+        [block: string]: HistoricalRawRenVM | null;
     }>({
         query,
     });
 
-    interface Row extends Partial<RawRenVM> {
+    interface Row extends Partial<HistoricalRawRenVM> {
         id: string;
         blockNumber: number;
     }
@@ -206,14 +206,14 @@ export const getVolumes = async (
             return {
                 ...last,
 
-                currentEpoch:
-                    (first && first.currentEpoch) ||
-                    (last && last.currentEpoch) ||
-                    (null as any),
-                previousEpoch:
-                    (first && first.previousEpoch) ||
-                    (last && last.previousEpoch) ||
-                    (null as any),
+                // currentEpoch:
+                //     (first && first.currentEpoch) ||
+                //     (last && last.currentEpoch) ||
+                //     (null as any),
+                // previousEpoch:
+                //     (first && first.previousEpoch) ||
+                //     (last && last.previousEpoch) ||
+                //     (null as any),
 
                 id: last.id, // "HOUR441028";
                 date:
@@ -231,14 +231,14 @@ export const getVolumes = async (
     const end = responseRows.last(undefined);
 
     const difference: PeriodData = {
-        currentEpoch:
-            (start && start.currentEpoch) ||
-            (end && end.currentEpoch) ||
-            (null as any),
-        previousEpoch:
-            (start && start.previousEpoch) ||
-            (end && end.previousEpoch) ||
-            (null as any),
+        // currentEpoch:
+        //     (start && start.currentEpoch) ||
+        //     (end && end.currentEpoch) ||
+        //     (null as any),
+        // previousEpoch:
+        //     (start && start.previousEpoch) ||
+        //     (end && end.previousEpoch) ||
+        //     (null as any),
 
         id: end ? end.id : "", // "HOUR441028";
         date:
@@ -246,33 +246,28 @@ export const getVolumes = async (
                 (activeBlock - (end ? end.blockNumber : 0)) * blockTime) *
             1000, // 1587700800;
 
-        numberOfDarknodes: getFieldDifference(start, end, "numberOfDarknodes"),
-        numberOfDarknodesLastEpoch: getFieldDifference(
-            start,
-            end,
-            "numberOfDarknodesLastEpoch",
-        ),
-        numberOfDarknodesNextEpoch: getFieldDifference(
-            start,
-            end,
-            "numberOfDarknodesNextEpoch",
-        ),
-        minimumBond: getFieldDifference(start, end, "minimumBond"),
-        minimumEpochInterval: getFieldDifference(
-            start,
-            end,
-            "minimumEpochInterval",
-        ),
-        currentCycle: getFieldDifference(start, end, "currentCycle"),
-        previousCycle: getFieldDifference(start, end, "previousCycle"),
-        deregistrationInterval: getFieldDifference(
-            start,
-            end,
-            "deregistrationInterval",
-        ),
+        // numberOfDarknodes: getFieldDifference(start, end, "numberOfDarknodes"),
+        // numberOfDarknodesLastEpoch: getFieldDifference(
+        //     start,
+        //     end,
+        //     "numberOfDarknodesLastEpoch",
+        // ),
+        // minimumBond: getFieldDifference(start, end, "minimumBond"),
+        // minimumEpochInterval: getFieldDifference(
+        //     start,
+        //     end,
+        //     "minimumEpochInterval",
+        // ),
+        // currentCycle: getFieldDifference(start, end, "currentCycle"),
+        // previousCycle: getFieldDifference(start, end, "previousCycle"),
+        // deregistrationInterval: getFieldDifference(
+        //     start,
+        //     end,
+        //     "deregistrationInterval",
+        // ),
 
-        btcMintFee: getFieldDifference(start, end, "btcMintFee"),
-        btcBurnFee: getFieldDifference(start, end, "btcBurnFee"),
+        // btcMintFee: getFieldDifference(start, end, "btcMintFee"),
+        // btcBurnFee: getFieldDifference(start, end, "btcBurnFee"),
 
         volume: tokenArrayToMap((end && end.volume) || []).map(
             (endTokenVolume, symbol) => ({

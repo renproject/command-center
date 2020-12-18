@@ -57,45 +57,6 @@ export interface QueryBlockResponse {
 export const QUERY_RENVM_HISTORY = (
     block: number,
 ) => `block_${block}: renVM(id: "1", block: { number: ${block} }) {
-    numberOfDarknodes
-    numberOfDarknodesLastEpoch
-    numberOfDarknodesNextEpoch
-    minimumBond
-    minimumEpochInterval
-    #   currentCyclePayoutPercent
-    deregistrationInterval
-    currentEpoch {
-        epochhash
-        timestamp
-        rewardShares {
-            symbol
-            amount
-            amountInEth
-            amountInUsd
-            asset {
-                decimals
-            }
-        }
-    }
-    previousEpoch {
-        epochhash
-        timestamp
-        rewardShares {
-            symbol
-            amount
-            amountInEth
-            amountInUsd
-            asset {
-                decimals
-            }
-        }
-    }
-    currentCycle
-    previousCycle
-
-    btcMintFee
-    btcBurnFee
-
     volume {
       symbol
       amount
@@ -116,36 +77,35 @@ export const QUERY_RENVM_HISTORY = (
     }
   }`;
 
-export interface RawRenVM {
-    id: string;
-    numberOfDarknodes: string;
-    numberOfDarknodesLastEpoch: string;
-    numberOfDarknodesNextEpoch: string;
-    minimumBond: string;
-    minimumEpochInterval: string;
-    // currentCyclePayoutPercent: string;
-    currentEpoch: {
-        epochhash: string;
-        timestamp: string;
-        rewardShares: Array<RawTokenAmount>;
-    };
-    previousEpoch: {
-        epochhash: string;
-        timestamp: string;
-        rewardShares: Array<RawTokenAmount>;
-    };
-    currentCycle: string;
-    previousCycle: string;
-    deregistrationInterval: string;
+export interface HistoricalRawRenVM {
+    // id: string;
+    // numberOfDarknodes: string;
+    // numberOfDarknodesLastEpoch: string;
+    // minimumBond: string;
+    // minimumEpochInterval: string;
+    // // currentCyclePayoutPercent: string;
+    // currentEpoch: {
+    //     epochhash: string;
+    //     timestamp: string;
+    //     rewardShares: Array<RawTokenAmount>;
+    // };
+    // previousEpoch: {
+    //     epochhash: string;
+    //     timestamp: string;
+    //     rewardShares: Array<RawTokenAmount>;
+    // };
+    // currentCycle: string;
+    // previousCycle: string;
+    // deregistrationInterval: string;
 
-    btcMintFee: string;
-    btcBurnFee: string;
+    // btcMintFee: string;
+    // btcBurnFee: string;
 
     volume: Array<RawTokenAmount>;
     locked: Array<Omit<RawTokenAmount, "amountInEth">>;
 }
 
-export interface PeriodData extends Omit<Omit<RawRenVM, "volume">, "locked"> {
+export interface PeriodData {
     id: string; // "HOUR441028";
     date: number; // 1587700800;
     volume: OrderedMap<string, RawTokenAmount>;

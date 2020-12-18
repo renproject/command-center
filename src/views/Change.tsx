@@ -20,6 +20,7 @@ interface Props
         HTMLDivElement
     > {
     change: number | string | BigNumber;
+    prefix?: string;
 }
 
 export const Change: React.FC<Props> = ({
@@ -27,6 +28,7 @@ export const Change: React.FC<Props> = ({
     className,
     defaultValue,
     children,
+    prefix,
     ...props
 }) => {
     const diractionClassName = getIndicatorClassName(change);
@@ -41,6 +43,7 @@ export const Change: React.FC<Props> = ({
             {...props}
             className={resolvedClassName}
         >
+            {prefix}
             {change}
             {children}
         </span>

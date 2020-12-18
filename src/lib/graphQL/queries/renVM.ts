@@ -19,7 +19,8 @@ interface RawRenVM {
     __typename: "Integrator";
     numberOfDarknodes: string;
     numberOfDarknodesLastEpoch: string;
-    numberOfDarknodesNextEpoch: string;
+    pendingRegistrations: string;
+    pendingDeregistrations: string;
     minimumBond: string;
     minimumEpochInterval: string;
     btcMintFee: string;
@@ -45,7 +46,8 @@ interface RawRenVM {
 export interface RenVM {
     numberOfDarknodes: BigNumber;
     numberOfDarknodesLastEpoch: BigNumber;
-    numberOfDarknodesNextEpoch: BigNumber;
+    pendingRegistrations: BigNumber;
+    pendingDeregistrations: BigNumber;
     minimumBond: BigNumber;
     minimumEpochInterval: BigNumber;
     btcMintFee: number;
@@ -79,7 +81,10 @@ const QUERY_RENVM = gql`
         renVM(id: "1") {
             numberOfDarknodes
             numberOfDarknodesLastEpoch
-            numberOfDarknodesNextEpoch
+
+            pendingRegistrations
+            pendingDeregistrations
+
             minimumBond
             minimumEpochInterval
             btcMintFee
@@ -197,8 +202,11 @@ export const queryRenVM = async (
         numberOfDarknodesLastEpoch: new BigNumber(
             response.data.renVM.numberOfDarknodesLastEpoch,
         ),
-        numberOfDarknodesNextEpoch: new BigNumber(
-            response.data.renVM.numberOfDarknodesNextEpoch,
+        pendingRegistrations: new BigNumber(
+            response.data.renVM.pendingRegistrations,
+        ),
+        pendingDeregistrations: new BigNumber(
+            response.data.renVM.pendingDeregistrations,
         ),
         timeUntilNextEpoch,
         timeSinceLastEpoch,

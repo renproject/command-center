@@ -28,7 +28,8 @@ export const DarknodeStatsPage = () => {
         previousCycle,
         numberOfDarknodes,
         numberOfDarknodesLastEpoch,
-        numberOfDarknodesNextEpoch,
+        pendingRegistrations,
+        pendingDeregistrations,
         minimumBond,
         timeUntilNextEpoch,
         timeSinceLastEpoch,
@@ -113,12 +114,28 @@ export const DarknodeStatsPage = () => {
                             big
                             infoLabel="The change in registrations at the beginning of the next Epoch."
                         >
-                            {isDefined(numberOfDarknodesNextEpoch) &&
-                            isDefined(numberOfDarknodes) ? (
+                            {isDefined(pendingRegistrations) &&
+                            isDefined(pendingDeregistrations) ? (
                                 <>
                                     <Change
-                                        change={numberOfDarknodesNextEpoch
-                                            .minus(numberOfDarknodes)
+                                        change={pendingRegistrations
+                                            .minus(pendingDeregistrations)
+                                            .toNumber()}
+                                    />
+                                    <Change
+                                        className="stat--children--diff positive"
+                                        prefix={"+"}
+                                        change={pendingRegistrations.toNumber()}
+                                    />
+                                    <Change
+                                        className="stat--children--diff negative"
+                                        prefix={
+                                            pendingDeregistrations.isZero()
+                                                ? "-"
+                                                : ""
+                                        }
+                                        change={new BigNumber(0)
+                                            .minus(pendingDeregistrations)
                                             .toNumber()}
                                     />
                                 </>
@@ -211,7 +228,7 @@ export const DarknodeStatsPage = () => {
                                             .reverse()
                                             .map((reward, symbol) => {
                                                 return (
-                                                    <div>
+                                                    <div key={symbol}>
                                                         <TokenIcon
                                                             white={true}
                                                             token={symbol.replace(
