@@ -40,12 +40,12 @@ export const BackgroundTasks = () => {
     }, [updateTokenPrices]);
     useTaskSchedule(priceUpdater);
 
-    // Update rewards every 120 seconds
+    // Update rewards every 240 seconds
     const rewardsUpdater = useCallback(async () => {
         try {
             if (renVM && tokenPrices) {
                 await updateCycleAndPendingRewards();
-                return address ? 120 : 300; // seconds
+                return address ? 240 : 600; // seconds
             }
             return 1; // second
         } catch (error) {
@@ -84,7 +84,7 @@ export const BackgroundTasks = () => {
         if (tokenPrices && address) {
             try {
                 await updateOperatorDarknodes(selectedDarknodeID);
-                return 120; // seconds
+                return 240; // seconds
             } catch (error) {
                 catchBackgroundException(
                     error,
@@ -101,7 +101,7 @@ export const BackgroundTasks = () => {
         if (tokenPrices && selectedDarknodeID) {
             try {
                 await updateDarknodeDetails(selectedDarknodeID);
-                return 60; // seconds
+                return 120; // seconds
             } catch (error) {
                 catchBackgroundException(
                     error,
