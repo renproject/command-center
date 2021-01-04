@@ -183,7 +183,7 @@ table th {
     text-align: right;
 }
 
-$spacing: 90px;
+$spacing: 80px;
 
 .container {
     width: 100%;
@@ -449,6 +449,14 @@ label {
 
         > span {
             background: $green;
+        }
+    }
+
+    &.status-dot--blue {
+        background: transparentize($color: $green, $amount: 0.5);
+
+        > span {
+            background: $primary;
         }
     }
 }

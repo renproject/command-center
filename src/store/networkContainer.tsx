@@ -634,11 +634,11 @@ const useNetworkContainer = () => {
     };
 
     const withdrawReward = async (
-        darknodeID: string,
+        darknodeIDs: string[],
         tokenSymbol: string,
         tokenAddress: string,
-    ) =>
-        new Promise(async (resolve, reject) => {
+    ): Promise<void> =>
+        new Promise<void>(async (resolve, reject) => {
             if (!address) {
                 throw new Error(`Unable to retrieve account address.`);
             }
@@ -648,7 +648,7 @@ const useNetworkContainer = () => {
                     web3,
                     renNetwork,
                     address,
-                    darknodeID,
+                    darknodeIDs,
                     tokenAddress,
                 );
             const onCancel = () => {
@@ -658,11 +658,14 @@ const useNetworkContainer = () => {
 
             const steps = [{ call: withdraw, name: `Withdraw ${tokenSymbol}` }];
 
+            const onComplete = () => resolve();
+
             setPopup({
                 popup: (
                     <MultiStepPopup
                         steps={steps}
                         onCancel={onCancel}
+                        onComplete={onComplete}
                         title={`Withdraw ${tokenSymbol}`}
                         confirm={false}
                     />

@@ -245,7 +245,7 @@ export const withdrawToken = (
     web3: Web3,
     renNetwork: RenNetworkDetails,
     address: string | null,
-    darknodeID: string,
+    darknodeIDs: string[],
     tokenAddress: string,
 ): PromiEvent<TransactionReceipt> => {
     if (!address) {
@@ -254,7 +254,13 @@ export const withdrawToken = (
 
     const darknodePayment = getDarknodePayment(web3, renNetwork);
 
-    return darknodePayment.methods
-        .withdraw(darknodeID, tokenAddress)
-        .send({ from: address });
+    if (darknodeIDs.length === 1) {
+        return darknodePayment.methods
+            .withdraw(darknodeIDs[0], tokenAddress)
+            .send({ from: address });
+    } else {
+        return darknodePayment.methods
+            .withdrawMultiple(darknodeIDs, [tokenAddress])
+            .send({ from: address });
+    }
 };

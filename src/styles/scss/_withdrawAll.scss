@@ -1,0 +1,39 @@
+.withdraw-all {
+    height: unset;
+    margin-bottom: 20px;
+
+    background: transparent;
+    border: 2px solid $blue-dark;
+
+    .block--advanced--bottom {
+        background: transparent;
+        border-top: 2px solid $blue-dark;
+    }
+
+    .fees-block--total {
+        margin-bottom: 0 !important;
+    }
+
+    thead {
+        display: none;
+    }
+
+    .percent-bar--tr {
+        display: none;
+    }
+
+    .block--title {
+        display: none;
+    }
+}
+
+.stat.withdraw-all--stat {
+    background: transparent;
+    border: 2px solid $blue-dark;
+    padding: 15px;
+    flex-shrink: 2;
+
+    .hr {
+        display: none;
+    }
+}

@@ -7,6 +7,7 @@ import { DarknodesState } from "../../../store/networkContainer";
 import { DarknodeID } from "../../../views/DarknodeID";
 import { EpochBlock } from "./blocks/EpochBlock";
 import { FeesBlock } from "./blocks/FeesBlock";
+import { FeesBlockController } from "./blocks/FeesBlockController";
 import { GasBlock } from "./blocks/GasBlock";
 import { NetworkBlock } from "./blocks/NetworkBlock";
 import { ResourcesBlock } from "./blocks/ResourcesBlock";
@@ -218,7 +219,7 @@ export const DarknodeView: React.FC<Props> = ({
                 {notifications}
             </div>
             <div className="darknodePage--bottom">
-                <FeesBlock
+                <FeesBlockController
                     isOperator={isOperator}
                     darknodeDetails={darknodeDetails}
                 />

@@ -10,26 +10,24 @@ import React, { useCallback, useState } from "react";
 import { TokenString } from "../../../lib/ethereum/tokens";
 import { TokenAmount } from "../../../lib/graphQL/queries/queries";
 import { classNames } from "../../../lib/react/className";
-import { NetworkContainer } from "../../../store/networkContainer";
 import { Web3Container } from "../../../store/web3Container";
 
 interface Props {
     disabled: boolean;
     token: TokenString;
     amount: TokenAmount | null;
-    darknodeID: string;
+    withdrawCallback: (
+        tokenSymbol: string,
+        tokenAddress: string,
+    ) => Promise<void>;
 }
 
 export const FeesItem: React.FC<Props> = ({
-    darknodeID,
     token,
     amount,
     disabled,
+    withdrawCallback,
 }) => {
-    const {
-        withdrawReward,
-        updateDarknodeDetails,
-    } = NetworkContainer.useContainer();
     const { address } = Web3Container.useContainer();
 
     const [loading, setLoading] = useState(false);
@@ -39,8 +37,7 @@ export const FeesItem: React.FC<Props> = ({
 
         if (address && amount && amount.asset && amount.asset.tokenAddress) {
             try {
-                await withdrawReward(
-                    darknodeID,
+                await withdrawCallback(
                     amount.symbol || token,
                     amount.asset.tokenAddress,
                 );
@@ -49,18 +46,10 @@ export const FeesItem: React.FC<Props> = ({
                 setLoading(false);
                 return;
             }
-            await updateDarknodeDetails(darknodeID);
         }
 
         setLoading(false);
-    }, [
-        withdrawReward,
-        updateDarknodeDetails,
-        darknodeID,
-        address,
-        token,
-        amount,
-    ]);
+    }, [address, token, amount, withdrawCallback]);
 
     let isDisabled = false;
     let title = "";
@@ -86,7 +75,9 @@ export const FeesItem: React.FC<Props> = ({
             onClick={isDisabled ? undefined : handleWithdraw}
         >
             {loading ? (
-                <Loading alt />
+                <div style={{ display: "flex", alignItems: "center" }}>
+                    <span style={{ marginRight: 5 }}>UPDATING</span> <Loading />
+                </div>
             ) : (
                 <FontAwesomeIcon
                     icon={faChevronRight as FontAwesomeIconProps["icon"]}

@@ -1,22 +1,12 @@
 import { Currency, CurrencyIcon, Loading } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useState } from "react";
 
-import {
-    DarknodeFeeStatus,
-    RegistrationStatus,
-} from "../../../../lib/ethereum/contractReads";
 import { TokenString } from "../../../../lib/ethereum/tokens";
 import { TokenAmount } from "../../../../lib/graphQL/queries/queries";
 import { classNames } from "../../../../lib/react/className";
-import { GraphContainer } from "../../../../store/graphContainer";
-import {
-    DarknodesState,
-    NetworkContainer,
-} from "../../../../store/networkContainer";
 import { ReactComponent as RewardsIcon } from "../../../../styles/images/icon-rewards-white.svg";
-// import { ReactComponent as WithdrawIcon } from "../../../../styles/images/icon-withdraw.svg";
 import { Tabs } from "../../../../views/Tabs";
 import { TokenIcon } from "../../../../views/tokenIcon/TokenIcon";
 import { AnyTokenBalance, ConvertCurrency } from "../../../common/TokenBalance";
@@ -28,13 +18,17 @@ enum Tab {
     Pending = "Pending",
 }
 
-const mergeFees = (
+export const mergeFees = (
     left: OrderedMap<TokenString, TokenAmount | null>,
     right: OrderedMap<TokenString, TokenAmount | null>,
 ) => {
     let newFees = OrderedMap<TokenString, TokenAmount | null>();
 
-    for (const token of left.keySeq().concat(right.keySeq()).toArray()) {
+    for (const token of left
+        .keySeq()
+        .concat(right.keySeq())
+        .toSet()
+        .toArray()) {
         const leftFee = left.get(token, null);
         const rightFee = right.get(token, null);
         const newFee: TokenAmount | null =
@@ -77,11 +71,15 @@ const mergeFees = (
 interface RowProps {
     token: TokenString;
     isOperator: boolean;
-    darknodeDetails: DarknodesState;
+    earningFees: boolean;
     tab: Tab;
     percent: number;
     balance: TokenAmount | null;
     quoteCurrency: Currency;
+    withdrawCallback: (
+        tokenSymbol: string,
+        tokenAddress: string,
+    ) => Promise<void>;
 }
 
 const FeesBlockRow: React.FC<RowProps> = ({
@@ -89,9 +87,10 @@ const FeesBlockRow: React.FC<RowProps> = ({
     quoteCurrency,
     balance,
     isOperator,
+    earningFees,
     tab,
     percent,
-    darknodeDetails,
+    withdrawCallback,
 }) => {
     return (
         <>
@@ -131,23 +130,18 @@ const FeesBlockRow: React.FC<RowProps> = ({
                         </>
                     ) : null}
                 </td>
-                {tab === Tab.Withdrawable &&
-                isOperator &&
-                (darknodeDetails.registrationStatus ===
-                    RegistrationStatus.Registered ||
-                    darknodeDetails.registrationStatus ===
-                        RegistrationStatus.DeregistrationPending) ? (
+                {tab === Tab.Withdrawable && isOperator && earningFees ? (
                     <td>
                         <FeesItem
                             disabled={tab !== Tab.Withdrawable || !balance}
                             token={token}
                             amount={balance}
-                            darknodeID={darknodeDetails.ID}
+                            withdrawCallback={withdrawCallback}
                         />
                     </td>
                 ) : null}
             </tr>
-            <tr>
+            <tr className="percent-bar--tr">
                 <td colSpan={4} style={{ padding: 0, margin: 0, height: 4 }}>
                     <div
                         className={classNames("percent-bar", token)}
@@ -163,90 +157,18 @@ const FeesBlockRow: React.FC<RowProps> = ({
     );
 };
 
-export const FeesBlock: React.FC<Props> = ({ darknodeDetails, isOperator }) => {
-    const {
-        quoteCurrency,
-        pendingRewards,
-        pendingTotalInUsd,
-    } = NetworkContainer.useContainer();
-    const { renVM } = GraphContainer.useContainer();
-    const { currentCycle, previousCycle } = renVM || {};
-
+export const FeesBlock: React.FC<Props> = ({
+    quoteCurrency,
+    isOperator,
+    earningFees,
+    withdrawable,
+    withdrawableInUsd,
+    pending,
+    pendingInUsd,
+    withdrawCallback,
+    className,
+}) => {
     const [tab, setTab] = useState(Tab.Withdrawable);
-    const [disableClaim, setDisableClaim] = useState(false);
-
-    const [currentCycleStatus, setCurrentCycleStatus] = useState<string | null>(
-        null,
-    );
-
-    const cycleStatus: string | null = useMemo(
-        () => darknodeDetails && darknodeDetails.cycleStatus.keySeq().first(),
-        [darknodeDetails],
-    );
-
-    useEffect(() => {
-        setCurrentCycleStatus(cycleStatus);
-        if (disableClaim && cycleStatus !== currentCycleStatus) {
-            setDisableClaim(false);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [cycleStatus]);
-
-    const showPreviousPending =
-        previousCycle &&
-        darknodeDetails &&
-        darknodeDetails.cycleStatus.get(previousCycle) ===
-            DarknodeFeeStatus.NOT_CLAIMED;
-    const showCurrentPending =
-        currentCycle &&
-        darknodeDetails &&
-        darknodeDetails.cycleStatus.get(currentCycle) ===
-            DarknodeFeeStatus.NOT_CLAIMED;
-
-    const cycleTotalInUsd = [
-        showPreviousPending ? previousCycle : null,
-        showCurrentPending ? currentCycle : null,
-    ].reduce((acc, cycle) => {
-        if (!cycle) {
-            return acc;
-        }
-        const cycleFeesInUsd = pendingTotalInUsd.get(cycle, null);
-        return cycleFeesInUsd
-            ? (acc || new BigNumber(0)).plus(cycleFeesInUsd)
-            : acc;
-    }, null as BigNumber | null);
-
-    let summedPendingRewards = OrderedMap<string, TokenAmount | null>();
-    if (previousCycle && showPreviousPending) {
-        // TODO(noah)
-        summedPendingRewards = OrderedMap(); // pendingRewards.get(previousCycle, OrderedMap());
-    }
-    if (currentCycle && showCurrentPending) {
-        summedPendingRewards = pendingRewards.get(currentCycle, OrderedMap());
-    }
-    if (
-        previousCycle &&
-        currentCycle &&
-        showPreviousPending &&
-        showCurrentPending
-    ) {
-        summedPendingRewards = mergeFees(
-            // TODO(noah)
-            // pendingRewards.get(previousCycle, OrderedMap()),
-            OrderedMap(),
-            pendingRewards.get(currentCycle, OrderedMap()),
-        );
-    }
-
-    let fees = OrderedMap<TokenString, TokenAmount | null>();
-    if (darknodeDetails) {
-        fees =
-            tab === Tab.Withdrawable
-                ? darknodeDetails.feesEarned
-                : tab === Tab.Pending
-                ? summedPendingRewards
-                : OrderedMap();
-    }
 
     const onTab = useCallback(
         (newTab: string) => {
@@ -255,14 +177,13 @@ export const FeesBlock: React.FC<Props> = ({ darknodeDetails, isOperator }) => {
         [setTab],
     );
 
-    const tabTotalInUsd = darknodeDetails
-        ? tab === Tab.Withdrawable
-            ? darknodeDetails.feesEarnedInUsd
-            : cycleTotalInUsd
-        : null;
+    const [fees, tabTotalInUsd] =
+        tab === Tab.Withdrawable
+            ? [withdrawable, withdrawableInUsd]
+            : [pending, pendingInUsd];
 
     return (
-        <Block className="fees-block">
+        <Block className={classNames("fees-block", className)}>
             <BlockTitle>
                 <h3>
                     <RewardsIcon />
@@ -270,25 +191,22 @@ export const FeesBlock: React.FC<Props> = ({ darknodeDetails, isOperator }) => {
                 </h3>
             </BlockTitle>
 
-            {darknodeDetails ? (
-                <BlockBody>
-                    <Tabs
-                        selected={tab}
-                        tabs={
-                            darknodeDetails.registrationStatus ===
-                                RegistrationStatus.Registered ||
-                            darknodeDetails.registrationStatus ===
-                                RegistrationStatus.DeregistrationPending
-                                ? {
-                                      Withdrawable: null,
-                                      Pending: null,
-                                  }
-                                : {
-                                      Withdrawable: null,
-                                  }
-                        }
-                        onTab={onTab}
-                    >
+            <BlockBody>
+                <Tabs
+                    selected={tab}
+                    tabs={
+                        earningFees
+                            ? {
+                                  Withdrawable: null,
+                                  Pending: null,
+                              }
+                            : {
+                                  Withdrawable: null,
+                              }
+                    }
+                    onTab={onTab}
+                >
+                    {fees ? (
                         <div className="block--advanced">
                             <div className="block--advanced--top">
                                 <div className="fees-block--total">
@@ -370,8 +288,11 @@ export const FeesBlock: React.FC<Props> = ({ darknodeDetails, isOperator }) => {
                                                             isOperator={
                                                                 isOperator
                                                             }
-                                                            darknodeDetails={
-                                                                darknodeDetails
+                                                            earningFees={
+                                                                earningFees
+                                                            }
+                                                            withdrawCallback={
+                                                                withdrawCallback
                                                             }
                                                             tab={tab}
                                                             percent={percent}
@@ -387,14 +308,24 @@ export const FeesBlock: React.FC<Props> = ({ darknodeDetails, isOperator }) => {
                                 </table>
                             </div>
                         </div>
-                    </Tabs>
-                </BlockBody>
-            ) : null}
+                    ) : null}
+                </Tabs>
+            </BlockBody>
         </Block>
     );
 };
 
 interface Props {
+    quoteCurrency: Currency;
     isOperator: boolean;
-    darknodeDetails: DarknodesState | null;
+    earningFees: boolean;
+    withdrawable: OrderedMap<string, TokenAmount | null> | null;
+    withdrawableInUsd: BigNumber | null;
+    pending: OrderedMap<string, TokenAmount | null> | null;
+    pendingInUsd: BigNumber | null;
+    withdrawCallback: (
+        tokenSymbol: string,
+        tokenAddress: string,
+    ) => Promise<void>;
+    className?: string;
 }

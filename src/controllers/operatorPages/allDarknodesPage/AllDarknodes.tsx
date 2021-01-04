@@ -1,9 +1,14 @@
+import { OrderedSet } from "immutable";
 import React, { useMemo } from "react";
 
-import { NetworkContainer } from "../../../store/networkContainer";
+import {
+    DarknodesState,
+    NetworkContainer,
+} from "../../../store/networkContainer";
 import { Web3Container } from "../../../store/web3Container";
 import { ErrorBoundary } from "../../common/ErrorBoundary";
 import { DarknodeList } from "./darknodeList/DarknodeList";
+import { WithdrawAll } from "./WithdrawAll";
 
 /**
  * Home is a page whose principal components are wallet selection to allow users
@@ -37,9 +42,20 @@ export const AllDarknodes: React.FC<{}> = () => {
                   !accountHiddenDarknodes.contains(d),
           );
 
+    const shownDarknodeDetails = shownDarknodeList
+        ? (shownDarknodeList
+              .map((darknode) => darknodeDetails.get(darknode))
+              .filter((x) => !!x) as OrderedSet<DarknodesState>)
+        : shownDarknodeList;
+
     return (
         <div className="home" key={`${address || undefined} ${network.name}`}>
             <div className="container">
+                {shownDarknodeList && shownDarknodeList.size > 0 ? (
+                    <ErrorBoundary>
+                        <WithdrawAll darknodeList={shownDarknodeDetails} />
+                    </ErrorBoundary>
+                ) : null}
                 {darknodeRegisteringList.size > 0 ? (
                     <>
                         <h2>Continue registering</h2>

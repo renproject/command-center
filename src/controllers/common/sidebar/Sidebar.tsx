@@ -23,6 +23,7 @@ import { ReactComponent as NetworkIcon } from "../../../styles/images/icon-netwo
 import { ReactComponent as OverviewIcon } from "../../../styles/images/Icon-Overview.svg";
 import { ReactComponent as Search } from "../../../styles/images/search.svg";
 import { ExternalLink, URLs } from "../../../views/ExternalLink";
+import { HighlightAllDarknodes } from "./HighlightAllDarknodes";
 import { SidebarIcon } from "./SidebarIcon";
 
 const MenuItem: React.FC<{
@@ -43,7 +44,10 @@ const MenuItem: React.FC<{
                 className,
             )}
         >
-            <div className="sidebar--nav--icon sidebar--icon">{icon}</div>
+            <div className="sidebar--nav--icon sidebar--icon">
+                {title === "Your Darknodes" ? <HighlightAllDarknodes /> : null}
+                {icon}
+            </div>
             {title ? <div className="sidebar--text">{title}</div> : null}
         </div>
     );
