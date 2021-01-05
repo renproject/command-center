@@ -660,13 +660,18 @@ const useNetworkContainer = () => {
 
             const onComplete = () => resolve();
 
+            const title =
+                darknodeIDs.length === 1
+                    ? `Withdraw ${tokenSymbol}`
+                    : `Withdraw ${tokenSymbol} from ${darknodeIDs.length} nodes`;
+
             setPopup({
                 popup: (
                     <MultiStepPopup
                         steps={steps}
                         onCancel={onCancel}
                         onComplete={onComplete}
-                        title={`Withdraw ${tokenSymbol}`}
+                        title={title}
                         confirm={false}
                     />
                 ),
