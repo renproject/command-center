@@ -336,8 +336,6 @@ const useNetworkContainer = () => {
      * }`
      */
     const fetchCycleAndPendingRewards = async (latestRenVM: RenVM) => {
-        const darknodePayment = getDarknodePayment(web3, renNetwork);
-
         let newPendingRewards = OrderedMap<
             string /* cycle */,
             OrderedMap<string, TokenAmount | null>
@@ -352,6 +350,7 @@ const useNetworkContainer = () => {
                     previous,
                 );
         }
+        previous = updatePrices(previous, tokenPrices);
 
         let current = OrderedMap<string, TokenAmount | null>();
         if (isDefined(latestRenVM)) {
@@ -474,13 +473,13 @@ const useNetworkContainer = () => {
         let newPendingTotalInUsd = null;
         if (tokenPrices) {
             const previousTotalInUsd = previous
-                ? updatePrices(previous, tokenPrices).reduce(
+                ? previous.reduce(
                       (sum, asset) => sum.plus(asset ? asset.amountInUsd : 0),
                       new BigNumber(0),
                   )
                 : null;
             const currentTotalInUsd = current
-                ? updatePrices(current, tokenPrices).reduce(
+                ? current.reduce(
                       (sum, asset) => sum.plus(asset ? asset.amountInUsd : 0),
                       new BigNumber(0),
                   )

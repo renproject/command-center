@@ -1,5 +1,6 @@
 import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
+import moment from "moment";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import {
@@ -13,7 +14,9 @@ import {
     DarknodesState,
     NetworkContainer,
 } from "../../../../store/networkContainer";
+import { PopupContainer } from "../../../../store/popupContainer";
 import { FeesBlock } from "./FeesBlock";
+import { NotClaimed } from "./NotClaimed";
 // import { ReactComponent as WithdrawIcon } from "../../../../styles/images/icon-withdraw.svg";
 
 export const mergeFees = (
@@ -76,7 +79,8 @@ export const FeesBlockController: React.FC<Props> = ({
         pendingTotalInUsd,
     } = NetworkContainer.useContainer();
     const { renVM } = GraphContainer.useContainer();
-    const { currentCycle, previousCycle } = renVM || {};
+    const { setPopup, clearPopup } = PopupContainer.useContainer();
+    const { currentCycle, previousCycle, timeSinceLastEpoch } = renVM || {};
 
     const [disableClaim, setDisableClaim] = useState(false);
 
@@ -108,6 +112,32 @@ export const FeesBlockController: React.FC<Props> = ({
         darknodeDetails.cycleStatus.get(currentCycle) ===
             DarknodeFeeStatus.NOT_CLAIMED;
 
+    const [claimWarningShown, setClaimWarningShown] = useState(false);
+
+    useEffect(() => {
+        const day = moment.duration(1, "day").asSeconds();
+        if (
+            !claimWarningShown &&
+            showPreviousPending &&
+            timeSinceLastEpoch &&
+            timeSinceLastEpoch.gt(day)
+        ) {
+            setClaimWarningShown(true);
+            setPopup({
+                popup: <NotClaimed onCancel={clearPopup} />,
+                onCancel: clearPopup,
+                dismissible: true,
+                overlay: true,
+            });
+        }
+    }, [
+        showPreviousPending,
+        timeSinceLastEpoch,
+        claimWarningShown,
+        clearPopup,
+        setPopup,
+    ]);
+
     const cycleTotalInUsd = [
         showPreviousPending ? previousCycle : null,
         showCurrentPending ? currentCycle : null,
@@ -123,8 +153,8 @@ export const FeesBlockController: React.FC<Props> = ({
 
     let summedPendingRewards = OrderedMap<string, TokenAmount | null>();
     if (previousCycle && showPreviousPending) {
-        // TODO(noah)
-        summedPendingRewards = OrderedMap(); // pendingRewards.get(previousCycle, OrderedMap());
+        pendingRewards.get(previousCycle, OrderedMap());
+        // summedPendingRewards = OrderedMap();
     }
     if (currentCycle && showCurrentPending) {
         summedPendingRewards = pendingRewards.get(currentCycle, OrderedMap());
@@ -136,9 +166,7 @@ export const FeesBlockController: React.FC<Props> = ({
         showCurrentPending
     ) {
         summedPendingRewards = mergeFees(
-            // TODO(noah)
-            // pendingRewards.get(previousCycle, OrderedMap()),
-            OrderedMap(),
+            pendingRewards.get(previousCycle, OrderedMap()),
             pendingRewards.get(currentCycle, OrderedMap()),
         );
     }

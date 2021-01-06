@@ -308,7 +308,6 @@ export const sumUpFeeMap = (
  * @returns Returns a promise to an immutable map from token codes to balances
  *          as BigNumbers.
  */
-// TODO(noah)
 const getBalances = async (
     web3: Web3,
     renNetwork: RenNetworkDetails,

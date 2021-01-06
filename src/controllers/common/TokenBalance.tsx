@@ -144,10 +144,10 @@ export const AnyTokenBalance: React.FC<{
 /**
  * Override token values using the latest prices.
  */
-export const updatePrices = (
-    tokenAmounts: OrderedMap<TokenString, TokenAmount | null>,
+export const updatePrices = <T extends TokenAmount | null | undefined>(
+    tokenAmounts: OrderedMap<TokenString, T>,
     tokenPrices: TokenPrices | null,
-): OrderedMap<TokenString, TokenAmount | null> => {
+): OrderedMap<TokenString, T> => {
     if (!tokenPrices) {
         return tokenAmounts;
     }

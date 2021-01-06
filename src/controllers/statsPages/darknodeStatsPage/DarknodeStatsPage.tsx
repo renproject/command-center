@@ -1,9 +1,10 @@
 import { Currency, CurrencyIcon, Loading } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
-import React from "react";
+import React, { useMemo } from "react";
 import { Token } from "../../../lib/ethereum/tokens";
 
 import { isDefined } from "../../../lib/general/isDefined";
+import { multiplyTokenAmount } from "../../../lib/graphQL/queries/queries";
 import { GithubAPIContainer } from "../../../store/githubApiContainer";
 import { GraphContainer } from "../../../store/graphContainer";
 import { NetworkContainer } from "../../../store/networkContainer";
@@ -13,11 +14,15 @@ import { ReactComponent as RewardsIcon } from "../../../styles/images/icon-rewar
 import { Change } from "../../../views/Change";
 import { EpochProgress } from "../../../views/EpochProgress";
 import { ExternalLink } from "../../../views/ExternalLink";
-import { InfoLabel } from "../../../views/infoLabel/InfoLabel";
 import { Stat, Stats } from "../../../views/Stat";
 import { TokenIcon } from "../../../views/tokenIcon/TokenIcon";
-import { AnyTokenBalance, ConvertCurrency } from "../../common/TokenBalance";
+import {
+    AnyTokenBalance,
+    ConvertCurrency,
+    updatePrices,
+} from "../../common/TokenBalance";
 import { DarknodeMap } from "./darknodeMap/DarknodeMap";
+import { FeesStat } from "./FeesStat";
 
 const REN_TOTAL_SUPPLY = new BigNumber(1000000000);
 
@@ -46,9 +51,19 @@ export const DarknodeStatsPage = () => {
         latestCLIVersionDaysAgo,
     } = GithubAPIContainer.useContainer();
 
-    const current = currentCycle && pendingRewards.get(currentCycle, undefined);
+    // const updatedFees = useMemo(
+    //     () => (fees ? updatePrices(fees, tokenPrices) : fees),
+    //     [fees, tokenPrices],
+    // );
+
+    const current =
+        (isDefined(currentCycle) &&
+            pendingRewards.get(currentCycle, undefined)) ||
+        undefined;
     const previous =
-        previousCycle && pendingRewards.get(previousCycle, undefined);
+        (isDefined(previousCycle) &&
+            pendingRewards.get(previousCycle, undefined)) ||
+        undefined;
 
     const percent =
         numberOfDarknodes && minimumBond
@@ -78,6 +93,26 @@ export const DarknodeStatsPage = () => {
         previousInUsd && numberOfDarknodesLastEpoch
             ? previousInUsd.times(numberOfDarknodesLastEpoch)
             : undefined;
+
+    const previousNetwork = useMemo(
+        () =>
+            previous && numberOfDarknodes
+                ? previous.map((x) =>
+                      !x ? x : multiplyTokenAmount(x, numberOfDarknodes),
+                  )
+                : undefined,
+        [previous, numberOfDarknodes],
+    );
+
+    const currentNetwork = useMemo(
+        () =>
+            current && numberOfDarknodes
+                ? current.map((x) =>
+                      !x ? x : multiplyTokenAmount(x, numberOfDarknodes),
+                  )
+                : undefined,
+        [current, numberOfDarknodes],
+    );
 
     return (
         <div className="overview container">
@@ -158,10 +193,17 @@ export const DarknodeStatsPage = () => {
                 </Stat>
                 <Stat icon={<IconIncome />} message="Network rewards">
                     <Stats>
+                        {/* <FeesStat
+                            fees={updatedFees}
+                            feesInUsd={totalFees}
+                            message="Total network fees"
+                            infoLabel="The fees paid to the network across all epochs."
+                            quoteCurrency={quoteCurrency}
+                        /> */}
                         <Stat
                             message="Total network fees"
                             big
-                            infoLabel="The fees paid to the network across all epochs."
+                            infoLabel="The fees paid to the network across all epochs, using the USD price at the time of the mint or burn."
                             style={{ flexBasis: "0", flexGrow: 3 }}
                         >
                             {isDefined(totalFees) ? (
@@ -177,167 +219,20 @@ export const DarknodeStatsPage = () => {
                                 <Loading alt={true} />
                             )}
                         </Stat>
-                        <Stat
-                            className="network-fees-stat"
+                        <FeesStat
+                            fees={previousNetwork}
+                            feesInUsd={previousNetworkInUsd}
                             message="Last cycle"
-                            big
-                            style={{ flexBasis: "0", flexGrow: 5 }}
-                            infoLabel="The amount of rewards earned by the entire network of Darknodes in the last Epoch. "
-                            dark={true}
-                        >
-                            {previous &&
-                            numberOfDarknodesLastEpoch &&
-                            previousNetworkInUsd ? (
-                                <>
-                                    <span style={{ display: "flex" }}>
-                                        <CurrencyIcon
-                                            currency={quoteCurrency}
-                                        />
-                                        {quoteCurrency === Currency.BTC ? (
-                                            <AnyTokenBalance
-                                                amount={previous
-                                                    .get(Token.BTC, {
-                                                        amount: new BigNumber(
-                                                            0,
-                                                        ),
-                                                    })!
-                                                    .amount.times(
-                                                        numberOfDarknodesLastEpoch,
-                                                    )}
-                                                decimals={8}
-                                            />
-                                        ) : (
-                                            <ConvertCurrency
-                                                from={Currency.USD}
-                                                to={quoteCurrency}
-                                                amount={previousNetworkInUsd}
-                                            />
-                                        )}
-                                    </span>
-                                    <div className="network-fees">
-                                        {previous
-                                            .filter(
-                                                (reward) =>
-                                                    reward &&
-                                                    reward.asset &&
-                                                    reward.amount.gt(0),
-                                            )
-                                            .sortBy((reward) =>
-                                                reward!.amountInUsd.toNumber(),
-                                            )
-                                            .reverse()
-                                            .map((reward, symbol) => {
-                                                return (
-                                                    <div key={symbol}>
-                                                        <TokenIcon
-                                                            white={true}
-                                                            token={symbol.replace(
-                                                                /^ren/,
-                                                                "",
-                                                            )}
-                                                        />
-                                                        <AnyTokenBalance
-                                                            amount={reward!.amount.times(
-                                                                numberOfDarknodesLastEpoch,
-                                                            )}
-                                                            decimals={
-                                                                reward!.asset!
-                                                                    .decimals
-                                                            }
-                                                        />{" "}
-                                                        {symbol}
-                                                    </div>
-                                                );
-                                            })
-                                            .valueSeq()
-                                            .toArray()}
-                                    </div>
-                                </>
-                            ) : (
-                                <Loading alt />
-                            )}
-                        </Stat>
-                        <Stat
-                            className="network-fees-stat"
+                            infoLabel="The amount of rewards earned by the entire network of Darknodes in the last Epoch."
+                            quoteCurrency={quoteCurrency}
+                        />
+                        <FeesStat
+                            fees={currentNetwork}
+                            feesInUsd={currentNetworkInUsd}
                             message="Current cycle"
-                            dark={true}
-                            big={true}
-                            style={{ flexBasis: "0", flexGrow: 5 }}
-                            icon={<RewardsIcon />}
                             infoLabel="Rewards earned in this current Epoch so far by the entire Darknode network."
-                        >
-                            {current &&
-                            numberOfDarknodes &&
-                            currentNetworkInUsd ? (
-                                <>
-                                    <span>
-                                        <CurrencyIcon
-                                            currency={quoteCurrency}
-                                        />
-                                        {quoteCurrency === Currency.BTC ? (
-                                            <AnyTokenBalance
-                                                amount={current
-                                                    .get(Token.BTC, {
-                                                        amount: new BigNumber(
-                                                            0,
-                                                        ),
-                                                    })!
-                                                    .amount.times(
-                                                        numberOfDarknodes,
-                                                    )}
-                                                decimals={8}
-                                            />
-                                        ) : (
-                                            <ConvertCurrency
-                                                from={Currency.USD}
-                                                to={quoteCurrency}
-                                                amount={currentNetworkInUsd}
-                                            />
-                                        )}
-                                    </span>
-                                    <div className="network-fees">
-                                        {current
-                                            .filter(
-                                                (reward) =>
-                                                    reward &&
-                                                    reward.asset &&
-                                                    reward.amount.gt(0),
-                                            )
-                                            .sortBy((reward) =>
-                                                reward!.amountInUsd.toNumber(),
-                                            )
-                                            .reverse()
-                                            .map((reward, symbol) => {
-                                                return (
-                                                    <div>
-                                                        <TokenIcon
-                                                            white={true}
-                                                            token={symbol.replace(
-                                                                /^ren/,
-                                                                "",
-                                                            )}
-                                                        />
-                                                        <AnyTokenBalance
-                                                            amount={reward!.amount.times(
-                                                                numberOfDarknodes,
-                                                            )}
-                                                            decimals={
-                                                                reward!.asset!
-                                                                    .decimals
-                                                            }
-                                                        />{" "}
-                                                        {symbol}
-                                                    </div>
-                                                );
-                                            })
-                                            .valueSeq()
-                                            .toArray()}
-                                    </div>
-                                </>
-                            ) : (
-                                <Loading alt />
-                            )}
-                        </Stat>
+                            quoteCurrency={quoteCurrency}
+                        />
                     </Stats>
                 </Stat>
             </Stats>

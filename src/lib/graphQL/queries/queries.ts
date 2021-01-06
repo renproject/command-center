@@ -34,6 +34,16 @@ export const parseTokenAmount = (amount: RawTokenAmount): TokenAmount => ({
     amountInEth: new BigNumber(amount.amountInEth),
 });
 
+export const multiplyTokenAmount = (
+    amount: TokenAmount,
+    scalar: BigNumber,
+) => ({
+    ...amount,
+    amount: amount.amount.times(scalar),
+    amountInUsd: amount.amountInUsd.times(scalar),
+    amountInEth: amount.amountInEth.times(scalar),
+});
+
 /* QUERY_BLOCK **/
 
 export const QUERY_BLOCK = gql`

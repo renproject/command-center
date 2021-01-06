@@ -10,6 +10,8 @@ export const URLs = {
     gitbook: "https://docs.renproject.io/ren",
     gitbookDevelopers: "https://docs.renproject.io/developers",
     gitbookDarknodes: "https://docs.renproject.io/darknodes/",
+    restartDarknode:
+        "https://github.com/renproject/darknode-cli#startstoprestart-darknode",
 
     welcomeToCommandCenter:
         "https://medium.com/renproject/renvm-mainnet-release-98cac4c6fa8e",

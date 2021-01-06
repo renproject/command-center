@@ -116,8 +116,8 @@ export const WithdrawAll: React.FC<Props> = ({ darknodeList }) => {
 
             let summedPendingRewards = OrderedMap<string, TokenAmount | null>();
             if (previousCycle && showPreviousPending) {
-                // TODO(noah)
-                summedPendingRewards = OrderedMap(); // pendingRewards.get(previousCycle, OrderedMap());
+                pendingRewards.get(previousCycle, OrderedMap());
+                // summedPendingRewards = OrderedMap();
             }
             if (currentCycle && showCurrentPending) {
                 summedPendingRewards = pendingRewards.get(
@@ -132,9 +132,8 @@ export const WithdrawAll: React.FC<Props> = ({ darknodeList }) => {
                 showCurrentPending
             ) {
                 summedPendingRewards = mergeFees(
-                    // TODO(noah)
-                    // pendingRewards.get(previousCycle, OrderedMap()),
-                    OrderedMap(),
+                    pendingRewards.get(previousCycle, OrderedMap()),
+                    // OrderedMap(),
                     pendingRewards.get(currentCycle, OrderedMap()),
                 );
             }
