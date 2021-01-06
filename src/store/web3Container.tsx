@@ -50,6 +50,10 @@ const useOnboard = (networkID: number) => {
                             walletName: "walletConnect",
                             infuraKey: BLOCKNATIVE_INFURA_KEY,
                         },
+                        {
+                            walletName: "ledger",
+                            rpcUrl: "https://" + networkID === 1 ? 'mainnet' : 'kovan' + `.infura.io/v3/${INFURA_KEY}`
+                        }
                     ],
                 },
                 walletCheck: [
