@@ -113,8 +113,9 @@ export const FeesBlockController: React.FC<Props> = ({
             DarknodeFeeStatus.NOT_CLAIMED;
 
     const [claimWarningShown, setClaimWarningShown] = useState(false);
-
     useEffect(() => {
+        // If the darknode hasn't claimed within 1 day of a new epoch, show a
+        // warning popup.
         const day = moment.duration(1, "day").asSeconds();
         if (
             !claimWarningShown &&

@@ -1,6 +1,7 @@
 import BigNumber from "bignumber.js";
 import { OrderedMap, OrderedSet } from "immutable";
-import React, { useCallback } from "react";
+import moment from "moment";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
     DarknodeFeeStatus,
     RegistrationStatus,
@@ -12,7 +13,9 @@ import {
     DarknodesState,
     NetworkContainer,
 } from "../../../store/networkContainer";
+import { PopupContainer } from "../../../store/popupContainer";
 import { FeesBlock, mergeFees } from "../darknodePage/blocks/FeesBlock";
+import { NotClaimed } from "../darknodePage/blocks/NotClaimed";
 
 interface Props {
     darknodeList: OrderedSet<DarknodesState> | null;
@@ -25,8 +28,9 @@ export const WithdrawAll: React.FC<Props> = ({ darknodeList }) => {
         pendingTotalInUsd,
     } = NetworkContainer.useContainer();
     const { renVM } = GraphContainer.useContainer();
-    const { currentCycle, previousCycle } = renVM || {};
+    const { currentCycle, previousCycle, timeSinceLastEpoch } = renVM || {};
 
+    const { setPopup, clearPopup } = PopupContainer.useContainer();
     const {
         withdrawReward,
         updateDarknodeDetails,
@@ -69,110 +73,168 @@ export const WithdrawAll: React.FC<Props> = ({ darknodeList }) => {
         [darknodeList, updateDarknodeDetails, withdrawReward],
     );
 
-    if (!darknodeList) {
-        return <></>;
-    }
+    const [claimWarningShown, setClaimWarningShown] = useState(false);
+    const [darknodeNotClaimed, setDarknodeNotClaimed] = useState<string | null>(
+        null,
+    );
+    useEffect(() => {
+        if (!claimWarningShown && darknodeNotClaimed) {
+            setClaimWarningShown(true);
+            setPopup({
+                popup: (
+                    <NotClaimed
+                        darknode={darknodeNotClaimed}
+                        onCancel={clearPopup}
+                    />
+                ),
+                onCancel: clearPopup,
+                dismissible: true,
+                overlay: true,
+            });
+        }
+    }, [darknodeNotClaimed, claimWarningShown, clearPopup, setPopup]);
 
-    const withdrawable = darknodeList.reduce(
-        (acc, darknodeDetails) => ({
-            fees: mergeFees(darknodeDetails.feesEarned, acc.fees).filter(
-                (fees) => fees && !fees.amount.isZero(),
+    const withdrawable = useMemo(
+        () =>
+            darknodeList &&
+            darknodeList.reduce(
+                (acc, darknodeDetails) => ({
+                    fees: mergeFees(
+                        darknodeDetails.feesEarned,
+                        acc.fees,
+                    ).filter((fees) => fees && !fees.amount.isZero()),
+                    feesInUsd: acc.feesInUsd.plus(
+                        darknodeDetails.feesEarnedInUsd || new BigNumber(0),
+                    ),
+                }),
+                {
+                    fees: OrderedMap<string, TokenAmount | null>(),
+                    feesInUsd: new BigNumber(0),
+                },
             ),
-            feesInUsd: acc.feesInUsd.plus(
-                darknodeDetails.feesEarnedInUsd || new BigNumber(0),
-            ),
-        }),
-        {
-            fees: OrderedMap<string, TokenAmount | null>(),
-            feesInUsd: new BigNumber(0),
-        },
+        [darknodeList],
     );
 
-    const pending = darknodeList
-        .map((darknodeDetails) => {
-            const showPreviousPending =
-                previousCycle &&
-                darknodeDetails &&
-                darknodeDetails.cycleStatus.get(previousCycle) ===
-                    DarknodeFeeStatus.NOT_CLAIMED;
-            const showCurrentPending =
-                currentCycle &&
-                darknodeDetails &&
-                darknodeDetails.cycleStatus.get(currentCycle) ===
-                    DarknodeFeeStatus.NOT_CLAIMED;
+    const pending = useMemo(
+        () =>
+            darknodeList &&
+            darknodeList
+                .map((darknodeDetails) => {
+                    const showPreviousPending =
+                        previousCycle &&
+                        darknodeDetails &&
+                        darknodeDetails.cycleStatus.get(previousCycle) ===
+                            DarknodeFeeStatus.NOT_CLAIMED;
+                    const showCurrentPending =
+                        currentCycle &&
+                        darknodeDetails &&
+                        darknodeDetails.cycleStatus.get(currentCycle) ===
+                            DarknodeFeeStatus.NOT_CLAIMED;
 
-            const cycleTotalInUsd = [
-                showPreviousPending ? previousCycle : null,
-                showCurrentPending ? currentCycle : null,
-            ].reduce((acc, cycle) => {
-                if (!cycle) {
+                    // If the darknode hasn't claimed within 1 day of a new epoch, show
+                    // a warning popup.
+                    const day = moment.duration(1, "day").asSeconds();
+                    if (
+                        showPreviousPending &&
+                        timeSinceLastEpoch &&
+                        timeSinceLastEpoch.gt(day)
+                    ) {
+                        setDarknodeNotClaimed(darknodeDetails.ID);
+                    }
+
+                    const cycleTotalInUsd = [
+                        showPreviousPending ? previousCycle : null,
+                        showCurrentPending ? currentCycle : null,
+                    ].reduce((acc, cycle) => {
+                        if (!cycle) {
+                            return acc;
+                        }
+                        const cycleFeesInUsd = pendingTotalInUsd.get(
+                            cycle,
+                            null,
+                        );
+                        return cycleFeesInUsd
+                            ? (acc || new BigNumber(0)).plus(cycleFeesInUsd)
+                            : acc;
+                    }, null as BigNumber | null);
+
+                    let summedPendingRewards = OrderedMap<
+                        string,
+                        TokenAmount | null
+                    >();
+                    if (previousCycle && showPreviousPending) {
+                        pendingRewards.get(previousCycle, OrderedMap());
+                        // summedPendingRewards = OrderedMap();
+                    }
+                    if (currentCycle && showCurrentPending) {
+                        summedPendingRewards = pendingRewards.get(
+                            currentCycle,
+                            OrderedMap(),
+                        );
+                    }
+                    if (
+                        previousCycle &&
+                        currentCycle &&
+                        showPreviousPending &&
+                        showCurrentPending
+                    ) {
+                        summedPendingRewards = mergeFees(
+                            pendingRewards.get(previousCycle, OrderedMap()),
+                            // OrderedMap(),
+                            pendingRewards.get(currentCycle, OrderedMap()),
+                        );
+                    }
+
+                    return {
+                        fees: summedPendingRewards,
+                        feesInUsd: cycleTotalInUsd,
+                    };
+                })
+                .reduce(
+                    (acc, darknodeDetails) => ({
+                        fees: mergeFees(darknodeDetails.fees, acc.fees).filter(
+                            (fees) => fees && !fees.amount.isZero(),
+                        ),
+                        feesInUsd: acc.feesInUsd.plus(
+                            darknodeDetails.feesInUsd || new BigNumber(0),
+                        ),
+                    }),
+                    {
+                        fees: OrderedMap<string, TokenAmount | null>(),
+                        feesInUsd: new BigNumber(0),
+                    },
+                ),
+        [
+            currentCycle,
+            darknodeList,
+            pendingRewards,
+            pendingTotalInUsd,
+            previousCycle,
+            timeSinceLastEpoch,
+        ],
+    );
+
+    const earningFees: boolean = useMemo(
+        () =>
+            !!darknodeList &&
+            darknodeList.reduce<boolean>((acc, darknodeDetails) => {
+                if (acc) {
                     return acc;
                 }
-                const cycleFeesInUsd = pendingTotalInUsd.get(cycle, null);
-                return cycleFeesInUsd
-                    ? (acc || new BigNumber(0)).plus(cycleFeesInUsd)
-                    : acc;
-            }, null as BigNumber | null);
-
-            let summedPendingRewards = OrderedMap<string, TokenAmount | null>();
-            if (previousCycle && showPreviousPending) {
-                pendingRewards.get(previousCycle, OrderedMap());
-                // summedPendingRewards = OrderedMap();
-            }
-            if (currentCycle && showCurrentPending) {
-                summedPendingRewards = pendingRewards.get(
-                    currentCycle,
-                    OrderedMap(),
+                return (
+                    !!darknodeDetails &&
+                    (darknodeDetails.registrationStatus ===
+                        RegistrationStatus.Registered ||
+                        darknodeDetails.registrationStatus ===
+                            RegistrationStatus.DeregistrationPending)
                 );
-            }
-            if (
-                previousCycle &&
-                currentCycle &&
-                showPreviousPending &&
-                showCurrentPending
-            ) {
-                summedPendingRewards = mergeFees(
-                    pendingRewards.get(previousCycle, OrderedMap()),
-                    // OrderedMap(),
-                    pendingRewards.get(currentCycle, OrderedMap()),
-                );
-            }
-
-            return {
-                fees: summedPendingRewards,
-                feesInUsd: cycleTotalInUsd,
-            };
-        })
-        .reduce(
-            (acc, darknodeDetails) => ({
-                fees: mergeFees(darknodeDetails.fees, acc.fees).filter(
-                    (fees) => fees && !fees.amount.isZero(),
-                ),
-                feesInUsd: acc.feesInUsd.plus(
-                    darknodeDetails.feesInUsd || new BigNumber(0),
-                ),
-            }),
-            {
-                fees: OrderedMap<string, TokenAmount | null>(),
-                feesInUsd: new BigNumber(0),
-            },
-        );
-
-    const earningFees: boolean = darknodeList.reduce<boolean>(
-        (acc, darknodeDetails) => {
-            if (acc) {
-                return acc;
-            }
-            return (
-                !!darknodeDetails &&
-                (darknodeDetails.registrationStatus ===
-                    RegistrationStatus.Registered ||
-                    darknodeDetails.registrationStatus ===
-                        RegistrationStatus.DeregistrationPending)
-            );
-        },
-        false,
+            }, false),
+        [darknodeList],
     );
+
+    if (!withdrawable || !pending) {
+        return <></>;
+    }
 
     return (
         <FeesBlock

@@ -1,7 +1,6 @@
 import { Currency, CurrencyIcon, Loading } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import React, { useMemo } from "react";
-import { Token } from "../../../lib/ethereum/tokens";
 
 import { isDefined } from "../../../lib/general/isDefined";
 import { multiplyTokenAmount } from "../../../lib/graphQL/queries/queries";
@@ -10,17 +9,11 @@ import { GraphContainer } from "../../../store/graphContainer";
 import { NetworkContainer } from "../../../store/networkContainer";
 import { ReactComponent as IconDarknodesOnline } from "../../../styles/images/icon-darknodes-online.svg";
 import { ReactComponent as IconIncome } from "../../../styles/images/icon-income.svg";
-import { ReactComponent as RewardsIcon } from "../../../styles/images/icon-rewards-white.svg";
 import { Change } from "../../../views/Change";
 import { EpochProgress } from "../../../views/EpochProgress";
 import { ExternalLink } from "../../../views/ExternalLink";
 import { Stat, Stats } from "../../../views/Stat";
-import { TokenIcon } from "../../../views/tokenIcon/TokenIcon";
-import {
-    AnyTokenBalance,
-    ConvertCurrency,
-    updatePrices,
-} from "../../common/TokenBalance";
+import { ConvertCurrency } from "../../common/TokenBalance";
 import { DarknodeMap } from "./darknodeMap/DarknodeMap";
 import { FeesStat } from "./FeesStat";
 
