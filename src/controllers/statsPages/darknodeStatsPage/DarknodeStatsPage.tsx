@@ -87,16 +87,6 @@ export const DarknodeStatsPage = () => {
             ? previousInUsd.times(numberOfDarknodesLastEpoch)
             : undefined;
 
-    const previousNetwork = useMemo(
-        () =>
-            previous && numberOfDarknodes
-                ? previous.map((x) =>
-                      !x ? x : multiplyTokenAmount(x, numberOfDarknodes),
-                  )
-                : undefined,
-        [previous, numberOfDarknodes],
-    );
-
     const currentNetwork = useMemo(
         () =>
             current && numberOfDarknodes
@@ -105,6 +95,18 @@ export const DarknodeStatsPage = () => {
                   )
                 : undefined,
         [current, numberOfDarknodes],
+    );
+
+    const previousNetwork = useMemo(
+        () =>
+            previous && numberOfDarknodesLastEpoch
+                ? previous.map((x) =>
+                      !x
+                          ? x
+                          : multiplyTokenAmount(x, numberOfDarknodesLastEpoch),
+                  )
+                : undefined,
+        [previous, numberOfDarknodesLastEpoch],
     );
 
     return (
