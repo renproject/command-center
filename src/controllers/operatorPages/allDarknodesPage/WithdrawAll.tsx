@@ -1,5 +1,5 @@
 import BigNumber from "bignumber.js";
-import { OrderedMap, OrderedSet } from "immutable";
+import { OrderedMap, List } from "immutable";
 import moment from "moment";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -18,7 +18,7 @@ import { FeesBlock, mergeFees } from "../darknodePage/blocks/FeesBlock";
 import { NotClaimed } from "../darknodePage/blocks/NotClaimed";
 
 interface Props {
-    darknodeList: OrderedSet<DarknodesState> | null;
+    darknodeList: List<DarknodesState> | null;
 }
 
 export const WithdrawAll: React.FC<Props> = ({ darknodeList }) => {

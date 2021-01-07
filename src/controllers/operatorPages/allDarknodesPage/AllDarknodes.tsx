@@ -1,4 +1,4 @@
-import { OrderedSet } from "immutable";
+import { List } from "immutable";
 import React, { useMemo } from "react";
 
 import {
@@ -44,8 +44,9 @@ export const AllDarknodes: React.FC<{}> = () => {
 
     const shownDarknodeDetails = shownDarknodeList
         ? (shownDarknodeList
+              .toList()
               .map((darknode) => darknodeDetails.get(darknode))
-              .filter((x) => !!x) as OrderedSet<DarknodesState>)
+              .filter((x) => !!x) as List<DarknodesState>)
         : shownDarknodeList;
 
     return (
