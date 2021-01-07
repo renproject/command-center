@@ -3,13 +3,15 @@ import { sleep } from "@renproject/react-components";
 import Axios from "axios";
 import { Map } from "immutable";
 import localforage from "localforage";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Point } from "react-simple-maps";
 import { createContainer } from "unstated-next";
 
 import { DEFAULT_REQUEST_TIMEOUT } from "../../../lib/react/environmentVariables";
 import { Web3Container } from "../../../store/web3Container";
 import { retryNTimes } from "../renvmStatsPage/renvmContainer";
+
+export const SESSION_MAP_LIMIT = 30;
 
 interface DarknodeLocation {
     darknodeID: string;
@@ -181,15 +183,21 @@ const useMapContainer = () => {
     let [darknodes, setDarknodes] = useState<Map<string, DarknodeLocation>>(
         Map(),
     );
-    // tslint:disable-next-line: prefer-const
-    let [darknodeCount, setDarknodeCount] = useState<number | null>(null);
+    let sessionMapCount = useRef(0);
+    const [darknodeCount, setDarknodeCount] = useState<number | null>(null);
     // tslint:disable-next-line: whitespace
-    const getLocation = async (ip: string): Promise<Location> => {
+    const getLocation = async (ip: string): Promise<Location | null> => {
         // Check if we've already fetched for this IP
         const previousLocation = await readCache(ip);
         if (previousLocation) {
             return previousLocation;
         }
+
+        if (sessionMapCount.current >= SESSION_MAP_LIMIT) {
+            return null;
+        }
+
+        sessionMapCount.current += 1;
 
         const location = await fetchLocationFromAPI(ip);
 
@@ -203,7 +211,12 @@ const useMapContainer = () => {
     const addDarknodeID = async (multiAddress: string) => {
         const { ip, darknodeID } = parseMultiAddress(multiAddress);
         try {
-            const { longitude, latitude } = await getLocation(ip);
+            const location = await getLocation(ip);
+            if (!location) {
+                return;
+            }
+
+            const { longitude, latitude } = location;
 
             // tslint:disable-next-line: strict-type-predicates
             if (typeof longitude !== "number" || typeof latitude !== "number") {
@@ -239,8 +252,7 @@ const useMapContainer = () => {
         if (network) {
             try {
                 const darknodeIDs = await getAllDarknodes(network);
-                darknodeCount = darknodeIDs.length;
-                setDarknodeCount(darknodeCount);
+                setDarknodeCount(darknodeIDs.length);
                 const updateDarknodes = darknodeIDs.map(
                     (darknodeID: string) => () => addDarknodeID(darknodeID),
                 );
