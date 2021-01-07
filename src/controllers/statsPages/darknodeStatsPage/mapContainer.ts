@@ -1,5 +1,4 @@
 import { RenNetworkDetails } from "@renproject/contracts";
-import { sleep } from "@renproject/react-components";
 import Axios from "axios";
 import { Map } from "immutable";
 import localforage from "localforage";
@@ -76,51 +75,45 @@ export const getLightnode = (network: RenNetworkDetails): string => {
 };
 
 const fetchLocationFromAPI = async (ip: string): Promise<Location> => {
-    let limit = 2;
-    while (limit) {
+    try {
+        const apiResponse = (
+            await Axios.get<{
+                latitude: number;
+                longitude: number;
+            }>(`https://ipapi.co/${ip}/json`, {
+                timeout: DEFAULT_REQUEST_TIMEOUT,
+            })
+        ).data;
+        return {
+            longitude: apiResponse.longitude,
+            latitude: apiResponse.latitude,
+        };
+    } catch (error) {
         try {
             const apiResponse = (
                 await Axios.get<{
-                    latitude: number;
-                    longitude: number;
-                }>(`https://ipapi.co/${ip}/json`, {
+                    lat: number;
+                    lon: number;
+                    // tslint:disable-next-line: no-http-string
+                }>(`http://ip-api.com/json/${ip}`, {
                     timeout: DEFAULT_REQUEST_TIMEOUT,
                 })
             ).data;
             return {
-                longitude: apiResponse.longitude,
-                latitude: apiResponse.latitude,
+                longitude: apiResponse.lon || 0,
+                latitude: apiResponse.lat || 0,
             };
-        } catch (error) {
-            try {
-                const apiResponse = (
-                    await Axios.get<{
-                        lat: number;
-                        lon: number;
-                        // tslint:disable-next-line: no-http-string
-                    }>(`http://ip-api.com/json/${ip}`, {
-                        timeout: DEFAULT_REQUEST_TIMEOUT,
-                    })
-                ).data;
-                return {
-                    longitude: apiResponse.lon || 0,
-                    latitude: apiResponse.lat || 0,
-                };
 
-                // Seems to share a rate-limiter with https://ipapi.co.
-                // const apiResponse = (await Axios.get<{
-                //     loc: string,
-                // }>(`https://ipinfo.io/${ip}/json`)).data;
-                // const [latitude, longitude] = apiResponse.loc.split(",").map((x) => parseInt(x));
-                // return { longitude, latitude };
-            } catch (error) {
-                // Try again
-            }
+            // Seems to share a rate-limiter with https://ipapi.co.
+            // const apiResponse = (await Axios.get<{
+            //     loc: string,
+            // }>(`https://ipinfo.io/${ip}/json`)).data;
+            // const [latitude, longitude] = apiResponse.loc.split(",").map((x) => parseInt(x));
+            // return { longitude, latitude };
+        } catch (error) {
+            throw new Error(`Unable to fetch location for ${ip}.`);
         }
-        limit--;
-        await sleep(1 * 1000);
     }
-    throw new Error(`Unable to fetch location for ${ip}`);
 };
 
 const parseMultiAddress = (
@@ -199,13 +192,19 @@ const useMapContainer = () => {
 
         sessionMapCount.current += 1;
 
-        const location = await fetchLocationFromAPI(ip);
+        try {
+            const location = await fetchLocationFromAPI(ip);
 
-        // Store in map for next time
-        await writeCache(ip, location);
+            // Store in map for next time
+            await writeCache(ip, location);
 
-        // Return location
-        return location;
+            // Return location
+            return location;
+        } catch (error) {
+            // If requests are failing, increase session request limit faster.
+            sessionMapCount.current += 4;
+            throw error;
+        }
     };
 
     const addDarknodeID = async (multiAddress: string) => {
