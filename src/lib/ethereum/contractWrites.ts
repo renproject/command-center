@@ -32,7 +32,7 @@ export const fundNode = (
         .decimalPlaces(0);
     if (weiAmount.isNaN()) {
         throw new Error(
-            `Invalid ETH amount ${ethAmountStr} - please try again`,
+            `Invalid ETH amount '${ethAmountStr}' - please try again`,
         );
     }
 
