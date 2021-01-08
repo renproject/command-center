@@ -14,6 +14,7 @@ import {
     NetworkContainer,
 } from "../../../store/networkContainer";
 import { PopupContainer } from "../../../store/popupContainer";
+import { UIContainer } from "../../../store/uiContainer";
 import { FeesBlock, mergeFees } from "../darknodePage/blocks/FeesBlock";
 import { NotClaimed } from "../darknodePage/blocks/NotClaimed";
 
@@ -29,6 +30,10 @@ export const WithdrawAll: React.FC<Props> = ({ darknodeList }) => {
     } = NetworkContainer.useContainer();
     const { renVM } = GraphContainer.useContainer();
     const { currentCycle, previousCycle, timeSinceLastEpoch } = renVM || {};
+    const {
+        claimWarningShown,
+        setClaimWarningShown,
+    } = UIContainer.useContainer();
 
     const { setPopup, clearPopup } = PopupContainer.useContainer();
     const {
@@ -73,7 +78,6 @@ export const WithdrawAll: React.FC<Props> = ({ darknodeList }) => {
         [darknodeList, updateDarknodeDetails, withdrawReward],
     );
 
-    const [claimWarningShown, setClaimWarningShown] = useState(false);
     const [darknodeNotClaimed, setDarknodeNotClaimed] = useState<string | null>(
         null,
     );
@@ -92,7 +96,13 @@ export const WithdrawAll: React.FC<Props> = ({ darknodeList }) => {
                 overlay: true,
             });
         }
-    }, [darknodeNotClaimed, claimWarningShown, clearPopup, setPopup]);
+    }, [
+        darknodeNotClaimed,
+        claimWarningShown,
+        clearPopup,
+        setPopup,
+        setClaimWarningShown,
+    ]);
 
     const withdrawable = useMemo(
         () =>

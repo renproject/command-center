@@ -15,6 +15,7 @@ import {
     NetworkContainer,
 } from "../../../../store/networkContainer";
 import { PopupContainer } from "../../../../store/popupContainer";
+import { UIContainer } from "../../../../store/uiContainer";
 import { FeesBlock } from "./FeesBlock";
 import { NotClaimed } from "./NotClaimed";
 // import { ReactComponent as WithdrawIcon } from "../../../../styles/images/icon-withdraw.svg";
@@ -81,6 +82,10 @@ export const FeesBlockController: React.FC<Props> = ({
     const { renVM } = GraphContainer.useContainer();
     const { setPopup, clearPopup } = PopupContainer.useContainer();
     const { currentCycle, previousCycle, timeSinceLastEpoch } = renVM || {};
+    const {
+        claimWarningShown,
+        setClaimWarningShown,
+    } = UIContainer.useContainer();
 
     const [disableClaim, setDisableClaim] = useState(false);
 
@@ -112,7 +117,6 @@ export const FeesBlockController: React.FC<Props> = ({
         darknodeDetails.cycleStatus.get(currentCycle) ===
             DarknodeFeeStatus.NOT_CLAIMED;
 
-    const [claimWarningShown, setClaimWarningShown] = useState(false);
     useEffect(() => {
         // If the darknode hasn't claimed within 1 day of a new epoch, show a
         // warning popup.
@@ -135,6 +139,7 @@ export const FeesBlockController: React.FC<Props> = ({
         showPreviousPending,
         timeSinceLastEpoch,
         claimWarningShown,
+        setClaimWarningShown,
         clearPopup,
         setPopup,
     ]);

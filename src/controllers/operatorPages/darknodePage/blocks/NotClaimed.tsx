@@ -19,7 +19,9 @@ export const NotClaimed: React.FC<Props> = ({ darknode, onCancel }) => {
             <h2>Rewards not claimed</h2>
             <div className="popup--description">
                 {darknode ? (
-                    <Link to={`/darknode/${darknode}`}>One of your nodes</Link>
+                    <Link onClick={onCancel} to={`/darknode/${darknode}`}>
+                        One of your nodes
+                    </Link>
                 ) : (
                     <>Your node</>
                 )}{" "}

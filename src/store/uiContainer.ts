@@ -15,12 +15,16 @@ const useUIContainer = () => {
         setMobileMenuActive(false);
     }, [setMobileMenuActive]);
 
+    const [claimWarningShown, setClaimWarningShown] = useState(false);
+
     return {
         mobileMenuActive,
         showMobileMenu,
         hideMobileMenu,
         selectedDarknodeID,
         setSelectedDarknodeID,
+        claimWarningShown,
+        setClaimWarningShown,
     };
 };
 
