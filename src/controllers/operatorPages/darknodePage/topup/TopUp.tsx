@@ -9,7 +9,7 @@ interface Props {
     pending: boolean;
     disabled: boolean;
     handleChange: (value: string) => void;
-    handleBlur: () => void;
+    handleMax: () => Promise<void>;
     sendFunds: () => void;
 }
 
@@ -24,9 +24,11 @@ export const TopUp: React.FC<Props> = ({
     pending,
     disabled,
     handleChange,
-    handleBlur,
+    handleMax,
     sendFunds,
 }) => {
+    const [clickedMax, setClickedMax] = useState(false);
+
     const handleChangeEvent = useCallback(
         (event: React.ChangeEvent<HTMLInputElement>) => {
             handleChange(event.target.value);
@@ -43,6 +45,11 @@ export const TopUp: React.FC<Props> = ({
         },
         [sendFunds],
     );
+
+    const onClickMax = useCallback(() => {
+        setClickedMax(true);
+        handleMax().finally(() => setClickedMax(false));
+    }, [handleMax]);
 
     return (
         <div className="topup">
@@ -64,24 +71,33 @@ export const TopUp: React.FC<Props> = ({
                                     </p>
                                 )}
                                 <form
-                                    className="topup--input"
+                                    className="topup--form"
                                     onSubmit={onSubmit}
                                 >
-                                    <input
-                                        disabled={pending}
-                                        type="text"
-                                        value={value}
-                                        min={0}
-                                        onChange={handleChangeEvent}
-                                        onBlur={handleBlur}
-                                        placeholder="Amount in ETH"
-                                    />
+                                    <div className="topup--input">
+                                        <input
+                                            disabled={pending}
+                                            type="text"
+                                            value={value}
+                                            min={0}
+                                            onChange={handleChangeEvent}
+                                            placeholder="Amount in ETH"
+                                        />
+                                        <button
+                                            type="button"
+                                            className="topup--max"
+                                            disabled={clickedMax}
+                                            onClick={onClickMax}
+                                        >
+                                            MAX
+                                        </button>
+                                    </div>
                                     {pending ? (
                                         <button disabled>Depositing...</button>
                                     ) : (
                                         <button
                                             type="submit"
-                                            className="hover green"
+                                            className="topup--submit hover green"
                                             disabled={disabled}
                                         >
                                             <span>Deposit</span>

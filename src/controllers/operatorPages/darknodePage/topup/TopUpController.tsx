@@ -34,12 +34,14 @@ export const TopUpController: React.FC<Props> = ({ darknodeID }) => {
             setResultMessage(
                 <>
                     Insufficient balance. Maximum deposit:{" "}
-                    <CurrencyIcon currency={Currency.ETH} />
-                    <AnyTokenBalance
-                        amount={accountBalance}
-                        digits={3}
-                        decimals={0}
-                    />
+                    <span className="pointer" onClick={handleMax}>
+                        <CurrencyIcon currency={Currency.ETH} />
+                        <AnyTokenBalance
+                            amount={accountBalance}
+                            digits={3}
+                            decimals={0}
+                        />
+                    </span>
                 </>,
             );
             setDisabled(true);
@@ -62,18 +64,27 @@ export const TopUpController: React.FC<Props> = ({ darknodeID }) => {
         return traderBalance;
     };
 
-    const handleBlur = async (): Promise<void> => {
+    const handleMax = async (): Promise<void> => {
+        if (!address) {
+            setResultMessage(<>Please connect your Web3 wallet first.</>);
+            return;
+        }
+
         let traderBalance;
         try {
+            // Subtract estimated gas from balance.
             traderBalance = await updateTraderBalance();
-            if (traderBalance.isLessThan(value)) {
-                setValue(traderBalance.toFormat());
-                setDisabled(true);
-            }
+            const gasPrice = await web3.eth.getGasPrice();
+            const gasLimit = 21000;
+            const gas = web3.utils.fromWei(
+                new BigNumber(gasPrice).times(gasLimit).toFixed(),
+                "ether",
+            );
+            handleChange(traderBalance.minus(gas).toFormat());
         } catch (error) {
             catchBackgroundException(
                 error,
-                "Error in TopUpController > handleBlur",
+                "Error in TopUpController > handleMax",
             );
         }
     };
@@ -107,6 +118,7 @@ export const TopUpController: React.FC<Props> = ({ darknodeID }) => {
             );
         };
 
+        console.log("Calling showFundPopup with value", value);
         showFundPopup(darknodeID, value, onCancel, onDone);
     };
 
@@ -127,7 +139,7 @@ export const TopUpController: React.FC<Props> = ({ darknodeID }) => {
             pending={pending}
             disabled={disabled}
             handleChange={handleChange}
-            handleBlur={handleBlur}
+            handleMax={handleMax}
             sendFunds={sendFunds}
         />
     );

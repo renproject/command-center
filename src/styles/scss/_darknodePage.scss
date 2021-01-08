@@ -282,8 +282,25 @@
         font-size: 12px;
     }
 
-    .topup button {
-        margin-left: 15px;
+    .topup {
+        .topup--max {
+            font-size: 14px;
+            font-weight: 200;
+            border: none;
+            color: $dark-grey;
+            position: absolute;
+            right: 6px;
+            margin-bottom: -1px;
+            background: none;
+            padding: none;
+            margin: none;
+            width: unset;
+            min-width: unset;
+
+            &:disabled {
+                opacity: 0.5;
+            }
+        }
     }
 
     .topup--title {
@@ -311,7 +328,6 @@
     }
 
     .topup--input--warning {
-        margin-top: 10px;
         font-weight: bold;
         font-size: 14px;
 
@@ -319,18 +335,27 @@
     }
 
     .topup--input {
+        position: relative;
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .topup--form {
         width: 100%;
 
         display: inline-flex;
         align-items: center;
     }
 
-    .topup--input:not(.disabled):hover {
+    .topup--form:not(.disabled):hover {
         box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
     }
 
     .topup--input > input {
         @extend .no-spin-button;
+        width: 100%;
         border: none;
         height: 42px;
         background: none;
@@ -352,13 +377,13 @@
         }
     }
 
-    .topup--input > span {
+    .topup--form > span {
         display: inline-block;
         width: 35px;
         text-align: center;
     }
 
-    .topup--input > button {
+    .topup--submit {
         height: 40px;
         background: $primary;
         border: none;
@@ -368,9 +393,11 @@
         font-size: 12px;
         line-height: 14px;
         letter-spacing: 1px;
-        width: 0;
+        padding: 0 20px;
+        min-width: unset;
 
         border-radius: 4px;
+        margin-left: 6px;
 
         /* identical to box height */
         text-align: center;
