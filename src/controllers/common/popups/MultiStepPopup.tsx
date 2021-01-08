@@ -31,6 +31,7 @@ interface Props {
 
     title: string;
     confirm: boolean;
+    description?: string;
     warning?: string | JSX.Element;
     ignoreWarning?: string;
 
@@ -45,6 +46,7 @@ interface Props {
 export const MultiStepPopup: React.FC<Props> = ({
     steps,
     title,
+    description,
     confirm,
     warning,
     ignoreWarning,
@@ -247,6 +249,9 @@ export const MultiStepPopup: React.FC<Props> = ({
                         ? `${transactionS} submitted`
                         : title}
                 </h3>
+                {description ? (
+                    <p className="multi-step--description">{description}</p>
+                ) : null}
                 {!notStarted && steps.length > 1 ? (
                     <ul className="multi-step--list">
                         {steps.map((step, index) => {

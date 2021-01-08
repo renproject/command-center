@@ -150,7 +150,7 @@ export const FeesBlockController: React.FC<Props> = ({
         return cycleFeesInUsd
             ? (acc || new BigNumber(0)).plus(cycleFeesInUsd)
             : acc;
-    }, null as BigNumber | null);
+    }, new BigNumber(0) as BigNumber);
 
     let summedPendingRewards = OrderedMap<string, TokenAmount | null>();
     if (previousCycle && showPreviousPending) {

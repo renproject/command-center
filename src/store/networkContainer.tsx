@@ -774,8 +774,10 @@ const useNetworkContainer = () => {
             );
         }
 
-        const ignoreWarning = "Continue away (fees will be lost)";
+        const ignoreWarning = "Continue anyway (fees will be lost)";
         const title = "Deregister darknode";
+        const description =
+            "Your REN will remain locked for the rest of the current epoch and for the next epoch, and pending and unwithdrawn rewards will be forfeited.";
 
         setPopup({
             popup: (
@@ -786,6 +788,7 @@ const useNetworkContainer = () => {
                     title={title}
                     ignoreWarning={ignoreWarning}
                     warning={warning}
+                    description={description}
                     confirm
                 />
             ),

@@ -74,7 +74,12 @@ export const Registration: React.FC<Props> = ({
     };
 
     const onDoneRegister = async () => {
-        await updateOperatorDarknodes().catch(/* ignore error */);
+        await updateOperatorDarknodes().catch((error) =>
+            catchBackgroundException(
+                error,
+                "Error in operatorPopupActions > showRegisterPopup > updateOperatorDarknodes",
+            ),
+        );
 
         if (tokenPrices) {
             try {
