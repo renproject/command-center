@@ -19,7 +19,11 @@ const UNSYNCED_THRESHOLD = 30;
 
 const useGraphContainer = () => {
     const { web3, renNetwork } = Web3Container.useContainer();
-    const { showSuccess, showError } = NotificationsContainer.useContainer();
+    const {
+        showSuccess,
+        showError,
+        showHint,
+    } = NotificationsContainer.useContainer();
 
     const client = useApolloClient();
 
@@ -99,10 +103,11 @@ const useGraphContainer = () => {
                     subgraphBlock < web3Block - UNSYNCED_THRESHOLD
                 ) {
                     setSubgraphOutOfSync(true);
-                    showError(
+                    showHint(
                         `The RenVM subgraph is ${
                             web3Block - subgraphBlock
-                        } blocks behind - data may be out of date.`,
+                        } blocks behind - data may be out of date. New epochs can take a few hours to process.`,
+                        0,
                     );
                 }
             } catch (error) {
