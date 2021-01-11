@@ -63,7 +63,6 @@ export const DarknodePage = () => {
 
     // const [darknodeID, setDarknodeID] = useState<string | undefined>(undefined);
     const [action, setAction] = useState<string | undefined>(undefined);
-    const [publicKey, setPublicKey] = useState<string | undefined>(undefined);
     // const [providedName, setProvidedName] = useState<string | undefined>(undefined);
 
     const location = useLocation();
@@ -89,10 +88,6 @@ export const DarknodePage = () => {
             typeof queryParams.action === "string"
                 ? queryParams.action
                 : undefined;
-        const urlPublicKey =
-            typeof queryParams.public_key === "string"
-                ? queryParams.public_key
-                : undefined;
         const urlName =
             typeof queryParams.name === "string" ? queryParams.name : undefined;
 
@@ -107,15 +102,13 @@ export const DarknodePage = () => {
         if (
             darknodeOrURL &&
             urlAction === DarknodeAction.Register &&
-            firstTime &&
-            urlPublicKey
+            firstTime
         ) {
-            addRegisteringDarknode(darknodeOrURL, urlPublicKey);
+            addRegisteringDarknode(darknodeOrURL);
             setFirstTime(false);
         }
 
         setAction(urlAction);
-        setPublicKey(urlPublicKey);
         // setProvidedName(name);
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -163,7 +156,6 @@ export const DarknodePage = () => {
                 storeDarknodeName={storeDarknodeName}
                 key={darknodeOrURL}
                 action={darknodeAction}
-                publicKey={publicKey}
                 name={name}
                 darknodeID={darknodeOrURL}
                 isOperator={!readOnly}

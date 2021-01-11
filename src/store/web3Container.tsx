@@ -12,6 +12,8 @@ import React, { useEffect, useState } from "react";
 import { createContainer } from "unstated-next";
 import Web3 from "web3";
 import { toChecksumAddress } from "web3-utils";
+import LedgerTransportU2F from "@ledgerhq/hw-transport-u2f";
+import LedgerTransportWebUSB from "@ledgerhq/hw-transport-webusb";
 
 import { LoggedOut } from "../controllers/common/popups/LoggedOut";
 import { getWeb3BrowserName, Web3Browser } from "../lib/ethereum/browsers";
@@ -40,99 +42,120 @@ const useOnboard = (networkID: number) => {
     const [onboard, setOnboard] = useState<OnboardInstance | undefined>();
 
     useEffect(() => {
-        const appName = "Command Center";
-        const appUrl =
-            networkID === 1 ? "mainnet.renproject.io" : "testnet.renproject.io";
-        const supportEmail = "support@renproject.io";
+        (async () => {
+            const appName = "Command Center";
+            const appUrl =
+                networkID === 1
+                    ? "mainnet.renproject.io"
+                    : "testnet.renproject.io";
+            const supportEmail = "support@renproject.io";
 
-        const rpcUrl = EXTRA_WALLETS_INFURA_KEY;
+            const rpcUrl = EXTRA_WALLETS_INFURA_KEY;
 
-        setOnboard(
-            Onboard({
-                dappId: BLOCKNATIVE_KEY,
-                networkId: networkID,
-                darkMode: true,
-                walletSelect: {
-                    wallets: [
-                        // Preferred ///////////////////////////////////////////
+            const isWebUSBSupported = navigator.platform.includes("Win")
+                ? false
+                : await LedgerTransportWebUSB.isSupported().catch(() => false);
 
-                        { walletName: "metamask", preferred: true },
-                        {
-                            walletName: "walletConnect",
-                            infuraKey: EXTRA_WALLETS_INFURA_KEY,
-                            preferred: true,
-                        },
+            const LedgerTransport = isWebUSBSupported
+                ? LedgerTransportWebUSB
+                : LedgerTransportU2F;
 
-                        // Not officially supported ////////////////////////////
+            setOnboard(
+                Onboard({
+                    dappId: BLOCKNATIVE_KEY,
+                    networkId: networkID,
+                    darkMode: true,
+                    walletSelect: {
+                        wallets: [
+                            // Preferred ///////////////////////////////////////////
 
-                        { walletName: "coinbase" },
-                        { walletName: "trust", rpcUrl },
-                        { walletName: "dapper" },
-                        {
-                            walletName: "trezor",
-                            appUrl,
-                            email: supportEmail,
-                            rpcUrl,
-                        },
-                        { walletName: "ledger", rpcUrl },
-                        {
-                            walletName: "lattice",
-                            rpcUrl,
-                            appName,
-                        },
-                        // Fortmatic requires a paid key
-                        // {
-                        //   walletName: "fortmatic",
-                        //   apiKey: FORTMATIC_KEY,
-                        //   preferred: true
-                        // },
-                        {
-                            walletName: "portis",
-                            apiKey: PORTIS_KEY,
-                        },
-                        // Squarelink's registration page is broken
-                        // {
-                        //   walletName: "squarelink",
-                        //   apiKey: SQUARELINK_KEY
-                        // },
-                        { walletName: "authereum" },
-                        { walletName: "opera" },
-                        { walletName: "operaTouch" },
-                        { walletName: "torus" },
-                        { walletName: "status" },
-                        { walletName: "unilogin" },
-                        {
-                            walletName: "walletLink",
-                            rpcUrl,
-                            appName,
-                        },
-                        {
-                            walletName: "imToken",
-                            rpcUrl,
-                        },
-                        { walletName: "meetone" },
-                        {
-                            walletName: "mykey",
-                            rpcUrl,
-                        },
-                        {
-                            walletName: "huobiwallet",
-                            rpcUrl,
-                        },
-                        { walletName: "hyperpay" },
-                        {
-                            walletName: "wallet.io",
-                            rpcUrl,
-                        },
+                            { walletName: "metamask", preferred: true },
+                            {
+                                walletName: "walletConnect",
+                                infuraKey: EXTRA_WALLETS_INFURA_KEY,
+                                preferred: true,
+                            },
+
+                            // Not officially supported ////////////////////////////
+
+                            { walletName: "coinbase" },
+                            { walletName: "trust", rpcUrl },
+                            { walletName: "dapper" },
+                            {
+                                walletName: "trezor",
+                                appUrl,
+                                email: supportEmail,
+                                rpcUrl,
+                            },
+                            {
+                                walletName: "ledger",
+                                rpcUrl,
+                                LedgerTransport,
+                            },
+                            {
+                                walletName: "ledger",
+                                label: "Ledger (legacy)",
+                                rpcUrl,
+                            },
+                            {
+                                walletName: "lattice",
+                                rpcUrl,
+                                appName,
+                            },
+                            // Fortmatic requires a paid key
+                            // {
+                            //   walletName: "fortmatic",
+                            //   apiKey: FORTMATIC_KEY,
+                            //   preferred: true
+                            // },
+                            {
+                                walletName: "portis",
+                                apiKey: PORTIS_KEY,
+                            },
+                            // Squarelink's registration page is broken
+                            // {
+                            //   walletName: "squarelink",
+                            //   apiKey: SQUARELINK_KEY
+                            // },
+                            { walletName: "authereum" },
+                            { walletName: "opera" },
+                            { walletName: "operaTouch" },
+                            { walletName: "torus" },
+                            { walletName: "status" },
+                            { walletName: "unilogin" },
+                            {
+                                walletName: "walletLink",
+                                rpcUrl,
+                                appName,
+                            },
+                            {
+                                walletName: "imToken",
+                                rpcUrl,
+                            },
+                            { walletName: "meetone" },
+                            {
+                                walletName: "mykey",
+                                rpcUrl,
+                            },
+                            {
+                                walletName: "huobiwallet",
+                                rpcUrl,
+                            },
+                            { walletName: "hyperpay" },
+                            {
+                                walletName: "wallet.io",
+                                rpcUrl,
+                            },
+                        ],
+                    },
+                    walletCheck: [
+                        { checkName: "accounts" },
+                        { checkName: "connect" },
+                        { checkName: "network" },
                     ],
-                },
-                walletCheck: [
-                    { checkName: "accounts" },
-                    { checkName: "connect" },
-                    { checkName: "network" },
-                ],
-            }),
-        );
+                }),
+            );
+        })().catch(console.error);
     }, [networkID]);
 
     return { onboard };

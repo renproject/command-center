@@ -121,9 +121,7 @@ export const MultiStepPopup: React.FC<Props> = ({
                 }
 
                 if (callResult !== null) {
-                    const promiEvent = callResult as PromiEvent<
-                        TransactionReceipt
-                    >;
+                    const promiEvent = callResult as PromiEvent<TransactionReceipt>;
                     const txHash = await waitForTX(promiEvent);
                     // eslint-disable-next-line no-loop-func
                     setTxHashes((currentTxHashes) =>
@@ -134,7 +132,7 @@ export const MultiStepPopup: React.FC<Props> = ({
                         waitForConfirmation ||
                         currentStep === steps.length - 1
                     ) {
-                        await new Promise((resolve, reject) => {
+                        await new Promise<void>((resolve, reject) => {
                             promiEvent
                                 .on("confirmation", () => resolve())
                                 .catch(reject);

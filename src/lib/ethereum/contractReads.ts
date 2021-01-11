@@ -12,15 +12,15 @@ import { DarknodesState } from "../../store/networkContainer";
 import { darknodeIDHexToBase58 } from "../darknode/darknodeID";
 import { queryStat } from "../darknode/jsonrpc";
 import { isDefined } from "../general/isDefined";
-import { safePromiseAllList } from "../general/promiseAll";
 import { TokenAmount } from "../graphQL/queries/queries";
 import { Darknode, queryDarknode } from "../graphQL/queries/darknode";
 import { RenVM } from "../graphQL/queries/renVM";
-import { catchBackgroundException } from "../react/errors";
 import { getDarknodePayment, getDarknodeRegistry } from "./contract";
 import { getDarknodeStatus, isRegisteredInEpoch } from "./darknodeStatus";
 import { FeeTokens, Token, TokenPrices, TokenString } from "./tokens";
 import { updatePrices } from "../../controllers/common/TokenBalance";
+import { safePromiseAllList } from "../general/promiseAll";
+import { catchBackgroundException } from "../react/errors";
 
 export const NULL = "0x0000000000000000000000000000000000000000";
 
@@ -309,13 +309,8 @@ export const sumUpFeeMap = (
  *          as BigNumbers.
  */
 const getBalances = async (
-    web3: Web3,
-    renNetwork: RenNetworkDetails,
     darknode: Darknode | null,
-    darknodeID: string,
-    renVM: RenVM,
-    tokenPrices: TokenPrices | null,
-): Promise<OrderedMap<string, TokenAmount | null>> => {
+): Promise<OrderedMap<TokenString, TokenAmount | null>> => {
     let balances = OrderedMap<string, TokenAmount | null>();
     if (isDefined(darknode)) {
         balances = darknode.balances
@@ -325,95 +320,95 @@ const getBalances = async (
 
     return balances;
 };
-// const getBalances = async (
-//     web3: Web3,
-//     renNetwork: RenNetworkDetails,
-//     darknode: Darknode | null,
-//     darknodeID: string,
-//     renVM: RenVM,
-//     tokenPrices: TokenPrices | null,
-// ): Promise<OrderedMap<TokenString, TokenAmount | null>> => {
-//     const darknodePayment = getDarknodePayment(web3, renNetwork);
 
-//     let feesEarned = OrderedMap<TokenString, TokenAmount | null>();
+const getBalancesWithInfura = async (
+    web3: Web3,
+    renNetwork: RenNetworkDetails,
+    darknodeID: string,
+    renVM: RenVM,
+    tokenPrices: TokenPrices | null,
+): Promise<OrderedMap<TokenString, TokenAmount | null>> => {
+    const darknodePayment = getDarknodePayment(web3, renNetwork);
 
-//     // const address = (await web3.eth.getAccounts())[0];
+    let feesEarned = OrderedMap<TokenString, TokenAmount | null>();
 
-//     const balances = await safePromiseAllList(
-//         List(
-//             renVM.assets
-//                 .map(async (asset) => {
-//                     const { symbol, tokenAddress, decimals } = asset;
-//                     const token = symbol
-//                         .replace(/^ren/, "")
-//                         .replace(/^test/, "")
-//                         .replace(/^dev/, "");
-//                     let tokenBalance;
-//                     try {
-//                         const balance1Call = await retryNTimes(
-//                             async () =>
-//                                 await darknodePayment.methods
-//                                     .darknodeBalances(darknodeID, tokenAddress)
-//                                     .call(/**/),
-//                             2,
-//                         );
-//                         tokenBalance = new BigNumber(
-//                             (balance1Call || "0").toString(),
-//                         );
-//                     } catch (error) {
-//                         catchBackgroundException(
-//                             error,
-//                             "Error in contractReads > darknodeBalances",
-//                         );
-//                         tokenBalance = new BigNumber(0);
-//                     }
+    // const address = (await web3.eth.getAccounts())[0];
 
-//                     let amountInEth: BigNumber | undefined;
-//                     let amountInUsd: BigNumber | undefined;
+    const balances = await safePromiseAllList(
+        List(
+            renVM.assets
+                .map(async (asset) => {
+                    const { symbol, tokenAddress, decimals } = asset;
+                    const token = symbol
+                        .replace(/^ren/, "")
+                        .replace(/^test/, "")
+                        .replace(/^dev/, "");
+                    let tokenBalance;
+                    try {
+                        const balance1Call = await retryNTimes(
+                            async () =>
+                                await darknodePayment.methods
+                                    .darknodeBalances(darknodeID, tokenAddress)
+                                    .call(/**/),
+                            2,
+                        );
+                        tokenBalance = new BigNumber(
+                            (balance1Call || "0").toString(),
+                        );
+                    } catch (error) {
+                        catchBackgroundException(
+                            error,
+                            "Error in contractReads > darknodeBalances",
+                        );
+                        tokenBalance = new BigNumber(0);
+                    }
 
-//                     if (tokenPrices) {
-//                         const price = tokenPrices.get(
-//                             token as Token,
-//                             undefined,
-//                         );
-//                         amountInEth = tokenBalance
-//                             .div(Math.pow(10, decimals))
-//                             .multipliedBy(
-//                                 price ? price.get(Currency.ETH, 0) : 0,
-//                             );
-//                         amountInUsd = tokenBalance
-//                             .div(Math.pow(10, decimals))
-//                             .multipliedBy(
-//                                 price ? price.get(Currency.USD, 0) : 0,
-//                             );
-//                     }
+                    let amountInEth: BigNumber | undefined;
+                    let amountInUsd: BigNumber | undefined;
 
-//                     const balance = {
-//                         symbol: token,
-//                         amount: tokenBalance,
-//                         amountInEth: amountInEth || new BigNumber(0),
-//                         amountInUsd: amountInUsd || new BigNumber(0),
-//                         asset,
-//                     };
+                    if (tokenPrices) {
+                        const price = tokenPrices.get(
+                            token as Token,
+                            undefined,
+                        );
+                        amountInEth = tokenBalance
+                            .div(Math.pow(10, decimals))
+                            .multipliedBy(
+                                price ? price.get(Currency.ETH, 0) : 0,
+                            );
+                        amountInUsd = tokenBalance
+                            .div(Math.pow(10, decimals))
+                            .multipliedBy(
+                                price ? price.get(Currency.USD, 0) : 0,
+                            );
+                    }
 
-//                     return {
-//                         balance, // .plus(balance2),
-//                         token: token,
-//                     };
-//                 })
-//                 .values(),
-//         ),
-//         null,
-//     );
+                    const balance = {
+                        symbol: token,
+                        amount: tokenBalance,
+                        amountInEth: amountInEth || new BigNumber(0),
+                        amountInUsd: amountInUsd || new BigNumber(0),
+                        asset,
+                    };
 
-//     for (const balance of balances.toArray()) {
-//         if (balance && balance.token && balance.balance.amount.gt(1)) {
-//             feesEarned = feesEarned.set(balance.token, balance.balance);
-//         }
-//     }
+                    return {
+                        balance, // .plus(balance2),
+                        token: token,
+                    };
+                })
+                .values(),
+        ),
+        null,
+    );
 
-//     return feesEarned;
-// };
+    for (const balance of balances.toArray()) {
+        if (balance && balance.token && balance.balance.amount.gt(1)) {
+            feesEarned = feesEarned.set(balance.token, balance.balance);
+        }
+    }
+
+    return feesEarned;
+};
 
 export enum DarknodeFeeStatus {
     BLACKLISTED = "BLACKLISTED",
@@ -470,11 +465,10 @@ const getDarknodeCycleRewards = async (
 
 /**
  * Fetches various pieces of information about a darknode, including:
- *  1. publicKey,
- *  2. balances and fees
- *  3. its status
- *  4. its gas usage information
- *  5. its network information (NOTE: not implemented yet)
+ *  1. balances and fees
+ *  2. its status
+ *  3. its gas usage information
+ *  4. its network information (NOTE: not implemented yet)
  *
  * @param client GraphQL client connected to RenVM subgraph.
  * @param web3 A Web3 instance.
@@ -490,6 +484,7 @@ export const fetchDarknodeDetails = async (
     renNetwork: RenNetworkDetails,
     darknodeID: string,
     tokenPrices: TokenPrices | null,
+    useInfura: boolean,
 ): Promise<DarknodesState> => {
     darknodeID = toChecksumAddress(darknodeID.toLowerCase());
 
@@ -523,14 +518,15 @@ export const fetchDarknodeDetails = async (
     );
 
     // Get earned fees
-    let feesEarned = await getBalances(
-        web3,
-        renNetwork,
-        darknode,
-        darknodeID,
-        renVM,
-        tokenPrices,
-    );
+    let feesEarned = !useInfura
+        ? await getBalances(darknode)
+        : await getBalancesWithInfura(
+              web3,
+              renNetwork,
+              darknodeID,
+              renVM,
+              tokenPrices,
+          );
     feesEarned = updatePrices(feesEarned, tokenPrices);
 
     let feesEarnedInEth: BigNumber | null = null;
@@ -550,7 +546,6 @@ export const fetchDarknodeDetails = async (
     return new DarknodesState({
         ID: darknodeID,
         multiAddress: "" as string,
-        publicKey: darknode ? darknode.publicKey : undefined,
         ethBalance: await πEthBalance,
         feesEarned,
         feesEarnedInEth,

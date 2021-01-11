@@ -13,14 +13,14 @@ interface Props {
     darknodeID: string;
     darknodeDetails: DarknodesState | null;
     name: string | undefined;
-    publicKey: string | undefined;
+    registering: boolean | undefined;
 }
 
 export const DarknodeCard: React.FC<Props> = ({
     darknodeID,
     darknodeDetails,
     name,
-    publicKey,
+    registering,
 }) => {
     const { address } = Web3Container.useContainer();
     const {
@@ -34,7 +34,7 @@ export const DarknodeCard: React.FC<Props> = ({
     // If we have the public key and the status is unregistered (or the status is not available yet), then link to
     // the registration page
     const continuable =
-        (publicKey &&
+        (registering &&
             (!darknodeDetails ||
                 darknodeDetails.registrationStatus ===
                     RegistrationStatus.Unregistered)) ||
@@ -75,7 +75,7 @@ export const DarknodeCard: React.FC<Props> = ({
     const darknodeIDBase58 = darknodeIDHexToBase58(darknodeID);
 
     const url = continuable
-        ? `/darknode/${darknodeIDBase58}?action=register&public_key=${publicKey}`
+        ? `/darknode/${darknodeIDBase58}?action=register`
         : `/darknode/${darknodeIDBase58}`;
 
     return (

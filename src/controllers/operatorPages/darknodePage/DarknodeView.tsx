@@ -6,7 +6,6 @@ import { GraphContainer } from "../../../store/graphContainer";
 import { DarknodesState } from "../../../store/networkContainer";
 import { DarknodeID } from "../../../views/DarknodeID";
 import { EpochBlock } from "./blocks/EpochBlock";
-import { FeesBlock } from "./blocks/FeesBlock";
 import { FeesBlockController } from "./blocks/FeesBlockController";
 import { GasBlock } from "./blocks/GasBlock";
 import { NetworkBlock } from "./blocks/NetworkBlock";
@@ -24,7 +23,6 @@ interface Props {
     darknodeDetails: DarknodesState | null;
     name: string | undefined;
     storeDarknodeName: (darknodeID: string, name: string) => void;
-    publicKey: string | undefined;
 }
 
 export const DarknodeView: React.FC<Props> = ({
@@ -34,7 +32,6 @@ export const DarknodeView: React.FC<Props> = ({
     isOperator,
     action,
     storeDarknodeName,
-    publicKey,
 }) => {
     const [renaming, setRenaming] = useState(false);
     const [newName, setNewName] = useState<string | undefined>(name);
@@ -200,7 +197,6 @@ export const DarknodeView: React.FC<Props> = ({
                                     : RegistrationStatus.Unknown
                             }
                             darknodeDetails={darknodeDetails}
-                            publicKey={publicKey}
                             darknodeID={darknodeID}
                         />
                     ) : darknodeDetails ? (

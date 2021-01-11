@@ -26,8 +26,7 @@ export const fundNode = (
     ethAmountStr: string,
 ): PromiEvent<TransactionReceipt> => {
     // Convert eth to wei
-    const ethAmount = new BigNumber(ethAmountStr);
-    const weiAmount = ethAmount
+    const weiAmount = new BigNumber(ethAmountStr)
         .times(new BigNumber(10).exponentiatedBy(18))
         .decimalPlaces(0);
     if (weiAmount.isNaN()) {
@@ -131,7 +130,6 @@ export const approveNode = async (
  * @param web3 Web3 provider with `address` unlocked.
  * @param renNetwork The details of the selected Ren network.
  * @param darknodeID Hexadecimal ID of the darknode to register.
- * @param publicKey Hexadecimal public key of the darknode.
  * @param bond The bond amount in REN's smallest unit (1e-18 REN).
  */
 export const registerNode = async (
@@ -139,7 +137,6 @@ export const registerNode = async (
     renNetwork: RenNetworkDetails,
     address: string,
     darknodeID: string,
-    publicKey: string,
     bond: BigNumber,
 ): Promise<{ promiEvent: PromiEvent<TransactionReceipt> }> => {
     const hardCodedGas = 500000;
@@ -177,7 +174,7 @@ export const registerNode = async (
 
     return {
         promiEvent: darknodeRegistry.methods
-            .register(darknodeID, publicKey)
+            .register(darknodeID, [])
             .send({ from: address, gas }),
     };
 };

@@ -22,7 +22,7 @@ export const BackgroundTasks = () => {
         updateOperatorDarknodes,
         updateDarknodeDetails,
     } = NetworkContainer.useContainer();
-    const { renVM } = GraphContainer.useContainer();
+    const { renVM, subgraphOutOfSync } = GraphContainer.useContainer();
     const { selectedDarknodeID } = UIContainer.useContainer();
 
     // Update token prices every 120 seconds
@@ -56,7 +56,7 @@ export const BackgroundTasks = () => {
             return 15; // seconds
         }
     }, [renVM, tokenPrices, address, updateCycleAndPendingRewards]);
-    useTaskSchedule(rewardsUpdater);
+    useTaskSchedule(rewardsUpdater, [subgraphOutOfSync]);
 
     const loggedOutUpdater = useCallback(async () => {
         if (address) {
@@ -95,7 +95,7 @@ export const BackgroundTasks = () => {
         }
         return 1; // second
     }, [tokenPrices, address, selectedDarknodeID, updateOperatorDarknodes]);
-    useTaskSchedule(operatorStatsUpdater, [address]);
+    useTaskSchedule(operatorStatsUpdater, [address, subgraphOutOfSync]);
 
     const selectedDarknodeUpdater = useCallback(async () => {
         if (tokenPrices && selectedDarknodeID) {
@@ -112,7 +112,10 @@ export const BackgroundTasks = () => {
         }
         return 1;
     }, [tokenPrices, selectedDarknodeID, updateDarknodeDetails]);
-    useTaskSchedule(selectedDarknodeUpdater, [selectedDarknodeID]);
+    useTaskSchedule(selectedDarknodeUpdater, [
+        selectedDarknodeID,
+        subgraphOutOfSync,
+    ]);
 
     return null;
 };

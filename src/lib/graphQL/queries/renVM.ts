@@ -16,7 +16,6 @@ export interface Epoch {
 }
 
 interface RawRenVM {
-    __typename: "Integrator";
     numberOfDarknodes: string;
     numberOfDarknodesLastEpoch: string;
     pendingRegistrations: string;

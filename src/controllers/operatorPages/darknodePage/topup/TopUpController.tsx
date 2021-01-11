@@ -118,7 +118,6 @@ export const TopUpController: React.FC<Props> = ({ darknodeID }) => {
             );
         };
 
-        console.log("Calling showFundPopup with value", value);
         showFundPopup(darknodeID, value, onCancel, onDone);
     };
 

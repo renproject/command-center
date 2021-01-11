@@ -45,7 +45,6 @@ export const NetworkBlock: React.FC<Props> = ({ darknodeDetails }) => {
                                     </td>
                                 </tr>
                                 {/* <tr><td>Address</td><td>{darknodeDetails.ID}</td></tr> */}
-                                {/* <tr><td>Public Key</td><td>{darknodeDetails.publicKey}</td></tr> */}
                                 {/* <tr><td>Operator</td><td>{darknodeDetails.operator}</td></tr> */}
                                 {/* <tr><td>Version</td><td>{darknodeDetails.nodeStatistics ? darknodeDetails.nodeStatistics.version : ""}</td></tr> */}
                                 <tr>

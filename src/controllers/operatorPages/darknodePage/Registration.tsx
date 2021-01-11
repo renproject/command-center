@@ -30,7 +30,6 @@ interface Props {
     registrationStatus: RegistrationStatus;
     darknodeID: string;
     darknodeDetails: DarknodesState | null;
-    publicKey?: string;
 }
 
 export const Registration: React.FC<Props> = ({
@@ -38,7 +37,6 @@ export const Registration: React.FC<Props> = ({
     darknodeDetails,
     registrationStatus,
     isOperator,
-    publicKey,
 }) => {
     const {
         address,
@@ -104,10 +102,6 @@ export const Registration: React.FC<Props> = ({
     };
 
     const handleRegister = async (): Promise<void> => {
-        if (!publicKey) {
-            return; // TODO: Show error.
-        }
-
         if (!address) {
             return; // TODO: Show error.
         }
@@ -117,7 +111,6 @@ export const Registration: React.FC<Props> = ({
             await showRegisterPopup(
                 address,
                 darknodeID,
-                publicKey,
                 onCancel,
                 onDoneRegister,
             );
@@ -155,7 +148,7 @@ export const Registration: React.FC<Props> = ({
     };
 
     const disabled = active || !address;
-    const registrationDisabled = active || !publicKey || !tokenPrices || !renVM;
+    const registrationDisabled = active || !tokenPrices || !renVM;
 
     const noStatus =
         registrationStatus === RegistrationStatus.Unregistered ||
@@ -224,11 +217,7 @@ export const Registration: React.FC<Props> = ({
                                         />
                                     </>
                                 ) : (
-                                    `Register darknode${
-                                        registrationDisabled && !publicKey
-                                            ? " (public key required)"
-                                            : ""
-                                    }`
+                                    `Register darknode`
                                 )}
                             </button>
                         )

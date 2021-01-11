@@ -9,11 +9,9 @@ import { parseTokenAmount, RawTokenAmount, TokenAmount } from "./queries";
 import { tokenArrayToMap } from "../volumes";
 
 interface RawDarknode {
-    __typename: "Darknode";
     deregisteredAt: string;
     id: string;
     operator: string;
-    publicKey: string;
     registeredAt: string;
     lastClaimedEpoch: string;
     previousLastClaimedEpoch: string;
@@ -23,7 +21,6 @@ interface RawDarknode {
 export interface Darknode {
     id: string;
     operator: string;
-    publicKey: string;
     registeredAt: BigNumber;
     deregisteredAt: BigNumber;
     lastClaimedEpoch: string;
@@ -36,7 +33,6 @@ const QUERY_DARKNODE = gql`
         darknode(id: $darknodeID) {
             id
             operator
-            publicKey
             registeredAt
             deregisteredAt
             lastClaimedEpoch
@@ -73,7 +69,6 @@ export const queryDarknode = async (
     return {
         id: darknodeID,
         operator: toChecksumAddress(response.data.darknode.operator),
-        publicKey: response.data.darknode.publicKey,
         registeredAt: new BigNumber(response.data.darknode.registeredAt),
         deregisteredAt: new BigNumber(response.data.darknode.deregisteredAt),
         lastClaimedEpoch: Ox(

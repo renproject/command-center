@@ -12,7 +12,7 @@ interface Props {
     darknodeList: OrderedSet<string> | null;
     darknodeDetails: Map<string, DarknodesState>;
     darknodeNames: Map<string, string>;
-    darknodeRegisteringList: Map<string, string>;
+    darknodeRegisteringList: Map<string, boolean>;
     registrySync: { progress: number; target: number };
 }
 
@@ -53,7 +53,7 @@ export const DarknodeList: React.FC<Props> = ({
                                             name={name}
                                             darknodeID={darknodeID}
                                             darknodeDetails={details}
-                                            publicKey={darknodeRegisteringList.get(
+                                            registering={darknodeRegisteringList.get(
                                                 darknodeID,
                                             )}
                                         />

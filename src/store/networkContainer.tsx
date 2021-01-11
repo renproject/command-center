@@ -52,7 +52,6 @@ import { Web3Container } from "./web3Container";
 export class DarknodesState extends Record({
     ID: "",
     multiAddress: "",
-    publicKey: "",
     ethBalance: null as BigNumber | null,
     feesEarned: OrderedMap<TokenString, TokenAmount | null>(),
     feesEarnedInEth: null as BigNumber | null,
@@ -79,7 +78,11 @@ export type WaitForTX = <T>(
 const useNetworkContainer = () => {
     const { web3, renNetwork, address, notify } = Web3Container.useContainer();
     const { setPopup, clearPopup } = PopupContainer.useContainer();
-    const { renVM, fetchRenVM } = GraphContainer.useContainer();
+    const {
+        renVM,
+        fetchRenVM,
+        subgraphOutOfSync,
+    } = GraphContainer.useContainer();
     const client = useApolloClient();
 
     const [tokenPrices, setTokenPrices] = useState(null as TokenPrices | null);
@@ -125,8 +128,8 @@ const useNetworkContainer = () => {
     ] = useStorageState(
         localStorage,
         "darknodeRegisteringList",
-        Map<string, string>(),
-        (s) => Map<string, string>(JSON.parse(s as string)),
+        Map<string, boolean>(),
+        (s) => Map<string, boolean>(JSON.parse(s as string)),
     );
     // Map from operator-address to list of darknodes.
     const [darknodeList, setDarknodeList] = useStorageState(
@@ -237,7 +240,7 @@ const useNetworkContainer = () => {
         });
 
         const newDarknodeRegisteringList = darknodeRegisteringList.filter(
-            (_: string, darknodeID: string) => !newList.contains(darknodeID),
+            (_: boolean, darknodeID: string) => !newList.contains(darknodeID),
         );
 
         setDarknodeList((latestDarknodeList) =>
@@ -255,9 +258,9 @@ const useNetworkContainer = () => {
         }
     };
 
-    const addRegisteringDarknode = (darknodeID: string, publicKey: string) => {
+    const addRegisteringDarknode = (darknodeID: string) => {
         setDarknodeRegisteringList((latestDarknodeRegisteringList) =>
-            (latestDarknodeRegisteringList || Map()).set(darknodeID, publicKey),
+            (latestDarknodeRegisteringList || Map()).set(darknodeID, true),
         );
     };
 
@@ -352,105 +355,112 @@ const useNetworkContainer = () => {
         }
         previous = updatePrices(previous, tokenPrices);
 
-        let current = OrderedMap<string, TokenAmount | null>();
-        if (isDefined(latestRenVM)) {
-            current = latestRenVM.cycleRewards
-                .filter((asset) => asset.asset !== null)
-                .map((asset) => ({
-                    ...asset,
-                    amount: asset.amount
-                        .dividedBy(latestRenVM.numberOfDarknodes)
-                        .decimalPlaces(0),
-                    amountInUsd: asset.amountInUsd
-                        .dividedBy(latestRenVM.numberOfDarknodes)
-                        .decimalPlaces(0),
-                    amountInEth: asset.amountInEth
-                        .dividedBy(latestRenVM.numberOfDarknodes)
-                        .decimalPlaces(0),
-                }))
-                .reduce(
-                    (map, asset, symbol) => map.set(symbol, asset),
-                    previous,
-                );
+        let current: OrderedMap<string, TokenAmount | null>;
+
+        if (!subgraphOutOfSync) {
+            current = OrderedMap<string, TokenAmount | null>();
+            if (isDefined(latestRenVM)) {
+                current = latestRenVM.cycleRewards
+                    .filter((asset) => asset.asset !== null)
+                    .map((asset) => ({
+                        ...asset,
+                        amount: asset.amount
+                            .dividedBy(latestRenVM.numberOfDarknodes)
+                            .decimalPlaces(0),
+                        amountInUsd: asset.amountInUsd
+                            .dividedBy(latestRenVM.numberOfDarknodes)
+                            .decimalPlaces(0),
+                        amountInEth: asset.amountInEth
+                            .dividedBy(latestRenVM.numberOfDarknodes)
+                            .decimalPlaces(0),
+                    }))
+                    .reduce(
+                        (map, asset, symbol) => map.set(symbol, asset),
+                        previous,
+                    );
+            }
+        } else {
+            const assets = tokenArrayToMap(latestRenVM.assets);
+
+            current = await safePromiseAllMap(
+                assets
+                    .filter((_, asset) => asset !== "ETH" && asset !== "SAI")
+                    .map(async (tokenDetails, token) => {
+                        if (latestRenVM.numberOfDarknodes.isZero()) {
+                            return null;
+                        }
+                        try {
+                            const darknodePayment = getDarknodePayment(
+                                web3,
+                                renNetwork,
+                            );
+                            const tokenAddress = tokenDetails.tokenAddress;
+                            const currentCycleRewardPool = await retryNTimes(
+                                async () =>
+                                    await darknodePayment.methods
+                                        .currentCycleRewardPool(tokenAddress)
+                                        .call(),
+                                2,
+                            );
+
+                            if (currentCycleRewardPool === null) {
+                                return null;
+                            }
+
+                            const amount = new BigNumber(
+                                currentCycleRewardPool.toString(),
+                            )
+                                .decimalPlaces(0)
+                                .div(latestRenVM.numberOfDarknodes)
+                                .decimalPlaces(0);
+
+                            let amountInEth: BigNumber | undefined;
+                            let amountInUsd: BigNumber | undefined;
+
+                            if (tokenPrices) {
+                                const price = tokenPrices.get(
+                                    token as Token,
+                                    undefined,
+                                );
+                                const decimals = tokenDetails
+                                    ? new BigNumber(
+                                          tokenDetails.decimals.toString(),
+                                      ).toNumber()
+                                    : 0;
+                                amountInEth = amount
+                                    .div(Math.pow(10, decimals))
+                                    .multipliedBy(
+                                        price ? price.get(Currency.ETH, 0) : 0,
+                                    );
+                                amountInUsd = amount
+                                    .div(Math.pow(10, decimals))
+                                    .multipliedBy(
+                                        price ? price.get(Currency.USD, 0) : 0,
+                                    );
+                            }
+
+                            return {
+                                symbol: token,
+                                amount: amount,
+                                amountInEth: amountInEth || new BigNumber(0),
+                                amountInUsd: amountInUsd || new BigNumber(0),
+                                asset: {
+                                    decimals: tokenDetails.decimals,
+                                } as { decimals: number } | null,
+                            };
+                        } catch (error) {
+                            console.error(
+                                `Error fetching rewards for ${token}`,
+                                error,
+                            );
+                            return null;
+                        }
+                    })
+                    .toOrderedMap(),
+                null,
+            );
         }
 
-        // const assets = tokenArrayToMap(latestRenVM.assets);
-
-        // const currentP = await safePromiseAllMap(
-        //     assets
-        //         .filter((_, asset) => asset !== "ETH" && asset !== "SAI")
-        //         .map(async (tokenDetails, token) => {
-        //             if (latestRenVM.numberOfDarknodes.isZero()) {
-        //                 return null;
-        //             }
-        //             try {
-        //                 const tokenAddress = tokenDetails.tokenAddress;
-        //                 const currentCycleRewardPool = await retryNTimes(
-        //                     async () =>
-        //                         await darknodePayment.methods
-        //                             .currentCycleRewardPool(tokenAddress)
-        //                             .call(),
-        //                     2,
-        //                 );
-
-        //                 if (currentCycleRewardPool === null) {
-        //                     return null;
-        //                 }
-
-        //                 const amount = new BigNumber(
-        //                     currentCycleRewardPool.toString(),
-        //                 )
-        //                     .decimalPlaces(0)
-        //                     .div(latestRenVM.numberOfDarknodes)
-        //                     .decimalPlaces(0);
-
-        //                 let amountInEth: BigNumber | undefined;
-        //                 let amountInUsd: BigNumber | undefined;
-
-        //                 if (tokenPrices) {
-        //                     const price = tokenPrices.get(
-        //                         token as Token,
-        //                         undefined,
-        //                     );
-        //                     const decimals = tokenDetails
-        //                         ? new BigNumber(
-        //                               tokenDetails.decimals.toString(),
-        //                           ).toNumber()
-        //                         : 0;
-        //                     amountInEth = amount
-        //                         .div(Math.pow(10, decimals))
-        //                         .multipliedBy(
-        //                             price ? price.get(Currency.ETH, 0) : 0,
-        //                         );
-        //                     amountInUsd = amount
-        //                         .div(Math.pow(10, decimals))
-        //                         .multipliedBy(
-        //                             price ? price.get(Currency.USD, 0) : 0,
-        //                         );
-        //                 }
-
-        //                 return {
-        //                     symbol: token,
-        //                     amount: amount,
-        //                     amountInEth: amountInEth || new BigNumber(0),
-        //                     amountInUsd: amountInUsd || new BigNumber(0),
-        //                     asset: {
-        //                         decimals: tokenDetails.decimals,
-        //                     } as { decimals: number } | null,
-        //                 };
-        //             } catch (error) {
-        //                 console.error(
-        //                     `Error fetching rewards for ${token}`,
-        //                     error,
-        //                 );
-        //                 return null;
-        //             }
-        //         })
-        //         .toOrderedMap(),
-        //     null,
-        // );
-
-        // let current = await currentP;
         current = updatePrices(current, tokenPrices);
 
         // let previous = await OrderedMap<string, TokenAmount | null>();
@@ -538,6 +548,7 @@ const useNetworkContainer = () => {
                 renNetwork,
                 darknodeID,
                 tokenPrices,
+                subgraphOutOfSync,
             );
             storeDarknodeDetails(details);
         }
@@ -683,7 +694,6 @@ const useNetworkContainer = () => {
     const showRegisterPopup = async (
         web3Address: string,
         darknodeID: string,
-        publicKey: string,
         onCancel: () => void,
         onDone: () => void,
     ) => {
@@ -705,7 +715,6 @@ const useNetworkContainer = () => {
                 renNetwork,
                 web3Address,
                 darknodeID,
-                publicKey,
                 renVM.minimumBond,
             );
 
