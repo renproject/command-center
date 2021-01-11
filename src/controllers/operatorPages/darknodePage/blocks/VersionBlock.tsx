@@ -9,6 +9,7 @@ import { RegistrationStatus } from "../../../../lib/ethereum/contractReads";
 import { isDefined } from "../../../../lib/general/isDefined";
 import { classNames } from "../../../../lib/react/className";
 import { GithubAPIContainer } from "../../../../store/githubApiContainer";
+import { GraphContainer } from "../../../../store/graphContainer";
 import { DarknodesState } from "../../../../store/networkContainer";
 import { ExternalLink } from "../../../../views/ExternalLink";
 import { StatusDot, StatusDotColor } from "../../../../views/StatusDot";
@@ -32,6 +33,12 @@ export const VersionBlock: React.FC<Props> = ({ darknodeDetails }) => {
         darknodeDetails && darknodeDetails.nodeStatistics
             ? isDarknodeUpToDate(darknodeDetails.nodeStatistics.version)
             : null;
+
+    const { renVM } = GraphContainer.useContainer();
+    const epochStart = renVM
+        ? Date.now() / 1000 - renVM.currentEpoch.timestamp.toNumber()
+        : undefined;
+    const bootstrapping = epochStart !== undefined && epochStart < 120 * 60;
 
     return (
         <Block className="version-block">
@@ -66,7 +73,9 @@ export const VersionBlock: React.FC<Props> = ({ darknodeDetails }) => {
                         ? "Operational"
                         : darknodeDetails.registrationStatus ===
                           RegistrationStatus.Registered
-                        ? "Unable to connect"
+                        ? bootstrapping
+                            ? "Bootstrapping"
+                            : "Unable to connect"
                         : "Not registered"
                     : "Connecting..."}
             </div>

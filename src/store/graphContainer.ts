@@ -43,7 +43,7 @@ const useGraphContainer = () => {
                 (renVM &&
                     newRenVM.currentEpoch.epochhash !==
                         renVM.currentEpoch.epochhash) ||
-                epochStart < 300;
+                epochStart < 600;
 
             // Show a notification about the new epoch.
             if (newEpoch && !shownEpochNotification.current) {
