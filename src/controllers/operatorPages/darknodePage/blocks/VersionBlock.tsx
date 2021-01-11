@@ -38,7 +38,7 @@ export const VersionBlock: React.FC<Props> = ({ darknodeDetails }) => {
     const epochStart = renVM
         ? Date.now() / 1000 - renVM.currentEpoch.timestamp.toNumber()
         : undefined;
-    const bootstrapping = epochStart !== undefined && epochStart < 120 * 60;
+    const bootstrapping = epochStart !== undefined && epochStart < 24 * 60 * 60;
 
     return (
         <Block className="version-block">

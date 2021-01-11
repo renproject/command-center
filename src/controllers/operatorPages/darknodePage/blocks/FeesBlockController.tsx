@@ -79,7 +79,7 @@ export const FeesBlockController: React.FC<Props> = ({
         pendingRewards,
         pendingTotalInUsd,
     } = NetworkContainer.useContainer();
-    const { renVM } = GraphContainer.useContainer();
+    const { renVM, subgraphOutOfSync } = GraphContainer.useContainer();
     const { setPopup, clearPopup } = PopupContainer.useContainer();
     const { currentCycle, previousCycle, timeSinceLastEpoch } = renVM || {};
     const {
@@ -115,7 +115,8 @@ export const FeesBlockController: React.FC<Props> = ({
         currentCycle &&
         darknodeDetails &&
         darknodeDetails.cycleStatus.get(currentCycle) ===
-            DarknodeFeeStatus.NOT_CLAIMED;
+            DarknodeFeeStatus.NOT_CLAIMED &&
+        !subgraphOutOfSync;
 
     useEffect(() => {
         // If the darknode hasn't claimed within 1 day of a new epoch, show a
