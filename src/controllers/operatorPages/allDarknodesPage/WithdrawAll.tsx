@@ -28,7 +28,7 @@ export const WithdrawAll: React.FC<Props> = ({ darknodeList }) => {
         pendingRewards,
         pendingTotalInUsd,
     } = NetworkContainer.useContainer();
-    const { renVM } = GraphContainer.useContainer();
+    const { renVM, subgraphOutOfSync } = GraphContainer.useContainer();
     const { currentCycle, previousCycle, timeSinceLastEpoch } = renVM || {};
     const {
         claimWarningShown,
@@ -134,7 +134,8 @@ export const WithdrawAll: React.FC<Props> = ({ darknodeList }) => {
                         previousCycle &&
                         darknodeDetails &&
                         darknodeDetails.cycleStatus.get(previousCycle) ===
-                            DarknodeFeeStatus.NOT_CLAIMED;
+                            DarknodeFeeStatus.NOT_CLAIMED &&
+                        !subgraphOutOfSync;
                     const showCurrentPending =
                         currentCycle &&
                         darknodeDetails &&

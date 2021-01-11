@@ -110,13 +110,13 @@ export const FeesBlockController: React.FC<Props> = ({
         previousCycle &&
         darknodeDetails &&
         darknodeDetails.cycleStatus.get(previousCycle) ===
-            DarknodeFeeStatus.NOT_CLAIMED;
+            DarknodeFeeStatus.NOT_CLAIMED &&
+        !subgraphOutOfSync;
     const showCurrentPending =
         currentCycle &&
         darknodeDetails &&
         darknodeDetails.cycleStatus.get(currentCycle) ===
-            DarknodeFeeStatus.NOT_CLAIMED &&
-        !subgraphOutOfSync;
+            DarknodeFeeStatus.NOT_CLAIMED;
 
     useEffect(() => {
         // If the darknode hasn't claimed within 1 day of a new epoch, show a
