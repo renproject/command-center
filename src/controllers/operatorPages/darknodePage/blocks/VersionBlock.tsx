@@ -12,6 +12,7 @@ import { GithubAPIContainer } from "../../../../store/githubApiContainer";
 import { GraphContainer } from "../../../../store/graphContainer";
 import { DarknodesState } from "../../../../store/networkContainer";
 import { ExternalLink } from "../../../../views/ExternalLink";
+import { InfoLabel } from "../../../../views/infoLabel/InfoLabel";
 import { StatusDot, StatusDotColor } from "../../../../views/StatusDot";
 import { Block, BlockBody, BlockTitle } from "./Block";
 
@@ -68,16 +69,28 @@ export const VersionBlock: React.FC<Props> = ({ darknodeDetails }) => {
                     }
                     size={24}
                 />
-                {darknodeDetails
-                    ? darknodeDetails.nodeStatistics
-                        ? "Operational"
-                        : darknodeDetails.registrationStatus ===
-                          RegistrationStatus.Registered
-                        ? bootstrapping
-                            ? "Bootstrapping"
-                            : "Unable to connect"
-                        : "Not registered"
-                    : "Connecting..."}
+                {darknodeDetails ? (
+                    darknodeDetails.nodeStatistics ? (
+                        "Operational"
+                    ) : darknodeDetails.registrationStatus ===
+                      RegistrationStatus.Registered ? (
+                        bootstrapping ? (
+                            <>
+                                Bootstrapping{" "}
+                                <InfoLabel>
+                                    Newly registered nodes can take a few hours
+                                    to be seen by the entire network.
+                                </InfoLabel>
+                            </>
+                        ) : (
+                            "Unable to connect"
+                        )
+                    ) : (
+                        "Not registered"
+                    )
+                ) : (
+                    "Connecting..."
+                )}
             </div>
 
             <div className="block--advanced--bottom">
