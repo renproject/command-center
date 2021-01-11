@@ -1,7 +1,7 @@
 import { Currency, CurrencyIcon, Loading } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 
 import { TokenString } from "../../../../lib/ethereum/tokens";
 import { TokenAmount } from "../../../../lib/graphQL/queries/queries";
@@ -162,9 +162,7 @@ export const FeesBlock: React.FC<Props> = ({
     isOperator,
     earningFees,
     withdrawable,
-    withdrawableInUsd,
     pending,
-    pendingInUsd,
     withdrawCallback,
     className,
 }) => {
@@ -175,6 +173,26 @@ export const FeesBlock: React.FC<Props> = ({
             setTab(newTab as Tab);
         },
         [setTab],
+    );
+
+    const withdrawableInUsd = useMemo(
+        () =>
+            withdrawable
+                ? withdrawable
+                      .map((fee) => (fee ? fee.amountInUsd : new BigNumber(0)))
+                      .reduce((acc, fee) => acc.plus(fee), new BigNumber(0))
+                : null,
+        [withdrawable],
+    );
+
+    const pendingInUsd = useMemo(
+        () =>
+            pending
+                ? pending
+                      .map((fee) => (fee ? fee.amountInUsd : new BigNumber(0)))
+                      .reduce((acc, fee) => acc.plus(fee), new BigNumber(0))
+                : null,
+        [pending],
     );
 
     const [fees, tabTotalInUsd] =
@@ -230,7 +248,6 @@ export const FeesBlock: React.FC<Props> = ({
                                         {quoteCurrency.toUpperCase()}
                                     </span>
                                 </div>
-                                {/* <button className="button button--dark"><WithdrawIcon className="icon" />Withdraw</button> */}
                             </div>
                             <div className="block--advanced--bottom">
                                 <table className="fees-block--table">
@@ -320,9 +337,7 @@ interface Props {
     isOperator: boolean;
     earningFees: boolean;
     withdrawable: OrderedMap<string, TokenAmount | null> | null;
-    withdrawableInUsd: BigNumber | null;
     pending: OrderedMap<string, TokenAmount | null> | null;
-    pendingInUsd: BigNumber | null;
     withdrawCallback: (
         tokenSymbol: string,
         tokenAddress: string,

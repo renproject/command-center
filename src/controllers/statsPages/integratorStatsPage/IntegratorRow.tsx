@@ -1,4 +1,3 @@
-import { RenNetworkDetails } from "@renproject/contracts";
 import { Currency, CurrencyIcon } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import React, { useCallback } from "react";
@@ -8,36 +7,11 @@ import { Integrator, TokenAmount } from "../../../lib/graphQL/queries/queries";
 import { classNames } from "../../../lib/react/className";
 import { NetworkContainer } from "../../../store/networkContainer";
 import { Web3Container } from "../../../store/web3Container";
-import DefaultLogo from "../../../styles/images/default-integrator.png";
 import { ExternalLink } from "../../../views/ExternalLink";
 import { TokenSection } from "../../../views/TitledSection";
 import { TokenIcon } from "../../../views/tokenIcon/TokenIcon";
 import { AnyTokenBalance, ConvertCurrency } from "../../common/TokenBalance";
-import Integrators from "./integrators.json";
-
-const resolveIntegrator = (
-    networkDetails: RenNetworkDetails,
-    id: string,
-    address: string,
-): { name: string; logo: string; urlHref: string; url: string } => {
-    const details =
-        (Integrators[networkDetails.name] &&
-            Integrators[networkDetails.name][id]) ||
-        {};
-
-    // `||` alternative that only checks for `undefined` or `null`.
-    const or = <A, B>(a: A, b: B) => (isDefined(a) ? a : b);
-
-    return {
-        name: or(details.name, address),
-        logo: or(details.logo, DefaultLogo),
-        urlHref: or(
-            details.urlHref,
-            `${networkDetails.etherscan}/address/${address}`,
-        ),
-        url: or(details.url, "Etherscan"),
-    };
-};
+import { resolveIntegrator } from "./integratorsContainer";
 
 interface Props {
     index: number;
@@ -46,53 +20,75 @@ interface Props {
     setActiveIntegrator: (id: string | null) => void;
 }
 
-const IntegratorTokenValue = ({
-    symbol,
-    volume,
-    title,
-    txCount,
-    quoteCurrency,
-}: {
+const IntegratorTokenValue: React.FC<{
     symbol: string;
     title: string;
     volume: TokenAmount | undefined;
     txCount: number | undefined;
     quoteCurrency: Currency;
-}) => {
+}> = ({ symbol, volume, title, txCount, quoteCurrency }) => (
+    <div>
+        <span className="lighter">{title}: </span>
+        {volume ? (
+            <AnyTokenBalance
+                amount={volume.amount}
+                decimals={volume.asset!.decimals}
+            />
+        ) : (
+            "..."
+        )}{" "}
+        {symbol}
+        <span className="lighter">{" - "}</span>
+        <CurrencyIcon currency={quoteCurrency} />
+        {volume && quoteCurrency === Currency.BTC && symbol === "BTC" ? (
+            <AnyTokenBalance
+                amount={volume.amount}
+                decimals={volume.asset!.decimals}
+            />
+        ) : volume ? (
+            <ConvertCurrency
+                from={Currency.USD}
+                to={quoteCurrency}
+                amount={volume.amountInUsd}
+            />
+        ) : (
+            "..."
+        )}
+        {isDefined(txCount) ? (
+            <span className="lighter"> ({txCount} txs)</span>
+        ) : (
+            <></>
+        )}
+    </div>
+);
+
+const IntegratorTokenVolume: React.FC<{
+    integrator: { now: Integrator; day: Integrator };
+    symbol: string;
+    quoteCurrency: Currency;
+}> = ({ integrator, symbol, quoteCurrency }) => {
+    const nowTxCount = integrator.now.txCount.get(symbol);
+    const nowVolume = integrator.now.volume.get(symbol);
+    const dayTxCount = integrator.day.txCount.get(symbol);
+    const dayVolume = integrator.day.volume.get(symbol);
+
     return (
-        <div>
-            <span className="lighter">{title}: </span>
-            {volume ? (
-                <AnyTokenBalance
-                    amount={volume.amount}
-                    decimals={volume.asset!.decimals}
-                />
-            ) : (
-                "..."
-            )}{" "}
-            {symbol}
-            <span className="lighter">{" - "}</span>
-            <CurrencyIcon currency={quoteCurrency} />
-            {volume && quoteCurrency === Currency.BTC && symbol === "BTC" ? (
-                <AnyTokenBalance
-                    amount={volume.amount}
-                    decimals={volume.asset!.decimals}
-                />
-            ) : volume ? (
-                <ConvertCurrency
-                    from={Currency.USD}
-                    to={quoteCurrency}
-                    amount={volume.amountInUsd}
-                />
-            ) : (
-                "..."
-            )}
-            {isDefined(txCount) ? (
-                <span className="lighter"> ({txCount} txs)</span>
-            ) : (
-                <></>
-            )}
-        </div>
+        <TokenSection icon={<TokenIcon token={symbol} />} key={symbol}>
+            <IntegratorTokenValue
+                symbol={symbol}
+                volume={nowVolume}
+                title={"All time"}
+                txCount={nowTxCount}
+                quoteCurrency={quoteCurrency}
+            />
+            <IntegratorTokenValue
+                symbol={symbol}
+                volume={dayVolume}
+                title={"24 hour"}
+                txCount={dayTxCount}
+                quoteCurrency={quoteCurrency}
+            />
+        </TokenSection>
     );
 };
 
@@ -200,42 +196,14 @@ export const IntegratorRow: React.FC<Props> = ({
                                 .reverse()
                                 .filter((value) => value.asset)
                                 .keySeq()
-                                .map((symbol) => {
-                                    const nowTxCount = integrator.now.txCount.get(
-                                        symbol,
-                                    );
-                                    const nowVolume = integrator.now.volume.get(
-                                        symbol,
-                                    );
-                                    const dayTxCount = integrator.day.txCount.get(
-                                        symbol,
-                                    );
-                                    const dayVolume = integrator.day.volume.get(
-                                        symbol,
-                                    );
-
-                                    return (
-                                        <TokenSection
-                                            icon={<TokenIcon token={symbol} />}
-                                            key={symbol}
-                                        >
-                                            <IntegratorTokenValue
-                                                symbol={symbol}
-                                                volume={nowVolume}
-                                                title={"All time"}
-                                                txCount={nowTxCount}
-                                                quoteCurrency={quoteCurrency}
-                                            />
-                                            <IntegratorTokenValue
-                                                symbol={symbol}
-                                                volume={dayVolume}
-                                                title={"24 hour"}
-                                                txCount={dayTxCount}
-                                                quoteCurrency={quoteCurrency}
-                                            />
-                                        </TokenSection>
-                                    );
-                                })
+                                .map((symbol) => (
+                                    <IntegratorTokenVolume
+                                        key={symbol}
+                                        integrator={integrator}
+                                        symbol={symbol}
+                                        quoteCurrency={quoteCurrency}
+                                    />
+                                ))
                                 .toArray()}
                         </div>
                     </div>

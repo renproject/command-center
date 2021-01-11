@@ -1,0 +1,27 @@
+.catalog--item {
+    border: 1px solid $blue-dark;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 4px;
+
+    > h3 {
+        margin-top: 0;
+    }
+
+    > p {
+        margin-bottom: 0;
+    }
+
+    > hr {
+        border: 1px solid $blue-dark;
+        margin: 20px 0;
+    }
+}
+
+.catalog--flex {
+    display: flex;
+    align-items: center;
+    > * {
+        margin: 2px;
+    }
+}

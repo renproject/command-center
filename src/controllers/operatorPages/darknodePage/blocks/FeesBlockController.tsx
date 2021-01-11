@@ -74,11 +74,7 @@ export const FeesBlockController: React.FC<Props> = ({
     isOperator,
     darknodeDetails,
 }) => {
-    const {
-        quoteCurrency,
-        pendingRewards,
-        pendingTotalInUsd,
-    } = NetworkContainer.useContainer();
+    const { quoteCurrency, pendingRewards } = NetworkContainer.useContainer();
     const { renVM, subgraphOutOfSync } = GraphContainer.useContainer();
     const { setPopup, clearPopup } = PopupContainer.useContainer();
     const { currentCycle, previousCycle, timeSinceLastEpoch } = renVM || {};
@@ -145,19 +141,6 @@ export const FeesBlockController: React.FC<Props> = ({
         setPopup,
     ]);
 
-    const cycleTotalInUsd = [
-        showPreviousPending ? previousCycle : null,
-        showCurrentPending ? currentCycle : null,
-    ].reduce((acc, cycle) => {
-        if (!cycle) {
-            return acc;
-        }
-        const cycleFeesInUsd = pendingTotalInUsd.get(cycle, null);
-        return cycleFeesInUsd
-            ? (acc || new BigNumber(0)).plus(cycleFeesInUsd)
-            : acc;
-    }, new BigNumber(0) as BigNumber);
-
     let summedPendingRewards = OrderedMap<string, TokenAmount | null>();
     if (previousCycle && showPreviousPending) {
         pendingRewards.get(previousCycle, OrderedMap());
@@ -179,11 +162,7 @@ export const FeesBlockController: React.FC<Props> = ({
     }
 
     let withdrawable = darknodeDetails ? darknodeDetails.feesEarned : null;
-    let withdrawableInUsd = darknodeDetails
-        ? darknodeDetails.feesEarnedInUsd
-        : null;
     let pending = summedPendingRewards;
-    let pendingInUsd = cycleTotalInUsd;
 
     const earningFees: boolean =
         !!darknodeDetails &&
@@ -217,9 +196,7 @@ export const FeesBlockController: React.FC<Props> = ({
             isOperator={isOperator}
             earningFees={earningFees}
             withdrawable={withdrawable}
-            withdrawableInUsd={withdrawableInUsd}
             pending={pending}
-            pendingInUsd={pendingInUsd}
             withdrawCallback={withdrawCallback}
         />
     );

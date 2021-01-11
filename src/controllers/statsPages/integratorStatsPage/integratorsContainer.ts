@@ -8,6 +8,7 @@ import moment from "moment";
 import { useEffect, useMemo, useState } from "react";
 import { createContainer } from "unstated-next";
 import { TokenString } from "../../../lib/ethereum/tokens";
+import { isDefined } from "../../../lib/general/isDefined";
 
 import {
     IntegratorRaw,
@@ -28,6 +29,31 @@ import { GraphContainer } from "../../../store/graphContainer";
 import { Web3Container } from "../../../store/web3Container";
 import DefaultLogo from "../../../styles/images/default-integrator.png";
 import Integrators from "./integrators.json";
+
+export const resolveIntegrator = (
+    networkDetails: RenNetworkDetails,
+    id: string,
+    address: string,
+): { name: string; logo: string; urlHref: string; url: string } => {
+    const details =
+        (Integrators[networkDetails.name] &&
+            Integrators[networkDetails.name][id]) ||
+        {};
+
+    // `||` alternative that only checks for `undefined` or `null`.
+    const or = <A, B>(a: A, b: B) => (isDefined(a) ? a : b);
+
+    return {
+        name: or(details.name, address),
+        logo: or(details.logo, DefaultLogo),
+        urlHref: or(
+            details.urlHref,
+            `${networkDetails.etherscan}/address/${address}`,
+        ),
+        url: or(details.url, "Etherscan"),
+    };
+};
+
 
 const rawToIntegrator = (raw: IntegratorRaw): Integrator => {
     const {
@@ -94,24 +120,6 @@ const integratorDifference = (
                       : value;
               })
             : now.volume,
-    };
-};
-
-const resolveIntegrator = (
-    networkDetails: RenNetworkDetails,
-    address: string,
-): { name: string; logo: string; urlHref: string; url: string } => {
-    const details =
-        (Integrators[networkDetails.name] &&
-            Integrators[networkDetails.name][address]) ||
-        {};
-
-    return {
-        name: details.name || address,
-        logo: details.logo || DefaultLogo,
-        urlHref:
-            details.urlHref || `${networkDetails.etherscan}/address/${address}`,
-        url: details.url || "Etherscan",
     };
 };
 
@@ -263,6 +271,7 @@ const useIntegratorsContainer = () => {
                           !search ||
                           resolveIntegrator(
                               renNetwork,
+                              integrator.now.id,
                               integrator.now.contractAddress,
                           )
                               .name.toLowerCase()

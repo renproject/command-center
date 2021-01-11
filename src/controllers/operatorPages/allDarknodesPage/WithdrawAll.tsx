@@ -23,11 +23,7 @@ interface Props {
 }
 
 export const WithdrawAll: React.FC<Props> = ({ darknodeList }) => {
-    const {
-        quoteCurrency,
-        pendingRewards,
-        pendingTotalInUsd,
-    } = NetworkContainer.useContainer();
+    const { quoteCurrency, pendingRewards } = NetworkContainer.useContainer();
     const { renVM, subgraphOutOfSync } = GraphContainer.useContainer();
     const { currentCycle, previousCycle, timeSinceLastEpoch } = renVM || {};
     const {
@@ -113,13 +109,9 @@ export const WithdrawAll: React.FC<Props> = ({ darknodeList }) => {
                         darknodeDetails.feesEarned,
                         acc.fees,
                     ).filter((fees) => fees && !fees.amount.isZero()),
-                    feesInUsd: acc.feesInUsd.plus(
-                        darknodeDetails.feesEarnedInUsd || new BigNumber(0),
-                    ),
                 }),
                 {
                     fees: OrderedMap<string, TokenAmount | null>(),
-                    feesInUsd: new BigNumber(0),
                 },
             ),
         [darknodeList],
@@ -153,22 +145,6 @@ export const WithdrawAll: React.FC<Props> = ({ darknodeList }) => {
                         setDarknodeNotClaimed(darknodeDetails.ID);
                     }
 
-                    const cycleTotalInUsd = [
-                        showPreviousPending ? previousCycle : null,
-                        showCurrentPending ? currentCycle : null,
-                    ].reduce((acc, cycle) => {
-                        if (!cycle) {
-                            return acc;
-                        }
-                        const cycleFeesInUsd = pendingTotalInUsd.get(
-                            cycle,
-                            null,
-                        );
-                        return cycleFeesInUsd
-                            ? (acc || new BigNumber(0)).plus(cycleFeesInUsd)
-                            : acc;
-                    }, null as BigNumber | null);
-
                     let summedPendingRewards = OrderedMap<
                         string,
                         TokenAmount | null
@@ -198,7 +174,6 @@ export const WithdrawAll: React.FC<Props> = ({ darknodeList }) => {
 
                     return {
                         fees: summedPendingRewards,
-                        feesInUsd: cycleTotalInUsd,
                     };
                 })
                 .reduce(
@@ -206,22 +181,18 @@ export const WithdrawAll: React.FC<Props> = ({ darknodeList }) => {
                         fees: mergeFees(darknodeDetails.fees, acc.fees).filter(
                             (fees) => fees && !fees.amount.isZero(),
                         ),
-                        feesInUsd: acc.feesInUsd.plus(
-                            darknodeDetails.feesInUsd || new BigNumber(0),
-                        ),
                     }),
                     {
                         fees: OrderedMap<string, TokenAmount | null>(),
-                        feesInUsd: new BigNumber(0),
                     },
                 ),
         [
             currentCycle,
             darknodeList,
             pendingRewards,
-            pendingTotalInUsd,
             previousCycle,
             timeSinceLastEpoch,
+            subgraphOutOfSync,
         ],
     );
 
@@ -254,9 +225,7 @@ export const WithdrawAll: React.FC<Props> = ({ darknodeList }) => {
             isOperator={true}
             earningFees={earningFees}
             withdrawable={withdrawable.fees}
-            withdrawableInUsd={withdrawable.feesInUsd}
             pending={pending.fees}
-            pendingInUsd={pending.feesInUsd}
             withdrawCallback={withdrawCallback}
         />
     );

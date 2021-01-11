@@ -3,12 +3,11 @@ import React, { useCallback, useEffect } from "react";
 import { Route, Switch } from "react-router-dom";
 
 import { classNames } from "../lib/react/className";
-import { DEFAULT_REN_NETWORK } from "../lib/react/environmentVariables";
 import { catchBackgroundException } from "../lib/react/errors";
 import { Web3Container } from "../store/web3Container";
 import { NotFound } from "../views/404";
+import { Catalog } from "../views/Catalog";
 import { URLs } from "../views/ExternalLink";
-import { NetworkBanner } from "../views/NetworkBanner";
 import { BackgroundTasks } from "./common/BackgroundTasks";
 import { ErrorBoundary } from "./common/ErrorBoundary";
 import { Header } from "./common/header/Header";
@@ -42,8 +41,6 @@ export const App = () => {
         [address],
     );
 
-    const showNetworkBanner = renNetwork.name !== DEFAULT_REN_NETWORK;
-
     useEffect(() => {
         if (loggedInBefore) {
             promptLogin({ manual: false }).catch((error) =>
@@ -59,14 +56,8 @@ export const App = () => {
             <div
                 className={classNames(
                     address ? "with-account" : "without-account",
-                    showNetworkBanner
-                        ? `with-banner with-banner--${renNetwork.chain}`
-                        : "",
                 )}
             >
-                {showNetworkBanner ? (
-                    <NetworkBanner renNetwork={renNetwork} />
-                ) : null}
                 <PopupController>
                     <ErrorBoundary>
                         <Sidebar />
@@ -152,7 +143,10 @@ export const App = () => {
                                     component={RenVMStatsPage}
                                 />
 
-                                {/* 404 */}
+                                {/* Developer catalog */}
+                                <Route path="/catalog" component={Catalog} />
+
+                                {/* 404 - must be last route */}
                                 <Route component={NotFound} />
                             </Switch>
                         </ErrorBoundary>
