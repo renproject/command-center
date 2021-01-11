@@ -25,8 +25,8 @@ const useGraphContainer = () => {
 
     const [renVM, setRenVM] = useState<RenVM | null>(null);
 
-    const [shownEpochNotification, setShownEpochNotification] = useState(false);
-    const [shownGraphError, setShownGraphError] = useState(false);
+    const shownEpochNotification = useRef(false);
+    const shownGraphError = useRef(false);
 
     const updater = async () => {
         try {
@@ -46,18 +46,18 @@ const useGraphContainer = () => {
                 epochStart < 300;
 
             // Show a notification about the new epoch.
-            if (newEpoch && !shownEpochNotification) {
-                setShownEpochNotification(true);
+            if (newEpoch && !shownEpochNotification.current) {
+                shownEpochNotification.current = true;
                 showSuccess(
                     `A new epoch has just started. There are now ${newRenVM.numberOfDarknodes} darknodes registered. Darknode rewards will appear shortly.`,
-                    300 * SECONDS,
+                    30 * SECONDS,
                 );
             }
             return { timeout: 15, result: newRenVM };
         } catch (error) {
             catchBackgroundException(error, "Error in graphStore: updater");
-            if (!renVM && !shownGraphError) {
-                setShownGraphError(true);
+            if (!renVM && !shownGraphError.current) {
+                shownGraphError.current = true;
                 showError("Failed to load RenVM data from subgraph.");
             }
             return { timeout: 15, result: renVM };
