@@ -33,12 +33,22 @@ export const IntegratorStatsPage = () => {
 
     // Load page from URL
     useEffect(() => {
-        const paramsPage = Math.max(
-            params.page ? (parseInt(params.page, 10) || 1) - 1 : 0,
-            0,
-        );
-        if (params.page && paramsPage !== page) {
-            setPage(paramsPage);
+        try {
+            const paramsPage = Math.max(
+                params.page ? (parseInt(params.page, 10) || 1) - 1 : 0,
+                0,
+            );
+            if (params.page && paramsPage !== page) {
+                setPage(paramsPage);
+            } else {
+                if (page === null) {
+                    setPage(0);
+                }
+            }
+        } catch (error) {
+            if (page === null) {
+                setPage(0);
+            }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [params.page]);
@@ -54,14 +64,14 @@ export const IntegratorStatsPage = () => {
 
     // Handle changing page
     const goToFirstPage = useCallback(() => changePage(0), [changePage]);
-    const goToPreviousPage = useCallback(() => changePage(page - 1), [
-        changePage,
-        page,
-    ]);
-    const goToNextPage = useCallback(() => changePage(page + 1), [
-        changePage,
-        page,
-    ]);
+    const goToPreviousPage = useCallback(
+        () => changePage(page !== null ? page - 1 : 0),
+        [changePage, page],
+    );
+    const goToNextPage = useCallback(
+        () => changePage(page !== null ? page + 1 : 0),
+        [changePage, page],
+    );
     // const lastPage = useCallback(() => setPage(0), [setPage]);
 
     // If there are less than 10 results, show empty rows below

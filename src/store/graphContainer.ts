@@ -1,7 +1,8 @@
 import { useApolloClient } from "@apollo/react-hooks";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { createContainer } from "unstated-next";
 import Axios from "axios";
+import { Mutex } from "async-mutex";
 
 import { useTaskSchedule } from "../hooks/useTaskSchedule";
 import { queryRenVM, RenVM } from "../lib/graphQL/queries/renVM";
@@ -9,8 +10,8 @@ import { catchBackgroundException } from "../lib/react/errors";
 import { Web3Container } from "./web3Container";
 import { subgraphEndpoint } from "../lib/graphQL/client";
 import { SECONDS } from "../controllers/common/BackgroundTasks";
-import moment from "moment";
 import { NotificationsContainer } from "./notificationsContainer";
+import { useMemoizeWithExpiry } from "../hooks/useMemoizeWithExpiry";
 
 // If the subgraph is behind by more than 30 blocks, show a warning and fall
 // back to infura for fetching rewards.
@@ -33,11 +34,8 @@ const useGraphContainer = () => {
             setRenVM(newRenVM);
 
             // Get seconds since start of epoch.
-            const now = moment();
-            const epochStart = now.diff(
-                moment(newRenVM.currentEpoch.timestamp.toNumber() * 1000),
-                "s",
-            );
+            const epochStart =
+                Date.now() / 1000 - newRenVM.currentEpoch.timestamp.toNumber();
 
             // Check if the epochhash is different or the epoch started less
             // than 5 minutes ago.
@@ -68,6 +66,18 @@ const useGraphContainer = () => {
 
     const [fetchRenVM] = useTaskSchedule(updater);
 
+    const getLatestSyncedBlock = useMemoizeWithExpiry(
+        async () =>
+            Axios.post<{
+                data: { _meta: { block: { number: number } } };
+            }>(subgraphEndpoint(renNetwork), {
+                query:
+                    "{\n    _meta {\n      block {\n        number\n      }\n    }\n}",
+            }).then((response) => response.data.data._meta.block.number),
+        60 * SECONDS,
+        [renNetwork],
+    );
+
     const [subgraphOutOfSync, setSubgraphOutOfSync] = useState(false);
 
     const [checkedBlock, setCheckedBlock] = useState(false);
@@ -80,13 +90,7 @@ const useGraphContainer = () => {
 
         (async () => {
             try {
-                const response = await Axios.post<{
-                    data: { _meta: { block: { number: number } } };
-                }>(subgraphEndpoint(renNetwork), {
-                    query:
-                        "{\n    _meta {\n      block {\n        number\n      }\n    }\n}",
-                });
-                const subgraphBlock = response.data.data._meta.block.number;
+                const subgraphBlock = await getLatestSyncedBlock();
                 const web3Block = await web3.eth.getBlockNumber();
 
                 if (
@@ -112,6 +116,7 @@ const useGraphContainer = () => {
         renVM,
         fetchRenVM,
         subgraphOutOfSync,
+        getLatestSyncedBlock,
     };
 };
 

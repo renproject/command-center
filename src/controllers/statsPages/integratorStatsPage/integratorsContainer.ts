@@ -24,6 +24,7 @@ import {
     tokenArrayToMap,
 } from "../../../lib/graphQL/volumes";
 import { extractError } from "../../../lib/react/errors";
+import { GraphContainer } from "../../../store/graphContainer";
 import { Web3Container } from "../../../store/web3Container";
 import DefaultLogo from "../../../styles/images/default-integrator.png";
 import Integrators from "./integrators.json";
@@ -118,7 +119,8 @@ const ROWS_PER_PAGE = 10;
 
 const useIntegratorsContainer = () => {
     const { renNetwork } = Web3Container.useContainer();
-    const [page, setPage] = useState(0);
+    const { getLatestSyncedBlock } = GraphContainer.useContainer();
+    const [page, setPage] = useState<number | null>(null);
     // const [search, setSearch] = useState("");
     const search: string = "";
 
@@ -131,10 +133,10 @@ const useIntegratorsContainer = () => {
             | string
         >
     >(OrderedMap());
-    const currentPage = useMemo(() => integrators.get(page), [
-        integrators,
-        page,
-    ]);
+    const currentPage = useMemo(
+        () => (page !== null ? integrators.get(page) : page),
+        [integrators, page],
+    );
     // const allIntegrators = useMemo(() =>
     //     (([] as Integrator[]).concat(...integrators.filter(Array.isArray).valueSeq().toArray())),
     //     [integrators],
@@ -144,6 +146,10 @@ const useIntegratorsContainer = () => {
     const apollo = useApolloClient();
 
     useEffect(() => {
+        if (page === null) {
+            return;
+        }
+
         (async () => {
             // Fetch page of integrators
 
@@ -163,18 +169,7 @@ const useIntegratorsContainer = () => {
 
                 const now = moment().unix();
 
-                const latestBlockResponse = await apollo.query<
-                    QueryBlockResponse
-                >({
-                    query: QUERY_BLOCK,
-                });
-
-                const activeBlock = new BigNumber(
-                    latestBlockResponse.data.renVM.activeBlock,
-                ).toNumber();
-                const activeTimestamp = new BigNumber(
-                    latestBlockResponse.data.renVM.activeTimestamp,
-                ).toNumber();
+                const latestBlockResponse = await getLatestSyncedBlock();
 
                 // TODO: Calculate dynamically or search for date in subgraph.
                 const blockTime = renNetwork.isTestnet ? 4 : 13; // seconds
@@ -191,9 +186,7 @@ const useIntegratorsContainer = () => {
                     renNetwork,
                 );
                 const startingBlock = Math.floor(
-                    activeBlock -
-                        (periodSecondsCount - (now - activeTimestamp)) /
-                            blockTime,
+                    latestBlockResponse - periodSecondsCount / blockTime,
                 );
 
                 let integratorsWithDay: Array<{

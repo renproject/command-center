@@ -25,7 +25,7 @@ const useNetworkStatsContainer = () => {
     const client = useApolloClient();
 
     const { renNetwork } = Web3Container.useContainer();
-    const { renVM } = GraphContainer.useContainer();
+    const { renVM, getLatestSyncedBlock } = GraphContainer.useContainer();
     const { numberOfDarknodes } = renVM || {};
     const { quoteCurrency, tokenPrices } = NetworkContainer.useContainer();
     const container = RenVMContainer.useContainer();
@@ -164,7 +164,13 @@ const useNetworkStatsContainer = () => {
 
                     let response: SeriesData;
                     try {
-                        response = await getVolumes(renNetwork, client, period);
+                        const latestBlock = await getLatestSyncedBlock();
+                        response = await getVolumes(
+                            renNetwork,
+                            client,
+                            period,
+                            latestBlock,
+                        );
                     } catch (error) {
                         console.error(error);
                     }

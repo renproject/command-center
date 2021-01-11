@@ -95,46 +95,25 @@ export const getVolumes = async (
     renNetwork: RenNetworkDetails,
     client: ApolloClient<unknown>,
     periodType: PeriodType,
+    latestSyncedBlock: number,
 ): Promise<SeriesData> => {
     const now = moment().unix();
 
-    const latestBlockResponse = await client.query<{
-        renVM: {
-            activeBlock: string;
-            activeTimestamp: string;
-        };
-    }>({
-        query: QUERY_BLOCK,
-    });
-
-    const activeBlock = new BigNumber(
-        latestBlockResponse.data.renVM.activeBlock,
-    ).toNumber();
-    const activeTimestamp = new BigNumber(
-        latestBlockResponse.data.renVM.activeTimestamp,
-    ).toNumber();
-
     // TODO: Calculate dynamically or search for date in subgraph.
     const blockTime = 13; // seconds
-
-    // Allow 30 blocks for the subgraph to sync blocks. This also matches the
-    // time for burns to be considered final in RenVM on mainnet.
-    // currentBlock = currentBlock - 30;
 
     // Calculate the steps so that there are 30 segments show on the graph.
     // An extra segment is fetched at the start to calculate the volume of
     // the first segment.
     const periodSecondsCount = getPeriodTimespan(periodType, renNetwork);
-    const startingBlock =
-        activeBlock -
-        (periodSecondsCount - (now - activeTimestamp)) / blockTime;
+    const startingBlock = latestSyncedBlock - periodSecondsCount / blockTime;
     // currentBlock - (periodSecondsCount / blockTime);
     const segmentCount = 50;
     const segmentLength = Math.ceil(
-        (activeBlock - startingBlock) / segmentCount,
+        (latestSyncedBlock - startingBlock) / segmentCount,
     );
     const blocks = Array.from(new Array(segmentCount + 1)).map(
-        (_, i) => activeBlock - (segmentCount - i) * segmentLength,
+        (_, i) => latestSyncedBlock - (segmentCount - i) * segmentLength,
     );
 
     // Build GraphQL query containing a request for each of the blocks.
@@ -217,8 +196,7 @@ export const getVolumes = async (
 
                 id: last.id, // "HOUR441028";
                 date:
-                    (activeTimestamp -
-                        (activeBlock - last.blockNumber) * blockTime) *
+                    (now - (latestSyncedBlock - last.blockNumber) * blockTime) *
                     1000, // 1587700800;,
 
                 volume: tokenArrayToMap(last.volume || first.volume || []),
@@ -242,8 +220,8 @@ export const getVolumes = async (
 
         id: end ? end.id : "", // "HOUR441028";
         date:
-            (activeTimestamp -
-                (activeBlock - (end ? end.blockNumber : 0)) * blockTime) *
+            (now -
+                (latestSyncedBlock - (end ? end.blockNumber : 0)) * blockTime) *
             1000, // 1587700800;
 
         // numberOfDarknodes: getFieldDifference(start, end, "numberOfDarknodes"),

@@ -217,6 +217,7 @@ export const IntegratorRow: React.FC<Props> = ({
                                     return (
                                         <TokenSection
                                             icon={<TokenIcon token={symbol} />}
+                                            key={symbol}
                                         >
                                             <IntegratorTokenValue
                                                 symbol={symbol}

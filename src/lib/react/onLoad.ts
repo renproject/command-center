@@ -70,6 +70,6 @@ export const onLoad = (title: string) => {
     // Update document title
     document.title = title; // Also set in index.html
 
-    // tslint:disable-next-line: no-console
-    console.debug(`${title} version hash: ${SOURCE_VERSION}`);
+    // // tslint:disable-next-line: no-console
+    // console.debug(`${title} version hash: ${SOURCE_VERSION}`);
 };

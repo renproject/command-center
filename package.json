@@ -46,6 +46,7 @@
     "@types/react-transition-group": "4.4",
     "@types/semver": "^7.3.4",
     "apollo-boost": "^0.4.9",
+    "async-mutex": "^0.2.6",
     "axios": "^0.21.1",
     "bchaddrjs": "^0.5.2",
     "bignumber.js": "^9.0.1",
