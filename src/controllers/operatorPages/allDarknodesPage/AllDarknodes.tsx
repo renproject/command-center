@@ -1,5 +1,6 @@
 import { List } from "immutable";
 import React, { useMemo } from "react";
+import { RegistrationStatus } from "../../../lib/ethereum/contractReads";
 
 import {
     DarknodesState,
@@ -49,12 +50,19 @@ export const AllDarknodes: React.FC<{}> = () => {
               .filter((x) => !!x) as List<DarknodesState>)
         : shownDarknodeList;
 
+    const withdrawableDetails = shownDarknodeDetails
+        ? shownDarknodeDetails.filter(
+              (details) =>
+                  details.registrationStatus === RegistrationStatus.Registered,
+          )
+        : shownDarknodeDetails;
+
     return (
         <div className="home" key={`${address || undefined} ${network.name}`}>
             <div className="container">
                 {shownDarknodeList && shownDarknodeList.size > 0 ? (
                     <ErrorBoundary>
-                        <WithdrawAll darknodeList={shownDarknodeDetails} />
+                        <WithdrawAll darknodeList={withdrawableDetails} />
                     </ErrorBoundary>
                 ) : null}
                 {darknodeRegisteringList.size > 0 ? (
