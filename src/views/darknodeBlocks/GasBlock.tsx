@@ -1,11 +1,7 @@
 import React, { useCallback, useMemo, useState } from "react";
 
 import { Tabs } from "../Tabs";
-import {
-    Block,
-    BlockBody,
-    BlockTitle,
-} from "../../controllers/pages/darknodePage/blocks/Block";
+import { Block, BlockBody, BlockTitle } from "./Block";
 
 import { ReactComponent as FlameIcon } from "../../styles/images/icon-flame.svg";
 import { Currency, CurrencyIcon } from "@renproject/react-components";

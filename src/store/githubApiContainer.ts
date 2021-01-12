@@ -17,6 +17,24 @@ const DARKNODE_CLI_ENDPOINT =
 
 const API_LIMIT_ERROR = /API rate limit exceeded/;
 
+export const isDarknodeUpToDate = (
+    darknodeVersion: string,
+    latestVersion: string,
+): boolean | null => {
+    try {
+        console.log("latestVersion", latestVersion);
+        console.log("darknodeVersion", darknodeVersion);
+
+        return semver.lte(
+            latestVersion.split("-")[0],
+            darknodeVersion.split("-")[0],
+        );
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
+};
+
 const useGithubAPIContainer = () => {
     const [latestDarknodeVersionFull, setLatestDarknodeVersionFull] = useState(
         null as string | null,
@@ -146,24 +164,6 @@ const useGithubAPIContainer = () => {
     };
 
     useTaskSchedule(updater);
-
-    const isDarknodeUpToDate = useCallback(
-        (darknodeVersionFull: string) => {
-            try {
-                return latestDarknodeVersionFull
-                    ? semver.gte(
-                          darknodeVersionFull.split("-")[0],
-                          latestDarknodeVersionFull,
-                      )
-                    : null;
-            } catch (error) {
-                console.error(error);
-                return null;
-            }
-        },
-
-        [latestDarknodeVersionFull],
-    );
 
     const isCLIUpToDate = useCallback(
         (cliVersionFull: string) => {

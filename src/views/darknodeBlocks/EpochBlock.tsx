@@ -7,11 +7,7 @@ import BigNumber from "bignumber.js";
 import React from "react";
 
 import { EpochProgress } from "../EpochProgress";
-import {
-    Block,
-    BlockBody,
-    BlockTitle,
-} from "../../controllers/pages/darknodePage/blocks/Block";
+import { Block, BlockBody, BlockTitle } from "./Block";
 
 interface Props {
     timeUntilNextEpoch: BigNumber | undefined;

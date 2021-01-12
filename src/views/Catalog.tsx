@@ -21,6 +21,10 @@ import { TokenIcon } from "./tokenIcon/TokenIcon";
 import { Web3Container } from "../store/web3Container";
 import { SECONDS } from "../controllers/common/BackgroundTasks";
 import { DarknodeName } from "./darknodeBlocks/DarknodeName";
+import {
+    DarknodeConnectionStatus,
+    VersionBlock,
+} from "./darknodeBlocks/VersionBlock";
 
 const CatalogItem: React.FC<
     {
@@ -254,6 +258,50 @@ export const Catalog = () => {
                     isOperator={true}
                     storeDarknodeName={(_, name) => setName(name)}
                 />
+            </CatalogItem>
+
+            {/* VersionBlock */}
+            <CatalogItem title="VersionBlock">
+                <h4>Up to date</h4>
+                <VersionBlock
+                    status={DarknodeConnectionStatus.Connected}
+                    darknodeVersion={"1.0.0"}
+                    latestVersion={"1.0.0"}
+                    latestVersionDaysAgo={"10 days ago"}
+                />
+                <hr />
+                <h4>Out of date</h4>
+                <VersionBlock
+                    status={DarknodeConnectionStatus.Connected}
+                    darknodeVersion={"1.0.0"}
+                    latestVersion={"1.0.1"}
+                    latestVersionDaysAgo={"3 days ago"}
+                />
+                <hr />
+                <h4>Bootstrapping</h4>
+                <VersionBlock
+                    status={DarknodeConnectionStatus.Bootstrapping}
+                    darknodeVersion={"1.0.0"}
+                    latestVersion={"1.0.0"}
+                    latestVersionDaysAgo={"3 days ago"}
+                />
+                <hr />
+                <h4>Connecting</h4>
+                <VersionBlock
+                    status={DarknodeConnectionStatus.Connecting}
+                    darknodeVersion={null}
+                    latestVersion={null}
+                    latestVersionDaysAgo={null}
+                />
+                <hr />
+                <h4>Unable to connect</h4>
+                <VersionBlock
+                    status={DarknodeConnectionStatus.NotConnected}
+                    darknodeVersion={null}
+                    latestVersion={"1.0.0"}
+                    latestVersionDaysAgo={"3 days ago"}
+                />
+                <hr />
             </CatalogItem>
         </div>
     );

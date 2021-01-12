@@ -8,7 +8,7 @@ import { EpochBlock } from "../../../views/darknodeBlocks/EpochBlock";
 import { FeesBlockController } from "./blocks/FeesBlockController";
 import { NetworkBlock } from "../../../views/darknodeBlocks/NetworkBlock";
 import { ResourcesBlock } from "../../../views/darknodeBlocks/ResourcesBlock";
-import { VersionBlock } from "./blocks/VersionBlock";
+import { VersionBlockController } from "./blocks/VersionBlockController";
 import { DarknodeAction } from "./DarknodePage";
 import { Notifications } from "./Notifications";
 import { Registration } from "./Registration";
@@ -123,7 +123,7 @@ export const DarknodeView: React.FC<Props> = ({
                     darknodeDetails={darknodeDetails}
                 />
                 <div className="block block--column">
-                    <VersionBlock darknodeDetails={darknodeDetails} />
+                    <VersionBlockController darknodeDetails={darknodeDetails} />
                     <GasBlockController
                         darknodeID={darknodeID}
                         darknodeDetails={darknodeDetails}
