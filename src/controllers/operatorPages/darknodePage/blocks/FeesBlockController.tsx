@@ -121,7 +121,7 @@ export const FeesBlockController: React.FC<Props> = ({
     useEffect(() => {
         // If the darknode hasn't claimed within 1 day of a new epoch, show a
         // warning popup.
-        const day = moment.duration(1, "day").asSeconds();
+        const day = moment.duration(5, "hours").asSeconds();
         if (
             !claimWarningShown &&
             showPreviousPending &&
