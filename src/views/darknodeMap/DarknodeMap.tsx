@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import {
     ComposableMap,
@@ -7,35 +7,22 @@ import {
     Marker,
 } from "react-simple-maps";
 import ReactTooltip from "react-tooltip";
+import { Map } from "immutable";
 
-import { Web3Container } from "../../../../store/web3Container";
-import { MapContainer } from "../mapContainer";
+import { DarknodeLocation } from "../../store/mapContainer";
 import MapJSON from "./world-50m.json";
+import { RenNetworkDetails } from "@renproject/contracts";
 
 // tslint:disable-next-line: no-any
 // const GeographyAlt: any = Geography;
 
-export const DarknodeMap = () => {
-    const { renNetwork } = Web3Container.useContainer();
-    const { darknodes, fetchDarknodes } = MapContainer.useContainer();
+interface Props {
+    renNetwork: RenNetworkDetails;
+    darknodes: Map<string, DarknodeLocation>;
+}
+
+export const DarknodeMap: React.FC<Props> = ({ renNetwork, darknodes }) => {
     const [tooltipContent, setTooltipContent] = useState("");
-
-    useEffect(() => {
-        const fetchIPs = () => {
-            fetchDarknodes().catch(console.error);
-        };
-
-        // Every two minutes
-        const interval = setInterval(fetchIPs, 120 * 1000);
-        if (darknodes.size === 0) {
-            fetchIPs();
-        }
-
-        return () => {
-            clearInterval(interval);
-        };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [renNetwork && renNetwork.name]);
 
     return (
         <div className="map">

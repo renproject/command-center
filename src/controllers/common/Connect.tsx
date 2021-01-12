@@ -9,7 +9,7 @@ import { NotificationsContainer } from "../../store/notificationsContainer";
 import { PopupContainer } from "../../store/popupContainer";
 import { UIContainer } from "../../store/uiContainer";
 import { Web3Container } from "../../store/web3Container";
-import { MapContainer } from "../pages/darknodeStatsPage/mapContainer";
+import { MapContainer } from "../../store/mapContainer";
 import { IntegratorsContainer } from "../pages/integratorStatsPage/integratorsContainer";
 import { NetworkStatsContainer } from "../pages/networkStatsPage/networkStatsContainer";
 import { RenVMContainer } from "../pages/renvmStatsPage/renvmContainer";

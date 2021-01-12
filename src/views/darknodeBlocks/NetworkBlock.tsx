@@ -21,7 +21,6 @@ export const NetworkBlock: React.FC<Props> = ({
     darknodeID,
     nodeStatistics,
 }) => {
-    console.log(nodeStatistics?.toJS());
     const darknodeIDBase58 = darknodeID
         ? darknodeIDHexToBase58(darknodeID)
         : "";

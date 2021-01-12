@@ -1,7 +1,7 @@
 import { renMainnet } from "@renproject/contracts";
 import { Currency, sleep } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
-import { OrderedMap } from "immutable";
+import { Map } from "immutable";
 import React, { useState } from "react";
 import { FeesBlock } from "./darknodeBlocks/FeesBlock";
 import { GasBlock } from "./darknodeBlocks/GasBlock";
@@ -25,8 +25,8 @@ import {
     DarknodeConnectionStatus,
     VersionBlock,
 } from "./darknodeBlocks/VersionBlock";
+import { Point } from "react-simple-maps";
 import { EmptyDarknodeCard } from "./darknodeCards/EmptyDarknodeCard";
-import { EmptyDarknodeList } from "./darknodeCards/EmptyDarknodeList";
 import { DarknodeCard } from "./darknodeCards/DarknodeCard";
 import { RegistrationStatus } from "../lib/ethereum/contractReads";
 import { EpochBlock } from "./darknodeBlocks/EpochBlock";
@@ -35,6 +35,7 @@ import { DarknodeAction } from "../controllers/pages/darknodePage/DarknodePage";
 import { NodeStatistics } from "../lib/darknode/jsonrpc";
 import { NetworkBlock } from "./darknodeBlocks/NetworkBlock";
 import { ResourcesBlock } from "./darknodeBlocks/ResourcesBlock";
+import { DarknodeMap } from "./darknodeMap/DarknodeMap";
 
 const CatalogItem: React.FC<
     {
@@ -79,12 +80,30 @@ const defaultNodeStatistics = new NodeStatistics({
     cores: 1,
 });
 
+const defaultDarknodeLocations = Map<
+    string,
+    { darknodeID: string; point: Point }
+>()
+    .set("8MGMnxzVuTESp8nMQGtXVjqLX7c54e", {
+        darknodeID: "8MGMnxzVuTESp8nMQGtXVjqLX7c54e",
+        point: [2.165068287374475, 48.697668287374476],
+    })
+    .set("8MGWsPMRNhgbCePqGU6Rk8SpUWrwLt", {
+        darknodeID: "8MGWsPMRNhgbCePqGU6Rk8SpUWrwLt",
+        point: [5.677960365237794, 53.09076036523779],
+    })
+    .set("8MGvowp18gG3qZsvDNEWBaPgSkMB8g", {
+        darknodeID: "8MGvowp18gG3qZsvDNEWBaPgSkMB8g",
+        point: [-73.25160764809007, 45.83269235190993],
+    });
+
 export const Catalog = () => {
     const {
         address,
         balance,
         promptLogin,
         web3BrowserName,
+        renNetwork,
     } = Web3Container.useContainer();
     const { quoteCurrency, pendingRewards } = NetworkContainer.useContainer();
     const { renVM } = GraphContainer.useContainer();
@@ -575,6 +594,14 @@ export const Catalog = () => {
             {/* ResourcesBlock */}
             <CatalogItem title="ResourcesBlock">
                 <ResourcesBlock nodeStatistics={defaultNodeStatistics} />
+            </CatalogItem>
+
+            {/* DarknodeMap */}
+            <CatalogItem title="DarknodeMap">
+                <DarknodeMap
+                    renNetwork={renNetwork}
+                    darknodes={defaultDarknodeLocations}
+                />
             </CatalogItem>
         </div>
     );

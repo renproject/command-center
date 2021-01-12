@@ -12,7 +12,7 @@ import { EncodedData, Encodings } from "../../../lib/general/encodedData";
 import { DEFAULT_REQUEST_TIMEOUT } from "../../../lib/react/environmentVariables";
 import { extractError } from "../../../lib/react/errors";
 import { Web3Container } from "../../../store/web3Container";
-import { getLightnode } from "../darknodeStatsPage/mapContainer";
+import { getLightnode } from "../../../store/mapContainer";
 
 export type Tx = ResponseQueryTx["tx"];
 

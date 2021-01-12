@@ -6,13 +6,13 @@ import { useRef, useState } from "react";
 import { Point } from "react-simple-maps";
 import { createContainer } from "unstated-next";
 
-import { DEFAULT_REQUEST_TIMEOUT } from "../../../lib/react/environmentVariables";
-import { Web3Container } from "../../../store/web3Container";
-import { retryNTimes } from "../renvmStatsPage/renvmContainer";
+import { DEFAULT_REQUEST_TIMEOUT } from "../lib/react/environmentVariables";
+import { Web3Container } from "./web3Container";
+import { retryNTimes } from "../controllers/pages/renvmStatsPage/renvmContainer";
 
 export const SESSION_MAP_LIMIT = 30;
 
-interface DarknodeLocation {
+export interface DarknodeLocation {
     darknodeID: string;
     point: Point;
 }

@@ -13,6 +13,7 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 
 import { classNames } from "../../../lib/react/className";
+import { NODE_ENV } from "../../../lib/react/environmentVariables";
 import { NetworkContainer } from "../../../store/networkContainer";
 import { UIContainer } from "../../../store/uiContainer";
 import { Web3Container } from "../../../store/web3Container";
@@ -140,6 +141,15 @@ export const Header = () => {
                     icon={<RenVMIcon />}
                     activePath={location.pathname}
                 />
+
+                {NODE_ENV === "development" ? (
+                    <MenuItem
+                        path="/catalog"
+                        title="Catalog"
+                        icon={<OverviewIcon />}
+                        activePath={location.pathname}
+                    />
+                ) : null}
 
                 {/* {languageDropdownNode} */}
                 {currencyDropdownNode}

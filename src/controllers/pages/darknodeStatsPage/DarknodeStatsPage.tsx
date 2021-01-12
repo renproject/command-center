@@ -1,12 +1,13 @@
 import { Currency, CurrencyIcon, Loading } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 
 import { isDefined } from "../../../lib/general/isDefined";
 import { multiplyTokenAmount } from "../../../lib/graphQL/queries/queries";
 import { GithubAPIContainer } from "../../../store/githubApiContainer";
 import { GraphContainer } from "../../../store/graphContainer";
 import { NetworkContainer } from "../../../store/networkContainer";
+import { Web3Container } from "../../../store/web3Container";
 import { ReactComponent as IconDarknodesOnline } from "../../../styles/images/icon-darknodes-online.svg";
 import { ReactComponent as IconIncome } from "../../../styles/images/icon-income.svg";
 import { Change } from "../../../views/Change";
@@ -14,8 +15,9 @@ import { EpochProgress } from "../../../views/EpochProgress";
 import { ExternalLink } from "../../../views/ExternalLink";
 import { Stat, Stats } from "../../../views/Stat";
 import { ConvertCurrency } from "../../common/TokenBalance";
-import { DarknodeMap } from "./darknodeMap/DarknodeMap";
+import { DarknodeMap } from "../../../views/darknodeMap/DarknodeMap";
 import { FeesStat } from "./FeesStat";
+import { MapContainer } from "../../../store/mapContainer";
 
 const REN_TOTAL_SUPPLY = new BigNumber(1000000000);
 
@@ -44,10 +46,25 @@ export const DarknodeStatsPage = () => {
         latestCLIVersionDaysAgo,
     } = GithubAPIContainer.useContainer();
 
-    // const updatedFees = useMemo(
-    //     () => (fees ? updatePrices(fees, tokenPrices) : fees),
-    //     [fees, tokenPrices],
-    // );
+    const { renNetwork } = Web3Container.useContainer();
+    const { darknodes, fetchDarknodes } = MapContainer.useContainer();
+
+    useEffect(() => {
+        const fetchIPs = () => {
+            fetchDarknodes().catch(console.error);
+        };
+
+        // Every two minutes
+        const interval = setInterval(fetchIPs, 120 * 1000);
+        if (darknodes.size === 0) {
+            fetchIPs();
+        }
+
+        return () => {
+            clearInterval(interval);
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [renNetwork && renNetwork.name]);
 
     const current =
         (isDefined(currentCycle) &&
@@ -232,7 +249,7 @@ export const DarknodeStatsPage = () => {
                 </Stat>
             </Stats>
             <div className="overview--bottom">
-                <DarknodeMap />
+                <DarknodeMap darknodes={darknodes} renNetwork={renNetwork} />
                 <Stats className="overview--bottom--right">
                     {/* <Stat message="All time total" big>$?</Stat> */}
                     <Stat

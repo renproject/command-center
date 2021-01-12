@@ -32,9 +32,9 @@
 @import "scss/withdrawAll";
 
 // Styles in src/components
+@import "../views/darknodeMap/darknodeMap";
 @import "../controllers/pages/renvmStatsPage/renvm";
 @import "../controllers/pages/darknodeStatsPage/overview";
-@import "../controllers/pages/darknodeStatsPage/darknodeMap/darknodeMap";
 @import "../controllers/pages/networkStatsPage/networkStats";
 @import "../controllers/pages/integratorStatsPage/integratorStatsPage";
 

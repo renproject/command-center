@@ -6,7 +6,7 @@ import { List, OrderedMap, OrderedSet } from "immutable";
 import Web3 from "web3";
 import { sha3, toChecksumAddress } from "web3-utils";
 
-import { getLightnode } from "../../controllers/pages/darknodeStatsPage/mapContainer";
+import { getLightnode } from "../../store/mapContainer";
 import { retryNTimes } from "../../controllers/pages/renvmStatsPage/renvmContainer";
 import { DarknodesState } from "../../store/networkContainer";
 import { darknodeIDHexToBase58 } from "../darknode/darknodeID";
