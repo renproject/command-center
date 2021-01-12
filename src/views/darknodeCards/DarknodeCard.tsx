@@ -5,52 +5,70 @@ import {
     FontAwesomeIconProps,
 } from "@fortawesome/react-fontawesome";
 import { Blocky, Currency, CurrencyIcon } from "@renproject/react-components";
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { Token } from "../../lib/ethereum/tokens";
 import { classNames } from "../../lib/react/className";
-import { DarknodesState } from "../../store/networkContainer";
 import { DarknodeID } from "../DarknodeID";
 import {
     ConvertCurrency,
     TokenBalance,
 } from "../../controllers/common/TokenBalance";
-import { statusText } from "../../controllers/pages/darknodePage/Registration";
+import { statusText } from "../../controllers/pages/darknodePage/RegistrationController";
+import BigNumber from "bignumber.js";
+import { RegistrationStatus } from "../../lib/ethereum/contractReads";
+import { darknodeIDHexToBase58 } from "../../lib/darknode/darknodeID";
 
 interface Props {
     darknodeID: string;
-    darknodeDetails: DarknodesState | null;
     name: string | undefined;
+    registrationStatus: RegistrationStatus | null;
+    feesEarnedInUsd: BigNumber | null;
+    ethBalance: BigNumber | null;
     quoteCurrency: Currency;
-    url: string;
-    faded: boolean | null;
-    hidable: boolean;
-    confirmedRemove: boolean;
     removeDarknode: () => void;
-    continuable: boolean;
+
+    // Optional
+    continuable?: boolean;
+    faded?: boolean | null;
+    hidable?: boolean;
 }
 
-export const DarknodeCardView: React.FC<Props> = ({
+export const DarknodeCard: React.FC<Props> = ({
     darknodeID,
-    darknodeDetails,
+    registrationStatus,
+    feesEarnedInUsd,
+    ethBalance,
     name,
     quoteCurrency,
-    url,
     faded,
     hidable,
-    confirmedRemove,
     removeDarknode,
     continuable,
 }) => {
+    const [confirmedRemove, setConfirmedRemove] = useState(false);
+
     const handleRemoveDarknode = useCallback(
         (e: React.MouseEvent<HTMLDivElement>): void => {
             e.stopPropagation();
             e.preventDefault();
+
+            if (!confirmedRemove) {
+                setConfirmedRemove(true);
+                return;
+            }
+
             removeDarknode();
         },
-        [removeDarknode],
+        [removeDarknode, confirmedRemove],
     );
+
+    const darknodeIDBase58 = darknodeIDHexToBase58(darknodeID);
+
+    const url = continuable
+        ? `/darknode/${darknodeIDBase58}?action=register`
+        : `/darknode/${darknodeIDBase58}`;
 
     return (
         <Link className="no-underline" to={url}>
@@ -93,12 +111,12 @@ export const DarknodeCardView: React.FC<Props> = ({
                     <span className="darknode-card--status">
                         {continuable
                             ? "Continue registering"
-                            : darknodeDetails
-                            ? statusText[darknodeDetails.registrationStatus]
+                            : registrationStatus
+                            ? statusText[registrationStatus]
                             : ""}
                     </span>
                 </div>
-                {darknodeDetails ? (
+                {feesEarnedInUsd && ethBalance ? (
                     <div className="darknode-card--bottom">
                         <div className="darknode-card--rewards">
                             <FontAwesomeIcon
@@ -107,11 +125,11 @@ export const DarknodeCardView: React.FC<Props> = ({
                             />
                             <span className="currency-value">
                                 <CurrencyIcon currency={quoteCurrency} />
-                                {darknodeDetails.feesEarnedInUsd ? (
+                                {feesEarnedInUsd ? (
                                     <ConvertCurrency
                                         from={Currency.USD}
                                         to={quoteCurrency}
-                                        amount={darknodeDetails.feesEarnedInUsd}
+                                        amount={feesEarnedInUsd}
                                     />
                                 ) : (
                                     "..."
@@ -128,10 +146,10 @@ export const DarknodeCardView: React.FC<Props> = ({
                             />
                             <span className="currency-value">
                                 <CurrencyIcon currency={Currency.ETH} />
-                                {darknodeDetails.ethBalance ? (
+                                {ethBalance ? (
                                     <TokenBalance
                                         token={Token.ETH}
-                                        amount={darknodeDetails.ethBalance}
+                                        amount={ethBalance}
                                         digits={3}
                                     />
                                 ) : (

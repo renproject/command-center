@@ -1,13 +1,12 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 
-import { darknodeIDHexToBase58 } from "../../../lib/darknode/darknodeID";
 import { RegistrationStatus } from "../../../lib/ethereum/contractReads";
 import {
     DarknodesState,
     NetworkContainer,
 } from "../../../store/networkContainer";
 import { Web3Container } from "../../../store/web3Container";
-import { DarknodeCardView } from "../../../views/darknodeCards/DarknodeCardView";
+import { DarknodeCard } from "../../../views/darknodeCards/DarknodeCard";
 
 interface Props {
     darknodeID: string;
@@ -16,7 +15,7 @@ interface Props {
     registering: boolean | undefined;
 }
 
-export const DarknodeCard: React.FC<Props> = ({
+export const DarknodeCardController: React.FC<Props> = ({
     darknodeID,
     darknodeDetails,
     name,
@@ -29,8 +28,6 @@ export const DarknodeCard: React.FC<Props> = ({
         removeRegisteringDarknode,
     } = NetworkContainer.useContainer();
 
-    const [confirmedRemove, setConfirmedRemove] = useState(false);
-
     // If we have the public key and the status is unregistered (or the status is not available yet), then link to
     // the registration page
     const continuable =
@@ -41,18 +38,12 @@ export const DarknodeCard: React.FC<Props> = ({
         false;
 
     const handleRemoveDarknode = useCallback((): void => {
-        if (!confirmedRemove) {
-            setConfirmedRemove(true);
-            return;
-        }
-
         if (continuable) {
             removeRegisteringDarknode(darknodeID);
         } else if (address) {
             hideDarknode(darknodeID, address);
         }
     }, [
-        confirmedRemove,
         continuable,
         removeRegisteringDarknode,
         address,
@@ -72,22 +63,18 @@ export const DarknodeCard: React.FC<Props> = ({
                 RegistrationStatus.Unregistered) ||
         continuable;
 
-    const darknodeIDBase58 = darknodeIDHexToBase58(darknodeID);
-
-    const url = continuable
-        ? `/darknode/${darknodeIDBase58}?action=register`
-        : `/darknode/${darknodeIDBase58}`;
-
     return (
-        <DarknodeCardView
+        <DarknodeCard
             darknodeID={darknodeID}
-            darknodeDetails={darknodeDetails}
+            registrationStatus={
+                darknodeDetails && darknodeDetails.registrationStatus
+            }
+            feesEarnedInUsd={darknodeDetails && darknodeDetails.feesEarnedInUsd}
+            ethBalance={darknodeDetails && darknodeDetails.ethBalance}
             name={name}
             quoteCurrency={quoteCurrency}
-            url={url}
             faded={faded}
             hidable={hidable}
-            confirmedRemove={confirmedRemove}
             removeDarknode={handleRemoveDarknode}
             continuable={continuable}
         />

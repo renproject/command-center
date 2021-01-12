@@ -109,7 +109,6 @@ export const DarknodeName: React.FC<Props> = ({
                             Darknode names are stored in your browser.
                         </InfoLabel>
                     </button>
-                    {/* {darknodeDetails ? <button>View details</button> : null} */}
                 </>
             )}
         </div>

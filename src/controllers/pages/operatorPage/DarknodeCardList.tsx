@@ -2,11 +2,11 @@ import { Loading } from "@renproject/react-components";
 import { Map, OrderedSet } from "immutable";
 import React from "react";
 
-import { DarknodesState } from "../../store/networkContainer";
-import { ErrorBoundary } from "../../controllers/common/ErrorBoundary";
-import { DarknodeCard } from "../../controllers/pages/operatorPage/DarknodeCard";
-import { EmptyDarknodeCard } from "./EmptyDarknodeCard";
-import { EmptyDarknodeList } from "./EmptyDarknodeList";
+import { DarknodesState } from "../../../store/networkContainer";
+import { ErrorBoundary } from "../../common/ErrorBoundary";
+import { DarknodeCardController } from "./DarknodeCardController";
+import { EmptyDarknodeCard } from "../../../views/darknodeCards/EmptyDarknodeCard";
+import { EmptyDarknodeList } from "../../../views/darknodeCards/EmptyDarknodeList";
 
 interface Props {
     darknodeList: OrderedSet<string> | null;
@@ -48,7 +48,7 @@ export const DarknodeCardList: React.FC<Props> = ({
 
                                 return (
                                     <ErrorBoundary key={darknodeID}>
-                                        <DarknodeCard
+                                        <DarknodeCardController
                                             key={darknodeID}
                                             name={name}
                                             darknodeID={darknodeID}

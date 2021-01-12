@@ -8,7 +8,7 @@ import {
 } from "../../../store/networkContainer";
 import { Web3Container } from "../../../store/web3Container";
 import { ErrorBoundary } from "../../common/ErrorBoundary";
-import { DarknodeCardList } from "../../../views/darknodeCards/DarknodeCardList";
+import { DarknodeCardList } from "./DarknodeCardList";
 import { WithdrawAll } from "./WithdrawAll";
 
 /**

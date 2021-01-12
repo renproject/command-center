@@ -1,19 +1,11 @@
 import { Loading } from "@renproject/react-components";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
-import { NULL, RegistrationStatus } from "../../../lib/ethereum/contractReads";
-import { classNames } from "../../../lib/react/className";
-import {
-    catchBackgroundException,
-    catchInteractionException,
-} from "../../../lib/react/errors";
-import { GraphContainer } from "../../../store/graphContainer";
-import {
-    DarknodesState,
-    NetworkContainer,
-} from "../../../store/networkContainer";
-import { Web3Container } from "../../../store/web3Container";
-import { StatusDot, StatusDotColor } from "../../../views/StatusDot";
+import { NULL, RegistrationStatus } from "../lib/ethereum/contractReads";
+import { DarknodesState } from "../store/networkContainer";
+import { StatusDot, StatusDotColor } from "../views/StatusDot";
+import { classNames } from "../lib/react/className";
+import { DarknodeAction } from "../controllers/pages/darknodePage/DarknodePage";
 
 export const statusText = {
     [RegistrationStatus.Unknown]: "Loading...",
@@ -26,34 +18,28 @@ export const statusText = {
 };
 
 interface Props {
-    isOperator: boolean;
+    address: string | null;
+    operator: string | null;
     registrationStatus: RegistrationStatus;
-    darknodeID: string;
-    darknodeDetails: DarknodesState | null;
+    web3BrowserName: string;
+    action: DarknodeAction;
+    loginCallback: () => Promise<void>;
+    registerCallback?: () => Promise<void>;
+    deregisterCallback?: () => Promise<void>;
+    refundCallback?: () => Promise<void>;
 }
 
 export const Registration: React.FC<Props> = ({
-    darknodeID,
-    darknodeDetails,
+    address,
     registrationStatus,
-    isOperator,
+    operator,
+    web3BrowserName,
+    action,
+    loginCallback,
+    registerCallback,
+    deregisterCallback,
+    refundCallback,
 }) => {
-    const {
-        address,
-        promptLogin,
-        web3BrowserName,
-    } = Web3Container.useContainer();
-    const { renVM } = GraphContainer.useContainer();
-    const {
-        tokenPrices,
-        unhideDarknode,
-        updateDarknodeDetails,
-        updateOperatorDarknodes,
-        showRegisterPopup,
-        showDeregisterPopup,
-        showRefundPopup,
-    } = NetworkContainer.useContainer();
-
     const [initialRegistrationStatus] = useState(registrationStatus);
     const [active, setActive] = useState(false);
 
@@ -64,100 +50,59 @@ export const Registration: React.FC<Props> = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [registrationStatus]);
 
-    const onCancel = () => setActive(false);
-
-    const onDone = async () => {
-        await updateDarknodeDetails(darknodeID).catch(/* ignore error */);
-        setActive(false);
-    };
-
-    const onDoneRegister = async () => {
-        await updateOperatorDarknodes().catch((error) =>
-            catchBackgroundException(
-                error,
-                "Error in operatorPopupActions > showRegisterPopup > updateOperatorDarknodes",
-            ),
-        );
-
-        if (tokenPrices) {
-            try {
-                await updateDarknodeDetails(darknodeID);
-            } catch (error) {
-                catchBackgroundException(
-                    error,
-                    "Error in operatorPopupActions > showRegisterPopup > updateDarknodeDetails",
-                );
-            }
-        }
-
-        setActive(false);
-    };
+    const onDone = () => setActive(false);
 
     const login = async () => {
         // If the user is not logged in, prompt login. On mobile, it may not be
         // obvious to the user that they need to login.
         if (!address) {
-            await promptLogin({ manual: true });
+            await loginCallback();
         }
     };
 
     const handleRegister = async (): Promise<void> => {
-        if (!address) {
+        if (!address || !registerCallback) {
             return; // TODO: Show error.
         }
 
         setActive(true);
-        try {
-            await showRegisterPopup(
-                address,
-                darknodeID,
-                onCancel,
-                onDoneRegister,
-            );
-            unhideDarknode(darknodeID, address);
-        } catch (error) {
-            catchInteractionException(
-                error,
-                "Error in Registration > handleRegister > showRegisterPopup",
-            );
-            onCancel();
-        }
+        await registerCallback().finally(onDone);
     };
 
     const handleDeregister = async (): Promise<void> => {
-        if (!address) {
+        if (!address || !deregisterCallback) {
             return;
         }
 
         setActive(true);
-        showDeregisterPopup(
-            darknodeID,
-            darknodeDetails && darknodeDetails.feesEarnedInUsd,
-            onCancel,
-            onDone,
-        );
+        await deregisterCallback().finally(onDone);
     };
 
     const handleRefund = async (): Promise<void> => {
-        if (!address) {
+        if (!address || !refundCallback) {
             return;
         }
 
         setActive(true);
-        showRefundPopup(darknodeID, onCancel, onDone);
+        await refundCallback().finally(onDone);
     };
 
     const disabled = active || !address;
-    const registrationDisabled = active || !tokenPrices || !renVM;
+
+    const noOperator = registrationStatus === RegistrationStatus.Unregistered;
+
+    const isOperator = useMemo(
+        () =>
+            (action === DarknodeAction.Register && noOperator) ||
+            (address &&
+                operator &&
+                address.toLowerCase() === operator.toLowerCase()),
+        [address, operator, action, noOperator],
+    );
 
     const noStatus =
         registrationStatus === RegistrationStatus.Unregistered ||
         (isOperator && registrationStatus === RegistrationStatus.Refundable);
-
-    const noOperator =
-        registrationStatus === RegistrationStatus.Unregistered &&
-        darknodeDetails &&
-        darknodeDetails.operator === NULL;
 
     return (
         <div className="status">
@@ -186,8 +131,7 @@ export const Registration: React.FC<Props> = ({
                     {registrationStatus === RegistrationStatus.Unregistered ? (
                         !address ? (
                             <button
-                                disabled={registrationDisabled}
-                                className="status--button"
+                                className="status--button status--button--blue"
                                 onClick={login}
                             >
                                 {active ? (
@@ -204,8 +148,8 @@ export const Registration: React.FC<Props> = ({
                             </button>
                         ) : (
                             <button
-                                disabled={registrationDisabled}
-                                className="status--button"
+                                disabled={disabled || !registerCallback}
+                                className="status--button status--button--blue"
                                 onClick={handleRegister}
                             >
                                 {active ? (
@@ -224,7 +168,7 @@ export const Registration: React.FC<Props> = ({
                     ) : null}
                     {registrationStatus === RegistrationStatus.Registered ? (
                         <button
-                            disabled={disabled}
+                            disabled={disabled || !deregisterCallback}
                             className="status--button"
                             onClick={handleDeregister}
                         >
@@ -243,8 +187,8 @@ export const Registration: React.FC<Props> = ({
                     ) : null}
                     {registrationStatus === RegistrationStatus.Refundable ? (
                         <button
-                            disabled={disabled}
-                            className="status--button status--button--focus"
+                            disabled={disabled || !refundCallback}
+                            className="status--button status--button--blue"
                             onClick={handleRefund}
                         >
                             {active ? (
@@ -262,13 +206,10 @@ export const Registration: React.FC<Props> = ({
                     ) : null}
                 </>
             ) : noOperator ? (
-                <span className="status--operator">NOT REGISTERED</span>
-            ) : darknodeDetails && darknodeDetails.operator ? (
+                <span className="status--title">NOT REGISTERED</span>
+            ) : operator ? (
                 <span className="status--operator">
-                    Operator:{" "}
-                    <span className="monospace">
-                        {darknodeDetails.operator}
-                    </span>
+                    Operator: <span className="monospace">{operator}</span>
                 </span>
             ) : null}
         </div>

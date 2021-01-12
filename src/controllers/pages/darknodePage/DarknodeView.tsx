@@ -11,7 +11,7 @@ import { ResourcesBlock } from "../../../views/darknodeBlocks/ResourcesBlock";
 import { VersionBlockController } from "./blocks/VersionBlockController";
 import { DarknodeAction } from "./DarknodePage";
 import { Notifications } from "./Notifications";
-import { Registration } from "./Registration";
+import { RegistrationController } from "./RegistrationController";
 import { GasBlockController } from "./blocks/GasBlockController";
 import { DarknodeName } from "../../../views/darknodeBlocks/DarknodeName";
 
@@ -92,8 +92,8 @@ export const DarknodeView: React.FC<Props> = ({
                 </div>
                 <div className="block--column col-xl-4 col-lg-12">
                     {action === DarknodeAction.Register ? (
-                        <Registration
-                            isOperator
+                        <RegistrationController
+                            action={action}
                             registrationStatus={
                                 darknodeDetails
                                     ? darknodeDetails.registrationStatus
@@ -103,8 +103,8 @@ export const DarknodeView: React.FC<Props> = ({
                             darknodeID={darknodeID}
                         />
                     ) : darknodeDetails ? (
-                        <Registration
-                            isOperator={isOperator}
+                        <RegistrationController
+                            action={action}
                             registrationStatus={
                                 darknodeDetails.registrationStatus
                             }
@@ -131,8 +131,17 @@ export const DarknodeView: React.FC<Props> = ({
                     {/* <GasGraph darknodeDetails={darknodeDetails} /> */}
                 </div>
                 <div className="block block--column">
-                    <NetworkBlock darknodeDetails={darknodeDetails} />
-                    <ResourcesBlock darknodeDetails={darknodeDetails} />
+                    <NetworkBlock
+                        darknodeID={darknodeDetails && darknodeDetails.ID}
+                        nodeStatistics={
+                            darknodeDetails && darknodeDetails.nodeStatistics
+                        }
+                    />
+                    <ResourcesBlock
+                        nodeStatistics={
+                            darknodeDetails && darknodeDetails.nodeStatistics
+                        }
+                    />
                     <EpochBlock
                         timeUntilNextEpoch={timeUntilNextEpoch}
                         timeSinceLastEpoch={timeSinceLastEpoch}

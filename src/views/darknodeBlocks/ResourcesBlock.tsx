@@ -6,15 +6,16 @@ import {
 import filesize from "filesize";
 import React from "react";
 import { Doughnut } from "react-chartjs-2";
+import { NodeStatistics } from "../../lib/darknode/jsonrpc";
 
 import { DarknodesState } from "../../store/networkContainer";
 import { Block, BlockBody, BlockTitle } from "./Block";
 
 interface Props {
-    darknodeDetails: DarknodesState | null;
+    nodeStatistics: NodeStatistics | null;
 }
 
-export const ResourcesBlock: React.FC<Props> = ({ darknodeDetails }) => (
+export const ResourcesBlock: React.FC<Props> = ({ nodeStatistics }) => (
     <Block className="resources-block">
         <BlockTitle>
             <h3>
@@ -26,7 +27,7 @@ export const ResourcesBlock: React.FC<Props> = ({ darknodeDetails }) => (
             </h3>
         </BlockTitle>
 
-        {darknodeDetails ? (
+        {nodeStatistics ? (
             <BlockBody>
                 <div className="resources--block--charts">
                     <div className="resources--chart--and--label">
@@ -38,29 +39,23 @@ export const ResourcesBlock: React.FC<Props> = ({ darknodeDetails }) => (
                                 data={{
                                     maintainAspectRation: true,
                                     labels: [
-                                        darknodeDetails.nodeStatistics
+                                        nodeStatistics
                                             ? `Used: ${filesize(
-                                                  darknodeDetails.nodeStatistics
-                                                      .memoryUsed,
+                                                  nodeStatistics.memoryUsed,
                                               )} -`
                                             : "Used: Unknown -",
-                                        darknodeDetails.nodeStatistics
+                                        nodeStatistics
                                             ? `Free: ${filesize(
-                                                  darknodeDetails.nodeStatistics
-                                                      .memoryFree,
+                                                  nodeStatistics.memoryFree,
                                               )} -`
                                             : "Free: Unknown -",
                                     ],
                                     datasets: [
                                         {
-                                            data: darknodeDetails.nodeStatistics
+                                            data: nodeStatistics
                                                 ? [
-                                                      darknodeDetails
-                                                          .nodeStatistics
-                                                          .memoryUsed,
-                                                      darknodeDetails
-                                                          .nodeStatistics
-                                                          .memoryFree,
+                                                      nodeStatistics.memoryUsed,
+                                                      nodeStatistics.memoryFree,
                                                   ]
                                                 : [0, 100],
                                             backgroundColor: [
@@ -86,29 +81,23 @@ export const ResourcesBlock: React.FC<Props> = ({ darknodeDetails }) => (
                                 data={{
                                     maintainAspectRation: true,
                                     labels: [
-                                        darknodeDetails.nodeStatistics
+                                        nodeStatistics
                                             ? `Used: ${filesize(
-                                                  darknodeDetails.nodeStatistics
-                                                      .diskUsed,
+                                                  nodeStatistics.diskUsed,
                                               )} -`
                                             : "Used: Unknown -",
-                                        darknodeDetails.nodeStatistics
+                                        nodeStatistics
                                             ? `Free: ${filesize(
-                                                  darknodeDetails.nodeStatistics
-                                                      .diskFree,
+                                                  nodeStatistics.diskFree,
                                               )} -`
                                             : "Free: Unknown -",
                                     ],
                                     datasets: [
                                         {
-                                            data: darknodeDetails.nodeStatistics
+                                            data: nodeStatistics
                                                 ? [
-                                                      darknodeDetails
-                                                          .nodeStatistics
-                                                          .diskUsed,
-                                                      darknodeDetails
-                                                          .nodeStatistics
-                                                          .diskFree,
+                                                      nodeStatistics.diskUsed,
+                                                      nodeStatistics.diskFree,
                                                   ]
                                                 : [0, 100],
                                             backgroundColor: [

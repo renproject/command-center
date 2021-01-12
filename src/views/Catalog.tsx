@@ -25,6 +25,16 @@ import {
     DarknodeConnectionStatus,
     VersionBlock,
 } from "./darknodeBlocks/VersionBlock";
+import { EmptyDarknodeCard } from "./darknodeCards/EmptyDarknodeCard";
+import { EmptyDarknodeList } from "./darknodeCards/EmptyDarknodeList";
+import { DarknodeCard } from "./darknodeCards/DarknodeCard";
+import { RegistrationStatus } from "../lib/ethereum/contractReads";
+import { EpochBlock } from "./darknodeBlocks/EpochBlock";
+import { Registration } from "./Registration";
+import { DarknodeAction } from "../controllers/pages/darknodePage/DarknodePage";
+import { NodeStatistics } from "../lib/darknode/jsonrpc";
+import { NetworkBlock } from "./darknodeBlocks/NetworkBlock";
+import { ResourcesBlock } from "./darknodeBlocks/ResourcesBlock";
 
 const CatalogItem: React.FC<
     {
@@ -50,12 +60,32 @@ const defaultCallback = async () => {
     await sleep(2 * SECONDS);
 };
 
-const defaultDarknodeID = "0x8C5c25072716d79f7045eEB9E347F6C73Bc33A3b";
+const defaultDarknodeID = "0x0000000000000000000000000000000000000000";
 
 const oneEth = new BigNumber(10).exponentiatedBy(18);
 
+const defaultNodeStatistics = new NodeStatistics({
+    version: "1.0.11-release/0.2.25-dffac04",
+    multiAddress:
+        "/ip4/165.22.193.227/tcp/18514/ren/8MJWSxiNmY3ghCYYo14yB1VPq7Su5h",
+    memory: 1033392128,
+    memoryUsed: 273891328,
+    memoryFree: 657330176,
+    disk: 25832407040,
+    diskUsed: 4701102080,
+    diskFree: 21114527744,
+    systemUptime: 33462611,
+    serviceUptime: 259088,
+    cores: 1,
+});
+
 export const Catalog = () => {
-    const { address, balance } = Web3Container.useContainer();
+    const {
+        address,
+        balance,
+        promptLogin,
+        web3BrowserName,
+    } = Web3Container.useContainer();
     const { quoteCurrency, pendingRewards } = NetworkContainer.useContainer();
     const { renVM } = GraphContainer.useContainer();
     const { currentCycle, previousCycle } = renVM || {};
@@ -141,6 +171,207 @@ export const Catalog = () => {
                     timeUntilNextEpoch={new BigNumber(10)}
                     minimumEpochInterval={new BigNumber(15)}
                     small={true}
+                />
+            </CatalogItem>
+
+            {/* EpochBlock */}
+            <CatalogItem title="EpochBlock">
+                <EpochBlock
+                    timeSinceLastEpoch={new BigNumber(5)}
+                    timeUntilNextEpoch={new BigNumber(10)}
+                    minimumEpochInterval={new BigNumber(15)}
+                />
+            </CatalogItem>
+
+            {/* Registration */}
+            <CatalogItem title="Registration">
+                <h4>Loading</h4>
+                <Registration
+                    action={DarknodeAction.View}
+                    address={address}
+                    registrationStatus={RegistrationStatus.Unknown}
+                    operator={null}
+                    web3BrowserName={web3BrowserName}
+                    loginCallback={async () => {
+                        await promptLogin({ manual: true });
+                    }}
+                    registerCallback={defaultCallback}
+                    deregisterCallback={defaultCallback}
+                    refundCallback={defaultCallback}
+                />
+                <hr />
+                <h4>No operator</h4>
+                <Registration
+                    action={DarknodeAction.View}
+                    address={address}
+                    registrationStatus={RegistrationStatus.Unregistered}
+                    operator={null}
+                    web3BrowserName={web3BrowserName}
+                    loginCallback={async () => {
+                        await promptLogin({ manual: true });
+                    }}
+                    registerCallback={defaultCallback}
+                    deregisterCallback={defaultCallback}
+                    refundCallback={defaultCallback}
+                />
+                <hr />
+                <h4>Register</h4>
+                <Registration
+                    action={DarknodeAction.Register}
+                    address={address}
+                    registrationStatus={RegistrationStatus.Unregistered}
+                    operator={null}
+                    web3BrowserName={web3BrowserName}
+                    loginCallback={async () => {
+                        await promptLogin({ manual: true });
+                    }}
+                    registerCallback={defaultCallback}
+                    deregisterCallback={defaultCallback}
+                    refundCallback={defaultCallback}
+                />
+                <hr />
+                <h4>Registration Pending</h4>
+                <Registration
+                    action={DarknodeAction.View}
+                    address={address}
+                    registrationStatus={RegistrationStatus.RegistrationPending}
+                    operator={address}
+                    web3BrowserName={web3BrowserName}
+                    loginCallback={async () => {
+                        await promptLogin({ manual: true });
+                    }}
+                    registerCallback={defaultCallback}
+                    deregisterCallback={defaultCallback}
+                    refundCallback={defaultCallback}
+                />
+                <Registration
+                    action={DarknodeAction.View}
+                    address={address}
+                    registrationStatus={RegistrationStatus.RegistrationPending}
+                    operator={"0x408e41876cccdc0f92210600ef50372656052a38"}
+                    web3BrowserName={web3BrowserName}
+                    loginCallback={async () => {
+                        await promptLogin({ manual: true });
+                    }}
+                    registerCallback={defaultCallback}
+                    deregisterCallback={defaultCallback}
+                    refundCallback={defaultCallback}
+                />
+                <hr />
+                <h4>Registered</h4>
+                <Registration
+                    action={DarknodeAction.View}
+                    address={address}
+                    registrationStatus={RegistrationStatus.Registered}
+                    operator={address}
+                    web3BrowserName={web3BrowserName}
+                    loginCallback={async () => {
+                        await promptLogin({ manual: true });
+                    }}
+                    registerCallback={defaultCallback}
+                    deregisterCallback={defaultCallback}
+                    refundCallback={defaultCallback}
+                />
+                <Registration
+                    action={DarknodeAction.View}
+                    address={address}
+                    registrationStatus={RegistrationStatus.Registered}
+                    operator={"0x408e41876cccdc0f92210600ef50372656052a38"}
+                    web3BrowserName={web3BrowserName}
+                    loginCallback={async () => {
+                        await promptLogin({ manual: true });
+                    }}
+                    registerCallback={defaultCallback}
+                    deregisterCallback={defaultCallback}
+                    refundCallback={defaultCallback}
+                />
+                <hr />
+                <h4>Registration Pending</h4>
+                <Registration
+                    action={DarknodeAction.View}
+                    address={address}
+                    registrationStatus={
+                        RegistrationStatus.DeregistrationPending
+                    }
+                    operator={address}
+                    web3BrowserName={web3BrowserName}
+                    loginCallback={async () => {
+                        await promptLogin({ manual: true });
+                    }}
+                    registerCallback={defaultCallback}
+                    deregisterCallback={defaultCallback}
+                    refundCallback={defaultCallback}
+                />
+                <Registration
+                    action={DarknodeAction.View}
+                    address={address}
+                    registrationStatus={
+                        RegistrationStatus.DeregistrationPending
+                    }
+                    operator={"0x408e41876cccdc0f92210600ef50372656052a38"}
+                    web3BrowserName={web3BrowserName}
+                    loginCallback={async () => {
+                        await promptLogin({ manual: true });
+                    }}
+                    registerCallback={defaultCallback}
+                    deregisterCallback={defaultCallback}
+                    refundCallback={defaultCallback}
+                />
+                <hr />
+                <h4>Awaiting refund</h4>
+                <Registration
+                    action={DarknodeAction.View}
+                    address={address}
+                    registrationStatus={RegistrationStatus.Deregistered}
+                    operator={address}
+                    web3BrowserName={web3BrowserName}
+                    loginCallback={async () => {
+                        await promptLogin({ manual: true });
+                    }}
+                    registerCallback={defaultCallback}
+                    deregisterCallback={defaultCallback}
+                    refundCallback={defaultCallback}
+                />
+                <Registration
+                    action={DarknodeAction.View}
+                    address={address}
+                    registrationStatus={RegistrationStatus.Deregistered}
+                    operator={"0x408e41876cccdc0f92210600ef50372656052a38"}
+                    web3BrowserName={web3BrowserName}
+                    loginCallback={async () => {
+                        await promptLogin({ manual: true });
+                    }}
+                    registerCallback={defaultCallback}
+                    deregisterCallback={defaultCallback}
+                    refundCallback={defaultCallback}
+                />
+                <hr />
+                <h4>Refundable</h4>
+                <Registration
+                    action={DarknodeAction.View}
+                    address={address}
+                    registrationStatus={RegistrationStatus.Refundable}
+                    operator={address}
+                    web3BrowserName={web3BrowserName}
+                    loginCallback={async () => {
+                        await promptLogin({ manual: true });
+                    }}
+                    registerCallback={defaultCallback}
+                    deregisterCallback={defaultCallback}
+                    refundCallback={defaultCallback}
+                />
+                <Registration
+                    action={DarknodeAction.View}
+                    address={address}
+                    registrationStatus={RegistrationStatus.Refundable}
+                    operator={"0x408e41876cccdc0f92210600ef50372656052a38"}
+                    web3BrowserName={web3BrowserName}
+                    loginCallback={async () => {
+                        await promptLogin({ manual: true });
+                    }}
+                    registerCallback={defaultCallback}
+                    deregisterCallback={defaultCallback}
+                    refundCallback={defaultCallback}
                 />
             </CatalogItem>
 
@@ -260,6 +491,36 @@ export const Catalog = () => {
                 />
             </CatalogItem>
 
+            {/* EmptyDarknodeCard */}
+            <CatalogItem title="EmptyDarknodeCard">
+                <EmptyDarknodeCard />
+            </CatalogItem>
+
+            {/* DarknodeCard */}
+            <CatalogItem title="DarknodeCard">
+                <h4>Registered</h4>
+                <DarknodeCard
+                    darknodeID={defaultDarknodeID}
+                    name={name}
+                    registrationStatus={RegistrationStatus.Registered}
+                    feesEarnedInUsd={new BigNumber(10)}
+                    ethBalance={oneEth.times(0.1)}
+                    quoteCurrency={quoteCurrency}
+                    removeDarknode={() => {}}
+                />
+                <hr />
+                <h4>Loading</h4>
+                <DarknodeCard
+                    darknodeID={defaultDarknodeID}
+                    name={name}
+                    registrationStatus={null}
+                    feesEarnedInUsd={null}
+                    ethBalance={null}
+                    quoteCurrency={quoteCurrency}
+                    removeDarknode={() => {}}
+                />
+            </CatalogItem>
+
             {/* VersionBlock */}
             <CatalogItem title="VersionBlock">
                 <h4>Up to date</h4>
@@ -301,7 +562,19 @@ export const Catalog = () => {
                     latestVersion={"1.0.0"}
                     latestVersionDaysAgo={"3 days ago"}
                 />
-                <hr />
+            </CatalogItem>
+
+            {/* NetworkBlock */}
+            <CatalogItem title="NetworkBlock">
+                <NetworkBlock
+                    darknodeID={defaultDarknodeID}
+                    nodeStatistics={defaultNodeStatistics}
+                />
+            </CatalogItem>
+
+            {/* ResourcesBlock */}
+            <CatalogItem title="ResourcesBlock">
+                <ResourcesBlock nodeStatistics={defaultNodeStatistics} />
             </CatalogItem>
         </div>
     );
