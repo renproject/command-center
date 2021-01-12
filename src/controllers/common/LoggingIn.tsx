@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from "react";
 
 import { catchBackgroundException } from "../../lib/react/errors";
 import { Web3Container } from "../../store/web3Container";
-import { EmptyDarknodeList } from "../operatorPages/allDarknodesPage/darknodeList/EmptyDarknodeList";
+import { EmptyDarknodeList } from "../../views/darknodeCards/EmptyDarknodeList";
 
 /**
  * LoggingIn is a page whose principal components are wallet selection to allow users

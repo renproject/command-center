@@ -20,6 +20,7 @@ import { TitledSection } from "./TitledSection";
 import { TokenIcon } from "./tokenIcon/TokenIcon";
 import { Web3Container } from "../store/web3Container";
 import { SECONDS } from "../controllers/common/BackgroundTasks";
+import { DarknodeName } from "./darknodeBlocks/DarknodeName";
 
 const CatalogItem: React.FC<
     {
@@ -45,6 +46,8 @@ const defaultCallback = async () => {
     await sleep(2 * SECONDS);
 };
 
+const defaultDarknodeID = "0x8C5c25072716d79f7045eEB9E347F6C73Bc33A3b";
+
 const oneEth = new BigNumber(10).exponentiatedBy(18);
 
 export const Catalog = () => {
@@ -60,6 +63,9 @@ export const Catalog = () => {
         : null;
 
     const [tab, setTab] = useState("left");
+
+    const [name, setName] = useState("Darknode name");
+    const [renaming, setRenaming] = useState(false);
 
     return (
         <div className="container catalog">
@@ -235,6 +241,18 @@ export const Catalog = () => {
                     loggedIn={isDefined(address)}
                     userBalance={balance}
                     topUpCallBack={defaultCallback}
+                />
+            </CatalogItem>
+
+            {/* DarknodeName */}
+            <CatalogItem title="DarknodeName">
+                <DarknodeName
+                    renaming={renaming}
+                    setRenaming={setRenaming}
+                    darknodeID={defaultDarknodeID}
+                    name={name}
+                    isOperator={true}
+                    storeDarknodeName={(_, name) => setName(name)}
                 />
             </CatalogItem>
         </div>

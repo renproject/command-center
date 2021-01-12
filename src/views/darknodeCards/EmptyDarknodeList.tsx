@@ -1,6 +1,6 @@
 import React from "react";
 
-import { classNames } from "../../../../lib/react/className";
+import { classNames } from "../../lib/react/className";
 import { EmptyDarknodeCard } from "./EmptyDarknodeCard";
 
 type Props = React.DetailedHTMLProps<

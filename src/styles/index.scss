@@ -32,11 +32,11 @@
 @import "scss/withdrawAll";
 
 // Styles in src/components
-@import "../controllers/statsPages/renvmStatsPage/renvm";
-@import "../controllers/statsPages/darknodeStatsPage/overview";
-@import "../controllers/statsPages/darknodeStatsPage/darknodeMap/darknodeMap";
-@import "../controllers/statsPages/networkStatsPage/networkStats";
-@import "../controllers/statsPages/integratorStatsPage/integratorStatsPage";
+@import "../controllers/pages/renvmStatsPage/renvm";
+@import "../controllers/pages/darknodeStatsPage/overview";
+@import "../controllers/pages/darknodeStatsPage/darknodeMap/darknodeMap";
+@import "../controllers/pages/networkStatsPage/networkStats";
+@import "../controllers/pages/integratorStatsPage/integratorStatsPage";
 
 // Styles for html, body, anchors etc. should go in _general
 @import "scss/_general";

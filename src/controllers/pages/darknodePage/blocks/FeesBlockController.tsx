@@ -17,7 +17,7 @@ import {
 import { PopupContainer } from "../../../../store/popupContainer";
 import { UIContainer } from "../../../../store/uiContainer";
 import { FeesBlock } from "../../../../views/darknodeBlocks/FeesBlock";
-import { NotClaimed } from "./NotClaimed";
+import { NotClaimed } from "../../../../views/popups/NotClaimed";
 // import { ReactComponent as WithdrawIcon } from "../../../../styles/images/icon-withdraw.svg";
 
 export const mergeFees = (

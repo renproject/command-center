@@ -8,7 +8,7 @@ import {
 } from "../../../store/networkContainer";
 import { Web3Container } from "../../../store/web3Container";
 import { ErrorBoundary } from "../../common/ErrorBoundary";
-import { DarknodeList } from "./darknodeList/DarknodeList";
+import { DarknodeCardList } from "../../../views/darknodeCards/DarknodeCardList";
 import { WithdrawAll } from "./WithdrawAll";
 
 /**
@@ -69,7 +69,7 @@ export const AllDarknodes: React.FC<{}> = () => {
                     <>
                         <h2>Continue registering</h2>
                         <ErrorBoundary>
-                            <DarknodeList
+                            <DarknodeCardList
                                 darknodeDetails={darknodeDetails}
                                 darknodeNames={darknodeNames}
                                 darknodeList={darknodeRegisteringList
@@ -89,7 +89,7 @@ export const AllDarknodes: React.FC<{}> = () => {
                 {darknodeRegisteringList.size === 0 ||
                 (shownDarknodeList && shownDarknodeList.size > 0) ? (
                     <ErrorBoundary>
-                        <DarknodeList
+                        <DarknodeCardList
                             darknodeDetails={darknodeDetails}
                             darknodeNames={darknodeNames}
                             darknodeList={shownDarknodeList}

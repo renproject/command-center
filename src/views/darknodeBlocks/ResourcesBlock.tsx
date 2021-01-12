@@ -7,8 +7,12 @@ import filesize from "filesize";
 import React from "react";
 import { Doughnut } from "react-chartjs-2";
 
-import { DarknodesState } from "../../../../store/networkContainer";
-import { Block, BlockBody, BlockTitle } from "./Block";
+import { DarknodesState } from "../../store/networkContainer";
+import {
+    Block,
+    BlockBody,
+    BlockTitle,
+} from "../../controllers/pages/darknodePage/blocks/Block";
 
 interface Props {
     darknodeDetails: DarknodesState | null;

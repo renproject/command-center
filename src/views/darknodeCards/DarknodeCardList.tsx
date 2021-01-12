@@ -2,9 +2,9 @@ import { Loading } from "@renproject/react-components";
 import { Map, OrderedSet } from "immutable";
 import React from "react";
 
-import { DarknodesState } from "../../../../store/networkContainer";
-import { ErrorBoundary } from "../../../common/ErrorBoundary";
-import { DarknodeCard } from "./DarknodeCard";
+import { DarknodesState } from "../../store/networkContainer";
+import { ErrorBoundary } from "../../controllers/common/ErrorBoundary";
+import { DarknodeCard } from "../../controllers/pages/operatorPage/DarknodeCard";
 import { EmptyDarknodeCard } from "./EmptyDarknodeCard";
 import { EmptyDarknodeList } from "./EmptyDarknodeList";
 
@@ -16,7 +16,7 @@ interface Props {
     registrySync: { progress: number; target: number };
 }
 
-export const DarknodeList: React.FC<Props> = ({
+export const DarknodeCardList: React.FC<Props> = ({
     darknodeList,
     darknodeDetails,
     darknodeNames,

@@ -5,7 +5,7 @@ import {
     Block,
     BlockBody,
     BlockTitle,
-} from "../../controllers/operatorPages/darknodePage/blocks/Block";
+} from "../../controllers/pages/darknodePage/blocks/Block";
 
 import { ReactComponent as FlameIcon } from "../../styles/images/icon-flame.svg";
 import { Currency, CurrencyIcon } from "@renproject/react-components";

@@ -1,6 +1,5 @@
 import React from "react";
-
-import { classNames } from "../../../../lib/react/className";
+import { classNames } from "../../lib/react/className";
 
 type Props = React.DetailedHTMLProps<
     React.HTMLAttributes<HTMLDivElement>,

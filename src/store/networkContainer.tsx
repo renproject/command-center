@@ -11,7 +11,7 @@ import {
     ConvertCurrency,
     updatePrices,
 } from "../controllers/common/TokenBalance";
-import { retryNTimes } from "../controllers/statsPages/renvmStatsPage/renvmContainer";
+import { retryNTimes } from "../controllers/pages/renvmStatsPage/renvmContainer";
 import { NodeStatistics } from "../lib/darknode/jsonrpc";
 import { getDarknodePayment } from "../lib/ethereum/contract";
 import {

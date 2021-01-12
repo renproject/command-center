@@ -3,116 +3,17 @@ import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
 import React, { useCallback, useMemo, useState } from "react";
 
-import { TokenString } from "../../lib/ethereum/tokens";
 import { TokenAmount } from "../../lib/graphQL/queries/queries";
 import { classNames } from "../../lib/react/className";
 import { ReactComponent as RewardsIcon } from "../../styles/images/icon-rewards-white.svg";
 import { Tabs } from "../Tabs";
-import { TokenIcon } from "../tokenIcon/TokenIcon";
-import {
-    AnyTokenBalance,
-    ConvertCurrency,
-} from "../../controllers/common/TokenBalance";
-import { FeesItem } from "../../controllers/operatorPages/darknodePage/FeesItem";
+import { ConvertCurrency } from "../../controllers/common/TokenBalance";
+import { FeesBlockRow, FeesBlockTab } from "./FeesBlockRow";
 import {
     Block,
     BlockBody,
     BlockTitle,
-} from "../../controllers/operatorPages/darknodePage/blocks/Block";
-
-enum Tab {
-    Withdrawable = "Withdrawable",
-    Pending = "Pending",
-}
-
-interface RowProps {
-    token: TokenString;
-    isOperator: boolean;
-    earningFees: boolean;
-    tab: Tab;
-    percent: number;
-    balance: TokenAmount | null;
-    quoteCurrency: Currency;
-    withdrawCallback: (
-        tokenSymbol: string,
-        tokenAddress: string,
-    ) => Promise<void>;
-}
-
-const FeesBlockRow: React.FC<RowProps> = ({
-    token,
-    quoteCurrency,
-    balance,
-    isOperator,
-    earningFees,
-    tab,
-    percent,
-    withdrawCallback,
-}) => {
-    return (
-        <>
-            <tr style={{}}>
-                <td className="fees-block--table--token">
-                    <TokenIcon
-                        className="fees-block--table--icon"
-                        white={true}
-                        token={token}
-                    />{" "}
-                    <span>{token}</span>
-                </td>
-                <td className="fees-block--table--value">
-                    {balance && balance.asset ? (
-                        <AnyTokenBalance
-                            decimals={balance.asset.decimals}
-                            amount={balance.amount}
-                            // digits={null}
-                            digits={8}
-                        />
-                    ) : (
-                        <Loading alt={true} />
-                    )}
-                </td>
-                <td className="fees-block--table--usd">
-                    {balance ? (
-                        <>
-                            <CurrencyIcon currency={quoteCurrency} />
-                            <ConvertCurrency
-                                from={Currency.USD}
-                                to={quoteCurrency}
-                                amount={balance.amountInUsd}
-                            />{" "}
-                            <span className="fees-block--table--usd-symbol">
-                                {quoteCurrency.toUpperCase()}
-                            </span>
-                        </>
-                    ) : null}
-                </td>
-                {tab === Tab.Withdrawable && isOperator && earningFees ? (
-                    <td>
-                        <FeesItem
-                            disabled={tab !== Tab.Withdrawable || !balance}
-                            token={token}
-                            amount={balance}
-                            withdrawCallback={withdrawCallback}
-                        />
-                    </td>
-                ) : null}
-            </tr>
-            <tr className="percent-bar--tr">
-                <td colSpan={4} style={{ padding: 0, margin: 0, height: 4 }}>
-                    <div
-                        className={classNames("percent-bar", token)}
-                        style={{
-                            width: `${percent}%`,
-                            height: 4,
-                            marginTop: -6,
-                        }}
-                    />
-                </td>
-            </tr>
-        </>
-    );
-};
+} from "../../controllers/pages/darknodePage/blocks/Block";
 
 export const FeesBlock: React.FC<Props> = ({
     quoteCurrency,
@@ -123,11 +24,11 @@ export const FeesBlock: React.FC<Props> = ({
     withdrawCallback,
     className,
 }) => {
-    const [tab, setTab] = useState(Tab.Withdrawable);
+    const [tab, setTab] = useState(FeesBlockTab.Withdrawable);
 
     const onTab = useCallback(
         (newTab: string) => {
-            setTab(newTab as Tab);
+            setTab(newTab as FeesBlockTab);
         },
         [setTab],
     );
@@ -153,7 +54,7 @@ export const FeesBlock: React.FC<Props> = ({
     );
 
     const [fees, tabTotalInUsd] =
-        tab === Tab.Withdrawable
+        tab === FeesBlockTab.Withdrawable
             ? [withdrawable, withdrawableInUsd]
             : [pending, pendingInUsd];
 

@@ -1,8 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { ExternalLink, URLs } from "../../../../views/ExternalLink";
+import { ExternalLink, URLs } from "../ExternalLink";
 
-import { Popup } from "../../../common/popups/Popup";
+import { Popup } from "../../controllers/common/popups/Popup";
 
 interface Props {
     darknode?: string;

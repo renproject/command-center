@@ -46,70 +46,6 @@
         }
     }
 
-    .darknodePage--banner--top {
-        height: 47.5px;
-
-        h3 {
-            font-size: 34px;
-            margin: 0;
-            font-weight: 500;
-
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            min-width: 0px;
-        }
-
-        button {
-            border: 1px solid #007bff66;
-            color: #007bff;
-            background: none;
-            height: 25px;
-            border-radius: 2px;
-            font-size: 12px;
-            font-weight: bold;
-            margin-top: 10px;
-
-            @media (max-width: $max-sm) {
-                display: none;
-            }
-        }
-    }
-
-    .darknodePage--rename {
-        display: flex;
-        align-items: center;
-        z-index: 1;
-
-        > :not(:first-child) {
-            margin-left: 20px;
-        }
-
-        input {
-            font-weight: 500;
-            font-size: 34px;
-            max-width: 300px;
-
-            color: white;
-            background: none;
-            border: none;
-            border-bottom: 1px solid white;
-        }
-
-        button {
-            background: $blue-darker;
-        }
-
-        .darknodePage--rename--save {
-            background: white;
-            color: $blue-darker;
-        }
-
-        .darknodePage--rename--save:disabled {
-            color: $light-grey;
-        }
-    }
-
     .darknodePage--bottom {
         @media screen and (min-width: $min-xl) {
             display: flex;
@@ -450,7 +386,7 @@
     min-width: 0px;
 }
 
-.darknodePage--banner--edit {
+.darknode--rename-edit {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -483,12 +419,74 @@
     justify-content: flex-start;
 }
 
-.darknodePage--banner--top {
+.darknode--rename {
     margin-left: 20px;
     flex-flow: column;
     height: 100% !important;
     justify-content: center;
     align-items: flex-start !important;
+
+    height: 47.5px;
+
+    h3 {
+        font-size: 34px;
+        margin: 0;
+        font-weight: 500;
+
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        min-width: 0px;
+    }
+
+    button {
+        border: 1px solid #007bff66;
+        color: #007bff;
+        background: none;
+        height: 25px;
+        border-radius: 2px;
+        font-size: 12px;
+        font-weight: bold;
+        margin-top: 10px;
+
+        @media (max-width: $max-sm) {
+            display: none;
+        }
+    }
+}
+
+.darknode--rename--form {
+    display: flex;
+    align-items: center;
+    z-index: 1;
+
+    > :not(:first-child) {
+        margin-left: 20px;
+    }
+
+    input {
+        font-weight: 500;
+        font-size: 34px;
+        max-width: 300px;
+
+        color: white;
+        background: none;
+        border: none;
+        border-bottom: 1px solid white;
+    }
+
+    button {
+        background: $blue-darker;
+    }
+
+    .darknode--rename--form--save {
+        background: white;
+        color: $blue-darker;
+    }
+
+    .darknode--rename--form--save:disabled {
+        color: $light-grey;
+    }
 }
 
 .resources--chart--and--label {

@@ -3,7 +3,7 @@ import BigNumber from "bignumber.js";
 import Web3 from "web3";
 import { PromiEvent, TransactionReceipt } from "web3-core";
 
-import { retryNTimes } from "../../controllers/statsPages/renvmStatsPage/renvmContainer";
+import { retryNTimes } from "../../controllers/pages/renvmStatsPage/renvmContainer";
 import { catchInteractionException, noCapture } from "../react/errors";
 import {
     getDarknodePayment,

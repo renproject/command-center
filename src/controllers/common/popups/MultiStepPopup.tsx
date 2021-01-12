@@ -15,7 +15,7 @@ import { PopupContainer } from "../../../store/popupContainer";
 import { Web3Container } from "../../../store/web3Container";
 import Warn from "../../../styles/images/warn.svg";
 import { ExternalLink } from "../../../views/ExternalLink";
-import { txUrl } from "../../statsPages/renvmStatsPage/RenVMTransaction";
+import { txUrl } from "../../pages/renvmStatsPage/RenVMTransaction";
 import { Popup } from "./Popup";
 import { PopupError } from "./PopupController";
 

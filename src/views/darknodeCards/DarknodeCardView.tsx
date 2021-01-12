@@ -8,12 +8,15 @@ import { Blocky, Currency, CurrencyIcon } from "@renproject/react-components";
 import React, { useCallback } from "react";
 import { Link } from "react-router-dom";
 
-import { Token } from "../../../../lib/ethereum/tokens";
-import { classNames } from "../../../../lib/react/className";
-import { DarknodesState } from "../../../../store/networkContainer";
-import { DarknodeID } from "../../../../views/DarknodeID";
-import { ConvertCurrency, TokenBalance } from "../../../common/TokenBalance";
-import { statusText } from "../../darknodePage/Registration";
+import { Token } from "../../lib/ethereum/tokens";
+import { classNames } from "../../lib/react/className";
+import { DarknodesState } from "../../store/networkContainer";
+import { DarknodeID } from "../DarknodeID";
+import {
+    ConvertCurrency,
+    TokenBalance,
+} from "../../controllers/common/TokenBalance";
+import { statusText } from "../../controllers/pages/darknodePage/Registration";
 
 interface Props {
     darknodeID: string;
@@ -28,7 +31,7 @@ interface Props {
     continuable: boolean;
 }
 
-export const CardView: React.FC<Props> = ({
+export const DarknodeCardView: React.FC<Props> = ({
     darknodeID,
     darknodeDetails,
     name,
@@ -108,9 +111,7 @@ export const CardView: React.FC<Props> = ({
                                     <ConvertCurrency
                                         from={Currency.USD}
                                         to={quoteCurrency}
-                                        amount={
-                                            darknodeDetails.feesEarnedInUsd
-                                        }
+                                        amount={darknodeDetails.feesEarnedInUsd}
                                     />
                                 ) : (
                                     "..."

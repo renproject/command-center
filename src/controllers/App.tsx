@@ -14,13 +14,13 @@ import { Header } from "./common/header/Header";
 import { LoggingIn } from "./common/LoggingIn";
 import { PopupController } from "./common/popups/PopupController";
 import { Sidebar } from "./common/sidebar/Sidebar";
-import { AllDarknodes } from "./operatorPages/allDarknodesPage/AllDarknodes";
-import { DarknodePage } from "./operatorPages/darknodePage/DarknodePage";
+import { AllDarknodes } from "./pages/operatorPage/AllDarknodes";
+import { DarknodePage } from "./pages/darknodePage/DarknodePage";
 import { ScrollToTop } from "./ScrollToTop";
-import { DarknodeStatsPage } from "./statsPages/darknodeStatsPage/DarknodeStatsPage";
-import { IntegratorStatsPage } from "./statsPages/integratorStatsPage/IntegratorStatsPage";
-import { NetworkStats } from "./statsPages/networkStatsPage/NetworkStats";
-import { RenVMStatsPage } from "./statsPages/renvmStatsPage/RenVMStatsPage";
+import { DarknodeStatsPage } from "./pages/darknodeStatsPage/DarknodeStatsPage";
+import { IntegratorStatsPage } from "./pages/integratorStatsPage/IntegratorStatsPage";
+import { NetworkStats } from "./pages/networkStatsPage/NetworkStats";
+import { RenVMStatsPage } from "./pages/renvmStatsPage/RenVMStatsPage";
 
 /**
  * App is the main visual component responsible for displaying different routes

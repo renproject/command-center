@@ -1,13 +1,13 @@
 import React, { useCallback, useState } from "react";
 
-import { darknodeIDHexToBase58 } from "../../../../lib/darknode/darknodeID";
-import { RegistrationStatus } from "../../../../lib/ethereum/contractReads";
+import { darknodeIDHexToBase58 } from "../../../lib/darknode/darknodeID";
+import { RegistrationStatus } from "../../../lib/ethereum/contractReads";
 import {
     DarknodesState,
     NetworkContainer,
-} from "../../../../store/networkContainer";
-import { Web3Container } from "../../../../store/web3Container";
-import { CardView } from "./CardView";
+} from "../../../store/networkContainer";
+import { Web3Container } from "../../../store/web3Container";
+import { DarknodeCardView } from "../../../views/darknodeCards/DarknodeCardView";
 
 interface Props {
     darknodeID: string;
@@ -79,7 +79,7 @@ export const DarknodeCard: React.FC<Props> = ({
         : `/darknode/${darknodeIDBase58}`;
 
     return (
-        <CardView
+        <DarknodeCardView
             darknodeID={darknodeID}
             darknodeDetails={darknodeDetails}
             name={name}
