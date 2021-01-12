@@ -14,7 +14,7 @@ import {
 } from "../../../store/networkContainer";
 import { PopupContainer } from "../../../store/popupContainer";
 import { UIContainer } from "../../../store/uiContainer";
-import { FeesBlock } from "../darknodePage/blocks/FeesBlock";
+import { FeesBlock } from "../../../views/darknodeBlocks/FeesBlock";
 import { mergeFees } from "../darknodePage/blocks/FeesBlockController";
 import { NotClaimed } from "../darknodePage/blocks/NotClaimed";
 

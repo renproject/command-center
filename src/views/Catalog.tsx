@@ -1,10 +1,10 @@
 import { renMainnet } from "@renproject/contracts";
-import { Currency } from "@renproject/react-components";
+import { Currency, sleep } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
 import React, { useState } from "react";
-import { FeesBlock } from "../controllers/operatorPages/darknodePage/blocks/FeesBlock";
-import { GasBlock } from "../controllers/operatorPages/darknodePage/topup/GasBlock";
+import { FeesBlock } from "./darknodeBlocks/FeesBlock";
+import { GasBlock } from "./darknodeBlocks/GasBlock";
 import { isDefined } from "../lib/general/isDefined";
 import { classNames } from "../lib/react/className";
 import { GraphContainer } from "../store/graphContainer";
@@ -18,6 +18,8 @@ import { StatusDot, StatusDotColor } from "./StatusDot";
 import { Tabs } from "./Tabs";
 import { TitledSection } from "./TitledSection";
 import { TokenIcon } from "./tokenIcon/TokenIcon";
+import { Web3Container } from "../store/web3Container";
+import { SECONDS } from "../controllers/common/BackgroundTasks";
 
 const CatalogItem: React.FC<
     {
@@ -39,7 +41,14 @@ const Flex: React.FC<{}> = ({ children }) => (
     <div className="catalog--flex">{children}</div>
 );
 
+const defaultCallback = async () => {
+    await sleep(2 * SECONDS);
+};
+
+const oneEth = new BigNumber(10).exponentiatedBy(18);
+
 export const Catalog = () => {
+    const { address, balance } = Web3Container.useContainer();
     const { quoteCurrency, pendingRewards } = NetworkContainer.useContainer();
     const { renVM } = GraphContainer.useContainer();
     const { currentCycle, previousCycle } = renVM || {};
@@ -216,6 +225,16 @@ export const Catalog = () => {
                     withdrawable={withdrawableRewards}
                     pending={claimableRewards}
                     withdrawCallback={async () => {}}
+                />
+            </CatalogItem>
+
+            {/* GasBlock */}
+            <CatalogItem title="GasBlock">
+                <GasBlock
+                    darknodeBalance={oneEth.times(0.123)}
+                    loggedIn={isDefined(address)}
+                    userBalance={balance}
+                    topUpCallBack={defaultCallback}
                 />
             </CatalogItem>
         </div>

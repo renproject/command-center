@@ -13,7 +13,7 @@ import { VersionBlock } from "./blocks/VersionBlock";
 import { DarknodeAction } from "./DarknodePage";
 import { Notifications } from "./Notifications";
 import { Registration } from "./Registration";
-import { GasBlockController } from "./topup/GasBlockController";
+import { GasBlockController } from "./blocks/GasBlockController";
 
 interface Props {
     action: DarknodeAction;

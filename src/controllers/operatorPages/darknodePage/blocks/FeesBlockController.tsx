@@ -16,7 +16,7 @@ import {
 } from "../../../../store/networkContainer";
 import { PopupContainer } from "../../../../store/popupContainer";
 import { UIContainer } from "../../../../store/uiContainer";
-import { FeesBlock } from "./FeesBlock";
+import { FeesBlock } from "../../../../views/darknodeBlocks/FeesBlock";
 import { NotClaimed } from "./NotClaimed";
 // import { ReactComponent as WithdrawIcon } from "../../../../styles/images/icon-withdraw.svg";
 

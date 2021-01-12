@@ -1,13 +1,13 @@
 import { BigNumber } from "bignumber.js";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback } from "react";
+import { isDefined } from "../../../../lib/general/isDefined";
 
-import { catchBackgroundException } from "../../../../lib/react/errors";
 import {
     DarknodesState,
     NetworkContainer,
 } from "../../../../store/networkContainer";
 import { Web3Container } from "../../../../store/web3Container";
-import { GasBlock } from "./GasBlock";
+import { GasBlock } from "../../../../views/darknodeBlocks/GasBlock";
 
 interface Props {
     darknodeID: string;
@@ -24,12 +24,7 @@ export const GasBlockController: React.FC<Props> = ({
         showFundPopup,
     } = NetworkContainer.useContainer();
 
-    const gasValue =
-        darknodeDetails && darknodeDetails.ethBalance
-            ? darknodeDetails.ethBalance
-                  .div(new BigNumber(Math.pow(10, 18)))
-                  .toFixed(3)
-            : null;
+    const darknodeBalance = darknodeDetails && darknodeDetails.ethBalance;
 
     const maxCallback = useCallback(async () => {
         if (!balance) {
@@ -70,9 +65,9 @@ export const GasBlockController: React.FC<Props> = ({
 
     return (
         <GasBlock
-            gasValue={gasValue}
-            address={address}
-            balance={balance}
+            darknodeBalance={darknodeBalance}
+            userBalance={balance}
+            loggedIn={isDefined(address)}
             maxCallback={maxCallback}
             topUpCallBack={topUpCallback}
         />

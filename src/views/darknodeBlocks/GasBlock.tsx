@@ -1,20 +1,24 @@
 import React, { useCallback, useMemo, useState } from "react";
 
-import { Tabs } from "../../../../views/Tabs";
-import { Block, BlockBody, BlockTitle } from "../blocks/Block";
+import { Tabs } from "../Tabs";
+import {
+    Block,
+    BlockBody,
+    BlockTitle,
+} from "../../controllers/operatorPages/darknodePage/blocks/Block";
 
-import { ReactComponent as FlameIcon } from "../../../../styles/images/icon-flame.svg";
+import { ReactComponent as FlameIcon } from "../../styles/images/icon-flame.svg";
 import { Currency, CurrencyIcon } from "@renproject/react-components";
-import { AnyTokenBalance } from "../../../common/TokenBalance";
+import { AnyTokenBalance } from "../../controllers/common/TokenBalance";
 import BigNumber from "bignumber.js";
-import { catchBackgroundException } from "../../../../lib/react/errors";
+import { catchBackgroundException } from "../../lib/react/errors";
 import { fromWei } from "web3-utils";
 
 interface Props {
-    gasValue: string | null;
-    address: string | null;
-    balance: BigNumber | null;
-    maxCallback: () => Promise<BigNumber>;
+    darknodeBalance: BigNumber | null;
+    loggedIn: boolean;
+    userBalance: BigNumber | null;
+    maxCallback?: () => Promise<BigNumber>;
     topUpCallBack: (value: string) => Promise<void>;
 }
 
@@ -23,15 +27,33 @@ enum Tab {
     Withdraw = "Withdraw (CLI)",
 }
 
+enum ResultMessage {
+    Null,
+    NoAccount,
+    InsufficientBalance,
+}
+
 export const GasBlock: React.FC<Props> = ({
-    gasValue,
-    address,
-    balance,
+    darknodeBalance,
+    loggedIn,
+    userBalance: balance,
     maxCallback,
     topUpCallBack,
 }) => {
+    const darknodeBalanceString = useMemo(
+        () =>
+            darknodeBalance
+                ? darknodeBalance
+                      .div(new BigNumber(Math.pow(10, 18)))
+                      .toFixed(3)
+                : null,
+        [darknodeBalance],
+    );
+
     const [value, setValue] = useState("");
-    const [resultMessage, setResultMessage] = useState<React.ReactNode>(null);
+    const [resultMessage, setResultMessage] = useState<ResultMessage>(
+        ResultMessage.Null,
+    );
     const [disabled, setDisabled] = useState(false);
     const [pending, setPending] = useState(false);
 
@@ -43,22 +65,6 @@ export const GasBlock: React.FC<Props> = ({
         [balance],
     );
 
-    const handleMax = useCallback(async (): Promise<void> => {
-        if (!address) {
-            setResultMessage(<>Please connect your Web3 wallet first.</>);
-            return;
-        }
-
-        try {
-            handleChange((await maxCallback()).toFormat());
-        } catch (error) {
-            catchBackgroundException(
-                error,
-                "Error in TopUpController > handleMax",
-            );
-        }
-    }, [address, maxCallback]);
-
     const handleChange = useCallback(
         (newValue: string): void => {
             setValue(newValue.toString());
@@ -66,38 +72,48 @@ export const GasBlock: React.FC<Props> = ({
             // If input is invalid, show an error.
             if (isNaN(parseFloat(newValue)) || parseFloat(newValue) <= 0) {
                 setDisabled(true);
-                setResultMessage(null);
-            } else if (!address) {
-                setResultMessage(<>Please connect your Web3 wallet first.</>);
+                setResultMessage(ResultMessage.Null);
+            } else if (!loggedIn) {
+                setResultMessage(ResultMessage.NoAccount);
             } else if (balanceInEth && balanceInEth.isLessThan(newValue)) {
-                setResultMessage(
-                    <>
-                        Insufficient balance. Maximum deposit:{" "}
-                        <span className="pointer" onClick={handleMax}>
-                            <CurrencyIcon currency={Currency.ETH} />
-                            <AnyTokenBalance
-                                amount={balanceInEth}
-                                digits={3}
-                                decimals={0}
-                            />
-                        </span>
-                    </>,
-                );
+                setResultMessage(ResultMessage.InsufficientBalance);
                 setDisabled(true);
             } else if (resultMessage || disabled) {
-                setResultMessage(null);
+                setResultMessage(ResultMessage.Null);
                 setDisabled(false);
             }
         },
-        [address, disabled, balanceInEth, handleMax, resultMessage],
+        [loggedIn, disabled, balanceInEth, resultMessage],
     );
 
+    const handleMax = useCallback(async (): Promise<void> => {
+        if (!loggedIn) {
+            setResultMessage(ResultMessage.NoAccount);
+            return;
+        }
+
+        try {
+            let max: BigNumber;
+            if (maxCallback) {
+                max = await maxCallback();
+            } else {
+                max = balanceInEth || new BigNumber(0);
+            }
+            handleChange(max.toFormat());
+        } catch (error) {
+            catchBackgroundException(
+                error,
+                "Error in TopUpController > handleMax",
+            );
+        }
+    }, [loggedIn, handleChange, maxCallback]);
+
     const sendFunds = useCallback(async (): Promise<void> => {
-        setResultMessage("");
+        setResultMessage(ResultMessage.Null);
         setPending(true);
 
-        if (!address) {
-            setResultMessage(`Invalid account.`);
+        if (!loggedIn) {
+            setResultMessage(ResultMessage.NoAccount);
             setPending(false);
             return;
         }
@@ -112,7 +128,7 @@ export const GasBlock: React.FC<Props> = ({
         }
 
         setPending(false);
-    }, [address, topUpCallBack, value]);
+    }, [loggedIn, topUpCallBack, value]);
 
     const [clickedMax, setClickedMax] = useState(false);
 
@@ -147,12 +163,12 @@ export const GasBlock: React.FC<Props> = ({
                 </h3>
             </BlockTitle>
 
-            {gasValue ? (
+            {darknodeBalanceString ? (
                 <div className="block--advanced">
                     <div className="block--advanced--top">
                         <>
                             <span className="gas-block--advanced--value">
-                                {gasValue}
+                                {darknodeBalanceString}
                             </span>
                             <span className="gas-block--advanced--unit">
                                 ETH
@@ -170,7 +186,49 @@ export const GasBlock: React.FC<Props> = ({
                                             <label>
                                                 {resultMessage ? (
                                                     <p className="topup--input--warning warning">
-                                                        {resultMessage}
+                                                        {resultMessage ===
+                                                        ResultMessage.NoAccount ? (
+                                                            <>
+                                                                Please connect
+                                                                your Web3 wallet
+                                                                first.
+                                                            </>
+                                                        ) : resultMessage ===
+                                                          ResultMessage.InsufficientBalance ? (
+                                                            <>
+                                                                Insufficient
+                                                                balance.{" "}
+                                                                {balanceInEth ? (
+                                                                    <>
+                                                                        Maximum
+                                                                        deposit:{" "}
+                                                                        <span
+                                                                            className="pointer"
+                                                                            onClick={
+                                                                                handleMax
+                                                                            }
+                                                                        >
+                                                                            <CurrencyIcon
+                                                                                currency={
+                                                                                    Currency.ETH
+                                                                                }
+                                                                            />
+                                                                            <AnyTokenBalance
+                                                                                amount={
+                                                                                    balanceInEth
+                                                                                }
+                                                                                digits={
+                                                                                    3
+                                                                                }
+                                                                                decimals={
+                                                                                    0
+                                                                                }
+                                                                            />
+                                                                        </span>
+                                                                    </>
+                                                                ) : null}
+                                                            </>
+                                                        ) : null}
                                                     </p>
                                                 ) : (
                                                     <p className="topup--title">

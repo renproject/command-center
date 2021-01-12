@@ -3,15 +3,22 @@ import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
 import React, { useCallback, useMemo, useState } from "react";
 
-import { TokenString } from "../../../../lib/ethereum/tokens";
-import { TokenAmount } from "../../../../lib/graphQL/queries/queries";
-import { classNames } from "../../../../lib/react/className";
-import { ReactComponent as RewardsIcon } from "../../../../styles/images/icon-rewards-white.svg";
-import { Tabs } from "../../../../views/Tabs";
-import { TokenIcon } from "../../../../views/tokenIcon/TokenIcon";
-import { AnyTokenBalance, ConvertCurrency } from "../../../common/TokenBalance";
-import { FeesItem } from "../FeesItem";
-import { Block, BlockBody, BlockTitle } from "./Block";
+import { TokenString } from "../../lib/ethereum/tokens";
+import { TokenAmount } from "../../lib/graphQL/queries/queries";
+import { classNames } from "../../lib/react/className";
+import { ReactComponent as RewardsIcon } from "../../styles/images/icon-rewards-white.svg";
+import { Tabs } from "../Tabs";
+import { TokenIcon } from "../tokenIcon/TokenIcon";
+import {
+    AnyTokenBalance,
+    ConvertCurrency,
+} from "../../controllers/common/TokenBalance";
+import { FeesItem } from "../../controllers/operatorPages/darknodePage/FeesItem";
+import {
+    Block,
+    BlockBody,
+    BlockTitle,
+} from "../../controllers/operatorPages/darknodePage/blocks/Block";
 
 enum Tab {
     Withdrawable = "Withdrawable",
