@@ -7,13 +7,13 @@ import { DarknodesState } from "../../../store/networkContainer";
 import { DarknodeID } from "../../../views/DarknodeID";
 import { EpochBlock } from "./blocks/EpochBlock";
 import { FeesBlockController } from "./blocks/FeesBlockController";
-import { GasBlock } from "./blocks/GasBlock";
 import { NetworkBlock } from "./blocks/NetworkBlock";
 import { ResourcesBlock } from "./blocks/ResourcesBlock";
 import { VersionBlock } from "./blocks/VersionBlock";
 import { DarknodeAction } from "./DarknodePage";
 import { Notifications } from "./Notifications";
 import { Registration } from "./Registration";
+import { GasBlockController } from "./topup/GasBlockController";
 
 interface Props {
     action: DarknodeAction;
@@ -221,7 +221,10 @@ export const DarknodeView: React.FC<Props> = ({
                 />
                 <div className="block block--column">
                     <VersionBlock darknodeDetails={darknodeDetails} />
-                    <GasBlock darknodeDetails={darknodeDetails} />
+                    <GasBlockController
+                        darknodeID={darknodeID}
+                        darknodeDetails={darknodeDetails}
+                    />
                     {/* <GasGraph darknodeDetails={darknodeDetails} /> */}
                 </div>
                 <div className="block block--column">

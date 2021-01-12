@@ -4,7 +4,7 @@ import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
 import React, { useState } from "react";
 import { FeesBlock } from "../controllers/operatorPages/darknodePage/blocks/FeesBlock";
-import { TopUp } from "../controllers/operatorPages/darknodePage/topup/TopUp";
+import { GasBlock } from "../controllers/operatorPages/darknodePage/topup/GasBlock";
 import { isDefined } from "../lib/general/isDefined";
 import { classNames } from "../lib/react/className";
 import { GraphContainer } from "../store/graphContainer";
@@ -207,7 +207,7 @@ export const Catalog = () => {
                     withdrawCallback={async () => {}}
                 />
                 <hr />
-                <h4>Combined</h4>
+                <h4>Combined page</h4>
                 <FeesBlock
                     className="withdraw-all"
                     quoteCurrency={quoteCurrency}

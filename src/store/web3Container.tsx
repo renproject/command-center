@@ -8,7 +8,7 @@ import {
 } from "@renproject/contracts";
 import Onboard from "bnc-onboard";
 import { API as OnboardInstance } from "bnc-onboard/dist/src/interfaces";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { createContainer } from "unstated-next";
 import Web3 from "web3";
 import { toChecksumAddress } from "web3-utils";
@@ -27,6 +27,7 @@ import {
 import { PopupContainer } from "./popupContainer";
 import useStorageState from "./useStorageState/useStorageState";
 import Notify, { API as NotifyInstance } from "bnc-notify";
+import BigNumber from "bignumber.js";
 
 const stringToNetwork = (network: RenNetwork): RenNetworkDetails => {
     switch (network.toLowerCase()) {
@@ -40,6 +41,10 @@ const stringToNetwork = (network: RenNetwork): RenNetworkDetails => {
 
 const useOnboard = (networkID: number) => {
     const [onboard, setOnboard] = useState<OnboardInstance | undefined>();
+    const [walletAddress, setWalletAddress] = useState<string | null>(null);
+    const [balance, setBalance] = useState<BigNumber | null>(null);
+
+    const onBalance = (balance: string) => setBalance(new BigNumber(balance));
 
     useEffect(() => {
         (async () => {
@@ -65,6 +70,10 @@ const useOnboard = (networkID: number) => {
                     dappId: BLOCKNATIVE_KEY,
                     networkId: networkID,
                     darkMode: true,
+                    subscriptions: {
+                        address: setWalletAddress,
+                        balance: onBalance,
+                    },
                     walletSelect: {
                         wallets: [
                             // Preferred ///////////////////////////////////////////
@@ -158,7 +167,7 @@ const useOnboard = (networkID: number) => {
         })().catch(console.error);
     }, [networkID]);
 
-    return { onboard };
+    return { onboard, walletAddress, balance };
 };
 
 const useNotify = (networkID: number) => {
@@ -184,7 +193,9 @@ const useWeb3Container = (initialState = RenNetwork.Testnet) => {
     const [renNetwork] = useState<RenNetworkDetails>(
         stringToNetwork(initialState),
     );
-    const { onboard } = useOnboard(renNetwork.networkID);
+    const { onboard, balance, walletAddress } = useOnboard(
+        renNetwork.networkID,
+    );
     const { notify } = useNotify(renNetwork.networkID);
 
     const rpcUrl = `${renNetwork.infura}/v3/${INFURA_KEY}`;
@@ -207,16 +218,15 @@ const useWeb3Container = (initialState = RenNetwork.Testnet) => {
     );
     const [loggedOut, setLoggedOut] = useState(false);
 
-    const logout = () => {
+    const logout = useCallback(() => {
         setWeb3(readonlyWeb3);
-        setAddress(null);
         setLoggedOut(true);
         setLoggedInBefore(false);
 
         if (onboard) {
             onboard.walletReset();
         }
-    };
+    }, [onboard, readonlyWeb3, setLoggedInBefore]);
 
     const login = ({
         newWeb3,
@@ -225,7 +235,6 @@ const useWeb3Container = (initialState = RenNetwork.Testnet) => {
         newWeb3: Web3;
         newAddress: string;
     }) => {
-        setAddress(newAddress);
         setWeb3(newWeb3);
         setLoggedOut(false);
         setLoggedInBefore(true);
@@ -267,20 +276,19 @@ const useWeb3Container = (initialState = RenNetwork.Testnet) => {
         return defaultAddress;
     };
 
-    // lookForLogout detects if 1) the user has changed or logged out of their Web3
-    // wallet
-    const lookForLogout = async () => {
+    useEffect(() => {
+        console.log("address------", address);
+        console.log("walletAddress", walletAddress);
+        console.log(" ");
+
         if (!address) {
+            setAddress(walletAddress);
             return;
         }
 
-        const accounts = (
-            await web3.eth.getAccounts()
-        ).map((web3Address: string) => web3Address.toLowerCase());
-
-        if (!accounts.includes(address.toLowerCase())) {
+        if (walletAddress !== address) {
             const onClick = async () => {
-                setAddress(accounts[0]);
+                setAddress(walletAddress);
                 clearPopup();
             };
             const onCancel = async () => {
@@ -293,7 +301,7 @@ const useWeb3Container = (initialState = RenNetwork.Testnet) => {
                     <LoggedOut
                         onConnect={onClick}
                         onCancel={onCancel}
-                        newAddress={accounts.length > 0 ? accounts[0] : null}
+                        newAddress={walletAddress}
                     />
                 ),
                 onCancel,
@@ -301,14 +309,14 @@ const useWeb3Container = (initialState = RenNetwork.Testnet) => {
                 overlay: true,
             });
         }
-    };
+    }, [walletAddress, address, clearPopup, logout, setPopup]);
 
     return {
         renNetwork,
         web3,
         setWeb3,
         address,
-        setAddress,
+        balance,
         web3BrowserName,
         setWeb3BrowserName,
         loggedInBefore,
@@ -319,7 +327,7 @@ const useWeb3Container = (initialState = RenNetwork.Testnet) => {
 
         logout,
         promptLogin,
-        lookForLogout,
+        // lookForLogout,
     };
 };
 

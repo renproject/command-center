@@ -18,56 +18,6 @@ enum Tab {
     Pending = "Pending",
 }
 
-export const mergeFees = (
-    left: OrderedMap<TokenString, TokenAmount | null>,
-    right: OrderedMap<TokenString, TokenAmount | null>,
-) => {
-    let newFees = OrderedMap<TokenString, TokenAmount | null>();
-
-    for (const token of left
-        .keySeq()
-        .concat(right.keySeq())
-        .toSet()
-        .toArray()) {
-        const leftFee = left.get(token, null);
-        const rightFee = right.get(token, null);
-        const newFee: TokenAmount | null =
-            leftFee || rightFee
-                ? {
-                      symbol:
-                          (leftFee && leftFee.symbol) ||
-                          (rightFee && rightFee.symbol) ||
-                          "",
-                      asset: (leftFee && leftFee.asset) ||
-                          (rightFee && rightFee.asset) || { decimals: 0 },
-                      amount: new BigNumber(0)
-                          .plus(leftFee ? leftFee.amount : new BigNumber(0))
-                          .plus(rightFee ? rightFee.amount : new BigNumber(0)),
-                      amountInEth: new BigNumber(0)
-                          .plus(
-                              leftFee ? leftFee.amountInEth : new BigNumber(0),
-                          )
-                          .plus(
-                              rightFee
-                                  ? rightFee.amountInEth
-                                  : new BigNumber(0),
-                          ),
-                      amountInUsd: new BigNumber(0)
-                          .plus(
-                              leftFee ? leftFee.amountInUsd : new BigNumber(0),
-                          )
-                          .plus(
-                              rightFee
-                                  ? rightFee.amountInUsd
-                                  : new BigNumber(0),
-                          ),
-                  }
-                : null;
-        newFees = newFees.set(token, newFee);
-    }
-    return newFees;
-};
-
 interface RowProps {
     token: TokenString;
     isOperator: boolean;

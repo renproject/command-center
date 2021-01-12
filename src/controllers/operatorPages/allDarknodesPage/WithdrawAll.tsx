@@ -1,4 +1,3 @@
-import BigNumber from "bignumber.js";
 import { OrderedMap, List } from "immutable";
 import moment from "moment";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -15,7 +14,8 @@ import {
 } from "../../../store/networkContainer";
 import { PopupContainer } from "../../../store/popupContainer";
 import { UIContainer } from "../../../store/uiContainer";
-import { FeesBlock, mergeFees } from "../darknodePage/blocks/FeesBlock";
+import { FeesBlock } from "../darknodePage/blocks/FeesBlock";
+import { mergeFees } from "../darknodePage/blocks/FeesBlockController";
 import { NotClaimed } from "../darknodePage/blocks/NotClaimed";
 
 interface Props {
@@ -229,93 +229,4 @@ export const WithdrawAll: React.FC<Props> = ({ darknodeList }) => {
             withdrawCallback={withdrawCallback}
         />
     );
-
-    // return (
-    //     <Stats className="withdraw-al">
-    //         <Stat
-    //             className="network-fees-stat withdraw-all--stat"
-    //             message="Withdrawable"
-    //             big
-    //             style={{ flexBasis: "0", flexGrow: 5 }}
-    //             dark={true}
-    //         >
-    //             <span style={{ display: "flex" }}>
-    //                 <CurrencyIcon currency={quoteCurrency} />
-    //                 <ConvertCurrency
-    //                     from={Currency.USD}
-    //                     to={quoteCurrency}
-    //                     amount={withdrawable.feesInUsd}
-    //                 />
-    //             </span>
-    //             <div className="network-fees">
-    //                 {withdrawable.fees
-    //                     .filter(
-    //                         (reward) =>
-    //                             reward && reward.asset && reward.amount.gt(0),
-    //                     )
-    //                     .sortBy((reward) => reward!.amountInUsd.toNumber())
-    //                     .reverse()
-    //                     .map((reward, symbol) => {
-    //                         return (
-    //                             <div key={symbol}>
-    //                                 <TokenIcon
-    //                                     white={true}
-    //                                     token={symbol.replace(/^ren/, "")}
-    //                                 />
-    //                                 <AnyTokenBalance
-    //                                     amount={reward!.amount}
-    //                                     decimals={reward!.asset!.decimals}
-    //                                 />{" "}
-    //                                 {symbol}
-    //                             </div>
-    //                         );
-    //                     })
-    //                     .valueSeq()
-    //                     .toArray()}
-    //             </div>
-    //         </Stat>
-    //         <Stat
-    //             className="network-fees-stat withdraw-all--stat"
-    //             message="Pending"
-    //             big
-    //             style={{ flexBasis: "0", flexGrow: 5 }}
-    //             dark={true}
-    //         >
-    //             <span style={{ display: "flex" }}>
-    //                 <CurrencyIcon currency={quoteCurrency} />
-    //                 <ConvertCurrency
-    //                     from={Currency.USD}
-    //                     to={quoteCurrency}
-    //                     amount={pending.feesInUsd}
-    //                 />
-    //             </span>
-    //             <div className="network-fees">
-    //                 {pending.fees
-    //                     .filter(
-    //                         (reward) =>
-    //                             reward && reward.asset && reward.amount.gt(0),
-    //                     )
-    //                     .sortBy((reward) => reward!.amountInUsd.toNumber())
-    //                     .reverse()
-    //                     .map((reward, symbol) => {
-    //                         return (
-    //                             <div key={symbol}>
-    //                                 <TokenIcon
-    //                                     white={true}
-    //                                     token={symbol.replace(/^ren/, "")}
-    //                                 />
-    //                                 <AnyTokenBalance
-    //                                     amount={reward!.amount}
-    //                                     decimals={reward!.asset!.decimals}
-    //                                 />{" "}
-    //                                 {symbol}
-    //                             </div>
-    //                         );
-    //                     })
-    //                     .valueSeq()
-    //                     .toArray()}
-    //             </div>
-    //         </Stat>
-    //     </Stats>
-    // );
 };
