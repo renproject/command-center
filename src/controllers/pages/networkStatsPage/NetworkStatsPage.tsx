@@ -17,6 +17,7 @@ import { Collateral } from "./Collateral";
 import { DoughnutChart } from "./DoughnutChart";
 import { Graph } from "./Graph";
 import { NetworkStatsContainer } from "./networkStatsContainer";
+import { NetworkStatsStyles } from "./NetworkStatsStyles";
 import { PeriodSelector } from "./PeriodSelector";
 import { StatTab, StatTabs } from "./StatTabs";
 
@@ -52,7 +53,7 @@ const timeSeries = (
 
 const VOLUME_AXIS = 0;
 
-export const NetworkStats = () => {
+export const NetworkStatsPage = () => {
     const { renVM } = GraphContainer.useContainer();
     const { btcMintFee, btcBurnFee } = renVM || {};
 
@@ -93,7 +94,7 @@ export const NetworkStats = () => {
     }, [volumePeriod, quoteVolumeSeries, lockedPeriod, quoteLockedSeries]);
 
     return (
-        <div className="network-stats container">
+        <NetworkStatsStyles className="network-stats container">
             {/* <div className="no-xl-or-larger col-lg-12 col-xl-4">
                 <div className="collateral-padding" />
                 {collateral}
@@ -353,7 +354,6 @@ export const NetworkStats = () => {
                     </div>
                 </Stats>
             </div>
-            {/* <div className="xl-or-larger col-lg-12 col-xl-4"> */}
             <div className="col-lg-12 col-xl-4">
                 <div className="collateral-padding" />
                 <Collateral
@@ -366,6 +366,6 @@ export const NetworkStats = () => {
                     burnFee={btcBurnFee}
                 />
             </div>
-        </div>
+        </NetworkStatsStyles>
     );
 };

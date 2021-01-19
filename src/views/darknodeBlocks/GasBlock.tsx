@@ -3,12 +3,15 @@ import React, { useCallback, useMemo, useState } from "react";
 import { Tabs } from "../Tabs";
 import { Block, BlockBody, BlockTitle } from "./Block";
 
-import { ReactComponent as FlameIcon } from "../../styles/images/icon-flame.svg";
 import { Currency, CurrencyIcon } from "@renproject/react-components";
-import { AnyTokenBalance } from "../../controllers/common/TokenBalance";
 import BigNumber from "bignumber.js";
-import { catchBackgroundException } from "../../lib/react/errors";
 import { fromWei } from "web3-utils";
+import { AnyTokenBalance } from "../../controllers/common/TokenBalance";
+import {
+    catchBackgroundException,
+    catchInteractionException,
+} from "../../lib/react/errors";
+import { ReactComponent as FlameIcon } from "../../styles/images/icon-flame.svg";
 
 interface Props {
     darknodeBalance: BigNumber | null;
@@ -102,7 +105,7 @@ export const GasBlock: React.FC<Props> = ({
                 "Error in TopUpController > handleMax",
             );
         }
-    }, [loggedIn, handleChange, maxCallback]);
+    }, [loggedIn, handleChange, maxCallback, balanceInEth]);
 
     const sendFunds = useCallback(async (): Promise<void> => {
         setResultMessage(ResultMessage.Null);
@@ -140,14 +143,24 @@ export const GasBlock: React.FC<Props> = ({
     const onSubmit = useMemo(
         () => (event: React.MouseEvent<HTMLFormElement, MouseEvent>) => {
             event.preventDefault();
-            sendFunds();
+            sendFunds().catch((error) =>
+                catchInteractionException(error, {
+                    description: "Error in GasBlock: onSubmit",
+                }),
+            );
         },
         [sendFunds],
     );
 
     const onClickMax = useCallback(() => {
         setClickedMax(true);
-        handleMax().finally(() => setClickedMax(false));
+        handleMax()
+            .finally(() => setClickedMax(false))
+            .catch((error) =>
+                catchInteractionException(error, {
+                    description: "Error in GasBlock: onClickMax",
+                }),
+            );
     }, [handleMax]);
 
     return (
@@ -199,6 +212,7 @@ export const GasBlock: React.FC<Props> = ({
                                                                         Maximum
                                                                         deposit:{" "}
                                                                         <span
+                                                                            role="button"
                                                                             className="pointer"
                                                                             onClick={
                                                                                 handleMax

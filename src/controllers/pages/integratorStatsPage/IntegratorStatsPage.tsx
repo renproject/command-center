@@ -7,6 +7,7 @@ import { ReactComponent as RemoteForward } from "../../../styles/images/remote-f
 import { ReactComponent as RemoteStart } from "../../../styles/images/remote-start.svg";
 import { IntegratorRow } from "./IntegratorRow";
 import { IntegratorsContainer } from "./integratorsContainer";
+import { IntegratorStatsStyles } from "./IntegratorStatsStyles";
 
 const EmptyRow: React.FC<{}> = ({ children }) => (
     <>
@@ -88,7 +89,7 @@ export const IntegratorStatsPage = () => {
     }
 
     return (
-        <div className="integrators-page container">
+        <IntegratorStatsStyles className="integrators-page container">
             <table className="integrators-top">
                 <thead>
                     <tr>
@@ -165,6 +166,6 @@ export const IntegratorStatsPage = () => {
                     {/* <button><RemoteEnd /></button> */}
                 </div>
             </div>
-        </div>
+        </IntegratorStatsStyles>
     );
 };

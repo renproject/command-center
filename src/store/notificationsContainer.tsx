@@ -1,8 +1,8 @@
+import { CustomNotificationObject } from "bnc-notify";
+import { List } from "immutable";
+import { useEffect, useState } from "react";
 import { createContainer } from "unstated-next";
 import { Web3Container } from "./web3Container";
-import { CustomNotificationObject } from "bnc-notify";
-import { useEffect, useState } from "react";
-import { List } from "immutable";
 
 const useNotificationsContainer = () => {
     const { notify } = Web3Container.useContainer();

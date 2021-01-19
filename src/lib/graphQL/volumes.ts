@@ -11,10 +11,9 @@ import moment from "moment";
 
 import { Token, TokenPrices, TokenString } from "../ethereum/tokens";
 import {
-    PeriodData,
-    QUERY_BLOCK,
-    QUERY_RENVM_HISTORY,
     HistoricalRawRenVM,
+    PeriodData,
+    QUERY_RENVM_HISTORY,
 } from "./queries/queries";
 
 export enum PeriodType {

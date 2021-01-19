@@ -1,17 +1,16 @@
 import { useApolloClient } from "@apollo/react-hooks";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { createContainer } from "unstated-next";
 import Axios from "axios";
-import { Mutex } from "async-mutex";
+import { useEffect, useRef, useState } from "react";
+import { createContainer } from "unstated-next";
 
+import { SECONDS } from "../controllers/common/BackgroundTasks";
+import { useMemoizeWithExpiry } from "../hooks/useMemoizeWithExpiry";
 import { useTaskSchedule } from "../hooks/useTaskSchedule";
+import { subgraphEndpoint } from "../lib/graphQL/client";
 import { queryRenVM, RenVM } from "../lib/graphQL/queries/renVM";
 import { catchBackgroundException } from "../lib/react/errors";
-import { Web3Container } from "./web3Container";
-import { subgraphEndpoint } from "../lib/graphQL/client";
-import { SECONDS } from "../controllers/common/BackgroundTasks";
 import { NotificationsContainer } from "./notificationsContainer";
-import { useMemoizeWithExpiry } from "../hooks/useMemoizeWithExpiry";
+import { Web3Container } from "./web3Container";
 
 // If the subgraph is behind by more than 30 blocks, show a warning and fall
 // back to infura for fetching rewards.

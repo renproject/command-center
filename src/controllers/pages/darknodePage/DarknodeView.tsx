@@ -4,16 +4,16 @@ import React, { useState } from "react";
 import { NULL, RegistrationStatus } from "../../../lib/ethereum/contractReads";
 import { GraphContainer } from "../../../store/graphContainer";
 import { DarknodesState } from "../../../store/networkContainer";
+import { DarknodeName } from "../../../views/darknodeBlocks/DarknodeName";
 import { EpochBlock } from "../../../views/darknodeBlocks/EpochBlock";
-import { FeesBlockController } from "./blocks/FeesBlockController";
 import { NetworkBlock } from "../../../views/darknodeBlocks/NetworkBlock";
 import { ResourcesBlock } from "../../../views/darknodeBlocks/ResourcesBlock";
+import { FeesBlockController } from "./blocks/FeesBlockController";
+import { GasBlockController } from "./blocks/GasBlockController";
 import { VersionBlockController } from "./blocks/VersionBlockController";
 import { DarknodeAction } from "./DarknodePage";
 import { Notifications } from "./Notifications";
 import { RegistrationController } from "./RegistrationController";
-import { GasBlockController } from "./blocks/GasBlockController";
-import { DarknodeName } from "../../../views/darknodeBlocks/DarknodeName";
 
 interface Props {
     action: DarknodeAction;

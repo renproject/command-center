@@ -1,4 +1,4 @@
-import { OrderedMap, List } from "immutable";
+import { List, OrderedMap } from "immutable";
 import moment from "moment";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -15,8 +15,8 @@ import {
 import { PopupContainer } from "../../../store/popupContainer";
 import { UIContainer } from "../../../store/uiContainer";
 import { FeesBlock } from "../../../views/darknodeBlocks/FeesBlock";
-import { mergeFees } from "../darknodePage/blocks/FeesBlockController";
 import { NotClaimed } from "../../../views/popups/NotClaimed";
+import { mergeFees } from "../darknodePage/blocks/FeesBlockController";
 
 interface Props {
     darknodeList: List<DarknodesState> | null;

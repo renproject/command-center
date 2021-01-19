@@ -6,21 +6,21 @@ import { List, OrderedMap, OrderedSet } from "immutable";
 import Web3 from "web3";
 import { sha3, toChecksumAddress } from "web3-utils";
 
-import { getLightnode } from "../../store/mapContainer";
+import { updatePrices } from "../../controllers/common/TokenBalance";
 import { retryNTimes } from "../../controllers/pages/renvmStatsPage/renvmContainer";
+import { getLightnode } from "../../store/mapContainer";
 import { DarknodesState } from "../../store/networkContainer";
 import { darknodeIDHexToBase58 } from "../darknode/darknodeID";
 import { queryStat } from "../darknode/jsonrpc";
 import { isDefined } from "../general/isDefined";
-import { TokenAmount } from "../graphQL/queries/queries";
+import { safePromiseAllList } from "../general/promiseAll";
 import { Darknode, queryDarknode } from "../graphQL/queries/darknode";
+import { TokenAmount } from "../graphQL/queries/queries";
 import { RenVM } from "../graphQL/queries/renVM";
+import { catchBackgroundException } from "../react/errors";
 import { getDarknodePayment, getDarknodeRegistry } from "./contract";
 import { getDarknodeStatus, isRegisteredInEpoch } from "./darknodeStatus";
 import { FeeTokens, Token, TokenPrices, TokenString } from "./tokens";
-import { updatePrices } from "../../controllers/common/TokenBalance";
-import { safePromiseAllList } from "../general/promiseAll";
-import { catchBackgroundException } from "../react/errors";
 
 export const NULL = "0x0000000000000000000000000000000000000000";
 
@@ -393,7 +393,7 @@ const getBalancesWithInfura = async (
 
                     return {
                         balance, // .plus(balance2),
-                        token: token,
+                        token,
                     };
                 })
                 .values(),

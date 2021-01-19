@@ -5,8 +5,8 @@ import { OrderedMap } from "immutable";
 import { SECONDS } from "../../../controllers/common/BackgroundTasks";
 import { Ox } from "../../ethereum/contractReads";
 import { TokenString } from "../../ethereum/tokens";
-import { parseTokenAmount, RawTokenAmount, TokenAmount } from "./queries";
 import { tokenArrayToMap } from "../volumes";
+import { parseTokenAmount, RawTokenAmount, TokenAmount } from "./queries";
 
 export interface Epoch {
     epochhash: string;
@@ -28,18 +28,18 @@ interface RawRenVM {
     currentEpoch: {
         epochhash: string;
         timestamp: string;
-        rewardShares: Array<RawTokenAmount>;
+        rewardShares: RawTokenAmount[];
     };
     previousEpoch: {
         epochhash: string;
         timestamp: string;
-        rewardShares: Array<RawTokenAmount>;
+        rewardShares: RawTokenAmount[];
     };
     currentCycle: string;
     previousCycle: string;
     deregistrationInterval: string;
-    fees: Array<RawTokenAmount>;
-    cycleRewards: Array<RawTokenAmount>;
+    fees: RawTokenAmount[];
+    cycleRewards: RawTokenAmount[];
 }
 
 export interface RenVM {

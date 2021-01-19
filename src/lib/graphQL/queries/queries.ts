@@ -111,7 +111,7 @@ export interface HistoricalRawRenVM {
     // btcMintFee: string;
     // btcBurnFee: string;
 
-    volume: Array<RawTokenAmount>;
+    volume: RawTokenAmount[];
     locked: Array<Omit<RawTokenAmount, "amountInEth">>;
 }
 
@@ -176,9 +176,9 @@ export interface IntegratorRaw {
         value: number;
     }>;
 
-    locked: Array<RawTokenAmount>;
+    locked: RawTokenAmount[];
 
-    volume: Array<RawTokenAmount>;
+    volume: RawTokenAmount[];
 }
 
 export const QUERY_INTEGRATORS = gql`

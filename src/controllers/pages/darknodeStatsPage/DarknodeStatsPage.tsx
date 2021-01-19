@@ -6,18 +6,19 @@ import { isDefined } from "../../../lib/general/isDefined";
 import { multiplyTokenAmount } from "../../../lib/graphQL/queries/queries";
 import { GithubAPIContainer } from "../../../store/githubApiContainer";
 import { GraphContainer } from "../../../store/graphContainer";
+import { MapContainer } from "../../../store/mapContainer";
 import { NetworkContainer } from "../../../store/networkContainer";
 import { Web3Container } from "../../../store/web3Container";
 import { ReactComponent as IconDarknodesOnline } from "../../../styles/images/icon-darknodes-online.svg";
 import { ReactComponent as IconIncome } from "../../../styles/images/icon-income.svg";
 import { Change } from "../../../views/Change";
+import { DarknodeMap } from "../../../views/darknodeMap/DarknodeMap";
 import { EpochProgress } from "../../../views/EpochProgress";
 import { ExternalLink } from "../../../views/ExternalLink";
 import { Stat, Stats } from "../../../views/Stat";
 import { ConvertCurrency } from "../../common/TokenBalance";
-import { DarknodeMap } from "../../../views/darknodeMap/DarknodeMap";
+import { OverviewDiv } from "./DarknodeStatsStyles";
 import { FeesStat } from "./FeesStat";
-import { MapContainer } from "../../../store/mapContainer";
 
 const REN_TOTAL_SUPPLY = new BigNumber(1000000000);
 
@@ -127,7 +128,7 @@ export const DarknodeStatsPage = () => {
     );
 
     return (
-        <div className="overview container">
+        <OverviewDiv className="overview container">
             <Stats>
                 <Stat icon={<IconDarknodesOnline />} message="Darknodes online">
                     <Stats>
@@ -296,6 +297,6 @@ export const DarknodeStatsPage = () => {
                     </Stat>
                 </Stats>
             </div>
-        </div>
+        </OverviewDiv>
     );
 };

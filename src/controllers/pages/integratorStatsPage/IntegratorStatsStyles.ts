@@ -1,6 +1,6 @@
-$table-radius: 4px;
+import styled from "styled-components";
 
-.integrators-page {
+export const IntegratorStatsStyles = styled.div`
     &.container {
         margin-top: 60px;
     }
@@ -62,7 +62,7 @@ $table-radius: 4px;
     }
 
     .integrators-large {
-        @media (max-width: $max-xs) {
+        @media (max-width: ${(props) => props.theme.grid.maxXs}) {
             display: none;
         }
     }
@@ -89,12 +89,12 @@ $table-radius: 4px;
         a {
             &:hover,
             &:active {
-                border: 1px dashed $primary;
+                border: 1px dashed ${(props) => props.theme.colors.primary};
             }
         }
 
         .col-0 {
-            @media (min-width: $min-lg) {
+            @media (min-width: ${(props) => props.theme.grid.minLg}) {
                 width: 60px;
             }
 
@@ -135,6 +135,8 @@ $table-radius: 4px;
             }
 
             &.integrator {
+                $table-radius: 4px;
+
                 cursor: pointer;
                 &:first-child {
                     td:first-child {
@@ -189,7 +191,7 @@ $table-radius: 4px;
                         margin: 5px;
                     }
 
-                    @media (min-width: $min-lg) {
+                    @media (min-width: ${(props) => props.theme.grid.minLg}) {
                         .integrators-extra--stats {
                             margin: 5px;
                             margin-right: 0;
@@ -205,11 +207,13 @@ $table-radius: 4px;
                         margin: 10px 0;
                         min-width: calc(100% - 10px);
 
-                        @media (min-width: $min-lg) {
+                        @media (min-width: ${(props) =>
+                                props.theme.grid.minLg}) {
                             min-width: 400px;
                         }
 
-                        @media (min-width: $min-xl) {
+                        @media (min-width: ${(props) =>
+                                props.theme.grid.minXl}) {
                             min-width: 500px;
                         }
 
@@ -230,7 +234,7 @@ $table-radius: 4px;
                 td {
                     transition: height 200ms;
 
-                    @media (max-width: $max-md) {
+                    @media (max-width: ${(props) => props.theme.grid.maxMd}) {
                         max-width: 180px;
                         overflow: hidden;
                         text-overflow: ellipsis;
@@ -241,7 +245,7 @@ $table-radius: 4px;
                 overflow: hidden;
 
                 table {
-                    @media (min-width: $min-md) {
+                    @media (min-width: ${(props) => props.theme.grid.minMd}) {
                         margin: 0 10px;
                     }
                 }
@@ -311,7 +315,7 @@ $table-radius: 4px;
             }
         }
 
-        @media (max-width: $max-sm) {
+        @media (max-width: ${(props) => props.theme.grid.maxSm}) {
             .integrator-name,
             .integrator-name p {
                 max-width: 150px;
@@ -321,7 +325,7 @@ $table-radius: 4px;
             }
         }
 
-        @media (max-width: $max-xs) {
+        @media (max-width: ${(props) => props.theme.grid.maxXs}) {
             .col-0,
             .col-3 {
                 display: none;
@@ -340,4 +344,4 @@ $table-radius: 4px;
             }
         }
     }
-}
+`;

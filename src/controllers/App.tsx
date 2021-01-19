@@ -14,13 +14,13 @@ import { Header } from "./common/header/Header";
 import { LoggingIn } from "./common/LoggingIn";
 import { PopupController } from "./common/popups/PopupController";
 import { Sidebar } from "./common/sidebar/Sidebar";
-import { AllDarknodes } from "./pages/operatorPage/AllDarknodes";
 import { DarknodePage } from "./pages/darknodePage/DarknodePage";
-import { ScrollToTop } from "./ScrollToTop";
 import { DarknodeStatsPage } from "./pages/darknodeStatsPage/DarknodeStatsPage";
 import { IntegratorStatsPage } from "./pages/integratorStatsPage/IntegratorStatsPage";
-import { NetworkStats } from "./pages/networkStatsPage/NetworkStats";
+import { NetworkStatsPage } from "./pages/networkStatsPage/NetworkStatsPage";
+import { AllDarknodes } from "./pages/operatorPage/AllDarknodes";
 import { RenVMStatsPage } from "./pages/renvmStatsPage/RenVMStatsPage";
+import { ScrollToTop } from "./ScrollToTop";
 
 /**
  * App is the main visual component responsible for displaying different routes
@@ -31,7 +31,6 @@ export const App = () => {
         address,
         loggedInBefore,
         promptLogin,
-        renNetwork,
     } = Web3Container.useContainer();
 
     const withAccount = useCallback(
@@ -69,12 +68,12 @@ export const App = () => {
                                 <Route
                                     path="/"
                                     exact
-                                    component={NetworkStats}
+                                    component={NetworkStatsPage}
                                 />
                                 <Route
                                     path="/network"
                                     exact
-                                    component={NetworkStats}
+                                    component={NetworkStatsPage}
                                 />
                                 <Route
                                     path="/integrators"

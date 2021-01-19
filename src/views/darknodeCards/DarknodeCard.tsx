@@ -8,17 +8,17 @@ import { Blocky, Currency, CurrencyIcon } from "@renproject/react-components";
 import React, { useCallback, useState } from "react";
 import { Link } from "react-router-dom";
 
-import { Token } from "../../lib/ethereum/tokens";
-import { classNames } from "../../lib/react/className";
-import { DarknodeID } from "../DarknodeID";
+import BigNumber from "bignumber.js";
 import {
     ConvertCurrency,
     TokenBalance,
 } from "../../controllers/common/TokenBalance";
 import { statusText } from "../../controllers/pages/darknodePage/RegistrationController";
-import BigNumber from "bignumber.js";
-import { RegistrationStatus } from "../../lib/ethereum/contractReads";
 import { darknodeIDHexToBase58 } from "../../lib/darknode/darknodeID";
+import { RegistrationStatus } from "../../lib/ethereum/contractReads";
+import { Token } from "../../lib/ethereum/tokens";
+import { classNames } from "../../lib/react/className";
+import { DarknodeID } from "../DarknodeID";
 
 interface Props {
     darknodeID: string;

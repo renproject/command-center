@@ -1,5 +1,7 @@
 import * as Sentry from "@sentry/browser";
 
+import LedgerTransportU2F from "@ledgerhq/hw-transport-u2f";
+import LedgerTransportWebUSB from "@ledgerhq/hw-transport-webusb";
 import {
     renMainnet,
     RenNetwork,
@@ -12,9 +14,9 @@ import React, { useCallback, useEffect, useState } from "react";
 import { createContainer } from "unstated-next";
 import Web3 from "web3";
 import { toChecksumAddress } from "web3-utils";
-import LedgerTransportU2F from "@ledgerhq/hw-transport-u2f";
-import LedgerTransportWebUSB from "@ledgerhq/hw-transport-webusb";
 
+import BigNumber from "bignumber.js";
+import Notify, { API as NotifyInstance } from "bnc-notify";
 import { LoggedOut } from "../controllers/common/popups/LoggedOut";
 import { getWeb3BrowserName, Web3Browser } from "../lib/ethereum/browsers";
 import { getReadOnlyWeb3 } from "../lib/ethereum/getWeb3";
@@ -26,8 +28,6 @@ import {
 } from "../lib/react/environmentVariables";
 import { PopupContainer } from "./popupContainer";
 import useStorageState from "./useStorageState/useStorageState";
-import Notify, { API as NotifyInstance } from "bnc-notify";
-import BigNumber from "bignumber.js";
 
 const stringToNetwork = (network: RenNetwork): RenNetworkDetails => {
     switch (network.toLowerCase()) {
@@ -44,7 +44,8 @@ const useOnboard = (networkID: number) => {
     const [walletAddress, setWalletAddress] = useState<string | null>(null);
     const [balance, setBalance] = useState<BigNumber | null>(null);
 
-    const onBalance = (balance: string) => setBalance(new BigNumber(balance));
+    const onBalance = (newBalance: string) =>
+        setBalance(new BigNumber(newBalance));
 
     useEffect(() => {
         (async () => {
@@ -277,10 +278,6 @@ const useWeb3Container = (initialState = RenNetwork.Testnet) => {
     };
 
     useEffect(() => {
-        console.log("address------", address);
-        console.log("walletAddress", walletAddress);
-        console.log(" ");
-
         if (!address) {
             setAddress(walletAddress);
             return;

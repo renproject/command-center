@@ -8,10 +8,10 @@ import { Block, BlockBody, BlockTitle } from "./Block";
 
 import { isDefined } from "../../lib/general/isDefined";
 import { classNames } from "../../lib/react/className";
+import { isDarknodeUpToDate } from "../../store/githubApiContainer";
 import { ExternalLink } from "../ExternalLink";
 import { InfoLabel } from "../infoLabel/InfoLabel";
 import { StatusDot, StatusDotColor } from "../StatusDot";
-import { isDarknodeUpToDate } from "../../store/githubApiContainer";
 
 const UPDATE_DARKNODE_LINK =
     "https://docs.renproject.io/darknodes/manage/updating";

@@ -8,6 +8,7 @@ import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
 import React from "react";
 import { Doughnut } from "react-chartjs-2";
+import { SimpleTable } from "../../../views/SimpleTable";
 
 import { TokenIcon } from "../../../views/tokenIcon/TokenIcon";
 
@@ -141,7 +142,7 @@ export const DoughnutChart: React.FC<Props> = ({
                             />
                         </div>
                         <div className="overview--chart--legend">
-                            <div className="overview--chart--legend--table">
+                            <SimpleTable>
                                 {data && tokens
                                     ? tokens.map((token) => {
                                           return (
@@ -179,7 +180,7 @@ export const DoughnutChart: React.FC<Props> = ({
                                           );
                                       })
                                     : null}
-                            </div>
+                            </SimpleTable>
                         </div>
                     </>
                 ) : (

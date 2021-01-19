@@ -81,7 +81,7 @@ export const RegistrationController: React.FC<Props> = ({
             ),
         );
 
-        onDone();
+        onDone().catch(console.error);
     };
 
     const refundCallback = async (): Promise<void> => {

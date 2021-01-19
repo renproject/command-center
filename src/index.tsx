@@ -5,6 +5,7 @@ import * as ReactDOM from "react-dom";
 import React from "react";
 import { Router } from "react-router-dom";
 
+import { ThemeProvider } from "styled-components";
 import { App } from "./controllers/App";
 import { Connect } from "./controllers/common/Connect";
 import { ErrorBoundary } from "./controllers/common/ErrorBoundary";
@@ -14,6 +15,7 @@ import {
 } from "./lib/react/environmentVariables";
 import { history } from "./lib/react/history";
 import { onLoad } from "./lib/react/onLoad";
+import { theme } from "./styles/theme";
 
 // Redirect to https if we aren't serving locally
 if (NODE_ENV !== "development") {
@@ -37,11 +39,13 @@ onLoad(
 const render = (Component: () => JSX.Element) => {
     ReactDOM.render(
         <ErrorBoundary popup={true}>
-            <Router history={history}>
-                <Connect>
-                    <Component />
-                </Connect>
-            </Router>
+            <ThemeProvider theme={theme}>
+                <Router history={history}>
+                    <Connect>
+                        <Component />
+                    </Connect>
+                </Router>
+            </ThemeProvider>
         </ErrorBoundary>,
         document.getElementById("root") as HTMLElement,
     );

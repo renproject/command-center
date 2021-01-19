@@ -42,9 +42,11 @@ export const FeesStat: React.FC<Props> = ({
                     {quoteCurrency === Currency.BTC ? (
                         <AnyTokenBalance
                             amount={
-                                fees.get(Token.BTC, {
-                                    amount: new BigNumber(0),
-                                })!.amount
+                                (
+                                    fees.get(Token.BTC) || {
+                                        amount: new BigNumber(0),
+                                    }
+                                ).amount
                             }
                             decimals={8}
                         />
@@ -62,23 +64,29 @@ export const FeesStat: React.FC<Props> = ({
                             (reward) =>
                                 reward && reward.asset && reward.amount.gt(0),
                         )
-                        .sortBy((reward) => reward!.amountInUsd.toNumber())
+                        .sortBy((reward) =>
+                            reward ? reward.amountInUsd.toNumber() : 0,
+                        )
                         .reverse()
-                        .map((reward, symbol) => {
-                            return (
+                        .map((reward, symbol) =>
+                            reward ? (
                                 <div key={symbol}>
                                     <TokenIcon
                                         white={true}
                                         token={symbol.replace(/^ren/, "")}
                                     />
                                     <AnyTokenBalance
-                                        amount={reward!.amount}
-                                        decimals={reward!.asset!.decimals}
+                                        amount={reward.amount}
+                                        decimals={
+                                            reward.asset
+                                                ? reward.asset.decimals
+                                                : 0
+                                        }
                                     />{" "}
                                     {symbol}
                                 </div>
-                            );
-                        })
+                            ) : null,
+                        )
                         .valueSeq()
                         .toArray()}
                 </div>

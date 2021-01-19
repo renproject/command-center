@@ -22,9 +22,6 @@ export const isDarknodeUpToDate = (
     latestVersion: string,
 ): boolean | null => {
     try {
-        console.log("latestVersion", latestVersion);
-        console.log("darknodeVersion", darknodeVersion);
-
         return semver.lte(
             latestVersion.split("-")[0],
             darknodeVersion.split("-")[0],

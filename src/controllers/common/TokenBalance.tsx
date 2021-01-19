@@ -103,7 +103,7 @@ export const ConvertCurrency: React.FC<{
     // let digits = amount.gt(100000) ? 0 : 2
     const digits = amount.eq(0) ? 0 : 2;
 
-    let formatted = resolvedAmount.toFormat(digits, BigNumber.ROUND_FLOOR);
+    const formatted = resolvedAmount.toFormat(digits, BigNumber.ROUND_FLOOR);
 
     return <>{formatted}</>;
 };
@@ -128,7 +128,7 @@ export const AnyTokenBalance: React.FC<{
                   BigNumber.ROUND_FLOOR,
               );
 
-    let formatted =
+    const formatted =
         amountBN.gt(0) && resolvedAmount.isZero()
             ? digits === null
                 ? resolvedAmount.toFormat()
@@ -152,11 +152,11 @@ export const updatePrices = <T extends TokenAmount | null | undefined>(
         return tokenAmounts;
     }
     return tokenAmounts.map((amount, symbol) => {
-        let prices = tokenPrices.get(symbol as Token);
+        const prices = tokenPrices.get(symbol as Token);
         if (amount && prices && amount.asset) {
-            let usdPrice = prices.get(Currency.USD);
-            let ethPrice = prices.get(Currency.ETH);
-            let shiftedAmount = amount.amount.div(
+            const usdPrice = prices.get(Currency.USD);
+            const ethPrice = prices.get(Currency.ETH);
+            const shiftedAmount = amount.amount.div(
                 new BigNumber(10).exponentiatedBy(amount.asset.decimals),
             );
 
@@ -186,15 +186,15 @@ export const missingPrices = (
     }
 
     return tokenAmounts.map((amount, symbol) => {
-        let prices = tokenPrices.get(symbol as Token);
+        const prices = tokenPrices.get(symbol as Token);
         if (
             amount &&
             amount.amount.gt(0) &&
             amount.amountInUsd.eq(0) &&
             prices
         ) {
-            let usdPrice = prices.get(Currency.USD);
-            let ethPrice = prices.get(Currency.ETH);
+            const usdPrice = prices.get(Currency.USD);
+            const ethPrice = prices.get(Currency.ETH);
             return {
                 ...amount,
                 amountInUsd: usdPrice

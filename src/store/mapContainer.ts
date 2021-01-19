@@ -6,9 +6,9 @@ import { useRef, useState } from "react";
 import { Point } from "react-simple-maps";
 import { createContainer } from "unstated-next";
 
+import { retryNTimes } from "../controllers/pages/renvmStatsPage/renvmContainer";
 import { DEFAULT_REQUEST_TIMEOUT } from "../lib/react/environmentVariables";
 import { Web3Container } from "./web3Container";
-import { retryNTimes } from "../controllers/pages/renvmStatsPage/renvmContainer";
 
 export const SESSION_MAP_LIMIT = 30;
 
@@ -176,7 +176,7 @@ const useMapContainer = () => {
     let [darknodes, setDarknodes] = useState<Map<string, DarknodeLocation>>(
         Map(),
     );
-    let sessionMapCount = useRef(0);
+    const sessionMapCount = useRef(0);
     const [darknodeCount, setDarknodeCount] = useState<number | null>(null);
     // tslint:disable-next-line: whitespace
     const getLocation = async (ip: string): Promise<Location | null> => {

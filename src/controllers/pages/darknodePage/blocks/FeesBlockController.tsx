@@ -18,7 +18,11 @@ import { PopupContainer } from "../../../../store/popupContainer";
 import { UIContainer } from "../../../../store/uiContainer";
 import { FeesBlock } from "../../../../views/darknodeBlocks/FeesBlock";
 import { NotClaimed } from "../../../../views/popups/NotClaimed";
-// import { ReactComponent as WithdrawIcon } from "../../../../styles/images/icon-withdraw.svg";
+
+interface Props {
+    isOperator: boolean;
+    darknodeDetails: DarknodesState | null;
+}
 
 export const mergeFees = (
     left: OrderedMap<TokenString, TokenAmount | null>,
@@ -161,8 +165,8 @@ export const FeesBlockController: React.FC<Props> = ({
         );
     }
 
-    let withdrawable = darknodeDetails ? darknodeDetails.feesEarned : null;
-    let pending = summedPendingRewards;
+    const withdrawable = darknodeDetails ? darknodeDetails.feesEarned : null;
+    const pending = summedPendingRewards;
 
     const earningFees: boolean =
         !!darknodeDetails &&
@@ -201,8 +205,3 @@ export const FeesBlockController: React.FC<Props> = ({
         />
     );
 };
-
-interface Props {
-    isOperator: boolean;
-    darknodeDetails: DarknodesState | null;
-}

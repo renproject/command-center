@@ -2,20 +2,15 @@
 
 import { gql, useApolloClient } from "@apollo/react-hooks";
 import { RenNetworkDetails } from "@renproject/contracts";
-import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
-import moment from "moment";
 import { useEffect, useMemo, useState } from "react";
 import { createContainer } from "unstated-next";
-import { TokenString } from "../../../lib/ethereum/tokens";
 import { isDefined } from "../../../lib/general/isDefined";
 
 import {
     IntegratorRaw,
-    QUERY_BLOCK,
     QUERY_INTEGRATORS,
     QUERY_INTEGRATORS_HISTORY,
-    QueryBlockResponse,
     Integrator,
     parseTokenAmount,
 } from "../../../lib/graphQL/queries/queries";
@@ -54,7 +49,6 @@ export const resolveIntegrator = (
     };
 };
 
-
 const rawToIntegrator = (raw: IntegratorRaw): Integrator => {
     const {
         txCount: txCountRaw,
@@ -88,7 +82,7 @@ const integratorDifference = (
             : now.txCount,
         locked: before
             ? now.locked.map((value, asset) => {
-                  let beforeValue = before.locked.get(asset);
+                  const beforeValue = before.locked.get(asset);
                   return beforeValue
                       ? {
                             ...value,
@@ -105,7 +99,7 @@ const integratorDifference = (
             : now.locked,
         volume: before
             ? now.volume.map((value, asset) => {
-                  let beforeValue = before.volume.get(asset);
+                  const beforeValue = before.volume.get(asset);
                   return beforeValue
                       ? {
                             ...value,
@@ -174,8 +168,6 @@ const useIntegratorsContainer = () => {
                         offset: page * ROWS_PER_PAGE,
                     },
                 });
-
-                const now = moment().unix();
 
                 const latestBlockResponse = await getLatestSyncedBlock();
 
@@ -255,7 +247,7 @@ const useIntegratorsContainer = () => {
             console.error(error);
             setIntegrators(integrators.set(page, extractError(error)));
         });
-    }, [integrators, page, apollo, renNetwork]);
+    }, [integrators, page, apollo, renNetwork, getLatestSyncedBlock]);
 
     // const onSearchChange = useCallback((event: React.FormEvent<HTMLInputElement>): void => {
     //     const element = (event.target as HTMLInputElement);

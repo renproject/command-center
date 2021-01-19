@@ -34,9 +34,7 @@
 // Styles in src/components
 @import "../views/darknodeMap/darknodeMap";
 @import "../controllers/pages/renvmStatsPage/renvm";
-@import "../controllers/pages/darknodeStatsPage/overview";
 @import "../controllers/pages/networkStatsPage/networkStats";
-@import "../controllers/pages/integratorStatsPage/integratorStatsPage";
 
 // Styles for html, body, anchors etc. should go in _general
 @import "scss/_general";

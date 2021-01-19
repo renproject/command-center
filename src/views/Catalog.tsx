@@ -1,41 +1,40 @@
-import { renMainnet } from "@renproject/contracts";
-import { Currency, sleep } from "@renproject/react-components";
+import { sleep } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import { Map } from "immutable";
-import React, { useState } from "react";
-import { FeesBlock } from "./darknodeBlocks/FeesBlock";
-import { GasBlock } from "./darknodeBlocks/GasBlock";
+import React, { useCallback, useMemo, useState } from "react";
+import { Point } from "react-simple-maps";
+import { SECONDS } from "../controllers/common/BackgroundTasks";
+import { DarknodeAction } from "../controllers/pages/darknodePage/DarknodePage";
+import { NodeStatistics } from "../lib/darknode/jsonrpc";
+import { RegistrationStatus } from "../lib/ethereum/contractReads";
 import { isDefined } from "../lib/general/isDefined";
 import { classNames } from "../lib/react/className";
 import { GraphContainer } from "../store/graphContainer";
 import { NetworkContainer } from "../store/networkContainer";
+import { Web3Container } from "../store/web3Container";
 import { Change } from "./Change";
+import { DarknodeName } from "./darknodeBlocks/DarknodeName";
+import { EpochBlock } from "./darknodeBlocks/EpochBlock";
+import { FeesBlock } from "./darknodeBlocks/FeesBlock";
+import { GasBlock } from "./darknodeBlocks/GasBlock";
+import { NetworkBlock } from "./darknodeBlocks/NetworkBlock";
+import { ResourcesBlock } from "./darknodeBlocks/ResourcesBlock";
+import {
+    DarknodeConnectionStatus,
+    VersionBlock,
+} from "./darknodeBlocks/VersionBlock";
+import { DarknodeCard } from "./darknodeCards/DarknodeCard";
+import { EmptyDarknodeCard } from "./darknodeCards/EmptyDarknodeCard";
 import { DarknodeID } from "./DarknodeID";
+import { DarknodeMap } from "./darknodeMap/DarknodeMap";
 import { EpochProgress } from "./EpochProgress";
 import { InfoLabel } from "./infoLabel/InfoLabel";
+import { Registration } from "./Registration";
 import { Stat, Stats } from "./Stat";
 import { StatusDot, StatusDotColor } from "./StatusDot";
 import { Tabs } from "./Tabs";
 import { TitledSection } from "./TitledSection";
 import { TokenIcon } from "./tokenIcon/TokenIcon";
-import { Web3Container } from "../store/web3Container";
-import { SECONDS } from "../controllers/common/BackgroundTasks";
-import { DarknodeName } from "./darknodeBlocks/DarknodeName";
-import {
-    DarknodeConnectionStatus,
-    VersionBlock,
-} from "./darknodeBlocks/VersionBlock";
-import { Point } from "react-simple-maps";
-import { EmptyDarknodeCard } from "./darknodeCards/EmptyDarknodeCard";
-import { DarknodeCard } from "./darknodeCards/DarknodeCard";
-import { RegistrationStatus } from "../lib/ethereum/contractReads";
-import { EpochBlock } from "./darknodeBlocks/EpochBlock";
-import { Registration } from "./Registration";
-import { DarknodeAction } from "../controllers/pages/darknodePage/DarknodePage";
-import { NodeStatistics } from "../lib/darknode/jsonrpc";
-import { NetworkBlock } from "./darknodeBlocks/NetworkBlock";
-import { ResourcesBlock } from "./darknodeBlocks/ResourcesBlock";
-import { DarknodeMap } from "./darknodeMap/DarknodeMap";
 
 const CatalogItem: React.FC<
     {
@@ -119,6 +118,16 @@ export const Catalog = () => {
 
     const [name, setName] = useState("Darknode name");
     const [renaming, setRenaming] = useState(false);
+    const updateName = useCallback((_darknodeID, newName) => setName(newName), [
+        setName,
+    ]);
+
+    const loginCallback = useMemo(
+        () => async () => {
+            await promptLogin({ manual: true });
+        },
+        [promptLogin],
+    );
 
     return (
         <div className="container catalog">
@@ -211,9 +220,7 @@ export const Catalog = () => {
                     registrationStatus={RegistrationStatus.Unknown}
                     operator={null}
                     web3BrowserName={web3BrowserName}
-                    loginCallback={async () => {
-                        await promptLogin({ manual: true });
-                    }}
+                    loginCallback={loginCallback}
                     registerCallback={defaultCallback}
                     deregisterCallback={defaultCallback}
                     refundCallback={defaultCallback}
@@ -226,9 +233,7 @@ export const Catalog = () => {
                     registrationStatus={RegistrationStatus.Unregistered}
                     operator={null}
                     web3BrowserName={web3BrowserName}
-                    loginCallback={async () => {
-                        await promptLogin({ manual: true });
-                    }}
+                    loginCallback={loginCallback}
                     registerCallback={defaultCallback}
                     deregisterCallback={defaultCallback}
                     refundCallback={defaultCallback}
@@ -241,9 +246,7 @@ export const Catalog = () => {
                     registrationStatus={RegistrationStatus.Unregistered}
                     operator={null}
                     web3BrowserName={web3BrowserName}
-                    loginCallback={async () => {
-                        await promptLogin({ manual: true });
-                    }}
+                    loginCallback={loginCallback}
                     registerCallback={defaultCallback}
                     deregisterCallback={defaultCallback}
                     refundCallback={defaultCallback}
@@ -256,9 +259,7 @@ export const Catalog = () => {
                     registrationStatus={RegistrationStatus.RegistrationPending}
                     operator={address}
                     web3BrowserName={web3BrowserName}
-                    loginCallback={async () => {
-                        await promptLogin({ manual: true });
-                    }}
+                    loginCallback={loginCallback}
                     registerCallback={defaultCallback}
                     deregisterCallback={defaultCallback}
                     refundCallback={defaultCallback}
@@ -269,9 +270,7 @@ export const Catalog = () => {
                     registrationStatus={RegistrationStatus.RegistrationPending}
                     operator={"0x408e41876cccdc0f92210600ef50372656052a38"}
                     web3BrowserName={web3BrowserName}
-                    loginCallback={async () => {
-                        await promptLogin({ manual: true });
-                    }}
+                    loginCallback={loginCallback}
                     registerCallback={defaultCallback}
                     deregisterCallback={defaultCallback}
                     refundCallback={defaultCallback}
@@ -284,9 +283,7 @@ export const Catalog = () => {
                     registrationStatus={RegistrationStatus.Registered}
                     operator={address}
                     web3BrowserName={web3BrowserName}
-                    loginCallback={async () => {
-                        await promptLogin({ manual: true });
-                    }}
+                    loginCallback={loginCallback}
                     registerCallback={defaultCallback}
                     deregisterCallback={defaultCallback}
                     refundCallback={defaultCallback}
@@ -297,9 +294,7 @@ export const Catalog = () => {
                     registrationStatus={RegistrationStatus.Registered}
                     operator={"0x408e41876cccdc0f92210600ef50372656052a38"}
                     web3BrowserName={web3BrowserName}
-                    loginCallback={async () => {
-                        await promptLogin({ manual: true });
-                    }}
+                    loginCallback={loginCallback}
                     registerCallback={defaultCallback}
                     deregisterCallback={defaultCallback}
                     refundCallback={defaultCallback}
@@ -314,9 +309,7 @@ export const Catalog = () => {
                     }
                     operator={address}
                     web3BrowserName={web3BrowserName}
-                    loginCallback={async () => {
-                        await promptLogin({ manual: true });
-                    }}
+                    loginCallback={loginCallback}
                     registerCallback={defaultCallback}
                     deregisterCallback={defaultCallback}
                     refundCallback={defaultCallback}
@@ -329,9 +322,7 @@ export const Catalog = () => {
                     }
                     operator={"0x408e41876cccdc0f92210600ef50372656052a38"}
                     web3BrowserName={web3BrowserName}
-                    loginCallback={async () => {
-                        await promptLogin({ manual: true });
-                    }}
+                    loginCallback={loginCallback}
                     registerCallback={defaultCallback}
                     deregisterCallback={defaultCallback}
                     refundCallback={defaultCallback}
@@ -344,9 +335,7 @@ export const Catalog = () => {
                     registrationStatus={RegistrationStatus.Deregistered}
                     operator={address}
                     web3BrowserName={web3BrowserName}
-                    loginCallback={async () => {
-                        await promptLogin({ manual: true });
-                    }}
+                    loginCallback={loginCallback}
                     registerCallback={defaultCallback}
                     deregisterCallback={defaultCallback}
                     refundCallback={defaultCallback}
@@ -357,9 +346,7 @@ export const Catalog = () => {
                     registrationStatus={RegistrationStatus.Deregistered}
                     operator={"0x408e41876cccdc0f92210600ef50372656052a38"}
                     web3BrowserName={web3BrowserName}
-                    loginCallback={async () => {
-                        await promptLogin({ manual: true });
-                    }}
+                    loginCallback={loginCallback}
                     registerCallback={defaultCallback}
                     deregisterCallback={defaultCallback}
                     refundCallback={defaultCallback}
@@ -372,9 +359,7 @@ export const Catalog = () => {
                     registrationStatus={RegistrationStatus.Refundable}
                     operator={address}
                     web3BrowserName={web3BrowserName}
-                    loginCallback={async () => {
-                        await promptLogin({ manual: true });
-                    }}
+                    loginCallback={loginCallback}
                     registerCallback={defaultCallback}
                     deregisterCallback={defaultCallback}
                     refundCallback={defaultCallback}
@@ -385,9 +370,7 @@ export const Catalog = () => {
                     registrationStatus={RegistrationStatus.Refundable}
                     operator={"0x408e41876cccdc0f92210600ef50372656052a38"}
                     web3BrowserName={web3BrowserName}
-                    loginCallback={async () => {
-                        await promptLogin({ manual: true });
-                    }}
+                    loginCallback={loginCallback}
                     registerCallback={defaultCallback}
                     deregisterCallback={defaultCallback}
                     refundCallback={defaultCallback}
@@ -473,7 +456,7 @@ export const Catalog = () => {
                     earningFees={true}
                     withdrawable={withdrawableRewards}
                     pending={claimableRewards}
-                    withdrawCallback={async () => {}}
+                    withdrawCallback={defaultCallback}
                 />
                 <hr />
                 <h4>Combined page</h4>
@@ -484,7 +467,7 @@ export const Catalog = () => {
                     earningFees={true}
                     withdrawable={withdrawableRewards}
                     pending={claimableRewards}
-                    withdrawCallback={async () => {}}
+                    withdrawCallback={defaultCallback}
                 />
             </CatalogItem>
 
@@ -506,7 +489,7 @@ export const Catalog = () => {
                     darknodeID={defaultDarknodeID}
                     name={name}
                     isOperator={true}
-                    storeDarknodeName={(_, name) => setName(name)}
+                    storeDarknodeName={updateName}
                 />
             </CatalogItem>
 
@@ -525,7 +508,7 @@ export const Catalog = () => {
                     feesEarnedInUsd={new BigNumber(10)}
                     ethBalance={oneEth.times(0.1)}
                     quoteCurrency={quoteCurrency}
-                    removeDarknode={() => {}}
+                    removeDarknode={defaultCallback}
                 />
                 <hr />
                 <h4>Loading</h4>
@@ -536,7 +519,7 @@ export const Catalog = () => {
                     feesEarnedInUsd={null}
                     ethBalance={null}
                     quoteCurrency={quoteCurrency}
-                    removeDarknode={() => {}}
+                    removeDarknode={defaultCallback}
                 />
             </CatalogItem>
 

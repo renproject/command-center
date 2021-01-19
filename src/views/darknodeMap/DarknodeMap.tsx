@@ -1,3 +1,4 @@
+import { Map } from "immutable";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -7,11 +8,10 @@ import {
     Marker,
 } from "react-simple-maps";
 import ReactTooltip from "react-tooltip";
-import { Map } from "immutable";
 
+import { RenNetworkDetails } from "@renproject/contracts";
 import { DarknodeLocation } from "../../store/mapContainer";
 import MapJSON from "./world-50m.json";
-import { RenNetworkDetails } from "@renproject/contracts";
 
 // tslint:disable-next-line: no-any
 // const GeographyAlt: any = Geography;

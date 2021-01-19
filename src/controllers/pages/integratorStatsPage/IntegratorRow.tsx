@@ -32,7 +32,7 @@ const IntegratorTokenValue: React.FC<{
         {volume ? (
             <AnyTokenBalance
                 amount={volume.amount}
-                decimals={volume.asset!.decimals}
+                decimals={volume.asset ? volume.asset.decimals : 0}
             />
         ) : (
             "..."
@@ -43,7 +43,7 @@ const IntegratorTokenValue: React.FC<{
         {volume && quoteCurrency === Currency.BTC && symbol === "BTC" ? (
             <AnyTokenBalance
                 amount={volume.amount}
-                decimals={volume.asset!.decimals}
+                decimals={volume.asset ? volume.asset.decimals : 0}
             />
         ) : volume ? (
             <ConvertCurrency

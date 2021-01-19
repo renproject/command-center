@@ -3,10 +3,10 @@ import { Map, OrderedSet } from "immutable";
 import React from "react";
 
 import { DarknodesState } from "../../../store/networkContainer";
-import { ErrorBoundary } from "../../common/ErrorBoundary";
-import { DarknodeCardController } from "./DarknodeCardController";
 import { EmptyDarknodeCard } from "../../../views/darknodeCards/EmptyDarknodeCard";
 import { EmptyDarknodeList } from "../../../views/darknodeCards/EmptyDarknodeList";
+import { ErrorBoundary } from "../../common/ErrorBoundary";
+import { DarknodeCardController } from "./DarknodeCardController";
 
 interface Props {
     darknodeList: OrderedSet<string> | null;

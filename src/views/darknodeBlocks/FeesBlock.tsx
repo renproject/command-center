@@ -3,13 +3,13 @@ import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
 import React, { useCallback, useMemo, useState } from "react";
 
+import { ConvertCurrency } from "../../controllers/common/TokenBalance";
 import { TokenAmount } from "../../lib/graphQL/queries/queries";
 import { classNames } from "../../lib/react/className";
 import { ReactComponent as RewardsIcon } from "../../styles/images/icon-rewards-white.svg";
 import { Tabs } from "../Tabs";
-import { ConvertCurrency } from "../../controllers/common/TokenBalance";
-import { FeesBlockRow, FeesBlockTab } from "./FeesBlockRow";
 import { Block, BlockBody, BlockTitle } from "./Block";
+import { FeesBlockRow, FeesBlockTab } from "./FeesBlockRow";
 
 export const FeesBlock: React.FC<Props> = ({
     quoteCurrency,

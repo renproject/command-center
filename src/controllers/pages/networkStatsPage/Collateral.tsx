@@ -3,12 +3,12 @@ import BigNumber from "bignumber.js";
 import React from "react";
 
 import { classNames } from "../../../lib/react/className";
-import { ReactComponent as IconBurnFee } from "../../../styles/images/icon-burn-fee.svg";
 import { ReactComponent as IconCheckCircle } from "../../../styles/images/icon-check-circle.svg";
 import { ReactComponent as IconCollateralization } from "../../../styles/images/icon-collateralization.svg";
 import { ReactComponent as IconMintFee } from "../../../styles/images/icon-mint-fee.svg";
 import { ExternalLink } from "../../../views/ExternalLink";
 import { InfoLabel } from "../../../views/infoLabel/InfoLabel";
+import { SimpleTable } from "../../../views/SimpleTable";
 import { Stat, Stats } from "../../../views/Stat";
 
 interface Props {
@@ -186,15 +186,8 @@ export const Collateral: React.FC<Props> = ({
                                 </div>
                             </div>
                         ) : null}
-                        <div
-                            className={classNames(
-                                "collateral-table",
-                                GREYCORE_ACTIVE
-                                    ? "collateral-table-greycore"
-                                    : "",
-                            )}
-                        >
-                            <div className="collateral-table--row">
+                        <SimpleTable>
+                            <div>
                                 <div
                                     className={classNames(
                                         "collateral-table--row--left",
@@ -219,7 +212,7 @@ export const Collateral: React.FC<Props> = ({
                                     </InfoLabel>
                                 </div>
                             </div>
-                            <div className="collateral-table--row">
+                            <div>
                                 <div className="collateral-table--row--left row--b">
                                     <RowBullet /> Value in motion
                                 </div>
@@ -243,11 +236,7 @@ export const Collateral: React.FC<Props> = ({
                                     </InfoLabel>
                                 </div>
                             </div>
-                            {/* <div className="collateral-table--row">
-                                <div className="collateral-table--row--left row--b3"><RowBullet /> Ceiling (R/3)</div>
-                                <div className="collateral-table--row--right"><CurrencyIcon currency={quoteCurrency} />{(r || new BigNumber(0)).div(3).toFormat(2)} <InfoLabel>Locked</InfoLabel></div>
-                            </div> */}
-                            <div className="collateral-table--row">
+                            <div>
                                 <div className="collateral-table--row--left row--b">
                                     <RowBullet /> Value Bonded&nbsp;(B)
                                 </div>
@@ -271,20 +260,20 @@ export const Collateral: React.FC<Props> = ({
                                     </InfoLabel>
                                 </div>
                             </div>
-                        </div>
+                        </SimpleTable>
                     </div>
                 </Stat>
             </Stats>
             <Stats>
                 <Stat
                     className="collateral-stat stat--extra-big"
-                    message="Mint Fee"
+                    message="Mint/Burn Fees"
                     icon={<IconMintFee />}
                     infoLabel={
                         <>
-                            The current RenVM minting fee. It is a dynamic fee
-                            which fluctuates based on the amount of value locked
-                            within in RenVM. For more information,{" "}
+                            The current RenVM minting and burning fee. These
+                            fees are voted on by the community based on recent
+                            network volume and TVL. For more information,{" "}
                             <ExternalLink href="https://github.com/renproject/ren/wiki/Fees-and-Economics#minting-and-burning-fee">
                                 see here
                             </ExternalLink>
@@ -293,34 +282,34 @@ export const Collateral: React.FC<Props> = ({
                     }
                     big={true}
                 >
-                    {mintFee === undefined ? (
-                        <Loading alt={true} />
-                    ) : (
-                        <>{mintFee / 100}%</>
-                    )}
-                </Stat>
-                <Stat
-                    className="collateral-stat stat--extra-big"
-                    message="Burn Fee"
-                    icon={<IconBurnFee />}
-                    infoLabel={
-                        <>
-                            The current RenVM burning fee. It is a dynamic fee
-                            which fluctuates based on the amount of value locked
-                            within in RenVM. For more information,{" "}
-                            <ExternalLink href="https://github.com/renproject/ren/wiki/Fees-and-Economics#minting-and-burning-fee">
-                                see here
-                            </ExternalLink>
-                            .
-                        </>
-                    }
-                    big={true}
-                >
-                    {burnFee === undefined ? (
-                        <Loading alt={true} />
-                    ) : (
-                        <>{burnFee / 100}%</>
-                    )}
+                    <SimpleTable>
+                        <div>Ethereum</div>
+                        <div>
+                            <span style={{ marginLeft: "40px" }}>Mint</span>
+                            <span>
+                                {mintFee ? <>{mintFee / 100}%</> : <Loading />}
+                            </span>
+                        </div>
+                        <div>
+                            <span style={{ marginLeft: "40px" }}>Burn</span>
+                            <span>
+                                {burnFee ? <>{burnFee / 100}%</> : <Loading />}
+                            </span>
+                        </div>
+                        <div>Binance Smart Chain</div>
+                        <div>
+                            <span style={{ marginLeft: "40px" }}>Mint</span>
+                            <span>
+                                {mintFee ? <>{mintFee / 100}%</> : <Loading />}
+                            </span>
+                        </div>
+                        <div>
+                            <span style={{ marginLeft: "40px" }}>Burn</span>
+                            <span>
+                                {burnFee ? <>{burnFee / 100}%</> : <Loading />}
+                            </span>
+                        </div>
+                    </SimpleTable>
                 </Stat>
             </Stats>
         </div>

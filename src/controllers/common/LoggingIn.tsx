@@ -5,8 +5,7 @@ import { Web3Container } from "../../store/web3Container";
 import { EmptyDarknodeList } from "../../views/darknodeCards/EmptyDarknodeList";
 
 /**
- * LoggingIn is a page whose principal components are wallet selection to allow users
- * to log-in, and the hidden orderbook
+ * LoggingIn is shown when a user is required to log in to see the selected page.
  */
 export const LoggingIn: React.FC<{}> = () => {
     const { address, promptLogin } = Web3Container.useContainer();

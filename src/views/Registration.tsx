@@ -1,11 +1,10 @@
 import { Loading } from "@renproject/react-components";
 import React, { useEffect, useMemo, useState } from "react";
 
-import { NULL, RegistrationStatus } from "../lib/ethereum/contractReads";
-import { DarknodesState } from "../store/networkContainer";
-import { StatusDot, StatusDotColor } from "../views/StatusDot";
-import { classNames } from "../lib/react/className";
 import { DarknodeAction } from "../controllers/pages/darknodePage/DarknodePage";
+import { RegistrationStatus } from "../lib/ethereum/contractReads";
+import { classNames } from "../lib/react/className";
+import { StatusDot, StatusDotColor } from "../views/StatusDot";
 
 export const statusText = {
     [RegistrationStatus.Unknown]: "Loading...",

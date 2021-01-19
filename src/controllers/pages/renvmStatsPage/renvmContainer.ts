@@ -11,8 +11,8 @@ import { createContainer } from "unstated-next";
 import { EncodedData, Encodings } from "../../../lib/general/encodedData";
 import { DEFAULT_REQUEST_TIMEOUT } from "../../../lib/react/environmentVariables";
 import { extractError } from "../../../lib/react/errors";
-import { Web3Container } from "../../../store/web3Container";
 import { getLightnode } from "../../../store/mapContainer";
+import { Web3Container } from "../../../store/web3Container";
 
 export type Tx = ResponseQueryTx["tx"];
 

@@ -1,4 +1,6 @@
-.overview {
+import styled from "styled-components";
+
+export const OverviewDiv = styled.div`
     &.container {
         max-width: 2200px;
     }
@@ -12,7 +14,7 @@
             flex-grow: 1;
         }
 
-        @media (min-width: $min-md) {
+        @media (min-width: ${(props) => props.theme.grid.minMd}) {
             .map {
                 flex-grow: 4;
             }
@@ -109,49 +111,17 @@
             display: flex;
             align-items: center;
             justify-content: center;
-
-            .overview--chart--legend--table {
-                width: 200px;
-                margin-left: 30px;
-
-                font-weight: 300;
-                font-size: 12px;
-                line-height: 27px;
-
-                letter-spacing: 1.5px;
-
-                > div {
-                    > :first-child {
-                        display: flex;
-                        align-items: center;
-                        font-weight: 900;
-
-                        svg {
-                            margin-right: 5px;
-                        }
-                    }
-
-                    &:not(:last-child) {
-                        border-bottom: 1px solid #ffffff20;
-                    }
-
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                    padding: 10px 0;
-                }
-            }
         }
     }
-}
 
-.darknode-cli {
-    padding: 20px;
-}
+    .darknode-cli {
+        padding: 20px;
+    }
 
-.darknode-cli--button {
-    background: #006fe8;
-    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.3);
-    border-radius: 4px !important;
-    width: 216px !important;
-}
+    .darknode-cli--button {
+        background: #006fe8;
+        box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.3);
+        border-radius: 4px !important;
+        width: 216px !important;
+    }
+`;

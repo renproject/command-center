@@ -8,7 +8,6 @@ import React from "react";
 import { Doughnut } from "react-chartjs-2";
 import { NodeStatistics } from "../../lib/darknode/jsonrpc";
 
-import { DarknodesState } from "../../store/networkContainer";
 import { Block, BlockBody, BlockTitle } from "./Block";
 
 interface Props {

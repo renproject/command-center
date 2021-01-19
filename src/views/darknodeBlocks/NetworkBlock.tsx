@@ -6,11 +6,11 @@ import {
 import { naturalTime } from "@renproject/react-components";
 import React from "react";
 
-import { darknodeIDHexToBase58 } from "../../lib/darknode/darknodeID";
-import { ReactComponent as CopyIcon } from "../../styles/images/icon-copy.svg";
 import { SECONDS } from "../../controllers/common/BackgroundTasks";
-import { Block, BlockBody, BlockTitle } from "./Block";
+import { darknodeIDHexToBase58 } from "../../lib/darknode/darknodeID";
 import { NodeStatistics } from "../../lib/darknode/jsonrpc";
+import { ReactComponent as CopyIcon } from "../../styles/images/icon-copy.svg";
+import { Block, BlockBody, BlockTitle } from "./Block";
 
 interface Props {
     darknodeID: string | null;

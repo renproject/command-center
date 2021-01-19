@@ -441,12 +441,12 @@ const useNetworkContainer = () => {
 
                             return {
                                 symbol: token,
-                                amount: amount,
+                                amount,
                                 amountInEth: amountInEth || new BigNumber(0),
                                 amountInUsd: amountInUsd || new BigNumber(0),
                                 asset: {
                                     decimals: tokenDetails.decimals,
-                                } as { decimals: number } | null,
+                                },
                             };
                         } catch (error) {
                             console.error(

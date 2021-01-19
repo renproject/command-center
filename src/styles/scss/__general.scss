@@ -352,13 +352,12 @@ label {
 .app--body {
     min-height: calc(100vh - 5px - 50px - 2vh);
     margin-top: calc(50px + 2vh);
-    margin-bottom: 5px;
 
     @media (min-width: $min-lg) {
         min-height: calc(100vh - 60px - 50px - 5vh);
 
-        margin-top: calc(50px + 5vh);
-        margin-bottom: 60px;
+        margin-top: calc(50px + 3vh);
+        // margin-bottom: 60px;
     }
 }
 
@@ -486,5 +485,11 @@ label {
 
     :active {
         margin-top: 0px;
+    }
+}
+
+.network-stats {
+    > * > .statistic--row {
+        margin-bottom: 0;
     }
 }
