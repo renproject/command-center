@@ -121,7 +121,7 @@ export const FeesBlock: React.FC<Props> = ({
                                     </thead>
                                     <tbody>
                                         {fees
-                                            .map((balance, token) => {
+                                            .map((balance, _token) => {
                                                 return {
                                                     balance,
                                                     percent:
@@ -150,7 +150,7 @@ export const FeesBlock: React.FC<Props> = ({
                                                         token,
                                                         { balance, percent },
                                                     ],
-                                                    i,
+                                                    _i,
                                                 ) => {
                                                     return (
                                                         <FeesBlockRow

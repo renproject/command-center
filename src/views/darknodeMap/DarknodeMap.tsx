@@ -9,19 +9,14 @@ import {
 } from "react-simple-maps";
 import ReactTooltip from "react-tooltip";
 
-import { RenNetworkDetails } from "@renproject/contracts";
 import { DarknodeLocation } from "../../store/mapContainer";
 import MapJSON from "./world-50m.json";
 
-// tslint:disable-next-line: no-any
-// const GeographyAlt: any = Geography;
-
 interface Props {
-    renNetwork: RenNetworkDetails;
     darknodes: Map<string, DarknodeLocation>;
 }
 
-export const DarknodeMap: React.FC<Props> = ({ renNetwork, darknodes }) => {
+export const DarknodeMap: React.FC<Props> = ({ darknodes }) => {
     const [tooltipContent, setTooltipContent] = useState("");
 
     return (

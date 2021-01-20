@@ -27,22 +27,24 @@ interface QueryResponse {
     };
 }
 
-// tslint:disable-next-line: no-any
 const parallelLimit = <T>(
     promiseFactories: Array<() => Promise<T>>,
     limit: number,
-): any => {
+): unknown => {
     const result: T[] = [];
     let cnt = 0;
 
-    // tslint:disable-next-line: no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const chain = (innerPromiseFactories: Array<() => Promise<T>>): any => {
         if (!innerPromiseFactories.length) {
             return;
         }
         const i = cnt++; // preserve order in result
-        // tslint:disable-next-line: no-non-null-assertion
-        return innerPromiseFactories.shift()!().then((res) => {
+        const shifted = innerPromiseFactories.shift();
+        if (!shifted) {
+            return null;
+        }
+        return shifted().then((res) => {
             result[i] = res; // save result
             return chain(innerPromiseFactories); // append next promise
         });
@@ -94,7 +96,6 @@ const fetchLocationFromAPI = async (ip: string): Promise<Location> => {
                 await Axios.get<{
                     lat: number;
                     lon: number;
-                    // tslint:disable-next-line: no-http-string
                 }>(`http://ip-api.com/json/${ip}`, {
                     timeout: DEFAULT_REQUEST_TIMEOUT,
                 })
@@ -110,7 +111,9 @@ const fetchLocationFromAPI = async (ip: string): Promise<Location> => {
             // }>(`https://ipinfo.io/${ip}/json`)).data;
             // const [latitude, longitude] = apiResponse.loc.split(",").map((x) => parseInt(x));
             // return { longitude, latitude };
-        } catch (error) {
+        } catch (_error) {
+            // Ignore error.
+
             throw new Error(`Unable to fetch location for ${ip}.`);
         }
     }
@@ -172,13 +175,12 @@ const readCache = async (ip: string) => {
 const useMapContainer = () => {
     const { renNetwork: network } = Web3Container.useContainer();
 
-    // tslint:disable-next-line: prefer-const
+    // eslint-disable-next-line prefer-const
     let [darknodes, setDarknodes] = useState<Map<string, DarknodeLocation>>(
         Map(),
     );
     const sessionMapCount = useRef(0);
     const [darknodeCount, setDarknodeCount] = useState<number | null>(null);
-    // tslint:disable-next-line: whitespace
     const getLocation = async (ip: string): Promise<Location | null> => {
         // Check if we've already fetched for this IP
         const previousLocation = await readCache(ip);
@@ -217,7 +219,6 @@ const useMapContainer = () => {
 
             const { longitude, latitude } = location;
 
-            // tslint:disable-next-line: strict-type-predicates
             if (typeof longitude !== "number" || typeof latitude !== "number") {
                 return;
             }
@@ -253,7 +254,8 @@ const useMapContainer = () => {
                 const darknodeIDs = await getAllDarknodes(network);
                 setDarknodeCount(darknodeIDs.length);
                 const updateDarknodes = darknodeIDs.map(
-                    (darknodeID: string) => () => addDarknodeID(darknodeID),
+                    (darknodeID: string) => async () =>
+                        addDarknodeID(darknodeID),
                 );
                 await parallelLimit(updateDarknodes, 4);
             } catch (error) {

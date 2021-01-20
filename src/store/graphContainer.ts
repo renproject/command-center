@@ -51,8 +51,11 @@ const useGraphContainer = () => {
             // Show a notification about the new epoch.
             if (newEpoch && !shownEpochNotification.current) {
                 shownEpochNotification.current = true;
+                const darknodeCount = newRenVM.numberOfDarknodes.toFixed
+                    ? newRenVM.numberOfDarknodes.toFixed()
+                    : newRenVM.numberOfDarknodes.toString();
                 showSuccess(
-                    `A new epoch has just started. There are now ${newRenVM.numberOfDarknodes} darknodes registered. Darknode rewards will appear shortly.`,
+                    `A new epoch has just started. There are now ${darknodeCount} darknodes registered. Darknode rewards will appear shortly.`,
                     30 * SECONDS,
                 );
             }
@@ -72,6 +75,7 @@ const useGraphContainer = () => {
     const getLatestSyncedBlock = useMemoizeWithExpiry(
         async () =>
             Axios.post<{
+                // eslint-disable-next-line id-blacklist
                 data: { _meta: { block: { number: number } } };
             }>(subgraphEndpoint(renNetwork), {
                 query:

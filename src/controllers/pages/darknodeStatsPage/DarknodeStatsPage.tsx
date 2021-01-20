@@ -250,7 +250,7 @@ export const DarknodeStatsPage = () => {
                 </Stat>
             </Stats>
             <div className="overview--bottom">
-                <DarknodeMap darknodes={darknodes} renNetwork={renNetwork} />
+                <DarknodeMap darknodes={darknodes} />
                 <Stats className="overview--bottom--right">
                     {/* <Stat message="All time total" big>$?</Stat> */}
                     <Stat

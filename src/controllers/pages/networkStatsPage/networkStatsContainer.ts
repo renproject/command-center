@@ -45,7 +45,6 @@ const useNetworkStatsContainer = () => {
         : null;
 
     // For each locked token, create a <Stat> element
-    // tslint:disable-next-line: no-any
     let lockedBalances: OrderedMap<Token, BigNumber> = OrderedMap();
     let total = new BigNumber(0);
     if (firstBlock && firstBlock.prevState && firstBlock.prevState.map) {

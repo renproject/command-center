@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { provider } from "web3-providers";
 
 import cipherIcon from "../../styles/images/browsers/cipher.png";
@@ -31,7 +32,6 @@ export const getWeb3BrowserName = (newProvider: provider): Web3Browser => {
     const isAndroid = ua.includes('Android')
     */
 
-    // tslint:disable:no-any
     if ((newProvider as any).isToshi) {
         // Toshi has become Coinbase wallet
         return Web3Browser.CoinbaseWallet;
@@ -53,7 +53,6 @@ export const getWeb3BrowserName = (newProvider: provider): Web3Browser => {
 export const getWeb3BrowserIcon = (web3Browser: Web3Browser): string => {
     // Note: Typescript will warn if the switch statement is non-exhaustive
 
-    // tslint:disable: switch-default
     // eslint-disable-next-line
     switch (web3Browser) {
         case Web3Browser.CoinbaseWallet:

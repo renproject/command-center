@@ -121,7 +121,7 @@ export const RenVMStatsPage = () => {
                     <td className="block--txs--td">
                         {block.data && block.data.length && block.data.map ? (
                             <div className="block--txs">
-                                {block.data.map((tx, index) => {
+                                {block.data.map((tx, _i) => {
                                     return (
                                         <div
                                             className="block--tx"
@@ -151,7 +151,7 @@ export const RenVMStatsPage = () => {
     // }
 
     // For each locked token, create a <Stat> element
-    // tslint:disable-next-line: no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const lockedBalances: any = {};
     if (firstBlock && firstBlock.prevState && firstBlock.prevState.map) {
         firstBlock.prevState.map((state) => {

@@ -89,7 +89,9 @@ export const SidebarIcon: React.FC<Props> = ({
                                         <ConvertCurrency
                                             from={Currency.USD}
                                             to={quoteCurrency}
-                                            amount={new BigNumber(feesEarnedInUsd)}
+                                            amount={
+                                                new BigNumber(feesEarnedInUsd)
+                                            }
                                         />
                                     </span>{" "}
                                     <span className="currency-symbol">

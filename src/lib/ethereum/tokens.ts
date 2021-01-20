@@ -89,7 +89,7 @@ export const FeeTokens: OrderedMap<Token, TokenDetail> = AllTokenDetails.filter(
 
 const coinGeckoURL = `https://api.coingecko.com/api/v3`;
 const coinGeckoParams = `localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`;
-export const getPrices = (
+export const getPrices = async (
     previousTokenPrices: TokenPrices | null,
 ): Promise<TokenPrices> =>
     AllTokenDetails.toArray()

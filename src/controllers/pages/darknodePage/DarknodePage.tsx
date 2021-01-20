@@ -45,8 +45,8 @@ export const getDarknodeParam = (params: {
  * in.
  *
  * URL parameters:
- *     1) action: either "register" or "deregister"
- *     2) public_key: only used if action is "register"
+ * 1) action: either "register" or "deregister"
+ * 2) public_key: only used if action is "register"
  */
 export const DarknodePage = () => {
     const { address } = Web3Container.useContainer();

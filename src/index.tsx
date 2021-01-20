@@ -20,10 +20,8 @@ import { theme } from "./styles/theme";
 // Redirect to https if we aren't serving locally
 if (NODE_ENV !== "development") {
     const loc = window.location.href + "";
-    // tslint:disable-next-line: no-http-string
     if (loc.indexOf("http://") === 0) {
         console.warn("Redirecting to use TLS");
-        // tslint:disable-next-line: no-http-string
         window.location.href = loc.replace("http://", "https://");
     }
 }
@@ -55,10 +53,11 @@ render(App);
 
 // Enable hot-reloading in development environment.
 
-// tslint:disable-next-line: no-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 if ((module as any).hot) {
-    // tslint:disable-next-line: no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (module as any).hot.accept("./controllers/App", () => {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         const NextApp = require("./controllers/App").App;
         render(NextApp);
     });

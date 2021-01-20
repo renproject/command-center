@@ -108,9 +108,9 @@ const useNetworkContainer = () => {
         OrderedMap<string /* cycle */, BigNumber | null>(),
     );
 
-    ///////////////////////////////////////////////////////////
+    // ///////////////////////////////////////////////////// //
     // If these change, localstorage migration may be needed //
-    ///////////////////////////////////////////////////////////
+    // ///////////////////////////////////////////////////// //
     const [quoteCurrency, setQuoteCurrency] = useStorageState(
         localStorage,
         "quoteCurrency",
@@ -162,7 +162,7 @@ const useNetworkContainer = () => {
                 List<string>(x),
             ),
     );
-    ///////////////////////////////////////////////////////
+    // ///////////////////////////////////////////////// //
 
     const updateTokenPrices = async () => {
         try {
@@ -331,11 +331,11 @@ const useNetworkContainer = () => {
      * contract.
      *
      * @returns `{
-     *     pendingRewards: For each cycle, a map from tokens to rewards
-     *     currentCycle: The current cycle (as a block number)
-     *     previousCycle: The previous cycle (as a block number)
-     *     cycleTimeout: The earliest the current cycle could end (as a block number)
-     *     pendingTotalInUsd: For each cycle, The pending rewards added up as ETH
+     * pendingRewards: For each cycle, a map from tokens to rewards
+     * currentCycle: The current cycle (as a block number)
+     * previousCycle: The previous cycle (as a block number)
+     * cycleTimeout: The earliest the current cycle could end (as a block number)
+     * pendingTotalInUsd: For each cycle, The pending rewards added up as ETH
      * }`
      */
     const fetchCycleAndPendingRewards = async (latestRenVM: RenVM) => {
@@ -616,7 +616,7 @@ const useNetworkContainer = () => {
         await Promise.all(
             newDarknodeList
                 .toList()
-                .map(async (darknodeID: string) => {
+                .map((darknodeID: string) => {
                     const details = darknodeDetails.get(darknodeID);
                     if (
                         details &&
@@ -633,7 +633,7 @@ const useNetworkContainer = () => {
                             return removeRegisteringDarknode(darknodeID);
                         }
                     }
-                    return;
+                    return null;
                 })
                 .toArray(),
         );
@@ -648,11 +648,12 @@ const useNetworkContainer = () => {
         tokenSymbol: string,
         tokenAddress: string,
     ): Promise<void> =>
-        new Promise<void>(async (resolve, reject) => {
+        new Promise<void>((resolve, reject) => {
             if (!address) {
                 throw new Error(`Unable to retrieve account address.`);
             }
 
+            // eslint-disable-next-line @typescript-eslint/promise-function-async
             const withdraw = () =>
                 withdrawToken(
                     web3,
@@ -691,7 +692,7 @@ const useNetworkContainer = () => {
             });
         });
 
-    const showRegisterPopup = async (
+    const showRegisterPopup = (
         web3Address: string,
         darknodeID: string,
         onCancel: () => void,
@@ -706,9 +707,11 @@ const useNetworkContainer = () => {
             );
         }
 
+        // eslint-disable-next-line @typescript-eslint/promise-function-async
         const step1 = () =>
             approveNode(web3, renNetwork, web3Address, renVM.minimumBond);
 
+        // eslint-disable-next-line @typescript-eslint/promise-function-async
         const step2 = () =>
             registerNode(
                 web3,
@@ -759,6 +762,7 @@ const useNetworkContainer = () => {
             throw new Error(`Unable to retrieve account address.`);
         }
 
+        // eslint-disable-next-line @typescript-eslint/promise-function-async
         const step1 = () =>
             deregisterNode(web3, renNetwork, address, darknodeID);
 
@@ -816,6 +820,7 @@ const useNetworkContainer = () => {
             throw new Error(`Unable to retrieve account address.`);
         }
 
+        // eslint-disable-next-line @typescript-eslint/promise-function-async
         const step1 = () => refundNode(web3, renNetwork, address, darknodeID);
 
         const steps = [{ call: step1, name: "Refund REN" }];
@@ -848,6 +853,7 @@ const useNetworkContainer = () => {
             throw new Error(`Unable to retrieve account address.`);
         }
 
+        // eslint-disable-next-line @typescript-eslint/promise-function-async
         const step1 = () => fundNode(web3, address, darknodeID, ethAmountStr);
 
         const steps = [{ call: step1, name: "Fund darknode" }];

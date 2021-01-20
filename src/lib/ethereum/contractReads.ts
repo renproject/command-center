@@ -56,9 +56,9 @@ export const Ox = (hex: string | Buffer | number | BigNumber): string => {
     return hexString.substring(0, 2) === "0x" ? hexString : `0x${hexString}`;
 };
 
-////////////////////////////////////////////////////////////////////////////////
-// Darknode Registry contract //////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////// //
+// Darknode Registry contract /////////////////////////////////////////////// //
+// ////////////////////////////////////////////////////////////////////////// //
 
 export enum RegistrationStatus {
     Unknown = "",
@@ -181,7 +181,7 @@ const retrieveDarknodesInLogs = async (
  * @param renNetwork A Ren network object.
  * @param operatorAddress The address of the operator to look up darknodes for.
  * @param onDarknode An optional callback to retrieve darknodes as they are
- *        found, instead of waiting for all of them to be returned together.
+ * found, instead of waiting for all of them to be returned together.
  * @returns An immutable set of darknode IDs (as hex strings).
  */
 export const getOperatorDarknodes = async (
@@ -261,9 +261,9 @@ export const getOperatorDarknodes = async (
     return operatorDarknodes;
 };
 
-////////////////////////////////////////////////////////////////////////////////
-// Darknode Payment contract ///////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////// //
+// Darknode Payment contract //////////////////////////////////////////////// //
+// ////////////////////////////////////////////////////////////////////////// //
 
 // Sum up fees into the total ETH value (in wei).
 export const sumUpFeeMap = (
@@ -295,9 +295,9 @@ export const sumUpFeeMap = (
     ];
 };
 
-////////////////////////////////////////////////////////////////////////////////
-// Darknode Payment contract ///////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////// //
+// Darknode Payment contract //////////////////////////////////////////////// //
+// ////////////////////////////////////////////////////////////////////////// //
 
 /**
  * Retrieves the balances from the DarknodePayment contract.
@@ -306,11 +306,11 @@ export const sumUpFeeMap = (
  * @param renNetwork A Ren network object.
  * @param darknodeID The ID of the darknode as a hex string.
  * @returns Returns a promise to an immutable map from token codes to balances
- *          as BigNumbers.
+ * as BigNumbers.
  */
-const getBalances = async (
+const getBalances = (
     darknode: Darknode | null,
-): Promise<OrderedMap<TokenString, TokenAmount | null>> => {
+): OrderedMap<TokenString, TokenAmount | null> => {
     let balances = OrderedMap<string, TokenAmount | null>();
     if (isDefined(darknode)) {
         balances = darknode.balances
@@ -417,18 +417,17 @@ export enum DarknodeFeeStatus {
     NOT_WHITELISTED = "NOT_WHITELISTED",
 }
 
-const getDarknodeCycleRewards = async (
+const getDarknodeCycleRewards = (
     renVM: RenVM,
     darknode: Darknode | null,
     registrationStatus: RegistrationStatus,
 ) => {
-    // Cycle status ////////////////////////////////////////////////////////////
+    // Cycle status ///////////////////////////////////////////////////////// //
 
-    let currentStatus;
     let previousStatus;
     const isRegisteredInPreviousEpoch =
         darknode && isRegisteredInEpoch(darknode, renVM.previousEpoch);
-    currentStatus =
+    const currentStatus =
         registrationStatus === RegistrationStatus.Registered
             ? DarknodeFeeStatus.NOT_CLAIMED
             : DarknodeFeeStatus.NOT_WHITELISTED;
@@ -465,10 +464,10 @@ const getDarknodeCycleRewards = async (
 
 /**
  * Fetches various pieces of information about a darknode, including:
- *  1. balances and fees
- *  2. its status
- *  3. its gas usage information
- *  4. its network information (NOTE: not implemented yet)
+ * 1. balances and fees
+ * 2. its status
+ * 3. its gas usage information
+ * 4. its network information (NOTE: not implemented yet)
  *
  * @param client GraphQL client connected to RenVM subgraph.
  * @param web3 A Web3 instance.
@@ -509,9 +508,9 @@ export const fetchDarknodeDetails = async (
     const πNodeStatistics = queryStat(
         getLightnode(renNetwork),
         darknodeIDHexToBase58(darknodeID),
-    ).catch((error) => /* ignore */ null);
+    ).catch((_error) => /* ignore */ null);
 
-    const πCycleStatuses = getDarknodeCycleRewards(
+    const cycleStatus = getDarknodeCycleRewards(
         renVM,
         darknode,
         registrationStatus,
@@ -519,7 +518,7 @@ export const fetchDarknodeDetails = async (
 
     // Get earned fees
     let feesEarned = !useInfura
-        ? await getBalances(darknode)
+        ? getBalances(darknode)
         : await getBalancesWithInfura(
               web3,
               renNetwork,
@@ -551,7 +550,7 @@ export const fetchDarknodeDetails = async (
         feesEarnedInEth,
         feesEarnedInUsd,
 
-        cycleStatus: await πCycleStatuses,
+        cycleStatus,
         averageGasUsage: 0,
         lastTopUp: null,
         expectedExhaustion: null,

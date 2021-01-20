@@ -64,7 +64,7 @@ export const MultiStepPopup: React.FC<Props> = ({
     const [running, setRunning] = useState(false);
     const [complete, setComplete] = useState(false);
     const [cancelled, setCancelled] = useState(false);
-    // tslint:disable-next-line: prefer-const
+    // eslint-disable-next-line prefer-const
     let [currentStep, setCurrentStep] = useState(0);
     const [runError, setRunError] = useState(null as Error | null);
     const [warningIgnored, setWarningIgnored] = useState(false);

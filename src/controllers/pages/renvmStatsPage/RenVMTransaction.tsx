@@ -22,7 +22,7 @@ import { Tx } from "./renvmContainer";
 
 export const TransactionPreview = ({ tx }: { tx: Tx }) => {
     const [match, _token, _left, _right] =
-        tx.to.match(/([A-Z0-9]*)0([A-Za-z0-0]*)2([A-Za-z0-0]*)/) || [];
+        /([A-Z0-9]*)0([A-Za-z0-0]*)2([A-Za-z0-0]*)/.exec(tx.to) || [];
 
     if (match) {
         const [token, left, right] = [
@@ -58,7 +58,7 @@ export const txUrl = (
     token: Asset,
     network: RenNetworkDetails,
 ): string => {
-    const isTx = txHash && txHash.slice && txHash.match(/^(0x)?[a-fA-F0-9]+$/);
+    const isTx = txHash && txHash.slice && /^(0x)?[a-fA-F0-9]+$/.exec(txHash);
     switch (token) {
         case Asset.ETH:
             return `${network.etherscan}/tx/${txHash}`;
@@ -89,9 +89,12 @@ const RenVMArgValue = ({
 }) => {
     if (arg.name === "utxo") {
         const [match, _token, _left, _right] =
-            renContract.match(/([A-Z0-9]*)0([A-Za-z0-0]*)2([A-Za-z0-0]*)/) ||
-            [];
-        const { ghash, scriptPubKey, ...utxo } = arg.value;
+            /([A-Z0-9]*)0([A-Za-z0-0]*)2([A-Za-z0-0]*)/.exec(renContract) || [];
+        const {
+            ghash: _ghash,
+            scriptPubKey: _scriptPubKey,
+            ...utxo
+        } = arg.value;
 
         if (match) {
             const [token, ,] = [

@@ -13,7 +13,7 @@ export const subgraphEndpoint = (renNetwork: RenNetworkDetails) =>
 export const apolloClient = (renNetwork: RenNetworkDetails) => {
     const client = new ApolloClient<unknown>({
         uri: subgraphEndpoint(renNetwork),
-        // tslint:disable-next-line: no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         fetch: fetch as any,
     });
     client.defaultOptions.query = {

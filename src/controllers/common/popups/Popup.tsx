@@ -11,7 +11,7 @@ export const Popup: React.FC<Props> = ({
     ...props
 }) => {
     return (
-        <div {...props} className={`popup ${className}`}>
+        <div {...props} className={`popup ${className || ""}`}>
             {onCancel ? (
                 <div
                     role="button"

@@ -61,7 +61,7 @@ const useGithubAPIContainer = () => {
 
         try {
             const response = await retryNTimes(
-                () =>
+                async () =>
                     Axios.get<VersionResponse | VersionError>(
                         DARKNODE_ENDPOINT,
                         {
@@ -111,7 +111,7 @@ const useGithubAPIContainer = () => {
 
         try {
             const response = await retryNTimes(
-                () =>
+                async () =>
                     Axios.get<VersionResponse | VersionError>(
                         DARKNODE_CLI_ENDPOINT,
                         {

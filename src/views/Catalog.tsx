@@ -102,7 +102,6 @@ export const Catalog = () => {
         balance,
         promptLogin,
         web3BrowserName,
-        renNetwork,
     } = Web3Container.useContainer();
     const { quoteCurrency, pendingRewards } = NetworkContainer.useContainer();
     const { renVM } = GraphContainer.useContainer();
@@ -581,10 +580,7 @@ export const Catalog = () => {
 
             {/* DarknodeMap */}
             <CatalogItem title="DarknodeMap">
-                <DarknodeMap
-                    renNetwork={renNetwork}
-                    darknodes={defaultDarknodeLocations}
-                />
+                <DarknodeMap darknodes={defaultDarknodeLocations} />
             </CatalogItem>
         </div>
     );

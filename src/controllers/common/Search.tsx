@@ -12,10 +12,10 @@ import { classNames } from "../../lib/react/className";
 const isDarknodeAddress = (search: string): string | undefined => {
     const regex = new RegExp(/^(0x)?[a-f0-9]{40}$/i);
     try {
-        if (search.match(regex)) {
+        if (regex.exec(search)) {
             return darknodeIDHexToBase58(search);
         }
-        if (darknodeIDBase58ToHex(search).match(regex)) {
+        if (regex.exec(darknodeIDBase58ToHex(search))) {
             return search;
         }
     } catch (error) {
@@ -27,13 +27,13 @@ const isDarknodeAddress = (search: string): string | undefined => {
 const isTransaction = (search: string): string | undefined => {
     const regex = new RegExp(/^(0x)?[a-f0-9]{64}$/i);
     try {
-        if (search.match(regex)) {
+        if (regex.exec(search)) {
             return Ox(search);
         }
         if (
-            new EncodedData(search, EncodedData.Encodings.BASE64)
-                .toHex()
-                .match(regex)
+            regex.exec(
+                new EncodedData(search, EncodedData.Encodings.BASE64).toHex(),
+            )
         ) {
             return new EncodedData(
                 search,
@@ -48,7 +48,7 @@ const isTransaction = (search: string): string | undefined => {
 
 const isBlock = (search: string): number | undefined => {
     const regex = new RegExp(/^\d+$/);
-    return !!search.match(regex) ? parseInt(search, 10) : undefined;
+    return !!regex.exec(search) ? parseInt(search, 10) : undefined;
 };
 
 interface Props {
@@ -75,13 +75,13 @@ export const Search: React.FC<Props> = ({ className }) => {
 
         if (isDarknodeAddress(search)) {
             // setSearchInput("");
-            history.push(`/darknode/${isDarknodeAddress(search)}`);
+            history.push(`/darknode/${isDarknodeAddress(search) || ""}`);
         } else if (isTransaction(search)) {
             // setSearchInput("");
-            history.push(`/renvm/tx/${isTransaction(search)}`);
+            history.push(`/renvm/tx/${isTransaction(search) || ""}`);
         } else if (isBlock(search)) {
             // setSearchInput("");
-            history.push(`/renvm/${isBlock(search)}`);
+            history.push(`/renvm/${isBlock(search) || ""}`);
         } else {
             setNotFound(true);
         }

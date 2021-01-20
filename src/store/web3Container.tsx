@@ -229,13 +229,7 @@ const useWeb3Container = (initialState = RenNetwork.Testnet) => {
         }
     }, [onboard, readonlyWeb3, setLoggedInBefore]);
 
-    const login = ({
-        newWeb3,
-        newAddress,
-    }: {
-        newWeb3: Web3;
-        newAddress: string;
-    }) => {
+    const login = ({ newWeb3 }: { newWeb3: Web3 }) => {
         setWeb3(newWeb3);
         setLoggedOut(false);
         setLoggedInBefore(true);
@@ -269,7 +263,7 @@ const useWeb3Container = (initialState = RenNetwork.Testnet) => {
         });
 
         // Store address in the store (and in local storage)
-        login({ newWeb3, newAddress: defaultAddress });
+        login({ newWeb3 });
 
         const newWeb3BrowserName = getWeb3BrowserName(newWeb3.currentProvider);
         setWeb3BrowserName(newWeb3BrowserName);
@@ -284,11 +278,11 @@ const useWeb3Container = (initialState = RenNetwork.Testnet) => {
         }
 
         if (walletAddress !== address) {
-            const onClick = async () => {
+            const onClick = () => {
                 setAddress(walletAddress);
                 clearPopup();
             };
-            const onCancel = async () => {
+            const onCancel = () => {
                 logout();
                 clearPopup();
             };

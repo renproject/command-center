@@ -60,15 +60,11 @@ export const retryNTimes = async <T>(
     retries: number,
 ) => {
     let returnError;
-    // tslint:disable-next-line: no-constant-condition
     for (let i = 0; i < retries; i++) {
-        // if (i > 0) {
-        //     console.debug(`Retrying...`);
-        // }
         try {
             return await fnCall();
         } catch (error) {
-            if (String(error).match(/timeout of .* exceeded/)) {
+            if (/timeout of .* exceeded/.exec(String(error))) {
                 returnError = error;
             } else {
                 const errorMessage = extractError(error);
@@ -123,23 +119,23 @@ const getBlocks = async (network: RenNetworkDetails): Promise<List<Block>> => {
 const useRenVMContainer = () => {
     const { renNetwork: network } = Web3Container.useContainer();
 
-    // tslint:disable-next-line: prefer-const
+    // eslint-disable-next-line prefer-const
     let [blocks, setBlocks] = useState<List<Block> | null>(null);
-    // tslint:disable-next-line: prefer-const
+    // eslint-disable-next-line prefer-const
     let [currentBlock, setCurrentBlock] = useState<null | Block>(null);
-    // tslint:disable-next-line: prefer-const
+    // eslint-disable-next-line prefer-const
     let [currentBlockNumber, setCurrentBlockNumber] = useState<null | number>(
         null,
     );
-    // tslint:disable-next-line: prefer-const
+    // eslint-disable-next-line prefer-const
     let [currentTransaction, setCurrentTransaction] = useState<
         undefined | null | ResponseQueryTx
     >(undefined);
-    // tslint:disable-next-line: prefer-const
+    // eslint-disable-next-line prefer-const
     let [currentTransactionHash, setCurrentTransactionHash] = useState<
         undefined | null | string
     >(undefined);
-    // tslint:disable-next-line: prefer-const
+    // eslint-disable-next-line prefer-const
     let [transactions, setTransactions] = useState<
         OrderedMap<string, ResponseQueryTx | null>
     >(OrderedMap());

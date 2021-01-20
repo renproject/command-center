@@ -141,7 +141,7 @@ export const getVolumes = async (
             // Extract numerical block number from ID. `rowID` follows the pattern
             // `block_1234`.
             try {
-                const match = rowID.match(/\d+/);
+                const match = /\d+/.exec(rowID);
                 blockNumber = parseInt(match ? match[0] : "0", 10);
             } catch (error) {
                 console.error(error);
@@ -169,9 +169,9 @@ export const getVolumes = async (
     // consecutive segment.
     const series = Array.from(new Array(segmentCount)).map(
         (_, i): Partial<PeriodData> => {
-            // tslint:disable-next-line: no-non-null-assertion
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const first = responseRows.get(i)!;
-            // tslint:disable-next-line: no-non-null-assertion
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const last = responseRows.get(i + 1)!;
 
             //   const isFirstRow = periodType === PeriodType.ALL && i === 0;

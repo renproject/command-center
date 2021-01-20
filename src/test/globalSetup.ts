@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+
 import { RenNetworkDetails } from "@renproject/contracts";
 import HDWalletProvider from "@truffle/hdwallet-provider";
 import { should } from "chai";
@@ -18,7 +20,6 @@ export const resetEVM = async (web3: Web3, snapshotID: string) => {
 export type Provider = { engine: { stop: () => void } };
 
 const ganache = (buildPath: string, networkID: number): RenNetworkDetails => {
-    // tslint:disable: non-literal-require
     const ProtocolProxy = require(join(buildPath, "ProtocolProxy.json"));
     const ProtocolLogic = require(join(buildPath, "ProtocolLogicV1.json"));
     const GatewayLogic = require(join(buildPath, "GatewayLogicV1.json"));
@@ -111,37 +112,37 @@ const ganache = (buildPath: string, networkID: number): RenNetworkDetails => {
                     _address: RenBTC.networks[networkID].address,
                     abi: RenBTC.abi as AbiItem[],
                     artifact: RenBTC,
-                    description: 'gatewayRegistry.getTokenBySymbol("BTC")',
+                    description: `gatewayRegistry.getTokenBySymbol("BTC")`,
                 },
                 BTCGateway: {
                     _address: BTCGateway.networks[networkID].address,
                     abi: GatewayLogic.abi as AbiItem[],
                     artifact: GatewayLogic,
-                    description: 'gatewayRegistry.getGatewayBySymbol("BTC")',
+                    description: `gatewayRegistry.getGatewayBySymbol("BTC")`,
                 },
                 RenZEC: {
                     _address: RenZEC.networks[networkID].address,
                     abi: RenZEC.abi as AbiItem[],
                     artifact: RenZEC,
-                    description: 'gatewayRegistry.getTokenBySymbol("ZEC")',
+                    description: `gatewayRegistry.getTokenBySymbol("ZEC")`,
                 },
                 ZECGateway: {
                     _address: ZECGateway.networks[networkID].address,
                     abi: GatewayLogic.abi as AbiItem[],
                     artifact: GatewayLogic,
-                    description: 'gatewayRegistry.getGatewayBySymbol("ZEC")',
+                    description: `gatewayRegistry.getGatewayBySymbol("ZEC")`,
                 },
                 RenBCH: {
                     _address: RenBCH.networks[networkID].address,
                     abi: RenBCH.abi as AbiItem[],
                     artifact: RenBCH,
-                    description: 'gatewayRegistry.getTokenBySymbol("BCH")',
+                    description: `gatewayRegistry.getTokenBySymbol("BCH")`,
                 },
                 BCHGateway: {
                     _address: BCHGateway.networks[networkID].address,
                     abi: GatewayLogic.abi as AbiItem[],
                     artifact: GatewayLogic,
-                    description: 'gatewayRegistry.getGatewayBySymbol("BCH")',
+                    description: `gatewayRegistry.getGatewayBySymbol("BCH")`,
                 },
                 BasicAdapter: {
                     address: BasicAdapter.networks[networkID].address,

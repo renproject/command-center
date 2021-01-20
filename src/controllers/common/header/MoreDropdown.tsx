@@ -17,11 +17,10 @@ export const MoreDropdown: React.FC<{}> = () => {
 
     const ref = useRef(null as HTMLDivElement | null);
 
-    // tslint:disable-next-line: no-any
-    const clickAway = (event: any) => {
+    const clickAway = (event: MouseEvent) => {
         if (ref) {
             const current = ref.current;
-            if (current && !current.contains(event.target)) {
+            if (current && !current.contains(event.target as Node)) {
                 setShown(false);
             }
         }

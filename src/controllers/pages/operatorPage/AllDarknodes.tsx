@@ -58,7 +58,7 @@ export const AllDarknodes: React.FC<{}> = () => {
         : shownDarknodeDetails;
 
     return (
-        <div className="home" key={`${address || undefined} ${network.name}`}>
+        <div className="home" key={`${address || ""} ${network.name}`}>
             <div className="container">
                 {shownDarknodeList && shownDarknodeList.size > 0 ? (
                     <ErrorBoundary>

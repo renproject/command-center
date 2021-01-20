@@ -79,10 +79,15 @@ export const DoughnutChart: React.FC<Props> = ({
                                 options={{
                                     tooltips: {
                                         callbacks: {
-                                            // tslint:disable-next-line: no-any
                                             title: (
-                                                tooltipItem: any,
-                                                line: any,
+                                                tooltipItem: Array<{
+                                                    index: string;
+                                                }>,
+                                                line: {
+                                                    labels: {
+                                                        [key: string]: string;
+                                                    };
+                                                },
                                             ) => {
                                                 return (
                                                     title +
@@ -92,10 +97,21 @@ export const DoughnutChart: React.FC<Props> = ({
                                                     ]
                                                 );
                                             },
-                                            // tslint:disable-next-line: no-any
                                             label: (
-                                                tooltipItem: any,
-                                                line: any,
+                                                tooltipItem: {
+                                                    index: string;
+                                                },
+                                                line: {
+                                                    datasets: Array<{
+                                                        data: number[];
+                                                        _meta: Array<{
+                                                            total: number;
+                                                        }>;
+                                                    }>;
+                                                    labels: {
+                                                        [key: string]: string;
+                                                    };
+                                                },
                                             ) => {
                                                 const dataset =
                                                     line.datasets[0];
@@ -121,12 +137,6 @@ export const DoughnutChart: React.FC<Props> = ({
                                                         : ""
                                                 }`;
                                             },
-                                            // // tslint:disable-next-line: no-any
-                                            // afterLabel: (tooltipItem: any, data: any) => {
-                                            //     const dataset = data.datasets[0];
-                                            //     const percent = Math.round((dataset.data[tooltipItem.index] / dataset._meta[0].total) * 100);
-                                            //     return percent + "%";
-                                            // }
                                         },
                                         backgroundColor: "#00050B",
                                         borderWidth: 0,

@@ -1,5 +1,3 @@
-// tslint:disable: ordered-imports
-
 import { gql, useApolloClient } from "@apollo/react-hooks";
 import { RenNetworkDetails } from "@renproject/contracts";
 import { OrderedMap } from "immutable";

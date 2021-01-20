@@ -165,14 +165,14 @@ export const NetworkStatsPage = () => {
                                             )}
                                         </span>
                                     </span>
-                                    {/*{totalVolumePercentChange !== null && (*/}
-                                    {/*  <Change*/}
-                                    {/*    className="stat--children--diff hidden"*/}
-                                    {/*    change={totalVolumePercentChange.toFormat(2)}*/}
-                                    {/*  >*/}
-                                    {/*    %*/}
-                                    {/*  </Change>*/}
-                                    {/*)}*/}
+                                    {/* {totalVolumePercentChange !== null && (
+                                      <Change
+                                        className="stat--children--diff hidden"
+                                        change={totalVolumePercentChange.toFormat(2)}
+                                      >
+                                        %
+                                      </Change>
+                                    )} */}
                                 </div>
                             ) : (
                                 <Loading alt />

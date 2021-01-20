@@ -64,9 +64,9 @@ export const RegistrationController: React.FC<Props> = ({
             return; // TODO: Show error.
         }
 
-        await new Promise<void>((resolve, reject) =>
-            showRegisterPopup(address, darknodeID, reject, resolve),
-        );
+        await new Promise<void>((resolve, reject) => {
+            showRegisterPopup(address, darknodeID, reject, resolve);
+        });
         unhideDarknode(darknodeID, address);
         await updateOperatorDarknodes();
     };

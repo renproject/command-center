@@ -122,7 +122,6 @@ export const useStorageListener = <S>(
             }
         };
 
-        // tslint:disable-next-line: no-typeof-undefined strict-type-predicates
         if (typeof window !== "undefined") {
             window.addEventListener("storage", onStorageChange);
             return () => {
