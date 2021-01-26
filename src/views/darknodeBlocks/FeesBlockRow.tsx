@@ -3,12 +3,7 @@ import {
     FontAwesomeIcon,
     FontAwesomeIconProps,
 } from "@fortawesome/react-fontawesome";
-import {
-    Currency,
-    CurrencyIcon,
-    Loading,
-    TokenIcon,
-} from "@renproject/react-components";
+import { Currency, CurrencyIcon, Loading } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import React, { useCallback, useState } from "react";
 import {
@@ -19,6 +14,7 @@ import {
 import { TokenString } from "../../lib/ethereum/tokens";
 import { TokenAmount } from "../../lib/graphQL/queries/queries";
 import { classNames } from "../../lib/react/className";
+import { TokenIcon } from "../tokenIcon/TokenIcon";
 
 export enum FeesBlockTab {
     Withdrawable = "Withdrawable",
