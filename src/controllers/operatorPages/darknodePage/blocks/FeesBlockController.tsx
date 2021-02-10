@@ -118,13 +118,25 @@ export const FeesBlockController: React.FC<Props> = ({
         darknodeDetails.cycleStatus.get(currentCycle) ===
             DarknodeFeeStatus.NOT_CLAIMED;
 
+    const earningFees: boolean =
+        !!darknodeDetails &&
+        darknodeDetails.registrationStatus === RegistrationStatus.Registered;
+
+    const canWithdraw: boolean =
+        !!darknodeDetails &&
+        (darknodeDetails.registrationStatus === RegistrationStatus.Registered ||
+            darknodeDetails.registrationStatus ===
+                RegistrationStatus.DeregistrationPending);
+
     useEffect(() => {
         // If the darknode hasn't claimed within 1 day of a new epoch, show a
         // warning popup.
         const day = moment.duration(5, "hours").asSeconds();
         if (
+            isOperator &&
             !claimWarningShown &&
             showPreviousPending &&
+            earningFees &&
             timeSinceLastEpoch &&
             timeSinceLastEpoch.gt(day)
         ) {
@@ -185,12 +197,6 @@ export const FeesBlockController: React.FC<Props> = ({
     let pending = summedPendingRewards;
     let pendingInUsd = cycleTotalInUsd;
 
-    const earningFees: boolean =
-        !!darknodeDetails &&
-        (darknodeDetails.registrationStatus === RegistrationStatus.Registered ||
-            darknodeDetails.registrationStatus ===
-                RegistrationStatus.DeregistrationPending);
-
     const {
         withdrawReward,
         updateDarknodeDetails,
@@ -216,6 +222,7 @@ export const FeesBlockController: React.FC<Props> = ({
             quoteCurrency={quoteCurrency}
             isOperator={isOperator}
             earningFees={earningFees}
+            canWithdraw={canWithdraw}
             withdrawable={withdrawable}
             withdrawableInUsd={withdrawableInUsd}
             pending={pending}

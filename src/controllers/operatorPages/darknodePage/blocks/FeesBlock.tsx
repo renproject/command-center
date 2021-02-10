@@ -71,7 +71,7 @@ export const mergeFees = (
 interface RowProps {
     token: TokenString;
     isOperator: boolean;
-    earningFees: boolean;
+    canWithdraw: boolean;
     tab: Tab;
     percent: number;
     balance: TokenAmount | null;
@@ -87,7 +87,7 @@ const FeesBlockRow: React.FC<RowProps> = ({
     quoteCurrency,
     balance,
     isOperator,
-    earningFees,
+    canWithdraw,
     tab,
     percent,
     withdrawCallback,
@@ -130,7 +130,7 @@ const FeesBlockRow: React.FC<RowProps> = ({
                         </>
                     ) : null}
                 </td>
-                {tab === Tab.Withdrawable && isOperator && earningFees ? (
+                {tab === Tab.Withdrawable && isOperator && canWithdraw ? (
                     <td>
                         <FeesItem
                             disabled={tab !== Tab.Withdrawable || !balance}
@@ -161,6 +161,7 @@ export const FeesBlock: React.FC<Props> = ({
     quoteCurrency,
     isOperator,
     earningFees,
+    canWithdraw,
     withdrawable,
     withdrawableInUsd,
     pending,
@@ -288,8 +289,8 @@ export const FeesBlock: React.FC<Props> = ({
                                                             isOperator={
                                                                 isOperator
                                                             }
-                                                            earningFees={
-                                                                earningFees
+                                                            canWithdraw={
+                                                                canWithdraw
                                                             }
                                                             withdrawCallback={
                                                                 withdrawCallback
@@ -319,6 +320,7 @@ interface Props {
     quoteCurrency: Currency;
     isOperator: boolean;
     earningFees: boolean;
+    canWithdraw: boolean;
     withdrawable: OrderedMap<string, TokenAmount | null> | null;
     withdrawableInUsd: BigNumber | null;
     pending: OrderedMap<string, TokenAmount | null> | null;
