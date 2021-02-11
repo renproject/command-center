@@ -15,6 +15,7 @@ export const FeesBlock: React.FC<Props> = ({
     quoteCurrency,
     isOperator,
     earningFees,
+    canWithdraw,
     withdrawable,
     pending,
     withdrawCallback,
@@ -159,8 +160,8 @@ export const FeesBlock: React.FC<Props> = ({
                                                             isOperator={
                                                                 isOperator
                                                             }
-                                                            earningFees={
-                                                                earningFees
+                                                            canWithdraw={
+                                                                canWithdraw
                                                             }
                                                             withdrawCallback={
                                                                 withdrawCallback
@@ -190,6 +191,7 @@ interface Props {
     quoteCurrency: Currency;
     isOperator: boolean;
     earningFees: boolean;
+    canWithdraw: boolean;
     withdrawable: OrderedMap<string, TokenAmount | null> | null;
     pending: OrderedMap<string, TokenAmount | null> | null;
     withdrawCallback: (

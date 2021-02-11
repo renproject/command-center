@@ -221,11 +221,11 @@ const useIntegratorsContainer = () => {
                                     (iDay: IntegratorRaw | null) =>
                                         iDay && iDay.id === integrator.id,
                                 )[0] || null;
-                            const now = rawToIntegrator(integrator);
+                            const nowIntegrator = rawToIntegrator(integrator);
                             return {
-                                now,
+                                now: nowIntegrator,
                                 day: integratorDifference(
-                                    now,
+                                    nowIntegrator,
                                     integratorDay
                                         ? rawToIntegrator(integratorDay)
                                         : integratorDay,

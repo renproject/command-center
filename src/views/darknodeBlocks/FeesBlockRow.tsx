@@ -98,7 +98,7 @@ export const FeesItem: React.FC<Props> = ({
 interface RowProps {
     token: TokenString;
     isOperator: boolean;
-    earningFees: boolean;
+    canWithdraw: boolean;
     tab: FeesBlockTab;
     percent: number;
     balance: TokenAmount | null;
@@ -114,7 +114,7 @@ export const FeesBlockRow: React.FC<RowProps> = ({
     quoteCurrency,
     balance,
     isOperator,
-    earningFees,
+    canWithdraw,
     tab,
     percent,
     withdrawCallback,
@@ -159,7 +159,7 @@ export const FeesBlockRow: React.FC<RowProps> = ({
                 </td>
                 {tab === FeesBlockTab.Withdrawable &&
                 isOperator &&
-                earningFees ? (
+                canWithdraw ? (
                     <td>
                         <FeesItem
                             disabled={

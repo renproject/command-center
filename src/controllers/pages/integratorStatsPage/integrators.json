@@ -104,11 +104,17 @@
             "name": "MyEtherWallet",
             "logo": "/integrators/mew.svg"
         },
-        "integrator-0xae65b0f676313fd715f29d07538d1dc8557f2b1a": {
+        "DefiBridge": {
             "name": "DeFi Bridge",
             "url": "bridge.codefi.network",
             "urlHref": "https://bridge.codefi.network",
             "logo": "/integrators/defibridge.svg"
+        },
+        "OpenDAO": {
+            "name": "OpenDAO Dogecoin Bridge",
+            "url": "doge.opendao.io/",
+            "urlHref": "https://doge.opendao.io/",
+            "logo": "/integrators/opendao.svg"
         }
     }
 }

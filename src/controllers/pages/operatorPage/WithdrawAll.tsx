@@ -134,12 +134,18 @@ export const WithdrawAll: React.FC<Props> = ({ darknodeList }) => {
                         darknodeDetails.cycleStatus.get(currentCycle) ===
                             DarknodeFeeStatus.NOT_CLAIMED;
 
+                    const earningFees: boolean =
+                        !!darknodeDetails &&
+                        darknodeDetails.registrationStatus ===
+                            RegistrationStatus.Registered;
+
                     // If the darknode hasn't claimed within 1 day of a new epoch, show
                     // a warning popup.
                     const day = moment.duration(5, "hours").asSeconds();
                     if (
                         showPreviousPending &&
                         timeSinceLastEpoch &&
+                        earningFees &&
                         timeSinceLastEpoch.gt(day)
                     ) {
                         setDarknodeNotClaimed(darknodeDetails.ID);
@@ -196,7 +202,23 @@ export const WithdrawAll: React.FC<Props> = ({ darknodeList }) => {
         ],
     );
 
-    const earningFees: boolean = useMemo(
+    const anyEarningFees: boolean = useMemo(
+        () =>
+            !!darknodeList &&
+            darknodeList.reduce<boolean>((acc, darknodeDetails) => {
+                if (acc) {
+                    return acc;
+                }
+                return (
+                    !!darknodeDetails &&
+                    darknodeDetails.registrationStatus ===
+                        RegistrationStatus.Registered
+                );
+            }, false),
+        [darknodeList],
+    );
+
+    const anyCanWithdraw: boolean = useMemo(
         () =>
             !!darknodeList &&
             darknodeList.reduce<boolean>((acc, darknodeDetails) => {
@@ -223,7 +245,8 @@ export const WithdrawAll: React.FC<Props> = ({ darknodeList }) => {
             className="withdraw-all"
             quoteCurrency={quoteCurrency}
             isOperator={true}
-            earningFees={earningFees}
+            earningFees={anyEarningFees}
+            canWithdraw={anyCanWithdraw}
             withdrawable={withdrawable.fees}
             pending={pending.fees}
             withdrawCallback={withdrawCallback}

@@ -453,6 +453,7 @@ export const Catalog = () => {
                     quoteCurrency={quoteCurrency}
                     isOperator={true}
                     earningFees={true}
+                    canWithdraw={true}
                     withdrawable={withdrawableRewards}
                     pending={claimableRewards}
                     withdrawCallback={defaultCallback}
@@ -464,6 +465,7 @@ export const Catalog = () => {
                     quoteCurrency={quoteCurrency}
                     isOperator={true}
                     earningFees={true}
+                    canWithdraw={true}
                     withdrawable={withdrawableRewards}
                     pending={claimableRewards}
                     withdrawCallback={defaultCallback}
