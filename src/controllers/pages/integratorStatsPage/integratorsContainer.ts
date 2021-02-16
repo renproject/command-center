@@ -1,9 +1,10 @@
-import { gql, useApolloClient } from "@apollo/react-hooks";
+import { gql } from "@apollo/react-hooks";
 import { RenNetworkDetails } from "@renproject/contracts";
 import { OrderedMap } from "immutable";
 import { useEffect, useMemo, useState } from "react";
 import { createContainer } from "unstated-next";
 import { isDefined } from "../../../lib/general/isDefined";
+import { GraphClientContainer } from "../../../lib/graphQL/ApolloWithNetwork";
 
 import {
     IntegratorRaw,
@@ -16,6 +17,7 @@ import {
     getPeriodTimespan,
     PeriodType,
     tokenArrayToMap,
+    VolumeNetwork,
 } from "../../../lib/graphQL/volumes";
 import { extractError } from "../../../lib/react/errors";
 import { GraphContainer } from "../../../store/graphContainer";
@@ -143,7 +145,7 @@ const useIntegratorsContainer = () => {
     // );
 
     // Fetch integrators from GraphQL endpoint
-    const apollo = useApolloClient();
+    const { ethereumSubgraph } = GraphClientContainer.useContainer();
 
     useEffect(() => {
         if (page === null) {
@@ -157,7 +159,7 @@ const useIntegratorsContainer = () => {
                 setIntegrators((currentIntegrators) =>
                     currentIntegrators.set(page, null),
                 );
-                const response = await apollo.query<{
+                const response = await ethereumSubgraph.query<{
                     integrators: IntegratorRaw[];
                 }>({
                     query: QUERY_INTEGRATORS,
@@ -181,7 +183,9 @@ const useIntegratorsContainer = () => {
                 // the first segment.
                 const periodSecondsCount = getPeriodTimespan(
                     PeriodType.DAY,
-                    renNetwork,
+                    renNetwork.isTestnet
+                        ? VolumeNetwork.EthereumTestnet
+                        : VolumeNetwork.Ethereum,
                 );
                 const startingBlock = Math.floor(
                     latestBlockResponse - periodSecondsCount / blockTime,
@@ -208,7 +212,7 @@ const useIntegratorsContainer = () => {
                         }
                     `);
 
-                    const responseDay = await apollo.query<{
+                    const responseDay = await ethereumSubgraph.query<{
                         [block: string]: IntegratorRaw | null;
                     }>({
                         query,
@@ -245,7 +249,7 @@ const useIntegratorsContainer = () => {
             console.error(error);
             setIntegrators(integrators.set(page, extractError(error)));
         });
-    }, [integrators, page, apollo, renNetwork, getLatestSyncedBlock]);
+    }, [integrators, page, ethereumSubgraph, renNetwork, getLatestSyncedBlock]);
 
     // const onSearchChange = useCallback((event: React.FormEvent<HTMLInputElement>): void => {
     //     const element = (event.target as HTMLInputElement);

@@ -1,18 +1,19 @@
-import { useApolloClient } from "@apollo/react-hooks";
 import { RenVMType } from "@renproject/interfaces";
 import BigNumber from "bignumber.js";
-import { Map, OrderedMap } from "immutable";
+import { Map, OrderedMap, OrderedSet } from "immutable";
 import { useEffect, useState } from "react";
 import { createContainer } from "unstated-next";
 
 import { AllTokenDetails, Token } from "../../../lib/ethereum/tokens";
 import { isDefined } from "../../../lib/general/isDefined";
+import { GraphClientContainer } from "../../../lib/graphQL/ApolloWithNetwork";
 import {
     getVolumes,
     normalizeSeriesVolumes,
     PeriodType,
     QuoteSeriesData,
     SeriesData,
+    VolumeNetwork,
 } from "../../../lib/graphQL/volumes";
 import { GraphContainer } from "../../../store/graphContainer";
 import { NetworkContainer } from "../../../store/networkContainer";
@@ -21,11 +22,24 @@ import { SECONDS } from "../../common/BackgroundTasks";
 import { Block, RenVMContainer } from "../renvmStatsPage/renvmContainer";
 import { StatTab } from "./StatTabs";
 
+export enum NetworkStatsChain {
+    // All = "All",
+    Ethereum = "Ethereum",
+    BinanceSmartChain = "Binance Smart Chain",
+}
+
 const useNetworkStatsContainer = () => {
-    const client = useApolloClient();
+    const {
+        ethereumSubgraph,
+        bscSubgraph,
+    } = GraphClientContainer.useContainer();
 
     const { renNetwork } = Web3Container.useContainer();
-    const { renVM, getLatestSyncedBlock } = GraphContainer.useContainer();
+    const {
+        renVM,
+        getLatestSyncedBlock,
+        getLatestSyncedBlockBSC,
+    } = GraphContainer.useContainer();
     const { numberOfDarknodes } = renVM || {};
     const { quoteCurrency, tokenPrices } = NetworkContainer.useContainer();
     const container = RenVMContainer.useContainer();
@@ -136,14 +150,21 @@ const useNetworkStatsContainer = () => {
     const [volumeTab, setVolumeTab] = useState<StatTab>(StatTab.History);
     const [lockedTab, setLockedTab] = useState<StatTab>(StatTab.History);
 
+    const [volumeSelectedChain, setVolumeSelectedChain] = useState(
+        NetworkStatsChain.Ethereum,
+    );
+    const [lockedSelectedChain, setLockedSelectedChain] = useState(
+        NetworkStatsChain.Ethereum,
+    );
+
     const [periodSeries, setPeriodSeries] = useState<
-        Map<PeriodType, SeriesData | null | undefined>
-    >(Map<PeriodType, SeriesData | null | undefined>());
+        Map<NetworkStatsChain, Map<PeriodType, SeriesData | null | undefined>>
+    >(Map<NetworkStatsChain, Map<PeriodType, SeriesData | null | undefined>>());
     // periodSeriesUpdated indicated whether the quote values should be
     // recalculated for the period series.
     const [periodSeriesUpdated, setPeriodSeriesUpdated] = useState<
-        Map<PeriodType, boolean>
-    >(Map<PeriodType, boolean>());
+        Map<NetworkStatsChain, Map<PeriodType, boolean>>
+    >(Map<NetworkStatsChain, Map<PeriodType, boolean>>());
     const [pricesUpdated, setPricesUpdated] = useState(false);
 
     useEffect(() => {
@@ -152,79 +173,154 @@ const useNetworkStatsContainer = () => {
 
     useEffect(() => {
         (async () => {
-            for (const period of [volumePeriod, lockedPeriod]) {
-                if (periodSeries.get(period) === undefined) {
+            for (const [period, chain] of OrderedSet([
+                [volumePeriod, volumeSelectedChain] as const,
+                [lockedPeriod, lockedSelectedChain] as const,
+            ]).toArray()) {
+                if (periodSeries.get(chain, Map()).get(period) === undefined) {
                     setPeriodSeries((currentPeriodSeries) =>
-                        currentPeriodSeries.set(period, null),
+                        currentPeriodSeries.set(
+                            chain,
+                            currentPeriodSeries
+                                .get(
+                                    chain,
+                                    Map<
+                                        PeriodType,
+                                        SeriesData | null | undefined
+                                    >(),
+                                )
+                                .set(period, null),
+                        ),
                     );
                     setPeriodSeriesUpdated((currentPeriodSeriesUpdated) =>
-                        currentPeriodSeriesUpdated.set(period, true),
+                        currentPeriodSeriesUpdated.set(
+                            chain,
+                            currentPeriodSeriesUpdated
+                                .get(chain, Map<PeriodType, boolean>())
+                                .set(period, true),
+                        ),
                     );
 
+                    // TODO: Refactor multiple networks.
                     let response: SeriesData;
                     try {
-                        const latestBlock = await getLatestSyncedBlock();
-                        response = await getVolumes(
-                            renNetwork,
-                            client,
-                            period,
-                            latestBlock,
-                        );
+                        if (chain === NetworkStatsChain.Ethereum) {
+                            const latestBlock = await getLatestSyncedBlock();
+                            response = await getVolumes(
+                                renNetwork.isTestnet
+                                    ? VolumeNetwork.EthereumTestnet
+                                    : VolumeNetwork.Ethereum,
+                                ethereumSubgraph,
+                                period,
+                                latestBlock,
+                            );
+                        } else {
+                            const latestBlock = await getLatestSyncedBlockBSC();
+                            response = await getVolumes(
+                                renNetwork.isTestnet
+                                    ? VolumeNetwork.BSCTestnet
+                                    : VolumeNetwork.BSC,
+                                bscSubgraph,
+                                period,
+                                // Round down latest block to improve caching.
+                                latestBlock - (latestBlock % 20),
+                            );
+                        }
                     } catch (error) {
                         console.error(error);
                     }
 
-                    // periodSeries = ;
                     setPeriodSeries((currentPeriodSeries) =>
-                        currentPeriodSeries.set(period, response),
+                        currentPeriodSeries.set(
+                            chain,
+                            currentPeriodSeries
+                                .get(
+                                    chain,
+                                    Map<
+                                        PeriodType,
+                                        SeriesData | null | undefined
+                                    >(),
+                                )
+                                .set(period, response),
+                        ),
                     );
                     setPeriodSeriesUpdated((currentPeriodSeriesUpdated) =>
-                        currentPeriodSeriesUpdated.set(period, true),
+                        currentPeriodSeriesUpdated.set(
+                            chain,
+                            currentPeriodSeriesUpdated
+                                .get(chain, Map<PeriodType, boolean>())
+                                .set(period, true),
+                        ),
                     );
                 }
             }
         })().catch(console.error);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [volumePeriod, lockedPeriod]);
+    }, [volumePeriod, lockedPeriod, volumeSelectedChain, lockedSelectedChain]);
 
     const [quotePeriodSeries, setQuotePeriodSeries] = useState<
-        Map<PeriodType, QuoteSeriesData>
-    >(Map<PeriodType, QuoteSeriesData>());
+        Map<NetworkStatsChain, Map<PeriodType, QuoteSeriesData>>
+    >(Map<NetworkStatsChain, Map<PeriodType, QuoteSeriesData>>());
     useEffect(() => {
-        for (const period of [
-            PeriodType.DAY,
-            PeriodType.HOUR,
-            PeriodType.MONTH,
-            PeriodType.WEEK,
-            PeriodType.YEAR,
-            PeriodType.ALL,
+        for (const chain of [
+            NetworkStatsChain.Ethereum,
+            NetworkStatsChain.BinanceSmartChain,
         ]) {
-            const individualPeriodSeries = periodSeries.get(period);
-            if (
-                tokenPrices &&
-                individualPeriodSeries &&
-                (periodSeriesUpdated.get(period) || pricesUpdated)
-            ) {
-                setQuotePeriodSeries((currentQuotePeriodSeries) =>
-                    currentQuotePeriodSeries.set(
-                        period,
-                        normalizeSeriesVolumes(
-                            individualPeriodSeries,
-                            tokenPrices,
-                            quoteCurrency,
+            for (const period of [
+                PeriodType.DAY,
+                PeriodType.HOUR,
+                PeriodType.MONTH,
+                PeriodType.WEEK,
+                PeriodType.YEAR,
+                PeriodType.ALL,
+            ]) {
+                const individualPeriodSeries = periodSeries
+                    .get(
+                        chain,
+                        Map<PeriodType, SeriesData | null | undefined>(),
+                    )
+                    .get(period);
+                if (
+                    tokenPrices &&
+                    individualPeriodSeries &&
+                    (periodSeriesUpdated
+                        .get(chain, Map<PeriodType, boolean>())
+                        .get(period) ||
+                        pricesUpdated)
+                ) {
+                    setQuotePeriodSeries((currentQuotePeriodSeries) =>
+                        currentQuotePeriodSeries.set(
+                            chain,
+                            currentQuotePeriodSeries
+                                .get(chain, Map<PeriodType, QuoteSeriesData>())
+                                .set(
+                                    period,
+                                    normalizeSeriesVolumes(
+                                        individualPeriodSeries,
+                                        tokenPrices,
+                                        quoteCurrency,
+                                    ),
+                                ),
                         ),
-                    ),
-                );
-                setPeriodSeriesUpdated((currentPeriodSeriesUpdated) =>
-                    currentPeriodSeriesUpdated.set(period, false),
-                );
+                    );
+                    setPeriodSeriesUpdated((currentPeriodSeriesUpdated) =>
+                        currentPeriodSeriesUpdated.set(
+                            chain,
+                            currentPeriodSeriesUpdated
+                                .get(chain, Map<PeriodType, boolean>())
+                                .set(period, false),
+                        ),
+                    );
+                }
             }
         }
         setPricesUpdated(false);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [periodSeries, pricesUpdated]);
 
-    const allPeriod = quotePeriodSeries.get(PeriodType.ALL);
+    const allPeriod = quotePeriodSeries
+        .get(NetworkStatsChain.Ethereum, Map<PeriodType, QuoteSeriesData>())
+        .get(PeriodType.ALL);
     let mintedTotal = new BigNumber(0);
     if (allPeriod) {
         mintedTotal = new BigNumber(
@@ -248,6 +344,10 @@ const useNetworkStatsContainer = () => {
         mintedTotal,
         b,
         numberOfDarknodes,
+        volumeSelectedChain,
+        setVolumeSelectedChain,
+        lockedSelectedChain,
+        setLockedSelectedChain,
     };
 };
 

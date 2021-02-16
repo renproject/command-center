@@ -49,7 +49,7 @@ const getOptions = (seriesData: Line[]) => ({
 
     chart: {
         backgroundColor: null,
-        height: "100%",
+        height: "80%",
     },
 
     yAxis: Array.from(

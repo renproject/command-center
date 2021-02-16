@@ -5,17 +5,19 @@ import React, { useMemo } from "react";
 import {
     PeriodType,
     QuotePeriodData,
+    QuoteSeriesData,
     SeriesData,
 } from "../../../lib/graphQL/volumes";
 import { GraphContainer } from "../../../store/graphContainer";
 import { ReactComponent as IconValueLocked } from "../../../styles/images/icon-value-locked.svg";
 import { ReactComponent as IconVolume } from "../../../styles/images/icon-volume.svg";
 import { Change } from "../../../views/Change";
-import { InfoLabel } from "../../../views/infoLabel/InfoLabel";
 import { Stat, Stats } from "../../../views/Stat";
+import { ChainSelector } from "./ChainSelector";
 import { Collateral } from "./Collateral";
 import { DoughnutChart } from "./DoughnutChart";
 import { Graph } from "./Graph";
+import { Map } from "immutable";
 import { NetworkStatsContainer } from "./networkStatsContainer";
 import { NetworkStatsStyles } from "./NetworkStatsStyles";
 import { PeriodSelector } from "./PeriodSelector";
@@ -73,9 +75,32 @@ export const NetworkStatsPage = () => {
         mintedTotal,
         b,
         numberOfDarknodes,
+        volumeSelectedChain,
+        setVolumeSelectedChain,
+        lockedSelectedChain,
+        setLockedSelectedChain,
     } = NetworkStatsContainer.useContainer();
-    const quoteVolumeSeries = quotePeriodSeries.get(volumePeriod);
-    const quoteLockedSeries = quotePeriodSeries.get(lockedPeriod);
+
+    const volumeSeries = periodSeries
+        .get(
+            volumeSelectedChain,
+            Map<PeriodType, SeriesData | null | undefined>(),
+        )
+        .get(volumePeriod);
+    const lockedSeries = periodSeries
+        .get(
+            lockedSelectedChain,
+            Map<PeriodType, SeriesData | null | undefined>(),
+        )
+        .get(lockedPeriod);
+
+    const quoteVolumeSeries = quotePeriodSeries
+        .get(volumeSelectedChain, Map<PeriodType, QuoteSeriesData>())
+        .get(volumePeriod);
+    const quoteLockedSeries = quotePeriodSeries
+        .get(lockedSelectedChain, Map<PeriodType, QuoteSeriesData>())
+        .get(lockedPeriod);
+
     const [, totalLockedPercentChange]: [
         BigNumber | null,
         BigNumber | null,
@@ -144,40 +169,23 @@ export const NetworkStatsPage = () => {
                                                     {new BigNumber(
                                                         quoteVolumeSeries.difference.quoteVolumeTotal,
                                                     ).toFormat(2)}
-                                                    <InfoLabel
-                                                        direction={"bottom"}
-                                                        style={{
-                                                            display:
-                                                                "inline-block",
-                                                        }}
-                                                    >
-                                                        From 11/11/2020 the
-                                                        volume statistic has
-                                                        been updated to use
-                                                        historical asset prices
-                                                        (the price of the asset
-                                                        when it moved through
-                                                        RenVM).
-                                                    </InfoLabel>
                                                 </>
                                             ) : (
                                                 "..."
                                             )}
                                         </span>
                                     </span>
-                                    {/* {totalVolumePercentChange !== null && (
-                                      <Change
-                                        className="stat--children--diff hidden"
-                                        change={totalVolumePercentChange.toFormat(2)}
-                                      >
-                                        %
-                                      </Change>
-                                    )} */}
                                 </div>
                             ) : (
                                 <Loading alt />
                             )}
                             <div className="overview--bottom">
+                                <div className="overview--select-chain">
+                                    <ChainSelector
+                                        selected={volumeSelectedChain}
+                                        onChange={setVolumeSelectedChain}
+                                    />
+                                </div>
                                 <StatTabs
                                     selected={volumeTab}
                                     onChange={setVolumeTab}
@@ -207,28 +215,22 @@ export const NetworkStatsPage = () => {
                                                     quoteVolumeSeries.difference
                                                         .quoteVolume
                                                 }
-                                                altData={
-                                                    periodSeries &&
-                                                    periodSeries
-                                                        .get(volumePeriod)
-                                                        ?.difference.volume?.map(
-                                                            (x) =>
-                                                                new BigNumber(
-                                                                    x.amount,
-                                                                ).div(
-                                                                    new BigNumber(
-                                                                        10,
-                                                                    ).exponentiatedBy(
-                                                                        x.asset
-                                                                            ? x
-                                                                                  .asset
-                                                                                  .decimals
-                                                                            : 0,
-                                                                    ),
-                                                                ),
-                                                        )
-                                                        .toObject()
-                                                }
+                                                altData={volumeSeries?.difference.volume
+                                                    ?.map((x) =>
+                                                        new BigNumber(
+                                                            x.amount,
+                                                        ).div(
+                                                            new BigNumber(
+                                                                10,
+                                                            ).exponentiatedBy(
+                                                                x.asset
+                                                                    ? x.asset
+                                                                          .decimals
+                                                                    : 0,
+                                                            ),
+                                                        ),
+                                                    )
+                                                    .toObject()}
                                             />
                                         )
                                     ) : (
@@ -294,6 +296,13 @@ export const NetworkStatsPage = () => {
                                 <Loading alt={true} />
                             )}
                             <div className="overview--bottom">
+                                <div className="overview--select-chain">
+                                    <ChainSelector
+                                        selected={lockedSelectedChain}
+                                        onChange={setLockedSelectedChain}
+                                    />
+                                </div>
+
                                 <StatTabs
                                     selected={lockedTab}
                                     onChange={setLockedTab}
@@ -322,28 +331,20 @@ export const NetworkStatsPage = () => {
                                                 quoteLockedSeries.difference
                                                     .quoteLocked || {}
                                             }
-                                            altData={
-                                                periodSeries &&
-                                                periodSeries
-                                                    .get(lockedPeriod)
-                                                    ?.difference.locked?.map(
-                                                        (x) =>
-                                                            new BigNumber(
-                                                                x.amount,
-                                                            ).div(
-                                                                new BigNumber(
-                                                                    10,
-                                                                ).exponentiatedBy(
-                                                                    x.asset
-                                                                        ? x
-                                                                              .asset
-                                                                              .decimals
-                                                                        : 0,
-                                                                ),
-                                                            ),
-                                                    )
-                                                    .toObject()
-                                            }
+                                            altData={lockedSeries?.difference.locked
+                                                ?.map((x) =>
+                                                    new BigNumber(x.amount).div(
+                                                        new BigNumber(
+                                                            10,
+                                                        ).exponentiatedBy(
+                                                            x.asset
+                                                                ? x.asset
+                                                                      .decimals
+                                                                : 0,
+                                                        ),
+                                                    ),
+                                                )
+                                                .toObject()}
                                         />
                                     )
                                 ) : (

@@ -34,6 +34,10 @@ export const NetworkStatsStyles = styled.div`
             height: 186px !important;
         }
 
+        .overview--select-chain {
+            margin-bottom: 50px;
+        }
+
         .overview--chart--outer {
             width: 100%;
             border-radius: 4px;

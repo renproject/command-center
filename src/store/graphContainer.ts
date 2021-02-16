@@ -1,4 +1,3 @@
-import { useApolloClient } from "@apollo/react-hooks";
 import Axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { createContainer } from "unstated-next";
@@ -6,7 +5,8 @@ import { createContainer } from "unstated-next";
 import { SECONDS } from "../controllers/common/BackgroundTasks";
 import { useMemoizeWithExpiry } from "../hooks/useMemoizeWithExpiry";
 import { useTaskSchedule } from "../hooks/useTaskSchedule";
-import { subgraphEndpoint } from "../lib/graphQL/client";
+import { GraphClientContainer } from "../lib/graphQL/ApolloWithNetwork";
+import { bscSubgraphUrl, ethereumSubgraphUrl } from "../lib/graphQL/client";
 import { queryRenVM, RenVM } from "../lib/graphQL/queries/renVM";
 import { catchBackgroundException } from "../lib/react/errors";
 import { NotificationsContainer } from "./notificationsContainer";
@@ -24,7 +24,7 @@ const useGraphContainer = () => {
         showHint,
     } = NotificationsContainer.useContainer();
 
-    const client = useApolloClient();
+    const { ethereumSubgraph } = GraphClientContainer.useContainer();
 
     const [renVM, setRenVM] = useState<RenVM | null>(null);
 
@@ -33,7 +33,7 @@ const useGraphContainer = () => {
 
     const updater = async () => {
         try {
-            const newRenVM = await queryRenVM(client);
+            const newRenVM = await queryRenVM(ethereumSubgraph);
             setRenVM(newRenVM);
 
             // Get seconds since start of epoch.
@@ -77,7 +77,21 @@ const useGraphContainer = () => {
             Axios.post<{
                 // eslint-disable-next-line id-blacklist
                 data: { _meta: { block: { number: number } } };
-            }>(subgraphEndpoint(renNetwork), {
+            }>(ethereumSubgraphUrl(renNetwork), {
+                query:
+                    "{\n    _meta {\n      block {\n        number\n      }\n    }\n}",
+            }).then((response) => response.data.data._meta.block.number),
+        60 * SECONDS,
+        [renNetwork],
+    );
+
+    // TODO: Refactor into above function.
+    const getLatestSyncedBlockBSC = useMemoizeWithExpiry(
+        async () =>
+            Axios.post<{
+                // eslint-disable-next-line id-blacklist
+                data: { _meta: { block: { number: number } } };
+            }>(bscSubgraphUrl(renNetwork), {
                 query:
                     "{\n    _meta {\n      block {\n        number\n      }\n    }\n}",
             }).then((response) => response.data.data._meta.block.number),
@@ -125,6 +139,7 @@ const useGraphContainer = () => {
         fetchRenVM,
         subgraphOutOfSync,
         getLatestSyncedBlock,
+        getLatestSyncedBlockBSC,
     };
 };
 

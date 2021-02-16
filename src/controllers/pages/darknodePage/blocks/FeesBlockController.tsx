@@ -155,6 +155,8 @@ export const FeesBlockController: React.FC<Props> = ({
         setClaimWarningShown,
         clearPopup,
         setPopup,
+        earningFees,
+        isOperator,
     ]);
 
     let summedPendingRewards = OrderedMap<string, TokenAmount | null>();

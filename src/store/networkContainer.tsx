@@ -1,4 +1,3 @@
-import { useApolloClient } from "@apollo/react-hooks";
 import { Currency, CurrencyIcon, Record } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import { List, Map, OrderedMap, OrderedSet } from "immutable";
@@ -37,6 +36,7 @@ import {
 } from "../lib/ethereum/tokens";
 import { isDefined } from "../lib/general/isDefined";
 import { safePromiseAllMap } from "../lib/general/promiseAll";
+import { GraphClientContainer } from "../lib/graphQL/ApolloWithNetwork";
 import { TokenAmount } from "../lib/graphQL/queries/queries";
 import { RenVM } from "../lib/graphQL/queries/renVM";
 import { tokenArrayToMap } from "../lib/graphQL/volumes";
@@ -83,7 +83,7 @@ const useNetworkContainer = () => {
         fetchRenVM,
         subgraphOutOfSync,
     } = GraphContainer.useContainer();
-    const client = useApolloClient();
+    const { ethereumSubgraph } = GraphClientContainer.useContainer();
 
     const [tokenPrices, setTokenPrices] = useState(null as TokenPrices | null);
 
@@ -542,7 +542,7 @@ const useNetworkContainer = () => {
         const latestRenVMOrNull = latestRenVM || (await fetchRenVM());
         if (latestRenVMOrNull) {
             const details = await fetchDarknodeDetails(
-                client,
+                ethereumSubgraph,
                 latestRenVMOrNull,
                 web3,
                 renNetwork,

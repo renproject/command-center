@@ -1,6 +1,6 @@
 import React from "react";
 
-import { ApolloWithNetwork } from "../../lib/graphQL/ApolloWithNetwork";
+import { GraphClientContainer } from "../../lib/graphQL/ApolloWithNetwork";
 import { DEFAULT_REN_NETWORK } from "../../lib/react/environmentVariables";
 import { GithubAPIContainer } from "../../store/githubApiContainer";
 import { GraphContainer } from "../../store/graphContainer";
@@ -20,7 +20,7 @@ export const Connect: React.FC = ({ children }) => (
     <PopupContainer.Provider>
         <Web3Container.Provider initialState={DEFAULT_REN_NETWORK}>
             <NotificationsContainer.Provider>
-                <ApolloWithNetwork>
+                <GraphClientContainer.Provider>
                     <GraphContainer.Provider>
                         <NetworkContainer.Provider>
                             <UIContainer.Provider>
@@ -38,7 +38,7 @@ export const Connect: React.FC = ({ children }) => (
                             </UIContainer.Provider>
                         </NetworkContainer.Provider>
                     </GraphContainer.Provider>
-                </ApolloWithNetwork>
+                </GraphClientContainer.Provider>
             </NotificationsContainer.Provider>
         </Web3Container.Provider>
     </PopupContainer.Provider>

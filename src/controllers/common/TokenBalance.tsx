@@ -141,6 +141,36 @@ export const AnyTokenBalance: React.FC<{
     return <>{formatted}</>;
 };
 
+export const updatePrice = <T extends TokenAmount | null | undefined>(
+    amount: T,
+    symbol: Token,
+    tokenPrices: TokenPrices | null,
+): T => {
+    if (!tokenPrices) {
+        return amount;
+    }
+
+    const prices = tokenPrices.get(symbol);
+    if (amount && prices && amount.asset) {
+        const usdPrice = prices.get(Currency.USD);
+        const ethPrice = prices.get(Currency.ETH);
+        const shiftedAmount = amount.amount.div(
+            new BigNumber(10).exponentiatedBy(amount.asset.decimals),
+        );
+
+        return {
+            ...amount,
+            amountInUsd: usdPrice
+                ? shiftedAmount.times(usdPrice)
+                : amount.amountInUsd,
+            amountInEth: ethPrice
+                ? shiftedAmount.times(ethPrice)
+                : amount.amountInEth,
+        };
+    }
+    return amount;
+};
+
 /**
  * Override token values using the latest prices.
  */
@@ -151,27 +181,9 @@ export const updatePrices = <T extends TokenAmount | null | undefined>(
     if (!tokenPrices) {
         return tokenAmounts;
     }
-    return tokenAmounts.map((amount, symbol) => {
-        const prices = tokenPrices.get(symbol as Token);
-        if (amount && prices && amount.asset) {
-            const usdPrice = prices.get(Currency.USD);
-            const ethPrice = prices.get(Currency.ETH);
-            const shiftedAmount = amount.amount.div(
-                new BigNumber(10).exponentiatedBy(amount.asset.decimals),
-            );
-
-            return {
-                ...amount,
-                amountInUsd: usdPrice
-                    ? shiftedAmount.times(usdPrice)
-                    : amount.amountInUsd,
-                amountInEth: ethPrice
-                    ? shiftedAmount.times(ethPrice)
-                    : amount.amountInEth,
-            };
-        }
-        return amount;
-    });
+    return tokenAmounts.map((amount, symbol) =>
+        updatePrice(amount, symbol as Token, tokenPrices),
+    );
 };
 
 /**
