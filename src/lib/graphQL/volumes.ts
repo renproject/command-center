@@ -46,7 +46,7 @@ const getNetworkStart = (volumeNetwork: VolumeNetwork) => {
         case VolumeNetwork.BSCTestnet:
             return "2020-11-03T00+00";
         case VolumeNetwork.BSC:
-            return "2020-11-03T00+00";
+            return "2021-02-11T00+00";
         case VolumeNetwork.EthereumTestnet:
             return "2020-04-15T00+00";
         case VolumeNetwork.Ethereum:
