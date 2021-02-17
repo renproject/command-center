@@ -83,11 +83,11 @@ export const ChainSelector = ({
                 selected={selected}
                 onChange={onChange}
             />
-            <ChainOption
+            {/* <ChainOption
                 value={NetworkStatsChain.BinanceSmartChain}
                 selected={selected}
                 onChange={onChange}
-            />
+            /> */}
         </ChainSelectorDiv>
     );
 };
