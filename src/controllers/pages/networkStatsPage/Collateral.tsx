@@ -10,6 +10,7 @@ import { ExternalLink } from "../../../views/ExternalLink";
 import { InfoLabel } from "../../../views/infoLabel/InfoLabel";
 import { SimpleTable } from "../../../views/SimpleTable";
 import { Stat, Stats } from "../../../views/Stat";
+import { TokenIcon } from "../../../views/tokenIcon/TokenIcon";
 
 interface Props {
     minted: BigNumber;
@@ -283,7 +284,11 @@ export const Collateral: React.FC<Props> = ({
                     big={true}
                 >
                     <SimpleTable>
-                        <div>Ethereum</div>
+                        <div>
+                            <span>
+                                <TokenIcon token="EthChain" /> Ethereum
+                            </span>
+                        </div>
                         <div>
                             <span style={{ marginLeft: "40px" }}>Mint</span>
                             <span>
@@ -296,7 +301,12 @@ export const Collateral: React.FC<Props> = ({
                                 {burnFee ? <>{burnFee / 100}%</> : <Loading />}
                             </span>
                         </div>
-                        <div>Binance Smart Chain</div>
+                        <div>
+                            <span>
+                                <TokenIcon token="BSCChain" /> Binance Smart
+                                Chain
+                            </span>
+                        </div>
                         <div>
                             <span style={{ marginLeft: "40px" }}>Mint</span>
                             <span>
