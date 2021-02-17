@@ -224,6 +224,7 @@ const useNetworkStatsContainer = () => {
                                 period,
                                 // Round down latest block to improve caching.
                                 latestBlock - (latestBlock % 20),
+                                20,
                             );
                         }
                     } catch (error) {

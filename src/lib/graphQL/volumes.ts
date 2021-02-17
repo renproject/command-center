@@ -113,6 +113,7 @@ export const getVolumes = async (
     client: ApolloClient<unknown>,
     periodType: PeriodType,
     latestSyncedBlock: number,
+    segmentCount = 50,
 ): Promise<SeriesData> => {
     const now = moment().unix();
 
@@ -127,7 +128,6 @@ export const getVolumes = async (
     const startingBlock =
         latestSyncedBlock - Math.floor(periodSecondsCount / averageBlockTime);
     // currentBlock - (periodSecondsCount / blockTime);
-    const segmentCount = 50;
     const segmentLength = Math.ceil(
         (latestSyncedBlock - startingBlock) / segmentCount,
     );
