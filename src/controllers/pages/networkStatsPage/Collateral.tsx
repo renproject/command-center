@@ -310,13 +310,13 @@ export const Collateral: React.FC<Props> = ({
                         <div>
                             <span style={{ marginLeft: "40px" }}>Mint</span>
                             <span>
-                                {mintFee ? <>{mintFee / 100}%</> : <Loading />}
+                                {mintFee ? <>{10 / 100}%</> : <Loading />}
                             </span>
                         </div>
                         <div>
                             <span style={{ marginLeft: "40px" }}>Burn</span>
                             <span>
-                                {burnFee ? <>{burnFee / 100}%</> : <Loading />}
+                                {burnFee ? <>{10 / 100}%</> : <Loading />}
                             </span>
                         </div>
                     </SimpleTable>
