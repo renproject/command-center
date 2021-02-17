@@ -223,7 +223,7 @@ const useNetworkStatsContainer = () => {
                                 bscSubgraph,
                                 period,
                                 // Round down latest block to improve caching.
-                                latestBlock - (latestBlock % 20),
+                                latestBlock - (latestBlock % 200),
                                 20,
                             );
                         }
