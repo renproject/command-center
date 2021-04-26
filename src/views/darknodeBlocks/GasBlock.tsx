@@ -35,7 +35,7 @@ enum ResultMessage {
 export const GasBlock: React.FC<Props> = ({
     darknodeBalance,
     loggedIn,
-    userBalance: balance,
+    userBalance,
     maxCallback,
     topUpCallBack,
 }) => {
@@ -58,10 +58,10 @@ export const GasBlock: React.FC<Props> = ({
 
     const balanceInEth = useMemo(
         () =>
-            balance
-                ? new BigNumber(fromWei(balance.toFixed(), "ether").toString())
-                : balance,
-        [balance],
+            userBalance
+                ? userBalance.div(new BigNumber(10).exponentiatedBy(18))
+                : userBalance,
+        [userBalance],
     );
 
     const handleChange = useCallback(
@@ -209,8 +209,8 @@ export const GasBlock: React.FC<Props> = ({
                                                                 balance.{" "}
                                                                 {balanceInEth ? (
                                                                     <>
-                                                                        Maximum
-                                                                        deposit:{" "}
+                                                                        Your
+                                                                        balance:{" "}
                                                                         <span
                                                                             role="button"
                                                                             className="pointer"

@@ -42,8 +42,8 @@ export const GasBlockController: React.FC<Props> = ({
                 )
                 .toString(),
         );
-        const balanceInEth = new BigNumber(
-            web3.utils.fromWei(balance.toFixed(), "ether").toString(),
+        const balanceInEth = new BigNumber(balance).dividedBy(
+            new BigNumber(10).exponentiatedBy(18),
         );
         return balanceInEth.minus(gas);
     }, [balance, web3]);
