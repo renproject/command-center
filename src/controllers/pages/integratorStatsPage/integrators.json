@@ -112,9 +112,15 @@
         },
         "OpenDAO": {
             "name": "OpenDAO Dogecoin Bridge",
-            "url": "doge.opendao.io/",
+            "url": "doge.opendao.io",
             "urlHref": "https://doge.opendao.io/",
             "logo": "/integrators/opendao.svg"
+        },
+        "integrator-0xb6ea1d3fb9100a2cf166febe11f24367b5fcd24a": {
+            "name": "Badger",
+            "url": "app.badger.finance",
+            "urlHref": "https://app.badger.finance/bridge",
+            "logo": "/integrators/badger.svg"
         }
     }
 }
