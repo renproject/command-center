@@ -148,7 +148,7 @@ export const Header = () => {
                     activePath={location.pathname}
                 />
 
-                {NODE_ENV !== "development" ? (
+                {NODE_ENV === "development" ? (
                     <MenuItem
                         path="/catalog"
                         title="Catalog"
