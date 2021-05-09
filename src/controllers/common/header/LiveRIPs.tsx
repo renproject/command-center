@@ -11,14 +11,12 @@ import { ExternalLink } from "../../../views/ExternalLink";
 export const LiveRIPs: React.FC = () => {
     const [RIPs, setDiscourseRIPs] = useState<RIP[]>([]);
 
-
     useEffect(() => {
         fetchDiscourseRIPs()
             .then((rips) => {
                 console.log(rips)
                 rips = rips.filter(function(element) {
-                return element["content"].includes('Name:');
-                // return element["content"].includes('Status: [LIVE]');
+                return element["content"].includes('Status: LIVE');
                 });
                 console.log(rips)
                 setDiscourseRIPs(rips);
@@ -40,8 +38,6 @@ export const LiveRIPs: React.FC = () => {
             </div>
             );
         }
-
-
 
     return (
         <div
