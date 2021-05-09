@@ -53,13 +53,13 @@ export class ErrorBoundary extends React.Component<Props, typeof defaultState> {
 
     /**
      * The main render function.
+     *
      * @dev Should have minimal computation, loops and anonymous functions.
      */
     public render() {
         const {
             children,
             popup,
-            onCancel,
             className,
             defaultValue,
             ...props

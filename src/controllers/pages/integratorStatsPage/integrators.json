@@ -1,0 +1,126 @@
+{
+    "testnet": {
+        "integrator-0x646972656374": {
+            "name": "Direct burns",
+            "url": "Burns from non-contract accounts including through RenBridge",
+            "urlHref": "",
+            "logo": "/integrators/burn.svg"
+        },
+        "curve": {
+            "name": "Curve",
+            "logo": "/integrators/curve.svg",
+            "urlHref": "https://curve.fi",
+            "url": "curve.fi"
+        },
+        "integrator-0xad81fdc92e2ecb43e6207647b17f6d5075e6a1fd": {
+            "name": "Uniswap Adapter",
+            "logo": "/integrators/uniswap.png"
+        },
+        "integrator-0x7ddfa2e5435027f6e13ca8db2f32ebd5551158bb": {
+            "name": "RenVM Demo Page",
+            "logo": "/integrators/ren.svg",
+            "urlHref": "https://renproject.github.io/gateway-staging/?network=testnet",
+            "url": "Gateway Staging"
+        },
+        "integrator-0x40f41fd6f5fb0dd1bf7e05e3a07a2ac56ac6fe11": {
+            "url": "Etherscan - WBTCCDPProxy"
+        },
+        "integrator-0x3aa969d343bd6ae66c4027bb61a382dc96e88150": {
+            "url": "Etherscan - Basic"
+        },
+        "integrator-0xb9b0442de9bc214a23b434ee2ec7af8a4e1b3eee": {
+            "url": "Etherscan - Basic"
+        },
+        "integrator-0x7262337b576cecbf9febb6b8fbb5210b98d43139": {
+            "url": "Etherscan - CurveExchangeAdapter"
+        },
+        "integrator-0xc896813996330ab852f2f27f27bf4523abf80b27": {
+            "url": "Etherscan - Vesting"
+        },
+        "integrator-0x43f0dc6f2b65260753fd73c429e54be7af920f9d": {
+            "url": "Etherscan - CurveExchangeAdapter"
+        },
+        "integrator-0x795a46daab5389d01b45ff6c68029c248b22999a": {
+            "name": "RenBridge",
+            "logo": "/integrators/ren.svg",
+            "urlHref": "https://bridge.renproject.io",
+            "url": "bridge.renproject.io"
+        },
+        "integrator-0x853fd00e802c2186bd2a1ba5dc94c07ef74b16c3": {
+            "name": "BTC to Aave",
+            "logo": "/integrators/aave.svg"
+        },
+        "integrator-0x3b4353d80464af08cc0787ea9c45bbc50f8c5cce": {
+            "name": "BTC to Aave",
+            "logo": "/integrators/aave.svg"
+        },
+        "integrator-0xb005bb5e58878318d559561a49f0b67c616d11f0": {
+            "name": "BTC to Aave",
+            "logo": "/integrators/aave.svg"
+        }
+    },
+    "devnet": {
+        "0xfabdb1f53ef8b080332621cbc9f820a39e7a1b83": {
+            "name": "RenVM Demo Page",
+            "logo": "/integrators/ren.svg",
+            "urlHref": "https://renproject.github.io/gateway-staging/?network=devnet",
+            "url": "Gateway Staging"
+        }
+    },
+    "mainnet": {
+        "integrator-0x646972656374": {
+            "name": "Direct burns",
+            "url": "Burns from non-contract accounts including through RenBridge",
+            "urlHref": "",
+            "logo": "/integrators/burn.svg"
+        },
+        "integrator-0xc633576775ab431ff627746d2c4af6686c4c719c": {
+            "url": "Etherscan - WBTCCDPProxy"
+        },
+        "curve": {
+            "name": "Curve",
+            "logo": "/integrators/curve.svg",
+            "urlHref": "https://curve.fi",
+            "url": "curve.fi"
+        },
+        "integrator-0x32666b64e9fd0f44916e1378efb2cfa3b3b96e80": {
+            "name": "RenBridge",
+            "logo": "/integrators/ren.svg",
+            "urlHref": "https://bridge.renproject.io",
+            "url": "bridge.renproject.io"
+        },
+        "RenEscrow": {
+            "name": "RenEscrow",
+            "url": "Etherscan - RenEscrow"
+        },
+        "integrator-0x98133009242724c031d80bce2d4f9f86a04a9290": {
+            "name": "Farmland renBTC",
+            "url": "Etherscan - VaultRenbtc"
+        },
+        "integrator-0xa30b9c9bc2294c26ee350f1c879380b416ff89c2": {
+            "url": "Etherscan - SimpleMintAdapter"
+        },
+        "integrator-0x10aa7bbcb29cf100fe0f25819d11499e43caaea5": {
+            "name": "MyEtherWallet",
+            "logo": "/integrators/mew.svg"
+        },
+        "DefiBridge": {
+            "name": "DeFi Bridge",
+            "url": "bridge.codefi.network",
+            "urlHref": "https://bridge.codefi.network",
+            "logo": "/integrators/defibridge.svg"
+        },
+        "OpenDAO": {
+            "name": "OpenDAO Dogecoin Bridge",
+            "url": "doge.opendao.io",
+            "urlHref": "https://doge.opendao.io/",
+            "logo": "/integrators/opendao.svg"
+        },
+        "integrator-0xb6ea1d3fb9100a2cf166febe11f24367b5fcd24a": {
+            "name": "Badger",
+            "url": "app.badger.finance",
+            "urlHref": "https://app.badger.finance/bridge",
+            "logo": "/integrators/badger.svg"
+        }
+    }
+}

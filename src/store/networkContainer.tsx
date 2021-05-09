@@ -1,4 +1,3 @@
-import { useApolloClient } from "@apollo/react-hooks";
 import { Currency, CurrencyIcon, Record } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import { List, Map, OrderedMap, OrderedSet } from "immutable";
@@ -11,7 +10,7 @@ import {
     ConvertCurrency,
     updatePrices,
 } from "../controllers/common/TokenBalance";
-import { retryNTimes } from "../controllers/statsPages/renvmStatsPage/renvmContainer";
+import { retryNTimes } from "../controllers/pages/renvmStatsPage/renvmContainer";
 import { NodeStatistics } from "../lib/darknode/jsonrpc";
 import { getDarknodePayment } from "../lib/ethereum/contract";
 import {
@@ -37,6 +36,7 @@ import {
 } from "../lib/ethereum/tokens";
 import { isDefined } from "../lib/general/isDefined";
 import { safePromiseAllMap } from "../lib/general/promiseAll";
+import { GraphClientContainer } from "../lib/graphQL/ApolloWithNetwork";
 import { TokenAmount } from "../lib/graphQL/queries/queries";
 import { RenVM } from "../lib/graphQL/queries/renVM";
 import { tokenArrayToMap } from "../lib/graphQL/volumes";
@@ -83,7 +83,7 @@ const useNetworkContainer = () => {
         fetchRenVM,
         subgraphOutOfSync,
     } = GraphContainer.useContainer();
-    const client = useApolloClient();
+    const { ethereumSubgraph } = GraphClientContainer.useContainer();
 
     const [tokenPrices, setTokenPrices] = useState(null as TokenPrices | null);
 
@@ -108,9 +108,9 @@ const useNetworkContainer = () => {
         OrderedMap<string /* cycle */, BigNumber | null>(),
     );
 
-    ///////////////////////////////////////////////////////////
+    // ///////////////////////////////////////////////////// //
     // If these change, localstorage migration may be needed //
-    ///////////////////////////////////////////////////////////
+    // ///////////////////////////////////////////////////// //
     const [quoteCurrency, setQuoteCurrency] = useStorageState(
         localStorage,
         "quoteCurrency",
@@ -162,7 +162,7 @@ const useNetworkContainer = () => {
                 List<string>(x),
             ),
     );
-    ///////////////////////////////////////////////////////
+    // ///////////////////////////////////////////////// //
 
     const updateTokenPrices = async () => {
         try {
@@ -331,11 +331,11 @@ const useNetworkContainer = () => {
      * contract.
      *
      * @returns `{
-     *     pendingRewards: For each cycle, a map from tokens to rewards
-     *     currentCycle: The current cycle (as a block number)
-     *     previousCycle: The previous cycle (as a block number)
-     *     cycleTimeout: The earliest the current cycle could end (as a block number)
-     *     pendingTotalInUsd: For each cycle, The pending rewards added up as ETH
+     * pendingRewards: For each cycle, a map from tokens to rewards
+     * currentCycle: The current cycle (as a block number)
+     * previousCycle: The previous cycle (as a block number)
+     * cycleTimeout: The earliest the current cycle could end (as a block number)
+     * pendingTotalInUsd: For each cycle, The pending rewards added up as ETH
      * }`
      */
     const fetchCycleAndPendingRewards = async (latestRenVM: RenVM) => {
@@ -441,12 +441,12 @@ const useNetworkContainer = () => {
 
                             return {
                                 symbol: token,
-                                amount: amount,
+                                amount,
                                 amountInEth: amountInEth || new BigNumber(0),
                                 amountInUsd: amountInUsd || new BigNumber(0),
                                 asset: {
                                     decimals: tokenDetails.decimals,
-                                } as { decimals: number } | null,
+                                },
                             };
                         } catch (error) {
                             console.error(
@@ -542,7 +542,7 @@ const useNetworkContainer = () => {
         const latestRenVMOrNull = latestRenVM || (await fetchRenVM());
         if (latestRenVMOrNull) {
             const details = await fetchDarknodeDetails(
-                client,
+                ethereumSubgraph,
                 latestRenVMOrNull,
                 web3,
                 renNetwork,
@@ -616,7 +616,7 @@ const useNetworkContainer = () => {
         await Promise.all(
             newDarknodeList
                 .toList()
-                .map(async (darknodeID: string) => {
+                .map((darknodeID: string) => {
                     const details = darknodeDetails.get(darknodeID);
                     if (
                         details &&
@@ -633,7 +633,7 @@ const useNetworkContainer = () => {
                             return removeRegisteringDarknode(darknodeID);
                         }
                     }
-                    return;
+                    return null;
                 })
                 .toArray(),
         );
@@ -648,11 +648,12 @@ const useNetworkContainer = () => {
         tokenSymbol: string,
         tokenAddress: string,
     ): Promise<void> =>
-        new Promise<void>(async (resolve, reject) => {
+        new Promise<void>((resolve, reject) => {
             if (!address) {
                 throw new Error(`Unable to retrieve account address.`);
             }
 
+            // eslint-disable-next-line @typescript-eslint/promise-function-async
             const withdraw = () =>
                 withdrawToken(
                     web3,
@@ -691,7 +692,7 @@ const useNetworkContainer = () => {
             });
         });
 
-    const showRegisterPopup = async (
+    const showRegisterPopup = (
         web3Address: string,
         darknodeID: string,
         onCancel: () => void,
@@ -706,9 +707,11 @@ const useNetworkContainer = () => {
             );
         }
 
+        // eslint-disable-next-line @typescript-eslint/promise-function-async
         const step1 = () =>
             approveNode(web3, renNetwork, web3Address, renVM.minimumBond);
 
+        // eslint-disable-next-line @typescript-eslint/promise-function-async
         const step2 = () =>
             registerNode(
                 web3,
@@ -759,6 +762,7 @@ const useNetworkContainer = () => {
             throw new Error(`Unable to retrieve account address.`);
         }
 
+        // eslint-disable-next-line @typescript-eslint/promise-function-async
         const step1 = () =>
             deregisterNode(web3, renNetwork, address, darknodeID);
 
@@ -816,6 +820,7 @@ const useNetworkContainer = () => {
             throw new Error(`Unable to retrieve account address.`);
         }
 
+        // eslint-disable-next-line @typescript-eslint/promise-function-async
         const step1 = () => refundNode(web3, renNetwork, address, darknodeID);
 
         const steps = [{ call: step1, name: "Refund REN" }];
@@ -848,6 +853,7 @@ const useNetworkContainer = () => {
             throw new Error(`Unable to retrieve account address.`);
         }
 
+        // eslint-disable-next-line @typescript-eslint/promise-function-async
         const step1 = () => fundNode(web3, address, darknodeID, ethAmountStr);
 
         const steps = [{ call: step1, name: "Fund darknode" }];

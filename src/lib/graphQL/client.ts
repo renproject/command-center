@@ -3,17 +3,24 @@ import { RenNetworkDetails } from "@renproject/contracts";
 import ApolloClient from "apollo-boost";
 import fetch from "node-fetch";
 
-export const subgraphEndpoint = (renNetwork: RenNetworkDetails) =>
+export const ethereumSubgraphUrl = (renNetwork: RenNetworkDetails) =>
     `https://api.thegraph.com/subgraphs/name/${
         renNetwork.name === "mainnet" || renNetwork.name === "testnet"
             ? "renproject"
             : "noiach"
     }/renvm${renNetwork.name === "mainnet" ? "" : `-${renNetwork.name}`}`;
 
-export const apolloClient = (renNetwork: RenNetworkDetails) => {
+export const bscSubgraphUrl = (renNetwork: RenNetworkDetails) =>
+    `https://bsc-graph${
+        renNetwork.name === "mainnet" ? "" : "-testnet"
+    }.renproject.io/subgraphs/name/renproject/renvm${
+        renNetwork.name === "mainnet" ? "" : `-${renNetwork.name}`
+    }`;
+
+export const apolloClient = (graphUrl: string) => {
     const client = new ApolloClient<unknown>({
-        uri: subgraphEndpoint(renNetwork),
-        // tslint:disable-next-line: no-any
+        uri: graphUrl,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         fetch: fetch as any,
     });
     client.defaultOptions.query = {

@@ -4,10 +4,11 @@ import { describe, it } from "mocha";
 // import { apolloClient } from "./client";
 // import { getVolumes, PeriodType } from "./volumes";
 
-require("chai").should();
+import { should } from "chai";
+should();
 
 describe("GraphQL", () => {
-    it("works", async () => {
+    it("works", () => {
         // const client = apolloClient(chaosnet);
         true.should.equal(true);
     });

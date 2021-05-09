@@ -5,7 +5,7 @@ import { useCallback, useState } from "react";
 import semver from "semver";
 import { createContainer } from "unstated-next";
 
-import { retryNTimes } from "../controllers/statsPages/renvmStatsPage/renvmContainer";
+import { retryNTimes } from "../controllers/pages/renvmStatsPage/renvmContainer";
 import { useTaskSchedule } from "../hooks/useTaskSchedule";
 import { DEFAULT_REQUEST_TIMEOUT } from "../lib/react/environmentVariables";
 import { catchBackgroundException } from "../lib/react/errors";
@@ -16,6 +16,21 @@ const DARKNODE_CLI_ENDPOINT =
     "https://api.github.com/repos/renproject/darknode-cli/releases/latest";
 
 const API_LIMIT_ERROR = /API rate limit exceeded/;
+
+export const isDarknodeUpToDate = (
+    darknodeVersion: string,
+    latestVersion: string,
+): boolean | null => {
+    try {
+        return semver.lte(
+            latestVersion.split("-")[0],
+            darknodeVersion.split("-")[0],
+        );
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
+};
 
 const useGithubAPIContainer = () => {
     const [latestDarknodeVersionFull, setLatestDarknodeVersionFull] = useState(
@@ -46,7 +61,7 @@ const useGithubAPIContainer = () => {
 
         try {
             const response = await retryNTimes(
-                () =>
+                async () =>
                     Axios.get<VersionResponse | VersionError>(
                         DARKNODE_ENDPOINT,
                         {
@@ -96,7 +111,7 @@ const useGithubAPIContainer = () => {
 
         try {
             const response = await retryNTimes(
-                () =>
+                async () =>
                     Axios.get<VersionResponse | VersionError>(
                         DARKNODE_CLI_ENDPOINT,
                         {
@@ -146,24 +161,6 @@ const useGithubAPIContainer = () => {
     };
 
     useTaskSchedule(updater);
-
-    const isDarknodeUpToDate = useCallback(
-        (darknodeVersionFull: string) => {
-            try {
-                return latestDarknodeVersionFull
-                    ? semver.gte(
-                          darknodeVersionFull.split("-")[0],
-                          latestDarknodeVersionFull,
-                      )
-                    : null;
-            } catch (error) {
-                console.error(error);
-                return null;
-            }
-        },
-
-        [latestDarknodeVersionFull],
-    );
 
     const isCLIUpToDate = useCallback(
         (cliVersionFull: string) => {

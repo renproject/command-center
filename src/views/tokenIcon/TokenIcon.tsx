@@ -8,6 +8,12 @@ import { ReactComponent as ColorDAI } from "./icons/color/dai.svg";
 import { ReactComponent as ColorETH } from "./icons/color/eth.svg";
 import { ReactComponent as ColorREN } from "./icons/color/ren.svg";
 import { ReactComponent as ColorZEC } from "./icons/color/zec.svg";
+import { ReactComponent as ColorDGB } from "./icons/color/dgb.svg";
+import { ReactComponent as ColorDOGE } from "./icons/color/doge.svg";
+import { ReactComponent as ColorFIL } from "./icons/color/fil.svg";
+import { ReactComponent as ColorLUNA } from "./icons/color/luna.svg";
+import { ReactComponent as ColorEthChain } from "./icons/color/eth-chain.svg";
+import { ReactComponent as ColorBSCChain } from "./icons/color/bsc-chain.svg";
 // White icons
 import { ReactComponent as WhiteBCH } from "./icons/white/bch.svg";
 import { ReactComponent as WhiteBTC } from "./icons/white/btc.svg";
@@ -29,6 +35,12 @@ const icons = {
         DAI: ColorDAI,
         ETH: ColorETH,
         REN: ColorREN,
+        DGB: ColorDGB,
+        DOGE: ColorDOGE,
+        FIL: ColorFIL,
+        LUNA: ColorLUNA,
+        EthChain: ColorEthChain,
+        BSCChain: ColorBSCChain,
     },
     white: {
         BTC: WhiteBTC,

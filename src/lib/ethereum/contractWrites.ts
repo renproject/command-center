@@ -3,7 +3,7 @@ import BigNumber from "bignumber.js";
 import Web3 from "web3";
 import { PromiEvent, TransactionReceipt } from "web3-core";
 
-import { retryNTimes } from "../../controllers/statsPages/renvmStatsPage/renvmContainer";
+import { retryNTimes } from "../../controllers/pages/renvmStatsPage/renvmContainer";
 import { catchInteractionException, noCapture } from "../react/errors";
 import {
     getDarknodePayment,
@@ -19,6 +19,7 @@ import {
  * @param darknodeID Hexadecimal ID of the darknode to fund.
  * @param ethAmountStr Amount as a string.
  */
+// eslint-disable-next-line @typescript-eslint/promise-function-async
 export const fundNode = (
     web3: Web3,
     address: string,
@@ -43,9 +44,9 @@ export const fundNode = (
     });
 };
 
-////////////////////////////////
+// ////////////////////////// //
 // Darknode Registry contract //
-////////////////////////////////
+// ////////////////////////// //
 
 /**
  * Approve REN to the DarknodeRegistry contract for registering a node.
@@ -189,6 +190,7 @@ export const registerNode = async (
  * @param address Ethereum address to send Ethereum transactions from.
  * @param darknodeID Hexadecimal ID of the darknode to deregister.
  */
+// eslint-disable-next-line @typescript-eslint/promise-function-async
 export const deregisterNode = (
     web3: Web3,
     renNetwork: RenNetworkDetails,
@@ -215,6 +217,7 @@ export const deregisterNode = (
  * @param address Ethereum address to send Ethereum transactions from.
  * @param darknodeID Hexadecimal ID of the darknode to refund.
  */
+// eslint-disable-next-line @typescript-eslint/promise-function-async
 export const refundNode = (
     web3: Web3,
     renNetwork: RenNetworkDetails,
@@ -238,6 +241,7 @@ export const refundNode = (
  * @param darknodeID Hexadecimal ID of the darknode to refund.
  * @param token The token to withdraw fees for.
  */
+// eslint-disable-next-line @typescript-eslint/promise-function-async
 export const withdrawToken = (
     web3: Web3,
     renNetwork: RenNetworkDetails,

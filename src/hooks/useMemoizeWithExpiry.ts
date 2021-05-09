@@ -1,5 +1,5 @@
-import { useCallback, useRef } from "react";
 import { Mutex } from "async-mutex";
+import { useCallback, useRef } from "react";
 
 /**
  * Memoize an async getter, with an expiry on the memoization.
@@ -8,12 +8,12 @@ export const useMemoizeWithExpiry = <T>(
     getValue: () => Promise<T> | T,
     expiry: number,
     params: React.DependencyList,
-) => {
+): (() => Promise<T>) => {
     const mutex = useRef(new Mutex());
     const latestValueTimestamp = useRef(0);
     const latestValue = useRef<T | null>(null);
 
-    const getMemoizedValue: () => Promise<T> = useCallback(
+    return useCallback(
         async () =>
             (async () => {
                 await mutex.current.acquire();
@@ -34,6 +34,4 @@ export const useMemoizeWithExpiry = <T>(
         // eslint-disable-next-line react-hooks/exhaustive-deps
         params,
     );
-
-    return getMemoizedValue;
 };

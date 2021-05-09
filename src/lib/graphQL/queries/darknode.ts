@@ -5,8 +5,8 @@ import { toChecksumAddress } from "web3-utils";
 
 import { Ox } from "../../ethereum/contractReads";
 import { TokenString } from "../../ethereum/tokens";
-import { parseTokenAmount, RawTokenAmount, TokenAmount } from "./queries";
 import { tokenArrayToMap } from "../volumes";
+import { parseTokenAmount, RawTokenAmount, TokenAmount } from "./queries";
 
 interface RawDarknode {
     deregisteredAt: string;
@@ -15,7 +15,7 @@ interface RawDarknode {
     registeredAt: string;
     lastClaimedEpoch: string;
     previousLastClaimedEpoch: string;
-    balances: Array<RawTokenAmount>;
+    balances: RawTokenAmount[];
 }
 
 export interface Darknode {

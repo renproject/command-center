@@ -23,7 +23,6 @@ export const ExternalLink: React.FC<Props> = ({
     defaultValue,
     ...props
 }) => (
-    // tslint:disable-next-line: react-a11y-anchors
     <a
         defaultValue={defaultValue as string[]}
         {...props}

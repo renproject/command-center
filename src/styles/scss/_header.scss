@@ -284,48 +284,6 @@
     margin-left: 10px;
 }
 
-.network--banner {
-    box-shadow: $blue-darker 0px 10px 10px;
-    top: 0;
-    width: 100%;
-    background-color: $red;
-    position: fixed;
-    z-index: 100;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 22px;
-
-    .banner--bold {
-        font-weight: 900;
-        margin: 0 5px;
-    }
-}
-
-.with-banner--main {
-    .network--banner {
-        background-color: $green;
-        color: $blue-dark;
-    }
-}
-
-.with-banner {
-    $top: 22px;
-
-    .header {
-        margin-top: $top;
-    }
-
-    .popup--container {
-        top: $top;
-    }
-
-    .sidebar {
-        top: $top;
-        height: calc(100vh - #{$top});
-    }
-}
-
 .wallet-icon {
     width: 45px;
     height: 48px;

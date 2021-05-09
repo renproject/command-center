@@ -1,17 +1,16 @@
-import { useApolloClient } from "@apollo/react-hooks";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { createContainer } from "unstated-next";
 import Axios from "axios";
-import { Mutex } from "async-mutex";
+import { useEffect, useRef, useState } from "react";
+import { createContainer } from "unstated-next";
 
+import { SECONDS } from "../controllers/common/BackgroundTasks";
+import { useMemoizeWithExpiry } from "../hooks/useMemoizeWithExpiry";
 import { useTaskSchedule } from "../hooks/useTaskSchedule";
+import { GraphClientContainer } from "../lib/graphQL/ApolloWithNetwork";
+import { bscSubgraphUrl, ethereumSubgraphUrl } from "../lib/graphQL/client";
 import { queryRenVM, RenVM } from "../lib/graphQL/queries/renVM";
 import { catchBackgroundException } from "../lib/react/errors";
-import { Web3Container } from "./web3Container";
-import { subgraphEndpoint } from "../lib/graphQL/client";
-import { SECONDS } from "../controllers/common/BackgroundTasks";
 import { NotificationsContainer } from "./notificationsContainer";
-import { useMemoizeWithExpiry } from "../hooks/useMemoizeWithExpiry";
+import { Web3Container } from "./web3Container";
 
 // If the subgraph is behind by more than 30 blocks, show a warning and fall
 // back to infura for fetching rewards.
@@ -25,7 +24,7 @@ const useGraphContainer = () => {
         showHint,
     } = NotificationsContainer.useContainer();
 
-    const client = useApolloClient();
+    const { ethereumSubgraph } = GraphClientContainer.useContainer();
 
     const [renVM, setRenVM] = useState<RenVM | null>(null);
 
@@ -34,7 +33,7 @@ const useGraphContainer = () => {
 
     const updater = async () => {
         try {
-            const newRenVM = await queryRenVM(client);
+            const newRenVM = await queryRenVM(ethereumSubgraph);
             setRenVM(newRenVM);
 
             // Get seconds since start of epoch.
@@ -52,8 +51,11 @@ const useGraphContainer = () => {
             // Show a notification about the new epoch.
             if (newEpoch && !shownEpochNotification.current) {
                 shownEpochNotification.current = true;
+                const darknodeCount = newRenVM.numberOfDarknodes.toFixed
+                    ? newRenVM.numberOfDarknodes.toFixed()
+                    : newRenVM.numberOfDarknodes.toString();
                 showSuccess(
-                    `A new epoch has just started. There are now ${newRenVM.numberOfDarknodes} darknodes registered. Darknode rewards will appear shortly.`,
+                    `A new epoch has just started. There are now ${darknodeCount} darknodes registered. Darknode rewards will appear shortly.`,
                     30 * SECONDS,
                 );
             }
@@ -73,8 +75,23 @@ const useGraphContainer = () => {
     const getLatestSyncedBlock = useMemoizeWithExpiry(
         async () =>
             Axios.post<{
+                // eslint-disable-next-line id-blacklist
                 data: { _meta: { block: { number: number } } };
-            }>(subgraphEndpoint(renNetwork), {
+            }>(ethereumSubgraphUrl(renNetwork), {
+                query:
+                    "{\n    _meta {\n      block {\n        number\n      }\n    }\n}",
+            }).then((response) => response.data.data._meta.block.number),
+        60 * SECONDS,
+        [renNetwork],
+    );
+
+    // TODO: Refactor into above function.
+    const getLatestSyncedBlockBSC = useMemoizeWithExpiry(
+        async () =>
+            Axios.post<{
+                // eslint-disable-next-line id-blacklist
+                data: { _meta: { block: { number: number } } };
+            }>(bscSubgraphUrl(renNetwork), {
                 query:
                     "{\n    _meta {\n      block {\n        number\n      }\n    }\n}",
             }).then((response) => response.data.data._meta.block.number),
@@ -122,6 +139,7 @@ const useGraphContainer = () => {
         fetchRenVM,
         subgraphOutOfSync,
         getLatestSyncedBlock,
+        getLatestSyncedBlockBSC,
     };
 };
 

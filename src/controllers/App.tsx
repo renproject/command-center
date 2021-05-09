@@ -3,25 +3,24 @@ import React, { useCallback, useEffect } from "react";
 import { Route, Switch } from "react-router-dom";
 
 import { classNames } from "../lib/react/className";
-import { DEFAULT_REN_NETWORK } from "../lib/react/environmentVariables";
 import { catchBackgroundException } from "../lib/react/errors";
 import { Web3Container } from "../store/web3Container";
 import { NotFound } from "../views/404";
+import { Catalog } from "../views/Catalog";
 import { URLs } from "../views/ExternalLink";
-import { NetworkBanner } from "../views/NetworkBanner";
 import { BackgroundTasks } from "./common/BackgroundTasks";
 import { ErrorBoundary } from "./common/ErrorBoundary";
 import { Header } from "./common/header/Header";
 import { LoggingIn } from "./common/LoggingIn";
 import { PopupController } from "./common/popups/PopupController";
 import { Sidebar } from "./common/sidebar/Sidebar";
-import { AllDarknodes } from "./operatorPages/allDarknodesPage/AllDarknodes";
-import { DarknodePage } from "./operatorPages/darknodePage/DarknodePage";
+import { DarknodePage } from "./pages/darknodePage/DarknodePage";
+import { DarknodeStatsPage } from "./pages/darknodeStatsPage/DarknodeStatsPage";
+import { IntegratorStatsPage } from "./pages/integratorStatsPage/IntegratorStatsPage";
+import { NetworkStatsPage } from "./pages/networkStatsPage/NetworkStatsPage";
+import { AllDarknodes } from "./pages/operatorPage/AllDarknodes";
+import { RenVMStatsPage } from "./pages/renvmStatsPage/RenVMStatsPage";
 import { ScrollToTop } from "./ScrollToTop";
-import { DarknodeStatsPage } from "./statsPages/darknodeStatsPage/DarknodeStatsPage";
-import { IntegratorStatsPage } from "./statsPages/integratorStatsPage/IntegratorStatsPage";
-import { NetworkStats } from "./statsPages/networkStatsPage/NetworkStats";
-import { RenVMStatsPage } from "./statsPages/renvmStatsPage/RenVMStatsPage";
 
 /**
  * App is the main visual component responsible for displaying different routes
@@ -32,7 +31,6 @@ export const App = () => {
         address,
         loggedInBefore,
         promptLogin,
-        renNetwork,
     } = Web3Container.useContainer();
 
     const withAccount = useCallback(
@@ -41,8 +39,6 @@ export const App = () => {
         ) => (address ? component : LoggingIn),
         [address],
     );
-
-    const showNetworkBanner = renNetwork.name !== DEFAULT_REN_NETWORK;
 
     useEffect(() => {
         if (loggedInBefore) {
@@ -59,14 +55,8 @@ export const App = () => {
             <div
                 className={classNames(
                     address ? "with-account" : "without-account",
-                    showNetworkBanner
-                        ? `with-banner with-banner--${renNetwork.chain}`
-                        : "",
                 )}
             >
-                {showNetworkBanner ? (
-                    <NetworkBanner renNetwork={renNetwork} />
-                ) : null}
                 <PopupController>
                     <ErrorBoundary>
                         <Sidebar />
@@ -78,12 +68,12 @@ export const App = () => {
                                 <Route
                                     path="/"
                                     exact
-                                    component={NetworkStats}
+                                    component={NetworkStatsPage}
                                 />
                                 <Route
                                     path="/network"
                                     exact
-                                    component={NetworkStats}
+                                    component={NetworkStatsPage}
                                 />
                                 <Route
                                     path="/integrators"
@@ -152,7 +142,10 @@ export const App = () => {
                                     component={RenVMStatsPage}
                                 />
 
-                                {/* 404 */}
+                                {/* Developer catalog */}
+                                <Route path="/catalog" component={Catalog} />
+
+                                {/* 404 - must be last route */}
                                 <Route component={NotFound} />
                             </Switch>
                         </ErrorBoundary>

@@ -15,7 +15,7 @@ import { PopupContainer } from "../../../store/popupContainer";
 import { Web3Container } from "../../../store/web3Container";
 import Warn from "../../../styles/images/warn.svg";
 import { ExternalLink } from "../../../views/ExternalLink";
-import { txUrl } from "../../statsPages/renvmStatsPage/RenVMTransaction";
+import { txUrl } from "../../pages/renvmStatsPage/RenVMTransaction";
 import { Popup } from "./Popup";
 import { PopupError } from "./PopupController";
 
@@ -64,7 +64,7 @@ export const MultiStepPopup: React.FC<Props> = ({
     const [running, setRunning] = useState(false);
     const [complete, setComplete] = useState(false);
     const [cancelled, setCancelled] = useState(false);
-    // tslint:disable-next-line: prefer-const
+    // eslint-disable-next-line prefer-const
     let [currentStep, setCurrentStep] = useState(0);
     const [runError, setRunError] = useState(null as Error | null);
     const [warningIgnored, setWarningIgnored] = useState(false);

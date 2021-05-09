@@ -5,9 +5,9 @@ const time = (): number => Math.floor(new Date().getTime() / SECONDS);
 
 type ReturnResult<T> = number | { timeout: number; result: T };
 
-// tslint:disable-next-line: no-any
 export const useTaskSchedule = <T = undefined>(
     task: () => ReturnResult<T> | Promise<ReturnResult<T>>,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     extraDependencies: any[] = [],
     errorTimeout = 1,
 ) => {

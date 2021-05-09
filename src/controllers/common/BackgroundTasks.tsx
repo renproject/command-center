@@ -14,7 +14,7 @@ export const SECONDS = 1000;
  * and running background app loops
  */
 export const BackgroundTasks = () => {
-    const { address, lookForLogout } = Web3Container.useContainer();
+    const { address } = Web3Container.useContainer();
     const {
         tokenPrices,
         updateTokenPrices,
@@ -58,27 +58,27 @@ export const BackgroundTasks = () => {
     }, [renVM, tokenPrices, address, updateCycleAndPendingRewards]);
     useTaskSchedule(rewardsUpdater, [subgraphOutOfSync]);
 
-    const loggedOutUpdater = useCallback(async () => {
-        if (address) {
-            try {
-                await ((lookForLogout() as unknown) as Promise<void>).catch(
-                    (error) => {
-                        catchBackgroundException(
-                            error,
-                            "Error in BackgroundTasks > loggedOutUpdater",
-                        );
-                    },
-                );
-            } catch (error) {
-                catchBackgroundException(
-                    error,
-                    "Error in BackgroundTasks > loggedOutUpdater",
-                );
-            }
-        }
-        return 5; // seconds
-    }, [address, lookForLogout]);
-    useTaskSchedule(loggedOutUpdater);
+    // const loggedOutUpdater = useCallback(async () => {
+    //     if (address) {
+    //         try {
+    //             await ((lookForLogout() as unknown) as Promise<void>).catch(
+    //                 (error) => {
+    //                     catchBackgroundException(
+    //                         error,
+    //                         "Error in BackgroundTasks > loggedOutUpdater",
+    //                     );
+    //                 },
+    //             );
+    //         } catch (error) {
+    //             catchBackgroundException(
+    //                 error,
+    //                 "Error in BackgroundTasks > loggedOutUpdater",
+    //             );
+    //         }
+    //     }
+    //     return 5; // seconds
+    // }, [address, lookForLogout]);
+    // useTaskSchedule(loggedOutUpdater);
 
     const operatorStatsUpdater = useCallback(async () => {
         if (tokenPrices && address) {

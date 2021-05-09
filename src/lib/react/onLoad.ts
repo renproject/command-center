@@ -11,7 +11,7 @@ import {
 import { pageLoadedAt } from "./errors";
 
 /**
- *  onLoad runs setup tasks when the page is loaded
+ * onLoad runs setup tasks when the page is loaded
  *
  * @param title The HTML title to show
  */
@@ -69,7 +69,4 @@ export const onLoad = (title: string) => {
 
     // Update document title
     document.title = title; // Also set in index.html
-
-    // // tslint:disable-next-line: no-console
-    // console.debug(`${title} version hash: ${SOURCE_VERSION}`);
 };

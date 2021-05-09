@@ -51,10 +51,10 @@ const parse = (
             if (
                 param.value === "" ||
                 param.value.slice(0, 2) === "0x" ||
-                param.value.match("^[A-Fa-f0-9]+$")
+                /^[A-Fa-f0-9]+$/.exec(param.value)
             ) {
                 param.encoding = Encodings.HEX;
-            } else if (param.value.match("^[A-Za-z0-9+/=]+$")) {
+            } else if (/^[A-Za-z0-9+/=]+$/.exec(param.value)) {
                 param.encoding = Encodings.BASE64;
             }
         } else if (param.value instanceof Buffer) {
@@ -85,7 +85,7 @@ const parse = (
             param.value = `0${param.value}`;
         }
 
-        if (!param.value.match("^[A-Fa-f0-9]+$")) {
+        if (!/^[A-Fa-f0-9]+$/.exec(param.value)) {
             throw new Error("invalid hex");
         }
     }

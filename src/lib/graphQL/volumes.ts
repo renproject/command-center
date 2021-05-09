@@ -1,9 +1,4 @@
 import { ApolloClient, gql } from "@apollo/react-hooks";
-import {
-    renMainnet,
-    RenNetwork,
-    RenNetworkDetails,
-} from "@renproject/contracts";
 import { Currency } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import { List, Map, OrderedMap } from "immutable";
@@ -11,10 +6,9 @@ import moment from "moment";
 
 import { Token, TokenPrices, TokenString } from "../ethereum/tokens";
 import {
-    PeriodData,
-    QUERY_BLOCK,
-    QUERY_RENVM_HISTORY,
     HistoricalRawRenVM,
+    PeriodData,
+    QUERY_RENVM_HISTORY,
 } from "./queries/queries";
 
 export enum PeriodType {
@@ -26,13 +20,36 @@ export enum PeriodType {
     ALL = "ALL",
 }
 
-const getNetworkStart = (renNetwork: RenNetworkDetails) => {
-    switch (renNetwork.name) {
-        case RenNetwork.Devnet:
-            return "2020-03-23T00+00";
-        case RenNetwork.Testnet:
+export enum VolumeNetwork {
+    Ethereum = "Ethereum",
+    EthereumTestnet = "EthereumTestnet",
+    BSC = "BSC",
+    BSCTestnet = "BSCTestnet",
+}
+
+const getNetworkBlockTime = (volumeNetwork: VolumeNetwork) => {
+    switch (volumeNetwork) {
+        case VolumeNetwork.BSCTestnet:
+            return 3.0013135656533794;
+        case VolumeNetwork.BSC:
+            return 3.00163;
+        case VolumeNetwork.EthereumTestnet:
+            return 5.34952;
+        case VolumeNetwork.Ethereum:
+        default:
+            return 13.28567;
+    }
+};
+
+const getNetworkStart = (volumeNetwork: VolumeNetwork) => {
+    switch (volumeNetwork) {
+        case VolumeNetwork.BSCTestnet:
+            return "2020-11-03T00+00";
+        case VolumeNetwork.BSC:
+            return "2021-02-11T00+00";
+        case VolumeNetwork.EthereumTestnet:
             return "2020-04-15T00+00";
-        case RenNetwork.Mainnet:
+        case VolumeNetwork.Ethereum:
         default:
             return "2020-05-27T00+00";
     }
@@ -55,7 +72,7 @@ export const tokenArrayToMap = <T extends { symbol: string }>(
 
 export const getPeriodTimespan = (
     type: string,
-    renNetwork: RenNetworkDetails = renMainnet,
+    volumeNetwork: VolumeNetwork,
 ): number => {
     const minutes = 60; // 60 seconds
     const hours = 60 * minutes;
@@ -79,7 +96,7 @@ export const getPeriodTimespan = (
             // Mar-24-2020 11:22:40 PM UTC
             // return Math.floor(moment().diff("2020-03-24T00+00") / 1000);
             return Math.floor(
-                moment().diff(getNetworkStart(renNetwork)) / 1000,
+                moment().diff(getNetworkStart(volumeNetwork)) / 1000,
             );
         default:
             throw new Error(`Unknown period type ${type}`);
@@ -92,23 +109,25 @@ export interface SeriesData {
 }
 
 export const getVolumes = async (
-    renNetwork: RenNetworkDetails,
+    volumeNetwork: VolumeNetwork,
     client: ApolloClient<unknown>,
     periodType: PeriodType,
     latestSyncedBlock: number,
+    segmentCount = 50,
 ): Promise<SeriesData> => {
     const now = moment().unix();
 
     // TODO: Calculate dynamically or search for date in subgraph.
-    const blockTime = 13; // seconds
+    // const blockTime = 13; // seconds
+    const averageBlockTime = getNetworkBlockTime(volumeNetwork);
 
     // Calculate the steps so that there are 30 segments show on the graph.
     // An extra segment is fetched at the start to calculate the volume of
     // the first segment.
-    const periodSecondsCount = getPeriodTimespan(periodType, renNetwork);
-    const startingBlock = latestSyncedBlock - periodSecondsCount / blockTime;
+    const periodSecondsCount = getPeriodTimespan(periodType, volumeNetwork);
+    const startingBlock =
+        latestSyncedBlock - Math.floor(periodSecondsCount / averageBlockTime);
     // currentBlock - (periodSecondsCount / blockTime);
-    const segmentCount = 50;
     const segmentLength = Math.ceil(
         (latestSyncedBlock - startingBlock) / segmentCount,
     );
@@ -142,7 +161,7 @@ export const getVolumes = async (
             // Extract numerical block number from ID. `rowID` follows the pattern
             // `block_1234`.
             try {
-                const match = rowID.match(/\d+/);
+                const match = /\d+/.exec(rowID);
                 blockNumber = parseInt(match ? match[0] : "0", 10);
             } catch (error) {
                 console.error(error);
@@ -170,9 +189,9 @@ export const getVolumes = async (
     // consecutive segment.
     const series = Array.from(new Array(segmentCount)).map(
         (_, i): Partial<PeriodData> => {
-            // tslint:disable-next-line: no-non-null-assertion
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const first = responseRows.get(i)!;
-            // tslint:disable-next-line: no-non-null-assertion
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const last = responseRows.get(i + 1)!;
 
             //   const isFirstRow = periodType === PeriodType.ALL && i === 0;
@@ -195,9 +214,12 @@ export const getVolumes = async (
                 //     (null as any),
 
                 id: last.id, // "HOUR441028";
-                date:
-                    (now - (latestSyncedBlock - last.blockNumber) * blockTime) *
-                    1000, // 1587700800;,
+                date: Math.floor(
+                    (now -
+                        (latestSyncedBlock - last.blockNumber) *
+                            averageBlockTime) *
+                        1000,
+                ), // 1587700800;,
 
                 volume: tokenArrayToMap(last.volume || first.volume || []),
                 locked: tokenArrayToMap(last.locked || first.locked || []),
@@ -219,10 +241,12 @@ export const getVolumes = async (
         //     (null as any),
 
         id: end ? end.id : "", // "HOUR441028";
-        date:
+        date: Math.floor(
             (now -
-                (latestSyncedBlock - (end ? end.blockNumber : 0)) * blockTime) *
-            1000, // 1587700800;
+                (latestSyncedBlock - (end ? end.blockNumber : 0)) *
+                    averageBlockTime) *
+                1000,
+        ), // 1587700800;
 
         // numberOfDarknodes: getFieldDifference(start, end, "numberOfDarknodes"),
         // numberOfDarknodesLastEpoch: getFieldDifference(
@@ -325,24 +349,59 @@ const normalizeVolumes = (
     if (periodData.volume) {
         periodData.volume.forEach(
             ({ amount, amountInEth, amountInUsd, asset }, symbol) => {
+                const amountBN = new BigNumber(amount || "0");
+                const prices = tokenPrices.get(
+                    symbol as Token,
+                    Map<Currency, number>(),
+                );
+
                 let tokenVolume: BigNumber;
                 if (quoteCurrency === Currency.BTC && asset) {
-                    tokenVolume = new BigNumber(amount || "0")
+                    tokenVolume = amountBN
                         .div(new BigNumber(10).exponentiatedBy(asset.decimals))
                         .times(
                             // Price should be 1 for BTC, variable for other
                             // assets.
-                            tokenPrices
-                                .get(symbol as Token, Map<Currency, number>())
-                                .get(quoteCurrency) || 0,
+                            prices.get(quoteCurrency) || 0,
                         )
                         .decimalPlaces(2);
                 } else if (quoteCurrency === Currency.ETH) {
-                    tokenVolume = new BigNumber(
-                        amountInEth || "0",
-                    ).decimalPlaces(2);
+                    let amountInEthBN = new BigNumber(amountInEth || "0");
+
+                    if (
+                        amountBN.isGreaterThan(0) &&
+                        amountInEthBN.isZero() &&
+                        prices &&
+                        asset
+                    ) {
+                        const ethPrice = prices.get(Currency.ETH);
+                        const shiftedAmount = amountBN.div(
+                            new BigNumber(10).exponentiatedBy(asset.decimals),
+                        );
+                        amountInEthBN = ethPrice
+                            ? shiftedAmount.times(ethPrice)
+                            : amountInEthBN;
+                    }
+
+                    tokenVolume = amountInEthBN.decimalPlaces(2);
                 } else {
-                    tokenVolume = new BigNumber(amountInUsd || "0")
+                    let amountInUsdBN = new BigNumber(amountInUsd || "0");
+                    if (
+                        amountBN.isGreaterThan(0) &&
+                        amountInUsdBN.isZero() &&
+                        prices &&
+                        asset
+                    ) {
+                        const usdPrice = prices.get(Currency.USD);
+                        const shiftedAmount = amountBN.div(
+                            new BigNumber(10).exponentiatedBy(asset.decimals),
+                        );
+                        amountInUsdBN = usdPrice
+                            ? shiftedAmount.times(usdPrice)
+                            : amountInUsdBN;
+                    }
+
+                    tokenVolume = amountInUsdBN
                         .dividedBy(
                             tokenPrices
                                 .get(Token.BTC, Map<Currency, number>())
@@ -363,7 +422,29 @@ const normalizeVolumes = (
 
     if (periodData.locked) {
         periodData.locked.forEach(({ amount, amountInUsd, asset }, symbol) => {
-            const tokenLockedHistoric = new BigNumber(amountInUsd || "0")
+            let amountInUsdBN = new BigNumber(amountInUsd || "0");
+            const amountBN = new BigNumber(amount);
+            const prices = tokenPrices.get(
+                symbol as Token,
+                Map<Currency, number>(),
+            );
+
+            if (
+                amountBN.isGreaterThan(0) &&
+                amountInUsdBN.isZero() &&
+                prices &&
+                asset
+            ) {
+                const usdPrice = prices.get(Currency.USD);
+                const shiftedAmount = amountBN.div(
+                    new BigNumber(10).exponentiatedBy(asset.decimals),
+                );
+                amountInUsdBN = usdPrice
+                    ? shiftedAmount.times(usdPrice)
+                    : amountInUsdBN;
+            }
+
+            const tokenLockedHistoric = amountInUsdBN
                 .dividedBy(
                     tokenPrices
                         .get(Token.BTC, Map<Currency, number>())

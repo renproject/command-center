@@ -1,4 +1,4 @@
-// tslint:disable: no-any
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import * as Sentry from "@sentry/browser";
 
@@ -47,17 +47,17 @@ const isNetworkError = (error: Error | any): boolean => {
     const message: string = String((error || {}).message || error);
 
     if (
-        message.match(/Network ?Error/i) ||
-        message.match(/Failed to fetch/i) ||
-        message.match(/Network request failed/i) ||
-        message.match(/Wrong response id/i) ||
-        message.match(/Request failed or timed out/i) ||
-        message.match(
-            /Returned values aren't valid, did it run Out of Gas\?/i,
+        /Network ?Error/i.exec(message) ||
+        /Failed to fetch/i.exec(message) ||
+        /Network request failed/i.exec(message) ||
+        /Wrong response id/i.exec(message) ||
+        /Request failed or timed out/i.exec(message) ||
+        /Returned values aren't valid, did it run Out of Gas\?/i.exec(
+            message,
         ) ||
-        message.match(/Invalid JSON RPC response/i) ||
-        message.match(/timeout of 0ms exceeded/i) ||
-        message.match(/header not found/i)
+        /Invalid JSON RPC response/i.exec(message) ||
+        /timeout of 0ms exceeded/i.exec(message) ||
+        /header not found/i.exec(message)
     ) {
         return true;
     }
@@ -78,10 +78,11 @@ const rawError = (errorObject: Error) => {
             if (cache.indexOf(value) !== -1) {
                 // Duplicate reference found
                 try {
-                    // If this value does not reference a parent it can be deduped
+                    // If this value does not reference a parent it can be
+                    // de-duped
                     return JSON.parse(JSON.stringify(value));
                 } catch (error) {
-                    // discard key if value cannot be deduped
+                    // discard key if value cannot be de-duped
                     return;
                 }
             }
@@ -135,9 +136,9 @@ const catchException = <X extends Details>(error: any, details: X) => {
                     error = `[${DEFAULT_REN_NETWORK}-${NODE_ENV}] ${error}`;
                 } else {
                     try {
-                        error.message = `[${DEFAULT_REN_NETWORK}-${NODE_ENV}] ${
-                            error.message || error
-                        }`;
+                        error.message = `[${DEFAULT_REN_NETWORK}-${NODE_ENV}] ${String(
+                            error.message || error,
+                        )}`;
                     } catch {
                         // Ignore: Unable to overwrite message (may be read-only)
                     }
@@ -208,7 +209,6 @@ export const noCapture = (error: Error): Error => {
 //     public _noCapture_ = true;
 // }
 
-// tslint:disable-next-line: no-any
 export const extractError = (error: any): string => {
     if (typeof error === "object") {
         if (error.response) {
@@ -228,7 +228,7 @@ export const extractError = (error: any): string => {
         }
         try {
             return JSON.stringify(error);
-        } catch (error) {
+        } catch (_error) {
             // Ignore JSON error
         }
     }

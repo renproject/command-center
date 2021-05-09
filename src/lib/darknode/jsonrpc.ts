@@ -4,7 +4,7 @@ import Axios from "axios";
 import {
     retryNTimes,
     RPCResponse,
-} from "../../controllers/statsPages/renvmStatsPage/renvmContainer";
+} from "../../controllers/pages/renvmStatsPage/renvmContainer";
 import { DEFAULT_REQUEST_TIMEOUT } from "../react/environmentVariables";
 
 interface ResponseQueryStat {

@@ -236,6 +236,10 @@
         &.LUNA {
             background: #578de9;
         }
+
+        &.DOGE {
+            background: #c2a633;
+        }
     }
 
     .fees-block--table--token {
@@ -312,6 +316,7 @@
 .epoch--block--charts {
     @extend .resources--block--charts;
     margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 .epoch-chart {
@@ -362,6 +367,8 @@
 
         width: 100%;
         overflow: scroll;
+        margin-bottom: 5px;
+        padding: 0 22px;
     }
 
     .darknode-info {
@@ -421,10 +428,6 @@
             margin-right: 10px;
         }
     }
-}
-
-.network-block--info {
-    padding: 0 22px;
 }
 
 .gas-block .block--body {
