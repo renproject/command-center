@@ -108,7 +108,7 @@ export const Header = () => {
                 <div className="header--news">
                     <NewsBanner />
                 </div>
-                <div className="header--news">
+                <div className="header--rips">
                     <LiveRIPs />
                 </div>
             </>
