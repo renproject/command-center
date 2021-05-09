@@ -9,8 +9,6 @@ import { classNames } from "../../../lib/react/className";
 import { ExternalLink } from "../../../views/ExternalLink";
 
 export const LiveRIPs: React.FC = () => {
-    const freshness = 3; // days
-    const take = 4;
     const [RIPs, setDiscourseRIPs] = useState<RIP[]>([]);
 
 
@@ -20,6 +18,7 @@ export const LiveRIPs: React.FC = () => {
                 console.log(rips)
                 rips = rips.filter(function(element) {
                 return element["content"].includes('Name:');
+                // return element["content"].includes('Status: [LIVE]');
                 });
                 console.log(rips)
                 setDiscourseRIPs(rips);

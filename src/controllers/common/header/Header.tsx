@@ -108,7 +108,7 @@ export const Header = () => {
                 <div className="header--news">
                     <NewsBanner />
                 </div>
-                <div className="header--news">
+                <div className="header--rips">
                     <LiveRIPs />
                 </div>
             </>
@@ -148,7 +148,7 @@ export const Header = () => {
                     activePath={location.pathname}
                 />
 
-                {NODE_ENV === "development" ? (
+                {NODE_ENV !== "development" ? (
                     <MenuItem
                         path="/catalog"
                         title="Catalog"
