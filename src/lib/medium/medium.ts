@@ -18,5 +18,6 @@ export const fetchMediumPosts = async (
 ): Promise<MediumPost[]> => {
     const feedurl = `${MEDIUM_FEED_URL}/${mediumName}`;
     const resp = await axios.get(feedurl);
+    console.log(resp);
     return resp.data.response as MediumPost[];
 };

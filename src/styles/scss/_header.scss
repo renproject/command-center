@@ -416,6 +416,40 @@
     }
 }
 
+.live {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    text-decoration: none;
+
+    @media (max-width: $max-lg) {
+        display: none;
+    }
+
+    .live-blue {
+        margin-left: 20px;
+        color: $primary;
+        font-size: 12px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+
+    .is-live:before {
+        content: "RIP LIVE FOR VOTING";
+        display: inline-block;
+        border-radius: 4px;
+        padding: 4px 10px;
+        background-color: #fff;
+        color: $blue-dark;
+        text-transform: uppercase;
+        font-weight: 600;
+        margin-right: 15px;
+        font-size: 12px;
+    }
+}
+
 .header--network {
     padding: 4px;
     margin: 0 20px;
