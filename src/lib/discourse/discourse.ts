@@ -1,6 +1,6 @@
 import Parser from 'rss-parser';
 
-const DISCOURSE_FEED_URL = "https://cors-anywhere.herokuapp.com/https://forum.renproject.io/c/rip/10.rss";
+const DISCOURSE_FEED_URL = "https://cors.bridged.cc/https://forum.renproject.io/c/rip/10.rss";
 
 export interface RIP {
     categories: string[];
