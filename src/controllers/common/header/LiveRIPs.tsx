@@ -14,11 +14,9 @@ export const LiveRIPs: React.FC = () => {
     useEffect(() => {
         fetchDiscourseRIPs()
             .then((rips) => {
-                console.log(rips)
                 rips = rips.filter(function(element) {
                 return element["content"].includes('Status: LIVE');
                 });
-                console.log(rips)
                 setDiscourseRIPs(rips);
 
             })
