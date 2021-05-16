@@ -25,7 +25,6 @@ import { StatusDot, StatusDotColor } from "../../../views/StatusDot";
 import { AccountDropdown } from "./AccountDropdown";
 import { MoreDropdown } from "./MoreDropdown";
 import { NewsBanner } from "./NewsBanner";
-import { LiveRIPs } from "./LiveRIPs";
 
 const getCurrencyOptions = () => {
     const options = new Map<string, React.ReactNode>();
@@ -107,9 +106,6 @@ export const Header = () => {
             <>
                 <div className="header--news">
                     <NewsBanner />
-                </div>
-                <div className="header--rips">
-                    <LiveRIPs />
                 </div>
             </>
             ) : (
