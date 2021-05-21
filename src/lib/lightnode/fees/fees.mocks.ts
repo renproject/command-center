@@ -9,6 +9,7 @@ export const partialFees = {
       }],
 }
 
+// fees expected (previously present) in store
 export const allFees = {
   'fees': [{
     '__typename': 'AssetAmount',
