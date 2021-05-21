@@ -12,6 +12,7 @@
         "lint:all": "$npm_execpath run --silent lint && $npm_execpath run --silent lint:extra",
         "test": "react-scripts test",
         "mocha": "ts-mocha --sort --exit --timeout 180000 --paths -p ./tsconfig.mocha.json ./**/*.mocha.ts",
+        "mocha-watch": "yarn mocha --watch --watch-files src",
         "start": "./.env || true; react-scripts start",
         "build": "REACT_APP_SOURCE_VERSION=$SOURCE_VERSION react-scripts --max_old_space_size=4096 build",
         "eject": "react-scripts eject"

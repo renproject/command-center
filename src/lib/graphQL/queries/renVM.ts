@@ -218,6 +218,7 @@ export const queryRenVM = async (
         deregistrationInterval: new BigNumber(
             response.data.renVM.deregistrationInterval,
         ),
+        // TODO: fees comes from here
         fees: tokenArrayToMap(response.data.renVM.fees).map(parseTokenAmount),
         cycleRewards: tokenArrayToMap(response.data.renVM.cycleRewards).map(
             parseTokenAmount,
