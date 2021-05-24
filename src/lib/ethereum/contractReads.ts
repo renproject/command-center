@@ -516,7 +516,7 @@ export const fetchDarknodeDetails = async (
         registrationStatus,
     );
 
-    // Get earned fees
+    // Get earned fees TODO: fees darknode fees are here
     let feesEarned = !useInfura
         ? getBalances(darknode)
         : await getBalancesWithInfura(

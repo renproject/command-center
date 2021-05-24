@@ -50,10 +50,8 @@ export const getDarknodeParam = (params: {
  */
 export const DarknodePage = () => {
     const { address } = Web3Container.useContainer();
-    const {
-        selectedDarknodeID,
-        setSelectedDarknodeID,
-    } = UIContainer.useContainer();
+    const { selectedDarknodeID, setSelectedDarknodeID } =
+        UIContainer.useContainer();
     const {
         darknodeDetails,
         darknodeNames,
@@ -149,7 +147,10 @@ export const DarknodePage = () => {
     if (!darknodeOrURL) {
         return <NotFound />;
     }
-
+    console.log("details", safe(details));
+    console.log("cycleStatus", safe(safe(details).cycleStatus));
+    //TODO: fees here are fees visible under "withdrawable" - the exact amounts
+    console.log("feesEarned", safe(safe(details).feesEarned));
     return (
         <ErrorBoundary>
             <DarknodeView
@@ -163,4 +164,14 @@ export const DarknodePage = () => {
             />
         </ErrorBoundary>
     );
+};
+
+export const safe = (obj: any) => {
+    if (!obj) {
+        return {};
+    }
+    if (obj && obj.toObject) {
+        return obj.toObject();
+    }
+    return obj;
 };

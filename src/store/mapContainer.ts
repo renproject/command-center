@@ -73,8 +73,8 @@ export const getLightnode = (
             // TODO: fees - not sure about following ones;
             // case "chaosnet":
             //     return "https://lightnode-chaosnet-new.herokuapp.com";
-            // case "devnet":
-            //     return "https://lightnode-devnet.herokuapp.com";
+            case "devnet":
+                return "https://lightnode-devnet.herokuapp.com";
             case "localnet":
                 return "";
         }

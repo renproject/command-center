@@ -38,15 +38,10 @@ export const DarknodeStatsPage = () => {
         fees,
     } = renVM || {};
     console.log(fees);
-    const {
-        pendingRewards,
-        quoteCurrency,
-        pendingTotalInUsd,
-    } = NetworkContainer.useContainer();
-    const {
-        latestCLIVersion,
-        latestCLIVersionDaysAgo,
-    } = GithubAPIContainer.useContainer();
+    const { pendingRewards, quoteCurrency, pendingTotalInUsd } =
+        NetworkContainer.useContainer();
+    const { latestCLIVersion, latestCLIVersionDaysAgo } =
+        GithubAPIContainer.useContainer();
 
     const { renNetwork } = Web3Container.useContainer();
     const { darknodes, fetchDarknodes } = MapContainer.useContainer();
@@ -68,6 +63,8 @@ export const DarknodeStatsPage = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [renNetwork && renNetwork.name]);
 
+    console.log(currentCycle, previousCycle); // TODO: fees 0x hashes of something
+    console.log("pendingRewards", pendingRewards.toJSON());
     const current =
         (isDefined(currentCycle) &&
             pendingRewards.get(currentCycle, undefined)) ||
@@ -116,6 +113,8 @@ export const DarknodeStatsPage = () => {
                 : undefined,
         [current, numberOfDarknodes],
     );
+
+    console.log("previous", previous?.toJSON());
 
     const previousNetwork = useMemo(
         () =>

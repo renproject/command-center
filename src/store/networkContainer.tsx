@@ -1,3 +1,4 @@
+import { RenNetworks } from "@renproject/interfaces";
 import { Currency, CurrencyIcon, Record } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import { List, Map, OrderedMap, OrderedSet } from "immutable";
@@ -8,10 +9,18 @@ import { PromiEvent } from "web3-core";
 import { MultiStepPopup } from "../controllers/common/popups/MultiStepPopup";
 import {
     ConvertCurrency,
+    updatePrice,
     updatePrices,
 } from "../controllers/common/TokenBalance";
+import { safe } from "../controllers/pages/darknodePage/DarknodePage";
 import { retryNTimes } from "../controllers/pages/renvmStatsPage/renvmContainer";
-import { NodeStatistics } from "../lib/darknode/jsonrpc";
+import { NodeStatistics, queryBlockState } from "../lib/darknode/jsonrpc";
+import {
+    getTokenRewardsForEpoch,
+    getFeesForAsset,
+    toEmptyTokenAmount,
+    normalizeTokenSymbol,
+} from "../lib/darknode/utils/feesUtils";
 import { getDarknodePayment } from "../lib/ethereum/contract";
 import {
     DarknodeFeeStatus,
@@ -78,11 +87,8 @@ export type WaitForTX = <T>(
 const useNetworkContainer = () => {
     const { web3, renNetwork, address, notify } = Web3Container.useContainer();
     const { setPopup, clearPopup } = PopupContainer.useContainer();
-    const {
-        renVM,
-        fetchRenVM,
-        subgraphOutOfSync,
-    } = GraphContainer.useContainer();
+    const { renVM, fetchRenVM, subgraphOutOfSync } =
+        GraphContainer.useContainer();
     const { ethereumSubgraph } = GraphClientContainer.useContainer();
 
     const [tokenPrices, setTokenPrices] = useState(null as TokenPrices | null);
@@ -122,15 +128,13 @@ const useNetworkContainer = () => {
         Map<string, string>(),
         (s) => Map<string, string>(JSON.parse(s as string)),
     );
-    const [
-        darknodeRegisteringList,
-        setDarknodeRegisteringList,
-    ] = useStorageState(
-        localStorage,
-        "darknodeRegisteringList",
-        Map<string, boolean>(),
-        (s) => Map<string, boolean>(JSON.parse(s as string)),
-    );
+    const [darknodeRegisteringList, setDarknodeRegisteringList] =
+        useStorageState(
+            localStorage,
+            "darknodeRegisteringList",
+            Map<string, boolean>(),
+            (s) => Map<string, boolean>(JSON.parse(s as string)),
+        );
     // Map from operator-address to list of darknodes.
     const [darknodeList, setDarknodeList] = useStorageState(
         localStorage,
@@ -150,10 +154,7 @@ const useNetworkContainer = () => {
                 OrderedSet<string>(x),
             ),
     );
-    const [
-        withdrawAddresses,
-        setWithdrawAddresses,
-    ] = useStorageState(
+    const [withdrawAddresses, setWithdrawAddresses] = useStorageState(
         localStorage,
         "withdrawAddresses",
         Map<Token, List<string>>(),
@@ -201,9 +202,8 @@ const useNetworkContainer = () => {
             let operatorHiddenDarknodes =
                 hiddenDarknodes.get(operator) || OrderedSet<string>();
 
-            operatorHiddenDarknodes = operatorHiddenDarknodes.remove(
-                darknodeID,
-            );
+            operatorHiddenDarknodes =
+                operatorHiddenDarknodes.remove(darknodeID);
 
             setHiddenDarknodes((latestHiddenDarknodes) =>
                 (latestHiddenDarknodes || Map()).set(
@@ -327,6 +327,7 @@ const useNetworkContainer = () => {
         });
 
     /**
+     * TODO: fees pending rewards/fees are here
      * Retrieves information about the pending rewards in the Darknode Payment
      * contract.
      *
@@ -339,10 +340,11 @@ const useNetworkContainer = () => {
      * }`
      */
     const fetchCycleAndPendingRewards = async (latestRenVM: RenVM) => {
-        let newPendingRewards = OrderedMap<
-            string /* cycle */,
-            OrderedMap<string, TokenAmount | null>
-        >();
+        let newPendingRewards =
+            OrderedMap<
+                string /* cycle */,
+                OrderedMap<string, TokenAmount | null>
+            >();
 
         let previous = OrderedMap<string, TokenAmount | null>();
         if (isDefined(latestRenVM)) {
@@ -357,30 +359,72 @@ const useNetworkContainer = () => {
 
         let current: OrderedMap<string, TokenAmount | null>;
 
+        const assets = tokenArrayToMap(latestRenVM.assets);
+
+        console.log("assets", assets.toJSON());
+        const bs = await queryBlockState(renNetwork);
+
         if (!subgraphOutOfSync) {
+            // TODO: what does it mean?
+            console.log("subgraphOutOfSync");
             current = OrderedMap<string, TokenAmount | null>();
             if (isDefined(latestRenVM)) {
+                console.log("latestRenVM defined");
                 current = latestRenVM.cycleRewards
-                    .filter((asset) => asset.asset !== null)
-                    .map((asset) => ({
-                        ...asset,
-                        amount: asset.amount
-                            .dividedBy(latestRenVM.numberOfDarknodes)
-                            .decimalPlaces(0),
-                        amountInUsd: asset.amountInUsd
-                            .dividedBy(latestRenVM.numberOfDarknodes)
-                            .decimalPlaces(0),
-                        amountInEth: asset.amountInEth
-                            .dividedBy(latestRenVM.numberOfDarknodes)
-                            .decimalPlaces(0),
-                    }))
+                    .filter((tokenAmount) => tokenAmount.asset !== null)
+                    .map((tokenAmount) => {
+                        const nativeSymbol = normalizeTokenSymbol(
+                            tokenAmount.symbol,
+                        );
+                        const renVmFeeAmount = getTokenRewardsForEpoch(
+                            nativeSymbol,
+                            "current",
+                            bs,
+                        );
+                        const fullRenVMFee = toEmptyTokenAmount(
+                            renVmFeeAmount,
+                            nativeSymbol,
+                            tokenAmount.asset?.decimals || 8,
+                        );
+                        const renVMFee = updatePrice(
+                            fullRenVMFee,
+                            nativeSymbol as Token,
+                            tokenPrices,
+                        );
+                        console.log(
+                            "rvm",
+                            tokenAmount.symbol,
+                            renVMFee,
+                            tokenAmount,
+                        );
+                        return {
+                            ...tokenAmount,
+                            amount: tokenAmount.amount
+                                .plus(renVMFee.amount) // TODO consider dividing by epoch.numNodes
+                                .dividedBy(latestRenVM.numberOfDarknodes)
+                                .decimalPlaces(0),
+                            amountInUsd: tokenAmount.amountInUsd
+                                .plus(renVMFee.amountInUsd)
+                                .dividedBy(latestRenVM.numberOfDarknodes)
+                                .decimalPlaces(0),
+                            amountInEth: tokenAmount.amountInEth
+                                .plus(renVMFee.amountInEth)
+                                .dividedBy(latestRenVM.numberOfDarknodes)
+                                .decimalPlaces(0),
+                        };
+                    })
                     .reduce(
                         (map, asset, symbol) => map.set(symbol, asset),
                         previous,
                     );
             }
         } else {
-            const assets = tokenArrayToMap(latestRenVM.assets);
+            console.log("subgraphsync");
+            // const assets = tokenArrayToMap(latestRenVM.assets);
+            // console.log("assets", assets.toJSON());
+            //
+            // const bs = await queryBlockState(renNetwork);
+            // // const { previousEpoch } = getFeesForAsset();
 
             current = await safePromiseAllMap(
                 assets
@@ -406,10 +450,18 @@ const useNetworkContainer = () => {
                             if (currentCycleRewardPool === null) {
                                 return null;
                             }
+                            const renVMAmount = getTokenRewardsForEpoch(
+                                tokenDetails.symbol,
+                                "current",
+                                bs,
+                            );
+
+                            console.log("amount", renVMAmount);
 
                             const amount = new BigNumber(
                                 currentCycleRewardPool.toString(),
                             )
+                                .plus(renVMAmount)
                                 .decimalPlaces(0)
                                 .div(latestRenVM.numberOfDarknodes)
                                 .decimalPlaces(0);
@@ -462,7 +514,7 @@ const useNetworkContainer = () => {
         }
 
         current = updatePrices(current, tokenPrices);
-
+        console.log("current", current?.toJSON ? current.toJSON() : current);
         // let previous = await OrderedMap<string, TokenAmount | null>();
         // previous = updatePrices(previous, tokenPrices);
 
@@ -494,10 +546,8 @@ const useNetworkContainer = () => {
                       new BigNumber(0),
                   )
                 : null;
-            newPendingTotalInUsd = OrderedMap<
-                string /* cycle */,
-                BigNumber | null
-            >();
+            newPendingTotalInUsd =
+                OrderedMap<string /* cycle */, BigNumber | null>();
             if (isDefined(latestRenVM)) {
                 newPendingTotalInUsd = newPendingTotalInUsd.set(
                     latestRenVM.previousCycle,
@@ -520,18 +570,16 @@ const useNetworkContainer = () => {
         if (!renVM) {
             return;
         }
-        const fetchCycleAndPendingRewardsPromise = fetchCycleAndPendingRewards(
-            renVM,
-        );
 
-        const {
-            newPendingRewards,
-            newPendingTotalInUsd,
-        } = await fetchCycleAndPendingRewardsPromise;
+        const { newPendingRewards, newPendingTotalInUsd } =
+            await fetchCycleAndPendingRewards(renVM);
+
+        console.log(newPendingRewards, newPendingTotalInUsd);
 
         if (isDefined(newPendingTotalInUsd)) {
             setPendingTotalInUsd(newPendingTotalInUsd);
         }
+        console.log("newPendingRewards", newPendingRewards);
         setPendingRewards(newPendingRewards);
     };
 

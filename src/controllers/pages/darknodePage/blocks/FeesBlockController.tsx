@@ -82,16 +82,13 @@ export const FeesBlockController: React.FC<Props> = ({
     const { renVM, subgraphOutOfSync } = GraphContainer.useContainer();
     const { setPopup, clearPopup } = PopupContainer.useContainer();
     const { currentCycle, previousCycle, timeSinceLastEpoch } = renVM || {};
-    const {
-        claimWarningShown,
-        setClaimWarningShown,
-    } = UIContainer.useContainer();
+    const { claimWarningShown, setClaimWarningShown } =
+        UIContainer.useContainer();
 
     const [disableClaim, setDisableClaim] = useState(false);
 
-    const [currentCycleStatus, setCurrentCycleStatus] = useState<string | null>(
-        null,
-    );
+    const [currentCycleStatus, setCurrentCycleStatus] =
+        useState<string | null>(null);
 
     const cycleStatus: string | null = useMemo(
         () => darknodeDetails && darknodeDetails.cycleStatus.keySeq().first(),
@@ -179,13 +176,12 @@ export const FeesBlockController: React.FC<Props> = ({
         );
     }
 
+    //TODO: fees here are being splitted to withdrawable / pending
     const withdrawable = darknodeDetails ? darknodeDetails.feesEarned : null;
     const pending = summedPendingRewards;
 
-    const {
-        withdrawReward,
-        updateDarknodeDetails,
-    } = NetworkContainer.useContainer();
+    const { withdrawReward, updateDarknodeDetails } =
+        NetworkContainer.useContainer();
 
     const withdrawCallback = useCallback(
         async (tokenSymbol: string, tokenAddress: string) => {
