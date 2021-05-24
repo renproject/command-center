@@ -7,11 +7,11 @@ import { createContainer } from "unstated-next";
 import { PromiEvent } from "web3-core";
 
 import { MultiStepPopup } from "../controllers/common/popups/MultiStepPopup";
+import { ConvertCurrency } from "../controllers/common/TokenBalance";
 import {
-    ConvertCurrency,
     updatePrice,
     updatePrices,
-} from "../controllers/common/TokenBalance";
+} from "../controllers/common/tokenBalanceUtils";
 import { safe } from "../controllers/pages/darknodePage/DarknodePage";
 import { retryNTimes } from "../controllers/pages/renvmStatsPage/renvmContainer";
 import { NodeStatistics, queryBlockState } from "../lib/darknode/jsonrpc";
@@ -19,7 +19,8 @@ import {
     getTokenRewardsForEpoch,
     getFeesForAsset,
     toEmptyTokenAmount,
-    normalizeTokenSymbol,
+    toNativeTokenSymbol,
+    getTokenFeeAmounts,
 } from "../lib/darknode/utils/feesUtils";
 import { getDarknodePayment } from "../lib/ethereum/contract";
 import {
@@ -346,14 +347,53 @@ const useNetworkContainer = () => {
                 OrderedMap<string, TokenAmount | null>
             >();
 
+        const blockState = await queryBlockState(renNetwork);
+
         let previous = OrderedMap<string, TokenAmount | null>();
         if (isDefined(latestRenVM)) {
+            console.log("renVMDefined", previous.toJSON());
             previous = latestRenVM.currentEpoch.rewardShares
                 .filter((asset) => asset.asset !== null)
                 .reduce(
                     (map, asset, symbol) => map.set(symbol, asset),
                     previous,
-                );
+                )
+                .map((tokenAmount) => {
+                    console.log(tokenAmount);
+                    if (!tokenAmount) {
+                        return tokenAmount;
+                    }
+                    const nativeSymbol = toNativeTokenSymbol(
+                        tokenAmount.symbol,
+                    );
+                    const renVmFeeAmount = getTokenRewardsForEpoch(
+                        nativeSymbol,
+                        "previous",
+                        blockState,
+                    );
+                    const renVMFee = getTokenFeeAmounts(
+                        renVmFeeAmount,
+                        nativeSymbol as Token,
+                        tokenAmount.asset?.decimals || 8,
+                        tokenPrices,
+                    );
+                    console.log(
+                        tokenAmount.symbol,
+                        renVmFeeAmount.toFixed(),
+                        renVMFee.amount.toFixed(),
+                    );
+                    console.log("before", tokenAmount);
+                    const after = updatePrice(
+                        {
+                            ...tokenAmount,
+                            amount: tokenAmount.amount.plus(renVMFee.amount),
+                        },
+                        tokenAmount.symbol as Token,
+                        tokenPrices,
+                    );
+                    console.log("after", after);
+                    return tokenAmount;
+                });
         }
         previous = updatePrices(previous, tokenPrices);
 
@@ -362,7 +402,6 @@ const useNetworkContainer = () => {
         const assets = tokenArrayToMap(latestRenVM.assets);
 
         console.log("assets", assets.toJSON());
-        const bs = await queryBlockState(renNetwork);
 
         if (!subgraphOutOfSync) {
             // TODO: what does it mean?
@@ -373,22 +412,18 @@ const useNetworkContainer = () => {
                 current = latestRenVM.cycleRewards
                     .filter((tokenAmount) => tokenAmount.asset !== null)
                     .map((tokenAmount) => {
-                        const nativeSymbol = normalizeTokenSymbol(
+                        const nativeSymbol = toNativeTokenSymbol(
                             tokenAmount.symbol,
                         );
                         const renVmFeeAmount = getTokenRewardsForEpoch(
                             nativeSymbol,
                             "current",
-                            bs,
+                            blockState,
                         );
-                        const fullRenVMFee = toEmptyTokenAmount(
+                        const renVMFee = getTokenFeeAmounts(
                             renVmFeeAmount,
-                            nativeSymbol,
-                            tokenAmount.asset?.decimals || 8,
-                        );
-                        const renVMFee = updatePrice(
-                            fullRenVMFee,
                             nativeSymbol as Token,
+                            tokenAmount.asset?.decimals || 8,
                             tokenPrices,
                         );
                         console.log(
@@ -450,18 +485,26 @@ const useNetworkContainer = () => {
                             if (currentCycleRewardPool === null) {
                                 return null;
                             }
-                            const renVMAmount = getTokenRewardsForEpoch(
-                                tokenDetails.symbol,
-                                "current",
-                                bs,
-                            );
 
-                            console.log("amount", renVMAmount);
+                            const nativeSymbol = toNativeTokenSymbol(
+                                tokenDetails.symbol,
+                            );
+                            const renVmFeeAmount = getTokenRewardsForEpoch(
+                                nativeSymbol,
+                                "current",
+                                blockState,
+                            );
+                            const renVMFee = getTokenFeeAmounts(
+                                renVmFeeAmount,
+                                nativeSymbol as Token,
+                                tokenDetails.decimals,
+                                tokenPrices,
+                            );
 
                             const amount = new BigNumber(
                                 currentCycleRewardPool.toString(),
                             )
-                                .plus(renVMAmount)
+                                .plus(renVMFee.amount)
                                 .decimalPlaces(0)
                                 .div(latestRenVM.numberOfDarknodes)
                                 .decimalPlaces(0);

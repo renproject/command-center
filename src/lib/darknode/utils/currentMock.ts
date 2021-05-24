@@ -1,1 +1,1 @@
-export { queryBlockStateResponse as queryBlockStateResponseMock } from "../../lightnode/fees/fees.bs.devnet.mock";
+export { queryBlockStateResponse as queryBlockStateResponseMock } from "./mocks/fees.bs.devnet.mock";
