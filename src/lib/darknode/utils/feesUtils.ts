@@ -59,7 +59,7 @@ export const getFeesForAsset = (
 
 export const getTokenRewardsForEpoch = (
     symbol: string,
-    epoch: "current" | "previous",
+    epoch: "current" | "previous" | number,
     response: QueryBlockStateResponse,
     perNode = false,
 ) => {
@@ -81,6 +81,12 @@ export const getTokenRewardsForEpoch = (
             return new BigNumber(amount).div(perNode ? numNodes : 1);
         }
         return new BigNumber(0);
+    }
+
+    const epochEntry = epochs.find((entry) => Number(entry.epoch) === epoch);
+    if (epochEntry) {
+        const { amount, numNodes } = epochEntry;
+        return new BigNumber(amount).div(perNode ? numNodes : 1);
     }
     return new BigNumber(0);
 };
@@ -136,7 +142,7 @@ export const getNodeEnteredAt = (
     return Number(nodeSystemData.enteredAt);
 };
 
-export const getLastEpochClaimed = (
+export const getNodeLastEpochClaimed = (
     renVmNodeId: string,
     symbol: string,
     response: QueryBlockStateResponse,
@@ -152,4 +158,60 @@ export const getLastEpochClaimed = (
         return null;
     }
     return Number(nodeData.lastEpochClaimed) || null;
+};
+
+export const getNodeFirstClaimableEpoch = (
+    renVmNodeId: string,
+    symbol: string,
+    response: QueryBlockStateResponse,
+) => {
+    const lastClaimed = getNodeLastEpochClaimed(renVmNodeId, symbol, response);
+    if (lastClaimed !== null) {
+        return lastClaimed + 1;
+    }
+    const enteredAt = getNodeEnteredAt(renVmNodeId, response);
+    if (enteredAt !== null) {
+        return enteredAt; //TODO: Jaz is it inclusive?
+    }
+    return null; // TODO: Jaz is it possible?
+};
+
+export const getNodeClaimableFeeForEpoch = (
+    renVmNodeId: string,
+    symbol: string,
+    epoch: number,
+    response: QueryBlockStateResponse,
+) => {
+    const startEpoch = getNodeFirstClaimableEpoch(
+        renVmNodeId,
+        symbol,
+        response,
+    );
+
+    if (startEpoch === null) {
+        return new BigNumber(0);
+    }
+    if (epoch >= startEpoch) {
+        return getTokenRewardsForEpoch(symbol, epoch, response, true);
+    }
+    return new BigNumber(0);
+};
+
+export const getNodeClaimableFees = (
+    renVmNodeId: string,
+    symbol: string,
+    epoch: number | string,
+    response: QueryBlockStateResponse,
+) => {
+    const startEpoch = getNodeFirstClaimableEpoch(
+        renVmNodeId,
+        symbol,
+        response,
+    );
+
+    if (startEpoch === null) {
+        return new BigNumber(0);
+    }
+
+    return new BigNumber(42); // TODO finish
 };

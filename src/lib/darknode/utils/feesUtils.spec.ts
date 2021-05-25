@@ -5,10 +5,12 @@ import { tokenArrayToMap } from "../../graphQL/volumes";
 import { queryBlockStateResponseMock } from "./currentMock";
 import {
     getFeesForAsset,
-    getLastEpochClaimed,
+    getNodeLastEpochClaimed,
     getNodeEnteredAt,
     getTokenFeeAmounts,
     getTokenRewardsForEpoch,
+    getNodeFirstClaimableEpoch,
+    getNodeClaimableFeeForEpoch,
 } from "./feesUtils";
 import { partialFees } from "./mocks/fees.mocks";
 
@@ -45,7 +47,7 @@ describe("fees", () => {
         expect(unify(obj)).to.eql(expected);
     });
 
-    it("maps", () => {
+    test("maps", () => {
         const result = tokenArrayToMap(partialFees.fees)
             .map(parseTokenAmount)
             .toObject();
@@ -77,7 +79,7 @@ describe("fees", () => {
         expect(unify(result)).to.eql(unify(expected));
     });
 
-    it("gets fee amount for asset", () => {
+    test("gets fee amount for asset", () => {
         const result = getFeesForAsset("BTC", queryBlockStateResponseMock);
         const expected = {
             epochs: [
@@ -116,7 +118,7 @@ describe("fees", () => {
         expect(unify(result)).to.eql(expected);
     });
 
-    it("get token rewards for current epoch", () => {
+    test("get token rewards for current epoch", () => {
         const reward = getTokenRewardsForEpoch(
             "BTC",
             "current",
@@ -125,7 +127,7 @@ describe("fees", () => {
         expect(reward.toNumber()).to.equal(50000000);
     });
 
-    it("get token rewards for previous epoch", () => {
+    test("get token rewards for previous epoch", () => {
         const reward = getTokenRewardsForEpoch(
             "BTC",
             "previous",
@@ -134,7 +136,7 @@ describe("fees", () => {
         expect(reward.toNumber()).to.equal(100000000);
     });
 
-    it("get token rewards for epoch per node", () => {
+    test("get token rewards for epoch per node", () => {
         const reward = getTokenRewardsForEpoch(
             "BTC",
             "current",
@@ -144,7 +146,7 @@ describe("fees", () => {
         expect(reward.toNumber()).to.equal(5000000);
     });
 
-    it("get token rewards for current epoch", () => {
+    test("get token rewards for current epoch", () => {
         const reward = getTokenRewardsForEpoch(
             "BTC",
             "current",
@@ -183,7 +185,7 @@ describe("node utils", () => {
     });
 
     test("gets node last epoch claimed", () => {
-        const result = getLastEpochClaimed(
+        const result = getNodeLastEpochClaimed(
             "R22tRItPlzKCZ5xmhDUNIw/CenwAAAAAAAAAAAAAAAA",
             "BTC",
             queryBlockStateResponseMock,
@@ -192,11 +194,68 @@ describe("node utils", () => {
     });
 
     test("gets node last epoch claimed for nonexisting node", () => {
-        const result = getLastEpochClaimed(
+        const result = getNodeLastEpochClaimed(
             "oNig-tMtnRPeOY00OzxAQHmpMS4AAAAAAAAAAAAAAAA",
             "BTC",
             queryBlockStateResponseMock,
         );
         expect(result).to.equal(null);
+    });
+
+    test("gets node first claimable epoch", () => {
+        const result = getNodeFirstClaimableEpoch(
+            "R22tRItPlzKCZ5xmhDUNIw/CenwAAAAAAAAAAAAAAAA",
+            "BTC",
+            queryBlockStateResponseMock,
+        );
+        expect(result).to.equal(3);
+    });
+
+    test("gets node first claimable epoch (previous)", () => {
+        const result = getNodeFirstClaimableEpoch(
+            "UyR7eXjDqVnArP0aCj4qD/A0w3MAAAAAAAAAAAAAAAA",
+            "BTC",
+            queryBlockStateResponseMock,
+        );
+        expect(result).to.equal(2);
+    });
+
+    test("gets node first claimable epoch for nonexistent node", () => {
+        const result = getNodeFirstClaimableEpoch(
+            "oNig-tMtnRPeOY00OzxAQHmpMS4AAAAAAAAAAAAAAAA",
+            "BTC",
+            queryBlockStateResponseMock,
+        );
+        expect(result).to.equal(null);
+    });
+
+    test("get node claimable fee for epoch (no claimable epochs)", () => {
+        const result = getNodeClaimableFeeForEpoch(
+            "R22tRItPlzKCZ5xmhDUNIw/CenwAAAAAAAAAAAAAAAA",
+            "BTC",
+            2,
+            queryBlockStateResponseMock,
+        );
+        expect(result.toNumber()).to.equal(0);
+    });
+
+    test("get node claimable fee for epoch (has claimable epochs)", () => {
+        const result = getNodeClaimableFeeForEpoch(
+            "UyR7eXjDqVnArP0aCj4qD/A0w3MAAAAAAAAAAAAAAAA",
+            "BTC",
+            2,
+            queryBlockStateResponseMock,
+        );
+        expect(result.toNumber()).to.equal(5000000);
+    });
+
+    test("get node claimable fee for epoch (nonexistent node)", () => {
+        const result = getNodeClaimableFeeForEpoch(
+            "oNig-tMtnRPeOY00OzxAQHmpMS4AAAAAAAAAAAAAAAA",
+            "BTC",
+            2,
+            queryBlockStateResponseMock,
+        );
+        expect(result.toNumber()).to.equal(0);
     });
 });
