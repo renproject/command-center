@@ -1095,11 +1095,11 @@ export const queryBlockStateResponse = {
                                 lastEpochClaimed: "2",
                             },
                             {
-                                node: "RVI3TISA7NHPUTQbGPWyZa1KWNQAAAAAAAAAAAAAAAA",
+                                node: "UyR7eXjDqVnArP0aCj4qD/A0w3MAAAAAAAAAAAAAAAA",
                                 lastEpochClaimed: "1",
                             },
                             {
-                                node: "yZtuRNsqOGs1FACy6-QQTuA5BbEAAAAAAAAAAAAAAAA",
+                                node: "R22tRItPlzKCZ5xmhDUNIw/CenwAAAAAAAAAAAAAAAA",
                                 lastEpochClaimed: "2",
                             },
                         ],
@@ -1292,7 +1292,7 @@ export const queryBlockStateResponse = {
                         },
                         {
                             enteredAt: "1",
-                            id: "RVI3TISA7NHPUTQbGPWyZa1KWNQAAAAAAAAAAAAAAAA",
+                            id: "UyR7eXjDqVnArP0aCj4qD/A0w3MAAAAAAAAAAAAAAAA",
                         },
                         {
                             enteredAt: "1",
@@ -1324,7 +1324,7 @@ export const queryBlockStateResponse = {
                         // },
                         {
                             enteredAt: "1",
-                            id: "yZtuRNsqOGs1FACy6-QQTuA5BbEAAAAAAAAAAAAAAAA",
+                            id: "R22tRItPlzKCZ5xmhDUNIw/CenwAAAAAAAAAAAAAAAA",
                         },
                         // {
                         //     enteredAt: "1",

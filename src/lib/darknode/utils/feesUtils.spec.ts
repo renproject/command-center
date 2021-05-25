@@ -101,11 +101,11 @@ describe("fees", () => {
                     lastEpochClaimed: "2",
                 },
                 {
-                    node: "RVI3TISA7NHPUTQbGPWyZa1KWNQAAAAAAAAAAAAAAAA",
+                    node: "UyR7eXjDqVnArP0aCj4qD/A0w3MAAAAAAAAAAAAAAAA",
                     lastEpochClaimed: "1",
                 },
                 {
-                    node: "yZtuRNsqOGs1FACy6-QQTuA5BbEAAAAAAAAAAAAAAAA",
+                    node: "R22tRItPlzKCZ5xmhDUNIw/CenwAAAAAAAAAAAAAAAA",
                     lastEpochClaimed: "2",
                 },
             ],
