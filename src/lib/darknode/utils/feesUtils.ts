@@ -2,7 +2,6 @@ import BigNumber from "bignumber.js";
 import { updatePrice } from "../../../controllers/common/tokenBalanceUtils";
 import { Token, TokenPrices } from "../../ethereum/tokens";
 import { TokenAmount } from "../../graphQL/queries/queries";
-import { darknodeIDBase58ToRenVmID } from "../darknodeID";
 import { queryBlockStateResponseMock } from "./currentMock";
 
 export type QueryBlockStateResponse = typeof queryBlockStateResponseMock;
@@ -32,30 +31,17 @@ export const getFeesForAsset = (
     return data.fees as FeeData;
 };
 
-// export const getTokenFeeForEpoch = (
-//   symbol: string,
-//   epoch: "current" | "previous",
-//   response: QueryBlockStateResponse,
-// ) => {
-//     const data = getFeesForAsset(symbol, response);
-//     if (data === null) {
-//         return new BigNumber(0);
-//     }
-//     const { epochs } = data;
-//     if (epoch === "current") {
-//         if (epochs.length) {
-//             return new BigNumber(epochs[epochs.length - 1].amount);
-//         }
-//         return new BigNumber(0);
-//     }
-//     if (epoch === "previous") {
-//         if (epochs.length > 1) {
-//             return new BigNumber(epochs[epochs.length - 2].amount);
-//         }
-//         return new BigNumber(0);
-//     }
-//     return new BigNumber(0);
-// };
+export const getLastEpochId = (
+    symbol: string,
+    response: QueryBlockStateResponse,
+) => {
+    const fees = getFeesForAsset(symbol, response);
+    if (!fees || fees.epochs.length === 0) {
+        return null;
+    }
+    const { epochs } = fees;
+    return Number(epochs[epochs.length - 1].epoch);
+};
 
 export const getTokenRewardsForEpoch = (
     symbol: string,
@@ -197,10 +183,9 @@ export const getNodeClaimableFeeForEpoch = (
     return new BigNumber(0);
 };
 
-export const getNodeClaimableFees = (
+export const getNodeActualFees = (
     renVmNodeId: string,
     symbol: string,
-    epoch: number | string,
     response: QueryBlockStateResponse,
 ) => {
     const startEpoch = getNodeFirstClaimableEpoch(
@@ -208,10 +193,15 @@ export const getNodeClaimableFees = (
         symbol,
         response,
     );
-
     if (startEpoch === null) {
         return new BigNumber(0);
     }
+    const lastClaimableEpoch = 3; // TODO: make method for it
+    let claimable = new BigNumber(0);
+    for (let epoch = startEpoch; epoch <= lastClaimableEpoch; epoch++) {
+        const fee = getTokenRewardsForEpoch(symbol, epoch, response, true);
+        claimable = claimable.plus(fee);
+    }
 
-    return new BigNumber(42); // TODO finish
+    return claimable;
 };

@@ -11,6 +11,7 @@ import {
     getTokenRewardsForEpoch,
     getNodeFirstClaimableEpoch,
     getNodeClaimableFeeForEpoch,
+    getLastEpochId,
 } from "./feesUtils";
 import { partialFees } from "./mocks/fees.mocks";
 
@@ -167,7 +168,7 @@ describe("fees", () => {
     });
 });
 
-describe("node utils", () => {
+describe("node basic utils", () => {
     test("gets node entered at", () => {
         const result = getNodeEnteredAt(
             "R22tRItPlzKCZ5xmhDUNIw/CenwAAAAAAAAAAAAAAAA",
@@ -202,6 +203,18 @@ describe("node utils", () => {
         expect(result).to.equal(null);
     });
 
+    test("gets last epoch id", () => {
+        const result = getLastEpochId("BTC", queryBlockStateResponseMock);
+        expect(result).to.equal(2);
+    });
+
+    test("gets last epoch id for asset with empty epochs", () => {
+        const result = getLastEpochId("ZEC", queryBlockStateResponseMock);
+        expect(result).to.equal(null);
+    });
+});
+
+describe("node epoch utils", () => {
     test("gets node first claimable epoch", () => {
         const result = getNodeFirstClaimableEpoch(
             "R22tRItPlzKCZ5xmhDUNIw/CenwAAAAAAAAAAAAAAAA",
@@ -211,7 +224,7 @@ describe("node utils", () => {
         expect(result).to.equal(3);
     });
 
-    test("gets node first claimable epoch (previous)", () => {
+    test("gets node first claimable epoch 2", () => {
         const result = getNodeFirstClaimableEpoch(
             "UyR7eXjDqVnArP0aCj4qD/A0w3MAAAAAAAAAAAAAAAA",
             "BTC",
@@ -229,7 +242,7 @@ describe("node utils", () => {
         expect(result).to.equal(null);
     });
 
-    test("get node claimable fee for epoch (no claimable epochs)", () => {
+    test("gets node claimable fee for epoch (no claimable epochs)", () => {
         const result = getNodeClaimableFeeForEpoch(
             "R22tRItPlzKCZ5xmhDUNIw/CenwAAAAAAAAAAAAAAAA",
             "BTC",
@@ -239,7 +252,7 @@ describe("node utils", () => {
         expect(result.toNumber()).to.equal(0);
     });
 
-    test("get node claimable fee for epoch (has claimable epochs)", () => {
+    test("gets node claimable fee for epoch (has claimable epochs)", () => {
         const result = getNodeClaimableFeeForEpoch(
             "UyR7eXjDqVnArP0aCj4qD/A0w3MAAAAAAAAAAAAAAAA",
             "BTC",
@@ -249,7 +262,7 @@ describe("node utils", () => {
         expect(result.toNumber()).to.equal(5000000);
     });
 
-    test("get node claimable fee for epoch (nonexistent node)", () => {
+    test("gets node claimable fee for epoch (nonexistent node)", () => {
         const result = getNodeClaimableFeeForEpoch(
             "oNig-tMtnRPeOY00OzxAQHmpMS4AAAAAAAAAAAAAAAA",
             "BTC",
