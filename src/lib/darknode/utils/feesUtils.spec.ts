@@ -5,6 +5,8 @@ import { tokenArrayToMap } from "../../graphQL/volumes";
 import { queryBlockStateResponseMock } from "./currentMock";
 import {
     getFeesForAsset,
+    getLastEpochClaimed,
+    getNodeEnteredAt,
     getTokenFeeAmounts,
     getTokenRewardsForEpoch,
 } from "./feesUtils";
@@ -160,5 +162,41 @@ describe("fees", () => {
                 },
             }),
         );
+    });
+});
+
+describe("node utils", () => {
+    test("gets node entered at", () => {
+        const result = getNodeEnteredAt(
+            "R22tRItPlzKCZ5xmhDUNIw/CenwAAAAAAAAAAAAAAAA",
+            queryBlockStateResponseMock,
+        );
+        expect(result).to.equal(1);
+    });
+
+    test("gets node entered at for nonexisting node", () => {
+        const result = getNodeEnteredAt(
+            "oNig-tMtnRPeOY00OzxAQHmpMS4AAAAAAAAAAAAAAAA",
+            queryBlockStateResponseMock,
+        );
+        expect(result).to.equal(null);
+    });
+
+    test("gets node last epoch claimed", () => {
+        const result = getLastEpochClaimed(
+            "R22tRItPlzKCZ5xmhDUNIw/CenwAAAAAAAAAAAAAAAA",
+            "BTC",
+            queryBlockStateResponseMock,
+        );
+        expect(result).to.equal(2);
+    });
+
+    test("gets node last epoch claimed for nonexisting node", () => {
+        const result = getLastEpochClaimed(
+            "oNig-tMtnRPeOY00OzxAQHmpMS4AAAAAAAAAAAAAAAA",
+            "BTC",
+            queryBlockStateResponseMock,
+        );
+        expect(result).to.equal(null);
     });
 });

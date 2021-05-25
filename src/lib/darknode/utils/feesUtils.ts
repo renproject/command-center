@@ -2,6 +2,7 @@ import BigNumber from "bignumber.js";
 import { updatePrice } from "../../../controllers/common/tokenBalanceUtils";
 import { Token, TokenPrices } from "../../ethereum/tokens";
 import { TokenAmount } from "../../graphQL/queries/queries";
+import { darknodeIDBase58ToRenVmID } from "../darknodeID";
 import { queryBlockStateResponseMock } from "./currentMock";
 
 export type QueryBlockStateResponse = typeof queryBlockStateResponseMock;
@@ -118,33 +119,37 @@ export const getTokenFeeAmounts = (
     return data;
 };
 
-// export const getCurrentAndPreviousFeesForAsset = (
-//     symbol: string,
-//     response: typeof queryBlockStateResponse,
-// ) => {
-//     const { nodes, epochs, unassigned } = getFeesForAsset(symbol, response);
-//     const previous = epochs[epochs.length - 1];
-//     const current = epochs[epochs.length];
-//
-//     return {
-//         nodes,
-//         unassigned,
-//         previous,
-//         current,
-//     };
-// };
-
-// export const getTokenFeeAmount = (symbol: string, epoch: FeeEpoch) => {
-//     const fee: TokenAmount = {
-//         amount: new BigNumber(epoch.amount),
-//         amountInEth: new BigNumber(0),
-//         amountInUsd: new BigNumber(0),
-//         asset: { decimals, tokenAddress },
-//         symbol: "",
-//     };
-//     return fee;
-// };
-
 export const toNativeTokenSymbol = (symbol: string) => {
     return symbol.replace(/^ren/, "").replace(/^test/, "").replace(/^dev/, "");
+};
+
+export const getNodeEnteredAt = (
+    renVmNodeId: string,
+    response: QueryBlockStateResponse,
+) => {
+    const nodeSystemData = response.result.state.v.System.nodes.find(
+        (node) => node.id === renVmNodeId,
+    );
+    if (!nodeSystemData) {
+        return null;
+    }
+    return Number(nodeSystemData.enteredAt);
+};
+
+export const getLastEpochClaimed = (
+    renVmNodeId: string,
+    symbol: string,
+    response: QueryBlockStateResponse,
+) => {
+    const data = getFeesForAsset(symbol, response);
+    if (!data) {
+        return null;
+    }
+    const nodeData = data.nodes.find(
+        (nodeItem) => nodeItem.node === renVmNodeId,
+    );
+    if (!nodeData) {
+        return null;
+    }
+    return Number(nodeData.lastEpochClaimed) || null;
 };
