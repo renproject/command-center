@@ -17,10 +17,9 @@ import { retryNTimes } from "../controllers/pages/renvmStatsPage/renvmContainer"
 import { NodeStatistics, queryBlockState } from "../lib/darknode/jsonrpc";
 import {
     getTokenRewardsForEpoch,
-    getFeesForAsset,
-    toEmptyTokenAmount,
     toNativeTokenSymbol,
     getTokenFeeAmounts,
+    toTokenAmount,
 } from "../lib/darknode/utils/feesUtils";
 import { getDarknodePayment } from "../lib/ethereum/contract";
 import {
@@ -370,29 +369,12 @@ const useNetworkContainer = () => {
                         nativeSymbol,
                         "previous",
                         blockState,
+                        true,
                     );
-                    const renVMFee = getTokenFeeAmounts(
-                        renVmFeeAmount,
-                        nativeSymbol as Token,
-                        tokenAmount.asset?.decimals || 8,
-                        tokenPrices,
-                    );
-                    console.log(
-                        tokenAmount.symbol,
-                        renVmFeeAmount.toFixed(),
-                        renVMFee.amount.toFixed(),
-                    );
-                    console.log("before", tokenAmount);
-                    const after = updatePrice(
-                        {
-                            ...tokenAmount,
-                            amount: tokenAmount.amount.plus(renVMFee.amount),
-                        },
-                        tokenAmount.symbol as Token,
-                        tokenPrices,
-                    );
-                    console.log("after", after);
-                    return tokenAmount;
+                    return {
+                        ...tokenAmount,
+                        amount: tokenAmount.amount.plus(renVmFeeAmount),
+                    };
                 });
         }
         previous = updatePrices(previous, tokenPrices);

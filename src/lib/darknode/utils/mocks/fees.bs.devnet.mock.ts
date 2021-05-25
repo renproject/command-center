@@ -1079,14 +1079,14 @@ export const queryBlockStateResponse = {
                                 numNodes: "0",
                             },
                             {
-                                amount: "14184320",
+                                amount: "100000000",
                                 epoch: "1",
-                                numNodes: "13",
+                                numNodes: "10",
                             },
                             {
-                                amount: "27005361",
+                                amount: "50000000",
                                 epoch: "2",
-                                numNodes: "13",
+                                numNodes: "10",
                             },
                         ],
                         nodes: [
@@ -1273,7 +1273,7 @@ export const queryBlockStateResponse = {
                 System: {
                     epoch: {
                         hash: "DH379e0CMqJeafGJjU9yDAT0geI3VddI_xciO-wSQtQ",
-                        numNodes: "13",
+                        numNodes: "10",
                         number: "1",
                         timestamp: "1590971276",
                     },
@@ -1314,22 +1314,22 @@ export const queryBlockStateResponse = {
                             enteredAt: "1",
                             id: "li963gPP4ANqdvHQ8rfC9hxLl7gAAAAAAAAAAAAAAAA",
                         },
-                        {
-                            enteredAt: "1",
-                            id: "oNig-tMtnRPeOY00OzxAQHmpMS4AAAAAAAAAAAAAAAA",
-                        },
-                        {
-                            enteredAt: "1",
-                            id: "ptiBAJHFqEI7PlTVrA8bXaZgDAYAAAAAAAAAAAAAAAA",
-                        },
+                        // {
+                        //     enteredAt: "1",
+                        //     id: "oNig-tMtnRPeOY00OzxAQHmpMS4AAAAAAAAAAAAAAAA",
+                        // },
+                        // {
+                        //     enteredAt: "1",
+                        //     id: "ptiBAJHFqEI7PlTVrA8bXaZgDAYAAAAAAAAAAAAAAAA",
+                        // },
                         {
                             enteredAt: "1",
                             id: "yZtuRNsqOGs1FACy6-QQTuA5BbEAAAAAAAAAAAAAAAA",
                         },
-                        {
-                            enteredAt: "1",
-                            id: "4HeZWmxBhkMpB-L-V7zYycImzs0AAAAAAAAAAAAAAAA",
-                        },
+                        // {
+                        //     enteredAt: "1",
+                        //     id: "4HeZWmxBhkMpB-L-V7zYycImzs0AAAAAAAAAAAAAAAA",
+                        // },
                     ],
                     shards: {
                         primary: [

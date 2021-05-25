@@ -1,18 +1,19 @@
 import BigNumber from "bignumber.js";
-import { describe, it } from "mocha";
 import { expect } from "chai";
 import { parseTokenAmount } from "../../graphQL/queries/queries";
 import { tokenArrayToMap } from "../../graphQL/volumes";
 import { queryBlockStateResponseMock } from "./currentMock";
-import { getFeesForAsset } from "./feesUtils";
+import {
+    getFeesForAsset,
+    getTokenFeeAmounts,
+    getTokenRewardsForEpoch,
+} from "./feesUtils";
 import { partialFees } from "./mocks/fees.mocks";
 
 const numericKeys = ["amount", "amountInUsd", "amountInEth"];
 
 const replacer = (key: any, value: any) => {
-    console.log(key, typeof value);
     if (numericKeys.includes(key)) {
-        console.log("converting", key, value);
         if (typeof value === "object") {
             return new BigNumber({ ...value, _isBigNumber: true }).toNumber();
         } else if (typeof value === "string") {
@@ -28,7 +29,7 @@ const unify = (obj: any) => {
 };
 
 describe("fees", () => {
-    it("unifies", () => {
+    test("unifies", () => {
         const obj = {
             amount: {
                 c: [1263406574],
@@ -79,19 +80,19 @@ describe("fees", () => {
         const expected = {
             epochs: [
                 {
-                    amount: "0",
+                    amount: 0,
                     epoch: "0",
                     numNodes: "0",
                 },
                 {
-                    amount: "14184320",
+                    amount: 100000000, // 1BTC
                     epoch: "1",
-                    numNodes: "13",
+                    numNodes: "10",
                 },
                 {
-                    amount: "27005361",
+                    amount: 50000000, // 0.5 BTC
                     epoch: "2",
-                    numNodes: "13",
+                    numNodes: "10",
                 },
             ],
             nodes: [
@@ -111,5 +112,53 @@ describe("fees", () => {
             unassigned: "0",
         };
         expect(unify(result)).to.eql(expected);
+    });
+
+    it("get token rewards for current epoch", () => {
+        const reward = getTokenRewardsForEpoch(
+            "BTC",
+            "current",
+            queryBlockStateResponseMock,
+        );
+        expect(reward.toNumber()).to.equal(50000000);
+    });
+
+    it("get token rewards for previous epoch", () => {
+        const reward = getTokenRewardsForEpoch(
+            "BTC",
+            "previous",
+            queryBlockStateResponseMock,
+        );
+        expect(reward.toNumber()).to.equal(100000000);
+    });
+
+    it("get token rewards for epoch per node", () => {
+        const reward = getTokenRewardsForEpoch(
+            "BTC",
+            "current",
+            queryBlockStateResponseMock,
+            true,
+        );
+        expect(reward.toNumber()).to.equal(5000000);
+    });
+
+    it("get token rewards for current epoch", () => {
+        const reward = getTokenRewardsForEpoch(
+            "BTC",
+            "current",
+            queryBlockStateResponseMock,
+        );
+        const amounts = getTokenFeeAmounts(reward, "BTC", 8, null);
+        expect(unify(amounts)).to.eql(
+            unify({
+                amount: 50000000,
+                amountInUsd: 0,
+                amountInEth: 0,
+                symbol: "BTC",
+                asset: {
+                    decimals: 8,
+                },
+            }),
+        );
     });
 });

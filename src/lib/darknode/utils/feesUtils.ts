@@ -84,7 +84,7 @@ export const getTokenRewardsForEpoch = (
     return new BigNumber(0);
 };
 
-export const toEmptyTokenAmount = (
+export const toTokenAmount = (
     amount: any,
     symbol: string,
     decimals: number,
