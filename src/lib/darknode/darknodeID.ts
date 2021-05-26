@@ -29,7 +29,6 @@ export const darknodeIDBase58ToRenVmID = (darknodeID: string) => {
 export const renVMID2Base58 = (renVMID: string) => {
     const bytes32 = new EncodedData(renVMID, Encodings.BASE64).toBuffer();
     const bytes24 = bytes32.slice(0, 20);
-    // console.log(bytes24);
     const address = new EncodedData(bytes24, Encodings.BUFFER).toHex();
     return darknodeIDHexToBase58(address);
 };

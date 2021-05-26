@@ -12,6 +12,7 @@ import {
     getNodeFirstClaimableEpoch,
     getNodeClaimableFeeForEpoch,
     getLastEpochId,
+    getNodeClaimableFees,
 } from "./feesUtils";
 import { partialFees } from "./mocks/fees.mocks";
 
@@ -267,6 +268,42 @@ describe("node epoch utils", () => {
             "oNig-tMtnRPeOY00OzxAQHmpMS4AAAAAAAAAAAAAAAA",
             "BTC",
             2,
+            queryBlockStateResponseMock,
+        );
+        expect(result.toNumber()).to.equal(0);
+    });
+
+    test("get node claimable fees (node never claimed)", () => {
+        const result = getNodeClaimableFees(
+            "li963gPP4ANqdvHQ8rfC9hxLl7gAAAAAAAAAAAAAAAA",
+            "BTC",
+            queryBlockStateResponseMock,
+        );
+        expect(result.toNumber()).to.equal(15000000);
+    });
+
+    test("get node claimable fees (node already claimed in previous-1 epoch)", () => {
+        const result = getNodeClaimableFees(
+            "UyR7eXjDqVnArP0aCj4qD/A0w3MAAAAAAAAAAAAAAAA",
+            "BTC",
+            queryBlockStateResponseMock,
+        );
+        expect(result.toNumber()).to.equal(5000000);
+    });
+
+    test("get node claimable fees (node claimed in previous epoch)", () => {
+        const result = getNodeClaimableFees(
+            "R22tRItPlzKCZ5xmhDUNIw/CenwAAAAAAAAAAAAAAAA",
+            "BTC",
+            queryBlockStateResponseMock,
+        );
+        expect(result.toNumber()).to.equal(0);
+    });
+
+    test("get node claimable fees (nonexistent node)", () => {
+        const result = getNodeClaimableFees(
+            "oNig-tMtnRPeOY00OzxAQHmpMS4AAAAAAAAAAAAAAAA",
+            "BTC",
             queryBlockStateResponseMock,
         );
         expect(result.toNumber()).to.equal(0);

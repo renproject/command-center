@@ -183,7 +183,7 @@ export const getNodeClaimableFeeForEpoch = (
     return new BigNumber(0);
 };
 
-export const getNodeActualFees = (
+export const getNodeClaimableFees = (
     renVmNodeId: string,
     symbol: string,
     response: QueryBlockStateResponse,
@@ -196,7 +196,11 @@ export const getNodeActualFees = (
     if (startEpoch === null) {
         return new BigNumber(0);
     }
-    const lastClaimableEpoch = 3; // TODO: make method for it
+    const lastClaimableEpoch = getLastEpochId(symbol, response);
+    if (!lastClaimableEpoch) {
+        return new BigNumber(0);
+    }
+
     let claimable = new BigNumber(0);
     for (let epoch = startEpoch; epoch <= lastClaimableEpoch; epoch++) {
         const fee = getTokenRewardsForEpoch(symbol, epoch, response, true);
