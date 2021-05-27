@@ -2,7 +2,7 @@ import { RenNetworks } from "@renproject/interfaces";
 import { Currency, CurrencyIcon, Record } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import { List, Map, OrderedMap, OrderedSet } from "immutable";
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { createContainer } from "unstated-next";
 import { PromiEvent } from "web3-core";
 
@@ -20,6 +20,7 @@ import {
     toNativeTokenSymbol,
     getTokenFeeAmounts,
     toTokenAmount,
+    QueryBlockStateResponse,
 } from "../lib/darknode/utils/feesUtils";
 import { getDarknodePayment } from "../lib/ethereum/contract";
 import {
@@ -97,6 +98,9 @@ const useNetworkContainer = () => {
         progress: 0,
         target: 0,
     });
+
+    const [blockState, setBlockState] =
+        useState<QueryBlockStateResponse | null>(null);
 
     const [darknodeDetails, setDarknodeDetails] = useState(
         Map<string, DarknodesState>(),
@@ -326,6 +330,11 @@ const useNetworkContainer = () => {
                 .catch(reject);
         });
 
+    const fetchQueryBlockState = useCallback(async () => {
+        const blockStateResult = await queryBlockState(renNetwork);
+        setBlockState(blockStateResult);
+    }, [renNetwork]);
+
     /**
      * TODO: fees pending rewards/fees are here
      * Retrieves information about the pending rewards in the Darknode Payment
@@ -346,8 +355,6 @@ const useNetworkContainer = () => {
                 OrderedMap<string, TokenAmount | null>
             >();
 
-        const blockState = await queryBlockState(renNetwork);
-
         let previous = OrderedMap<string, TokenAmount | null>();
         if (isDefined(latestRenVM)) {
             console.log("renVMDefined", previous.toJSON());
@@ -359,7 +366,7 @@ const useNetworkContainer = () => {
                 )
                 .map((tokenAmount) => {
                     console.log(tokenAmount);
-                    if (!tokenAmount) {
+                    if (!tokenAmount || blockState === null) {
                         return tokenAmount;
                     }
                     const nativeSymbol = toNativeTokenSymbol(
@@ -397,11 +404,14 @@ const useNetworkContainer = () => {
                         const nativeSymbol = toNativeTokenSymbol(
                             tokenAmount.symbol,
                         );
-                        const renVmFeeAmount = getTokenRewardsForEpoch(
-                            nativeSymbol,
-                            "current",
-                            blockState,
-                        );
+                        const renVmFeeAmount =
+                            blockState !== null
+                                ? getTokenRewardsForEpoch(
+                                      nativeSymbol,
+                                      "current",
+                                      blockState,
+                                  )
+                                : new BigNumber(0);
                         const renVMFee = getTokenFeeAmounts(
                             renVmFeeAmount,
                             nativeSymbol as Token,
@@ -440,7 +450,6 @@ const useNetworkContainer = () => {
             // const assets = tokenArrayToMap(latestRenVM.assets);
             // console.log("assets", assets.toJSON());
             //
-            // const bs = await queryBlockState(renNetwork);
             // // const { previousEpoch } = getFeesForAsset();
 
             current = await safePromiseAllMap(
@@ -471,11 +480,15 @@ const useNetworkContainer = () => {
                             const nativeSymbol = toNativeTokenSymbol(
                                 tokenDetails.symbol,
                             );
-                            const renVmFeeAmount = getTokenRewardsForEpoch(
-                                nativeSymbol,
-                                "current",
-                                blockState,
-                            );
+                            const renVmFeeAmount =
+                                blockState !== null
+                                    ? getTokenRewardsForEpoch(
+                                          nativeSymbol,
+                                          "current",
+                                          blockState,
+                                      )
+                                    : new BigNumber(0);
+
                             const renVMFee = getTokenFeeAmounts(
                                 renVmFeeAmount,
                                 nativeSymbol as Token,
