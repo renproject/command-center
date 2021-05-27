@@ -1,5 +1,6 @@
 import BigNumber from "bignumber.js";
 import { expect } from "chai";
+import { Token } from "../../ethereum/tokens";
 import { parseTokenAmount } from "../../graphQL/queries/queries";
 import { tokenArrayToMap } from "../../graphQL/volumes";
 import { queryBlockStateResponseMock } from "./currentMock";
@@ -13,6 +14,7 @@ import {
     getNodeClaimableFeeForEpoch,
     getLastEpochId,
     getNodeClaimableFees,
+    getNodeFeesCollection,
 } from "./feesUtils";
 import { partialFees } from "./mocks/fees.mocks";
 
@@ -272,7 +274,9 @@ describe("node epoch utils", () => {
         );
         expect(result.toNumber()).to.equal(0);
     });
+});
 
+describe("node fees", () => {
     test("get node claimable fees (node never claimed)", () => {
         const result = getNodeClaimableFees(
             "li963gPP4ANqdvHQ8rfC9hxLl7gAAAAAAAAAAAAAAAA",
@@ -307,5 +311,25 @@ describe("node epoch utils", () => {
             queryBlockStateResponseMock,
         );
         expect(result.toNumber()).to.equal(0);
+    });
+});
+
+describe("node fees - aggregations", () => {
+    test("get node claimable assets fees (nonexistent node)", () => {
+        const result = getNodeFeesCollection(
+            "oNig-tMtnRPeOY00OzxAQHmpMS4AAAAAAAAAAAAAAAA",
+            queryBlockStateResponseMock,
+        );
+        expect(unify(result.get("BTC" as Token)).amount).to.eql(0);
+        expect(unify(result.get("ZEC" as Token)).amount).to.eql(0);
+    });
+
+    test("get node claimable assets fees (node never claimed)", () => {
+        const result = getNodeFeesCollection(
+            "li963gPP4ANqdvHQ8rfC9hxLl7gAAAAAAAAAAAAAAAA",
+            queryBlockStateResponseMock,
+        );
+        expect(unify(result.get("BTC" as Token)).amount).to.eql(15000000);
+        expect(unify(result.get("ZEC" as Token)).amount).to.eql(0);
     });
 });

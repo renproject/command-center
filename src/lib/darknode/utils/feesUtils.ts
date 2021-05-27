@@ -230,11 +230,7 @@ export const getNodeFeesCollection = (
         if (blockState !== null) {
             amount =
                 type === "withdrawable"
-                    ? getNodeClaimableFees(
-                          renVmNodeId,
-                          token.symbol,
-                          blockState,
-                      )
+                    ? getNodeClaimableFees(renVmNodeId, symbol, blockState)
                     : new BigNumber(9); //TODO: fees add pending
         }
         const tokenAmount = toTokenAmount(amount, token.symbol, token.decimals);

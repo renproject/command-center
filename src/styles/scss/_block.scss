@@ -107,10 +107,10 @@
         position: absolute;
         top: 4px;
         right: 5px;
+        color: rgba(255, 255, 255, 0.4);
     }
     &--button {
         cursor: pointer;
-        color: rgba(255, 255, 255, 0.4);
         &--active {
             color: rgba(255, 255, 255, 0.8);
         }

@@ -250,31 +250,24 @@ export const FeesSwitcherController: React.FC<Props> = ({
     return (
         <div className="fees-switcher">
             <div className="fees-switcher--control">
-                <span
-                    className={classNames(
-                        "fees-switcher--button",
-                        source === "eth" ? "fees-switcher--button--active" : "",
-                    )}
-                    onClick={() => {
-                        setSource("eth");
-                    }}
-                >
-                    Ethereum
-                </span>
-                {" | "}
-                <span
-                    className={classNames(
-                        "fees-switcher--button",
-                        source === "renvm"
-                            ? "fees-switcher--button--active"
-                            : "",
-                    )}
-                    onClick={() => {
-                        setSource("renvm");
-                    }}
-                >
-                    RenVM
-                </span>
+                {["eth", "renvm"].map((symbol) => (
+                    <span key={symbol}>
+                        <span
+                            className={classNames(
+                                "fees-switcher--button",
+                                source === symbol
+                                    ? "fees-switcher--button--active"
+                                    : "",
+                            )}
+                            onClick={() => {
+                                setSource(symbol as FeesSource);
+                            }}
+                        >
+                            {symbol === "eth" ? "Ethereum" : "RenVM"}
+                        </span>
+                        {symbol === "eth" && " | "}
+                    </span>
+                ))}
             </div>
             {source === "eth" && (
                 <FeesBlockController
