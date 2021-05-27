@@ -330,7 +330,7 @@ const useNetworkContainer = () => {
                 .catch(reject);
         });
 
-    const fetchQueryBlockState = useCallback(async () => {
+    const fetchBlockState = useCallback(async () => {
         const blockStateResult = await queryBlockState(renNetwork);
         setBlockState(blockStateResult);
     }, [renNetwork]);
@@ -975,6 +975,7 @@ const useNetworkContainer = () => {
         darknodeList,
         hiddenDarknodes,
         withdrawAddresses,
+        blockState,
 
         updateTokenPrices,
         hideDarknode,
@@ -993,6 +994,7 @@ const useNetworkContainer = () => {
         showDeregisterPopup,
         showRefundPopup,
         showFundPopup,
+        fetchBlockState,
     };
 };
 

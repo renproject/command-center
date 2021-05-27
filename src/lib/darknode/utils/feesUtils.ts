@@ -1,7 +1,11 @@
 import BigNumber from "bignumber.js";
+import { OrderedMap } from "immutable";
 import { updatePrice } from "../../../controllers/common/tokenBalanceUtils";
-import { Token, TokenPrices } from "../../ethereum/tokens";
-import { TokenAmount } from "../../graphQL/queries/queries";
+import { FeeTokens, Token, TokenPrices } from "../../ethereum/tokens";
+import {
+    TokenAmount,
+    TokenAmountCollection,
+} from "../../graphQL/queries/queries";
 import { queryBlockStateResponseMock } from "./currentMock";
 
 export type QueryBlockStateResponse = typeof queryBlockStateResponseMock;
@@ -208,4 +212,22 @@ export const getNodeClaimableFees = (
     }
 
     return claimable;
+};
+export type FeeType = "withdrawable" | "pending";
+
+export const getNodeFeesCollection = (
+    renVmNodeId: string,
+    response: QueryBlockStateResponse,
+    type: FeeType = "withdrawable",
+) => {
+    const data: TokenAmountCollection = OrderedMap();
+    FeeTokens.forEach((token) => {
+        const amount =
+            type === "withdrawable"
+                ? getNodeClaimableFees(renVmNodeId, token.symbol, response)
+                : new BigNumber(9); //TODO: fees add pending
+        const tokenAmount = toTokenAmount(amount, token.symbol, token.decimals);
+        data.set(token.symbol, tokenAmount);
+    });
+    return data;
 };

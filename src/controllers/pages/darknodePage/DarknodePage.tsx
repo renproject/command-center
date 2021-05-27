@@ -57,7 +57,12 @@ export const DarknodePage = () => {
         darknodeNames,
         storeDarknodeName,
         addRegisteringDarknode,
+        fetchBlockState,
     } = NetworkContainer.useContainer();
+
+    useEffect(() => {
+        fetchBlockState().catch(console.error);
+    }, [fetchBlockState]);
 
     // const [darknodeID, setDarknodeID] = useState<string | undefined>(undefined);
     const [action, setAction] = useState<string | undefined>(undefined);
