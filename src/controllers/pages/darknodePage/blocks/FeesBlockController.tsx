@@ -2,6 +2,7 @@ import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
 import moment from "moment";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { getNodeFeesCollection } from "../../../../lib/darknode/utils/feesUtils";
 
 import {
     DarknodeFeeStatus,
@@ -9,6 +10,7 @@ import {
 } from "../../../../lib/ethereum/contractReads";
 import { TokenString } from "../../../../lib/ethereum/tokens";
 import { TokenAmount } from "../../../../lib/graphQL/queries/queries";
+import { classNames } from "../../../../lib/react/className";
 import { GraphContainer } from "../../../../store/graphContainer";
 import {
     DarknodesState,
@@ -208,5 +210,84 @@ export const FeesBlockController: React.FC<Props> = ({
             pending={pending}
             withdrawCallback={withdrawCallback}
         />
+    );
+};
+
+export const RenVmFeesBlockController: React.FC<Props> = ({
+    isOperator,
+    darknodeDetails,
+}) => {
+    console.log("dd", darknodeDetails);
+    const { blockState, quoteCurrency } = NetworkContainer.useContainer();
+
+    // const withdrawable = darknodeDetails ? darknodeDetails.feesEarned : null;
+    const pending = darknodeDetails ? darknodeDetails.feesEarned : null;
+
+    const renVmNodeId = "aaa";
+    const withdrawable = getNodeFeesCollection(renVmNodeId, blockState);
+    const withdraw: any = () => {};
+
+    return (
+        <FeesBlock
+            quoteCurrency={quoteCurrency}
+            isOperator={isOperator}
+            earningFees={true}
+            canWithdraw={true}
+            withdrawable={withdrawable}
+            pending={pending}
+            withdrawCallback={withdraw}
+        />
+    );
+};
+
+type FeesSource = "eth" | "renvm";
+
+export const FeesSwitcherController: React.FC<Props> = ({
+    isOperator,
+    darknodeDetails,
+}) => {
+    const [source, setSource] = useState<FeesSource>("eth");
+    return (
+        <div className="fees-switcher">
+            <div className="fees-switcher--control">
+                <span
+                    className={classNames(
+                        "fees-switcher--button",
+                        source === "eth" ? "fees-switcher--button--active" : "",
+                    )}
+                    onClick={() => {
+                        setSource("eth");
+                    }}
+                >
+                    Ethereum
+                </span>
+                {" | "}
+                <span
+                    className={classNames(
+                        "fees-switcher--button",
+                        source === "renvm"
+                            ? "fees-switcher--button--active"
+                            : "",
+                    )}
+                    onClick={() => {
+                        setSource("renvm");
+                    }}
+                >
+                    RenVM
+                </span>
+            </div>
+            {source === "eth" && (
+                <FeesBlockController
+                    isOperator={isOperator}
+                    darknodeDetails={darknodeDetails}
+                />
+            )}
+            {source === "renvm" && (
+                <RenVmFeesBlockController
+                    isOperator={isOperator}
+                    darknodeDetails={darknodeDetails}
+                />
+            )}
+        </div>
     );
 };

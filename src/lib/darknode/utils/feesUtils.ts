@@ -26,9 +26,9 @@ type FeeData = {
 
 export const getFeesForAsset = (
     symbol: string,
-    response: QueryBlockStateResponse,
+    blockState: QueryBlockStateResponse,
 ) => {
-    const data = response.result.state.v[symbol];
+    const data = blockState.result.state.v[symbol];
     if (!data) {
         return null;
     }
@@ -37,9 +37,9 @@ export const getFeesForAsset = (
 
 export const getLastEpochId = (
     symbol: string,
-    response: QueryBlockStateResponse,
+    blockState: QueryBlockStateResponse,
 ) => {
-    const fees = getFeesForAsset(symbol, response);
+    const fees = getFeesForAsset(symbol, blockState);
     if (!fees || fees.epochs.length === 0) {
         return null;
     }
@@ -50,10 +50,10 @@ export const getLastEpochId = (
 export const getTokenRewardsForEpoch = (
     symbol: string,
     epoch: "current" | "previous" | number,
-    response: QueryBlockStateResponse,
+    blockState: QueryBlockStateResponse,
     perNode = false,
 ) => {
-    const data = getFeesForAsset(symbol, response);
+    const data = getFeesForAsset(symbol, blockState);
     if (data === null) {
         return new BigNumber(0);
     }
@@ -121,9 +121,9 @@ export const toNativeTokenSymbol = (symbol: string) => {
 
 export const getNodeEnteredAt = (
     renVmNodeId: string,
-    response: QueryBlockStateResponse,
+    blockState: QueryBlockStateResponse,
 ) => {
-    const nodeSystemData = response.result.state.v.System.nodes.find(
+    const nodeSystemData = blockState.result.state.v.System.nodes.find(
         (node) => node.id === renVmNodeId,
     );
     if (!nodeSystemData) {
@@ -135,9 +135,9 @@ export const getNodeEnteredAt = (
 export const getNodeLastEpochClaimed = (
     renVmNodeId: string,
     symbol: string,
-    response: QueryBlockStateResponse,
+    blockState: QueryBlockStateResponse,
 ) => {
-    const data = getFeesForAsset(symbol, response);
+    const data = getFeesForAsset(symbol, blockState);
     if (!data) {
         return null;
     }
@@ -153,13 +153,17 @@ export const getNodeLastEpochClaimed = (
 export const getNodeFirstClaimableEpoch = (
     renVmNodeId: string,
     symbol: string,
-    response: QueryBlockStateResponse,
+    blockState: QueryBlockStateResponse,
 ) => {
-    const lastClaimed = getNodeLastEpochClaimed(renVmNodeId, symbol, response);
+    const lastClaimed = getNodeLastEpochClaimed(
+        renVmNodeId,
+        symbol,
+        blockState,
+    );
     if (lastClaimed !== null) {
         return lastClaimed + 1;
     }
-    const enteredAt = getNodeEnteredAt(renVmNodeId, response);
+    const enteredAt = getNodeEnteredAt(renVmNodeId, blockState);
     if (enteredAt !== null) {
         return enteredAt; //TODO: Jaz is it inclusive?
     }
@@ -170,19 +174,19 @@ export const getNodeClaimableFeeForEpoch = (
     renVmNodeId: string,
     symbol: string,
     epoch: number,
-    response: QueryBlockStateResponse,
+    blockState: QueryBlockStateResponse,
 ) => {
     const startEpoch = getNodeFirstClaimableEpoch(
         renVmNodeId,
         symbol,
-        response,
+        blockState,
     );
 
     if (startEpoch === null) {
         return new BigNumber(0);
     }
     if (epoch >= startEpoch) {
-        return getTokenRewardsForEpoch(symbol, epoch, response, true);
+        return getTokenRewardsForEpoch(symbol, epoch, blockState, true);
     }
     return new BigNumber(0);
 };
@@ -190,44 +194,50 @@ export const getNodeClaimableFeeForEpoch = (
 export const getNodeClaimableFees = (
     renVmNodeId: string,
     symbol: string,
-    response: QueryBlockStateResponse,
+    blockState: QueryBlockStateResponse,
 ) => {
     const startEpoch = getNodeFirstClaimableEpoch(
         renVmNodeId,
         symbol,
-        response,
+        blockState,
     );
     if (startEpoch === null) {
         return new BigNumber(0);
     }
-    const lastClaimableEpoch = getLastEpochId(symbol, response);
+    const lastClaimableEpoch = getLastEpochId(symbol, blockState);
     if (!lastClaimableEpoch) {
         return new BigNumber(0);
     }
 
     let claimable = new BigNumber(0);
     for (let epoch = startEpoch; epoch <= lastClaimableEpoch; epoch++) {
-        const fee = getTokenRewardsForEpoch(symbol, epoch, response, true);
+        const fee = getTokenRewardsForEpoch(symbol, epoch, blockState, true);
         claimable = claimable.plus(fee);
     }
 
     return claimable;
 };
+
 export type FeeType = "withdrawable" | "pending";
 
 export const getNodeFeesCollection = (
     renVmNodeId: string,
-    response: QueryBlockStateResponse,
+    blockState: QueryBlockStateResponse | null,
     type: FeeType = "withdrawable",
 ) => {
-    const data: TokenAmountCollection = OrderedMap();
-    FeeTokens.forEach((token) => {
-        const amount =
-            type === "withdrawable"
-                ? getNodeClaimableFees(renVmNodeId, token.symbol, response)
-                : new BigNumber(9); //TODO: fees add pending
+    return FeeTokens.mapEntries(([symbol, token]) => {
+        let amount = new BigNumber(0);
+        if (blockState !== null) {
+            amount =
+                type === "withdrawable"
+                    ? getNodeClaimableFees(
+                          renVmNodeId,
+                          token.symbol,
+                          blockState,
+                      )
+                    : new BigNumber(9); //TODO: fees add pending
+        }
         const tokenAmount = toTokenAmount(amount, token.symbol, token.decimals);
-        data.set(token.symbol, tokenAmount);
+        return [symbol, tokenAmount];
     });
-    return data;
 };

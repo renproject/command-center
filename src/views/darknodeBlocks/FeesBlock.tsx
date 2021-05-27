@@ -20,6 +20,7 @@ export const FeesBlock: React.FC<Props> = ({
     pending,
     withdrawCallback,
     className,
+    children,
 }) => {
     const [tab, setTab] = useState(FeesBlockTab.Withdrawable);
 
@@ -63,7 +64,7 @@ export const FeesBlock: React.FC<Props> = ({
                     Darknode Income
                 </h3>
             </BlockTitle>
-
+            {children}
             <BlockBody>
                 <Tabs
                     selected={tab}
@@ -200,3 +201,16 @@ interface Props {
     ) => Promise<void>;
     className?: string;
 }
+
+export const FeesBlocks: React.FC = ({}) => {
+    return (
+        <Block className={classNames("fees-block")}>
+            <BlockTitle>
+                <h3>
+                    <RewardsIcon />
+                    Darknode Income
+                </h3>
+            </BlockTitle>
+        </Block>
+    );
+};
