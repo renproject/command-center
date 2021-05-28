@@ -29,17 +29,12 @@ export enum NetworkStatsChain {
 }
 
 const useNetworkStatsContainer = () => {
-    const {
-        ethereumSubgraph,
-        bscSubgraph,
-    } = GraphClientContainer.useContainer();
+    const { ethereumSubgraph, bscSubgraph } =
+        GraphClientContainer.useContainer();
 
     const { renNetwork } = Web3Container.useContainer();
-    const {
-        renVM,
-        getLatestSyncedBlock,
-        getLatestSyncedBlockBSC,
-    } = GraphContainer.useContainer();
+    const { renVM, getLatestSyncedBlock, getLatestSyncedBlockBSC } =
+        GraphContainer.useContainer();
     const { numberOfDarknodes } = renVM || {};
     const { quoteCurrency, tokenPrices } = NetworkContainer.useContainer();
     const container = RenVMContainer.useContainer();

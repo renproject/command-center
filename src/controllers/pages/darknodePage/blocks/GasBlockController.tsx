@@ -19,10 +19,8 @@ export const GasBlockController: React.FC<Props> = ({
     darknodeDetails,
 }) => {
     const { address, web3, balance } = Web3Container.useContainer();
-    const {
-        updateDarknodeDetails,
-        showFundPopup,
-    } = NetworkContainer.useContainer();
+    const { updateDarknodeDetails, showFundPopup } =
+        NetworkContainer.useContainer();
 
     const darknodeBalance = darknodeDetails && darknodeDetails.ethBalance;
 

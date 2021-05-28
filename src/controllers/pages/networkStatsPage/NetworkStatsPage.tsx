@@ -101,22 +101,20 @@ export const NetworkStatsPage = () => {
         .get(lockedSelectedChain, Map<PeriodType, QuoteSeriesData>())
         .get(lockedPeriod);
 
-    const [, totalLockedPercentChange]: [
-        BigNumber | null,
-        BigNumber | null,
-    ] = useMemo(() => {
-        const volumeChange = getPeriodPercentChange(
-            volumePeriod,
-            "quoteVolumeTotal",
-            quoteVolumeSeries && quoteVolumeSeries.series,
-        );
-        const lockedChange = getPeriodPercentChange(
-            lockedPeriod,
-            "quoteLockedTotal",
-            quoteLockedSeries && quoteLockedSeries.series,
-        );
-        return [volumeChange, lockedChange];
-    }, [volumePeriod, quoteVolumeSeries, lockedPeriod, quoteLockedSeries]);
+    const [, totalLockedPercentChange]: [BigNumber | null, BigNumber | null] =
+        useMemo(() => {
+            const volumeChange = getPeriodPercentChange(
+                volumePeriod,
+                "quoteVolumeTotal",
+                quoteVolumeSeries && quoteVolumeSeries.series,
+            );
+            const lockedChange = getPeriodPercentChange(
+                lockedPeriod,
+                "quoteLockedTotal",
+                quoteLockedSeries && quoteLockedSeries.series,
+            );
+            return [volumeChange, lockedChange];
+        }, [volumePeriod, quoteVolumeSeries, lockedPeriod, quoteLockedSeries]);
 
     return (
         <NetworkStatsStyles className="network-stats container">

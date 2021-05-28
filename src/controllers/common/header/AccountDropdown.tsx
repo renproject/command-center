@@ -9,12 +9,8 @@ export const AccountDropdown: React.FC = () => {
     const [shown, setShown] = useState(false);
     const [copied, setCopied] = useState(false);
 
-    const {
-        address,
-        web3BrowserName,
-        promptLogin,
-        logout,
-    } = Web3Container.useContainer();
+    const { address, web3BrowserName, promptLogin, logout } =
+        Web3Container.useContainer();
 
     const ref = useRef(null as HTMLDivElement | null);
 

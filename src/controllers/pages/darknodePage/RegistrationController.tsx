@@ -33,11 +33,8 @@ export const RegistrationController: React.FC<Props> = ({
     darknodeDetails,
     registrationStatus,
 }) => {
-    const {
-        address,
-        promptLogin,
-        web3BrowserName,
-    } = Web3Container.useContainer();
+    const { address, promptLogin, web3BrowserName } =
+        Web3Container.useContainer();
     const {
         unhideDarknode,
         updateDarknodeDetails,

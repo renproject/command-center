@@ -57,13 +57,8 @@ export class ErrorBoundary extends React.Component<Props, typeof defaultState> {
      * @dev Should have minimal computation, loops and anonymous functions.
      */
     public render() {
-        const {
-            children,
-            popup,
-            className,
-            defaultValue,
-            ...props
-        } = this.props;
+        const { children, popup, className, defaultValue, ...props } =
+            this.props;
 
         if (this.state.errorInfo) {
             // Error path

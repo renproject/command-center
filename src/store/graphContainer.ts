@@ -18,11 +18,8 @@ const UNSYNCED_THRESHOLD = 30;
 
 const useGraphContainer = () => {
     const { web3, renNetwork } = Web3Container.useContainer();
-    const {
-        showSuccess,
-        showError,
-        showHint,
-    } = NotificationsContainer.useContainer();
+    const { showSuccess, showError, showHint } =
+        NotificationsContainer.useContainer();
 
     const { ethereumSubgraph } = GraphClientContainer.useContainer();
 
@@ -78,8 +75,7 @@ const useGraphContainer = () => {
                 // eslint-disable-next-line id-blacklist
                 data: { _meta: { block: { number: number } } };
             }>(ethereumSubgraphUrl(renNetwork), {
-                query:
-                    "{\n    _meta {\n      block {\n        number\n      }\n    }\n}",
+                query: "{\n    _meta {\n      block {\n        number\n      }\n    }\n}",
             }).then((response) => response.data.data._meta.block.number),
         60 * SECONDS,
         [renNetwork],
@@ -92,8 +88,7 @@ const useGraphContainer = () => {
                 // eslint-disable-next-line id-blacklist
                 data: { _meta: { block: { number: number } } };
             }>(bscSubgraphUrl(renNetwork), {
-                query:
-                    "{\n    _meta {\n      block {\n        number\n      }\n    }\n}",
+                query: "{\n    _meta {\n      block {\n        number\n      }\n    }\n}",
             }).then((response) => response.data.data._meta.block.number),
         60 * SECONDS,
         [renNetwork],

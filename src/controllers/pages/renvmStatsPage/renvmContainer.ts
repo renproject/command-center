@@ -124,17 +124,14 @@ const useRenVMContainer = () => {
     // eslint-disable-next-line prefer-const
     let [currentBlock, setCurrentBlock] = useState<null | Block>(null);
     // eslint-disable-next-line prefer-const
-    let [currentBlockNumber, setCurrentBlockNumber] = useState<null | number>(
-        null,
-    );
+    let [currentBlockNumber, setCurrentBlockNumber] =
+        useState<null | number>(null);
     // eslint-disable-next-line prefer-const
-    let [currentTransaction, setCurrentTransaction] = useState<
-        undefined | null | ResponseQueryTx
-    >(undefined);
+    let [currentTransaction, setCurrentTransaction] =
+        useState<undefined | null | ResponseQueryTx>(undefined);
     // eslint-disable-next-line prefer-const
-    let [currentTransactionHash, setCurrentTransactionHash] = useState<
-        undefined | null | string
-    >(undefined);
+    let [currentTransactionHash, setCurrentTransactionHash] =
+        useState<undefined | null | string>(undefined);
     // eslint-disable-next-line prefer-const
     let [transactions, setTransactions] = useState<
         OrderedMap<string, ResponseQueryTx | null>

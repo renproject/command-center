@@ -175,7 +175,7 @@ export const catchBackgroundException = <X extends Details & Described>(
 
 // Interaction exceptions are thrown as a direct result of a user interaction
 export const catchInteractionException = <
-    X extends Details & Described & ShownToUser
+    X extends Details & Described & ShownToUser,
 >(
     error: any,
     details: X | string,

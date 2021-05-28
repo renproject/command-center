@@ -471,9 +471,8 @@ const normalizeVolumes = (
                 : tokenLockedHistoric;
             data.quoteLocked[symbol] = tokenLocked;
             data.quoteLockedTotal = data.quoteLockedTotal.plus(tokenLocked);
-            data.quoteLockedTotalHistoric = data.quoteLockedTotalHistoric.plus(
-                tokenLockedHistoric,
-            );
+            data.quoteLockedTotalHistoric =
+                data.quoteLockedTotalHistoric.plus(tokenLockedHistoric);
         });
     }
 

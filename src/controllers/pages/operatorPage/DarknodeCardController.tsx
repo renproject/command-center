@@ -22,11 +22,8 @@ export const DarknodeCardController: React.FC<Props> = ({
     registering,
 }) => {
     const { address } = Web3Container.useContainer();
-    const {
-        quoteCurrency,
-        hideDarknode,
-        removeRegisteringDarknode,
-    } = NetworkContainer.useContainer();
+    const { quoteCurrency, hideDarknode, removeRegisteringDarknode } =
+        NetworkContainer.useContainer();
 
     // If we have the public key and the status is unregistered (or the status is not available yet), then link to
     // the registration page

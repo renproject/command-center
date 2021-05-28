@@ -26,5 +26,5 @@ export const apolloClient = (graphUrl: string) => {
     client.defaultOptions.query = {
         fetchPolicy: "no-cache",
     };
-    return (client as unknown) as ApolloClientInterface<object>;
+    return client as unknown as ApolloClientInterface<object>;
 };

@@ -3,9 +3,8 @@ import { createContainer } from "unstated-next";
 
 const useUIContainer = () => {
     const [mobileMenuActive, setMobileMenuActive] = useState(false);
-    const [selectedDarknodeID, setSelectedDarknodeID] = useState<
-        string | undefined
-    >(undefined);
+    const [selectedDarknodeID, setSelectedDarknodeID] =
+        useState<string | undefined>(undefined);
 
     const showMobileMenu = useCallback(() => {
         setMobileMenuActive(true);

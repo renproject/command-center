@@ -16,10 +16,8 @@ interface Props {
 export const VersionBlockController: React.FC<Props> = ({
     darknodeDetails,
 }) => {
-    const {
-        latestDarknodeVersionFull,
-        latestDarknodeVersionDaysAgo,
-    } = GithubAPIContainer.useContainer();
+    const { latestDarknodeVersionFull, latestDarknodeVersionDaysAgo } =
+        GithubAPIContainer.useContainer();
 
     const { renVM } = GraphContainer.useContainer();
     const epochStart = renVM
