@@ -31,7 +31,7 @@ export const getFeesForAsset = (
     return data.fees as FeeData;
 };
 
-export const getLastEpochId = (
+export const getLastAssetEpochId = (
     symbol: string,
     blockState: QueryBlockStateResponse,
 ) => {
@@ -48,6 +48,7 @@ export const getCurrentEpochId = (blockState: QueryBlockStateResponse) => {
 };
 
 export const getTokenRewardsForEpoch = (
+    //TODO: fees rename
     symbol: string,
     epoch: "current" | "previous" | number,
     blockState: QueryBlockStateResponse,
@@ -58,22 +59,19 @@ export const getTokenRewardsForEpoch = (
         return new BigNumber(0);
     }
     const { epochs } = data;
+    const current = getCurrentEpochId(blockState);
+    let epochIndex = 0;
     if (epoch === "current") {
-        if (epochs.length) {
-            const { amount, numNodes } = epochs[epochs.length - 1];
-            return new BigNumber(amount).div(perNode ? numNodes : 1);
-        }
-        return new BigNumber(0);
-    }
-    if (epoch === "previous") {
-        if (epochs.length > 1) {
-            const { amount, numNodes } = epochs[epochs.length - 2];
-            return new BigNumber(amount).div(perNode ? numNodes : 1);
-        }
-        return new BigNumber(0);
+        epochIndex = current;
+    } else if (epoch === "previous") {
+        epochIndex = current - 1;
+    } else {
+        epochIndex = epoch;
     }
 
-    const epochEntry = epochs.find((entry) => Number(entry.epoch) === epoch);
+    const epochEntry = epochs.find(
+        (entry) => Number(entry.epoch) === epochIndex,
+    );
     if (epochEntry) {
         const { amount, numNodes } = epochEntry;
         return new BigNumber(amount).div(perNode ? numNodes : 1);
@@ -130,6 +128,13 @@ export const getNodeEnteredAt = (
         return null;
     }
     return Number(nodeSystemData.enteredAt);
+};
+
+export const getNodeExists = (
+    renVmNodeId: string,
+    blockState: QueryBlockStateResponse,
+) => {
+    return getNodeEnteredAt(renVmNodeId, blockState) !== null;
 };
 
 export const getNodeLastEpochClaimed = (
@@ -204,7 +209,7 @@ export const getNodeClaimableFees = (
     if (startEpoch === null) {
         return new BigNumber(0);
     }
-    const lastClaimableEpoch = getLastEpochId(symbol, blockState);
+    const lastClaimableEpoch = getCurrentEpochId(blockState) - 1;
     if (!lastClaimableEpoch) {
         return new BigNumber(0);
     }
@@ -223,8 +228,12 @@ export const getNodePendingFees = (
     symbol: string,
     blockState: QueryBlockStateResponse,
 ) => {
-    const epoch = 3;
-    getTokenRewardsForEpoch(symbol, epoch, blockState, true);
+    const exists = getNodeEnteredAt(renVmNodeId, blockState);
+    if (!exists) {
+        return new BigNumber(0);
+    }
+    const epoch = getCurrentEpochId(blockState);
+    return getTokenRewardsForEpoch(symbol, epoch, blockState, true);
 };
 
 export type FeeType = "withdrawable" | "pending";
