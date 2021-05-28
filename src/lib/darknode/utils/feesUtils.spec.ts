@@ -318,13 +318,13 @@ describe("node fees", () => {
         expect(result.toNumber()).to.equal(0);
     });
 
-    test("gets node claimable fees (nnever claimed for this asset)", () => {
+    test("gets node claimable fees (never claimed for this asset)", () => {
         const result = getNodeClaimableFees(
             "R22tRItPlzKCZ5xmhDUNIw/CenwAAAAAAAAAAAAAAAA",
             "DOGE",
             blockState,
         );
-        expect(result.toNumber()).to.equal(4200000000012346000);
+        expect(result.toNumber()).to.equal(420690000000012300000);
     });
 
     test("gets node claimable fees (nonexistent node)", () => {
