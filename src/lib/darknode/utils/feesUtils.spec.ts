@@ -3,7 +3,7 @@ import { expect } from "chai";
 import { Token } from "../../ethereum/tokens";
 import { parseTokenAmount } from "../../graphQL/queries/queries";
 import { tokenArrayToMap } from "../../graphQL/volumes";
-import { queryBlockStateResponseMock } from "./currentMock";
+import { queryBlockStateResponseMock as blockState } from "./currentMock";
 import {
     getFeesForAsset,
     getNodeLastEpochClaimed,
@@ -15,6 +15,7 @@ import {
     getLastEpochId,
     getNodeClaimableFees,
     getNodeFeesCollection,
+    getCurrentEpochId,
 } from "./feesUtils";
 import { partialFees } from "./mocks/fees.mocks";
 
@@ -84,7 +85,7 @@ describe("fees", () => {
     });
 
     test("gets fee amount for asset", () => {
-        const result = getFeesForAsset("BTC", queryBlockStateResponseMock);
+        const result = getFeesForAsset("BTC", blockState);
         const expected = {
             epochs: [
                 {
@@ -123,20 +124,12 @@ describe("fees", () => {
     });
 
     test("get token rewards for current epoch", () => {
-        const reward = getTokenRewardsForEpoch(
-            "BTC",
-            "current",
-            queryBlockStateResponseMock,
-        );
+        const reward = getTokenRewardsForEpoch("BTC", "current", blockState);
         expect(reward.toNumber()).to.equal(50000000);
     });
 
     test("get token rewards for previous epoch", () => {
-        const reward = getTokenRewardsForEpoch(
-            "BTC",
-            "previous",
-            queryBlockStateResponseMock,
-        );
+        const reward = getTokenRewardsForEpoch("BTC", "previous", blockState);
         expect(reward.toNumber()).to.equal(100000000);
     });
 
@@ -144,18 +137,14 @@ describe("fees", () => {
         const reward = getTokenRewardsForEpoch(
             "BTC",
             "current",
-            queryBlockStateResponseMock,
+            blockState,
             true,
         );
         expect(reward.toNumber()).to.equal(5000000);
     });
 
     test("get token rewards for current epoch", () => {
-        const reward = getTokenRewardsForEpoch(
-            "BTC",
-            "current",
-            queryBlockStateResponseMock,
-        );
+        const reward = getTokenRewardsForEpoch("BTC", "current", blockState);
         const amounts = getTokenFeeAmounts(reward, "BTC", 8, null);
         expect(unify(amounts)).to.eql(
             unify({
@@ -172,10 +161,15 @@ describe("fees", () => {
 });
 
 describe("node basic utils", () => {
+    test("gets current epoch id", () => {
+        const result = getCurrentEpochId(blockState);
+        expect(result).to.equal(3);
+    });
+
     test("gets node entered at", () => {
         const result = getNodeEnteredAt(
             "R22tRItPlzKCZ5xmhDUNIw/CenwAAAAAAAAAAAAAAAA",
-            queryBlockStateResponseMock,
+            blockState,
         );
         expect(result).to.equal(1);
     });
@@ -183,7 +177,7 @@ describe("node basic utils", () => {
     test("gets node entered at for nonexisting node", () => {
         const result = getNodeEnteredAt(
             "oNig-tMtnRPeOY00OzxAQHmpMS4AAAAAAAAAAAAAAAA",
-            queryBlockStateResponseMock,
+            blockState,
         );
         expect(result).to.equal(null);
     });
@@ -192,7 +186,7 @@ describe("node basic utils", () => {
         const result = getNodeLastEpochClaimed(
             "R22tRItPlzKCZ5xmhDUNIw/CenwAAAAAAAAAAAAAAAA",
             "BTC",
-            queryBlockStateResponseMock,
+            blockState,
         );
         expect(result).to.equal(2);
     });
@@ -201,18 +195,18 @@ describe("node basic utils", () => {
         const result = getNodeLastEpochClaimed(
             "oNig-tMtnRPeOY00OzxAQHmpMS4AAAAAAAAAAAAAAAA",
             "BTC",
-            queryBlockStateResponseMock,
+            blockState,
         );
         expect(result).to.equal(null);
     });
 
     test("gets last epoch id", () => {
-        const result = getLastEpochId("BTC", queryBlockStateResponseMock);
+        const result = getLastEpochId("BTC", blockState);
         expect(result).to.equal(2);
     });
 
     test("gets last epoch id for asset with empty epochs", () => {
-        const result = getLastEpochId("ZEC", queryBlockStateResponseMock);
+        const result = getLastEpochId("ZEC", blockState);
         expect(result).to.equal(null);
     });
 });
@@ -222,7 +216,7 @@ describe("node epoch utils", () => {
         const result = getNodeFirstClaimableEpoch(
             "R22tRItPlzKCZ5xmhDUNIw/CenwAAAAAAAAAAAAAAAA",
             "BTC",
-            queryBlockStateResponseMock,
+            blockState,
         );
         expect(result).to.equal(3);
     });
@@ -231,7 +225,7 @@ describe("node epoch utils", () => {
         const result = getNodeFirstClaimableEpoch(
             "UyR7eXjDqVnArP0aCj4qD/A0w3MAAAAAAAAAAAAAAAA",
             "BTC",
-            queryBlockStateResponseMock,
+            blockState,
         );
         expect(result).to.equal(2);
     });
@@ -240,7 +234,7 @@ describe("node epoch utils", () => {
         const result = getNodeFirstClaimableEpoch(
             "oNig-tMtnRPeOY00OzxAQHmpMS4AAAAAAAAAAAAAAAA",
             "BTC",
-            queryBlockStateResponseMock,
+            blockState,
         );
         expect(result).to.equal(null);
     });
@@ -250,7 +244,7 @@ describe("node epoch utils", () => {
             "R22tRItPlzKCZ5xmhDUNIw/CenwAAAAAAAAAAAAAAAA",
             "BTC",
             2,
-            queryBlockStateResponseMock,
+            blockState,
         );
         expect(result.toNumber()).to.equal(0);
     });
@@ -260,7 +254,7 @@ describe("node epoch utils", () => {
             "UyR7eXjDqVnArP0aCj4qD/A0w3MAAAAAAAAAAAAAAAA",
             "BTC",
             2,
-            queryBlockStateResponseMock,
+            blockState,
         );
         expect(result.toNumber()).to.equal(5000000);
     });
@@ -270,7 +264,7 @@ describe("node epoch utils", () => {
             "oNig-tMtnRPeOY00OzxAQHmpMS4AAAAAAAAAAAAAAAA",
             "BTC",
             2,
-            queryBlockStateResponseMock,
+            blockState,
         );
         expect(result.toNumber()).to.equal(0);
     });
@@ -281,7 +275,7 @@ describe("node fees", () => {
         const result = getNodeClaimableFees(
             "li963gPP4ANqdvHQ8rfC9hxLl7gAAAAAAAAAAAAAAAA",
             "BTC",
-            queryBlockStateResponseMock,
+            blockState,
         );
         expect(result.toNumber()).to.equal(15000000);
     });
@@ -290,7 +284,7 @@ describe("node fees", () => {
         const result = getNodeClaimableFees(
             "UyR7eXjDqVnArP0aCj4qD/A0w3MAAAAAAAAAAAAAAAA",
             "BTC",
-            queryBlockStateResponseMock,
+            blockState,
         );
         expect(result.toNumber()).to.equal(5000000);
     });
@@ -299,7 +293,7 @@ describe("node fees", () => {
         const result = getNodeClaimableFees(
             "R22tRItPlzKCZ5xmhDUNIw/CenwAAAAAAAAAAAAAAAA",
             "BTC",
-            queryBlockStateResponseMock,
+            blockState,
         );
         expect(result.toNumber()).to.equal(0);
     });
@@ -308,7 +302,7 @@ describe("node fees", () => {
         const result = getNodeClaimableFees(
             "oNig-tMtnRPeOY00OzxAQHmpMS4AAAAAAAAAAAAAAAA",
             "BTC",
-            queryBlockStateResponseMock,
+            blockState,
         );
         expect(result.toNumber()).to.equal(0);
     });
@@ -318,7 +312,7 @@ describe("node fees - aggregations", () => {
     test("get node claimable assets fees (nonexistent node)", () => {
         const result = getNodeFeesCollection(
             "oNig-tMtnRPeOY00OzxAQHmpMS4AAAAAAAAAAAAAAAA",
-            queryBlockStateResponseMock,
+            blockState,
             "withdrawable",
         );
         expect(unify(result.get("BTC" as Token)).amount).to.eql(0);
@@ -328,7 +322,7 @@ describe("node fees - aggregations", () => {
     test("get node claimable assets fees (node never claimed)", () => {
         const result = getNodeFeesCollection(
             "li963gPP4ANqdvHQ8rfC9hxLl7gAAAAAAAAAAAAAAAA",
-            queryBlockStateResponseMock,
+            blockState,
             "withdrawable",
         );
         expect(unify(result.get("BTC" as Token)).amount).to.eql(15000000);

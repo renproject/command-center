@@ -1279,7 +1279,7 @@ export const queryBlockStateResponse = {
                     epoch: {
                         hash: "DH379e0CMqJeafGJjU9yDAT0geI3VddI_xciO-wSQtQ",
                         numNodes: "10",
-                        number: "1",
+                        number: "3",
                         timestamp: "1590971276",
                     },
                     nodes: [

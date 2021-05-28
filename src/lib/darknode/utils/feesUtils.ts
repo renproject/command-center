@@ -1,11 +1,7 @@
 import BigNumber from "bignumber.js";
-import { OrderedMap } from "immutable";
 import { updatePrice } from "../../../controllers/common/tokenBalanceUtils";
 import { FeeTokens, Token, TokenPrices } from "../../ethereum/tokens";
-import {
-    TokenAmount,
-    TokenAmountCollection,
-} from "../../graphQL/queries/queries";
+import { TokenAmount } from "../../graphQL/queries/queries";
 import { queryBlockStateResponseMock } from "./currentMock";
 
 export type QueryBlockStateResponse = typeof queryBlockStateResponseMock;
