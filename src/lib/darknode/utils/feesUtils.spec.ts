@@ -277,7 +277,7 @@ describe("node epoch utils", () => {
 });
 
 describe("node fees", () => {
-    test("get node claimable fees (node never claimed)", () => {
+    test("gets node claimable fees (node never claimed)", () => {
         const result = getNodeClaimableFees(
             "li963gPP4ANqdvHQ8rfC9hxLl7gAAAAAAAAAAAAAAAA",
             "BTC",
@@ -286,7 +286,7 @@ describe("node fees", () => {
         expect(result.toNumber()).to.equal(15000000);
     });
 
-    test("get node claimable fees (node already claimed in previous-1 epoch)", () => {
+    test("gets node claimable fees (node already claimed in previous-1 epoch)", () => {
         const result = getNodeClaimableFees(
             "UyR7eXjDqVnArP0aCj4qD/A0w3MAAAAAAAAAAAAAAAA",
             "BTC",
@@ -295,7 +295,7 @@ describe("node fees", () => {
         expect(result.toNumber()).to.equal(5000000);
     });
 
-    test("get node claimable fees (node claimed in previous epoch)", () => {
+    test("gets node claimable fees (node claimed in previous epoch)", () => {
         const result = getNodeClaimableFees(
             "R22tRItPlzKCZ5xmhDUNIw/CenwAAAAAAAAAAAAAAAA",
             "BTC",
@@ -304,7 +304,7 @@ describe("node fees", () => {
         expect(result.toNumber()).to.equal(0);
     });
 
-    test("get node claimable fees (nonexistent node)", () => {
+    test("gets node claimable fees (nonexistent node)", () => {
         const result = getNodeClaimableFees(
             "oNig-tMtnRPeOY00OzxAQHmpMS4AAAAAAAAAAAAAAAA",
             "BTC",
@@ -319,6 +319,7 @@ describe("node fees - aggregations", () => {
         const result = getNodeFeesCollection(
             "oNig-tMtnRPeOY00OzxAQHmpMS4AAAAAAAAAAAAAAAA",
             queryBlockStateResponseMock,
+            "withdrawable",
         );
         expect(unify(result.get("BTC" as Token)).amount).to.eql(0);
         expect(unify(result.get("ZEC" as Token)).amount).to.eql(0);
@@ -328,6 +329,7 @@ describe("node fees - aggregations", () => {
         const result = getNodeFeesCollection(
             "li963gPP4ANqdvHQ8rfC9hxLl7gAAAAAAAAAAAAAAAA",
             queryBlockStateResponseMock,
+            "withdrawable",
         );
         expect(unify(result.get("BTC" as Token)).amount).to.eql(15000000);
         expect(unify(result.get("ZEC" as Token)).amount).to.eql(0);

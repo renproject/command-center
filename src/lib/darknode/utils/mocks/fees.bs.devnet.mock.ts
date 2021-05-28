@@ -1088,6 +1088,11 @@ export const queryBlockStateResponse = {
                                 epoch: "2",
                                 numNodes: "10", //13
                             },
+                            // {
+                            //     amount: "25000000",
+                            //     epoch: "3",
+                            //     numNodes: "10",
+                            // },
                         ],
                         nodes: [
                             {

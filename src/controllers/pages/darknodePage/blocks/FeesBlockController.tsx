@@ -2,6 +2,10 @@ import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
 import moment from "moment";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import {
+    darknodeIDBase58ToRenVmID,
+    darknodeIDHexToBase58,
+} from "../../../../lib/darknode/darknodeID";
 import { getNodeFeesCollection } from "../../../../lib/darknode/utils/feesUtils";
 
 import {
@@ -20,6 +24,7 @@ import { PopupContainer } from "../../../../store/popupContainer";
 import { UIContainer } from "../../../../store/uiContainer";
 import { FeesBlock } from "../../../../views/darknodeBlocks/FeesBlock";
 import { NotClaimed } from "../../../../views/popups/NotClaimed";
+import { updatePrices } from "../../../common/tokenBalanceUtils";
 
 interface Props {
     isOperator: boolean;
@@ -217,14 +222,29 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
     isOperator,
     darknodeDetails,
 }) => {
-    console.log("dd", darknodeDetails);
-    const { blockState, quoteCurrency } = NetworkContainer.useContainer();
+    const { blockState, quoteCurrency, tokenPrices } =
+        NetworkContainer.useContainer();
+    const { selectedDarknodeID } = UIContainer.useContainer();
+    console.log("dd", selectedDarknodeID, darknodeDetails?.toJS(), blockState);
 
     // const withdrawable = darknodeDetails ? darknodeDetails.feesEarned : null;
-    const pending = darknodeDetails ? darknodeDetails.feesEarned : null;
+    // const pending = darknodeDetails ? darknodeDetails.feesEarned : null;
 
-    const renVmNodeId = "aaa";
-    const withdrawable = getNodeFeesCollection(renVmNodeId, blockState);
+    const renVmNodeId = darknodeIDBase58ToRenVmID(
+        darknodeIDHexToBase58(darknodeDetails?.ID || ""),
+    );
+    console.log(renVmNodeId);
+    // const renVmNodeId = ""; // darknodeIDBase58ToRenVmID(selectedDarknodeID);s
+
+    const pending = updatePrices(
+        getNodeFeesCollection(renVmNodeId, blockState, "withdrawable"),
+        tokenPrices,
+    );
+    const withdrawable = updatePrices(
+        getNodeFeesCollection(renVmNodeId, blockState, "withdrawable"),
+        tokenPrices,
+    );
+
     const withdraw: any = () => {};
 
     return (

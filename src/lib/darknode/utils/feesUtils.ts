@@ -47,6 +47,10 @@ export const getLastEpochId = (
     return Number(epochs[epochs.length - 1].epoch);
 };
 
+export const getCurrentEpochId = (blockState: QueryBlockStateResponse) => {
+    return Number(blockState.result.state.v.System.epoch.number);
+};
+
 export const getTokenRewardsForEpoch = (
     symbol: string,
     epoch: "current" | "previous" | number,
@@ -218,12 +222,21 @@ export const getNodeClaimableFees = (
     return claimable;
 };
 
+export const getNodePendingFees = (
+    renVmNodeId: string,
+    symbol: string,
+    blockState: QueryBlockStateResponse,
+) => {
+    const epoch = 3;
+    getTokenRewardsForEpoch(symbol, epoch, blockState, true);
+};
+
 export type FeeType = "withdrawable" | "pending";
 
 export const getNodeFeesCollection = (
     renVmNodeId: string,
     blockState: QueryBlockStateResponse | null,
-    type: FeeType = "withdrawable",
+    type: FeeType,
 ) => {
     return FeeTokens.mapEntries(([symbol, token]) => {
         let amount = new BigNumber(0);
