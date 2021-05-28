@@ -1,17 +1,15 @@
-import React, { useCallback, useMemo, useState } from "react";
-
-import { Tabs } from "../Tabs";
-import { Block, BlockBody, BlockTitle } from "./Block";
-
 import { Currency, CurrencyIcon } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
-import { fromWei } from "web3-utils";
+import React, { useCallback, useMemo, useState } from "react";
 import { AnyTokenBalance } from "../../controllers/common/TokenBalance";
 import {
     catchBackgroundException,
     catchInteractionException,
 } from "../../lib/react/errors";
 import { ReactComponent as FlameIcon } from "../../styles/images/icon-flame.svg";
+
+import { Tabs } from "../Tabs";
+import { Block, BlockBody, BlockTitle } from "./Block";
 
 interface Props {
     darknodeBalance: BigNumber | null;

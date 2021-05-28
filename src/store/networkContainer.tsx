@@ -1,26 +1,20 @@
-import { RenNetworks } from "@renproject/interfaces";
 import { Currency, CurrencyIcon, Record } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import { List, Map, OrderedMap, OrderedSet } from "immutable";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { createContainer } from "unstated-next";
 import { PromiEvent } from "web3-core";
 
 import { MultiStepPopup } from "../controllers/common/popups/MultiStepPopup";
 import { ConvertCurrency } from "../controllers/common/TokenBalance";
-import {
-    updatePrice,
-    updatePrices,
-} from "../controllers/common/tokenBalanceUtils";
-import { safe } from "../controllers/pages/darknodePage/DarknodePage";
+import { updatePrices } from "../controllers/common/tokenBalanceUtils";
 import { retryNTimes } from "../controllers/pages/renvmStatsPage/renvmContainer";
 import { NodeStatistics, queryBlockState } from "../lib/darknode/jsonrpc";
 import {
-    getTokenRewardsForEpoch,
-    toNativeTokenSymbol,
     getTokenFeeAmounts,
-    toTokenAmount,
+    getTokenRewardsForEpoch,
     QueryBlockStateResponse,
+    toNativeTokenSymbol,
 } from "../lib/darknode/utils/feesUtils";
 import { getDarknodePayment } from "../lib/ethereum/contract";
 import {

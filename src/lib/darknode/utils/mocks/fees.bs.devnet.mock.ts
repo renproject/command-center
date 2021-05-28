@@ -1182,7 +1182,28 @@ export const queryBlockStateResponse = {
                     burnFee: "10",
                     dustAmount: "100000000",
                     fees: {
-                        epochs: [],
+                        epochs: [
+                            {
+                                amount: "0",
+                                epoch: "0",
+                                numNodes: "0",
+                            },
+                            {
+                                amount: 4206.9 * 10 ** 18,
+                                epoch: "1",
+                                numNodes: "10",
+                            },
+                            {
+                                amount: "123456789",
+                                epoch: "2",
+                                numNodes: "10",
+                            },
+                            {
+                                amount: 690 * 10 ** 18, //0.69 DOGE
+                                epoch: "3",
+                                numNodes: "10",
+                            },
+                        ],
                         nodes: [],
                         unassigned: "0",
                     },

@@ -201,16 +201,3 @@ interface Props {
     ) => Promise<void>;
     className?: string;
 }
-
-export const FeesBlocks: React.FC = ({}) => {
-    return (
-        <Block className={classNames("fees-block")}>
-            <BlockTitle>
-                <h3>
-                    <RewardsIcon />
-                    Darknode Income
-                </h3>
-            </BlockTitle>
-        </Block>
-    );
-};

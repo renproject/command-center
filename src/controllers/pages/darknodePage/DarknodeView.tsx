@@ -1,20 +1,14 @@
 import { Blocky } from "@renproject/react-components";
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 
 import { NULL, RegistrationStatus } from "../../../lib/ethereum/contractReads";
-import { classNames } from "../../../lib/react/className";
 import { GraphContainer } from "../../../store/graphContainer";
 import { DarknodesState } from "../../../store/networkContainer";
-import { ReactComponent as RewardsIcon } from "../../../styles/images/icon-rewards-white.svg";
-import { Block, BlockTitle } from "../../../views/darknodeBlocks/Block";
 import { DarknodeName } from "../../../views/darknodeBlocks/DarknodeName";
 import { EpochBlock } from "../../../views/darknodeBlocks/EpochBlock";
 import { NetworkBlock } from "../../../views/darknodeBlocks/NetworkBlock";
 import { ResourcesBlock } from "../../../views/darknodeBlocks/ResourcesBlock";
-import {
-    FeesBlockController,
-    FeesSwitcherController,
-} from "./blocks/FeesBlockController";
+import { FeesSwitcherController } from "./blocks/FeesBlockController";
 import { GasBlockController } from "./blocks/GasBlockController";
 import { VersionBlockController } from "./blocks/VersionBlockController";
 import { DarknodeAction } from "./DarknodePage";
