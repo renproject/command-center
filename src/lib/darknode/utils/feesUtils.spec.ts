@@ -351,7 +351,7 @@ describe("node fees - aggregations", () => {
         const result = getNodeFeesCollection(
             "oNig-tMtnRPeOY00OzxAQHmpMS4AAAAAAAAAAAAAAAA",
             blockState,
-            "withdrawable",
+            "claimable",
         );
         expect(unify(result.get("BTC" as Token)).amount).to.eql(0);
         expect(unify(result.get("ZEC" as Token)).amount).to.eql(0);
@@ -361,7 +361,7 @@ describe("node fees - aggregations", () => {
         const result = getNodeFeesCollection(
             "li963gPP4ANqdvHQ8rfC9hxLl7gAAAAAAAAAAAAAAAA",
             blockState,
-            "withdrawable",
+            "claimable",
         );
         expect(unify(result.get("BTC" as Token)).amount).to.eql(15000000);
         expect(unify(result.get("ZEC" as Token)).amount).to.eql(0);
@@ -371,9 +371,39 @@ describe("node fees - aggregations", () => {
         const result = getNodeFeesCollection(
             "UyR7eXjDqVnArP0aCj4qD/A0w3MAAAAAAAAAAAAAAAA",
             blockState,
-            "withdrawable",
+            "claimable",
         );
         expect(unify(result.get("BTC" as Token)).amount).to.eql(5000000);
+        expect(unify(result.get("ZEC" as Token)).amount).to.eql(0);
+    });
+
+    test("get node pending assets fees (nonexistent node)", () => {
+        const result = getNodeFeesCollection(
+            "oNig-tMtnRPeOY00OzxAQHmpMS4AAAAAAAAAAAAAAAA",
+            blockState,
+            "claimable",
+        );
+        expect(unify(result.get("BTC" as Token)).amount).to.eql(0);
+        expect(unify(result.get("ZEC" as Token)).amount).to.eql(0);
+    });
+
+    test("get node pending assets fees (node never claimed)", () => {
+        const result = getNodeFeesCollection(
+            "li963gPP4ANqdvHQ8rfC9hxLl7gAAAAAAAAAAAAAAAA",
+            blockState,
+            "pending",
+        );
+        expect(unify(result.get("BTC" as Token)).amount).to.eql(2500000);
+        expect(unify(result.get("ZEC" as Token)).amount).to.eql(0);
+    });
+
+    test("get node pending assets fees (node claimed in previous-1 epoch)", () => {
+        const result = getNodeFeesCollection(
+            "UyR7eXjDqVnArP0aCj4qD/A0w3MAAAAAAAAAAAAAAAA",
+            blockState,
+            "pending",
+        );
+        expect(unify(result.get("BTC" as Token)).amount).to.eql(2500000);
         expect(unify(result.get("ZEC" as Token)).amount).to.eql(0);
     });
 });

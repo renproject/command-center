@@ -236,7 +236,7 @@ export const getNodePendingFees = (
     return getTokenRewardsForEpoch(symbol, epoch, blockState, true);
 };
 
-export type FeeType = "withdrawable" | "pending";
+export type FeeType = "claimable" | "pending";
 
 export const getNodeFeesCollection = (
     renVmNodeId: string,
@@ -247,9 +247,9 @@ export const getNodeFeesCollection = (
         let amount = new BigNumber(0);
         if (blockState !== null) {
             amount =
-                type === "withdrawable"
+                type === "claimable"
                     ? getNodeClaimableFees(renVmNodeId, symbol, blockState)
-                    : new BigNumber(9); //TODO: fees add pending
+                    : getNodePendingFees(renVmNodeId, symbol, blockState);
         }
         const tokenAmount = toTokenAmount(amount, token.symbol, token.decimals);
         return [symbol, tokenAmount];

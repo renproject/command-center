@@ -236,12 +236,12 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
     console.log(renVmNodeId);
     // const renVmNodeId = ""; // darknodeIDBase58ToRenVmID(selectedDarknodeID);s
 
-    const pending = updatePrices(
-        getNodeFeesCollection(renVmNodeId, blockState, "withdrawable"),
+    const withdrawable = updatePrices(
+        getNodeFeesCollection(renVmNodeId, blockState, "claimable"),
         tokenPrices,
     );
-    const withdrawable = updatePrices(
-        getNodeFeesCollection(renVmNodeId, blockState, "withdrawable"),
+    const pending = updatePrices(
+        getNodeFeesCollection(renVmNodeId, blockState, "pending"),
         tokenPrices,
     );
 
