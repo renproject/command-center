@@ -163,6 +163,8 @@ export const FeesBlockController: React.FC<Props> = ({
         isOperator,
     ]);
 
+    console.log(pendingRewards);
+
     let summedPendingRewards = OrderedMap<string, TokenAmount | null>();
     if (previousCycle && showPreviousPending) {
         pendingRewards.get(previousCycle, OrderedMap());

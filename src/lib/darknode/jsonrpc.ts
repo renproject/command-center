@@ -91,7 +91,7 @@ export const queryBlockState = async (network: RenNetworkDetails) => {
     };
 
     if (lightnode !== "foo") {
-        // TODO: fees use mock until testnet readyy
+        // TODO: fees use mock until testnet ready
         return Promise.resolve(queryBlockStateResponseMock);
     }
 

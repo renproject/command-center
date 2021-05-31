@@ -153,8 +153,8 @@ export const DarknodePage = () => {
     if (!darknodeOrURL) {
         return <NotFound />;
     }
-    // console.log("details", objectify(details));
-    // console.log("cycleStatus", objectify(objectify(details).cycleStatus));
+    console.log("details", objectify(details));
+    console.log("cycleStatus", objectify(objectify(details).cycleStatus));
     // TODO: fees here are fees visible under "withdrawable" - the exact amounts
     console.log("feesEarned", objectify(objectify(details).feesEarned));
     return (
