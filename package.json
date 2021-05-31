@@ -10,8 +10,8 @@
         "lint:extra": "$npm_execpath run --silent lint:unused-exports; $npm_execpath run --silent lint:outdated-imports",
         "lint": "$npm_execpath run --silent lint:ts && $npm_execpath run --silent lint:prettier",
         "lint:all": "$npm_execpath run --silent lint && $npm_execpath run --silent lint:extra",
-        "test": "react-scripts jest --testPathIgnorePatterns=src/lib/ethereum",
-        "test-contracts": "react-scripts jest --testPathPattern=src/lib/ethereum --globalSetup=./src/test/globalSetup.ts --globalTeardown=./src/test/globalTeardown.ts",
+        "test": "react-scripts test --testPathIgnorePatterns=src/lib/ethereum",
+        "test-contracts": "react-scripts test --testPathPattern=src/lib/ethereum --globalSetup=./src/test/globalSetup.ts --globalTeardown=./src/test/globalTeardown.ts",
         "start": "./.env || true; react-scripts start",
         "build": "REACT_APP_SOURCE_VERSION=$SOURCE_VERSION react-scripts --max_old_space_size=4096 build",
         "eject": "react-scripts eject"
