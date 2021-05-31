@@ -1,6 +1,6 @@
-import BigNumber from "bignumber.js";
 import { expect } from "chai";
 import { Token } from "../../ethereum/tokens";
+import { unify } from "../../general/debugUtils";
 import { parseTokenAmount } from "../../graphQL/queries/queries";
 import { tokenArrayToMap } from "../../graphQL/volumes";
 import { queryBlockStateResponseMock as blockState } from "./currentMock";
@@ -20,24 +20,6 @@ import {
     getNodeExists,
 } from "./feesUtils";
 import { partialFees } from "./mocks/fees.mocks";
-
-const numericKeys = ["amount", "amountInUsd", "amountInEth"];
-
-const replacer = (key: any, value: any) => {
-    if (numericKeys.includes(key)) {
-        if (typeof value === "object") {
-            return new BigNumber({ ...value, _isBigNumber: true }).toNumber();
-        } else if (typeof value === "string") {
-            return Number(value);
-        }
-        return value;
-    }
-    return value;
-};
-
-const unify = (obj: any) => {
-    return JSON.parse(JSON.stringify(obj, replacer));
-};
 
 describe("fees", () => {
     test("unifies", () => {

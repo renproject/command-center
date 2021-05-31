@@ -1079,14 +1079,14 @@ export const queryBlockStateResponse = {
                                 numNodes: "0",
                             },
                             {
-                                amount: "100000000", //14184320
+                                amount: "100000000", // 14184320
                                 epoch: "1",
-                                numNodes: "10", //13
+                                numNodes: "10", // 13
                             },
                             {
-                                amount: "50000000", //27005361
+                                amount: "50000000", // 27005361
                                 epoch: "2",
-                                numNodes: "10", //13
+                                numNodes: "10", // 13
                             },
                             {
                                 amount: "25000000",
@@ -1199,7 +1199,7 @@ export const queryBlockStateResponse = {
                                 numNodes: "10",
                             },
                             {
-                                amount: 690 * 10 ** 18, //0.69 DOGE
+                                amount: 690 * 10 ** 18, // 0.69 DOGE
                                 epoch: "3",
                                 numNodes: "10",
                             },

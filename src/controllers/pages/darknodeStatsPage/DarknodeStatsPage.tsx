@@ -83,7 +83,6 @@ export const DarknodeStatsPage = () => {
                   .toNumber()
             : null;
 
-    //TODO: here
     const totalFees = fees
         ? fees.reduce(
               (sum, feeItem) => sum.plus(feeItem.amountInUsd),

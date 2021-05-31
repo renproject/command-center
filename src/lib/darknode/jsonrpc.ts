@@ -85,9 +85,7 @@ interface ResponseQueryBlockState {
     result: QueryBlockStateResponse;
 }
 
-export const queryBlockState = async (
-    network: RenNetworkDetails,
-): Promise<any> => {
+export const queryBlockState = async (network: RenNetworkDetails) => {
     const lightnode = getLightnode(network);
     if (!lightnode) {
         throw new Error(`No lightnode to fetch fees.`);
@@ -99,7 +97,7 @@ export const queryBlockState = async (
     };
 
     if (lightnode !== "foo") {
-        // TODO: fees use mock until done
+        // TODO: fees use mock until testnet ready
         return Promise.resolve(queryBlockStateResponseMock);
     }
 

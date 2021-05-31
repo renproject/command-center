@@ -33,6 +33,5 @@ export const renVMID2Base58 = (renVMID: string) => {
     return darknodeIDHexToBase58(address);
 };
 
-// TODO: fees temporary
-(window as any).renVMID2Base58 = renVMID2Base58;
-(window as any).darknodeIDBase58ToRenVmID = darknodeIDBase58ToRenVmID;
+// (window as any).renVMID2Base58 = renVMID2Base58;
+// (window as any).darknodeIDBase58ToRenVmID = darknodeIDBase58ToRenVmID;

@@ -45,7 +45,7 @@ module.exports = {
         "jsdoc/newline-after-description": "warn",
         "jsdoc/check-indentation": "warn",
         "no-console": [
-            "warn",
+            "off", // turn on before merge
             {
                 allow: [
                     "error",

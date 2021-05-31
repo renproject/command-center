@@ -6,6 +6,7 @@ import { toChecksumAddress } from "web3-utils";
 
 import { darknodeIDBase58ToHex } from "../../../lib/darknode/darknodeID";
 import { RegistrationStatus } from "../../../lib/ethereum/contractReads";
+import { objectify } from "../../../lib/general/debugUtils";
 import { NetworkContainer } from "../../../store/networkContainer";
 import { UIContainer } from "../../../store/uiContainer";
 import { Web3Container } from "../../../store/web3Container";
@@ -152,10 +153,10 @@ export const DarknodePage = () => {
     if (!darknodeOrURL) {
         return <NotFound />;
     }
-    console.log("details", safe(details));
-    console.log("cycleStatus", safe(safe(details).cycleStatus));
-    //TODO: fees here are fees visible under "withdrawable" - the exact amounts
-    console.log("feesEarned", safe(safe(details).feesEarned));
+    // console.log("details", objectify(details));
+    // console.log("cycleStatus", objectify(objectify(details).cycleStatus));
+    // TODO: fees here are fees visible under "withdrawable" - the exact amounts
+    console.log("feesEarned", objectify(objectify(details).feesEarned));
     return (
         <ErrorBoundary>
             <DarknodeView
@@ -169,14 +170,4 @@ export const DarknodePage = () => {
             />
         </ErrorBoundary>
     );
-};
-
-export const safe = (obj: any) => {
-    if (!obj) {
-        return {};
-    }
-    if (obj && obj.toObject) {
-        return obj.toObject();
-    }
-    return obj;
 };

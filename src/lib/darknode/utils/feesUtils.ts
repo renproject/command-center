@@ -8,6 +8,11 @@ export type QueryBlockStateResponse = typeof queryBlockStateResponseMock;
 
 type Numeric = number | string;
 
+type FeeNode = {
+    node: string;
+    lastEpochClaimed: Numeric;
+};
+
 type FeeEpoch = {
     amount: Numeric;
     epoch: Numeric;
@@ -15,8 +20,8 @@ type FeeEpoch = {
 };
 
 type FeeData = {
-    nodes: Array<any>;
-    epochs: Array<FeeEpoch>;
+    nodes: FeeNode[];
+    epochs: FeeEpoch[];
     unassigned: Numeric;
 };
 
@@ -47,8 +52,8 @@ export const getCurrentEpochId = (blockState: QueryBlockStateResponse) => {
     return Number(blockState.result.state.v.System.epoch.number);
 };
 
+// TODO: fees rename
 export const getTokenRewardsForEpoch = (
-    //TODO: fees rename
     symbol: string,
     epoch: "current" | "previous" | number,
     blockState: QueryBlockStateResponse,
@@ -80,7 +85,7 @@ export const getTokenRewardsForEpoch = (
 };
 
 export const toTokenAmount = (
-    amount: any,
+    amount: BigNumber,
     symbol: string,
     decimals: number,
 ) => {
@@ -95,6 +100,7 @@ export const toTokenAmount = (
 };
 
 export const getTokenFeeAmounts = (
+    // eslint-disable-next-line
     amount: any,
     symbol: string,
     decimals: number,
@@ -170,9 +176,9 @@ export const getNodeFirstClaimableEpoch = (
     }
     const enteredAt = getNodeEnteredAt(renVmNodeId, blockState);
     if (enteredAt !== null) {
-        return enteredAt; //TODO: Jaz is it inclusive?
+        return enteredAt; // TODO: is it inclusive?
     }
-    return null; // TODO: Jaz is it possible?
+    return null; // TODO: is it possible?
 };
 
 export const getNodeClaimableFeeForEpoch = (

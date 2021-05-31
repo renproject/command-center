@@ -183,7 +183,7 @@ export const FeesBlockController: React.FC<Props> = ({
         );
     }
 
-    //TODO: fees here are being splitted to withdrawable / pending
+    // TODO: fees here are being splitted to withdrawable / pending
     const withdrawable = darknodeDetails ? darknodeDetails.feesEarned : null;
     const pending = summedPendingRewards;
 
@@ -245,7 +245,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
         tokenPrices,
     );
 
-    const withdraw: any = () => {};
+    const withdraw = async () => {};
 
     return (
         <FeesBlock
