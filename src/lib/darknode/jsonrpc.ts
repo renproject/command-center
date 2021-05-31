@@ -79,12 +79,6 @@ export const queryStat = async (lightnode: string, darknodeID: string) => {
     });
 };
 
-interface ResponseQueryBlockState {
-    jsonrpc: "2.0";
-    id: number;
-    result: QueryBlockStateResponse;
-}
-
 export const queryBlockState = async (network: RenNetworkDetails) => {
     const lightnode = getLightnode(network);
     if (!lightnode) {
@@ -97,11 +91,16 @@ export const queryBlockState = async (network: RenNetworkDetails) => {
     };
 
     if (lightnode !== "foo") {
-        // TODO: fees use mock until testnet ready
+        // TODO: fees use mock until testnet readyy
         return Promise.resolve(queryBlockStateResponseMock);
     }
 
-    return Axios.post<ResponseQueryBlockState>(lightnode, request, {
-        timeout: DEFAULT_REQUEST_TIMEOUT,
-    });
+    const response = await Axios.post<RPCResponse<QueryBlockStateResponse>>(
+        lightnode,
+        request,
+        {
+            timeout: DEFAULT_REQUEST_TIMEOUT,
+        },
+    );
+    return response.data.result;
 };
