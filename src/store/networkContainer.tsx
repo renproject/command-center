@@ -12,7 +12,7 @@ import { retryNTimes } from "../controllers/pages/renvmStatsPage/renvmContainer"
 import { NodeStatistics, queryBlockState } from "../lib/darknode/jsonrpc";
 import {
     getTokenFeeAmounts,
-    getTokenRewardsForEpoch,
+    getTokenFeeForEpoch,
     QueryBlockStateResponse,
     toNativeTokenSymbol,
 } from "../lib/darknode/utils/feesUtils";
@@ -366,7 +366,7 @@ const useNetworkContainer = () => {
                     const nativeSymbol = toNativeTokenSymbol(
                         tokenAmount.symbol,
                     );
-                    const renVmFeeAmount = getTokenRewardsForEpoch(
+                    const renVmFeeAmount = getTokenFeeForEpoch(
                         nativeSymbol,
                         "previous",
                         blockState,
@@ -400,7 +400,7 @@ const useNetworkContainer = () => {
                         );
                         const renVmFeeAmount =
                             blockState !== null
-                                ? getTokenRewardsForEpoch(
+                                ? getTokenFeeForEpoch(
                                       nativeSymbol,
                                       "current",
                                       blockState,
@@ -476,7 +476,7 @@ const useNetworkContainer = () => {
                             );
                             const renVmFeeAmount =
                                 blockState !== null
-                                    ? getTokenRewardsForEpoch(
+                                    ? getTokenFeeForEpoch(
                                           nativeSymbol,
                                           "current",
                                           blockState,

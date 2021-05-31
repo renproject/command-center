@@ -9,7 +9,7 @@ import {
     getNodeLastEpochClaimed,
     getNodeEnteredAt,
     getTokenFeeAmounts,
-    getTokenRewardsForEpoch,
+    getTokenFeeForEpoch,
     getNodeFirstClaimableEpoch,
     getNodeClaimableFeeForEpoch,
     getLastAssetEpochId,
@@ -113,27 +113,22 @@ describe("fees", () => {
     });
 
     test("get token rewards for current epoch", () => {
-        const reward = getTokenRewardsForEpoch("BTC", "current", blockState);
+        const reward = getTokenFeeForEpoch("BTC", "current", blockState);
         expect(reward.toNumber()).to.equal(25000000);
     });
 
     test("get token rewards for previous epoch", () => {
-        const reward = getTokenRewardsForEpoch("BTC", "previous", blockState);
+        const reward = getTokenFeeForEpoch("BTC", "previous", blockState);
         expect(reward.toNumber()).to.equal(50000000);
     });
 
     test("get token rewards for epoch per node", () => {
-        const reward = getTokenRewardsForEpoch(
-            "BTC",
-            "current",
-            blockState,
-            true,
-        );
+        const reward = getTokenFeeForEpoch("BTC", "current", blockState, true);
         expect(reward.toNumber()).to.equal(2500000);
     });
 
     test("get token rewards for current epoch", () => {
-        const reward = getTokenRewardsForEpoch("BTC", "current", blockState);
+        const reward = getTokenFeeForEpoch("BTC", "current", blockState);
         const amounts = getTokenFeeAmounts(reward, "BTC", 8, null);
         expect(unify(amounts)).to.eql(
             unify({

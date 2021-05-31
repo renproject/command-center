@@ -53,7 +53,7 @@ export const getCurrentEpochId = (blockState: QueryBlockStateResponse) => {
 };
 
 // TODO: fees rename
-export const getTokenRewardsForEpoch = (
+export const getTokenFeeForEpoch = (
     symbol: string,
     epoch: "current" | "previous" | number,
     blockState: QueryBlockStateResponse,
@@ -197,7 +197,7 @@ export const getNodeClaimableFeeForEpoch = (
         return new BigNumber(0);
     }
     if (epoch >= startEpoch) {
-        return getTokenRewardsForEpoch(symbol, epoch, blockState, true);
+        return getTokenFeeForEpoch(symbol, epoch, blockState, true);
     }
     return new BigNumber(0);
 };
@@ -222,7 +222,7 @@ export const getNodeClaimableFees = (
 
     let claimable = new BigNumber(0);
     for (let epoch = startEpoch; epoch <= lastClaimableEpoch; epoch++) {
-        const fee = getTokenRewardsForEpoch(symbol, epoch, blockState, true);
+        const fee = getTokenFeeForEpoch(symbol, epoch, blockState, true);
         claimable = claimable.plus(fee);
     }
 
@@ -239,7 +239,7 @@ export const getNodePendingFees = (
         return new BigNumber(0);
     }
     const epoch = getCurrentEpochId(blockState);
-    return getTokenRewardsForEpoch(symbol, epoch, blockState, true);
+    return getTokenFeeForEpoch(symbol, epoch, blockState, true);
 };
 
 export type FeeType = "claimable" | "pending";
