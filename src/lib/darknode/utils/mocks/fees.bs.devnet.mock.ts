@@ -1189,17 +1189,17 @@ export const queryBlockStateResponse = {
                                 numNodes: "0",
                             },
                             {
-                                amount: 4206.9 * 10 ** 18,
+                                amount: 4206.9 * 10 ** 8,
                                 epoch: "1",
                                 numNodes: "10",
                             },
                             {
-                                amount: "123456789",
+                                amount: 1235 * 10 ** 8, // 1.235 DOGE
                                 epoch: "2",
                                 numNodes: "10",
                             },
                             {
-                                amount: 690 * 10 ** 18, // 0.69 DOGE
+                                amount: 690 * 10 ** 8, // 0.69 DOGE
                                 epoch: "3",
                                 numNodes: "10",
                             },

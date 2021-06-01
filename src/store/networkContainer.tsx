@@ -357,26 +357,26 @@ const useNetworkContainer = () => {
                 .reduce(
                     (map, asset, symbol) => map.set(symbol, asset),
                     previous,
-                )
-                .map((tokenAmount) => {
-                    console.log(tokenAmount);
-                    if (!tokenAmount || blockState === null) {
-                        return tokenAmount;
-                    }
-                    const nativeSymbol = toNativeTokenSymbol(
-                        tokenAmount.symbol,
-                    );
-                    const renVmFeeAmount = getTokenFeeForEpoch(
-                        nativeSymbol,
-                        "previous",
-                        blockState,
-                        true,
-                    );
-                    return {
-                        ...tokenAmount,
-                        amount: tokenAmount.amount.plus(renVmFeeAmount),
-                    };
-                });
+                );
+            // .map((tokenAmount) => {
+            //     console.log(tokenAmount);
+            //     if (!tokenAmount || blockState === null) {
+            //         return tokenAmount;
+            //     }
+            //     const nativeSymbol = toNativeTokenSymbol(
+            //         tokenAmount.symbol,
+            //     );
+            //     const renVmFeeAmount = getTokenFeeForEpoch(
+            //         nativeSymbol,
+            //         "previous",
+            //         blockState,
+            //         true,
+            //     );
+            //     return {
+            //         ...tokenAmount,
+            //         amount: tokenAmount.amount.plus(renVmFeeAmount),
+            //     };
+            // });
         }
         previous = updatePrices(previous, tokenPrices);
 
@@ -395,41 +395,51 @@ const useNetworkContainer = () => {
                 current = latestRenVM.cycleRewards
                     .filter((tokenAmount) => tokenAmount.asset !== null)
                     .map((tokenAmount) => {
-                        const nativeSymbol = toNativeTokenSymbol(
-                            tokenAmount.symbol,
-                        );
-                        const renVmFeeAmount =
-                            blockState !== null
-                                ? getTokenFeeForEpoch(
-                                      nativeSymbol,
-                                      "current",
-                                      blockState,
-                                  )
-                                : new BigNumber(0);
-                        const renVMFee = getTokenFeeAmounts(
-                            renVmFeeAmount,
-                            nativeSymbol as Token,
-                            tokenAmount.asset?.decimals || 8,
-                            tokenPrices,
-                        );
-                        console.log(
-                            "rvm",
-                            tokenAmount.symbol,
-                            renVMFee,
-                            tokenAmount,
-                        );
+                        // const nativeSymbol = toNativeTokenSymbol(
+                        //     tokenAmount.symbol,
+                        // );
+                        // const renVmFeeAmount =
+                        //     blockState !== null
+                        //         ? getTokenFeeForEpoch(
+                        //               nativeSymbol,
+                        //               "current",
+                        //               blockState,
+                        //           )
+                        //         : new BigNumber(0);
+                        // const decimals =
+                        //     nativeSymbol === "DOGE"
+                        //         ? 8
+                        //         : tokenAmount.asset?.decimals || 0;
+                        // const renVMFee = getTokenFeeAmounts(
+                        //     renVmFeeAmount,
+                        //     nativeSymbol as Token,
+                        //     decimals,
+                        //     tokenPrices,
+                        // );
+                        // console.log(
+                        //     "eth",
+                        //     nativeSymbol,
+                        //     tokenAmount.amount.toNumber(),
+                        //     tokenAmount.asset?.decimals,
+                        // );
+                        // console.log(
+                        //     "rvm",
+                        //     nativeSymbol,
+                        //     renVMFee.amount.toNumber(),
+                        //     renVMFee.asset?.decimals,
+                        // );
                         return {
                             ...tokenAmount,
                             amount: tokenAmount.amount
-                                .plus(renVMFee.amount) // TODO consider dividing by epoch.numNodes
+                                // .plus(renVMFee.amount) // TODO consider dividing by epoch.numNodes
                                 .dividedBy(latestRenVM.numberOfDarknodes)
                                 .decimalPlaces(0),
                             amountInUsd: tokenAmount.amountInUsd
-                                .plus(renVMFee.amountInUsd)
+                                // .plus(renVMFee.amountInUsd)
                                 .dividedBy(latestRenVM.numberOfDarknodes)
                                 .decimalPlaces(0),
                             amountInEth: tokenAmount.amountInEth
-                                .plus(renVMFee.amountInEth)
+                                // .plus(renVMFee.amountInEth)
                                 .dividedBy(latestRenVM.numberOfDarknodes)
                                 .decimalPlaces(0),
                         };
@@ -471,29 +481,29 @@ const useNetworkContainer = () => {
                                 return null;
                             }
 
-                            const nativeSymbol = toNativeTokenSymbol(
-                                tokenDetails.symbol,
-                            );
-                            const renVmFeeAmount =
-                                blockState !== null
-                                    ? getTokenFeeForEpoch(
-                                          nativeSymbol,
-                                          "current",
-                                          blockState,
-                                      )
-                                    : new BigNumber(0);
-
-                            const renVMFee = getTokenFeeAmounts(
-                                renVmFeeAmount,
-                                nativeSymbol as Token,
-                                tokenDetails.decimals,
-                                tokenPrices,
-                            );
+                            // const nativeSymbol = toNativeTokenSymbol(
+                            //     tokenDetails.symbol,
+                            // );
+                            // const renVmFeeAmount =
+                            //     blockState !== null
+                            //         ? getTokenFeeForEpoch(
+                            //               nativeSymbol,
+                            //               "current",
+                            //               blockState,
+                            //           )
+                            //         : new BigNumber(0);
+                            //
+                            // const renVMFee = getTokenFeeAmounts(
+                            //     renVmFeeAmount,
+                            //     nativeSymbol as Token,
+                            //     tokenDetails.decimals,
+                            //     tokenPrices,
+                            // );
 
                             const amount = new BigNumber(
                                 currentCycleRewardPool.toString(),
                             )
-                                .plus(renVMFee.amount)
+                                // .plus(renVMFee.amount)
                                 .decimalPlaces(0)
                                 .div(latestRenVM.numberOfDarknodes)
                                 .decimalPlaces(0);

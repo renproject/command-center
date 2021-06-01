@@ -1,6 +1,8 @@
 import { Currency, CurrencyIcon, Loading } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import React, { useEffect, useMemo } from "react";
+import { getFeesCollection } from "../../../lib/darknode/utils/feesUtils";
+import { objectify, unify } from "../../../lib/general/debugUtils";
 
 import { isDefined } from "../../../lib/general/isDefined";
 import { multiplyTokenAmount } from "../../../lib/graphQL/queries/queries";
@@ -17,6 +19,8 @@ import { EpochProgress } from "../../../views/EpochProgress";
 import { ExternalLink } from "../../../views/ExternalLink";
 import { Stat, Stats } from "../../../views/Stat";
 import { ConvertCurrency } from "../../common/TokenBalance";
+import { updatePrices } from "../../common/tokenBalanceUtils";
+import { mergeFees } from "../darknodePage/blocks/FeesBlockController";
 import { OverviewDiv } from "./DarknodeStatsStyles";
 import { FeesStat } from "./FeesStat";
 
@@ -38,13 +42,23 @@ export const DarknodeStatsPage = () => {
         fees,
     } = renVM || {};
     console.log(fees);
-    const { pendingRewards, quoteCurrency, pendingTotalInUsd } =
-        NetworkContainer.useContainer();
+    const {
+        pendingRewards,
+        blockState,
+        quoteCurrency,
+        pendingTotalInUsd,
+        tokenPrices,
+        fetchBlockState,
+    } = NetworkContainer.useContainer();
     const { latestCLIVersion, latestCLIVersionDaysAgo } =
         GithubAPIContainer.useContainer();
 
     const { renNetwork } = Web3Container.useContainer();
     const { darknodes, fetchDarknodes } = MapContainer.useContainer();
+
+    useEffect(() => {
+        fetchBlockState().catch(console.error);
+    }, [fetchBlockState]);
 
     useEffect(() => {
         const fetchIPs = () => {
@@ -65,6 +79,24 @@ export const DarknodeStatsPage = () => {
 
     console.log(currentCycle, previousCycle); // TODO: fees 0x hashes of something
     console.log("pendingRewards", pendingRewards.toJSON());
+
+    const currentNetworkRenVM = updatePrices(
+        getFeesCollection("current", blockState),
+        tokenPrices,
+    );
+    const currentNetworkRenVmInUsd = currentNetworkRenVM.reduce(
+        (sum, entry) => sum.plus(entry.amountInUsd),
+        new BigNumber(0),
+    );
+    const previousNetworkRenVm = updatePrices(
+        getFeesCollection("previous", blockState),
+        tokenPrices,
+    );
+    const previousNetworkRenVmInUsd = previousNetworkRenVm.reduce(
+        (sum, entry) => sum.plus(entry.amountInUsd),
+        new BigNumber(0),
+    );
+
     const current =
         (isDefined(currentCycle) &&
             pendingRewards.get(currentCycle, undefined)) ||
@@ -103,6 +135,14 @@ export const DarknodeStatsPage = () => {
             ? previousInUsd.times(numberOfDarknodesLastEpoch)
             : undefined;
 
+    const currentNetworkInUsdMerged = currentNetworkRenVmInUsd.plus(
+        currentNetworkInUsd || 0,
+    );
+    const previousNetworkInUsdMerged = previousNetworkRenVmInUsd.plus(
+        previousNetworkInUsd || 0,
+    );
+
+    console.log("o1", objectify(currentNetworkRenVM));
     const currentNetwork = useMemo(
         () =>
             current && numberOfDarknodes
@@ -112,8 +152,6 @@ export const DarknodeStatsPage = () => {
                 : undefined,
         [current, numberOfDarknodes],
     );
-
-    console.log("previous", previous?.toJSON());
 
     const previousNetwork = useMemo(
         () =>
@@ -126,6 +164,16 @@ export const DarknodeStatsPage = () => {
                 : undefined,
         [previous, numberOfDarknodesLastEpoch],
     );
+
+    const currentNetworkMerged =
+        currentNetwork !== undefined
+            ? mergeFees(currentNetwork, currentNetworkRenVM)
+            : currentNetworkRenVM;
+
+    const previousNetworkMerged =
+        previousNetwork !== undefined
+            ? mergeFees(previousNetwork, previousNetworkRenVm)
+            : previousNetworkRenVm;
 
     return (
         <OverviewDiv className="overview container">
@@ -233,15 +281,15 @@ export const DarknodeStatsPage = () => {
                             )}
                         </Stat>
                         <FeesStat
-                            fees={previousNetwork}
-                            feesInUsd={previousNetworkInUsd}
+                            fees={previousNetworkMerged}
+                            feesInUsd={previousNetworkInUsdMerged}
                             message="Last cycle"
                             infoLabel="The amount of rewards earned by the entire network of Darknodes in the last Epoch."
                             quoteCurrency={quoteCurrency}
                         />
                         <FeesStat
-                            fees={currentNetwork}
-                            feesInUsd={currentNetworkInUsd}
+                            fees={currentNetworkMerged}
+                            feesInUsd={currentNetworkInUsdMerged}
                             message="Current cycle"
                             infoLabel="Rewards earned in this current Epoch so far by the entire Darknode network."
                             quoteCurrency={quoteCurrency}

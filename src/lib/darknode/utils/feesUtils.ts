@@ -25,7 +25,7 @@ type FeeData = {
     unassigned: Numeric;
 };
 
-export const getFeesForAsset = (
+export const getFeesForToken = (
     symbol: string,
     blockState: QueryBlockStateResponse,
 ) => {
@@ -40,7 +40,7 @@ export const getLastAssetEpochId = (
     symbol: string,
     blockState: QueryBlockStateResponse,
 ) => {
-    const fees = getFeesForAsset(symbol, blockState);
+    const fees = getFeesForToken(symbol, blockState);
     if (!fees || fees.epochs.length === 0) {
         return null;
     }
@@ -52,14 +52,13 @@ export const getCurrentEpochId = (blockState: QueryBlockStateResponse) => {
     return Number(blockState.result.state.v.System.epoch.number);
 };
 
-// TODO: fees rename
 export const getTokenFeeForEpoch = (
     symbol: string,
     epoch: "current" | "previous" | number,
     blockState: QueryBlockStateResponse,
     perNode = false,
 ) => {
-    const data = getFeesForAsset(symbol, blockState);
+    const data = getFeesForToken(symbol, blockState);
     if (data === null) {
         return new BigNumber(0);
     }
@@ -123,6 +122,10 @@ export const toNativeTokenSymbol = (symbol: string) => {
     return symbol.replace(/^ren/, "").replace(/^test/, "").replace(/^dev/, "");
 };
 
+// export const getNativeDecimals = (symbol: string) => {
+//     AllTokenDetails;
+// };
+
 export const getNodeEnteredAt = (
     renVmNodeId: string,
     blockState: QueryBlockStateResponse,
@@ -148,7 +151,7 @@ export const getNodeLastEpochClaimed = (
     symbol: string,
     blockState: QueryBlockStateResponse,
 ) => {
-    const data = getFeesForAsset(symbol, blockState);
+    const data = getFeesForToken(symbol, blockState);
     if (!data) {
         return null;
     }
@@ -257,6 +260,47 @@ export const getNodeFeesCollection = (
                     ? getNodeClaimableFees(renVmNodeId, symbol, blockState)
                     : getNodePendingFees(renVmNodeId, symbol, blockState);
         }
+        const tokenAmount = toTokenAmount(amount, token.symbol, token.decimals);
+        return [symbol, tokenAmount];
+    });
+};
+
+export const getFeesCollection = (
+    epoch: "current" | "previous" | number,
+    blockState: QueryBlockStateResponse | null,
+) => {
+    return FeeTokens.mapEntries(([symbol, token]) => {
+        let amount = new BigNumber(0);
+        if (blockState !== null) {
+            amount = getTokenFeeForEpoch(symbol, epoch, blockState);
+        }
+        const tokenAmount = toTokenAmount(amount, token.symbol, token.decimals);
+        return [symbol, tokenAmount];
+    });
+};
+
+export const getAggregatedFeeAmountForToken = (
+    symbol: string,
+    blockState: QueryBlockStateResponse | null,
+) => {
+    let amount = new BigNumber(0);
+    if (blockState !== null) {
+        const fees = getFeesForToken(symbol, blockState);
+        if (fees && fees.epochs.length) {
+            amount = fees.epochs.reduce(
+                (sum, epoch) => sum.plus(epoch.amount),
+                new BigNumber(0),
+            );
+        }
+    }
+    return amount;
+};
+
+export const getAggregatedFeesCollection = (
+    blockState: QueryBlockStateResponse | null,
+) => {
+    return FeeTokens.mapEntries(([symbol, token]) => {
+        let amount = getAggregatedFeeAmountForToken(symbol, blockState);
         const tokenAmount = toTokenAmount(amount, token.symbol, token.decimals);
         return [symbol, tokenAmount];
     });

@@ -5,7 +5,7 @@ import { parseTokenAmount } from "../../graphQL/queries/queries";
 import { tokenArrayToMap } from "../../graphQL/volumes";
 import { queryBlockStateResponseMock as blockState } from "./currentMock";
 import {
-    getFeesForAsset,
+    getFeesForToken,
     getNodeLastEpochClaimed,
     getNodeEnteredAt,
     getTokenFeeAmounts,
@@ -18,6 +18,8 @@ import {
     getCurrentEpochId,
     getNodePendingFees,
     getNodeExists,
+    getAggregatedFeesCollection,
+    getAggregatedFeeAmountForToken,
 } from "./feesUtils";
 import { partialFees } from "./mocks/fees.mocks";
 
@@ -69,7 +71,7 @@ describe("fees", () => {
     });
 
     test("gets fee amount for asset", () => {
-        const result = getFeesForAsset("BTC", blockState);
+        const result = getFeesForToken("BTC", blockState);
         const expected = {
             epochs: [
                 {
@@ -301,7 +303,7 @@ describe("node fees", () => {
             "DOGE",
             blockState,
         );
-        expect(result.toNumber()).to.equal(420690000000012300000);
+        expect(result.toNumber()).to.equal(54418999999.99999);
     });
 
     test("gets node claimable fees (nonexistent node)", () => {
@@ -390,6 +392,24 @@ describe("node fees - aggregations", () => {
             "pending",
         );
         expect(unify(result.get("BTC" as Token)).amount).to.eql(2500000);
+        expect(unify(result.get("ZEC" as Token)).amount).to.eql(0);
+    });
+});
+
+describe("total fees - aggregations", () => {
+    test("aggregated fee amount for token", () => {
+        const btc = getAggregatedFeeAmountForToken("BTC", blockState);
+        const doge = getAggregatedFeeAmountForToken("DOGE", blockState);
+        const zec = getAggregatedFeeAmountForToken("ZEC", blockState);
+        expect(btc.toNumber()).to.eql(175000000);
+        expect(doge.toNumber()).to.eql(613190000000);
+        expect(zec.toNumber()).to.eql(0);
+    });
+
+    test("aggregated fee amounts for tokens", () => {
+        const result = getAggregatedFeesCollection(blockState);
+        expect(unify(result.get("BTC" as Token)).amount).to.eql(175000000);
+        expect(unify(result.get("DOGE" as Token)).amount).to.eql(613190000000);
         expect(unify(result.get("ZEC" as Token)).amount).to.eql(0);
     });
 });
