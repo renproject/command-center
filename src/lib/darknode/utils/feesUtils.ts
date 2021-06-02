@@ -300,7 +300,7 @@ export const getAggregatedFeesCollection = (
     blockState: QueryBlockStateResponse | null,
 ) => {
     return FeeTokens.mapEntries(([symbol, token]) => {
-        let amount = getAggregatedFeeAmountForToken(symbol, blockState);
+        const amount = getAggregatedFeeAmountForToken(symbol, blockState);
         const tokenAmount = toTokenAmount(amount, token.symbol, token.decimals);
         return [symbol, tokenAmount];
     });

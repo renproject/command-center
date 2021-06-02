@@ -1,8 +1,11 @@
 import { Currency, CurrencyIcon, Loading } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import React, { useEffect, useMemo } from "react";
-import { getFeesCollection } from "../../../lib/darknode/utils/feesUtils";
-import { objectify, unify } from "../../../lib/general/debugUtils";
+import {
+    getAggregatedFeesCollection,
+    getFeesCollection,
+} from "../../../lib/darknode/utils/feesUtils";
+import { objectify } from "../../../lib/general/debugUtils";
 
 import { isDefined } from "../../../lib/general/isDefined";
 import { multiplyTokenAmount } from "../../../lib/graphQL/queries/queries";
@@ -115,12 +118,21 @@ export const DarknodeStatsPage = () => {
                   .toNumber()
             : null;
 
-    const totalFees = fees
+    const totalFeesInUsd = fees
         ? fees.reduce(
               (sum, feeItem) => sum.plus(feeItem.amountInUsd),
               new BigNumber(0),
           )
         : null;
+    const totalFeesRenVm = updatePrices(
+        getAggregatedFeesCollection(blockState),
+        tokenPrices,
+    );
+    const totalFeesRenVmInUsd = totalFeesRenVm.reduce(
+        (sum, feeItem) => sum.plus(feeItem.amountInUsd),
+        new BigNumber(0),
+    );
+    const totalFeesInUsdMerged = totalFeesRenVmInUsd.plus(totalFeesInUsd || 0);
 
     const currentInUsd =
         currentCycle && pendingTotalInUsd.get(currentCycle, undefined);
@@ -267,13 +279,13 @@ export const DarknodeStatsPage = () => {
                             infoLabel="The fees paid to the network across all epochs, using the USD price at the time of the mint or burn."
                             style={{ flexBasis: "0", flexGrow: 3 }}
                         >
-                            {isDefined(totalFees) ? (
+                            {Boolean(totalFeesInUsdMerged) ? (
                                 <>
                                     <CurrencyIcon currency={quoteCurrency} />
                                     <ConvertCurrency
                                         from={Currency.USD}
                                         to={quoteCurrency}
-                                        amount={totalFees}
+                                        amount={totalFeesInUsdMerged}
                                     />
                                 </>
                             ) : (
