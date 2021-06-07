@@ -26,12 +26,16 @@ export enum NetworkStatsChain {
     // All = "All",
     Ethereum = "Ethereum",
     BinanceSmartChain = "Binance Smart Chain",
+    Fantom = "Fantom",
+    Polygon = "Polygon",
 }
 
 const useNetworkStatsContainer = () => {
     const {
         ethereumSubgraph,
         bscSubgraph,
+        fantomSubgraph,
+        polygonSubgraph,
     } = GraphClientContainer.useContainer();
 
     const { renNetwork } = Web3Container.useContainer();
@@ -39,6 +43,8 @@ const useNetworkStatsContainer = () => {
         renVM,
         getLatestSyncedBlock,
         getLatestSyncedBlockBSC,
+        getLatestSyncedBlockFantom,
+        getLatestSyncedBlockPolygon,
     } = GraphContainer.useContainer();
     const { numberOfDarknodes } = renVM || {};
     const { quoteCurrency, tokenPrices } = NetworkContainer.useContainer();
@@ -214,7 +220,9 @@ const useNetworkStatsContainer = () => {
                                 period,
                                 latestBlock,
                             );
-                        } else {
+                        } else if (
+                            chain === NetworkStatsChain.BinanceSmartChain
+                        ) {
                             const latestBlock = await getLatestSyncedBlockBSC();
                             response = await getVolumes(
                                 renNetwork.isTestnet
@@ -225,6 +233,30 @@ const useNetworkStatsContainer = () => {
                                 // Round down latest block to improve caching.
                                 latestBlock - (latestBlock % 200),
                                 20,
+                            );
+                        } else if (chain === NetworkStatsChain.Fantom) {
+                            const latestBlock = await getLatestSyncedBlockFantom();
+                            response = await getVolumes(
+                                VolumeNetwork.Fantom,
+                                fantomSubgraph,
+                                period,
+                                // Round down latest block to improve caching.
+                                latestBlock - (latestBlock % 200),
+                                20,
+                            );
+                        } else if (chain === NetworkStatsChain.Polygon) {
+                            const latestBlock = await getLatestSyncedBlockPolygon();
+                            response = await getVolumes(
+                                VolumeNetwork.Polygon,
+                                polygonSubgraph,
+                                period,
+                                // Round down latest block to improve caching.
+                                latestBlock - (latestBlock % 200),
+                                20,
+                            );
+                        } else {
+                            throw new Error(
+                                `Unsupported chain ${String(chain)}.`,
                             );
                         }
                     } catch (error) {
@@ -266,6 +298,8 @@ const useNetworkStatsContainer = () => {
         for (const chain of [
             NetworkStatsChain.Ethereum,
             NetworkStatsChain.BinanceSmartChain,
+            NetworkStatsChain.Fantom,
+            NetworkStatsChain.Polygon,
         ]) {
             for (const period of [
                 PeriodType.DAY,

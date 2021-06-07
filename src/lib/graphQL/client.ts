@@ -17,6 +17,17 @@ export const bscSubgraphUrl = (renNetwork: RenNetworkDetails) =>
         renNetwork.name === "mainnet" ? "" : `-${renNetwork.name}`
     }`;
 
+export const fantomSubgraphUrl = (renNetwork: RenNetworkDetails) =>
+    `https://api.thegraph.com/subgraphs/name/renproject/renvm${
+        renNetwork.name === "mainnet" ? "-fantom" : `-fantom-testnet`
+    }`;
+
+export const polygonSubgraphUrl = (renNetwork: RenNetworkDetails) => {
+    return `https://api.thegraph.com/subgraphs/name/renproject/renvm${
+        renNetwork.name === "mainnet" ? "-polygon" : `-polygon-testnet`
+    }`;
+};
+
 export const apolloClient = (graphUrl: string) => {
     const client = new ApolloClient<unknown>({
         uri: graphUrl,

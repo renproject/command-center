@@ -25,6 +25,8 @@ export enum VolumeNetwork {
     EthereumTestnet = "EthereumTestnet",
     BSC = "BSC",
     BSCTestnet = "BSCTestnet",
+    Fantom = "Fantom",
+    Polygon = "Polygon"
 }
 
 const getNetworkBlockTime = (volumeNetwork: VolumeNetwork) => {

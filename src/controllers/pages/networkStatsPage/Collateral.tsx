@@ -319,6 +319,40 @@ export const Collateral: React.FC<Props> = ({
                                 {burnFee ? <>{10 / 100}%</> : <Loading />}
                             </span>
                         </div>
+                        <div>
+                            <span>
+                                <TokenIcon token="FantomChain" /> Fantom
+                            </span>
+                        </div>
+                        <div>
+                            <span style={{ marginLeft: "40px" }}>Mint</span>
+                            <span>
+                                {mintFee ? <>{15 / 100}%</> : <Loading />}
+                            </span>
+                        </div>
+                        <div>
+                            <span style={{ marginLeft: "40px" }}>Burn</span>
+                            <span>
+                                {burnFee ? <>{15 / 100}%</> : <Loading />}
+                            </span>
+                        </div>
+                        <div>
+                            <span>
+                                <TokenIcon token="PolygonChain" /> Polygon
+                            </span>
+                        </div>
+                        <div>
+                            <span style={{ marginLeft: "40px" }}>Mint</span>
+                            <span>
+                                {mintFee ? <>{15 / 100}%</> : <Loading />}
+                            </span>
+                        </div>
+                        <div>
+                            <span style={{ marginLeft: "40px" }}>Burn</span>
+                            <span>
+                                {burnFee ? <>{15 / 100}%</> : <Loading />}
+                            </span>
+                        </div>
                     </SimpleTable>
                 </Stat>
             </Stats>
