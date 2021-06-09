@@ -84,7 +84,6 @@ const useOnboard = (networkID: number) => {
                                 rpcUrl: rpcUrl,
                             },
                             { walletName: "metamask", preferred: true },
-                            { walletName: "authereum" },
                             {
                                 walletName: "trezor",
                                 appUrl: appUrl,
@@ -101,6 +100,8 @@ const useOnboard = (networkID: number) => {
                                 label: "Ledger (legacy)",
                                 rpcUrl,
                             },
+                            { walletName: "gnosis" },
+                            { walletName: "authereum" },
                             {
                                 walletName: "lattice",
                                 rpcUrl: rpcUrl,
@@ -145,7 +146,6 @@ const useOnboard = (networkID: number) => {
                             { walletName: "frame" },
                             { walletName: "ownbit" },
                             { walletName: "alphawallet" },
-                            { walletName: "gnosis" },
                             { walletName: "xdefi" },
                             { walletName: "bitpie" },
                         ],
