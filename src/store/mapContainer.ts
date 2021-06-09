@@ -69,14 +69,15 @@ export const getLightnode = (
             case "mainnet":
                 return "https://lightnode-new-mainnet.herokuapp.com";
             case "testnet":
-                return "https://lightnode-new-testnet.herokuapp.com";
+                return "http://0.0.0.0:8888";
+            // return "https://lightnode-new-testnet.herokuapp.com";
             // TODO: fees - not sure about following ones;
             // case "chaosnet":
             //     return "https://lightnode-chaosnet-new.herokuapp.com";
             case "devnet":
                 return "https://lightnode-devnet.herokuapp.com";
             case "localnet":
-                return "";
+                return "http://0.0.0.0:8888";
         }
     }
     switch (network.name) {
