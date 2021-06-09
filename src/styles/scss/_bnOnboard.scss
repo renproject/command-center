@@ -64,22 +64,22 @@
 
     .bn-onboard-modal-select-wallets {
         & > div {
-            margin-bottom: -40px !important;
+            margin-bottom: -30px !important;
             justify-content: flex-end !important;
 
-            & > .bn-onboard-prepare-button {
-                color: transparent !important;
-                font-size: 0px !important;
-                border: none !important;
-                right: 0;
+            // & > .bn-onboard-prepare-button {
+            //     color: transparent !important;
+            //     font-size: 0px !important;
+            //     border: none !important;
+            //     right: 0;
 
-                &:after {
-                    content: "Show disabled wallets";
-                    color: #aaa;
-                    font-size: 12px;
-                    margin: 0 10px;
-                }
-            }
+            //     &:after {
+            //         content: "Show disabled wallets";
+            //         color: #aaa;
+            //         font-size: 12px;
+            //         margin: 0 10px;
+            //     }
+            // }
         }
     }
 }
