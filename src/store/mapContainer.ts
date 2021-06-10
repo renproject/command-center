@@ -63,14 +63,17 @@ const parallelLimit = <T>(
 export const getLightnode = (
     network: RenNetworkDetails,
     isNew = false,
+    loki = false, // temporary
 ): string => {
+    if (loki) {
+        return "http://0.0.0.0:8888";
+    }
     if (isNew) {
         switch (network.name) {
             case "mainnet":
                 return "https://lightnode-new-mainnet.herokuapp.com";
             case "testnet":
-                return "http://0.0.0.0:8888";
-            // return "https://lightnode-new-testnet.herokuapp.com";
+                return "https://lightnode-new-testnet.herokuapp.com";
             // TODO: fees - not sure about following ones;
             // case "chaosnet":
             //     return "https://lightnode-chaosnet-new.herokuapp.com";

@@ -80,7 +80,7 @@ export const queryStat = async (lightnode: string, darknodeID: string) => {
 };
 
 export const queryBlockState = async (network: RenNetworkDetails) => {
-    const lightnode = getLightnode(network);
+    const lightnode = getLightnode(network, true, true);
     if (!lightnode) {
         throw new Error(`No lightnode to fetch fees.`);
     }
@@ -88,12 +88,14 @@ export const queryBlockState = async (network: RenNetworkDetails) => {
         jsonrpc: "2.0",
         method: "ren_queryBlockState",
         id: 300,
+        params: {},
     };
 
     if (lightnode !== "foo") {
         // TODO: fees use mock until testnet ready
         return Promise.resolve(queryBlockStateResponseMock);
     }
+    console.log("query");
 
     const response = await Axios.post<RPCResponse<QueryBlockStateResponse>>(
         lightnode,
@@ -102,5 +104,6 @@ export const queryBlockState = async (network: RenNetworkDetails) => {
             timeout: DEFAULT_REQUEST_TIMEOUT,
         },
     );
-    return response.data.result;
+    console.log("responsee", response);
+    return response.data as any;
 };
