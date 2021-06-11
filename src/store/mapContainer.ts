@@ -8,6 +8,7 @@ import { createContainer } from "unstated-next";
 
 import { retryNTimes } from "../controllers/pages/renvmStatsPage/renvmContainer";
 import { DEFAULT_REQUEST_TIMEOUT } from "../lib/react/environmentVariables";
+import { peerResponse } from "./vDot2Peers";
 import { Web3Container } from "./web3Container";
 
 export const SESSION_MAP_LIMIT = 30;
@@ -131,21 +132,22 @@ const getAllDarknodes = async (network: RenNetworkDetails) => {
     if (!lightnode) {
         throw new Error(`No lightnode to fetch darknode locations.`);
     }
-    const request = {
-        jsonrpc: "2.0",
-        method: "ren_queryPeers",
-        params: {},
-        id: 67,
-    };
-    const response = (
-        await retryNTimes(
-            async () =>
-                await Axios.post<QueryResponse>(lightnode, request, {
-                    timeout: DEFAULT_REQUEST_TIMEOUT,
-                }),
-            2,
-        )
-    ).data;
+    // const request = {
+    //     jsonrpc: "2.0",
+    //     method: "ren_queryPeers",
+    //     params: {},
+    //     id: 67,
+    // };
+    // const response = (
+    //     await retryNTimes(
+    //         async () =>
+    //             await Axios.post<QueryResponse>(lightnode, request, {
+    //                 timeout: DEFAULT_REQUEST_TIMEOUT,
+    //             }),
+    //         2,
+    //     )
+    // ).data;
+    const response = peerResponse;
     return response.result.peers;
     // return darknodeIDs.map(parseMultiAddress);
 };
