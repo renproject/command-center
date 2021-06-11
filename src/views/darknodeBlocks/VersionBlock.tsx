@@ -37,8 +37,8 @@ const RenderStatus: React.FC<{ status: DarknodeConnectionStatus }> = ({
     switch (status) {
         case DarknodeConnectionStatus.NotRegistered:
             return <>Not registered</>;
-        // case DarknodeConnectionStatus.Connecting:
-        // return <>Connecting...</>;
+        case DarknodeConnectionStatus.Connecting:
+            return <>Connecting...</>;
         // case DarknodeConnectionStatus.Connected:
         // return <>Operational</>;
         // case DarknodeConnectionStatus.NotConnected:
@@ -53,7 +53,6 @@ const RenderStatus: React.FC<{ status: DarknodeConnectionStatus }> = ({
         //         </InfoLabel>
         //     </>
         // );
-        case DarknodeConnectionStatus.Connecting:
         case DarknodeConnectionStatus.Connected:
         case DarknodeConnectionStatus.NotConnected:
         case DarknodeConnectionStatus.Bootstrapping:
@@ -100,8 +99,9 @@ export const VersionBlock: React.FC<Props> = ({
                         // status === DarknodeConnectionStatus.Connected
                         //     ? StatusDotColor.Green
                         //     : StatusDotColor.Yellow
-                        status === DarknodeConnectionStatus.NotRegistered
-                            ? StatusDotColor.Red
+                        status === DarknodeConnectionStatus.NotRegistered ||
+                        status === DarknodeConnectionStatus.Connecting
+                            ? StatusDotColor.Yellow
                             : StatusDotColor.Green
                     }
                     size={24}
