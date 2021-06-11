@@ -20,6 +20,16 @@ export enum Token {
     DGB = "DGB",
 }
 
+export const chainToToken = {
+    Bitcoin: Token.BTC,
+    BitcoinCash: Token.BCH,
+    DigiByte: Token.DGB,
+    Dogecoin: Token.DOGE,
+    Filecoin: Token.FIL,
+    Terra: Token.LUNA,
+    Zcash: Token.ZEC,
+};
+
 export type TokenString = string;
 
 interface TokenDetail {

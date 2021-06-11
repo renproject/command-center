@@ -213,7 +213,7 @@ export const Collateral: React.FC<Props> = ({
                                     </InfoLabel>
                                 </div>
                             </div>
-                            <div>
+                            {/* <div>
                                 <div className="collateral-table--row--left row--b">
                                     <RowBullet /> Value in motion
                                 </div>
@@ -236,7 +236,7 @@ export const Collateral: React.FC<Props> = ({
                                         value minted.
                                     </InfoLabel>
                                 </div>
-                            </div>
+                            </div> */}
                             <div>
                                 <div className="collateral-table--row--left row--b">
                                     <RowBullet /> Value Bonded&nbsp;(B)
