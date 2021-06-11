@@ -135,12 +135,12 @@ export const Header = () => {
                     icon={<OverviewIcon />}
                     activePath={location.pathname}
                 />
-                <MenuItem
+                {/* <MenuItem
                     path="/renvm"
                     title="RenVM"
                     icon={<RenVMIcon />}
                     activePath={location.pathname}
-                />
+                /> */}
 
                 {NODE_ENV === "development" ? (
                     <MenuItem
