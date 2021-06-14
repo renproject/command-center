@@ -213,7 +213,7 @@ export const Collateral: React.FC<Props> = ({
                                     </InfoLabel>
                                 </div>
                             </div>
-                            <div>
+                            {/* <div>
                                 <div className="collateral-table--row--left row--b">
                                     <RowBullet /> Value in motion
                                 </div>
@@ -236,7 +236,7 @@ export const Collateral: React.FC<Props> = ({
                                         value minted.
                                     </InfoLabel>
                                 </div>
-                            </div>
+                            </div> */}
                             <div>
                                 <div className="collateral-table--row--left row--b">
                                     <RowBullet /> Value Bonded&nbsp;(B)
@@ -317,6 +317,40 @@ export const Collateral: React.FC<Props> = ({
                             <span style={{ marginLeft: "40px" }}>Burn</span>
                             <span>
                                 {burnFee ? <>{10 / 100}%</> : <Loading />}
+                            </span>
+                        </div>
+                        <div>
+                            <span>
+                                <TokenIcon token="FantomChain" /> Fantom
+                            </span>
+                        </div>
+                        <div>
+                            <span style={{ marginLeft: "40px" }}>Mint</span>
+                            <span>
+                                {mintFee ? <>{15 / 100}%</> : <Loading />}
+                            </span>
+                        </div>
+                        <div>
+                            <span style={{ marginLeft: "40px" }}>Burn</span>
+                            <span>
+                                {burnFee ? <>{15 / 100}%</> : <Loading />}
+                            </span>
+                        </div>
+                        <div>
+                            <span>
+                                <TokenIcon token="PolygonChain" /> Polygon
+                            </span>
+                        </div>
+                        <div>
+                            <span style={{ marginLeft: "40px" }}>Mint</span>
+                            <span>
+                                {mintFee ? <>{15 / 100}%</> : <Loading />}
+                            </span>
+                        </div>
+                        <div>
+                            <span style={{ marginLeft: "40px" }}>Burn</span>
+                            <span>
+                                {burnFee ? <>{15 / 100}%</> : <Loading />}
                             </span>
                         </div>
                     </SimpleTable>

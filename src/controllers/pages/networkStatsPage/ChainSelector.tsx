@@ -7,6 +7,8 @@ const ChainDotColors = {
     // [NetworkStatsChain.All]: "#006FE8",
     [NetworkStatsChain.Ethereum]: "#627EEA",
     [NetworkStatsChain.BinanceSmartChain]: "#F9B72D",
+    [NetworkStatsChain.Fantom]: "#1969ff",
+    [NetworkStatsChain.Polygon]: "#8247e5",
 };
 
 const ChainDotDiv = styled.div`
@@ -85,6 +87,16 @@ export const ChainSelector = ({
             />
             <ChainOption
                 value={NetworkStatsChain.BinanceSmartChain}
+                selected={selected}
+                onChange={onChange}
+            />
+            <ChainOption
+                value={NetworkStatsChain.Fantom}
+                selected={selected}
+                onChange={onChange}
+            />
+            <ChainOption
+                value={NetworkStatsChain.Polygon}
                 selected={selected}
                 onChange={onChange}
             />

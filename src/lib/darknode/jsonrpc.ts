@@ -79,6 +79,49 @@ export const queryStat = async (lightnode: string, darknodeID: string) => {
     });
 };
 
+export interface RenVMState {
+    state: {
+        [chain: string]: {
+            address: string; // "19iqYbeATe4RxghQZJnYVFU4mjUUu76EA6";
+            dust: string; // "546";
+            gasCap: string; // "68";
+            gasLimit: string; // "400";
+            gasPrice: string; // "68";
+            latestChainHash: string; // "";
+            latestChainHeight: string; // "687159";
+            minimumAmount: string; // "547";
+            output?: {
+                outpoint: {
+                    hash: string; // "X8rTxRtVMBPJeOp3n5O7lvtzwL5CpP2wOBXfvw2JrpQ";
+                    index: string; // "1";
+                };
+                pubKeyScript: string; // "dqkUX6qVduRay8lmK2q_MjIpt0ipSV2IrA";
+                value: string; // "1103287860496";
+            };
+            pubKey: string; // "A6Auk8-MR7JQB1sK9h-W69EDdsCqp2NRSOiJyytRyWkn";
+        };
+    };
+}
+
+export const queryState = async (lightnode: string): Promise<RenVMState> => {
+    const request = {
+        jsonrpc: "2.0",
+        method: "ren_queryState",
+        params: {},
+        id: 67,
+    };
+    const result = (
+        await retryNTimes(
+            async () =>
+                await Axios.post<RPCResponse<RenVMState>>(lightnode, request, {
+                    timeout: DEFAULT_REQUEST_TIMEOUT,
+                }),
+            2,
+        )
+    ).data.result;
+    return result;
+};
+
 export const queryBlockState = async (network: RenNetworkDetails) => {
     const lightnode = getLightnode(network, true, true);
     if (!lightnode) {

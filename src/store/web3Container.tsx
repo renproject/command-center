@@ -80,25 +80,18 @@ const useOnboard = (networkID: number) => {
                     },
                     walletSelect: {
                         wallets: [
-                            // Preferred ///////////////////////////////////////////
-
+                            { walletName: "coinbase", preferred: true },
+                            {
+                                walletName: "trust",
+                                preferred: true,
+                                rpcUrl: rpcUrl,
+                            },
                             { walletName: "metamask", preferred: true },
                             {
-                                walletName: "walletConnect",
-                                infuraKey: EXTRA_WALLETS_INFURA_KEY,
-                                preferred: true,
-                            },
-
-                            // Not officially supported ////////////////////////////
-
-                            { walletName: "coinbase" },
-                            { walletName: "trust", rpcUrl },
-                            { walletName: "dapper" },
-                            {
                                 walletName: "trezor",
-                                appUrl,
+                                appUrl: appUrl,
                                 email: supportEmail,
-                                rpcUrl,
+                                rpcUrl: rpcUrl,
                             },
                             {
                                 walletName: "ledger",
@@ -110,12 +103,18 @@ const useOnboard = (networkID: number) => {
                                 label: "Ledger (legacy)",
                                 rpcUrl,
                             },
+                            { walletName: "gnosis" },
+                            { walletName: "authereum" },
                             {
                                 walletName: "lattice",
-                                rpcUrl,
-                                appName,
+                                rpcUrl: rpcUrl,
+                                appName: appName,
                             },
-                            // Fortmatic requires a paid key
+                            {
+                                walletName: "cobovault",
+                                rpcUrl: rpcUrl,
+                                appName: appName,
+                            },
                             // {
                             //   walletName: "fortmatic",
                             //   apiKey: FORTMATIC_KEY,
@@ -124,41 +123,34 @@ const useOnboard = (networkID: number) => {
                             {
                                 walletName: "portis",
                                 apiKey: PORTIS_KEY,
+                                label: "Login with Email",
                             },
-                            // Squarelink's registration page is broken
-                            // {
-                            //   walletName: "squarelink",
-                            //   apiKey: SQUARELINK_KEY
-                            // },
-                            { walletName: "authereum" },
+                            {
+                                walletName: "walletConnect",
+                                preferred: true,
+                                infuraKey: INFURA_KEY,
+                            },
                             { walletName: "opera" },
                             { walletName: "operaTouch" },
                             { walletName: "torus" },
                             { walletName: "status" },
-                            { walletName: "unilogin" },
                             {
                                 walletName: "walletLink",
-                                rpcUrl,
-                                appName,
+                                rpcUrl: rpcUrl,
+                                appName: appName,
                             },
-                            {
-                                walletName: "imToken",
-                                rpcUrl,
-                            },
+                            { walletName: "imToken", rpcUrl: rpcUrl },
                             { walletName: "meetone" },
-                            {
-                                walletName: "mykey",
-                                rpcUrl,
-                            },
-                            {
-                                walletName: "huobiwallet",
-                                rpcUrl,
-                            },
+                            { walletName: "mykey", rpcUrl: rpcUrl },
+                            { walletName: "huobiwallet", rpcUrl: rpcUrl },
                             { walletName: "hyperpay" },
-                            {
-                                walletName: "wallet.io",
-                                rpcUrl,
-                            },
+                            { walletName: "wallet.io", rpcUrl: rpcUrl },
+                            { walletName: "atoken" },
+                            { walletName: "frame" },
+                            { walletName: "ownbit" },
+                            { walletName: "alphawallet" },
+                            { walletName: "xdefi" },
+                            { walletName: "bitpie" },
                         ],
                     },
                     walletCheck: [

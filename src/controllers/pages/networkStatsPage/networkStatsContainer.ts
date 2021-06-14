@@ -3,8 +3,13 @@ import BigNumber from "bignumber.js";
 import { Map, OrderedMap, OrderedSet } from "immutable";
 import { useEffect, useState } from "react";
 import { createContainer } from "unstated-next";
+import { queryState, RenVMState } from "../../../lib/darknode/jsonrpc";
 
-import { AllTokenDetails, Token } from "../../../lib/ethereum/tokens";
+import {
+    AllTokenDetails,
+    chainToToken,
+    Token,
+} from "../../../lib/ethereum/tokens";
 import { isDefined } from "../../../lib/general/isDefined";
 import { GraphClientContainer } from "../../../lib/graphQL/ApolloWithNetwork";
 import {
@@ -16,6 +21,7 @@ import {
     VolumeNetwork,
 } from "../../../lib/graphQL/volumes";
 import { GraphContainer } from "../../../store/graphContainer";
+import { getLightnode } from "../../../store/mapContainer";
 import { NetworkContainer } from "../../../store/networkContainer";
 import { Web3Container } from "../../../store/web3Container";
 import { SECONDS } from "../../common/BackgroundTasks";
@@ -26,98 +32,109 @@ export enum NetworkStatsChain {
     // All = "All",
     Ethereum = "Ethereum",
     BinanceSmartChain = "Binance Smart Chain",
+    Fantom = "Fantom",
+    Polygon = "Polygon",
 }
 
 const useNetworkStatsContainer = () => {
-    const { ethereumSubgraph, bscSubgraph } =
-        GraphClientContainer.useContainer();
+    const {
+        ethereumSubgraph,
+        bscSubgraph,
+        fantomSubgraph,
+        polygonSubgraph,
+    } = GraphClientContainer.useContainer();
 
     const { renNetwork } = Web3Container.useContainer();
-    const { renVM, getLatestSyncedBlock, getLatestSyncedBlockBSC } =
-        GraphContainer.useContainer();
+    const {
+        renVM,
+        getLatestSyncedBlock,
+        getLatestSyncedBlockBSC,
+        getLatestSyncedBlockFantom,
+        getLatestSyncedBlockPolygon,
+    } = GraphContainer.useContainer();
     const { numberOfDarknodes } = renVM || {};
     const { quoteCurrency, tokenPrices } = NetworkContainer.useContainer();
-    const container = RenVMContainer.useContainer();
+
+    const [renVMState, setRenVMState] = useState<RenVMState | null>(null);
 
     const updateBlocksInterval = 120 * SECONDS;
     useEffect(() => {
-        container.updateBlocks().catch(console.error);
+        (async () => {
+            const lightnode = getLightnode(renNetwork);
+            if (!lightnode) {
+                throw new Error(`No lightnode to fetch darknode locations.`);
+            }
+            setRenVMState(await queryState(lightnode));
+        })().catch(console.error);
+
         const interval = setInterval(() => {
-            container.updateBlocks().catch(console.error);
+            (async () => {
+                const lightnode = getLightnode(renNetwork);
+                if (!lightnode) {
+                    throw new Error(
+                        `No lightnode to fetch darknode locations.`,
+                    );
+                }
+                setRenVMState(await queryState(lightnode));
+            })().catch(console.error);
         }, updateBlocksInterval);
         return () => clearInterval(interval);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []); // 120 seconds
 
-    const firstBlock = container.blocks
-        ? container.blocks.first<Block | null>(null)
-        : null;
+    // const firstBlock = container.blocks
+    //     ? container.blocks.first<Block | null>(null)
+    //     : null;
 
     // For each locked token, create a <Stat> element
     let lockedBalances: OrderedMap<Token, BigNumber> = OrderedMap();
     let total = new BigNumber(0);
-    if (firstBlock && firstBlock.prevState && firstBlock.prevState.map) {
-        firstBlock.prevState
+    if (renVMState) {
+        Object.keys(renVMState.state)
             // .map(state => { const { name, ...restOfA } = state; return { ...restOfA, name: state.name.replace("UTXOs", "").toUpperCase() as Token }; })
-            .map((state) => {
-                if (state.type === RenVMType.ExtTypeBtcCompatUTXOs) {
-                    const token = state.name
-                        .replace("UTXOs", "")
-                        .toUpperCase() as Token;
-                    if (tokenPrices === null) {
-                        lockedBalances = lockedBalances.set(
-                            token,
-                            new BigNumber(0),
-                        );
-                        return null;
-                    }
-
-                    const tokenPriceMap = tokenPrices.get(token, undefined);
-                    if (!tokenPriceMap) {
-                        lockedBalances = lockedBalances.set(
-                            token,
-                            new BigNumber(0),
-                        );
-                        return null;
-                    }
-
-                    const price = tokenPriceMap.get(quoteCurrency, undefined);
-                    if (!price) {
-                        lockedBalances = lockedBalances.set(
-                            token,
-                            new BigNumber(0),
-                        );
-                        return null;
-                    }
-
-                    const tokenDetails = AllTokenDetails.get(token, undefined);
-                    const decimals = tokenDetails
-                        ? new BigNumber(
-                              tokenDetails.decimals.toString(),
-                          ).toNumber()
-                        : 0;
-
-                    const amount = new BigNumber(
-                        state && state.value
-                            ? state.value
-                                  .reduce(
-                                      (sum, utxo) =>
-                                          sum.plus(utxo.amount || "0"),
-                                      new BigNumber(0),
-                                  )
-                                  .toFixed()
-                            : 0,
-                    ).div(new BigNumber(Math.pow(10, decimals)));
-
+            .map((chain) => {
+                const token = chainToToken[chain];
+                if (!token) {
+                    return null;
+                }
+                if (tokenPrices === null) {
                     lockedBalances = lockedBalances.set(
                         token,
-                        amount.times(price),
-                    );
-                    total = total.plus(
-                        lockedBalances.get(token, new BigNumber(0)),
+                        new BigNumber(0),
                     );
                     return null;
                 }
+
+                const tokenPriceMap = tokenPrices.get(token, undefined);
+                if (!tokenPriceMap) {
+                    lockedBalances = lockedBalances.set(
+                        token,
+                        new BigNumber(0),
+                    );
+                    return null;
+                }
+
+                const price = tokenPriceMap.get(quoteCurrency, undefined);
+                if (!price) {
+                    lockedBalances = lockedBalances.set(
+                        token,
+                        new BigNumber(0),
+                    );
+                    return null;
+                }
+
+                const tokenDetails = AllTokenDetails.get(token, undefined);
+                const decimals = tokenDetails
+                    ? new BigNumber(tokenDetails.decimals.toString()).toNumber()
+                    : 0;
+
+                const output = renVMState.state[chain].output;
+                const amount = new BigNumber(output ? output.value : 0).div(
+                    new BigNumber(Math.pow(10, decimals)),
+                );
+
+                lockedBalances = lockedBalances.set(token, amount.times(price));
+                total = total.plus(lockedBalances.get(token, new BigNumber(0)));
                 return null;
             });
     }
@@ -209,7 +226,9 @@ const useNetworkStatsContainer = () => {
                                 period,
                                 latestBlock,
                             );
-                        } else {
+                        } else if (
+                            chain === NetworkStatsChain.BinanceSmartChain
+                        ) {
                             const latestBlock = await getLatestSyncedBlockBSC();
                             response = await getVolumes(
                                 renNetwork.isTestnet
@@ -220,6 +239,30 @@ const useNetworkStatsContainer = () => {
                                 // Round down latest block to improve caching.
                                 latestBlock - (latestBlock % 200),
                                 20,
+                            );
+                        } else if (chain === NetworkStatsChain.Fantom) {
+                            const latestBlock = await getLatestSyncedBlockFantom();
+                            response = await getVolumes(
+                                VolumeNetwork.Fantom,
+                                fantomSubgraph,
+                                period,
+                                // Round down latest block to improve caching.
+                                latestBlock - (latestBlock % 200),
+                                20,
+                            );
+                        } else if (chain === NetworkStatsChain.Polygon) {
+                            const latestBlock = await getLatestSyncedBlockPolygon();
+                            response = await getVolumes(
+                                VolumeNetwork.Polygon,
+                                polygonSubgraph,
+                                period,
+                                // Round down latest block to improve caching.
+                                latestBlock - (latestBlock % 200),
+                                20,
+                            );
+                        } else {
+                            throw new Error(
+                                `Unsupported chain ${String(chain)}.`,
                             );
                         }
                     } catch (error) {
@@ -261,6 +304,8 @@ const useNetworkStatsContainer = () => {
         for (const chain of [
             NetworkStatsChain.Ethereum,
             NetworkStatsChain.BinanceSmartChain,
+            NetworkStatsChain.Fantom,
+            NetworkStatsChain.Polygon,
         ]) {
             for (const period of [
                 PeriodType.DAY,

@@ -39,20 +39,24 @@ const RenderStatus: React.FC<{ status: DarknodeConnectionStatus }> = ({
             return <>Not registered</>;
         case DarknodeConnectionStatus.Connecting:
             return <>Connecting...</>;
+        // case DarknodeConnectionStatus.Connected:
+        // return <>Operational</>;
+        // case DarknodeConnectionStatus.NotConnected:
+        // return <>Unable to connect</>;
+        // case DarknodeConnectionStatus.Bootstrapping:
+        // return (
+        //     <>
+        //         Bootstrapping{" "}
+        //         <InfoLabel>
+        //             Newly registered nodes can take a few hours to be seen
+        //             by the entire network.
+        //         </InfoLabel>
+        //     </>
+        // );
         case DarknodeConnectionStatus.Connected:
-            return <>Operational</>;
         case DarknodeConnectionStatus.NotConnected:
-            return <>Unable to connect</>;
         case DarknodeConnectionStatus.Bootstrapping:
-            return (
-                <>
-                    Bootstrapping{" "}
-                    <InfoLabel>
-                        Newly registered nodes can take a few hours to be seen
-                        by the entire network.
-                    </InfoLabel>
-                </>
-            );
+            return <>Registered</>;
     }
 };
 
@@ -92,9 +96,13 @@ export const VersionBlock: React.FC<Props> = ({
             >
                 <StatusDot
                     color={
-                        status === DarknodeConnectionStatus.Connected
-                            ? StatusDotColor.Green
-                            : StatusDotColor.Yellow
+                        // status === DarknodeConnectionStatus.Connected
+                        //     ? StatusDotColor.Green
+                        //     : StatusDotColor.Yellow
+                        status === DarknodeConnectionStatus.NotRegistered ||
+                        status === DarknodeConnectionStatus.Connecting
+                            ? StatusDotColor.Yellow
+                            : StatusDotColor.Green
                     }
                     size={24}
                 />

@@ -6,7 +6,12 @@ import { SECONDS } from "../controllers/common/BackgroundTasks";
 import { useMemoizeWithExpiry } from "../hooks/useMemoizeWithExpiry";
 import { useTaskSchedule } from "../hooks/useTaskSchedule";
 import { GraphClientContainer } from "../lib/graphQL/ApolloWithNetwork";
-import { bscSubgraphUrl, ethereumSubgraphUrl } from "../lib/graphQL/client";
+import {
+    bscSubgraphUrl,
+    ethereumSubgraphUrl,
+    fantomSubgraphUrl,
+    polygonSubgraphUrl,
+} from "../lib/graphQL/client";
 import { queryRenVM, RenVM } from "../lib/graphQL/queries/renVM";
 import { catchBackgroundException } from "../lib/react/errors";
 import { NotificationsContainer } from "./notificationsContainer";
@@ -94,6 +99,34 @@ const useGraphContainer = () => {
         [renNetwork],
     );
 
+    const getLatestSyncedBlockFantom = useMemoizeWithExpiry(
+        async () =>
+            Axios.post<{
+                // eslint-disable-next-line id-blacklist
+                data: { _meta: { block: { number: number } } };
+            }>(fantomSubgraphUrl(renNetwork), {
+                query:
+                    "{\n    _meta {\n      block {\n        number\n      }\n    }\n}",
+            }).then((response) => response.data.data._meta.block.number),
+        // .then(() => 7995685),
+        60 * SECONDS,
+        [renNetwork],
+    );
+
+    const getLatestSyncedBlockPolygon = useMemoizeWithExpiry(
+        async () =>
+            Axios.post<{
+                // eslint-disable-next-line id-blacklist
+                data: { _meta: { block: { number: number } } };
+            }>(polygonSubgraphUrl(renNetwork), {
+                query:
+                    "{\n    _meta {\n      block {\n        number\n      }\n    }\n}",
+            }).then((response) => response.data.data._meta.block.number),
+        // .then(() => 7995726),
+        60 * SECONDS,
+        [renNetwork],
+    );
+
     const [subgraphOutOfSync, setSubgraphOutOfSync] = useState(false);
 
     const [checkedBlock, setCheckedBlock] = useState(false);
@@ -135,6 +168,8 @@ const useGraphContainer = () => {
         subgraphOutOfSync,
         getLatestSyncedBlock,
         getLatestSyncedBlockBSC,
+        getLatestSyncedBlockFantom,
+        getLatestSyncedBlockPolygon,
     };
 };
 
