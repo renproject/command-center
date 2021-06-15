@@ -77,8 +77,11 @@ export type WaitForTX = <T>(
 const useNetworkContainer = () => {
     const { web3, renNetwork, address, notify } = Web3Container.useContainer();
     const { setPopup, clearPopup } = PopupContainer.useContainer();
-    const { renVM, fetchRenVM, subgraphOutOfSync } =
-        GraphContainer.useContainer();
+    const {
+        renVM,
+        fetchRenVM,
+        subgraphOutOfSync,
+    } = GraphContainer.useContainer();
     const { ethereumSubgraph } = GraphClientContainer.useContainer();
 
     const [tokenPrices, setTokenPrices] = useState(null as TokenPrices | null);
@@ -88,8 +91,10 @@ const useNetworkContainer = () => {
         target: 0,
     });
 
-    const [blockState, setBlockState] =
-        useState<QueryBlockStateResponse | null>(null);
+    const [
+        blockState,
+        setBlockState,
+    ] = useState<QueryBlockStateResponse | null>(null);
 
     const [darknodeDetails, setDarknodeDetails] = useState(
         Map<string, DarknodesState>(),
@@ -121,13 +126,15 @@ const useNetworkContainer = () => {
         Map<string, string>(),
         (s) => Map<string, string>(JSON.parse(s as string)),
     );
-    const [darknodeRegisteringList, setDarknodeRegisteringList] =
-        useStorageState(
-            localStorage,
-            "darknodeRegisteringList",
-            Map<string, boolean>(),
-            (s) => Map<string, boolean>(JSON.parse(s as string)),
-        );
+    const [
+        darknodeRegisteringList,
+        setDarknodeRegisteringList,
+    ] = useStorageState(
+        localStorage,
+        "darknodeRegisteringList",
+        Map<string, boolean>(),
+        (s) => Map<string, boolean>(JSON.parse(s as string)),
+    );
     // Map from operator-address to list of darknodes.
     const [darknodeList, setDarknodeList] = useStorageState(
         localStorage,
@@ -147,7 +154,10 @@ const useNetworkContainer = () => {
                 OrderedSet<string>(x),
             ),
     );
-    const [withdrawAddresses, setWithdrawAddresses] = useStorageState(
+    const [
+        withdrawAddresses,
+        setWithdrawAddresses,
+    ] = useStorageState(
         localStorage,
         "withdrawAddresses",
         Map<Token, List<string>>(),
@@ -195,8 +205,9 @@ const useNetworkContainer = () => {
             let operatorHiddenDarknodes =
                 hiddenDarknodes.get(operator) || OrderedSet<string>();
 
-            operatorHiddenDarknodes =
-                operatorHiddenDarknodes.remove(darknodeID);
+            operatorHiddenDarknodes = operatorHiddenDarknodes.remove(
+                darknodeID,
+            );
 
             setHiddenDarknodes((latestHiddenDarknodes) =>
                 (latestHiddenDarknodes || Map()).set(
@@ -338,15 +349,13 @@ const useNetworkContainer = () => {
      * }`
      */
     const fetchCycleAndPendingRewards = async (latestRenVM: RenVM) => {
-        let newPendingRewards =
-            OrderedMap<
-                string /* cycle */,
-                OrderedMap<string, TokenAmount | null>
-            >();
+        let newPendingRewards = OrderedMap<
+            string /* cycle */,
+            OrderedMap<string, TokenAmount | null>
+        >();
 
         let previous = OrderedMap<string, TokenAmount | null>();
         if (isDefined(latestRenVM)) {
-            console.log("renVMDefined", previous.toJSON());
             previous = latestRenVM.currentEpoch.rewardShares
                 .filter((asset) => asset.asset !== null)
                 .reduce(
@@ -379,50 +388,12 @@ const useNetworkContainer = () => {
 
         const assets = tokenArrayToMap(latestRenVM.assets);
 
-        console.log("assets", assets.toJSON());
-
         if (!subgraphOutOfSync) {
-            // TODO: what does it mean?
-            console.log("subgraphOutOfSync");
             current = OrderedMap<string, TokenAmount | null>();
             if (isDefined(latestRenVM)) {
-                console.log("latestRenVM defined");
                 current = latestRenVM.cycleRewards
                     .filter((tokenAmount) => tokenAmount.asset !== null)
                     .map((tokenAmount) => {
-                        // const nativeSymbol = toNativeTokenSymbol(
-                        //     tokenAmount.symbol,
-                        // );
-                        // const renVmFeeAmount =
-                        //     blockState !== null
-                        //         ? getTokenFeeForEpoch(
-                        //               nativeSymbol,
-                        //               "current",
-                        //               blockState,
-                        //           )
-                        //         : new BigNumber(0);
-                        // const decimals =
-                        //     nativeSymbol === "DOGE"
-                        //         ? 8
-                        //         : tokenAmount.asset?.decimals || 0;
-                        // const renVMFee = getTokenFeeAmounts(
-                        //     renVmFeeAmount,
-                        //     nativeSymbol as Token,
-                        //     decimals,
-                        //     tokenPrices,
-                        // );
-                        // console.log(
-                        //     "eth",
-                        //     nativeSymbol,
-                        //     tokenAmount.amount.toNumber(),
-                        //     tokenAmount.asset?.decimals,
-                        // );
-                        // console.log(
-                        //     "rvm",
-                        //     nativeSymbol,
-                        //     renVMFee.amount.toNumber(),
-                        //     renVMFee.asset?.decimals,
-                        // );
                         return {
                             ...tokenAmount,
                             amount: tokenAmount.amount
@@ -445,12 +416,6 @@ const useNetworkContainer = () => {
                     );
             }
         } else {
-            console.log("subgraphsync");
-            // const assets = tokenArrayToMap(latestRenVM.assets);
-            // console.log("assets", assets.toJSON());
-            //
-            // // const { previousEpoch } = getFeesForAsset();
-
             current = await safePromiseAllMap(
                 assets
                     .filter((_, asset) => asset !== "ETH" && asset !== "SAI")
@@ -551,9 +516,6 @@ const useNetworkContainer = () => {
         }
 
         current = updatePrices(current, tokenPrices);
-        console.log("current", current?.toJSON ? current.toJSON() : current);
-        // let previous = await OrderedMap<string, TokenAmount | null>();
-        // previous = updatePrices(previous, tokenPrices);
 
         if (isDefined(latestRenVM)) {
             newPendingRewards = newPendingRewards.set(
@@ -583,8 +545,10 @@ const useNetworkContainer = () => {
                       new BigNumber(0),
                   )
                 : null;
-            newPendingTotalInUsd =
-                OrderedMap<string /* cycle */, BigNumber | null>();
+            newPendingTotalInUsd = OrderedMap<
+                string /* cycle */,
+                BigNumber | null
+            >();
             if (isDefined(latestRenVM)) {
                 newPendingTotalInUsd = newPendingTotalInUsd.set(
                     latestRenVM.previousCycle,
@@ -608,15 +572,14 @@ const useNetworkContainer = () => {
             return;
         }
 
-        const { newPendingRewards, newPendingTotalInUsd } =
-            await fetchCycleAndPendingRewards(renVM);
-
-        console.log(newPendingRewards, newPendingTotalInUsd);
+        const {
+            newPendingRewards,
+            newPendingTotalInUsd,
+        } = await fetchCycleAndPendingRewards(renVM);
 
         if (isDefined(newPendingTotalInUsd)) {
             setPendingTotalInUsd(newPendingTotalInUsd);
         }
-        console.log("newPendingRewards", newPendingRewards);
         setPendingRewards(newPendingRewards);
     };
 

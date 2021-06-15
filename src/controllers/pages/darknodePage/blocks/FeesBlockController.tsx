@@ -89,13 +89,16 @@ export const FeesBlockController: React.FC<Props> = ({
     const { renVM, subgraphOutOfSync } = GraphContainer.useContainer();
     const { setPopup, clearPopup } = PopupContainer.useContainer();
     const { currentCycle, previousCycle, timeSinceLastEpoch } = renVM || {};
-    const { claimWarningShown, setClaimWarningShown } =
-        UIContainer.useContainer();
+    const {
+        claimWarningShown,
+        setClaimWarningShown,
+    } = UIContainer.useContainer();
 
     const [disableClaim, setDisableClaim] = useState(false);
 
-    const [currentCycleStatus, setCurrentCycleStatus] =
-        useState<string | null>(null);
+    const [currentCycleStatus, setCurrentCycleStatus] = useState<string | null>(
+        null,
+    );
 
     const cycleStatus: string | null = useMemo(
         () => darknodeDetails && darknodeDetails.cycleStatus.keySeq().first(),
@@ -163,8 +166,6 @@ export const FeesBlockController: React.FC<Props> = ({
         isOperator,
     ]);
 
-    console.log(pendingRewards);
-
     let summedPendingRewards = OrderedMap<string, TokenAmount | null>();
     if (previousCycle && showPreviousPending) {
         pendingRewards.get(previousCycle, OrderedMap());
@@ -189,8 +190,10 @@ export const FeesBlockController: React.FC<Props> = ({
     const withdrawable = darknodeDetails ? darknodeDetails.feesEarned : null;
     const pending = summedPendingRewards;
 
-    const { withdrawReward, updateDarknodeDetails } =
-        NetworkContainer.useContainer();
+    const {
+        withdrawReward,
+        updateDarknodeDetails,
+    } = NetworkContainer.useContainer();
 
     const withdrawCallback = useCallback(
         async (tokenSymbol: string, tokenAddress: string) => {
@@ -224,19 +227,15 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
     isOperator,
     darknodeDetails,
 }) => {
-    const { blockState, quoteCurrency, tokenPrices } =
-        NetworkContainer.useContainer();
-    const { selectedDarknodeID } = UIContainer.useContainer();
-    console.log("dd", selectedDarknodeID, darknodeDetails?.toJS(), blockState);
-
-    // const withdrawable = darknodeDetails ? darknodeDetails.feesEarned : null;
-    // const pending = darknodeDetails ? darknodeDetails.feesEarned : null;
+    const {
+        blockState,
+        quoteCurrency,
+        tokenPrices,
+    } = NetworkContainer.useContainer();
 
     const renVmNodeId = darknodeIDBase58ToRenVmID(
         darknodeIDHexToBase58(darknodeDetails?.ID || ""),
     );
-    console.log(renVmNodeId);
-    // const renVmNodeId = ""; // darknodeIDBase58ToRenVmID(selectedDarknodeID);s
 
     const withdrawable = updatePrices(
         getNodeFeesCollection(renVmNodeId, blockState, "claimable"),

@@ -6,7 +6,6 @@ import { useRef, useState } from "react";
 import { Point } from "react-simple-maps";
 import { createContainer } from "unstated-next";
 
-import { retryNTimes } from "../controllers/pages/renvmStatsPage/renvmContainer";
 import { DEFAULT_REQUEST_TIMEOUT } from "../lib/react/environmentVariables";
 import { peerResponse } from "./vDot2Peers";
 import { Web3Container } from "./web3Container";
@@ -20,7 +19,7 @@ export interface DarknodeLocation {
 
 // const sampleDarknodes: DarknodeLocation[] = [];
 
-interface QueryResponse {
+export interface QueryResponse {
     jsonrpc: "2.0";
     id: number;
     result: {
@@ -64,11 +63,7 @@ const parallelLimit = <T>(
 export const getLightnode = (
     network: RenNetworkDetails,
     isNew = false,
-    loki = false, // temporary
 ): string => {
-    if (loki) {
-        return "http://0.0.0.0:8888";
-    }
     if (isNew) {
         switch (network.name) {
             case "mainnet":
@@ -170,7 +165,7 @@ const getAllDarknodes = async (network: RenNetworkDetails) => {
     //     )
     // ).data;
     const response = peerResponse;
-    return response.result.peers;
+    return Promise.resolve(response.result.peers);
     // return darknodeIDs.map(parseMultiAddress);
 };
 

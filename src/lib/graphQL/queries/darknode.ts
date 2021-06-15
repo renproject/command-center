@@ -61,7 +61,6 @@ export const queryDarknode = async (
             darknodeID: darknodeID.toLowerCase(),
         },
     });
-    console.log("darknode", darknodeID, response);
     if (!response.data.darknode) {
         return null;
     }

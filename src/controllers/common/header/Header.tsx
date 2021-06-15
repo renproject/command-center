@@ -17,7 +17,6 @@ import { NODE_ENV } from "../../../lib/react/environmentVariables";
 import { NetworkContainer } from "../../../store/networkContainer";
 import { UIContainer } from "../../../store/uiContainer";
 import { Web3Container } from "../../../store/web3Container";
-import { ReactComponent as RenVMIcon } from "../../../styles/images/Icon-HyperDrive.svg";
 import { ReactComponent as IntegratorsIcon } from "../../../styles/images/icon-integrators.svg";
 import { ReactComponent as NetworkIcon } from "../../../styles/images/icon-network.svg";
 import { ReactComponent as OverviewIcon } from "../../../styles/images/Icon-Overview.svg";

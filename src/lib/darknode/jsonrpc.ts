@@ -9,7 +9,7 @@ import {
 
 import { getLightnode } from "../../store/mapContainer";
 import { DEFAULT_REQUEST_TIMEOUT } from "../react/environmentVariables";
-import { queryBlockStateResponseMock } from "./utils/currentMock";
+// import { queryBlockStateResponseMock } from "./utils/currentMock";
 import { QueryBlockStateResponse } from "./utils/feesUtils";
 
 interface ResponseQueryStat {
@@ -123,7 +123,7 @@ export const queryState = async (lightnode: string): Promise<RenVMState> => {
 };
 
 export const queryBlockState = async (network: RenNetworkDetails) => {
-    const lightnode = getLightnode(network, true, true);
+    const lightnode = getLightnode(network, true);
     if (!lightnode) {
         throw new Error(`No lightnode to fetch fees.`);
     }
@@ -134,11 +134,9 @@ export const queryBlockState = async (network: RenNetworkDetails) => {
         params: {},
     };
 
-    if (lightnode !== "foo") {
-        // TODO: fees use mock until testnet ready
-        return Promise.resolve(queryBlockStateResponseMock);
-    }
-    console.log("query");
+    // if (lightnode !== "toggleMock") {
+    //     return Promise.resolve(queryBlockStateResponseMock);
+    // }
 
     const response = await Axios.post<RPCResponse<QueryBlockStateResponse>>(
         lightnode,
@@ -147,6 +145,6 @@ export const queryBlockState = async (network: RenNetworkDetails) => {
             timeout: DEFAULT_REQUEST_TIMEOUT,
         },
     );
-    console.log("responsee", response);
+    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
     return response.data as any;
 };

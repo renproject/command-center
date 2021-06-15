@@ -155,7 +155,6 @@ export const queryRenVM = async (
     }>({
         query: QUERY_RENVM,
     });
-    console.log("renVM", response);
 
     const newMinimumEpochInterval = new BigNumber(
         response.data.renVM.minimumEpochInterval,

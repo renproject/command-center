@@ -3,7 +3,6 @@ import * as Sentry from "@sentry/browser";
 import LedgerTransportU2F from "@ledgerhq/hw-transport-u2f";
 import LedgerTransportWebUSB from "@ledgerhq/hw-transport-webusb";
 import {
-    renLocalnet,
     renMainnet,
     RenNetwork,
     RenNetworkDetails,

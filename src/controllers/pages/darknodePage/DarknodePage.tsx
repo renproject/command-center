@@ -6,7 +6,6 @@ import { toChecksumAddress } from "web3-utils";
 
 import { darknodeIDBase58ToHex } from "../../../lib/darknode/darknodeID";
 import { RegistrationStatus } from "../../../lib/ethereum/contractReads";
-import { objectify } from "../../../lib/general/debugUtils";
 import { NetworkContainer } from "../../../store/networkContainer";
 import { UIContainer } from "../../../store/uiContainer";
 import { Web3Container } from "../../../store/web3Container";
@@ -51,8 +50,10 @@ export const getDarknodeParam = (params: {
  */
 export const DarknodePage = () => {
     const { address } = Web3Container.useContainer();
-    const { selectedDarknodeID, setSelectedDarknodeID } =
-        UIContainer.useContainer();
+    const {
+        selectedDarknodeID,
+        setSelectedDarknodeID,
+    } = UIContainer.useContainer();
     const {
         darknodeDetails,
         darknodeNames,
@@ -153,10 +154,6 @@ export const DarknodePage = () => {
     if (!darknodeOrURL) {
         return <NotFound />;
     }
-    console.log("details", objectify(details));
-    console.log("cycleStatus", objectify(objectify(details).cycleStatus));
-    // TODO: fees here are fees visible under "withdrawable" - the exact amounts
-    console.log("feesEarned", objectify(objectify(details).feesEarned));
     return (
         <ErrorBoundary>
             <DarknodeView

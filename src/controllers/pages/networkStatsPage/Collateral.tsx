@@ -32,7 +32,6 @@ const RowBullet = () => (
 const GREYCORE_ACTIVE = true;
 
 export const Collateral: React.FC<Props> = ({
-    minted,
     l,
     b,
     bRen,

@@ -5,8 +5,6 @@ import {
     getAggregatedFeesCollection,
     getFeesCollection,
 } from "../../../lib/darknode/utils/feesUtils";
-import { objectify } from "../../../lib/general/debugUtils";
-
 import { isDefined } from "../../../lib/general/isDefined";
 import { multiplyTokenAmount } from "../../../lib/graphQL/queries/queries";
 import { GithubAPIContainer } from "../../../store/githubApiContainer";
@@ -44,7 +42,6 @@ export const DarknodeStatsPage = () => {
         minimumEpochInterval,
         fees,
     } = renVM || {};
-    console.log(fees);
     const {
         pendingRewards,
         blockState,
@@ -53,8 +50,10 @@ export const DarknodeStatsPage = () => {
         tokenPrices,
         fetchBlockState,
     } = NetworkContainer.useContainer();
-    const { latestCLIVersion, latestCLIVersionDaysAgo } =
-        GithubAPIContainer.useContainer();
+    const {
+        latestCLIVersion,
+        latestCLIVersionDaysAgo,
+    } = GithubAPIContainer.useContainer();
 
     const { renNetwork } = Web3Container.useContainer();
     const { darknodes, fetchDarknodes } = MapContainer.useContainer();
@@ -79,9 +78,6 @@ export const DarknodeStatsPage = () => {
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [renNetwork && renNetwork.name]);
-
-    console.log(currentCycle, previousCycle); // TODO: fees 0x hashes of something
-    console.log("pendingRewards", pendingRewards.toJSON());
 
     const currentNetworkRenVM = updatePrices(
         getFeesCollection("current", blockState),
@@ -154,7 +150,6 @@ export const DarknodeStatsPage = () => {
         previousNetworkInUsd || 0,
     );
 
-    console.log("o1", objectify(currentNetworkRenVM));
     const currentNetwork = useMemo(
         () =>
             current && numberOfDarknodes
