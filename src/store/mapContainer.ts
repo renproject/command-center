@@ -89,7 +89,7 @@ export const getLightnode = (
         case "devnet":
             return "https://lightnode-devnet.herokuapp.com";
         case "localnet":
-            return "";
+            return "http://0.0.0.0:8888";
     }
     return "";
 };

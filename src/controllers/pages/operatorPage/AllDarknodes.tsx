@@ -26,10 +26,15 @@ export const AllDarknodes: React.FC<{}> = () => {
         hiddenDarknodes,
     } = NetworkContainer.useContainer();
 
+    // TODO: here
     const accountDarknodeList = useMemo(
         () => (address ? darknodeList.get(address, null) : null),
         [address, darknodeList],
     );
+
+    console.log("a", accountDarknodeList?.toJS());
+    console.log("h", hiddenDarknodes?.toJS());
+
     const accountHiddenDarknodes = useMemo(
         () => (address ? hiddenDarknodes.get(address, null) : null),
         [address, hiddenDarknodes],

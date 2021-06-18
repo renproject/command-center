@@ -142,7 +142,7 @@ const QUERY_RENVM = gql`
     }
 `;
 
-export const queryRenVM = async (
+export const queryRenVMSubgraph = async (
     client: ApolloClient<object>,
 ): Promise<RenVM> => {
     const response = await client.query<{
