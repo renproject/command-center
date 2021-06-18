@@ -3,10 +3,10 @@ import { updatePrice } from "../../../controllers/common/tokenBalanceUtils";
 import { FeeTokens, Token, TokenPrices } from "../../ethereum/tokens";
 import { TokenAmount } from "../../graphQL/queries/queries";
 import {
+    BlockState,
     getCurrentEpochId,
     getNodeEnteredAt,
     Numeric,
-    QueryBlockState,
 } from "./blockStateUtils";
 
 type FeeNode = {
@@ -26,10 +26,7 @@ type FeeData = {
     unassigned: Numeric;
 };
 
-export const getFeesForToken = (
-    symbol: string,
-    blockState: QueryBlockState,
-) => {
+export const getFeesForToken = (symbol: string, blockState: BlockState) => {
     const data = blockState[symbol];
     if (!data) {
         return null;
@@ -37,10 +34,7 @@ export const getFeesForToken = (
     return data.fees as FeeData;
 };
 
-export const getLastAssetEpochId = (
-    symbol: string,
-    blockState: QueryBlockState,
-) => {
+export const getLastAssetEpochId = (symbol: string, blockState: BlockState) => {
     const fees = getFeesForToken(symbol, blockState);
     if (!fees || fees.epochs.length === 0) {
         return null;
@@ -52,7 +46,7 @@ export const getLastAssetEpochId = (
 export const getTokenFeeForEpoch = (
     symbol: string,
     epoch: "current" | "previous" | number,
-    blockState: QueryBlockState,
+    blockState: BlockState,
     perNode = false,
 ) => {
     const data = getFeesForToken(symbol, blockState);
@@ -119,17 +113,10 @@ export const getTokenFeeAmounts = (
 //     AllTokenDetails;
 // };
 
-export const getNodeExists = (
-    renVmNodeId: string,
-    blockState: QueryBlockState,
-) => {
-    return getNodeEnteredAt(renVmNodeId, blockState) !== null;
-};
-
 export const getNodeLastEpochClaimed = (
     renVmNodeId: string,
     symbol: string,
-    blockState: QueryBlockState,
+    blockState: BlockState,
 ) => {
     const data = getFeesForToken(symbol, blockState);
     if (!data) {
@@ -147,7 +134,7 @@ export const getNodeLastEpochClaimed = (
 export const getNodeFirstClaimableEpoch = (
     renVmNodeId: string,
     symbol: string,
-    blockState: QueryBlockState,
+    blockState: BlockState,
 ) => {
     const lastClaimed = getNodeLastEpochClaimed(
         renVmNodeId,
@@ -168,7 +155,7 @@ export const getNodeClaimableFeeForEpoch = (
     renVmNodeId: string,
     symbol: string,
     epoch: number,
-    blockState: QueryBlockState,
+    blockState: BlockState,
 ) => {
     const startEpoch = getNodeFirstClaimableEpoch(
         renVmNodeId,
@@ -188,7 +175,7 @@ export const getNodeClaimableFeeForEpoch = (
 export const getNodeClaimableFees = (
     renVmNodeId: string,
     symbol: string,
-    blockState: QueryBlockState,
+    blockState: BlockState,
 ) => {
     const startEpoch = getNodeFirstClaimableEpoch(
         renVmNodeId,
@@ -215,7 +202,7 @@ export const getNodeClaimableFees = (
 export const getNodePendingFees = (
     renVmNodeId: string,
     symbol: string,
-    blockState: QueryBlockState,
+    blockState: BlockState,
 ) => {
     const exists = getNodeEnteredAt(renVmNodeId, blockState);
     if (!exists) {
@@ -229,7 +216,7 @@ export type FeeType = "claimable" | "pending";
 
 export const getNodeFeesCollection = (
     renVmNodeId: string,
-    blockState: QueryBlockState | null,
+    blockState: BlockState | null,
     type: FeeType,
 ) => {
     return FeeTokens.mapEntries(([symbol, token]) => {
@@ -247,7 +234,7 @@ export const getNodeFeesCollection = (
 
 export const getFeesCollection = (
     epoch: "current" | "previous" | number,
-    blockState: QueryBlockState | null,
+    blockState: BlockState | null,
 ) => {
     return FeeTokens.mapEntries(([symbol, token]) => {
         let amount = new BigNumber(0);
@@ -261,7 +248,7 @@ export const getFeesCollection = (
 
 export const getAggregatedFeeAmountForToken = (
     symbol: string,
-    blockState: QueryBlockState | null,
+    blockState: BlockState | null,
 ) => {
     let amount = new BigNumber(0);
     if (blockState !== null) {
@@ -276,9 +263,7 @@ export const getAggregatedFeeAmountForToken = (
     return amount;
 };
 
-export const getAggregatedFeesCollection = (
-    blockState: QueryBlockState | null,
-) => {
+export const getAggregatedFeesCollection = (blockState: BlockState | null) => {
     return FeeTokens.mapEntries(([symbol, token]) => {
         const amount = getAggregatedFeeAmountForToken(symbol, blockState);
         const tokenAmount = toTokenAmount(amount, token.symbol, token.decimals);

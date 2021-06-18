@@ -3,7 +3,11 @@ import { Token } from "../../ethereum/tokens";
 import { unify } from "../../general/debugUtils";
 import { parseTokenAmount } from "../../graphQL/queries/queries";
 import { tokenArrayToMap } from "../../graphQL/volumes";
-import { getCurrentEpochId, getNodeEnteredAt } from "./blockStateUtils";
+import {
+    getCurrentEpochId,
+    getNodeEnteredAt,
+    getNodeExists,
+} from "./blockStateUtils";
 import { queryBlockStateResponseMock } from "./currentMock";
 import {
     getFeesForToken,
@@ -16,7 +20,6 @@ import {
     getNodeClaimableFees,
     getNodeFeesCollection,
     getNodePendingFees,
-    getNodeExists,
     getAggregatedFeesCollection,
     getAggregatedFeeAmountForToken,
 } from "./feesUtils";
@@ -25,20 +28,6 @@ import { partialFees } from "./mocks/fees.mocks";
 const blockState = queryBlockStateResponseMock.result.state.v;
 
 describe("fees", () => {
-    test("unifies", () => {
-        const obj = {
-            amount: {
-                c: [1263406574],
-                e: 9,
-                s: 1,
-            },
-        };
-        const expected = {
-            amount: 1263406574,
-        };
-        expect(unify(obj)).to.eql(expected);
-    });
-
     test("maps", () => {
         const result = tokenArrayToMap(partialFees.fees)
             .map(parseTokenAmount)
@@ -147,41 +136,7 @@ describe("fees", () => {
     });
 });
 
-describe("node basic utils", () => {
-    test("checks if node not exists", () => {
-        const result = getNodeExists("nonexistent", blockState);
-        expect(result).to.equal(false);
-    });
-
-    test("checks node exists", () => {
-        const result = getNodeExists(
-            "R22tRItPlzKCZ5xmhDUNIw/CenwAAAAAAAAAAAAAAAA",
-            blockState,
-        );
-        expect(result).to.equal(true);
-    });
-
-    test("gets current epoch id", () => {
-        const result = getCurrentEpochId(blockState);
-        expect(result).to.equal(3);
-    });
-
-    test("gets node entered at", () => {
-        const result = getNodeEnteredAt(
-            "R22tRItPlzKCZ5xmhDUNIw/CenwAAAAAAAAAAAAAAAA",
-            blockState,
-        );
-        expect(result).to.equal(1);
-    });
-
-    test("gets node entered at for nonexisting node", () => {
-        const result = getNodeEnteredAt(
-            "oNig-tMtnRPeOY00OzxAQHmpMS4AAAAAAAAAAAAAAAA",
-            blockState,
-        );
-        expect(result).to.equal(null);
-    });
-
+describe("node fees - basic utils", () => {
     test("gets node last epoch claimed", () => {
         const result = getNodeLastEpochClaimed(
             "R22tRItPlzKCZ5xmhDUNIw/CenwAAAAAAAAAAAAAAAA",

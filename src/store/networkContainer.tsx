@@ -10,7 +10,7 @@ import { ConvertCurrency } from "../controllers/common/TokenBalance";
 import { updatePrices } from "../controllers/common/tokenBalanceUtils";
 import { retryNTimes } from "../controllers/pages/renvmStatsPage/renvmContainer";
 import { NodeStatistics, queryBlockState } from "../lib/darknode/jsonrpc";
-import { QueryBlockStateResponse } from "../lib/darknode/utils/blockStateUtils";
+import { BlockState } from "../lib/darknode/utils/blockStateUtils";
 import { getDarknodePayment } from "../lib/ethereum/contract";
 import {
     DarknodeFeeStatus,
@@ -91,10 +91,7 @@ const useNetworkContainer = () => {
         target: 0,
     });
 
-    const [
-        blockState,
-        setBlockState,
-    ] = useState<QueryBlockStateResponse | null>(null);
+    const [blockState, setBlockState] = useState<BlockState | null>(null);
 
     const [darknodeDetails, setDarknodeDetails] = useState(
         Map<string, DarknodesState>(),
