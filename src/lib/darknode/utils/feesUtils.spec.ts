@@ -3,11 +3,11 @@ import { Token } from "../../ethereum/tokens";
 import { unify } from "../../general/debugUtils";
 import { parseTokenAmount } from "../../graphQL/queries/queries";
 import { tokenArrayToMap } from "../../graphQL/volumes";
+import { getCurrentEpochId, getNodeEnteredAt } from "./blockStateUtils";
 import { queryBlockStateResponseMock } from "./currentMock";
 import {
     getFeesForToken,
     getNodeLastEpochClaimed,
-    getNodeEnteredAt,
     getTokenFeeAmounts,
     getTokenFeeForEpoch,
     getNodeFirstClaimableEpoch,
@@ -15,7 +15,6 @@ import {
     getLastAssetEpochId,
     getNodeClaimableFees,
     getNodeFeesCollection,
-    getCurrentEpochId,
     getNodePendingFees,
     getNodeExists,
     getAggregatedFeesCollection,

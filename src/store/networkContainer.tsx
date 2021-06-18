@@ -10,7 +10,7 @@ import { ConvertCurrency } from "../controllers/common/TokenBalance";
 import { updatePrices } from "../controllers/common/tokenBalanceUtils";
 import { retryNTimes } from "../controllers/pages/renvmStatsPage/renvmContainer";
 import { NodeStatistics, queryBlockState } from "../lib/darknode/jsonrpc";
-import { QueryBlockStateResponse } from "../lib/darknode/utils/feesUtils";
+import { QueryBlockStateResponse } from "../lib/darknode/utils/blockStateUtils";
 import { getDarknodePayment } from "../lib/ethereum/contract";
 import {
     DarknodeFeeStatus,

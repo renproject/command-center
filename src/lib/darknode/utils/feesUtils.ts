@@ -2,12 +2,12 @@ import BigNumber from "bignumber.js";
 import { updatePrice } from "../../../controllers/common/tokenBalanceUtils";
 import { FeeTokens, Token, TokenPrices } from "../../ethereum/tokens";
 import { TokenAmount } from "../../graphQL/queries/queries";
-import { queryBlockStateResponseMock } from "./currentMock";
-
-export type QueryBlockStateResponse = typeof queryBlockStateResponseMock;
-export type QueryBlockState = QueryBlockStateResponse["result"]["state"]["v"];
-
-type Numeric = number | string;
+import {
+    getCurrentEpochId,
+    getNodeEnteredAt,
+    Numeric,
+    QueryBlockState,
+} from "./blockStateUtils";
 
 type FeeNode = {
     node: string;
@@ -47,10 +47,6 @@ export const getLastAssetEpochId = (
     }
     const { epochs } = fees;
     return Number(epochs[epochs.length - 1].epoch);
-};
-
-export const getCurrentEpochId = (blockState: QueryBlockState) => {
-    return Number(blockState.System.epoch.number);
 };
 
 export const getTokenFeeForEpoch = (
@@ -119,26 +115,9 @@ export const getTokenFeeAmounts = (
     return data;
 };
 
-export const toNativeTokenSymbol = (symbol: string) => {
-    return symbol.replace(/^ren/, "").replace(/^test/, "").replace(/^dev/, "");
-};
-
 // export const getNativeDecimals = (symbol: string) => {
 //     AllTokenDetails;
 // };
-
-export const getNodeEnteredAt = (
-    renVmNodeId: string,
-    blockState: QueryBlockState,
-) => {
-    const nodeSystemData = blockState.System.nodes.find(
-        (node) => node.id === renVmNodeId,
-    );
-    if (!nodeSystemData) {
-        return null;
-    }
-    return Number(nodeSystemData.enteredAt);
-};
 
 export const getNodeExists = (
     renVmNodeId: string,

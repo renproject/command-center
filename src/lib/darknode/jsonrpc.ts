@@ -10,8 +10,8 @@ import {
 import { getLightnode } from "../../store/mapContainer";
 import { RenVM } from "../graphQL/queries/renVM";
 import { DEFAULT_REQUEST_TIMEOUT } from "../react/environmentVariables";
+import { QueryBlockStateResponse } from "./utils/blockStateUtils";
 // import { queryBlockStateResponseMock } from "./utils/currentMock";
-import { QueryBlockStateResponse } from "./utils/feesUtils";
 
 interface ResponseQueryStat {
     version: string;
