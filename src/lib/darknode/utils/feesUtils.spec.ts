@@ -3,7 +3,7 @@ import { Token } from "../../ethereum/tokens";
 import { unify } from "../../general/debugUtils";
 import { parseTokenAmount } from "../../graphQL/queries/queries";
 import { tokenArrayToMap } from "../../graphQL/volumes";
-import { queryBlockStateResponseMock as blockState } from "./currentMock";
+import { queryBlockStateResponseMock } from "./currentMock";
 import {
     getFeesForToken,
     getNodeLastEpochClaimed,
@@ -22,6 +22,8 @@ import {
     getAggregatedFeeAmountForToken,
 } from "./feesUtils";
 import { partialFees } from "./mocks/fees.mocks";
+
+const blockState = queryBlockStateResponseMock.result.state.v;
 
 describe("fees", () => {
     test("unifies", () => {

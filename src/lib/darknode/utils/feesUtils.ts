@@ -5,6 +5,7 @@ import { TokenAmount } from "../../graphQL/queries/queries";
 import { queryBlockStateResponseMock } from "./currentMock";
 
 export type QueryBlockStateResponse = typeof queryBlockStateResponseMock;
+export type QueryBlockState = QueryBlockStateResponse["result"]["state"]["v"];
 
 type Numeric = number | string;
 
@@ -27,9 +28,9 @@ type FeeData = {
 
 export const getFeesForToken = (
     symbol: string,
-    blockState: QueryBlockStateResponse,
+    blockState: QueryBlockState,
 ) => {
-    const data = blockState.result.state.v[symbol];
+    const data = blockState[symbol];
     if (!data) {
         return null;
     }
@@ -38,7 +39,7 @@ export const getFeesForToken = (
 
 export const getLastAssetEpochId = (
     symbol: string,
-    blockState: QueryBlockStateResponse,
+    blockState: QueryBlockState,
 ) => {
     const fees = getFeesForToken(symbol, blockState);
     if (!fees || fees.epochs.length === 0) {
@@ -48,14 +49,14 @@ export const getLastAssetEpochId = (
     return Number(epochs[epochs.length - 1].epoch);
 };
 
-export const getCurrentEpochId = (blockState: QueryBlockStateResponse) => {
-    return Number(blockState.result.state.v.System.epoch.number);
+export const getCurrentEpochId = (blockState: QueryBlockState) => {
+    return Number(blockState.System.epoch.number);
 };
 
 export const getTokenFeeForEpoch = (
     symbol: string,
     epoch: "current" | "previous" | number,
-    blockState: QueryBlockStateResponse,
+    blockState: QueryBlockState,
     perNode = false,
 ) => {
     const data = getFeesForToken(symbol, blockState);
@@ -128,9 +129,9 @@ export const toNativeTokenSymbol = (symbol: string) => {
 
 export const getNodeEnteredAt = (
     renVmNodeId: string,
-    blockState: QueryBlockStateResponse,
+    blockState: QueryBlockState,
 ) => {
-    const nodeSystemData = blockState.result.state.v.System.nodes.find(
+    const nodeSystemData = blockState.System.nodes.find(
         (node) => node.id === renVmNodeId,
     );
     if (!nodeSystemData) {
@@ -141,7 +142,7 @@ export const getNodeEnteredAt = (
 
 export const getNodeExists = (
     renVmNodeId: string,
-    blockState: QueryBlockStateResponse,
+    blockState: QueryBlockState,
 ) => {
     return getNodeEnteredAt(renVmNodeId, blockState) !== null;
 };
@@ -149,7 +150,7 @@ export const getNodeExists = (
 export const getNodeLastEpochClaimed = (
     renVmNodeId: string,
     symbol: string,
-    blockState: QueryBlockStateResponse,
+    blockState: QueryBlockState,
 ) => {
     const data = getFeesForToken(symbol, blockState);
     if (!data) {
@@ -167,7 +168,7 @@ export const getNodeLastEpochClaimed = (
 export const getNodeFirstClaimableEpoch = (
     renVmNodeId: string,
     symbol: string,
-    blockState: QueryBlockStateResponse,
+    blockState: QueryBlockState,
 ) => {
     const lastClaimed = getNodeLastEpochClaimed(
         renVmNodeId,
@@ -188,7 +189,7 @@ export const getNodeClaimableFeeForEpoch = (
     renVmNodeId: string,
     symbol: string,
     epoch: number,
-    blockState: QueryBlockStateResponse,
+    blockState: QueryBlockState,
 ) => {
     const startEpoch = getNodeFirstClaimableEpoch(
         renVmNodeId,
@@ -208,7 +209,7 @@ export const getNodeClaimableFeeForEpoch = (
 export const getNodeClaimableFees = (
     renVmNodeId: string,
     symbol: string,
-    blockState: QueryBlockStateResponse,
+    blockState: QueryBlockState,
 ) => {
     const startEpoch = getNodeFirstClaimableEpoch(
         renVmNodeId,
@@ -235,7 +236,7 @@ export const getNodeClaimableFees = (
 export const getNodePendingFees = (
     renVmNodeId: string,
     symbol: string,
-    blockState: QueryBlockStateResponse,
+    blockState: QueryBlockState,
 ) => {
     const exists = getNodeEnteredAt(renVmNodeId, blockState);
     if (!exists) {
@@ -249,7 +250,7 @@ export type FeeType = "claimable" | "pending";
 
 export const getNodeFeesCollection = (
     renVmNodeId: string,
-    blockState: QueryBlockStateResponse | null,
+    blockState: QueryBlockState | null,
     type: FeeType,
 ) => {
     return FeeTokens.mapEntries(([symbol, token]) => {
@@ -267,7 +268,7 @@ export const getNodeFeesCollection = (
 
 export const getFeesCollection = (
     epoch: "current" | "previous" | number,
-    blockState: QueryBlockStateResponse | null,
+    blockState: QueryBlockState | null,
 ) => {
     return FeeTokens.mapEntries(([symbol, token]) => {
         let amount = new BigNumber(0);
@@ -281,7 +282,7 @@ export const getFeesCollection = (
 
 export const getAggregatedFeeAmountForToken = (
     symbol: string,
-    blockState: QueryBlockStateResponse | null,
+    blockState: QueryBlockState | null,
 ) => {
     let amount = new BigNumber(0);
     if (blockState !== null) {
@@ -297,7 +298,7 @@ export const getAggregatedFeeAmountForToken = (
 };
 
 export const getAggregatedFeesCollection = (
-    blockState: QueryBlockStateResponse | null,
+    blockState: QueryBlockState | null,
 ) => {
     return FeeTokens.mapEntries(([symbol, token]) => {
         const amount = getAggregatedFeeAmountForToken(symbol, blockState);
