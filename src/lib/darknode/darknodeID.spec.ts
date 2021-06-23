@@ -3,7 +3,7 @@ import {
     darknodeIDBase58ToHex,
     darknodeIDBase58ToRenVmID,
     darknodeIDHexToBase58,
-    renVMID2Base58,
+    renVMIDToBase58,
 } from "./darknodeID";
 
 describe("darknode ids", () => {
@@ -28,7 +28,7 @@ describe("darknode ids", () => {
 
     test("decodes renVM id to base58", () => {
         const id = "34i8lj5hT6sr2oHCmAVroY4BpCQAAAAAAAAAAAAAAAA";
-        const result = renVMID2Base58(id);
+        const result = renVMIDToBase58(id);
         expect(result).to.equal("8MKAUt5TKKdP4PpKmgfjEBwcXSbbXq");
         expect(result.length).to.equal(30);
     });

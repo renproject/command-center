@@ -11,6 +11,10 @@ import { updatePrices } from "../controllers/common/tokenBalanceUtils";
 import { retryNTimes } from "../controllers/pages/renvmStatsPage/renvmContainer";
 import { NodeStatistics, queryBlockState } from "../lib/darknode/jsonrpc";
 import { BlockState } from "../lib/darknode/utils/blockStateUtils";
+import {
+    getRenVMFromLightnode,
+    resolveRenVM,
+} from "../lib/darknode/utils/renVMUtils";
 import { getDarknodePayment } from "../lib/ethereum/contract";
 import {
     DarknodeFeeStatus,
@@ -76,9 +80,10 @@ export type WaitForTX = <T>(
 
 const useNetworkContainer = () => {
     const { web3, renNetwork, address, notify } = Web3Container.useContainer();
+    console.log("renNetwork", renNetwork);
     const { setPopup, clearPopup } = PopupContainer.useContainer();
     const {
-        renVM,
+        renVM: renVMGraph,
         fetchRenVM,
         subgraphOutOfSync,
     } = GraphContainer.useContainer();
@@ -92,7 +97,10 @@ const useNetworkContainer = () => {
     });
 
     const [blockState, setBlockState] = useState<BlockState | null>(null);
+    console.log("bs", blockState);
+    const renVMLightnode = getRenVMFromLightnode(blockState);
 
+    const renVM = resolveRenVM(renVMGraph, renVMLightnode);
     const [darknodeDetails, setDarknodeDetails] = useState(
         Map<string, DarknodesState>(),
     );
@@ -328,8 +336,8 @@ const useNetworkContainer = () => {
         });
 
     const fetchBlockState = useCallback(async () => {
-        const blockStateResult = await queryBlockState(renNetwork);
-        setBlockState(blockStateResult);
+        const blockStateResponse = await queryBlockState(renNetwork);
+        setBlockState(blockStateResponse.result.state.v);
     }, [renNetwork]);
 
     /**
@@ -359,25 +367,6 @@ const useNetworkContainer = () => {
                     (map, asset, symbol) => map.set(symbol, asset),
                     previous,
                 );
-            // .map((tokenAmount) => {
-            //     console.log(tokenAmount);
-            //     if (!tokenAmount || blockState === null) {
-            //         return tokenAmount;
-            //     }
-            //     const nativeSymbol = toNativeTokenSymbol(
-            //         tokenAmount.symbol,
-            //     );
-            //     const renVmFeeAmount = getTokenFeeForEpoch(
-            //         nativeSymbol,
-            //         "previous",
-            //         blockState,
-            //         true,
-            //     );
-            //     return {
-            //         ...tokenAmount,
-            //         amount: tokenAmount.amount.plus(renVmFeeAmount),
-            //     };
-            // });
         }
         previous = updatePrices(previous, tokenPrices);
 
@@ -394,15 +383,12 @@ const useNetworkContainer = () => {
                         return {
                             ...tokenAmount,
                             amount: tokenAmount.amount
-                                // .plus(renVMFee.amount) // TODO consider dividing by epoch.numNodes
                                 .dividedBy(latestRenVM.numberOfDarknodes)
                                 .decimalPlaces(0),
                             amountInUsd: tokenAmount.amountInUsd
-                                // .plus(renVMFee.amountInUsd)
                                 .dividedBy(latestRenVM.numberOfDarknodes)
                                 .decimalPlaces(0),
                             amountInEth: tokenAmount.amountInEth
-                                // .plus(renVMFee.amountInEth)
                                 .dividedBy(latestRenVM.numberOfDarknodes)
                                 .decimalPlaces(0),
                         };
@@ -438,29 +424,9 @@ const useNetworkContainer = () => {
                                 return null;
                             }
 
-                            // const nativeSymbol = toNativeTokenSymbol(
-                            //     tokenDetails.symbol,
-                            // );
-                            // const renVmFeeAmount =
-                            //     blockState !== null
-                            //         ? getTokenFeeForEpoch(
-                            //               nativeSymbol,
-                            //               "current",
-                            //               blockState,
-                            //           )
-                            //         : new BigNumber(0);
-                            //
-                            // const renVMFee = getTokenFeeAmounts(
-                            //     renVmFeeAmount,
-                            //     nativeSymbol as Token,
-                            //     tokenDetails.decimals,
-                            //     tokenPrices,
-                            // );
-
                             const amount = new BigNumber(
                                 currentCycleRewardPool.toString(),
                             )
-                                // .plus(renVMFee.amount)
                                 .decimalPlaces(0)
                                 .div(latestRenVM.numberOfDarknodes)
                                 .decimalPlaces(0);

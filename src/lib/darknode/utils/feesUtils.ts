@@ -6,6 +6,7 @@ import {
     BlockState,
     getCurrentEpochId,
     getNodeEnteredAt,
+    getNodeExists,
     Numeric,
 } from "./blockStateUtils";
 
@@ -204,7 +205,7 @@ export const getNodePendingFees = (
     symbol: string,
     blockState: BlockState,
 ) => {
-    const exists = getNodeEnteredAt(renVmNodeId, blockState);
+    const exists = getNodeExists(renVmNodeId, blockState);
     if (!exists) {
         return new BigNumber(0);
     }
@@ -219,6 +220,7 @@ export const getNodeFeesCollection = (
     blockState: BlockState | null,
     type: FeeType,
 ) => {
+    console.log("bsf", blockState);
     return FeeTokens.mapEntries(([symbol, token]) => {
         let amount = new BigNumber(0);
         if (blockState !== null) {

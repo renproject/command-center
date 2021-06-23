@@ -149,28 +149,3 @@ export const queryBlockState = async (network: RenNetworkDetails) => {
     // eslint-disable-next-line  @typescript-eslint/no-explicit-any
     return response.data as any;
 };
-
-export const constructRenVMFromBlockState = (): RenVM => {
-    const renVM = {
-        assets: undefined,
-        btcBurnFee: 0,
-        btcMintFee: 0,
-        currentCycle: "",
-        currentEpoch: undefined,
-        cycleRewards: undefined,
-        deregistrationInterval: undefined,
-        fees: undefined,
-        minimumBond: undefined,
-        minimumEpochInterval: undefined,
-        numberOfDarknodes: undefined,
-        numberOfDarknodesLastEpoch: undefined,
-        pendingDeregistrations: undefined,
-        pendingRegistrations: undefined,
-        previousCycle: "",
-        previousEpoch: undefined,
-        timeSinceLastEpoch: undefined,
-        timeUntilNextEpoch: undefined,
-    };
-
-    return {} as any;
-};

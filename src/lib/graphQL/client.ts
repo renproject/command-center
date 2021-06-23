@@ -5,9 +5,7 @@ import fetch from "node-fetch";
 
 export const ethereumSubgraphUrl = (renNetwork: RenNetworkDetails) =>
     `https://api.thegraph.com/subgraphs/name/${
-        renNetwork.name === "mainnet" ||
-        renNetwork.name === "testnet" ||
-        renNetwork.name === "localnet"
+        renNetwork.name === "mainnet" || renNetwork.name === "testnet"
             ? "renproject"
             : "noiach"
     }/renvm${renNetwork.name === "mainnet" ? "" : `-${renNetwork.name}`}`;

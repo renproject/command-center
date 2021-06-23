@@ -241,10 +241,12 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
         getNodeFeesCollection(renVmNodeId, blockState, "claimable"),
         tokenPrices,
     );
+    console.log("withdrawable", withdrawable?.toJS());
     const pending = updatePrices(
         getNodeFeesCollection(renVmNodeId, blockState, "pending"),
         tokenPrices,
     );
+    console.log("pending", pending?.toJS());
 
     const withdraw = async () => {};
 

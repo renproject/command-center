@@ -97,8 +97,12 @@ const defaultDarknodeLocations = Map<
     });
 
 export const Catalog = () => {
-    const { address, balance, promptLogin, web3BrowserName } =
-        Web3Container.useContainer();
+    const {
+        address,
+        balance,
+        promptLogin,
+        web3BrowserName,
+    } = Web3Container.useContainer();
     const { quoteCurrency, pendingRewards } = NetworkContainer.useContainer();
     const { renVM } = GraphContainer.useContainer();
     const { currentCycle, previousCycle } = renVM || {};
@@ -113,10 +117,9 @@ export const Catalog = () => {
 
     const [name, setName] = useState("Darknode name");
     const [renaming, setRenaming] = useState(false);
-    const updateName = useCallback(
-        (_darknodeID, newName) => setName(newName),
-        [setName],
-    );
+    const updateName = useCallback((_darknodeID, newName) => setName(newName), [
+        setName,
+    ]);
 
     const loginCallback = useMemo(
         () => async () => {

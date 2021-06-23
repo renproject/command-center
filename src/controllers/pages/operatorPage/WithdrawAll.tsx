@@ -26,12 +26,16 @@ export const WithdrawAll: React.FC<Props> = ({ darknodeList }) => {
     const { quoteCurrency, pendingRewards } = NetworkContainer.useContainer();
     const { renVM, subgraphOutOfSync } = GraphContainer.useContainer();
     const { currentCycle, previousCycle, timeSinceLastEpoch } = renVM || {};
-    const { claimWarningShown, setClaimWarningShown } =
-        UIContainer.useContainer();
+    const {
+        claimWarningShown,
+        setClaimWarningShown,
+    } = UIContainer.useContainer();
 
     const { setPopup, clearPopup } = PopupContainer.useContainer();
-    const { withdrawReward, updateDarknodeDetails } =
-        NetworkContainer.useContainer();
+    const {
+        withdrawReward,
+        updateDarknodeDetails,
+    } = NetworkContainer.useContainer();
 
     const withdrawCallback = useCallback(
         async (tokenSymbol: string, tokenAddress: string) => {
@@ -70,8 +74,9 @@ export const WithdrawAll: React.FC<Props> = ({ darknodeList }) => {
         [darknodeList, updateDarknodeDetails, withdrawReward],
     );
 
-    const [darknodeNotClaimed, setDarknodeNotClaimed] =
-        useState<string | null>(null);
+    const [darknodeNotClaimed, setDarknodeNotClaimed] = useState<string | null>(
+        null,
+    );
     useEffect(() => {
         if (!claimWarningShown && darknodeNotClaimed) {
             setClaimWarningShown(true);
@@ -146,8 +151,10 @@ export const WithdrawAll: React.FC<Props> = ({ darknodeList }) => {
                         setDarknodeNotClaimed(darknodeDetails.ID);
                     }
 
-                    let summedPendingRewards =
-                        OrderedMap<string, TokenAmount | null>();
+                    let summedPendingRewards = OrderedMap<
+                        string,
+                        TokenAmount | null
+                    >();
                     if (previousCycle && showPreviousPending) {
                         pendingRewards.get(previousCycle, OrderedMap());
                         // summedPendingRewards = OrderedMap();

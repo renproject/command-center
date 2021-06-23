@@ -17,6 +17,7 @@ export const darknodeIDHexToBase58 = (darknodeIDHex: string): string =>
         `0x1B14${darknodeIDHex.slice(2)}`,
         Encodings.HEX,
     ).toBase58();
+// .replace("/", "_");
 
 export const darknodeIDBase58ToRenVmID = (darknodeID: string) => {
     const decoded = new EncodedData(darknodeID, Encodings.BASE58).toBuffer();
@@ -26,12 +27,12 @@ export const darknodeIDBase58ToRenVmID = (darknodeID: string) => {
     return bytes32.toString("base64").replace("=", "");
 };
 
-export const renVMID2Base58 = (renVMID: string) => {
+export const renVMIDToBase58 = (renVMID: string) => {
     const bytes32 = new EncodedData(renVMID, Encodings.BASE64).toBuffer();
     const bytes24 = bytes32.slice(0, 20);
     const address = new EncodedData(bytes24, Encodings.BUFFER).toHex();
     return darknodeIDHexToBase58(address);
 };
 
-// (window as any).renVMID2Base58 = renVMID2Base58;
-// (window as any).darknodeIDBase58ToRenVmID = darknodeIDBase58ToRenVmID;
+(window as any).renVMID2Base58 = renVMIDToBase58;
+(window as any).darknodeIDBase58ToRenVmID = darknodeIDBase58ToRenVmID;
