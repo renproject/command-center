@@ -2019,7 +2019,7 @@ export const queryBlockStateResponse = {
                                 numNodes: "28",
                             },
                             {
-                                amount: "0",
+                                amount: "1000000",
                                 epoch: "3",
                                 numNodes: "29",
                             },
@@ -2030,7 +2030,7 @@ export const queryBlockStateResponse = {
                             },
                         ],
                         nodes: [],
-                        unassigned: "24133002",
+                        unassigned: "23133002",
                     },
                     gasCap: "200",
                     gasLimit: "400",

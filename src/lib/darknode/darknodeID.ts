@@ -17,14 +17,13 @@ export const darknodeIDHexToBase58 = (darknodeIDHex: string): string =>
         `0x1B14${darknodeIDHex.slice(2)}`,
         Encodings.HEX,
     ).toBase58();
-// .replace("/", "_");
 
 export const darknodeIDBase58ToRenVmID = (darknodeID: string) => {
     const decoded = new EncodedData(darknodeID, Encodings.BASE58).toBuffer();
     const address = decoded.slice(2);
     const bytes32 = Buffer.alloc(32, 0);
     address.copy(bytes32);
-    return bytes32.toString("base64").replace("=", "");
+    return bytes32.toString("base64").replace("=", "").replace("/", "_");
 };
 
 export const renVMIDToBase58 = (renVMID: string) => {

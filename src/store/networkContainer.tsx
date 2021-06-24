@@ -10,7 +10,10 @@ import { ConvertCurrency } from "../controllers/common/TokenBalance";
 import { updatePrices } from "../controllers/common/tokenBalanceUtils";
 import { retryNTimes } from "../controllers/pages/renvmStatsPage/renvmContainer";
 import { NodeStatistics, queryBlockState } from "../lib/darknode/jsonrpc";
-import { BlockState } from "../lib/darknode/utils/blockStateUtils";
+import {
+    BlockState,
+    toNativeTokenSymbol,
+} from "../lib/darknode/utils/blockStateUtils";
 import {
     getRenVMFromLightnode,
     resolveRenVM,
@@ -652,6 +655,16 @@ const useNetworkContainer = () => {
         if (newDarknodeList.size === 0) {
             storeEmptyDarknodeList();
         }
+    };
+
+    const withdrawDarknodeFees = async (
+        darknodeId: string,
+        tokenSymbol: string,
+    ) => {
+        if (!address) {
+            throw new Error(`Unable to retrieve account address.`);
+        }
+        const symbol = toNativeTokenSymbol(tokenSymbol);
     };
 
     const withdrawReward = async (

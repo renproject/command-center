@@ -62,6 +62,7 @@ export const AllDarknodes: React.FC<{}> = () => {
           )
         : shownDarknodeDetails;
 
+    console.log("aa");
     return (
         <div className="home" key={`${address || ""} ${network.name}`}>
             <div className="container">

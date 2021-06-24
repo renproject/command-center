@@ -23,7 +23,9 @@ describe("my node", () => {
             "claimable",
         );
         expect(unify(result.get("BTC" as Token)).amount).to.eql(0);
-        expect(unify(result.get("ZEC" as Token)).amount).to.eql(0);
+        expect(unify(result.get("ZEC" as Token)).amount).to.eql(
+            34482.75862068965,
+        );
     });
 
     test("pending", () => {

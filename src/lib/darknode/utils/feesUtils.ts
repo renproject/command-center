@@ -220,7 +220,7 @@ export const getNodeFeesCollection = (
     blockState: BlockState | null,
     type: FeeType,
 ) => {
-    console.log("bsf", blockState);
+    console.log("rvmid", renVmNodeId);
     return FeeTokens.mapEntries(([symbol, token]) => {
         let amount = new BigNumber(0);
         if (blockState !== null) {

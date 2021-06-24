@@ -8,10 +8,12 @@ import {
 } from "../../controllers/pages/renvmStatsPage/renvmContainer";
 
 import { getLightnode } from "../../store/mapContainer";
-import { RenVM } from "../graphQL/queries/renVM";
 import { DEFAULT_REQUEST_TIMEOUT } from "../react/environmentVariables";
-import { QueryBlockStateResponse } from "./utils/blockStateUtils";
-// import { queryBlockStateResponseMock } from "./utils/currentMock";
+import {
+    QueryBlockStateResponse,
+    toNativeTokenSymbol,
+} from "./utils/blockStateUtils";
+import { queryBlockStateResponse } from "./utils/mocks/fees.bs.testnet.mock";
 
 interface ResponseQueryStat {
     version: string;
@@ -135,9 +137,9 @@ export const queryBlockState = async (network: RenNetworkDetails) => {
         params: {},
     };
 
-    // if (lightnode !== "toggleMock") {
-    //     return Promise.resolve(queryBlockStateResponseMock);
-    // }
+    if (lightnode !== "toggleMock") {
+        return Promise.resolve(queryBlockStateResponse);
+    }
 
     const response = await Axios.post<RPCResponse<QueryBlockStateResponse>>(
         lightnode,
@@ -148,4 +150,84 @@ export const queryBlockState = async (network: RenNetworkDetails) => {
     );
     // eslint-disable-next-line  @typescript-eslint/no-explicit-any
     return response.data as any;
+};
+
+type ClaimFeesParams = {
+    darknodeId: string;
+    amount: string;
+    epoch: string;
+    to: string;
+    signature: string;
+};
+export const claimFees = async (
+    network: RenNetworkDetails,
+    token: string,
+    node: string,
+    amount: string,
+    to: string,
+) => {
+    const lightnode = getLightnode(network, true);
+    if (!lightnode) {
+        throw new Error(`No lightnode to claim fees.`);
+    }
+    const request = {
+        method: "ren_submitTx",
+        id: 1,
+        jsonrpc: "2.0",
+        params: {
+            tx: {
+                hash: "eKT2CEAd3ZuzIsQ5mrqKO9Yv24e7ql9fSi-ltOUXfBM",
+                in: {
+                    t: {
+                        struct: [
+                            {
+                                txid: "bytes",
+                            },
+                            {
+                                txindex: "u32",
+                            },
+                            {
+                                amount: "u256",
+                            },
+                            {
+                                payload: "bytes",
+                            },
+                            {
+                                phash: "bytes32",
+                            },
+                            {
+                                to: "string",
+                            },
+                            {
+                                nonce: "bytes32",
+                            },
+                            {
+                                nhash: "bytes32",
+                            },
+                            {
+                                gpubkey: "bytes",
+                            },
+                            {
+                                ghash: "bytes32",
+                            },
+                        ],
+                    },
+                    v: {
+                        amount: "401480",
+                        ghash: "9VxewtRVSJmKnc2jhplArqWeSOxE50msbMJd1hx2X7U",
+                        gpubkey: "A4knRXgAkxx9RNyUywAhtOiB-ZNcEjTckvRW4y7AGdXX",
+                        nhash: "MUdOHf1As-OXFjQMI0PogV6Lx5PKbSPN7fpvZu21okM",
+                        nonce: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACs",
+                        payload: "",
+                        phash: "xdJGAYb3IzySfn2y3McDwOUAtlPKgic7e_rYBF2FpHA",
+                        to: "bc1qj4cj3406k5pe4m0m7ngth35w73aghljghpykqf",
+                        txid: "aCjatCwWSIALMAzSsTGPgSadDgZT8Nsc2iAqn413ewY",
+                        txindex: "0",
+                    },
+                },
+                selector: `${toNativeTokenSymbol(token)}/claimFees`,
+                version: "1",
+            },
+        },
+    };
 };

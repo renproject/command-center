@@ -21,7 +21,7 @@ export enum FeesBlockTab {
     Pending = "Pending",
 }
 
-interface Props {
+interface FeesWithdrawalProps {
     disabled: boolean;
     token: TokenString;
     amount: TokenAmount | null;
@@ -29,20 +29,28 @@ interface Props {
         tokenSymbol: string,
         tokenAddress: string,
     ) => Promise<void>;
+    isRenVMFee?: boolean;
 }
 
-export const FeesItem: React.FC<Props> = ({
+export const FeesWithdrawal: React.FC<FeesWithdrawalProps> = ({
     token,
     amount,
     disabled,
     withdrawCallback,
+    isRenVMFee = false,
 }) => {
     const [loading, setLoading] = useState(false);
 
     const handleWithdraw = useCallback(async (): Promise<void> => {
+        console.log("withdrawing");
         setLoading(true);
 
-        if (amount && amount.asset && amount.asset.tokenAddress) {
+        if (
+            !isRenVMFee &&
+            amount &&
+            amount.asset &&
+            amount.asset.tokenAddress
+        ) {
             try {
                 await withdrawCallback(
                     amount.symbol || token,
@@ -53,10 +61,17 @@ export const FeesItem: React.FC<Props> = ({
                 setLoading(false);
                 return;
             }
+        } else if (!isRenVMFee && amount && amount.asset) {
+            try {
+                await withdrawCallback(amount.symbol || token, "");
+            } catch (error) {
+                console.error(error);
+                setLoading(false);
+                return;
+            }
         }
-
         setLoading(false);
-    }, [token, amount, withdrawCallback]);
+    }, [token, amount, isRenVMFee, withdrawCallback]);
 
     let isDisabled = false;
     let title = "";
@@ -66,7 +81,7 @@ export const FeesItem: React.FC<Props> = ({
     } else if (!amount || new BigNumber(amount.amount).lte(0)) {
         isDisabled = true;
         title = "No fees to withdraw";
-    } else if (!amount.asset || !amount.asset.tokenAddress) {
+    } else if (!isRenVMFee && (!amount.asset || !amount.asset.tokenAddress)) {
         isDisabled = true;
         title = "Unable to look up token address";
     }
@@ -95,7 +110,7 @@ export const FeesItem: React.FC<Props> = ({
     );
 };
 
-interface RowProps {
+interface FeesBlockRowProps {
     token: TokenString;
     isOperator: boolean;
     canWithdraw: boolean;
@@ -107,9 +122,10 @@ interface RowProps {
         tokenSymbol: string,
         tokenAddress: string,
     ) => Promise<void>;
+    isRenVMFee?: boolean;
 }
 
-export const FeesBlockRow: React.FC<RowProps> = ({
+export const FeesBlockRow: React.FC<FeesBlockRowProps> = ({
     token,
     quoteCurrency,
     balance,
@@ -118,6 +134,7 @@ export const FeesBlockRow: React.FC<RowProps> = ({
     tab,
     percent,
     withdrawCallback,
+    isRenVMFee = false,
 }) => {
     return (
         <>
@@ -161,13 +178,14 @@ export const FeesBlockRow: React.FC<RowProps> = ({
                 isOperator &&
                 canWithdraw ? (
                     <td>
-                        <FeesItem
+                        <FeesWithdrawal
                             disabled={
                                 tab !== FeesBlockTab.Withdrawable || !balance
                             }
                             token={token}
                             amount={balance}
                             withdrawCallback={withdrawCallback}
+                            isRenVMFee={isRenVMFee}
                         />
                     </td>
                 ) : null}

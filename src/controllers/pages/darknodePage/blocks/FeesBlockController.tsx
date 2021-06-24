@@ -248,17 +248,28 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
     );
     console.log("pending", pending?.toJS());
 
-    const withdraw = async () => {};
+    const withdraw = useCallback(async (token: string) => {
+        console.log("withdraw", token);
+    }, []);
+
+    const canWithdraw =
+        darknodeDetails?.registrationStatus === RegistrationStatus.Registered ||
+        darknodeDetails?.registrationStatus ===
+            RegistrationStatus.DeregistrationPending;
+
+    const earningFees =
+        darknodeDetails?.registrationStatus === RegistrationStatus.Registered;
 
     return (
         <FeesBlock
             quoteCurrency={quoteCurrency}
             isOperator={isOperator}
-            earningFees={true}
-            canWithdraw={true}
+            earningFees={earningFees}
+            canWithdraw={canWithdraw}
             withdrawable={withdrawable}
             pending={pending}
             withdrawCallback={withdraw}
+            isRenVMFee={true}
         />
     );
 };
