@@ -42,7 +42,6 @@ export const FeesWithdrawal: React.FC<FeesWithdrawalProps> = ({
     const [loading, setLoading] = useState(false);
 
     const handleWithdraw = useCallback(async (): Promise<void> => {
-        console.log("withdrawing");
         setLoading(true);
 
         if (
@@ -61,7 +60,7 @@ export const FeesWithdrawal: React.FC<FeesWithdrawalProps> = ({
                 setLoading(false);
                 return;
             }
-        } else if (!isRenVMFee && amount && amount.asset) {
+        } else if (isRenVMFee && amount && amount.asset) {
             try {
                 await withdrawCallback(amount.symbol || token, "");
             } catch (error) {
@@ -70,6 +69,7 @@ export const FeesWithdrawal: React.FC<FeesWithdrawalProps> = ({
                 return;
             }
         }
+
         setLoading(false);
     }, [token, amount, isRenVMFee, withdrawCallback]);
 
@@ -84,6 +84,9 @@ export const FeesWithdrawal: React.FC<FeesWithdrawalProps> = ({
     } else if (!isRenVMFee && (!amount.asset || !amount.asset.tokenAddress)) {
         isDisabled = true;
         title = "Unable to look up token address";
+    } else if (isRenVMFee) {
+        isDisabled = true;
+        title = "Fee claiming will be available in few days";
     }
 
     return (

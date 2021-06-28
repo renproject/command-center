@@ -44,6 +44,7 @@ const usePopupContainer = () => {
         clearPopup,
         popup,
         overlay,
+        setOverlay,
         dismissible,
         onCancel,
     };

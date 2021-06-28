@@ -657,7 +657,7 @@ const useNetworkContainer = () => {
         }
     };
 
-    const withdrawDarknodeFees = async (
+    const withdrawRenVMReward = async (
         darknodeId: string,
         tokenSymbol: string,
     ) => {
@@ -665,6 +665,7 @@ const useNetworkContainer = () => {
             throw new Error(`Unable to retrieve account address.`);
         }
         const symbol = toNativeTokenSymbol(tokenSymbol);
+        console.log("withdrawRenVMReward", darknodeId, tokenSymbol);
     };
 
     const withdrawReward = async (
@@ -927,6 +928,7 @@ const useNetworkContainer = () => {
         updateCycleAndPendingRewards,
         updateDarknodeDetails,
         updateOperatorDarknodes,
+        withdrawRenVMReward,
         withdrawReward,
         showRegisterPopup,
         showDeregisterPopup,
