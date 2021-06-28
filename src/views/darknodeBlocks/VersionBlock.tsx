@@ -106,6 +106,14 @@ export const VersionBlock: React.FC<Props> = ({
                     size={24}
                 />
                 <RenderStatus status={status} />
+                {status !== DarknodeConnectionStatus.NotRegistered &&
+                status !== DarknodeConnectionStatus.Connecting ? (
+                    <InfoLabel direction="bottom">
+                        Darknode stats won't be immediately available after the
+                        recent RenVM update. No action is required if your node
+                        is showing "Registered".
+                    </InfoLabel>
+                ) : null}
             </div>
 
             <div className="block--advanced--bottom">

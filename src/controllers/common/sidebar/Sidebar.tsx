@@ -241,10 +241,8 @@ export const Sidebar = () => {
                                             }
                                             quoteCurrency={quoteCurrency}
                                             connected={
-                                                details &&
-                                                details.nodeStatistics
-                                                    ? true
-                                                    : false
+                                                details?.registrationStatus ===
+                                                RegistrationStatus.Registered
                                             }
                                             hideMobileMenu={hideMobileMenu}
                                         />
