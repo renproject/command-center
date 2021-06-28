@@ -1,17 +1,23 @@
 import { Currency, CurrencyIcon, Record } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import { List, Map, OrderedMap, OrderedSet } from "immutable";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { createContainer } from "unstated-next";
 import { PromiEvent } from "web3-core";
 
 import { MultiStepPopup } from "../controllers/common/popups/MultiStepPopup";
-import {
-    ConvertCurrency,
-    updatePrices,
-} from "../controllers/common/TokenBalance";
+import { ConvertCurrency } from "../controllers/common/TokenBalance";
+import { updatePrices } from "../controllers/common/tokenBalanceUtils";
 import { retryNTimes } from "../controllers/pages/renvmStatsPage/renvmContainer";
-import { NodeStatistics } from "../lib/darknode/jsonrpc";
+import { NodeStatistics, queryBlockState } from "../lib/darknode/jsonrpc";
+import {
+    BlockState,
+    toNativeTokenSymbol,
+} from "../lib/darknode/utils/blockStateUtils";
+import {
+    getRenVMFromLightnode,
+    resolveRenVM,
+} from "../lib/darknode/utils/renVMUtils";
 import { getDarknodePayment } from "../lib/ethereum/contract";
 import {
     DarknodeFeeStatus,
@@ -77,9 +83,10 @@ export type WaitForTX = <T>(
 
 const useNetworkContainer = () => {
     const { web3, renNetwork, address, notify } = Web3Container.useContainer();
+    // console.log("renNetwork", renNetwork);
     const { setPopup, clearPopup } = PopupContainer.useContainer();
     const {
-        renVM,
+        renVM: renVMGraph,
         fetchRenVM,
         subgraphOutOfSync,
     } = GraphContainer.useContainer();
@@ -92,6 +99,11 @@ const useNetworkContainer = () => {
         target: 0,
     });
 
+    const [blockState, setBlockState] = useState<BlockState | null>(null);
+    // console.log("bs", blockState);
+    const renVMLightnode = getRenVMFromLightnode(blockState);
+
+    const renVM = resolveRenVM(renVMGraph, renVMLightnode);
     const [darknodeDetails, setDarknodeDetails] = useState(
         Map<string, DarknodesState>(),
     );
@@ -326,7 +338,13 @@ const useNetworkContainer = () => {
                 .catch(reject);
         });
 
+    const fetchBlockState = useCallback(async () => {
+        const blockStateResponse = await queryBlockState(renNetwork);
+        setBlockState(blockStateResponse.result.state.v);
+    }, [renNetwork]);
+
     /**
+     * TODO: fees pending rewards/fees are here
      * Retrieves information about the pending rewards in the Darknode Payment
      * contract.
      *
@@ -357,31 +375,33 @@ const useNetworkContainer = () => {
 
         let current: OrderedMap<string, TokenAmount | null>;
 
+        const assets = tokenArrayToMap(latestRenVM.assets);
+
         if (!subgraphOutOfSync) {
             current = OrderedMap<string, TokenAmount | null>();
             if (isDefined(latestRenVM)) {
                 current = latestRenVM.cycleRewards
-                    .filter((asset) => asset.asset !== null)
-                    .map((asset) => ({
-                        ...asset,
-                        amount: asset.amount
-                            .dividedBy(latestRenVM.numberOfDarknodes)
-                            .decimalPlaces(0),
-                        amountInUsd: asset.amountInUsd
-                            .dividedBy(latestRenVM.numberOfDarknodes)
-                            .decimalPlaces(0),
-                        amountInEth: asset.amountInEth
-                            .dividedBy(latestRenVM.numberOfDarknodes)
-                            .decimalPlaces(0),
-                    }))
+                    .filter((tokenAmount) => tokenAmount.asset !== null)
+                    .map((tokenAmount) => {
+                        return {
+                            ...tokenAmount,
+                            amount: tokenAmount.amount
+                                .dividedBy(latestRenVM.numberOfDarknodes)
+                                .decimalPlaces(0),
+                            amountInUsd: tokenAmount.amountInUsd
+                                .dividedBy(latestRenVM.numberOfDarknodes)
+                                .decimalPlaces(0),
+                            amountInEth: tokenAmount.amountInEth
+                                .dividedBy(latestRenVM.numberOfDarknodes)
+                                .decimalPlaces(0),
+                        };
+                    })
                     .reduce(
                         (map, asset, symbol) => map.set(symbol, asset),
                         previous,
                     );
             }
         } else {
-            const assets = tokenArrayToMap(latestRenVM.assets);
-
             current = await safePromiseAllMap(
                 assets
                     .filter((_, asset) => asset !== "ETH" && asset !== "SAI")
@@ -463,9 +483,6 @@ const useNetworkContainer = () => {
 
         current = updatePrices(current, tokenPrices);
 
-        // let previous = await OrderedMap<string, TokenAmount | null>();
-        // previous = updatePrices(previous, tokenPrices);
-
         if (isDefined(latestRenVM)) {
             newPendingRewards = newPendingRewards.set(
                 latestRenVM.previousCycle,
@@ -520,14 +537,11 @@ const useNetworkContainer = () => {
         if (!renVM) {
             return;
         }
-        const fetchCycleAndPendingRewardsPromise = fetchCycleAndPendingRewards(
-            renVM,
-        );
 
         const {
             newPendingRewards,
             newPendingTotalInUsd,
-        } = await fetchCycleAndPendingRewardsPromise;
+        } = await fetchCycleAndPendingRewards(renVM);
 
         if (isDefined(newPendingTotalInUsd)) {
             setPendingTotalInUsd(newPendingTotalInUsd);
@@ -584,7 +598,7 @@ const useNetworkContainer = () => {
         ); /* , (darknodeID) => {
                             addDarknode({ darknodeID, address, network: renNetwork.name });
                     }, ); */
-
+        // console.log("currDark", currentDarknodes);
         addDarknodes(currentDarknodes);
 
         // The lists are merged in the reducer as well, but we combine them again
@@ -641,6 +655,17 @@ const useNetworkContainer = () => {
         if (newDarknodeList.size === 0) {
             storeEmptyDarknodeList();
         }
+    };
+
+    const withdrawRenVMReward = async (
+        darknodeId: string,
+        tokenSymbol: string,
+    ) => {
+        if (!address) {
+            throw new Error(`Unable to retrieve account address.`);
+        }
+        const symbol = toNativeTokenSymbol(tokenSymbol);
+        console.info("withdrawRenVMReward", darknodeId, symbol);
     };
 
     const withdrawReward = async (
@@ -889,6 +914,7 @@ const useNetworkContainer = () => {
         darknodeList,
         hiddenDarknodes,
         withdrawAddresses,
+        blockState,
 
         updateTokenPrices,
         hideDarknode,
@@ -902,11 +928,13 @@ const useNetworkContainer = () => {
         updateCycleAndPendingRewards,
         updateDarknodeDetails,
         updateOperatorDarknodes,
+        withdrawRenVMReward,
         withdrawReward,
         showRegisterPopup,
         showDeregisterPopup,
         showRefundPopup,
         showFundPopup,
+        fetchBlockState,
     };
 };
 

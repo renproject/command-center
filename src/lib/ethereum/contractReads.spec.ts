@@ -1,7 +1,7 @@
 import { RenNetworkDetails } from "@renproject/contracts";
 import Web3 from "web3";
 
-import { createWeb3, Provider } from "../../test/globalSetup";
+import { createWeb3, Provider } from "../../../jest/globalSetup";
 import { darknodeIDBase58ToHex } from "../darknode/darknodeID";
 import { getDarknodeStatus, RegistrationStatus } from "./contractReads";
 

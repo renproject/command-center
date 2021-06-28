@@ -34,7 +34,7 @@ export const useTaskSchedule = <T = undefined>(
         const timeout: ReturnResult<T> = await task();
         if (typeof timeout === "number") {
             scheduleNextCall(timeout);
-            return (undefined as unknown) as T;
+            return undefined as unknown as T;
         } else {
             scheduleNextCall(timeout.timeout);
             return timeout.result;

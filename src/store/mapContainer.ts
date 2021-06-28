@@ -6,7 +6,6 @@ import { useRef, useState } from "react";
 import { Point } from "react-simple-maps";
 import { createContainer } from "unstated-next";
 
-import { retryNTimes } from "../controllers/pages/renvmStatsPage/renvmContainer";
 import { DEFAULT_REQUEST_TIMEOUT } from "../lib/react/environmentVariables";
 import { peerResponse } from "./vDot2Peers";
 import { Web3Container } from "./web3Container";
@@ -20,7 +19,7 @@ export interface DarknodeLocation {
 
 // const sampleDarknodes: DarknodeLocation[] = [];
 
-interface QueryResponse {
+export interface QueryResponse {
     jsonrpc: "2.0";
     id: number;
     result: {
@@ -61,7 +60,25 @@ const parallelLimit = <T>(
     return Promise.all(arrChains).then(() => result);
 };
 
-export const getLightnode = (network: RenNetworkDetails): string => {
+export const getLightnode = (
+    network: RenNetworkDetails,
+    isNew = false,
+): string => {
+    if (isNew) {
+        switch (network.name) {
+            case "mainnet":
+                return "https://lightnode-new-mainnet.herokuapp.com";
+            case "testnet":
+                return "https://lightnode-new-testnet.herokuapp.com";
+            // TODO: fees - not sure about following ones;
+            // case "chaosnet":
+            //     return "https://lightnode-chaosnet-new.herokuapp.com";
+            case "devnet":
+                return "https://lightnode-devnet.herokuapp.com";
+            case "localnet":
+                return "http://0.0.0.0:8888";
+        }
+    }
     switch (network.name) {
         case "mainnet":
             return "https://lightnode-mainnet.herokuapp.com";
@@ -72,7 +89,7 @@ export const getLightnode = (network: RenNetworkDetails): string => {
         case "devnet":
             return "https://lightnode-devnet.herokuapp.com";
         case "localnet":
-            return "";
+            return "http://0.0.0.0:8888";
     }
     return "";
 };
@@ -148,7 +165,7 @@ const getAllDarknodes = async (network: RenNetworkDetails) => {
     //     )
     // ).data;
     const response = peerResponse;
-    return response.result.peers;
+    return Promise.resolve(response.result.peers);
     // return darknodeIDs.map(parseMultiAddress);
 };
 

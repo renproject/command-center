@@ -10,7 +10,6 @@ import { isDefined } from "../../lib/general/isDefined";
 import { classNames } from "../../lib/react/className";
 import { isDarknodeUpToDate } from "../../store/githubApiContainer";
 import { ExternalLink } from "../ExternalLink";
-import { InfoLabel } from "../infoLabel/InfoLabel";
 import { StatusDot, StatusDotColor } from "../StatusDot";
 
 const UPDATE_DARKNODE_LINK =

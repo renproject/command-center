@@ -82,13 +82,13 @@ export const AllTokenDetails = OrderedMap<Token, TokenDetail>()
     })
     .set(Token.DOGE, {
         symbol: "DOGE",
-        decimals: 18,
+        decimals: 8, // this was 18
         coinGeckoID: "dogecoin",
         feesToken: true,
     })
     .set(Token.DGB, {
         symbol: "DGB",
-        decimals: 18,
+        decimals: 8, // this was 18
         coinGeckoID: "digibyte",
         feesToken: true,
     });

@@ -24,12 +24,24 @@ export const AllDarknodes: React.FC<{}> = () => {
         registrySync,
         darknodeList,
         hiddenDarknodes,
+        // fetchBlockState,
+        // blockState,
     } = NetworkContainer.useContainer();
 
+    // TODO: here
     const accountDarknodeList = useMemo(
         () => (address ? darknodeList.get(address, null) : null),
         [address, darknodeList],
     );
+
+    // useEffect(() => {
+    //     fetchBlockState().catch(console.error);
+    // }, [fetchBlockState]);
+
+    // console.log("bs", blockState);
+    // console.log("a", accountDarknodeList?.toJS());
+    // console.log("h", hiddenDarknodes?.toJS());
+
     const accountHiddenDarknodes = useMemo(
         () => (address ? hiddenDarknodes.get(address, null) : null),
         [address, hiddenDarknodes],

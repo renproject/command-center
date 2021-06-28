@@ -71,6 +71,7 @@ input[type="password"] {
 
     &:disabled {
         color: $mid-grey;
+        background: $light-grey;
     }
 
     &:focus {

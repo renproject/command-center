@@ -11,7 +11,22 @@ import { Tabs } from "../Tabs";
 import { Block, BlockBody, BlockTitle } from "./Block";
 import { FeesBlockRow, FeesBlockTab } from "./FeesBlockRow";
 
-export const FeesBlock: React.FC<Props> = ({
+interface FeesBlockProps {
+    quoteCurrency: Currency;
+    isOperator: boolean;
+    earningFees: boolean;
+    canWithdraw: boolean;
+    withdrawable: OrderedMap<string, TokenAmount | null> | null;
+    pending: OrderedMap<string, TokenAmount | null> | null;
+    withdrawCallback: (
+        tokenSymbol: string,
+        tokenAddress: string,
+    ) => Promise<void>;
+    isRenVMFee?: boolean;
+    className?: string;
+}
+
+export const FeesBlock: React.FC<FeesBlockProps> = ({
     quoteCurrency,
     isOperator,
     earningFees,
@@ -19,7 +34,9 @@ export const FeesBlock: React.FC<Props> = ({
     withdrawable,
     pending,
     withdrawCallback,
+    isRenVMFee,
     className,
+    children,
 }) => {
     const [tab, setTab] = useState(FeesBlockTab.Withdrawable);
 
@@ -63,16 +80,20 @@ export const FeesBlock: React.FC<Props> = ({
                     Darknode Income
                 </h3>
             </BlockTitle>
-
+            {children}
             <BlockBody>
                 <Tabs
                     selected={tab}
                     tabs={
                         earningFees
-                            ? {
-                                  Withdrawable: null,
-                                  Pending: null,
-                              }
+                            ? isRenVMFee
+                                ? {
+                                      Withdrawable: null,
+                                      Pending: null,
+                                  }
+                                : {
+                                      Withdrawable: null,
+                                  }
                             : {
                                   Withdrawable: null,
                               }
@@ -172,6 +193,9 @@ export const FeesBlock: React.FC<Props> = ({
                                                             quoteCurrency={
                                                                 quoteCurrency
                                                             }
+                                                            isRenVMFee={
+                                                                isRenVMFee
+                                                            }
                                                         />
                                                     );
                                                 },
@@ -186,17 +210,3 @@ export const FeesBlock: React.FC<Props> = ({
         </Block>
     );
 };
-
-interface Props {
-    quoteCurrency: Currency;
-    isOperator: boolean;
-    earningFees: boolean;
-    canWithdraw: boolean;
-    withdrawable: OrderedMap<string, TokenAmount | null> | null;
-    pending: OrderedMap<string, TokenAmount | null> | null;
-    withdrawCallback: (
-        tokenSymbol: string,
-        tokenAddress: string,
-    ) => Promise<void>;
-    className?: string;
-}

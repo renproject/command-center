@@ -1,10 +1,8 @@
-import { RenVMType } from "@renproject/interfaces";
 import BigNumber from "bignumber.js";
 import { Map, OrderedMap, OrderedSet } from "immutable";
 import { useEffect, useState } from "react";
 import { createContainer } from "unstated-next";
 import { queryState, RenVMState } from "../../../lib/darknode/jsonrpc";
-
 import {
     AllTokenDetails,
     chainToToken,
@@ -25,7 +23,6 @@ import { getLightnode } from "../../../store/mapContainer";
 import { NetworkContainer } from "../../../store/networkContainer";
 import { Web3Container } from "../../../store/web3Container";
 import { SECONDS } from "../../common/BackgroundTasks";
-import { Block, RenVMContainer } from "../renvmStatsPage/renvmContainer";
 import { StatTab } from "./StatTabs";
 
 export enum NetworkStatsChain {

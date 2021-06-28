@@ -4,7 +4,7 @@ import Web3 from "web3";
 import { PromiEvent, TransactionConfig } from "web3-core";
 
 import { WaitForTX } from "../../store/networkContainer";
-import { createWeb3, Provider } from "../../test/globalSetup";
+import { createWeb3, Provider } from "../../../jest/globalSetup";
 import { darknodeIDBase58ToHex } from "../darknode/darknodeID";
 import { getDarknodeRegistry } from "./contract";
 import { getOperatorDarknodes } from "./contractReads";

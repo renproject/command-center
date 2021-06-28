@@ -6,7 +6,7 @@ import { List, OrderedMap, OrderedSet } from "immutable";
 import Web3 from "web3";
 import { sha3, toChecksumAddress } from "web3-utils";
 
-import { updatePrices } from "../../controllers/common/TokenBalance";
+import { updatePrices } from "../../controllers/common/tokenBalanceUtils";
 import { retryNTimes } from "../../controllers/pages/renvmStatsPage/renvmContainer";
 import { getLightnode } from "../../store/mapContainer";
 import { DarknodesState } from "../../store/networkContainer";
@@ -516,7 +516,7 @@ export const fetchDarknodeDetails = async (
         registrationStatus,
     );
 
-    // Get earned fees
+    // Get earned fees TODO: fees darknode fees are here
     let feesEarned = !useInfura
         ? getBalances(darknode)
         : await getBalancesWithInfura(

@@ -2,6 +2,11 @@ import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
 import moment from "moment";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import {
+    darknodeIDBase58ToRenVmID,
+    darknodeIDHexToBase58,
+} from "../../../../lib/darknode/darknodeID";
+import { getNodeFeesCollection } from "../../../../lib/darknode/utils/feesUtils";
 
 import {
     DarknodeFeeStatus,
@@ -9,6 +14,7 @@ import {
 } from "../../../../lib/ethereum/contractReads";
 import { TokenString } from "../../../../lib/ethereum/tokens";
 import { TokenAmount } from "../../../../lib/graphQL/queries/queries";
+import { classNames } from "../../../../lib/react/className";
 import { GraphContainer } from "../../../../store/graphContainer";
 import {
     DarknodesState,
@@ -16,8 +22,12 @@ import {
 } from "../../../../store/networkContainer";
 import { PopupContainer } from "../../../../store/popupContainer";
 import { UIContainer } from "../../../../store/uiContainer";
+import { Web3Container } from "../../../../store/web3Container";
 import { FeesBlock } from "../../../../views/darknodeBlocks/FeesBlock";
 import { NotClaimed } from "../../../../views/popups/NotClaimed";
+import { Popup } from "../../../common/popups/Popup";
+import { PopupError } from "../../../common/popups/PopupController";
+import { updatePrices } from "../../../common/tokenBalanceUtils";
 
 interface Props {
     isOperator: boolean;
@@ -179,6 +189,7 @@ export const FeesBlockController: React.FC<Props> = ({
         );
     }
 
+    // TODO: fees here are being splitted to withdrawable / pending
     const withdrawable = darknodeDetails ? darknodeDetails.feesEarned : null;
     const pending = summedPendingRewards;
 
@@ -212,5 +223,166 @@ export const FeesBlockController: React.FC<Props> = ({
             pending={pending}
             withdrawCallback={withdrawCallback}
         />
+    );
+};
+
+export const RenVmFeesBlockController: React.FC<Props> = ({
+    isOperator,
+    darknodeDetails,
+}) => {
+    const { address, web3 } = Web3Container.useContainer();
+    const {
+        blockState,
+        quoteCurrency,
+        tokenPrices,
+        // withdrawRenVMReward,
+    } = NetworkContainer.useContainer();
+
+    const { setOverlay } = PopupContainer.useContainer();
+
+    const renVmNodeId = darknodeIDBase58ToRenVmID(
+        darknodeIDHexToBase58(darknodeDetails?.ID || ""),
+    );
+
+    const withdrawable = updatePrices(
+        getNodeFeesCollection(renVmNodeId, blockState, "claimable"),
+        tokenPrices,
+    );
+    // console.log("withdrawable", withdrawable?.toJS());
+    const pending = updatePrices(
+        getNodeFeesCollection(renVmNodeId, blockState, "pending"),
+        tokenPrices,
+    );
+    // console.log("pending", pending?.toJS());
+
+    const [open, setOpen] = useState(false);
+    const [token, setToken] = useState("");
+    const [amount, setAmount] = useState(0);
+    const handleOpen = useCallback(() => {
+        setOverlay(true);
+        setOpen(true);
+    }, [setOverlay]);
+    const handleClose = useCallback(() => {
+        setOpen(false);
+        setOverlay(false);
+    }, [setOverlay]);
+    const [error] = useState("");
+    const withdrawCallback = useCallback(
+        async (tokenSymbol: string) => {
+            // console.log("withdraw", tokenSymbol);
+            if (!open) {
+                handleOpen();
+                setToken(tokenSymbol);
+                const tokenAmount = withdrawable.find(
+                    (entry) => entry.symbol === token,
+                );
+                const amountBN = new BigNumber(tokenAmount?.amount || 0).div(
+                    new BigNumber(
+                        Math.pow(10, tokenAmount?.asset?.decimals || 0),
+                    ),
+                );
+                setAmount(amountBN.toNumber());
+            }
+        },
+        [open, handleOpen, token, withdrawable],
+    );
+    const handleConfirm = useCallback(async () => {
+        // console.log("confirming");
+        const accounts = await web3.eth.getAccounts();
+        const signature = await web3.eth.sign("todo", accounts[0]);
+        console.info(signature);
+    }, [web3, address]);
+
+    const canWithdraw =
+        darknodeDetails?.registrationStatus === RegistrationStatus.Registered ||
+        darknodeDetails?.registrationStatus ===
+            RegistrationStatus.DeregistrationPending;
+
+    const earningFees =
+        darknodeDetails?.registrationStatus === RegistrationStatus.Registered;
+
+    return (
+        <>
+            <FeesBlock
+                quoteCurrency={quoteCurrency}
+                isOperator={isOperator}
+                earningFees={earningFees}
+                canWithdraw={canWithdraw}
+                withdrawable={withdrawable}
+                pending={pending}
+                withdrawCallback={withdrawCallback}
+                isRenVMFee={true}
+            />
+            {open && (
+                <div>
+                    <Popup onCancel={handleClose}>
+                        <div className="popup--description">
+                            <h3>Withdraw fees for {token}</h3>
+                            <h4>
+                                Please confirm you want to withdraw {amount}{" "}
+                                {token}
+                            </h4>
+                            {Boolean(error) && <PopupError>{error}</PopupError>}
+                        </div>
+                        <div className="popup--buttons">
+                            <button className="button" onClick={handleConfirm}>
+                                Confirm
+                            </button>
+                            <button
+                                className="button button--white"
+                                onClick={handleClose}
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </Popup>
+                </div>
+            )}
+        </>
+    );
+};
+
+type FeesSource = "eth" | "renvm";
+
+export const FeesSwitcherController: React.FC<Props> = ({
+    isOperator,
+    darknodeDetails,
+}) => {
+    const [source, setSource] = useState<FeesSource>("eth");
+    return (
+        <div className="fees-switcher">
+            <div className="fees-switcher--control">
+                {["eth", "renvm"].map((symbol) => (
+                    <span key={symbol}>
+                        <span
+                            className={classNames(
+                                "fees-switcher--button",
+                                source === symbol
+                                    ? "fees-switcher--button--active"
+                                    : "",
+                            )}
+                            onClick={() => {
+                                setSource(symbol as FeesSource);
+                            }}
+                        >
+                            {symbol === "eth" ? "Ethereum" : "RenVM"}
+                        </span>
+                        {symbol === "eth" && " | "}
+                    </span>
+                ))}
+            </div>
+            {source === "eth" && (
+                <FeesBlockController
+                    isOperator={isOperator}
+                    darknodeDetails={darknodeDetails}
+                />
+            )}
+            {source === "renvm" && (
+                <RenVmFeesBlockController
+                    isOperator={isOperator}
+                    darknodeDetails={darknodeDetails}
+                />
+            )}
+        </div>
     );
 };

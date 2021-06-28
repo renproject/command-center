@@ -80,14 +80,14 @@ export const retryNTimes = async <T>(
 };
 
 const getBlocks = async (network: RenNetworkDetails): Promise<List<Block>> => {
-    const lightnode = getLightnode(network);
+    const lightnode = getLightnode(network, true);
     if (!lightnode) {
         throw new Error(`No lightnode to fetch darknode locations.`);
     }
     const request = {
         jsonrpc: "2.0",
         method: "ren_queryBlocks",
-        params: { n: N },
+        params: { n: `${N}` },
         id: 67,
     };
     let response;

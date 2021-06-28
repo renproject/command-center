@@ -101,6 +101,24 @@
 
 /**** FEES BLOCK *****/
 
+.fees-switcher {
+    position: relative;
+    &--control {
+        position: absolute;
+        top: 4px;
+        right: 5px;
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.4);
+    }
+    &--button {
+        cursor: pointer;
+        &--active {
+            color: rgba(255, 255, 255, 0.8);
+            border-bottom: 2px solid $primary;
+        }
+    }
+}
+
 .fees-block {
     overflow-y: unset;
 

@@ -8,7 +8,7 @@ import { DarknodeName } from "../../../views/darknodeBlocks/DarknodeName";
 import { EpochBlock } from "../../../views/darknodeBlocks/EpochBlock";
 import { NetworkBlock } from "../../../views/darknodeBlocks/NetworkBlock";
 import { ResourcesBlock } from "../../../views/darknodeBlocks/ResourcesBlock";
-import { FeesBlockController } from "./blocks/FeesBlockController";
+import { FeesSwitcherController } from "./blocks/FeesBlockController";
 import { GasBlockController } from "./blocks/GasBlockController";
 import { VersionBlockController } from "./blocks/VersionBlockController";
 import { DarknodeAction } from "./DarknodePage";
@@ -118,10 +118,12 @@ export const DarknodeView: React.FC<Props> = ({
                 {notifications}
             </div>
             <div className="darknodePage--bottom">
-                <FeesBlockController
-                    isOperator={isOperator}
-                    darknodeDetails={darknodeDetails}
-                />
+                <div className="block block--column">
+                    <FeesSwitcherController
+                        isOperator={isOperator}
+                        darknodeDetails={darknodeDetails}
+                    />
+                </div>
                 <div className="block block--column">
                     <VersionBlockController darknodeDetails={darknodeDetails} />
                     <GasBlockController

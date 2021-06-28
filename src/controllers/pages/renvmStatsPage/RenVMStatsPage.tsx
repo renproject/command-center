@@ -35,9 +35,8 @@ export const RenVMStatsPage = () => {
     } = RenVMContainer.useContainer();
 
     const history = useHistory();
-    const {
-        params,
-    }: { params: { txHash?: string; blockNumber?: string } } = useRouteMatch();
+    const { params }: { params: { txHash?: string; blockNumber?: string } } =
+        useRouteMatch();
     const txHash: string | undefined = params.txHash;
     const blockNumber = params.blockNumber
         ? parseInt(params.blockNumber, 10)

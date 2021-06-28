@@ -78,11 +78,8 @@ export const Sidebar = () => {
         darknodeList,
         hiddenDarknodes,
     } = NetworkContainer.useContainer();
-    const {
-        address,
-        web3BrowserName,
-        promptLogin,
-    } = Web3Container.useContainer();
+    const { address, web3BrowserName, promptLogin } =
+        Web3Container.useContainer();
     const { mobileMenuActive, hideMobileMenu } = UIContainer.useContainer();
     const { selectedDarknodeID } = UIContainer.useContainer();
 
@@ -216,9 +213,8 @@ export const Sidebar = () => {
                                     );
                                 })
                                 .map((darknodeID: string) => {
-                                    const details = darknodeDetails.get(
-                                        darknodeID,
-                                    );
+                                    const details =
+                                        darknodeDetails.get(darknodeID);
                                     return (
                                         <SidebarIcon
                                             key={darknodeID}

@@ -12,7 +12,7 @@ import {
     fantomSubgraphUrl,
     polygonSubgraphUrl,
 } from "../lib/graphQL/client";
-import { queryRenVM, RenVM } from "../lib/graphQL/queries/renVM";
+import { queryRenVMSubgraph, RenVM } from "../lib/graphQL/queries/renVM";
 import { catchBackgroundException } from "../lib/react/errors";
 import { NotificationsContainer } from "./notificationsContainer";
 import { Web3Container } from "./web3Container";
@@ -38,7 +38,7 @@ const useGraphContainer = () => {
 
     const updater = async () => {
         try {
-            const newRenVM = await queryRenVM(ethereumSubgraph);
+            const newRenVM = await queryRenVMSubgraph(ethereumSubgraph);
             setRenVM(newRenVM);
 
             // Get seconds since start of epoch.

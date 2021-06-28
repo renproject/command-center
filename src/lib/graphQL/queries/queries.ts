@@ -27,6 +27,8 @@ export interface TokenAmount {
     } | null;
 }
 
+export type TokenAmountCollection = OrderedMap<string, TokenAmount>;
+
 export const parseTokenAmount = (amount: RawTokenAmount): TokenAmount => ({
     ...amount,
     amount: new BigNumber(amount.amount),

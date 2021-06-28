@@ -381,6 +381,7 @@
 }
 
 .topup {
+    padding: 0 22px;
     .topup--max {
         font-size: 14px;
         font-weight: 200;
@@ -411,6 +412,8 @@
 
     mix-blend-mode: normal;
     opacity: 0.6;
+    margin-top: 15px;
+    margin-bottom: 25px;
 }
 
 .topup--withdraw {

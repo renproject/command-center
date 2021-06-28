@@ -61,7 +61,6 @@ export const queryDarknode = async (
             darknodeID: darknodeID.toLowerCase(),
         },
     });
-
     if (!response.data.darknode) {
         return null;
     }
@@ -77,7 +76,7 @@ export const queryDarknode = async (
         previousLastClaimedEpoch: Ox(
             new BigNumber(response.data.darknode.previousLastClaimedEpoch),
         ),
-
+        // TODO: fees darknode balances (withdrawable/pending) are here
         balances: tokenArrayToMap(response.data.darknode.balances).map(
             parseTokenAmount,
         ),

@@ -3,6 +3,7 @@ import * as Sentry from "@sentry/browser";
 import LedgerTransportU2F from "@ledgerhq/hw-transport-u2f";
 import LedgerTransportWebUSB from "@ledgerhq/hw-transport-webusb";
 import {
+    renLocalnet,
     renMainnet,
     RenNetwork,
     RenNetworkDetails,
@@ -35,6 +36,8 @@ const stringToNetwork = (network: RenNetwork): RenNetworkDetails => {
             return renMainnet;
         case RenNetwork.Testnet:
             return renTestnet;
+        case RenNetwork.Localnet: //subgraphs not working
+            return renLocalnet;
     }
     throw new Error(`Unknown network ${network}.`);
 };
