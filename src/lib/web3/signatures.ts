@@ -1,4 +1,5 @@
-import { sha256 } from "ethereumjs-util";
+import { sha256, sha256FromString } from "ethereumjs-util";
+import { numberToLeftPaddedUrlBase64 } from "../general/encodingUtils";
 
 export const claimFeesDigest = (
     darknodeId: string,
@@ -6,15 +7,20 @@ export const claimFeesDigest = (
     address: string,
     nonce: number,
 ) => {
-    const hash = (x: any) => x.toString(); // sha256;
-    const nodeHash = hash(stringToBuffer(darknodeId));
-    const amountHash = hash(toBytes32(stringToBuffer(amount.toString())));
-    const toHash = hash(sha256(stringToBuffer(address)));
-    const nonceHash = hash(toBytes32(stringToBuffer(nonce.toString())));
+    const nodeHash = sha256(Buffer.from(darknodeId));
+    const amountHash = sha256(
+        Buffer.from(numberToLeftPaddedUrlBase64(amount.toString())),
+    );
+    const toHash = sha256FromString(address);
+    const nonceHash = sha256(
+        Buffer.from(numberToLeftPaddedUrlBase64(nonce.toString())),
+    );
 
-    const h01 = hash(nodeHash + amountHash);
-    const h23 = hash(toHash + nonceHash);
-    return hash(h01 + h23);
+    console.info(nodeHash, amountHash, toHash, nonceHash);
+    // const h01 = hash(nodeHash + amountHash);
+    // const h23 = hash(toHash + nonceHash);
+    return toHash;
+    // return hash(h01 + h23);
 };
 
 export const toBytes32 = (value: Buffer) => {
