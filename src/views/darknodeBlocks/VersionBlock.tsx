@@ -4,6 +4,7 @@ import {
     FontAwesomeIconProps,
 } from "@fortawesome/react-fontawesome";
 import React, { useMemo } from "react";
+import { InfoLabel } from "../infoLabel/InfoLabel";
 import { Block, BlockBody, BlockTitle } from "./Block";
 
 import { isDefined } from "../../lib/general/isDefined";
