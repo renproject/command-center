@@ -290,6 +290,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
         // console.log("confirming");
         const accounts = await web3.eth.getAccounts();
         const signature = await web3.eth.sign("todo", accounts[0]);
+        console.info(signature);
     }, [web3, address]);
 
     const canWithdraw =

@@ -72,9 +72,6 @@ export const FeesBlock: React.FC<FeesBlockProps> = ({
             ? [withdrawable, withdrawableInUsd]
             : [pending, pendingInUsd];
 
-    const availableTabs = {};
-    if (!isRenVMFee) {
-    }
     return (
         <Block className={classNames("fees-block", className)}>
             <BlockTitle>
