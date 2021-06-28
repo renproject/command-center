@@ -50,6 +50,9 @@ export const getTokenFeeForEpoch = (
     blockState: BlockState,
     perNode = false,
 ) => {
+    if (epoch === "current") {
+        return getTokenUnassignedFees(symbol, blockState, perNode).div(2);
+    }
     const data = getFeesForToken(symbol, blockState);
     if (data === null) {
         return new BigNumber(0);
@@ -57,9 +60,8 @@ export const getTokenFeeForEpoch = (
     const { epochs } = data;
     const current = getCurrentEpochId(blockState);
     let epochIndex = 0;
-    if (epoch === "current") {
-        epochIndex = current;
-    } else if (epoch === "previous") {
+
+    if (epoch === "previous") {
         epochIndex = current - 1;
     } else {
         epochIndex = epoch;
@@ -226,7 +228,6 @@ export const getNodePendingFees = (
     if (!exists) {
         return new BigNumber(0);
     }
-    // const epoch = getCurrentEpochId(blockState);
     return getTokenUnassignedFees(symbol, blockState, true).div(2); // 50% assigned to next epoch
 };
 

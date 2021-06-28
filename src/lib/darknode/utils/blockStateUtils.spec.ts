@@ -23,7 +23,7 @@ describe("node basic utils", () => {
 
     test("gets current epoch id", () => {
         const result = getCurrentEpochId(blockState);
-        expect(result).to.equal(3);
+        expect(result).to.equal(4);
     });
 
     test("gets node entered at", () => {

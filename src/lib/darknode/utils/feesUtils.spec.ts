@@ -94,7 +94,7 @@ describe("fees", () => {
                     lastEpochClaimed: "2",
                 },
             ],
-            unassigned: "12500000",
+            unassigned: "50000000",
         };
         expect(unify(result)).to.eql(expected);
     });
@@ -106,7 +106,7 @@ describe("fees", () => {
 
     test("get token rewards for previous epoch", () => {
         const reward = getTokenFeeForEpoch("BTC", "previous", blockState);
-        expect(reward.toNumber()).to.equal(50000000);
+        expect(reward.toNumber()).to.equal(25000000);
     });
 
     test("get token rewards for epoch per node", () => {
@@ -227,7 +227,7 @@ describe("node fees", () => {
             "BTC",
             blockState,
         );
-        expect(result.toNumber()).to.equal(15000000);
+        expect(result.toNumber()).to.equal(17500000);
     });
 
     test("gets node claimable fees (node claimed in previous-1 epoch)", () => {
@@ -236,7 +236,7 @@ describe("node fees", () => {
             "BTC",
             blockState,
         );
-        expect(result.toNumber()).to.equal(5000000);
+        expect(result.toNumber()).to.equal(7500000);
     });
 
     test("gets node claimable fees (node claimed in previous epoch)", () => {
@@ -245,7 +245,7 @@ describe("node fees", () => {
             "BTC",
             blockState,
         );
-        expect(result.toNumber()).to.equal(0);
+        expect(result.toNumber()).to.equal(2500000);
     });
 
     test("gets node claimable fees (never claimed for this asset)", () => {
@@ -254,7 +254,7 @@ describe("node fees", () => {
             "DOGE",
             blockState,
         );
-        expect(result.toNumber()).to.equal(54418999999.99999);
+        expect(result.toNumber()).to.equal(61318999999.99999);
     });
 
     test("gets node claimable fees (nonexistent node)", () => {
@@ -272,7 +272,7 @@ describe("node fees", () => {
             "BTC",
             blockState,
         );
-        expect(result.toNumber()).to.equal(625000);
+        expect(result.toNumber()).to.equal(2500000);
     });
 
     test("gets node pending fees (nonexistent node)", () => {
@@ -302,7 +302,7 @@ describe("node fees - aggregations", () => {
             blockState,
             "claimable",
         );
-        expect(unify(result.get("BTC" as Token)).amount).to.eql(15000000);
+        expect(unify(result.get("BTC" as Token)).amount).to.eql(17500000);
         expect(unify(result.get("ZEC" as Token)).amount).to.eql(0);
     });
 
@@ -312,7 +312,7 @@ describe("node fees - aggregations", () => {
             blockState,
             "claimable",
         );
-        expect(unify(result.get("BTC" as Token)).amount).to.eql(5000000);
+        expect(unify(result.get("BTC" as Token)).amount).to.eql(7500000);
         expect(unify(result.get("ZEC" as Token)).amount).to.eql(0);
     });
 
@@ -332,7 +332,7 @@ describe("node fees - aggregations", () => {
             blockState,
             "pending",
         );
-        expect(unify(result.get("BTC" as Token)).amount).to.eql(625000);
+        expect(unify(result.get("BTC" as Token)).amount).to.eql(2500000);
         expect(unify(result.get("ZEC" as Token)).amount).to.eql(0);
     });
 
@@ -342,7 +342,7 @@ describe("node fees - aggregations", () => {
             blockState,
             "pending",
         );
-        expect(unify(result.get("BTC" as Token)).amount).to.eql(625000);
+        expect(unify(result.get("BTC" as Token)).amount).to.eql(2500000);
         expect(unify(result.get("ZEC" as Token)).amount).to.eql(0);
     });
 });

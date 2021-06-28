@@ -1135,7 +1135,7 @@ export const queryBlockStateResponse = {
                                 lastEpochClaimed: "2",
                             },
                         ],
-                        unassigned: "12500000",
+                        unassigned: "50000000",
                     },
                     gasCap: "2",
                     gasLimit: "400",
@@ -1338,7 +1338,7 @@ export const queryBlockStateResponse = {
                     epoch: {
                         hash: "DH379e0CMqJeafGJjU9yDAT0geI3VddI_xciO-wSQtQ",
                         numNodes: "10",
-                        number: "3",
+                        number: "4",
                         timestamp: "1590971276",
                     },
                     nodes: [
