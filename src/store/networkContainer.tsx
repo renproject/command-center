@@ -83,7 +83,7 @@ export type WaitForTX = <T>(
 
 const useNetworkContainer = () => {
     const { web3, renNetwork, address, notify } = Web3Container.useContainer();
-    console.log("renNetwork", renNetwork);
+    // console.log("renNetwork", renNetwork);
     const { setPopup, clearPopup } = PopupContainer.useContainer();
     const {
         renVM: renVMGraph,
@@ -100,7 +100,7 @@ const useNetworkContainer = () => {
     });
 
     const [blockState, setBlockState] = useState<BlockState | null>(null);
-    console.log("bs", blockState);
+    // console.log("bs", blockState);
     const renVMLightnode = getRenVMFromLightnode(blockState);
 
     const renVM = resolveRenVM(renVMGraph, renVMLightnode);
@@ -665,7 +665,7 @@ const useNetworkContainer = () => {
             throw new Error(`Unable to retrieve account address.`);
         }
         const symbol = toNativeTokenSymbol(tokenSymbol);
-        console.log("withdrawRenVMReward", darknodeId, tokenSymbol);
+        console.log("withdrawRenVMReward", darknodeId, symbol);
     };
 
     const withdrawReward = async (

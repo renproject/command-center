@@ -13,7 +13,7 @@ import {
     QueryBlockStateResponse,
     toNativeTokenSymbol,
 } from "./utils/blockStateUtils";
-import { queryBlockStateResponse } from "./utils/mocks/fees.bs.testnet.mock";
+// import { queryBlockStateResponse } from "./utils/mocks/fees.bs.testnet.mock";
 
 interface ResponseQueryStat {
     version: string;
@@ -137,9 +137,9 @@ export const queryBlockState = async (network: RenNetworkDetails) => {
         params: {},
     };
 
-    if (lightnode !== "toggleMock") {
-        return Promise.resolve(queryBlockStateResponse);
-    }
+    // if (lightnode !== "toggleMock") {
+    //     return Promise.resolve(queryBlockStateResponse);
+    // }
 
     const response = await Axios.post<RPCResponse<QueryBlockStateResponse>>(
         lightnode,
@@ -152,13 +152,14 @@ export const queryBlockState = async (network: RenNetworkDetails) => {
     return response.data as any;
 };
 
-type ClaimFeesParams = {
+export type ClaimFeesParams = {
     darknodeId: string;
     amount: string;
     epoch: string;
     to: string;
     signature: string;
 };
+
 export const claimFees = async (
     network: RenNetworkDetails,
     token: string,
@@ -230,4 +231,5 @@ export const claimFees = async (
             },
         },
     };
+    console.log(request);
 };
