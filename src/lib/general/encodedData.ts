@@ -153,3 +153,13 @@ export class EncodedData extends Record(DefaultEncodedData) {
         return this.toHex();
     }
 }
+
+export const bufferToURLBase64 = (input: Buffer): string =>
+    input
+        .toString("base64")
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_")
+        .replace(/\=+$/, "");
+
+export const urlize = (value: string) =>
+    value.replace(/\+/g, "-").replace(/\//g, "_").replace(/\=+$/, "");
