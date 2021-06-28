@@ -34,7 +34,11 @@ describe("my node", () => {
             blockState,
             "pending",
         );
-        expect(unify(result.get("BTC" as Token)).amount).to.eql(0);
-        expect(unify(result.get("ZEC" as Token)).amount).to.eql(0);
+        expect(unify(result.get("BTC" as Token)).amount).to.eql(
+            336.2758620689655,
+        );
+        expect(unify(result.get("ZEC" as Token)).amount).to.eql(
+            398844.8620689655,
+        );
     });
 });

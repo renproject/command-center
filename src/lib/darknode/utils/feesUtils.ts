@@ -75,6 +75,23 @@ export const getTokenFeeForEpoch = (
     return new BigNumber(0);
 };
 
+export const getTokenUnassignedFees = (
+    symbol: string,
+    blockState: BlockState,
+    perNode = false,
+) => {
+    const data = getFeesForToken(symbol, blockState);
+    if (data === null) {
+        return new BigNumber(0);
+    }
+    const { unassigned } = data;
+    if (perNode) {
+        const numNodes = blockState.System.epoch.numNodes;
+        return new BigNumber(unassigned).div(numNodes);
+    }
+    return new BigNumber(unassigned);
+};
+
 export const toTokenAmount = (
     amount: BigNumber,
     symbol: string,
@@ -209,8 +226,8 @@ export const getNodePendingFees = (
     if (!exists) {
         return new BigNumber(0);
     }
-    const epoch = getCurrentEpochId(blockState);
-    return getTokenFeeForEpoch(symbol, epoch, blockState, true);
+    // const epoch = getCurrentEpochId(blockState);
+    return getTokenUnassignedFees(symbol, blockState, true).div(2); // 50% assigned to next epoch
 };
 
 export type FeeType = "claimable" | "pending";
@@ -220,7 +237,6 @@ export const getNodeFeesCollection = (
     blockState: BlockState | null,
     type: FeeType,
 ) => {
-    console.log("rvmid", renVmNodeId);
     return FeeTokens.mapEntries(([symbol, token]) => {
         let amount = new BigNumber(0);
         if (blockState !== null) {

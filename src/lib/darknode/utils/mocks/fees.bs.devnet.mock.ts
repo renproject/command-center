@@ -47,7 +47,8 @@ export const queryBlockStateResponse = {
                                                         list: {
                                                             struct: [
                                                                 {
-                                                                    hash: "bytes32",
+                                                                    hash:
+                                                                        "bytes32",
                                                                 },
                                                             ],
                                                         },
@@ -60,10 +61,12 @@ export const queryBlockStateResponse = {
                                                                 outpoint: {
                                                                     struct: [
                                                                         {
-                                                                            hash: "bytes",
+                                                                            hash:
+                                                                                "bytes",
                                                                         },
                                                                         {
-                                                                            index: "u32",
+                                                                            index:
+                                                                                "u32",
                                                                         },
                                                                     ],
                                                                 },
@@ -182,7 +185,8 @@ export const queryBlockStateResponse = {
                                                         list: {
                                                             struct: [
                                                                 {
-                                                                    hash: "bytes32",
+                                                                    hash:
+                                                                        "bytes32",
                                                                 },
                                                             ],
                                                         },
@@ -195,10 +199,12 @@ export const queryBlockStateResponse = {
                                                                 outpoint: {
                                                                     struct: [
                                                                         {
-                                                                            hash: "bytes",
+                                                                            hash:
+                                                                                "bytes",
                                                                         },
                                                                         {
-                                                                            index: "u32",
+                                                                            index:
+                                                                                "u32",
                                                                         },
                                                                     ],
                                                                 },
@@ -317,7 +323,8 @@ export const queryBlockStateResponse = {
                                                         list: {
                                                             struct: [
                                                                 {
-                                                                    hash: "bytes32",
+                                                                    hash:
+                                                                        "bytes32",
                                                                 },
                                                             ],
                                                         },
@@ -330,10 +337,12 @@ export const queryBlockStateResponse = {
                                                                 outpoint: {
                                                                     struct: [
                                                                         {
-                                                                            hash: "bytes",
+                                                                            hash:
+                                                                                "bytes",
                                                                         },
                                                                         {
-                                                                            index: "u32",
+                                                                            index:
+                                                                                "u32",
                                                                         },
                                                                     ],
                                                                 },
@@ -452,7 +461,8 @@ export const queryBlockStateResponse = {
                                                         list: {
                                                             struct: [
                                                                 {
-                                                                    hash: "bytes32",
+                                                                    hash:
+                                                                        "bytes32",
                                                                 },
                                                             ],
                                                         },
@@ -465,10 +475,12 @@ export const queryBlockStateResponse = {
                                                                 outpoint: {
                                                                     struct: [
                                                                         {
-                                                                            hash: "bytes",
+                                                                            hash:
+                                                                                "bytes",
                                                                         },
                                                                         {
-                                                                            index: "u32",
+                                                                            index:
+                                                                                "u32",
                                                                         },
                                                                     ],
                                                                 },
@@ -587,7 +599,8 @@ export const queryBlockStateResponse = {
                                                         list: {
                                                             struct: [
                                                                 {
-                                                                    hash: "bytes32",
+                                                                    hash:
+                                                                        "bytes32",
                                                                 },
                                                             ],
                                                         },
@@ -608,7 +621,8 @@ export const queryBlockStateResponse = {
                                                                                     "string",
                                                                             },
                                                                             {
-                                                                                nonce: "u256",
+                                                                                nonce:
+                                                                                    "u256",
                                                                             },
                                                                         ],
                                                                     },
@@ -721,7 +735,8 @@ export const queryBlockStateResponse = {
                                                         list: {
                                                             struct: [
                                                                 {
-                                                                    hash: "bytes32",
+                                                                    hash:
+                                                                        "bytes32",
                                                                 },
                                                             ],
                                                         },
@@ -742,7 +757,8 @@ export const queryBlockStateResponse = {
                                                                                     "string",
                                                                             },
                                                                             {
-                                                                                nonce: "u256",
+                                                                                nonce:
+                                                                                    "u256",
                                                                             },
                                                                         ],
                                                                     },
@@ -856,7 +872,8 @@ export const queryBlockStateResponse = {
                                                     list: {
                                                         struct: [
                                                             {
-                                                                shard: "bytes32",
+                                                                shard:
+                                                                    "bytes32",
                                                             },
                                                             {
                                                                 pubKey: "bytes",
@@ -870,7 +887,8 @@ export const queryBlockStateResponse = {
                                                     list: {
                                                         struct: [
                                                             {
-                                                                shard: "bytes32",
+                                                                shard:
+                                                                    "bytes32",
                                                             },
                                                             {
                                                                 pubKey: "bytes",
@@ -884,7 +902,8 @@ export const queryBlockStateResponse = {
                                                     list: {
                                                         struct: [
                                                             {
-                                                                shard: "bytes32",
+                                                                shard:
+                                                                    "bytes32",
                                                             },
                                                             {
                                                                 pubKey: "bytes",
@@ -941,7 +960,8 @@ export const queryBlockStateResponse = {
                                                         list: {
                                                             struct: [
                                                                 {
-                                                                    hash: "bytes32",
+                                                                    hash:
+                                                                        "bytes32",
                                                                 },
                                                             ],
                                                         },
@@ -954,10 +974,12 @@ export const queryBlockStateResponse = {
                                                                 outpoint: {
                                                                     struct: [
                                                                         {
-                                                                            hash: "bytes",
+                                                                            hash:
+                                                                                "bytes",
                                                                         },
                                                                         {
-                                                                            index: "u32",
+                                                                            index:
+                                                                                "u32",
                                                                         },
                                                                     ],
                                                                 },
@@ -1054,9 +1076,11 @@ export const queryBlockStateResponse = {
                     minted: [],
                     shards: [
                         {
-                            pubKey: "AjKTi8mz_QlIindwTRAvdptsic0z3kty0wn4O_G34m9Q",
+                            pubKey:
+                                "AjKTi8mz_QlIindwTRAvdptsic0z3kty0wn4O_G34m9Q",
                             queue: [],
-                            shard: "zGbiznfn3tR3EYbnaTe28LUd1gVlhOVvMNK6qvmYub4",
+                            shard:
+                                "zGbiznfn3tR3EYbnaTe28LUd1gVlhOVvMNK6qvmYub4",
                             state: {
                                 outpoint: {
                                     hash: "",
@@ -1096,19 +1120,22 @@ export const queryBlockStateResponse = {
                         ],
                         nodes: [
                             {
-                                node: "Dnc1du8wE8dX1grSGzFszTkGC8wAAAAAAAAAAAAAAAA",
+                                node:
+                                    "Dnc1du8wE8dX1grSGzFszTkGC8wAAAAAAAAAAAAAAAA",
                                 lastEpochClaimed: "2",
                             },
                             {
-                                node: "UyR7eXjDqVnArP0aCj4qD/A0w3MAAAAAAAAAAAAAAAA",
+                                node:
+                                    "UyR7eXjDqVnArP0aCj4qD/A0w3MAAAAAAAAAAAAAAAA",
                                 lastEpochClaimed: "1",
                             },
                             {
-                                node: "R22tRItPlzKCZ5xmhDUNIw/CenwAAAAAAAAAAAAAAAA",
+                                node:
+                                    "R22tRItPlzKCZ5xmhDUNIw/CenwAAAAAAAAAAAAAAAA",
                                 lastEpochClaimed: "2",
                             },
                         ],
-                        unassigned: "0",
+                        unassigned: "12500000",
                     },
                     gasCap: "2",
                     gasLimit: "400",
@@ -1132,12 +1159,15 @@ export const queryBlockStateResponse = {
                     ],
                     shards: [
                         {
-                            pubKey: "AjKTi8mz_QlIindwTRAvdptsic0z3kty0wn4O_G34m9Q",
+                            pubKey:
+                                "AjKTi8mz_QlIindwTRAvdptsic0z3kty0wn4O_G34m9Q",
                             queue: [],
-                            shard: "zGbiznfn3tR3EYbnaTe28LUd1gVlhOVvMNK6qvmYub4",
+                            shard:
+                                "zGbiznfn3tR3EYbnaTe28LUd1gVlhOVvMNK6qvmYub4",
                             state: {
                                 outpoint: {
-                                    hash: "vXqqfST0-D-mdRpogGQ-3r_y-dgOjfSvlIti-wdVmdA",
+                                    hash:
+                                        "vXqqfST0-D-mdRpogGQ-3r_y-dgOjfSvlIti-wdVmdA",
                                     index: "0",
                                 },
                                 pubKeyScript:
@@ -1164,9 +1194,11 @@ export const queryBlockStateResponse = {
                     minted: [],
                     shards: [
                         {
-                            pubKey: "AjKTi8mz_QlIindwTRAvdptsic0z3kty0wn4O_G34m9Q",
+                            pubKey:
+                                "AjKTi8mz_QlIindwTRAvdptsic0z3kty0wn4O_G34m9Q",
                             queue: [],
-                            shard: "zGbiznfn3tR3EYbnaTe28LUd1gVlhOVvMNK6qvmYub4",
+                            shard:
+                                "zGbiznfn3tR3EYbnaTe28LUd1gVlhOVvMNK6qvmYub4",
                             state: {
                                 outpoint: {
                                     hash: "",
@@ -1216,9 +1248,11 @@ export const queryBlockStateResponse = {
                     minted: [],
                     shards: [
                         {
-                            pubKey: "AjKTi8mz_QlIindwTRAvdptsic0z3kty0wn4O_G34m9Q",
+                            pubKey:
+                                "AjKTi8mz_QlIindwTRAvdptsic0z3kty0wn4O_G34m9Q",
                             queue: [],
-                            shard: "zGbiznfn3tR3EYbnaTe28LUd1gVlhOVvMNK6qvmYub4",
+                            shard:
+                                "zGbiznfn3tR3EYbnaTe28LUd1gVlhOVvMNK6qvmYub4",
                             state: {
                                 outpoint: {
                                     hash: "",
@@ -1253,9 +1287,11 @@ export const queryBlockStateResponse = {
                     minted: [],
                     shards: [
                         {
-                            pubKey: "AjKTi8mz_QlIindwTRAvdptsic0z3kty0wn4O_G34m9Q",
+                            pubKey:
+                                "AjKTi8mz_QlIindwTRAvdptsic0z3kty0wn4O_G34m9Q",
                             queue: [],
-                            shard: "zGbiznfn3tR3EYbnaTe28LUd1gVlhOVvMNK6qvmYub4",
+                            shard:
+                                "zGbiznfn3tR3EYbnaTe28LUd1gVlhOVvMNK6qvmYub4",
                             state: {
                                 gnonces: [],
                                 nonce: "1751",
@@ -1286,9 +1322,11 @@ export const queryBlockStateResponse = {
                     minted: [],
                     shards: [
                         {
-                            pubKey: "AjKTi8mz_QlIindwTRAvdptsic0z3kty0wn4O_G34m9Q",
+                            pubKey:
+                                "AjKTi8mz_QlIindwTRAvdptsic0z3kty0wn4O_G34m9Q",
                             queue: [],
-                            shard: "zGbiznfn3tR3EYbnaTe28LUd1gVlhOVvMNK6qvmYub4",
+                            shard:
+                                "zGbiznfn3tR3EYbnaTe28LUd1gVlhOVvMNK6qvmYub4",
                             state: {
                                 gnonces: [],
                                 nonce: "6241",
@@ -1360,8 +1398,10 @@ export const queryBlockStateResponse = {
                     shards: {
                         primary: [
                             {
-                                pubKey: "AjKTi8mz_QlIindwTRAvdptsic0z3kty0wn4O_G34m9Q",
-                                shard: "zGbiznfn3tR3EYbnaTe28LUd1gVlhOVvMNK6qvmYub4",
+                                pubKey:
+                                    "AjKTi8mz_QlIindwTRAvdptsic0z3kty0wn4O_G34m9Q",
+                                shard:
+                                    "zGbiznfn3tR3EYbnaTe28LUd1gVlhOVvMNK6qvmYub4",
                             },
                         ],
                         secondary: [],
@@ -1385,9 +1425,11 @@ export const queryBlockStateResponse = {
                     minted: [],
                     shards: [
                         {
-                            pubKey: "AjKTi8mz_QlIindwTRAvdptsic0z3kty0wn4O_G34m9Q",
+                            pubKey:
+                                "AjKTi8mz_QlIindwTRAvdptsic0z3kty0wn4O_G34m9Q",
                             queue: [],
-                            shard: "zGbiznfn3tR3EYbnaTe28LUd1gVlhOVvMNK6qvmYub4",
+                            shard:
+                                "zGbiznfn3tR3EYbnaTe28LUd1gVlhOVvMNK6qvmYub4",
                             state: {
                                 outpoint: {
                                     hash: "",

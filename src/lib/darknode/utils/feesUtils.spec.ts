@@ -3,11 +3,6 @@ import { Token } from "../../ethereum/tokens";
 import { unify } from "../../general/debugUtils";
 import { parseTokenAmount } from "../../graphQL/queries/queries";
 import { tokenArrayToMap } from "../../graphQL/volumes";
-import {
-    getCurrentEpochId,
-    getNodeEnteredAt,
-    getNodeExists,
-} from "./blockStateUtils";
 import { queryBlockStateResponseMock } from "./currentMock";
 import {
     getFeesForToken,
@@ -99,7 +94,7 @@ describe("fees", () => {
                     lastEpochClaimed: "2",
                 },
             ],
-            unassigned: "0",
+            unassigned: "12500000",
         };
         expect(unify(result)).to.eql(expected);
     });
@@ -277,7 +272,7 @@ describe("node fees", () => {
             "BTC",
             blockState,
         );
-        expect(result.toNumber()).to.equal(2500000);
+        expect(result.toNumber()).to.equal(625000);
     });
 
     test("gets node pending fees (nonexistent node)", () => {
@@ -337,7 +332,7 @@ describe("node fees - aggregations", () => {
             blockState,
             "pending",
         );
-        expect(unify(result.get("BTC" as Token)).amount).to.eql(2500000);
+        expect(unify(result.get("BTC" as Token)).amount).to.eql(625000);
         expect(unify(result.get("ZEC" as Token)).amount).to.eql(0);
     });
 
@@ -347,7 +342,7 @@ describe("node fees - aggregations", () => {
             blockState,
             "pending",
         );
-        expect(unify(result.get("BTC" as Token)).amount).to.eql(2500000);
+        expect(unify(result.get("BTC" as Token)).amount).to.eql(625000);
         expect(unify(result.get("ZEC" as Token)).amount).to.eql(0);
     });
 });
