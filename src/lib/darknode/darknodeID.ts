@@ -37,5 +37,5 @@ export const renVMIDToBase58 = (renVMID: string) => {
     return darknodeIDHexToBase58(address);
 };
 
-(window as any).renVMID2Base58 = renVMIDToBase58;
-(window as any).darknodeIDBase58ToRenVmID = darknodeIDBase58ToRenVmID;
+// (window as any).renVMID2Base58 = renVMIDToBase58;
+// (window as any).darknodeIDBase58ToRenVmID = darknodeIDBase58ToRenVmID;

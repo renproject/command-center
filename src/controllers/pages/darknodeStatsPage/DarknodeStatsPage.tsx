@@ -124,7 +124,6 @@ export const DarknodeStatsPage = () => {
         getAggregatedFeesCollection(blockState),
         tokenPrices,
     );
-    console.log("tfr", totalFeesRenVm?.toJS());
 
     const totalFeesRenVmInUsd = totalFeesRenVm.reduce(
         (sum, feeItem) => sum.plus(feeItem.amountInUsd),

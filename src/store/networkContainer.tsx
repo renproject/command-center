@@ -598,7 +598,7 @@ const useNetworkContainer = () => {
         ); /* , (darknodeID) => {
                             addDarknode({ darknodeID, address, network: renNetwork.name });
                     }, ); */
-        console.log("currDark", currentDarknodes);
+        // console.log("currDark", currentDarknodes);
         addDarknodes(currentDarknodes);
 
         // The lists are merged in the reducer as well, but we combine them again
@@ -665,7 +665,7 @@ const useNetworkContainer = () => {
             throw new Error(`Unable to retrieve account address.`);
         }
         const symbol = toNativeTokenSymbol(tokenSymbol);
-        console.log("withdrawRenVMReward", darknodeId, symbol);
+        console.info("withdrawRenVMReward", darknodeId, symbol);
     };
 
     const withdrawReward = async (

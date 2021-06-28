@@ -253,3 +253,7 @@ export const WithdrawAll: React.FC<Props> = ({ darknodeList }) => {
         />
     );
 };
+
+export const RenVMWithdrawall = () => {
+    return null;
+};

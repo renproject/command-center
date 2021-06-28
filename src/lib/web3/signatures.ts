@@ -12,13 +12,10 @@ export const claimFeesDigest = (
     const toHash = hash(sha256(stringToBuffer(address)));
     const nonceHash = hash(toBytes32(stringToBuffer(nonce.toString())));
 
-    console.log(nodeHash, amountHash, toHash, nonceHash);
     const h01 = hash(nodeHash + amountHash);
     const h23 = hash(toHash + nonceHash);
     return hash(h01 + h23);
 };
-
-(window as any).Buffer = Buffer;
 
 export const toBytes32 = (value: Buffer) => {
     const bytes32 = Buffer.alloc(32, 0);

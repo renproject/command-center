@@ -231,5 +231,5 @@ export const claimFees = async (
             },
         },
     };
-    console.log(request);
+    console.info(request);
 };

@@ -231,7 +231,6 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
     darknodeDetails,
 }) => {
     const { address, web3 } = Web3Container.useContainer();
-    (window as any).web33 = web3;
     const {
         blockState,
         quoteCurrency,
@@ -277,7 +276,6 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                 const tokenAmount = withdrawable.find(
                     (entry) => entry.symbol === token,
                 );
-                console.log(tokenAmount, withdrawable, token);
                 const amountBN = new BigNumber(tokenAmount?.amount || 0).div(
                     new BigNumber(
                         Math.pow(10, tokenAmount?.asset?.decimals || 0),
@@ -291,9 +289,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
     const handleConfirm = useCallback(async () => {
         // console.log("confirming");
         const accounts = await web3.eth.getAccounts();
-        console.log(accounts);
         const signature = await web3.eth.sign("todo", accounts[0]);
-        console.log(signature, address);
     }, [web3, address]);
 
     const canWithdraw =
