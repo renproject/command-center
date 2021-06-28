@@ -26,6 +26,16 @@ describe("darknode ids", () => {
         expect(address.length).to.equal(43);
     });
 
+    test("encodes base58 with special chars to renVM id", () => {
+        const address1 = darknodeIDBase58ToRenVmID(
+            "8MKCqtnmdmjESHUDcwXuvLVqdQbAXm",
+        );
+        expect(address1).to.equal(
+            "4nUltv8WR1cYvAkzZq8Mo-G0lHwAAAAAAAAAAAAAAAA",
+        );
+        expect(address1.length).to.equal(43);
+    });
+
     test("decodes renVM id to base58", () => {
         const id = "34i8lj5hT6sr2oHCmAVroY4BpCQAAAAAAAAAAAAAAAA";
         const result = renVMIDToBase58(id);

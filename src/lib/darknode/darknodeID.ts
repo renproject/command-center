@@ -23,7 +23,11 @@ export const darknodeIDBase58ToRenVmID = (darknodeID: string) => {
     const address = decoded.slice(2);
     const bytes32 = Buffer.alloc(32, 0);
     address.copy(bytes32);
-    return bytes32.toString("base64").replace("=", "").replace("/", "_");
+    return bytes32
+        .toString("base64")
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_")
+        .replace(/\=+$/, "");
 };
 
 export const renVMIDToBase58 = (renVMID: string) => {
