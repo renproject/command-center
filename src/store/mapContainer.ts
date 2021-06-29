@@ -67,9 +67,9 @@ export const getLightnode = (
     if (isNew) {
         switch (network.name) {
             case "mainnet":
-                return "https://lightnode-new-mainnet.herokuapp.com";
+                return "https://lightnode-mainnet.herokuapp.com";
             case "testnet":
-                return "https://lightnode-new-testnet.herokuapp.com";
+                return "https://lightnode-testnet.herokuapp.com";
             // TODO: fees - not sure about following ones;
             // case "chaosnet":
             //     return "https://lightnode-chaosnet-new.herokuapp.com";
