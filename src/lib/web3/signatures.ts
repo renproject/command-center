@@ -1,5 +1,13 @@
 import { sha256, sha256FromString } from "ethereumjs-util";
-import { numberToLeftPaddedUrlBase64 } from "../general/encodingUtils";
+import {
+    numberToLeftPaddedBase64String,
+    sanitizeBase64String,
+} from "../general/encodingUtils";
+import {
+    base64Sha256FromBase64String,
+    base64Sha256FromTwoBase64Strings,
+    base64Sha256FromUtf8String,
+} from "../general/sha256";
 
 export const claimFeesDigest = (
     darknodeId: string,
@@ -7,40 +15,15 @@ export const claimFeesDigest = (
     address: string,
     nonce: number,
 ) => {
-    const nodeHash = sha256(Buffer.from(darknodeId));
-    const amountHash = sha256(
-        Buffer.from(numberToLeftPaddedUrlBase64(amount.toString())),
-    );
-    const toHash = sha256FromString(address);
-    const nonceHash = sha256(
-        Buffer.from(numberToLeftPaddedUrlBase64(nonce.toString())),
-    );
+    const nodeHash = sanitizeBase64String(darknodeId);
+    const amountHash = numberToLeftPaddedBase64String(amount.toString());
+    const toHash = base64Sha256FromUtf8String(address);
+    const nonceHash = numberToLeftPaddedBase64String(nonce.toString());
 
     console.info(nodeHash, amountHash, toHash, nonceHash);
-    // const h01 = hash(nodeHash + amountHash);
-    // const h23 = hash(toHash + nonceHash);
-    return toHash;
-    // return hash(h01 + h23);
-};
+    const h01 = base64Sha256FromTwoBase64Strings(nodeHash, amountHash);
+    const h23 = base64Sha256FromTwoBase64Strings(toHash, nonceHash);
 
-export const toBytes32 = (value: Buffer) => {
-    const bytes32 = Buffer.alloc(32, 0);
-    value.copy(bytes32);
-    return bytes32;
-};
-
-export const prependBytes32 = (value: number) => {
-    const bytes32 = Buffer.alloc(32, 0);
-    const strBuff = stringToBuffer(value.toString());
-    strBuff.copy(bytes32);
-    return bytes32;
-};
-
-const stringToBuffer = (str: string) => {
-    const buffer = new ArrayBuffer(str.length * 2); // 2 bytes for each char
-    const bufferView = new Uint16Array(buffer);
-    for (var i = 0, strLen = str.length; i < strLen; i++) {
-        bufferView[i] = str.charCodeAt(i);
-    }
-    return new Buffer(buffer);
+    //root
+    return base64Sha256FromTwoBase64Strings(h01, h23);
 };

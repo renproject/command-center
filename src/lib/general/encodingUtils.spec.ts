@@ -1,13 +1,15 @@
 import { expect } from "chai";
 import {
     bufferToUrlBase64,
-    numberToLeftPaddedUrlBase64,
-    urlize,
+    numberToLeftPaddedBase64String,
+    sanitizeBase64String,
 } from "./encodingUtils";
 
 describe("encoding utils", () => {
-    test("urlize", () => {
-        const result = urlize("4nUltv8WR1cYvAkz-+=/-G0lHwAAAAAAAAAAAAAAAA");
+    test("sanitizeBase64String", () => {
+        const result = sanitizeBase64String(
+            "4nUltv8WR1cYvAkz-+=/-G0lHwAAAAAAAAAAAAAAAA=",
+        );
         expect(result).to.equal("4nUltv8WR1cYvAkz--=_-G0lHwAAAAAAAAAAAAAAAA");
     });
 
@@ -16,13 +18,13 @@ describe("encoding utils", () => {
         expect(result).to.eql("MDAwMGFiY2RlZg");
     });
 
-    test("numberToLeftPaddedUrlBase64 number", () => {
-        const result = numberToLeftPaddedUrlBase64(3500000);
+    test("numberToLeftPaddedBase64String number", () => {
+        const result = numberToLeftPaddedBase64String(3500000);
         expect(result).to.eql("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA1Z-A");
     });
 
-    test("numberToLeftPaddedUrlBase64 string", () => {
-        const result = numberToLeftPaddedUrlBase64("3500000");
+    test("numberToLeftPaddedBase64String string", () => {
+        const result = numberToLeftPaddedBase64String("3500000");
         expect(result).to.eql("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA1Z-A");
     });
 });
