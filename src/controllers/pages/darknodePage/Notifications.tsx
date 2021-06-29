@@ -94,19 +94,20 @@ export const Notifications: React.FC<Props> = ({
             detail: `You will be able to withdraw your bond ${nextEpochReadable}.`,
             type: NotificationType.Information,
         };
-    } else if (
-        isOperator &&
-        darknodeDetails &&
-        darknodeDetails.registrationStatus === RegistrationStatus.Registered &&
-        darknodeDetails.ethBalance &&
-        darknodeDetails.ethBalance.lt(lowValue)
-    ) {
-        notification = {
-            title: "Low gas balance.",
-            detail: "If your darknode runs out of ETH, it won't earn fees.",
-            type: NotificationType.Warning,
-        };
     }
+    // } else if (
+    //     isOperator &&
+    //     darknodeDetails &&
+    //     darknodeDetails.registrationStatus === RegistrationStatus.Registered &&
+    //     darknodeDetails.ethBalance &&
+    //     darknodeDetails.ethBalance.lt(lowValue)
+    // ) {
+    //     notification = {
+    //         title: "Low gas balance.",
+    //         detail: "If your darknode runs out of ETH, it won't earn fees.",
+    //         type: NotificationType.Warning,
+    //     };
+    // }
 
     return (
         <div className="darknodePage--notifications">
