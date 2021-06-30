@@ -42,4 +42,12 @@ describe("sha256", () => {
         );
         expect(result).toEqual("ujDyrEiMS2iO3VKCYmwyfy-WP0-xDnfBXYIAALVgmT0");
     });
+
+    test("base64Sha256FromTwoBase64Strings 2", () => {
+        const result = base64Sha256FromTwoBase64Strings(
+            "testnesAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+            "d7XRfplad6PSXZGf48wUl80TC84AAAAAAAAAAAAAAAA",
+        );
+        expect(result).toEqual("IW2xoFQ3PrFi5EJntT7idnUXrawH4JbXYChlvwIn3L8");
+    });
 });

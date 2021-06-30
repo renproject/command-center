@@ -3,6 +3,7 @@ import {
     bufferToUrlBase64,
     numberToLeftPaddedBase64String,
     sanitizeBase64String,
+    stringToRightPaddedBase64String,
 } from "./encodingUtils";
 
 describe("encoding utils", () => {
@@ -26,5 +27,10 @@ describe("encoding utils", () => {
     test("numberToLeftPaddedBase64String string", () => {
         const result = numberToLeftPaddedBase64String("3500000");
         expect(result).to.eql("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA1Z-A");
+    });
+
+    xtest("stringToRightPaddedBase64String string", () => {
+        const result = stringToRightPaddedBase64String("testnet");
+        expect(result).to.eql("testnesAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
     });
 });

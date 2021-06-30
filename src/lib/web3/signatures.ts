@@ -1,3 +1,4 @@
+import { renMainnet } from "@renproject/contracts";
 import {
     numberToLeftPaddedBase64String,
     sanitizeBase64String,
@@ -8,20 +9,22 @@ import {
 } from "../general/sha256";
 
 export const claimFeesDigest = (
+    network: string,
     darknodeId: string,
     amount: number,
-    address: string,
+    to: string,
     nonce: number,
 ) => {
+    const networkHash = sanitizeBase64String(network);
     const nodeHash = sanitizeBase64String(darknodeId);
     const amountHash = numberToLeftPaddedBase64String(amount.toString());
-    const toHash = base64Sha256FromUtf8String(address);
+    const toHash = base64Sha256FromUtf8String(to);
     const nonceHash = numberToLeftPaddedBase64String(nonce.toString());
 
     console.info(nodeHash, amountHash, toHash, nonceHash);
-    const h01 = base64Sha256FromTwoBase64Strings(nodeHash, amountHash);
-    const h23 = base64Sha256FromTwoBase64Strings(toHash, nonceHash);
-
+    const h12 = base64Sha256FromTwoBase64Strings(nodeHash, amountHash);
+    const h34 = base64Sha256FromTwoBase64Strings(toHash, nonceHash);
+    const h1234 = base64Sha256FromTwoBase64Strings(h12, h34);
     //root
-    return base64Sha256FromTwoBase64Strings(h01, h23);
+    return base64Sha256FromTwoBase64Strings(networkHash, h1234);
 };

@@ -287,7 +287,33 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
             return;
         }
         const hash = claimFeesDigest(renVmNodeId, amount, address, nonce);
-        const signature = await web3.eth.personal.sign(hash, address, "");
+        const message = { node: renVmNodeId, amount, address, nonce };
+        const signature = await web3.eth.personal.sign(
+            JSON.stringify(message),
+            address,
+            "",
+        );
+
+        // const msgParams = [
+        //     {
+        //         type: "string",
+        //         name: "Message",
+        //         value: "Hi, Alice!",
+        //     },
+        //     {
+        //         type: "uint32",
+        //         name: "A number",
+        //         value: "1337",
+        //     },
+        // ];
+
+        // web3.currentProvider.send({
+        //     "eth_signTypedData",
+        //     [msgParams, address],
+        // address,
+        // }, function (err, result) {
+        //     if (err) return console.dir(err)
+        // });
 
         console.info("signature", signature);
         try {
