@@ -6,6 +6,7 @@ import {
     darknodeIDBase58ToRenVmID,
     darknodeIDHexToBase58,
 } from "../../../../lib/darknode/darknodeID";
+import { claimFees } from "../../../../lib/darknode/jsonrpc";
 import { getNodeFeesCollection } from "../../../../lib/darknode/utils/feesUtils";
 
 import {
@@ -15,6 +16,7 @@ import {
 import { TokenString } from "../../../../lib/ethereum/tokens";
 import { TokenAmount } from "../../../../lib/graphQL/queries/queries";
 import { classNames } from "../../../../lib/react/className";
+import { claimFeesDigest } from "../../../../lib/web3/signatures";
 import { GraphContainer } from "../../../../store/graphContainer";
 import {
     DarknodesState,
@@ -230,12 +232,11 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
     isOperator,
     darknodeDetails,
 }) => {
-    const { address, web3 } = Web3Container.useContainer();
+    const { address, web3, renNetwork } = Web3Container.useContainer();
     const {
         blockState,
         quoteCurrency,
         tokenPrices,
-        // withdrawRenVMReward,
     } = NetworkContainer.useContainer();
 
     const { setOverlay } = PopupContainer.useContainer();
@@ -256,8 +257,10 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
     // console.log("pending", pending?.toJS());
 
     const [open, setOpen] = useState(false);
+    const [error, setError] = useState("");
     const [token, setToken] = useState("");
-    const [amount, setAmount] = useState(0);
+    const tokenAmount = withdrawable.find((entry) => entry.symbol === token);
+    const amount = Math.floor(tokenAmount?.amount.toNumber() || 0);
     const handleOpen = useCallback(() => {
         setOverlay(true);
         setOpen(true);
@@ -266,32 +269,44 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
         setOpen(false);
         setOverlay(false);
     }, [setOverlay]);
-    const [error] = useState("");
     const withdrawCallback = useCallback(
         async (tokenSymbol: string) => {
             // console.log("withdraw", tokenSymbol);
             if (!open) {
                 handleOpen();
                 setToken(tokenSymbol);
-                const tokenAmount = withdrawable.find(
-                    (entry) => entry.symbol === token,
-                );
-                const amountBN = new BigNumber(tokenAmount?.amount || 0).div(
-                    new BigNumber(
-                        Math.pow(10, tokenAmount?.asset?.decimals || 0),
-                    ),
-                );
-                setAmount(amountBN.toNumber());
             }
         },
-        [open, handleOpen, token, withdrawable],
+        [open, handleOpen],
     );
+    (window as any).web33 = web3;
     const handleConfirm = useCallback(async () => {
         // console.log("confirming");
-        const accounts = await web3.eth.getAccounts();
-        const signature = await web3.eth.sign("todo", accounts[0]);
-        console.info(signature);
-    }, [web3, address]);
+        const nonce = 1; // get from node data
+        if (!darknodeDetails?.ID || !address) {
+            return;
+        }
+        const hash = claimFeesDigest(renVmNodeId, amount, address, nonce);
+        const signature = await web3.eth.personal.sign(hash, address, "");
+
+        console.info("signature", signature);
+        try {
+            const response = await claimFees(
+                renNetwork,
+                token,
+                renVmNodeId,
+                amount,
+                nonce,
+                address,
+                signature,
+            );
+            console.log("rrr", response);
+        } catch (e) {
+            setError("Error claiming, check console");
+            console.error(e);
+        }
+        handleClose();
+    }, [web3, address, amount, renVmNodeId, renNetwork, token]);
 
     const canWithdraw =
         darknodeDetails?.registrationStatus === RegistrationStatus.Registered ||
@@ -301,6 +316,9 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
     const earningFees =
         darknodeDetails?.registrationStatus === RegistrationStatus.Registered;
 
+    const amountBN = new BigNumber(tokenAmount?.amount || 0).div(
+        new BigNumber(Math.pow(10, tokenAmount?.asset?.decimals || 0)),
+    );
     return (
         <>
             <FeesBlock
@@ -319,8 +337,9 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                         <div className="popup--description">
                             <h3>Withdraw fees for {token}</h3>
                             <h4>
-                                Please confirm you want to withdraw {amount}{" "}
-                                {token}
+                                Please confirm you want to withdraw{" "}
+                                {amountBN.toNumber()} {token} to address{" "}
+                                {address}
                             </h4>
                             {Boolean(error) && <PopupError>{error}</PopupError>}
                         </div>

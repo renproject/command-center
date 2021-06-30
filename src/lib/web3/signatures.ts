@@ -1,10 +1,8 @@
-import { sha256, sha256FromString } from "ethereumjs-util";
 import {
     numberToLeftPaddedBase64String,
     sanitizeBase64String,
 } from "../general/encodingUtils";
 import {
-    base64Sha256FromBase64String,
     base64Sha256FromTwoBase64Strings,
     base64Sha256FromUtf8String,
 } from "../general/sha256";

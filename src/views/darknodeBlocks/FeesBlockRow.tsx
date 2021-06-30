@@ -84,9 +84,6 @@ export const FeesWithdrawal: React.FC<FeesWithdrawalProps> = ({
     } else if (!isRenVMFee && (!amount.asset || !amount.asset.tokenAddress)) {
         isDisabled = true;
         title = "Unable to look up token address";
-    } else if (isRenVMFee) {
-        isDisabled = true;
-        title = "Fee claiming will be available in few days";
     }
 
     return (

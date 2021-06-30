@@ -152,20 +152,14 @@ export const queryBlockState = async (network: RenNetworkDetails) => {
     return response.data as any;
 };
 
-export type ClaimFeesParams = {
-    darknodeId: string;
-    amount: string;
-    epoch: string;
-    to: string;
-    signature: string;
-};
-
 export const claimFees = async (
     network: RenNetworkDetails,
     token: string,
     node: string,
-    amount: string,
+    amount: number,
+    nonce: number, // TODO: replace with nonce?
     to: string,
+    signature: string,
 ) => {
     const lightnode = getLightnode(network, true);
     if (!lightnode) {
@@ -177,53 +171,32 @@ export const claimFees = async (
         jsonrpc: "2.0",
         params: {
             tx: {
-                hash: "eKT2CEAd3ZuzIsQ5mrqKO9Yv24e7ql9fSi-ltOUXfBM",
                 in: {
                     t: {
                         struct: [
                             {
-                                txid: "bytes",
-                            },
-                            {
-                                txindex: "u32",
+                                node: "bytes32",
                             },
                             {
                                 amount: "u256",
                             },
                             {
-                                payload: "bytes",
-                            },
-                            {
-                                phash: "bytes32",
-                            },
-                            {
                                 to: "string",
                             },
                             {
-                                nonce: "bytes32",
+                                nonce: "u64",
                             },
                             {
-                                nhash: "bytes32",
-                            },
-                            {
-                                gpubkey: "bytes",
-                            },
-                            {
-                                ghash: "bytes32",
+                                signature: "bytes",
                             },
                         ],
                     },
                     v: {
-                        amount: "401480",
-                        ghash: "9VxewtRVSJmKnc2jhplArqWeSOxE50msbMJd1hx2X7U",
-                        gpubkey: "A4knRXgAkxx9RNyUywAhtOiB-ZNcEjTckvRW4y7AGdXX",
-                        nhash: "MUdOHf1As-OXFjQMI0PogV6Lx5PKbSPN7fpvZu21okM",
-                        nonce: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACs",
-                        payload: "",
-                        phash: "xdJGAYb3IzySfn2y3McDwOUAtlPKgic7e_rYBF2FpHA",
-                        to: "bc1qj4cj3406k5pe4m0m7ngth35w73aghljghpykqf",
-                        txid: "aCjatCwWSIALMAzSsTGPgSadDgZT8Nsc2iAqn413ewY",
-                        txindex: "0",
+                        node,
+                        amount,
+                        nonce,
+                        to,
+                        signature,
                     },
                 },
                 selector: `${toNativeTokenSymbol(token)}/claimFees`,
@@ -231,5 +204,9 @@ export const claimFees = async (
             },
         },
     };
-    console.info(request);
+    console.log("claiming fees");
+    const response = await Axios.post<RPCResponse<any>>(lightnode, request, {
+        timeout: DEFAULT_REQUEST_TIMEOUT,
+    });
+    console.info(request, response);
 };
