@@ -154,7 +154,7 @@ export const queryBlockState = async (network: RenNetworkDetails) => {
 };
 
 export const claimFees = async (
-    network: RenNetworkDetails,
+    renNetwork: RenNetworkDetails,
     token: string,
     node: string,
     amount: number,
@@ -162,7 +162,7 @@ export const claimFees = async (
     nonce: number,
     signature: string,
 ) => {
-    const lightnode = getLightnode(network, true);
+    const lightnode = getLightnode(renNetwork, true);
     if (!lightnode) {
         throw new Error(`No lightnode to claim fees.`);
     }
@@ -172,6 +172,7 @@ export const claimFees = async (
         jsonrpc: "2.0",
         params: {
             tx: {
+                hash: "7FFHx7eOhWufPFT_U1GoCkuSIT512y5vdUPtRkLNLuQ", // TODO: where to find it?
                 in: {
                     t: {
                         struct: [
@@ -200,7 +201,7 @@ export const claimFees = async (
                     },
                     v: {
                         type: "ethSign",
-                        network: network.name,
+                        network: renNetwork.name,
                         node,
                         amount: String(amount),
                         to,

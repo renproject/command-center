@@ -7,6 +7,7 @@ import {
     darknodeIDHexToBase58,
 } from "../../../../lib/darknode/darknodeID";
 import { claimFees } from "../../../../lib/darknode/jsonrpc";
+import { toNativeTokenSymbol } from "../../../../lib/darknode/utils/blockStateUtils";
 import { getNodeFeesCollection } from "../../../../lib/darknode/utils/feesUtils";
 
 import {
@@ -228,6 +229,20 @@ export const FeesBlockController: React.FC<Props> = ({
     );
 };
 
+const convertToNativeAmount = (value: string | number, decimals: number) => {
+    const newAmount = Number(value);
+    return new BigNumber(newAmount || 0)
+        .multipliedBy(new BigNumber(Math.pow(10, decimals || 0)))
+        .toNumber();
+};
+
+const convertToAmount = (value: string | number, decimals: number) => {
+    const newAmount = Number(value);
+    return new BigNumber(newAmount || 0)
+        .div(new BigNumber(Math.pow(10, decimals || 0)))
+        .toNumber();
+};
+
 export const RenVmFeesBlockController: React.FC<Props> = ({
     isOperator,
     darknodeDetails,
@@ -246,36 +261,97 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
         darknodeIDHexToBase58(darknodeDetails?.ID || ""),
     );
 
-    const withdrawable = updatePrices(
+    const withdrawableFees = updatePrices(
         getNodeFeesCollection(renVmNodeId, blockState, "claimable"),
         tokenPrices,
     );
     // console.log("withdrawable", withdrawable?.toJS());
-    const pending = updatePrices(
+    const pendingFees = updatePrices(
         getNodeFeesCollection(renVmNodeId, blockState, "pending"),
         tokenPrices,
     );
     // console.log("pending", pending?.toJS());
 
+    const [token, setToken] = useState("");
     const [open, setOpen] = useState(false);
     const [error, setError] = useState("");
-    const [token, setToken] = useState("");
-    const tokenAmount = withdrawable.find((entry) => entry.symbol === token);
-    const amount = Math.floor(tokenAmount?.amount.toNumber() || 0);
+    const [amount, setAmount] = useState(0);
+    const [inputAmount, setInputAmount] = useState(0);
+    const [amountError, setAmountError] = useState("");
+    const [inputAddress, setInputAddress] = useState(
+        "tmJ8ngiRiaUVGtExgNgd5nzRF1fSRd47qvP",
+    );
+    const [addressError, setAddressError] = useState("");
+    const [pending, setPending] = useState(false);
+    const tokenAmount = withdrawableFees.find(
+        (entry) => entry.symbol === token,
+    );
+    const maxAmount = Math.floor(tokenAmount?.amount.toNumber() || 0);
+    useEffect(() => {
+        setAmount(maxAmount);
+        setInputAmount(
+            convertToAmount(maxAmount, tokenAmount?.asset?.decimals || 0),
+        );
+    }, [maxAmount, tokenAmount?.asset?.decimals]);
+
     const handleOpen = useCallback(() => {
         setOverlay(true);
         setOpen(true);
     }, [setOverlay]);
+
     const handleClose = useCallback(() => {
         setOpen(false);
         setOverlay(false);
+        setPending(false);
+        setError("");
+        setAmountError("");
+        setToken("");
     }, [setOverlay]);
+
+    const handleAddressChange = useCallback((event) => {
+        const value = event.target.value;
+        setInputAddress(value);
+        if (!value) {
+            setAddressError("Please provide an address");
+        } else {
+            setAddressError("");
+        }
+    }, []);
+    const destinationAddress = inputAddress;
+
+    const handleAmountChange = useCallback(
+        (event) => {
+            const value = event.target.value;
+            setInputAmount(value);
+            console.log(value);
+            const newAmount = Number(value);
+            const newNativeAmount = convertToNativeAmount(
+                newAmount,
+                tokenAmount?.asset?.decimals || 0,
+            );
+            setAmount(newNativeAmount);
+
+            if (isNaN(newAmount)) {
+                setAmountError("Not a valid amount");
+            } else if (newNativeAmount > maxAmount) {
+                setAmountError("Amount exceeds claimable fee");
+            } else if (newNativeAmount === 0) {
+                setAmountError("Please enter amount");
+            } else if (newNativeAmount % 1 !== 0) {
+                setAmountError("Forbidden decimals in native amount");
+            } else {
+                setAmountError("");
+            }
+        },
+        [maxAmount, tokenAmount?.asset?.decimals],
+    );
+
     const withdrawCallback = useCallback(
         async (tokenSymbol: string) => {
             // console.log("withdraw", tokenSymbol);
             if (!open) {
-                handleOpen();
                 setToken(tokenSymbol);
+                handleOpen();
             }
         },
         [open, handleOpen],
@@ -283,39 +359,19 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
     (window as any).web33 = web3;
     const handleConfirm = useCallback(async () => {
         // console.log("confirming");
-        const nonce = 1; // get from node data
+        setPending(true);
+        const nonce = 0; // TODO: crit get from node data
         if (!darknodeDetails?.ID || !address) {
             return;
         }
         const hash = claimFeesDigest(
             network,
             renVmNodeId,
-            amount,
-            address,
+            maxAmount,
+            destinationAddress,
             nonce,
         );
         const signature = await web3.eth.personal.sign(hash, address, "");
-
-        // const msgParams = [
-        //     {
-        //         type: "string",
-        //         name: "Message",
-        //         value: "Hi, Alice!",
-        //     },
-        //     {
-        //         type: "uint32",
-        //         name: "A number",
-        //         value: "1337",
-        //     },
-        // ];
-
-        // web3.currentProvider.send({
-        //     "eth_signTypedData",
-        //     [msgParams, address],
-        // address,
-        // }, function (err, result) {
-        //     if (err) return console.dir(err)
-        // });
 
         console.info("signature", signature);
         try {
@@ -325,7 +381,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                 token,
                 renVmNodeId,
                 amount,
-                address,
+                destinationAddress,
                 nonce,
                 signature,
             );
@@ -334,7 +390,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                 token,
                 renVmNodeId,
                 amount,
-                address,
+                destinationAddress,
                 nonce,
                 signature,
             );
@@ -344,7 +400,19 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
             console.error(e);
         }
         handleClose();
-    }, [web3, network, address, amount, renVmNodeId, token]);
+    }, [
+        amount,
+        web3,
+        network,
+        address,
+        destinationAddress,
+        maxAmount,
+        renVmNodeId,
+        token,
+        darknodeDetails?.ID,
+        handleClose,
+        renNetwork,
+    ]);
 
     const canWithdraw =
         darknodeDetails?.registrationStatus === RegistrationStatus.Registered ||
@@ -354,9 +422,10 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
     const earningFees =
         darknodeDetails?.registrationStatus === RegistrationStatus.Registered;
 
-    const amountBN = new BigNumber(tokenAmount?.amount || 0).div(
+    const amountBN = new BigNumber(amount || 0).div(
         new BigNumber(Math.pow(10, tokenAmount?.asset?.decimals || 0)),
     );
+    const nativeTokenSymbol = toNativeTokenSymbol(token);
     return (
         <>
             <FeesBlock
@@ -364,8 +433,8 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                 isOperator={isOperator}
                 earningFees={earningFees}
                 canWithdraw={canWithdraw}
-                withdrawable={withdrawable}
-                pending={pending}
+                withdrawable={withdrawableFees}
+                pending={pendingFees}
                 withdrawCallback={withdrawCallback}
                 isRenVMFee={true}
             />
@@ -374,15 +443,58 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                     <Popup onCancel={handleClose}>
                         <div className="popup--description">
                             <h3>Withdraw fees for {token}</h3>
-                            <h4>
-                                Please confirm you want to withdraw{" "}
-                                {amountBN.toNumber()} {token} to address{" "}
-                                {address}
-                            </h4>
+                            <div className="field-wrapper">
+                                <label>Amount</label>
+                                <input
+                                    type="text"
+                                    onChange={handleAmountChange}
+                                    value={inputAmount}
+                                />
+                                <div>
+                                    <small>
+                                        Native {nativeTokenSymbol} amount:{" "}
+                                        {amount}
+                                    </small>
+                                </div>
+                                {Boolean(amountError) && (
+                                    <div className="field-error">
+                                        {amountError}
+                                    </div>
+                                )}
+                            </div>
+                            <div className="field-wrapper">
+                                <label>Address</label>
+                                <input
+                                    type="text"
+                                    placeholder={`Enter destination ${nativeTokenSymbol} address`}
+                                    onChange={handleAddressChange}
+                                    value={inputAddress}
+                                />
+                                {Boolean(addressError) && (
+                                    <div className="field-error">
+                                        {addressError}
+                                    </div>
+                                )}
+                            </div>
+                            {!Boolean(amountError) && !Boolean(addressError) && (
+                                <h4>
+                                    Please confirm you want to withdraw{" "}
+                                    {amountBN.toNumber()} {nativeTokenSymbol} to
+                                    address {inputAddress}
+                                </h4>
+                            )}
                             {Boolean(error) && <PopupError>{error}</PopupError>}
                         </div>
                         <div className="popup--buttons">
-                            <button className="button" onClick={handleConfirm}>
+                            <button
+                                className="button"
+                                onClick={handleConfirm}
+                                disabled={
+                                    Boolean(error) ||
+                                    Boolean(amountError) ||
+                                    pending
+                                }
+                            >
                                 Confirm
                             </button>
                             <button

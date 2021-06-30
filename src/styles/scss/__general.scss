@@ -494,3 +494,18 @@ label {
         margin-bottom: 0;
     }
 }
+
+.field-wrapper {
+    margin: 16px 0;
+}
+
+.field-info {
+    font-size: 14px;
+    margin: 4px 0;
+}
+
+.field-error {
+    font-size: 14px;
+    color: $red;
+    margin: 4px 0;
+}
