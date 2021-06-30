@@ -3,7 +3,7 @@ import {
     bufferToUrlBase64,
     numberToLeftPaddedBase64String,
     sanitizeBase64String,
-    stringToRightPaddedBase64String,
+    stringTo43APaddedString,
 } from "./encodingUtils";
 
 describe("encoding utils", () => {
@@ -29,8 +29,8 @@ describe("encoding utils", () => {
         expect(result).to.eql("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA1Z-A");
     });
 
-    xtest("stringToRightPaddedBase64String string", () => {
-        const result = stringToRightPaddedBase64String("testnet");
-        expect(result).to.eql("testnesAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+    test("pads string to 43 chars", () => {
+        const result = stringTo43APaddedString("testnet");
+        expect(result).to.eql("testnetAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
     });
 });

@@ -1,4 +1,5 @@
 import { RenNetworkDetails } from "@renproject/contracts";
+import { isRenNetwork } from "@renproject/interfaces";
 import { Record } from "@renproject/react-components";
 import Axios from "axios";
 
@@ -157,8 +158,8 @@ export const claimFees = async (
     token: string,
     node: string,
     amount: number,
-    nonce: number, // TODO: replace with nonce?
     to: string,
+    nonce: number,
     signature: string,
 ) => {
     const lightnode = getLightnode(network, true);
@@ -174,6 +175,12 @@ export const claimFees = async (
                 in: {
                     t: {
                         struct: [
+                            {
+                                type: "string",
+                            },
+                            {
+                                network: "string",
+                            },
                             {
                                 node: "bytes32",
                             },
@@ -192,10 +199,12 @@ export const claimFees = async (
                         ],
                     },
                     v: {
+                        type: "ethSign",
+                        network: network.name,
                         node,
-                        amount,
-                        nonce,
+                        amount: String(amount),
                         to,
+                        nonce: String(nonce),
                         signature,
                     },
                 },
@@ -204,9 +213,10 @@ export const claimFees = async (
             },
         },
     };
-    console.log("claiming fees");
+    console.log("claiming fees request", request.params.tx.in.v);
     const response = await Axios.post<RPCResponse<any>>(lightnode, request, {
         timeout: DEFAULT_REQUEST_TIMEOUT,
     });
     console.info(request, response);
+    return response;
 };

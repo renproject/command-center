@@ -8,8 +8,8 @@ import { sha256, sha256FromString } from "ethereumjs-util";
 
 describe("signatures", () => {
     test("creates signature", () => {
-        // const network = "testnet";
-        const network = "testnesAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+        const network = "testnet";
+        // const network = "testnesAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
         const node = "d7XRfplad6PSXZGf48wUl80TC84AAAAAAAAAAAAAAAA";
         const amount = 3500000;
         const to = "3BXVSSgpDzN79JLyUwcWtCTVCG48D35s2t";

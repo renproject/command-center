@@ -233,6 +233,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
     darknodeDetails,
 }) => {
     const { address, web3, renNetwork } = Web3Container.useContainer();
+    const network = renNetwork.name;
     const {
         blockState,
         quoteCurrency,
@@ -286,13 +287,14 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
         if (!darknodeDetails?.ID || !address) {
             return;
         }
-        const hash = claimFeesDigest(renVmNodeId, amount, address, nonce);
-        const message = { node: renVmNodeId, amount, address, nonce };
-        const signature = await web3.eth.personal.sign(
-            JSON.stringify(message),
+        const hash = claimFeesDigest(
+            network,
+            renVmNodeId,
+            amount,
             address,
-            "",
+            nonce,
         );
+        const signature = await web3.eth.personal.sign(hash, address, "");
 
         // const msgParams = [
         //     {
@@ -317,13 +319,23 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
 
         console.info("signature", signature);
         try {
+            console.log(
+                "claiming fees",
+                network,
+                token,
+                renVmNodeId,
+                amount,
+                address,
+                nonce,
+                signature,
+            );
             const response = await claimFees(
                 renNetwork,
                 token,
                 renVmNodeId,
                 amount,
-                nonce,
                 address,
+                nonce,
                 signature,
             );
             console.log("rrr", response);
@@ -332,7 +344,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
             console.error(e);
         }
         handleClose();
-    }, [web3, address, amount, renVmNodeId, renNetwork, token]);
+    }, [web3, network, address, amount, renVmNodeId, token]);
 
     const canWithdraw =
         darknodeDetails?.registrationStatus === RegistrationStatus.Registered ||

@@ -11,12 +11,18 @@ export const numberToLeftPaddedBase64String = (value: number | string) => {
     const buffer = new BN(value).toArrayLike(Buffer, "be", 32);
     return bufferToUrlBase64(buffer);
 };
+//
+// export const stringToRightPaddedBase64String = (value: string) => {
+//     const bytes32 = Buffer.alloc(32, 8);
+//     const buffer = Buffer.from(value, "utf-8");
+//     const arr = ArrayBuffer.f;
+//     console.log("bf", buffer);
+//     buffer.copy(bytes32, 8);
+//     console.log("bytes", bytes32.toString());
+//     return buffer.toString();
+// };
 
-export const stringToRightPaddedBase64String = (value: string) => {
-    const bytes32 = Buffer.alloc(32, 0);
-    const buffer = Buffer.from(value, "utf-8");
-    console.log("bf", buffer);
-    // buffer.copy(bytes32, 8);
-    console.log("bytes", bytes32.toString());
-    return bufferToUrlBase64(buffer);
+// temporary function until proper conversion done
+export const stringTo43APaddedString = (value: string) => {
+    return value.padEnd(43, "A");
 };
