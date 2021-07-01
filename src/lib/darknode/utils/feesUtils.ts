@@ -13,6 +13,8 @@ import {
 type FeeNode = {
     node: string;
     lastEpochClaimed: Numeric;
+    amountClaimed: Numeric;
+    nonce: Numeric;
 };
 
 type FeeEpoch = {
@@ -133,6 +135,7 @@ export const getTokenFeeAmounts = (
 //     AllTokenDetails;
 // };
 
+// TODO: deprecated
 export const getNodeLastEpochClaimed = (
     renVmNodeId: string,
     symbol: string,
@@ -149,6 +152,28 @@ export const getNodeLastEpochClaimed = (
         return null;
     }
     return Number(nodeData.lastEpochClaimed) || null;
+};
+
+export const getNodeLastNonceClaimed = (
+    renVmNodeId: string,
+    symbol: string,
+    blockState: BlockState,
+) => {
+    const exists = getNodeExists(renVmNodeId, blockState);
+    if (!exists) {
+        return null;
+    }
+    const feesData = getFeesForToken(symbol, blockState);
+    if (!feesData) {
+        return null;
+    }
+    const nodeData = feesData.nodes.find(
+        (nodeItem) => nodeItem.node === renVmNodeId,
+    );
+    if (nodeData && nodeData.nonce) {
+        return Number(nodeData.nonce);
+    }
+    return 0;
 };
 
 export const getNodeFirstClaimableEpoch = (

@@ -1,5 +1,4 @@
 import { RenNetworkDetails } from "@renproject/contracts";
-import { isRenNetwork } from "@renproject/interfaces";
 import { Record } from "@renproject/react-components";
 import Axios from "axios";
 
@@ -14,7 +13,6 @@ import {
     QueryBlockStateResponse,
     toNativeTokenSymbol,
 } from "./utils/blockStateUtils";
-// import { queryBlockStateResponse } from "./utils/mocks/fees.bs.testnet.mock";
 
 interface ResponseQueryStat {
     version: string;
@@ -172,7 +170,7 @@ export const claimFees = async (
         jsonrpc: "2.0",
         params: {
             tx: {
-                hash: "7FFHx7eOhWufPFT_U1GoCkuSIT512y5vdUPtRkLNLuQ", // TODO: where to find it?
+                hash: "IoXJ0ua8a8l2d62txiuZOHuObfP0Pi0EL2sp3IiibOk", // TODO: where to find it?
                 in: {
                     t: {
                         struct: [

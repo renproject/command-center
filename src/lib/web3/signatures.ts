@@ -1,4 +1,4 @@
-import { renMainnet } from "@renproject/contracts";
+import { sha256 } from "ethereumjs-util";
 import {
     numberToLeftPaddedBase64String,
     sanitizeBase64String,
@@ -8,6 +8,8 @@ import {
     base64Sha256FromTwoBase64Strings,
     base64Sha256FromUtf8String,
 } from "../general/sha256";
+import { marshalString, marshalTypedPackValue } from "../pack/marshal";
+import { TypedPackValue } from "../pack/pack";
 
 const encodeNetwork = (network: string) => {
     switch (network) {
@@ -42,4 +44,18 @@ export const claimFeesDigest = (
     const h1234 = base64Sha256FromTwoBase64Strings(h12, h34);
     //root
     return base64Sha256FromTwoBase64Strings(networkHash, h1234);
+};
+
+export const hashTransaction = (
+    version: string,
+    selector: string,
+    packValue: TypedPackValue,
+) => {
+    return sha256(
+        Buffer.concat([
+            marshalString(version),
+            marshalString(selector),
+            marshalTypedPackValue(packValue),
+        ]),
+    );
 };

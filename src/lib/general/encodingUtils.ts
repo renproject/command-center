@@ -1,5 +1,5 @@
 import BN from "bn.js";
-import { Simulate } from "react-dom/test-utils";
+import { EncodedData, Encodings } from "./encodedData";
 
 export const sanitizeBase64String = (value: string) =>
     value.replace(/\+/g, "-").replace(/\//g, "_").replace(/\=+$/, "");
@@ -25,4 +25,9 @@ export const numberToLeftPaddedBase64String = (value: number | string) => {
 // temporary function until proper conversion done
 export const stringTo43APaddedString = (value: string) => {
     return value.padEnd(43, "A");
+};
+
+export const hexStringToBase64String = (value: string) => {
+    const buffer = new EncodedData(value, Encodings.HEX).toBuffer();
+    return sanitizeBase64String(buffer.toString("base64"));
 };

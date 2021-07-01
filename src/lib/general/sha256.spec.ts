@@ -1,10 +1,18 @@
 import { sha256 } from "ethereumjs-util";
 import { sanitizeBase64String } from "./encodingUtils";
+// @ts-ignore
+// import createHash from "create-hash";
+
 import {
     base64Sha256FromBase64String,
     base64Sha256FromTwoBase64Strings,
     base64Sha256FromUtf8String,
 } from "./sha256";
+
+// export const sha256ch = (msg: Buffer): Buffer =>
+//     sanitizeBase64String(
+//         createHash("sha256").update(msg).digest().toString("base64"),
+//     );
 
 describe("sha256", () => {
     test("hashes the right way", () => {
@@ -20,6 +28,12 @@ describe("sha256", () => {
         );
         expect(result).toEqual("MHWN14pNl7GqwOj9pQfnomSFhP4HSTC5FguRlGUHg08");
     });
+
+    // test("sha256s works", () => {
+    //     const result1 = base64Sha256FromUtf8String("a");
+    //     const result2 = sha256ch(Buffer.from("a", "utf-8"));
+    //     expect(result1).toEqual(result2);
+    // });
 
     test("base64Sha256FromBase64String", () => {
         const result = base64Sha256FromBase64String(

@@ -1133,6 +1133,8 @@ export const queryBlockStateResponse = {
                                 node:
                                     "R22tRItPlzKCZ5xmhDUNIw/CenwAAAAAAAAAAAAAAAA",
                                 lastEpochClaimed: "2",
+                                amountClaimed: "10000",
+                                nonce: "2",
                             },
                         ],
                         unassigned: "50000000",

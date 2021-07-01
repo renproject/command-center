@@ -8,13 +8,17 @@ import {
 } from "../../../../lib/darknode/darknodeID";
 import { claimFees } from "../../../../lib/darknode/jsonrpc";
 import { toNativeTokenSymbol } from "../../../../lib/darknode/utils/blockStateUtils";
-import { getNodeFeesCollection } from "../../../../lib/darknode/utils/feesUtils";
+import {
+    getNodeFeesCollection,
+    getNodeLastNonceClaimed,
+} from "../../../../lib/darknode/utils/feesUtils";
 
 import {
     DarknodeFeeStatus,
     RegistrationStatus,
 } from "../../../../lib/ethereum/contractReads";
 import { TokenString } from "../../../../lib/ethereum/tokens";
+import { hexStringToBase64String } from "../../../../lib/general/encodingUtils";
 import { TokenAmount } from "../../../../lib/graphQL/queries/queries";
 import { classNames } from "../../../../lib/react/className";
 import { claimFeesDigest } from "../../../../lib/web3/signatures";
@@ -273,13 +277,23 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
     // console.log("pending", pending?.toJS());
 
     const [token, setToken] = useState("");
+    const nativeTokenSymbol = toNativeTokenSymbol(token);
+    const nonce =
+        blockState !== null
+            ? getNodeLastNonceClaimed(
+                  renVmNodeId,
+                  nativeTokenSymbol,
+                  blockState,
+              )
+            : null;
+    console.log(nonce);
     const [open, setOpen] = useState(false);
     const [error, setError] = useState("");
     const [amount, setAmount] = useState(0);
     const [inputAmount, setInputAmount] = useState(0);
     const [amountError, setAmountError] = useState("");
     const [inputAddress, setInputAddress] = useState(
-        "tmJ8ngiRiaUVGtExgNgd5nzRF1fSRd47qvP",
+        "tmJ8ngiRiaUVGtExgNgd5nzRF1fSRd47qvP", // TODO: crit change
     );
     const [addressError, setAddressError] = useState("");
     const [pending, setPending] = useState(false);
@@ -360,8 +374,8 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
     const handleConfirm = useCallback(async () => {
         // console.log("confirming");
         setPending(true);
-        const nonce = 0; // TODO: crit get from node data
-        if (!darknodeDetails?.ID || !address) {
+        // const nonce = 0; // TODO: crit get from node data
+        if (!darknodeDetails?.ID || !address || nonce === null) {
             return;
         }
         const hash = claimFeesDigest(
@@ -371,9 +385,11 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
             destinationAddress,
             nonce,
         );
-        const signature = await web3.eth.personal.sign(hash, address, "");
-
-        console.info("signature", signature);
+        console.log("fees hash", hash);
+        const hexSignature = await web3.eth.personal.sign(hash, address, "");
+        const signature = hexStringToBase64String(hexSignature);
+        console.info("hex signature", hexSignature);
+        console.info("base64 signature", signature);
         try {
             console.log(
                 "claiming fees",
@@ -425,7 +441,6 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
     const amountBN = new BigNumber(amount || 0).div(
         new BigNumber(Math.pow(10, tokenAmount?.asset?.decimals || 0)),
     );
-    const nativeTokenSymbol = toNativeTokenSymbol(token);
     return (
         <>
             <FeesBlock

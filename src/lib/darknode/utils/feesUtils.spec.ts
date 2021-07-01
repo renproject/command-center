@@ -17,6 +17,7 @@ import {
     getNodePendingFees,
     getAggregatedFeesCollection,
     getAggregatedFeeAmountForToken,
+    getNodeLastNonceClaimed,
 } from "./feesUtils";
 import { partialFees } from "./mocks/fees.mocks";
 
@@ -55,7 +56,8 @@ describe("fees", () => {
         expect(unify(result)).to.eql(unify(expected));
     });
 
-    test("gets fee amount for asset", () => {
+    xtest("gets fee amount for asset", () => {
+        //TODO: skip until depreacted data
         const result = getFeesForToken("BTC", blockState);
         const expected = {
             epochs: [
@@ -132,6 +134,33 @@ describe("fees", () => {
 });
 
 describe("node fees - basic utils", () => {
+    test("gets node last used nonce", () => {
+        const result = getNodeLastNonceClaimed(
+            "R22tRItPlzKCZ5xmhDUNIw/CenwAAAAAAAAAAAAAAAA",
+            "BTC",
+            blockState,
+        );
+        expect(result).to.equal(2);
+    });
+
+    test("gets node last used nonce - never claimed", () => {
+        const result = getNodeLastNonceClaimed(
+            "UyR7eXjDqVnArP0aCj4qD/A0w3MAAAAAAAAAAAAAAAA",
+            "BTC",
+            blockState,
+        );
+        expect(result).to.equal(0);
+    });
+
+    test("gets node last used nonce - nonexistent node", () => {
+        const result = getNodeLastNonceClaimed(
+            "oNig-tMtnRPeOY00OzxAQHmpMS4AAAAAAAAAAAAAAAA",
+            "BTC",
+            blockState,
+        );
+        expect(result).to.equal(null);
+    });
+
     test("gets node last epoch claimed", () => {
         const result = getNodeLastEpochClaimed(
             "R22tRItPlzKCZ5xmhDUNIw/CenwAAAAAAAAAAAAAAAA",
