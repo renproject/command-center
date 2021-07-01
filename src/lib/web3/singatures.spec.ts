@@ -1,21 +1,20 @@
-import { sanitizeBase64String } from "../general/encodingUtils";
+import { base64StringToHexString } from "../general/encodingUtils";
 import { claimFeesDigest } from "./signatures";
-import { sha256, sha256FromString } from "ethereumjs-util";
-
-// export const base64StringToSha256 = (value: string) => {
-//     const result =
-// }
 
 describe("signatures", () => {
     test("creates signature", () => {
         const network = "testnet";
-        // const network = "testnesAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
-        const node = "d7XRfplad6PSXZGf48wUl80TC84AAAAAAAAAAAAAAAA";
-        const amount = 3500000;
-        const to = "3BXVSSgpDzN79JLyUwcWtCTVCG48D35s2t";
-        const nonce = 5;
+        const node = "xoFRPv_xsoti6yaZAoZT5zNkU7sAAAAAAAAAAAAAAAA";
+        const amount = 449767;
+        const to = "tmJ8ngiRiaUVGtExgNgd5nzRF1fSRd47qvP";
+        const nonce = 0;
 
         const result = claimFeesDigest(network, node, amount, to, nonce);
-        expect(result).toEqual("3h_5aaYsPy99VKGieabycNsaaSM9EJQNo7onjmVhq38");
+        expect(result).toEqual("PWh08iGFm9txroTLrZmE7e6MPltJ_kurZuGu13mI5Q0");
+
+        const resultHex = base64StringToHexString(result);
+        expect(resultHex).toEqual(
+            "3d6874f221859bdb71ae84cbad9984edee8c3e5b49fe4bab66e1aed77988e50d",
+        );
     });
 });

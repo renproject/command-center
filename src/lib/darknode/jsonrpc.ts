@@ -9,6 +9,7 @@ import {
 
 import { getLightnode } from "../../store/mapContainer";
 import { DEFAULT_REQUEST_TIMEOUT } from "../react/environmentVariables";
+import { hashTransaction } from "../web3/signatures";
 import {
     QueryBlockStateResponse,
     toNativeTokenSymbol,
@@ -170,7 +171,7 @@ export const claimFees = async (
         jsonrpc: "2.0",
         params: {
             tx: {
-                hash: "IoXJ0ua8a8l2d62txiuZOHuObfP0Pi0EL2sp3IiibOk", // TODO: where to find it?
+                hash: "xeP7Ehi4g7S3erp8z-7yU1td07757diRYtwd0s-4SzI", // TODO: where to find it?
                 in: {
                     t: {
                         struct: [
@@ -212,6 +213,14 @@ export const claimFees = async (
             },
         },
     };
+    const txHash = hashTransaction(
+        request.params.tx.version,
+        request.params.tx.selector,
+        request.params.tx.in as any,
+    ).toString("base64");
+    console.log(txHash);
+    request.params.tx.hash = txHash;
+
     console.log("claiming fees request", request.params.tx.in.v);
     const response = await Axios.post<RPCResponse<any>>(lightnode, request, {
         timeout: DEFAULT_REQUEST_TIMEOUT,

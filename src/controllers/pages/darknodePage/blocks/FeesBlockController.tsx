@@ -18,7 +18,10 @@ import {
     RegistrationStatus,
 } from "../../../../lib/ethereum/contractReads";
 import { TokenString } from "../../../../lib/ethereum/tokens";
-import { hexStringToBase64String } from "../../../../lib/general/encodingUtils";
+import {
+    base64StringToHexString,
+    hexStringToBase64String,
+} from "../../../../lib/general/encodingUtils";
 import { TokenAmount } from "../../../../lib/graphQL/queries/queries";
 import { classNames } from "../../../../lib/react/className";
 import { claimFeesDigest } from "../../../../lib/web3/signatures";
@@ -27,6 +30,7 @@ import {
     DarknodesState,
     NetworkContainer,
 } from "../../../../store/networkContainer";
+import { NotificationsContainer } from "../../../../store/notificationsContainer";
 import { PopupContainer } from "../../../../store/popupContainer";
 import { UIContainer } from "../../../../store/uiContainer";
 import { Web3Container } from "../../../../store/web3Container";
@@ -252,6 +256,8 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
     darknodeDetails,
 }) => {
     const { address, web3, renNetwork } = Web3Container.useContainer();
+    const { showSuccess } = NotificationsContainer.useContainer();
+
     const network = renNetwork.name;
     const {
         blockState,
@@ -378,15 +384,21 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
         if (!darknodeDetails?.ID || !address || nonce === null) {
             return;
         }
-        const hash = claimFeesDigest(
+        const base64Digest = claimFeesDigest(
             network,
             renVmNodeId,
             maxAmount,
             destinationAddress,
             nonce,
         );
-        console.log("fees hash", hash);
-        const hexSignature = await web3.eth.personal.sign(hash, address, "");
+        const hexDigest = base64StringToHexString(base64Digest);
+        console.log("fees hash", hexDigest);
+
+        const hexSignature = await web3.eth.personal.sign(
+            hexDigest,
+            address,
+            "",
+        );
         const signature = hexStringToBase64String(hexSignature);
         console.info("hex signature", hexSignature);
         console.info("base64 signature", signature);
@@ -411,6 +423,9 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                 signature,
             );
             console.log("rrr", response);
+            if (response.status === 200) {
+                showSuccess("Fees successfully claimed!");
+            }
         } catch (e) {
             setError("Error claiming, check console");
             console.error(e);
