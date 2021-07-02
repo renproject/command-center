@@ -7,7 +7,10 @@ import {
     darknodeIDHexToBase58,
 } from "../../../../lib/darknode/darknodeID";
 import { claimFees } from "../../../../lib/darknode/jsonrpc";
-import { toNativeTokenSymbol } from "../../../../lib/darknode/utils/blockStateUtils";
+import {
+    BlockState,
+    toNativeTokenSymbol,
+} from "../../../../lib/darknode/utils/blockStateUtils";
 import {
     getNodeFeesCollection,
     getNodeLastNonceClaimed,
@@ -299,7 +302,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
     const [inputAmount, setInputAmount] = useState(0);
     const [amountError, setAmountError] = useState("");
     const [inputAddress, setInputAddress] = useState(
-        "tmJ8ngiRiaUVGtExgNgd5nzRF1fSRd47qvP", // TODO: crit change
+        "", // TODO: crit change
     );
     const [addressError, setAddressError] = useState("");
     const [pending, setPending] = useState(false);
@@ -468,9 +471,11 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                 pending={pendingFees}
                 withdrawCallback={withdrawCallback}
                 isRenVMFee={true}
+                blockState={blockState as BlockState}
             />
             {open && (
-                <div>
+                <div className="popup--container">
+                    <div className="popup--blur" />
                     <Popup onCancel={handleClose}>
                         <div className="popup--description">
                             <h3>Withdraw fees for {token}</h3>

@@ -4,6 +4,8 @@ import { OrderedMap } from "immutable";
 import React, { useCallback, useMemo, useState } from "react";
 
 import { ConvertCurrency } from "../../controllers/common/TokenBalance";
+import { BlockState } from "../../lib/darknode/utils/blockStateUtils";
+import { getDustAmountForToken } from "../../lib/darknode/utils/feesUtils";
 import { TokenAmount } from "../../lib/graphQL/queries/queries";
 import { classNames } from "../../lib/react/className";
 import { ReactComponent as RewardsIcon } from "../../styles/images/icon-rewards-white.svg";
@@ -23,6 +25,7 @@ interface FeesBlockProps {
         tokenAddress: string,
     ) => Promise<void>;
     isRenVMFee?: boolean;
+    blockState?: BlockState;
     className?: string;
 }
 
@@ -35,6 +38,7 @@ export const FeesBlock: React.FC<FeesBlockProps> = ({
     pending,
     withdrawCallback,
     isRenVMFee,
+    blockState,
     className,
     children,
 }) => {
@@ -174,6 +178,13 @@ export const FeesBlock: React.FC<FeesBlockProps> = ({
                                                     ],
                                                     _i,
                                                 ) => {
+                                                    const dustAmount = blockState
+                                                        ? getDustAmountForToken(
+                                                              token,
+                                                              blockState,
+                                                          )
+                                                        : undefined;
+
                                                     return (
                                                         <FeesBlockRow
                                                             key={token}
@@ -195,6 +206,9 @@ export const FeesBlock: React.FC<FeesBlockProps> = ({
                                                             }
                                                             isRenVMFee={
                                                                 isRenVMFee
+                                                            }
+                                                            dustAmount={
+                                                                dustAmount
                                                             }
                                                         />
                                                     );

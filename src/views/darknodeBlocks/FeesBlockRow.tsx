@@ -10,6 +10,7 @@ import {
     AnyTokenBalance,
     ConvertCurrency,
 } from "../../controllers/common/TokenBalance";
+import { getDustAmountForToken } from "../../lib/darknode/utils/feesUtils";
 
 import { TokenString } from "../../lib/ethereum/tokens";
 import { TokenAmount } from "../../lib/graphQL/queries/queries";
@@ -30,6 +31,7 @@ interface FeesWithdrawalProps {
         tokenAddress: string,
     ) => Promise<void>;
     isRenVMFee?: boolean;
+    dustAmount?: BigNumber;
 }
 
 export const FeesWithdrawal: React.FC<FeesWithdrawalProps> = ({
@@ -38,6 +40,7 @@ export const FeesWithdrawal: React.FC<FeesWithdrawalProps> = ({
     disabled,
     withdrawCallback,
     isRenVMFee = false,
+    dustAmount = new BigNumber(-1),
 }) => {
     const [loading, setLoading] = useState(false);
 
@@ -81,6 +84,9 @@ export const FeesWithdrawal: React.FC<FeesWithdrawalProps> = ({
     } else if (!amount || new BigNumber(amount.amount).lte(0)) {
         isDisabled = true;
         title = "No fees to withdraw";
+    } else if (isRenVMFee && new BigNumber(amount.amount).lte(dustAmount)) {
+        isDisabled = true;
+        title = `Fee is lower than dust amount`;
     } else if (!isRenVMFee && (!amount.asset || !amount.asset.tokenAddress)) {
         isDisabled = true;
         title = "Unable to look up token address";
@@ -123,6 +129,7 @@ interface FeesBlockRowProps {
         tokenAddress: string,
     ) => Promise<void>;
     isRenVMFee?: boolean;
+    dustAmount?: BigNumber;
 }
 
 export const FeesBlockRow: React.FC<FeesBlockRowProps> = ({
@@ -135,6 +142,7 @@ export const FeesBlockRow: React.FC<FeesBlockRowProps> = ({
     percent,
     withdrawCallback,
     isRenVMFee = false,
+    dustAmount = new BigNumber(-1),
 }) => {
     return (
         <>
@@ -186,6 +194,7 @@ export const FeesBlockRow: React.FC<FeesBlockRowProps> = ({
                             amount={balance}
                             withdrawCallback={withdrawCallback}
                             isRenVMFee={isRenVMFee}
+                            dustAmount={dustAmount}
                         />
                     </td>
                 ) : null}

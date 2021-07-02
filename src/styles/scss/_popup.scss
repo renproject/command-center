@@ -238,6 +238,13 @@ $noWeb3Padding: 20px;
     top: 0;
     width: 100%;
 }
+.popup--blur--fixed {
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    pointer-events: none;
+    filter: blur(2px);
+}
 
 /* Multi Step */
 

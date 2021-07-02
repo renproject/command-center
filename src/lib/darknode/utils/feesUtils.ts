@@ -35,7 +35,7 @@ export const getDustAmountForToken = (
 ) => {
     const data = blockState[symbol];
     if (!data) {
-        return new BigNumber(0);
+        return new BigNumber(-1);
     }
     return new BigNumber(data.dustAmount);
 };

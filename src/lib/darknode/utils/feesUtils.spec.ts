@@ -149,9 +149,11 @@ describe("fees", () => {
 });
 
 describe("node fees - basic utils", () => {
-    test("gets token dust amount", () => {
-        const result = getDustAmountForToken("BTC", blockState);
-        expect(result.toNumber()).to.equal(546);
+    describe("dust amount", () => {
+        test("gets dust amount", () => {
+            const result = getDustAmountForToken("BTC", blockState);
+            expect(result.toNumber()).to.equal(546);
+        });
     });
 
     describe("gets node last used nonce", () => {
