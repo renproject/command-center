@@ -325,6 +325,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
         setPending(false);
         setError("");
         setAmountError("");
+        setAddressError("");
         setToken("");
     }, [setOverlay]);
 

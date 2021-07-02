@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { Token } from "../../ethereum/tokens";
 import { unify } from "../../general/debugUtils";
 import { getNodeEnteredAt, getNodeExists } from "./blockStateUtils";
-import { getNodeFeesCollection, getNodePendingFees } from "./feesUtils";
+import { getNodeFeesCollection, getNodePendingFee } from "./feesUtils";
 import { queryBlockStateResponse } from "./mocks/fees.bs.testnet.mock";
 
 const blockState = queryBlockStateResponse.result.state.v as any;
@@ -22,7 +22,7 @@ describe("my node", () => {
     });
 
     test("pending BTC", () => {
-        const result = getNodePendingFees(id, "BTC", blockState);
+        const result = getNodePendingFee(id, "BTC", blockState);
         expect(result.toNumber()).to.eql(1256537.05546448087431693989);
     });
 

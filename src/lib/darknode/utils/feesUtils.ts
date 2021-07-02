@@ -29,21 +29,23 @@ type FeeData = {
     unassigned: Numeric;
 };
 
-export const getFeesForToken = (symbol: string, blockState: BlockState) => {
+export const getDustAmountForToken = (
+    symbol: string,
+    blockState: BlockState,
+) => {
+    const data = blockState[symbol];
+    if (!data) {
+        return new BigNumber(0);
+    }
+    return new BigNumber(data.dustAmount);
+};
+
+export const getFeeDataForToken = (symbol: string, blockState: BlockState) => {
     const data = blockState[symbol];
     if (!data) {
         return null;
     }
     return data.fees as FeeData;
-};
-
-export const getLastAssetEpochId = (symbol: string, blockState: BlockState) => {
-    const fees = getFeesForToken(symbol, blockState);
-    if (!fees || fees.epochs.length === 0) {
-        return null;
-    }
-    const { epochs } = fees;
-    return Number(epochs[epochs.length - 1].epoch);
 };
 
 export const getTokenFeeForEpoch = (
@@ -55,7 +57,7 @@ export const getTokenFeeForEpoch = (
     if (epoch === "current") {
         return getTokenUnassignedFees(symbol, blockState, perNode).div(2);
     }
-    const data = getFeesForToken(symbol, blockState);
+    const data = getFeeDataForToken(symbol, blockState);
     if (data === null) {
         return new BigNumber(0);
     }
@@ -77,23 +79,6 @@ export const getTokenFeeForEpoch = (
         return new BigNumber(amount).div(perNode ? numNodes : 1);
     }
     return new BigNumber(0);
-};
-
-export const getTokenUnassignedFees = (
-    symbol: string,
-    blockState: BlockState,
-    perNode = false,
-) => {
-    const data = getFeesForToken(symbol, blockState);
-    if (data === null) {
-        return new BigNumber(0);
-    }
-    const { unassigned } = data;
-    if (perNode) {
-        const numNodes = blockState.System.epoch.numNodes;
-        return new BigNumber(unassigned).div(numNodes);
-    }
-    return new BigNumber(unassigned);
 };
 
 export const toTokenAmount = (
@@ -131,29 +116,6 @@ export const getTokenFeeAmounts = (
     return data;
 };
 
-// export const getNativeDecimals = (symbol: string) => {
-//     AllTokenDetails;
-// };
-
-// TODO: deprecated
-export const getNodeLastEpochClaimed = (
-    renVmNodeId: string,
-    symbol: string,
-    blockState: BlockState,
-) => {
-    const data = getFeesForToken(symbol, blockState);
-    if (!data) {
-        return null;
-    }
-    const nodeData = data.nodes.find(
-        (nodeItem) => nodeItem.node === renVmNodeId,
-    );
-    if (!nodeData) {
-        return null;
-    }
-    return Number(nodeData.lastEpochClaimed) || null;
-};
-
 export const getNodeLastNonceClaimed = (
     renVmNodeId: string,
     symbol: string,
@@ -163,7 +125,7 @@ export const getNodeLastNonceClaimed = (
     if (!exists) {
         return null;
     }
-    const feesData = getFeesForToken(symbol, blockState);
+    const feesData = getFeeDataForToken(symbol, blockState);
     if (!feesData) {
         return null;
     }
@@ -176,7 +138,24 @@ export const getNodeLastNonceClaimed = (
     return 0;
 };
 
-export const getNodeClaimedAmount = (
+export const getTokenUnassignedFees = (
+    symbol: string,
+    blockState: BlockState,
+    perNode = false,
+) => {
+    const data = getFeeDataForToken(symbol, blockState);
+    if (data === null) {
+        return new BigNumber(0);
+    }
+    const { unassigned } = data;
+    if (perNode) {
+        const numNodes = blockState.System.epoch.numNodes;
+        return new BigNumber(unassigned).div(numNodes);
+    }
+    return new BigNumber(unassigned);
+};
+
+export const getNodePendingFee = (
     renVmNodeId: string,
     symbol: string,
     blockState: BlockState,
@@ -185,7 +164,19 @@ export const getNodeClaimedAmount = (
     if (!exists) {
         return new BigNumber(0);
     }
-    const feesData = getFeesForToken(symbol, blockState);
+    return getTokenUnassignedFees(symbol, blockState, true).div(2); // 50% assigned to next epoch
+};
+
+export const getNodeClaimedFee = (
+    renVmNodeId: string,
+    symbol: string,
+    blockState: BlockState,
+) => {
+    const exists = getNodeExists(renVmNodeId, blockState);
+    if (!exists) {
+        return new BigNumber(0);
+    }
+    const feesData = getFeeDataForToken(symbol, blockState);
     if (!feesData) {
         return new BigNumber(0);
     }
@@ -198,7 +189,7 @@ export const getNodeClaimedAmount = (
     return new BigNumber(0);
 };
 
-export const getNodeTotalAmount = (
+export const getNodeTotalFee = (
     renVmNodeId: string,
     symbol: string,
     blockState: BlockState,
@@ -208,7 +199,7 @@ export const getNodeTotalAmount = (
         return new BigNumber(0);
     }
     const startEpoch = getNodeEnteredAt(renVmNodeId, blockState);
-    const feesData = getFeesForToken(symbol, blockState);
+    const feesData = getFeeDataForToken(symbol, blockState);
     if (!feesData || !startEpoch) {
         return new BigNumber(0);
     }
@@ -223,102 +214,21 @@ export const getNodeTotalAmount = (
     return claimable;
 };
 
-export const getNodeClaimableAmount = (
+export const getNodeClaimableFee = (
     renVmNodeId: string,
     symbol: string,
     blockState: BlockState,
 ) => {
-    const claimed = getNodeClaimedAmount(renVmNodeId, symbol, blockState);
+    const claimed = getNodeClaimedFee(renVmNodeId, symbol, blockState);
     if (claimed === null) {
         return new BigNumber(0);
     }
-    const total = getNodeTotalAmount(renVmNodeId, symbol, blockState);
+    const total = getNodeTotalFee(renVmNodeId, symbol, blockState);
     if (total === null) {
         return new BigNumber(0);
     }
 
     return total.minus(claimed);
-};
-
-// TODO: depreacated
-export const getNodeFirstClaimableEpoch = (
-    renVmNodeId: string,
-    symbol: string,
-    blockState: BlockState,
-) => {
-    const lastClaimed = getNodeLastEpochClaimed(
-        renVmNodeId,
-        symbol,
-        blockState,
-    );
-    if (lastClaimed !== null) {
-        return lastClaimed + 1;
-    }
-    const enteredAt = getNodeEnteredAt(renVmNodeId, blockState);
-    if (enteredAt !== null) {
-        return enteredAt; // TODO: is it inclusive?
-    }
-    return null; // TODO: is it possible?
-};
-
-export const getNodeClaimableFeeForEpoch = (
-    renVmNodeId: string,
-    symbol: string,
-    epoch: number,
-    blockState: BlockState,
-) => {
-    const startEpoch = getNodeFirstClaimableEpoch(
-        renVmNodeId,
-        symbol,
-        blockState,
-    );
-
-    if (startEpoch === null) {
-        return new BigNumber(0);
-    }
-    if (epoch >= startEpoch) {
-        return getTokenFeeForEpoch(symbol, epoch, blockState, true);
-    }
-    return new BigNumber(0);
-};
-
-export const getNodeClaimableFees = (
-    renVmNodeId: string,
-    symbol: string,
-    blockState: BlockState,
-) => {
-    const startEpoch = getNodeFirstClaimableEpoch(
-        renVmNodeId,
-        symbol,
-        blockState,
-    );
-    if (startEpoch === null) {
-        return new BigNumber(0);
-    }
-    const lastClaimableEpoch = getCurrentEpochId(blockState) - 1;
-    if (!lastClaimableEpoch) {
-        return new BigNumber(0);
-    }
-
-    let claimable = new BigNumber(0);
-    for (let epoch = startEpoch; epoch <= lastClaimableEpoch; epoch++) {
-        const fee = getTokenFeeForEpoch(symbol, epoch, blockState, true);
-        claimable = claimable.plus(fee);
-    }
-
-    return claimable;
-};
-
-export const getNodePendingFees = (
-    renVmNodeId: string,
-    symbol: string,
-    blockState: BlockState,
-) => {
-    const exists = getNodeExists(renVmNodeId, blockState);
-    if (!exists) {
-        return new BigNumber(0);
-    }
-    return getTokenUnassignedFees(symbol, blockState, true).div(2); // 50% assigned to next epoch
 };
 
 export type FeeType = "claimable" | "pending";
@@ -333,8 +243,8 @@ export const getNodeFeesCollection = (
         if (blockState !== null) {
             amount =
                 type === "claimable"
-                    ? getNodeClaimableFees(renVmNodeId, symbol, blockState)
-                    : getNodePendingFees(renVmNodeId, symbol, blockState);
+                    ? getNodeClaimableFee(renVmNodeId, symbol, blockState)
+                    : getNodePendingFee(renVmNodeId, symbol, blockState);
         }
         const tokenAmount = toTokenAmount(amount, token.symbol, token.decimals);
         return [symbol, tokenAmount];
@@ -361,7 +271,7 @@ export const getAggregatedFeeAmountForToken = (
 ) => {
     let amount = new BigNumber(0);
     if (blockState !== null) {
-        const fees = getFeesForToken(symbol, blockState);
+        const fees = getFeeDataForToken(symbol, blockState);
         if (fees && fees.epochs.length) {
             amount = fees.epochs.reduce(
                 (sum, epoch) => sum.plus(epoch.amount),
