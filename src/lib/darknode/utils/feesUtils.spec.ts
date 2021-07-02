@@ -18,6 +18,9 @@ import {
     getAggregatedFeesCollection,
     getAggregatedFeeAmountForToken,
     getNodeLastNonceClaimed,
+    getNodeClaimedAmount,
+    getNodeTotalAmount,
+    getNodeClaimableAmount,
 } from "./feesUtils";
 import { partialFees } from "./mocks/fees.mocks";
 
@@ -134,31 +137,120 @@ describe("fees", () => {
 });
 
 describe("node fees - basic utils", () => {
-    test("gets node last used nonce", () => {
-        const result = getNodeLastNonceClaimed(
-            "R22tRItPlzKCZ5xmhDUNIw/CenwAAAAAAAAAAAAAAAA",
-            "BTC",
-            blockState,
-        );
-        expect(result).to.equal(2);
+    describe("gets node last used nonce", () => {
+        test("exists & claimed", () => {
+            const result = getNodeLastNonceClaimed(
+                "R22tRItPlzKCZ5xmhDUNIw/CenwAAAAAAAAAAAAAAAA",
+                "BTC",
+                blockState,
+            );
+            expect(result).to.equal(2);
+        });
+
+        test("exists & never claimed", () => {
+            const result = getNodeLastNonceClaimed(
+                "UyR7eXjDqVnArP0aCj4qD/A0w3MAAAAAAAAAAAAAAAA",
+                "BTC",
+                blockState,
+            );
+            expect(result).to.equal(0);
+        });
+
+        test("not exists", () => {
+            const result = getNodeLastNonceClaimed(
+                "oNig-tMtnRPeOY00OzxAQHmpMS4AAAAAAAAAAAAAAAA",
+                "BTC",
+                blockState,
+            );
+            expect(result).to.equal(null);
+        });
     });
 
-    test("gets node last used nonce - never claimed", () => {
-        const result = getNodeLastNonceClaimed(
-            "UyR7eXjDqVnArP0aCj4qD/A0w3MAAAAAAAAAAAAAAAA",
-            "BTC",
-            blockState,
-        );
-        expect(result).to.equal(0);
+    describe("gets node claimed amount", () => {
+        test("exists & claimed", () => {
+            const result = getNodeClaimedAmount(
+                "R22tRItPlzKCZ5xmhDUNIw/CenwAAAAAAAAAAAAAAAA",
+                "BTC",
+                blockState,
+            );
+            expect(result.toNumber()).to.equal(10000);
+        });
+
+        test("exists & never claimed", () => {
+            const result = getNodeClaimedAmount(
+                "UyR7eXjDqVnArP0aCj4qD/A0w3MAAAAAAAAAAAAAAAA",
+                "BTC",
+                blockState,
+            );
+            expect(result.toNumber()).to.equal(0);
+        });
+
+        test("not exists", () => {
+            const result = getNodeClaimedAmount(
+                "oNig-tMtnRPeOY00OzxAQHmpMS4AAAAAAAAAAAAAAAA",
+                "BTC",
+                blockState,
+            );
+            expect(result.toNumber()).to.equal(0);
+        });
     });
 
-    test("gets node last used nonce - nonexistent node", () => {
-        const result = getNodeLastNonceClaimed(
-            "oNig-tMtnRPeOY00OzxAQHmpMS4AAAAAAAAAAAAAAAA",
-            "BTC",
-            blockState,
-        );
-        expect(result).to.equal(null);
+    describe("gets node total amount", () => {
+        test("exists & claimed", () => {
+            const result = getNodeTotalAmount(
+                "R22tRItPlzKCZ5xmhDUNIw/CenwAAAAAAAAAAAAAAAA",
+                "BTC",
+                blockState,
+            );
+            expect(result.toNumber()).to.equal(17500000);
+        });
+
+        test("exists & never claimed", () => {
+            const result = getNodeTotalAmount(
+                "UyR7eXjDqVnArP0aCj4qD/A0w3MAAAAAAAAAAAAAAAA",
+                "BTC",
+                blockState,
+            );
+            expect(result.toNumber()).to.equal(17500000);
+        });
+
+        test("not exists", () => {
+            const result = getNodeTotalAmount(
+                "oNig-tMtnRPeOY00OzxAQHmpMS4AAAAAAAAAAAAAAAA",
+                "BTC",
+                blockState,
+            );
+            expect(result.toNumber()).to.equal(0);
+        });
+    });
+
+    describe("gets node claimable amount", () => {
+        test("exists & claimed", () => {
+            const result = getNodeClaimableAmount(
+                "R22tRItPlzKCZ5xmhDUNIw/CenwAAAAAAAAAAAAAAAA",
+                "BTC",
+                blockState,
+            );
+            expect(result.toNumber()).to.equal(17490000);
+        });
+
+        test("exists & never claimed", () => {
+            const result = getNodeClaimableAmount(
+                "UyR7eXjDqVnArP0aCj4qD/A0w3MAAAAAAAAAAAAAAAA",
+                "BTC",
+                blockState,
+            );
+            expect(result.toNumber()).to.equal(17500000);
+        });
+
+        test("not exists", () => {
+            const result = getNodeClaimableAmount(
+                "oNig-tMtnRPeOY00OzxAQHmpMS4AAAAAAAAAAAAAAAA",
+                "BTC",
+                blockState,
+            );
+            expect(result.toNumber()).to.equal(0);
+        });
     });
 
     test("gets node last epoch claimed", () => {

@@ -176,6 +176,71 @@ export const getNodeLastNonceClaimed = (
     return 0;
 };
 
+export const getNodeClaimedAmount = (
+    renVmNodeId: string,
+    symbol: string,
+    blockState: BlockState,
+) => {
+    const exists = getNodeExists(renVmNodeId, blockState);
+    if (!exists) {
+        return new BigNumber(0);
+    }
+    const feesData = getFeesForToken(symbol, blockState);
+    if (!feesData) {
+        return new BigNumber(0);
+    }
+    const nodeData = feesData.nodes.find(
+        (nodeItem) => nodeItem.node === renVmNodeId,
+    );
+    if (nodeData && nodeData.amountClaimed) {
+        return new BigNumber(nodeData.amountClaimed);
+    }
+    return new BigNumber(0);
+};
+
+export const getNodeTotalAmount = (
+    renVmNodeId: string,
+    symbol: string,
+    blockState: BlockState,
+) => {
+    const exists = getNodeExists(renVmNodeId, blockState);
+    if (!exists) {
+        return new BigNumber(0);
+    }
+    const startEpoch = getNodeEnteredAt(renVmNodeId, blockState);
+    const feesData = getFeesForToken(symbol, blockState);
+    if (!feesData || !startEpoch) {
+        return new BigNumber(0);
+    }
+    const currentEpoch = getCurrentEpochId(blockState);
+
+    let claimable = new BigNumber(0);
+    for (let epoch = startEpoch; epoch < currentEpoch; epoch++) {
+        const fee = getTokenFeeForEpoch(symbol, epoch, blockState, true);
+        claimable = claimable.plus(fee);
+    }
+
+    return claimable;
+};
+
+export const getNodeClaimableAmount = (
+    renVmNodeId: string,
+    symbol: string,
+    blockState: BlockState,
+) => {
+    const claimed = getNodeClaimedAmount(renVmNodeId, symbol, blockState);
+    if (claimed === null) {
+        return new BigNumber(0);
+    }
+    const total = getNodeTotalAmount(renVmNodeId, symbol, blockState);
+    if (total === null) {
+        return new BigNumber(0);
+    }
+
+    return total.minus(claimed);
+};
+
+// TODO: depreacated
 export const getNodeFirstClaimableEpoch = (
     renVmNodeId: string,
     symbol: string,

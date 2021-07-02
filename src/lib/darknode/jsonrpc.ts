@@ -8,6 +8,7 @@ import {
 } from "../../controllers/pages/renvmStatsPage/renvmContainer";
 
 import { getLightnode } from "../../store/mapContainer";
+import { sanitizeBase64String } from "../general/encodingUtils";
 import { DEFAULT_REQUEST_TIMEOUT } from "../react/environmentVariables";
 import { hashTransaction } from "../web3/signatures";
 import {
@@ -213,11 +214,13 @@ export const claimFees = async (
             },
         },
     };
-    const txHash = hashTransaction(
-        request.params.tx.version,
-        request.params.tx.selector,
-        request.params.tx.in as any,
-    ).toString("base64");
+    const txHash = sanitizeBase64String(
+        hashTransaction(
+            request.params.tx.version,
+            request.params.tx.selector,
+            request.params.tx.in as any,
+        ).toString("base64"),
+    );
     console.log(txHash);
     request.params.tx.hash = txHash;
 
