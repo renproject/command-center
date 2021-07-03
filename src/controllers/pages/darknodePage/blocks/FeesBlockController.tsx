@@ -475,7 +475,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
             />
             {open && (
                 <div className="popup--container">
-                    <div className="popup--blur" />
+                    <div className="popup-backdrop--blur" />
                     <Popup onCancel={handleClose}>
                         <div className="popup--description">
                             <h3>Withdraw fees for {token}</h3>

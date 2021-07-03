@@ -233,18 +233,29 @@ $noWeb3Padding: 20px;
     filter: blur(2px);
 }
 
+.popup-backdrop--blur {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    pointer-events: none;
+    backdrop-filter: blur(2px);
+    z-index: 15;
+}
+
 .popup--container {
     position: absolute;
     top: 0;
     width: 100%;
 }
-.popup--blur--fixed {
-    position: fixed;
-    height: 100%;
-    width: 100%;
-    pointer-events: none;
-    filter: blur(2px);
-}
+//.popup--blur--fixed {
+//    position: fixed;
+//    height: 100%;
+//    width: 100%;
+//    pointer-events: none;
+//    filter: blur(2px);
+//}
 
 /* Multi Step */
 
