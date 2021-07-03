@@ -10,7 +10,7 @@ import {
     AnyTokenBalance,
     ConvertCurrency,
 } from "../../controllers/common/TokenBalance";
-import { getDustAmountForToken } from "../../lib/darknode/utils/feesUtils";
+import { getMinimumAmountForToken } from "../../lib/darknode/utils/feesUtils";
 
 import { TokenString } from "../../lib/ethereum/tokens";
 import { TokenAmount } from "../../lib/graphQL/queries/queries";
@@ -76,17 +76,18 @@ export const FeesWithdrawal: React.FC<FeesWithdrawalProps> = ({
         setLoading(false);
     }, [token, amount, isRenVMFee, withdrawCallback]);
 
+    // let minimumUiAmount = Math.pow(10, amount?.asset.decimals)
     let isDisabled = false;
     let title = "";
     if (disabled) {
         isDisabled = true;
         title = "Must be operator to withdraw";
-    } else if (!amount || new BigNumber(amount.amount).lte(0)) {
+    } else if (!amount || new BigNumber(amount.amount).lte(1)) {
         isDisabled = true;
         title = "No fees to withdraw";
     } else if (isRenVMFee && new BigNumber(amount.amount).lte(dustAmount)) {
         isDisabled = true;
-        title = `Fee is lower than dust amount`;
+        title = `Fee is lower than the minimum amount`;
     } else if (!isRenVMFee && (!amount.asset || !amount.asset.tokenAddress)) {
         isDisabled = true;
         title = "Unable to look up token address";
@@ -161,7 +162,7 @@ export const FeesBlockRow: React.FC<FeesBlockRowProps> = ({
                             decimals={balance.asset.decimals}
                             amount={balance.amount}
                             // digits={null}
-                            digits={8}
+                            digits={balance.asset.decimals}
                         />
                     ) : (
                         <Loading alt={true} />

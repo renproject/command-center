@@ -29,7 +29,7 @@ type FeeData = {
     unassigned: Numeric;
 };
 
-export const getDustAmountForToken = (
+export const getMinimumAmountForToken = (
     symbol: string,
     blockState: BlockState,
 ) => {

@@ -3,18 +3,19 @@ import { claimFeesDigest } from "./signatures";
 
 describe("signatures", () => {
     test("creates signature", () => {
+        const asset = "ZEC";
         const network = "testnet";
         const node = "xoFRPv_xsoti6yaZAoZT5zNkU7sAAAAAAAAAAAAAAAA";
         const amount = 449767;
         const to = "tmJ8ngiRiaUVGtExgNgd5nzRF1fSRd47qvP";
         const nonce = 0;
 
-        const result = claimFeesDigest(network, node, amount, to, nonce);
-        expect(result).toEqual("PWh08iGFm9txroTLrZmE7e6MPltJ_kurZuGu13mI5Q0");
+        const result = claimFeesDigest(asset, network, node, amount, to, nonce);
+        expect(result).toEqual("r0UE-lKA9DONHg13fOlOdU0PX1MIU5b798eaXdE_ahg");
 
         const resultHex = base64StringToHexString(result);
         expect(resultHex).toEqual(
-            "3d6874f221859bdb71ae84cbad9984edee8c3e5b49fe4bab66e1aed77988e50d",
+            "af4504fa5280f4338d1e0d777ce94e754d0f5f53085396fbf7c79a5dd13f6a18",
         );
     });
 });

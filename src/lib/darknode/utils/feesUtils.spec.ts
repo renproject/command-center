@@ -7,7 +7,7 @@ import { queryBlockStateResponseMock } from "./currentMock";
 import {
     getAggregatedFeeAmountForToken,
     getAggregatedFeesCollection,
-    getDustAmountForToken,
+    getMinimumAmountForToken,
     getFeeDataForToken,
     getNodeClaimableFee,
     getNodeClaimedFee,
@@ -149,9 +149,9 @@ describe("fees", () => {
 });
 
 describe("node fees - basic utils", () => {
-    describe("dust amount", () => {
-        test("gets dust amount", () => {
-            const result = getDustAmountForToken("BTC", blockState);
+    describe("minimum amount", () => {
+        test("gets minimum amount", () => {
+            const result = getMinimumAmountForToken("BTC", blockState);
             expect(result.toNumber()).to.equal(546);
         });
     });

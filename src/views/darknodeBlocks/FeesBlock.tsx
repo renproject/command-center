@@ -5,7 +5,7 @@ import React, { useCallback, useMemo, useState } from "react";
 
 import { ConvertCurrency } from "../../controllers/common/TokenBalance";
 import { BlockState } from "../../lib/darknode/utils/blockStateUtils";
-import { getDustAmountForToken } from "../../lib/darknode/utils/feesUtils";
+import { getMinimumAmountForToken } from "../../lib/darknode/utils/feesUtils";
 import { TokenAmount } from "../../lib/graphQL/queries/queries";
 import { classNames } from "../../lib/react/className";
 import { ReactComponent as RewardsIcon } from "../../styles/images/icon-rewards-white.svg";
@@ -179,7 +179,7 @@ export const FeesBlock: React.FC<FeesBlockProps> = ({
                                                     _i,
                                                 ) => {
                                                     const dustAmount = blockState
-                                                        ? getDustAmountForToken(
+                                                        ? getMinimumAmountForToken(
                                                               token,
                                                               blockState,
                                                           )

@@ -389,9 +389,10 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
             return;
         }
         const base64Digest = claimFeesDigest(
+            nativeTokenSymbol,
             network,
             renVmNodeId,
-            maxAmount,
+            amount,
             destinationAddress,
             nonce,
         );
@@ -429,12 +430,12 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
             console.log("rrr", response);
             if (response.status === 200) {
                 showSuccess("Fees successfully claimed!");
+                handleClose();
             }
         } catch (e) {
             setError("Error claiming, check console");
             console.error(e);
         }
-        handleClose();
     }, [
         amount,
         web3,
@@ -477,7 +478,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                 <div className="popup--container">
                     <div className="popup-backdrop--blur" />
                     <Popup onCancel={handleClose}>
-                        <div className="popup--description">
+                        <div className="popup--description popup--description--medium ">
                             <h3>Withdraw fees for {token}</h3>
                             <div className="field-wrapper">
                                 <label>Amount</label>
