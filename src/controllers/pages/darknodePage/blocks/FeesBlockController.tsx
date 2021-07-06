@@ -1,6 +1,5 @@
 import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
-import moment from "moment";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
     darknodeIDBase58ToRenVmID,
@@ -39,7 +38,6 @@ import { Web3Container } from "../../../../store/web3Container";
 import { ReactComponent as IconCheckCircle } from "../../../../styles/images/icon-check-circle.svg";
 import { FeesBlock } from "../../../../views/darknodeBlocks/FeesBlock";
 import { Popup } from "../../../common/popups/Popup";
-import { PopupError } from "../../../common/popups/PopupController";
 import { updatePrices } from "../../../common/tokenBalanceUtils";
 
 interface Props {
@@ -310,7 +308,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
         "", // TODO: crit change
     );
     const [addressError, setAddressError] = useState("");
-    const [pending, setPending] = useState(false);
+    // const [pending, setPending] = useState(false);
     const tokenAmount = withdrawableFees.find(
         (entry) => entry.symbol === token,
     );
@@ -330,7 +328,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
     const handleClose = useCallback(() => {
         setOpen(false);
         setOverlay(false);
-        setPending(false);
+        // setPending(false);
         setError("");
         setAmount(0);
         setAddress("");
@@ -395,7 +393,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
 
     const handleContinue = useCallback(async () => {
         // console.log("confirming");
-        setPending(true);
+        // setPending(true);
         if (stage === "configuration") {
             if (!amountError && !addressError) {
                 setStage("confirmation");
@@ -469,16 +467,13 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
         network,
         signingAddress,
         destinationAddress,
-        maxAmount,
         renVmNodeId,
         token,
         darknodeDetails?.ID,
-        handleClose,
         renNetwork,
         stage,
         addressError,
         amountError,
-        error,
         nativeTokenSymbol,
         nonce,
         showSuccess,
