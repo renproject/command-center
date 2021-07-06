@@ -1,6 +1,10 @@
 import { Loading } from "@renproject/react-components";
 import { Map, OrderedSet } from "immutable";
 import React from "react";
+import {
+    darknodeIDBase58ToRenVmID,
+    darknodeIDHexToBase58,
+} from "../../../lib/darknode/darknodeID";
 
 import { DarknodesState } from "../../../store/networkContainer";
 import { EmptyDarknodeCard } from "../../../views/darknodeCards/EmptyDarknodeCard";
@@ -45,7 +49,7 @@ export const DarknodeCardList: React.FC<Props> = ({
                                 const details =
                                     darknodeDetails.get(darknodeID) || null;
                                 const name = darknodeNames.get(darknodeID);
-
+                                console.log("dd", details?.toJS());
                                 return (
                                     <ErrorBoundary key={darknodeID}>
                                         <DarknodeCardController

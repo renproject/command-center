@@ -25,6 +25,7 @@ interface Props {
     name: string | undefined;
     registrationStatus: RegistrationStatus | null;
     feesEarnedInUsd: BigNumber | null;
+    renVmFeesEarnedInUsd?: BigNumber;
     ethBalance: BigNumber | null;
     quoteCurrency: Currency;
     removeDarknode: () => void;
@@ -39,6 +40,7 @@ export const DarknodeCard: React.FC<Props> = ({
     darknodeID,
     registrationStatus,
     feesEarnedInUsd,
+    renVmFeesEarnedInUsd = new BigNumber(0),
     ethBalance,
     name,
     quoteCurrency,
@@ -70,6 +72,7 @@ export const DarknodeCard: React.FC<Props> = ({
         ? `/darknode/${darknodeIDBase58}?action=register`
         : `/darknode/${darknodeIDBase58}`;
 
+    const totalFeesInUsd = renVmFeesEarnedInUsd.plus(feesEarnedInUsd || 0);
     return (
         <Link className="no-underline" to={url}>
             <div
@@ -116,7 +119,7 @@ export const DarknodeCard: React.FC<Props> = ({
                             : ""}
                     </span>
                 </div>
-                {feesEarnedInUsd && ethBalance ? (
+                {totalFeesInUsd && ethBalance ? (
                     <div className="darknode-card--bottom">
                         <div className="darknode-card--rewards">
                             <FontAwesomeIcon
@@ -125,11 +128,11 @@ export const DarknodeCard: React.FC<Props> = ({
                             />
                             <span className="currency-value">
                                 <CurrencyIcon currency={quoteCurrency} />
-                                {feesEarnedInUsd ? (
+                                {totalFeesInUsd ? (
                                     <ConvertCurrency
                                         from={Currency.USD}
                                         to={quoteCurrency}
-                                        amount={feesEarnedInUsd}
+                                        amount={totalFeesInUsd}
                                     />
                                 ) : (
                                     "..."

@@ -1,5 +1,10 @@
-import { List } from "immutable";
-import React, { useMemo } from "react";
+import BigNumber from "bignumber.js";
+import { List, OrderedSet } from "immutable";
+import React, { useEffect, useMemo } from "react";
+import {
+    darknodeIDBase58ToRenVmID,
+    darknodeIDHexToBase58,
+} from "../../../lib/darknode/darknodeID";
 import { RegistrationStatus } from "../../../lib/ethereum/contractReads";
 
 import {
@@ -18,35 +23,44 @@ import { WithdrawAll } from "./WithdrawAll";
 export const AllDarknodes: React.FC<{}> = () => {
     const { address, renNetwork: network } = Web3Container.useContainer();
     const {
-        darknodeDetails,
+        darknodeDetails: darknodeDetailsPure,
         darknodeNames,
         darknodeRegisteringList,
         registrySync,
         darknodeList,
         hiddenDarknodes,
-        // fetchBlockState,
-        // blockState,
+        fetchBlockState,
+        blockState,
     } = NetworkContainer.useContainer();
 
+    const darknodeDetails = darknodeDetailsPure;
+    console.log("ddjs", darknodeDetails.toJS());
     // TODO: here
     const accountDarknodeList = useMemo(
         () => (address ? darknodeList.get(address, null) : null),
         [address, darknodeList],
     );
 
-    // useEffect(() => {
-    //     fetchBlockState().catch(console.error);
-    // }, [fetchBlockState]);
+    useEffect(() => {
+        fetchBlockState().catch(console.error);
+    }, [fetchBlockState]);
 
-    // console.log("bs", blockState);
-    // console.log("a", accountDarknodeList?.toJS());
-    // console.log("h", hiddenDarknodes?.toJS());
+    console.log("bs", blockState);
+    console.log("a", accountDarknodeList?.toJS());
+    console.log("h", hiddenDarknodes?.toJS());
 
     const accountHiddenDarknodes = useMemo(
         () => (address ? hiddenDarknodes.get(address, null) : null),
         [address, hiddenDarknodes],
     );
 
+    //.map((darknode) => {
+    //             const details = darknodeDetails.get(darknode);
+    //             if (details) {
+    //                 return details.set("renVmFeesEarnedInUsd", new BigNumber(42));
+    //             }
+    //             return details;
+    //         })
     const shownDarknodeList = !accountDarknodeList
         ? accountDarknodeList
         : accountDarknodeList.filter(
@@ -55,20 +69,17 @@ export const AllDarknodes: React.FC<{}> = () => {
                   !accountHiddenDarknodes.contains(d),
           );
 
-    const shownDarknodeDetails = shownDarknodeList
-        ? (shownDarknodeList
-              .toList()
-              .map((darknode) => darknodeDetails.get(darknode))
-              .filter((x) => !!x) as List<DarknodesState>)
-        : shownDarknodeList;
+    const shownDarknodeDetails = (shownDarknodeList || OrderedSet())
+        .toList()
+        .map((darknode) => darknodeDetails.get(darknode))
+        .filter((x) => !!x) as List<DarknodesState>;
 
-    const withdrawableDetails = shownDarknodeDetails
-        ? shownDarknodeDetails.filter(
-              (details) =>
-                  details.registrationStatus === RegistrationStatus.Registered,
-          )
-        : shownDarknodeDetails;
+    const withdrawableDetails = shownDarknodeDetails.filter(
+        (details) =>
+            details.registrationStatus === RegistrationStatus.Registered,
+    );
 
+    console.log("details", withdrawableDetails?.toJS());
     return (
         <div className="home" key={`${address || ""} ${network.name}`}>
             <div className="container">

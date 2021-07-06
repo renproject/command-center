@@ -62,7 +62,7 @@ export class DarknodesState extends Record({
     feesEarned: OrderedMap<TokenString, TokenAmount | null>(),
     feesEarnedInEth: null as BigNumber | null,
     feesEarnedInUsd: null as BigNumber | null,
-
+    renVmFeesEarnedInUsd: null as BigNumber | null,
     cycleStatus: OrderedMap<string, DarknodeFeeStatus>(),
 
     averageGasUsage: 0,

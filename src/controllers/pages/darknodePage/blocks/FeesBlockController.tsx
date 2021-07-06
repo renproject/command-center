@@ -274,17 +274,17 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
 
     const { setOverlay } = PopupContainer.useContainer();
 
-    const renVmNodeId = darknodeIDBase58ToRenVmID(
+    const renVmDarknodeId = darknodeIDBase58ToRenVmID(
         darknodeIDHexToBase58(darknodeDetails?.ID || ""),
     );
 
     const withdrawableFees = updatePrices(
-        getNodeFeesCollection(renVmNodeId, blockState, "claimable"),
+        getNodeFeesCollection(renVmDarknodeId, blockState, "claimable"),
         tokenPrices,
     );
     // console.log("withdrawable", withdrawable?.toJS());
     const pendingFees = updatePrices(
-        getNodeFeesCollection(renVmNodeId, blockState, "pending"),
+        getNodeFeesCollection(renVmDarknodeId, blockState, "pending"),
         tokenPrices,
     );
     // console.log("pending", pending?.toJS());
@@ -294,7 +294,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
     const nonce =
         blockState !== null
             ? getNodeLastNonceClaimed(
-                  renVmNodeId,
+                  renVmDarknodeId,
                   nativeTokenSymbol,
                   blockState,
               )
@@ -406,7 +406,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
             const base64Digest = claimFeesDigest(
                 nativeTokenSymbol,
                 network,
-                renVmNodeId,
+                renVmDarknodeId,
                 amount,
                 destinationAddress,
                 nonce,
@@ -427,7 +427,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                     "claiming fees",
                     network,
                     token,
-                    renVmNodeId,
+                    renVmDarknodeId,
                     amount,
                     destinationAddress,
                     nonce,
@@ -436,7 +436,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                 const response = await claimFees(
                     renNetwork,
                     token,
-                    renVmNodeId,
+                    renVmDarknodeId,
                     amount,
                     destinationAddress,
                     nonce,
@@ -469,7 +469,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
         network,
         signingAddress,
         destinationAddress,
-        renVmNodeId,
+        renVmDarknodeId,
         token,
         darknodeDetails?.ID,
         renNetwork,
