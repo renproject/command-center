@@ -104,12 +104,12 @@ export const FeesBlockController: React.FC<Props> = ({
 }) => {
     const { quoteCurrency, pendingRewards } = NetworkContainer.useContainer();
     const { renVM, subgraphOutOfSync } = GraphContainer.useContainer();
-    const { setPopup, clearPopup } = PopupContainer.useContainer();
-    const { currentCycle, previousCycle, timeSinceLastEpoch } = renVM || {};
-    const {
-        claimWarningShown,
-        setClaimWarningShown,
-    } = UIContainer.useContainer();
+    // const { setPopup, clearPopup } = PopupContainer.useContainer();
+    const { currentCycle, previousCycle } = renVM || {};
+    // const {
+    //     claimWarningShown,
+    //     setClaimWarningShown,
+    // } = UIContainer.useContainer();
 
     const [disableClaim, setDisableClaim] = useState(false);
 
@@ -152,36 +152,36 @@ export const FeesBlockController: React.FC<Props> = ({
             darknodeDetails.registrationStatus ===
                 RegistrationStatus.DeregistrationPending);
 
-    useEffect(() => {
-        // If the darknode hasn't claimed within 1 day of a new epoch, show a
-        // warning popup.
-        const day = moment.duration(5, "hours").asSeconds();
-        if (
-            isOperator &&
-            !claimWarningShown &&
-            showPreviousPending &&
-            earningFees &&
-            timeSinceLastEpoch &&
-            timeSinceLastEpoch.gt(day)
-        ) {
-            setClaimWarningShown(true);
-            setPopup({
-                popup: <NotClaimed onCancel={clearPopup} />,
-                onCancel: clearPopup,
-                dismissible: true,
-                overlay: true,
-            });
-        }
-    }, [
-        showPreviousPending,
-        timeSinceLastEpoch,
-        claimWarningShown,
-        setClaimWarningShown,
-        clearPopup,
-        setPopup,
-        earningFees,
-        isOperator,
-    ]);
+    // useEffect(() => {
+    //     // If the darknode hasn't claimed within 1 day of a new epoch, show a
+    //     // warning popup.
+    //     const day = moment.duration(5, "hours").asSeconds();
+    //     if (
+    //         isOperator &&
+    //         !claimWarningShown &&
+    //         showPreviousPending &&
+    //         earningFees &&
+    //         timeSinceLastEpoch &&
+    //         timeSinceLastEpoch.gt(day)
+    //     ) {
+    //         setClaimWarningShown(true);
+    //         setPopup({
+    //             popup: <NotClaimed onCancel={clearPopup} />,
+    //             onCancel: clearPopup,
+    //             dismissible: true,
+    //             overlay: true,
+    //         });
+    //     }
+    // }, [
+    //     showPreviousPending,
+    //     timeSinceLastEpoch,
+    //     claimWarningShown,
+    //     setClaimWarningShown,
+    //     clearPopup,
+    //     setPopup,
+    //     earningFees,
+    //     isOperator,
+    // ]);
 
     let summedPendingRewards = OrderedMap<string, TokenAmount | null>();
     if (previousCycle && showPreviousPending) {
@@ -371,6 +371,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
     );
 
     const withdrawCallback = useCallback(
+        // eslint-disable-next-line @typescript-eslint/require-await
         async (tokenSymbol: string) => {
             // console.log("withdraw", tokenSymbol);
             if (!open) {
