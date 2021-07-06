@@ -39,6 +39,7 @@ import { ReactComponent as IconCheckCircle } from "../../../../styles/images/ico
 import { FeesBlock } from "../../../../views/darknodeBlocks/FeesBlock";
 import { Popup } from "../../../common/popups/Popup";
 import { updatePrices } from "../../../common/tokenBalanceUtils";
+import * as Chains from "@renproject/chains";
 
 interface Props {
     isOperator: boolean;
@@ -321,6 +322,11 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
             convertToAmount(maxAmount, tokenAmount?.asset?.decimals || 0),
         );
     }, [maxAmount, tokenAmount?.asset?.decimals]);
+
+    const addressValidator = useMemo(() => {}, [nativeTokenSymbol]);
+    // useEffect(() => {
+    //
+    // }, [address]);
 
     const handleOpen = useCallback(() => {
         setOverlay(true);
