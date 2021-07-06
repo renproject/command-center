@@ -227,6 +227,8 @@ export const claimFees = async (
     console.log("claiming fees request", request.params.tx.in.v);
     const response = await Axios.post<RPCResponse<any>>(lightnode, request, {
         timeout: DEFAULT_REQUEST_TIMEOUT,
+    }).catch((err) => {
+        throw err;
     });
     console.info(request, response);
     return response;

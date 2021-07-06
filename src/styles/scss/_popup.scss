@@ -28,6 +28,19 @@
     a {
         color: $primary;
     }
+
+    &--size-medium{
+        width: 100%;
+        max-width: 480px;
+    }
+
+    &--padded-medium {
+        padding: 34px;
+    }
+
+    &--align-left {
+        text-align: left;
+    }
 }
 
 .popup h2,
@@ -189,13 +202,15 @@ $noWeb3Padding: 20px;
     height: 40px;
 }
 
+.popup--content {
+    font-size: 14px;
+    text-align: left;
+    margin: 48px 0;
+}
+
 .popup--description {
     font-size: 16px;
     margin: 20px 0;
-}
-
-.popup--description--medium {
-    min-width: 480px;
 }
 
 .popup--logged-out {

@@ -35,10 +35,9 @@ import {
 } from "../../../../store/networkContainer";
 import { NotificationsContainer } from "../../../../store/notificationsContainer";
 import { PopupContainer } from "../../../../store/popupContainer";
-import { UIContainer } from "../../../../store/uiContainer";
 import { Web3Container } from "../../../../store/web3Container";
+import { ReactComponent as IconCheckCircle } from "../../../../styles/images/icon-check-circle.svg";
 import { FeesBlock } from "../../../../views/darknodeBlocks/FeesBlock";
-import { NotClaimed } from "../../../../views/popups/NotClaimed";
 import { Popup } from "../../../common/popups/Popup";
 import { PopupError } from "../../../common/popups/PopupController";
 import { updatePrices } from "../../../common/tokenBalanceUtils";
@@ -254,11 +253,17 @@ const convertToAmount = (value: string | number, decimals: number) => {
         .toNumber();
 };
 
+type FeeWithdrawalStage = "configuration" | "confirmation" | "processing";
+
 export const RenVmFeesBlockController: React.FC<Props> = ({
     isOperator,
     darknodeDetails,
 }) => {
-    const { address, web3, renNetwork } = Web3Container.useContainer();
+    const {
+        address: signingAddress,
+        web3,
+        renNetwork,
+    } = Web3Container.useContainer();
     const { showSuccess } = NotificationsContainer.useContainer();
 
     const network = renNetwork.name;
@@ -301,7 +306,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
     const [amount, setAmount] = useState(0);
     const [inputAmount, setInputAmount] = useState(0);
     const [amountError, setAmountError] = useState("");
-    const [inputAddress, setInputAddress] = useState(
+    const [address, setAddress] = useState(
         "", // TODO: crit change
     );
     const [addressError, setAddressError] = useState("");
@@ -327,21 +332,24 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
         setOverlay(false);
         setPending(false);
         setError("");
+        setAmount(0);
+        setAddress("");
         setAmountError("");
         setAddressError("");
         setToken("");
+        setStage("configuration");
     }, [setOverlay]);
 
     const handleAddressChange = useCallback((event) => {
         const value = event.target.value;
-        setInputAddress(value);
+        setAddress(value);
         if (!value) {
-            setAddressError("Please provide an address");
+            setAddressError("please enter suitable address");
         } else {
             setAddressError("");
         }
     }, []);
-    const destinationAddress = inputAddress;
+    const destinationAddress = address;
 
     const handleAmountChange = useCallback(
         (event) => {
@@ -355,14 +363,14 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
             );
             setAmount(newNativeAmount);
 
-            if (isNaN(newAmount)) {
-                setAmountError("Not a valid amount");
+            if (isNaN(newAmount) || newAmount < 0) {
+                setAmountError("not a valid amount");
             } else if (newNativeAmount > maxAmount) {
-                setAmountError("Amount exceeds claimable fee");
+                setAmountError("amount exceeds claimable fee");
             } else if (newNativeAmount === 0) {
-                setAmountError("Please enter amount");
+                setAmountError("please enter amount");
             } else if (newNativeAmount % 1 !== 0) {
-                setAmountError("Forbidden decimals in native amount");
+                setAmountError("forbidden decimals in native amount");
             } else {
                 setAmountError("");
             }
@@ -382,66 +390,84 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
         [open, handleOpen],
     );
     (window as any).web33 = web3;
-    const handleConfirm = useCallback(async () => {
+
+    const [stage, setStage] = useState<FeeWithdrawalStage>("configuration");
+
+    const handleContinue = useCallback(async () => {
         // console.log("confirming");
         setPending(true);
-        // const nonce = 0; // TODO: crit get from node data
-        if (!darknodeDetails?.ID || !address || nonce === null) {
-            return;
-        }
-        const base64Digest = claimFeesDigest(
-            nativeTokenSymbol,
-            network,
-            renVmNodeId,
-            amount,
-            destinationAddress,
-            nonce,
-        );
-        const hexDigest = base64StringToHexString(base64Digest);
-        console.log("fees hash", hexDigest);
-
-        const hexSignature = await web3.eth.personal.sign(
-            hexDigest,
-            address,
-            "",
-        );
-        const signature = hexStringToBase64String(hexSignature);
-        console.info("hex signature", hexSignature);
-        console.info("base64 signature", signature);
-        try {
-            console.log(
-                "claiming fees",
-                network,
-                token,
-                renVmNodeId,
-                amount,
-                destinationAddress,
-                nonce,
-                signature,
-            );
-            const response = await claimFees(
-                renNetwork,
-                token,
-                renVmNodeId,
-                amount,
-                destinationAddress,
-                nonce,
-                signature,
-            );
-            console.log("rrr", response);
-            if (response.status === 200) {
-                showSuccess("Fees successfully claimed!");
-                handleClose();
+        if (stage === "configuration") {
+            if (!amountError && !addressError) {
+                setStage("confirmation");
             }
-        } catch (e) {
-            setError("Error claiming, check console");
-            console.error(e);
+        } else if (stage === "confirmation") {
+            if (!darknodeDetails?.ID || !signingAddress || nonce === null) {
+                return;
+            }
+            const base64Digest = claimFeesDigest(
+                nativeTokenSymbol,
+                network,
+                renVmNodeId,
+                amount,
+                destinationAddress,
+                nonce,
+            );
+            const hexDigest = base64StringToHexString(base64Digest);
+            console.log("fees hash", hexDigest);
+
+            const hexSignature = await web3.eth.personal.sign(
+                hexDigest,
+                signingAddress,
+                "",
+            );
+            const signature = hexStringToBase64String(hexSignature);
+            console.info("hex signature", hexSignature);
+            console.info("base64 signature", signature);
+            try {
+                console.log(
+                    "claiming fees",
+                    network,
+                    token,
+                    renVmNodeId,
+                    amount,
+                    destinationAddress,
+                    nonce,
+                    signature,
+                );
+                const response = await claimFees(
+                    renNetwork,
+                    token,
+                    renVmNodeId,
+                    amount,
+                    destinationAddress,
+                    nonce,
+                    signature,
+                );
+                console.log("rrr", response);
+                if (response.status === 200) {
+                    showSuccess("Fees successfully claimed!");
+                    // handleClose();
+                }
+            } catch (err) {
+                console.log("in app", err.response);
+                setStage("configuration");
+                setError("Claiming failed");
+
+                if (
+                    (err?.response?.data?.error?.message || "").includes(
+                        "bad to",
+                    )
+                ) {
+                    setAddressError("incorrect address");
+                }
+                console.error(err?.data?.error?.message);
+            }
         }
     }, [
         amount,
         web3,
         network,
-        address,
+        signingAddress,
         destinationAddress,
         maxAmount,
         renVmNodeId,
@@ -449,7 +475,20 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
         darknodeDetails?.ID,
         handleClose,
         renNetwork,
+        stage,
+        addressError,
+        amountError,
+        error,
+        nativeTokenSymbol,
+        nonce,
+        showSuccess,
     ]);
+
+    const handlePrev = useCallback(() => {
+        if (stage === "confirmation") {
+            setStage("configuration");
+        }
+    }, [stage]);
 
     const canWithdraw =
         darknodeDetails?.registrationStatus === RegistrationStatus.Registered ||
@@ -478,69 +517,175 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
             {open && (
                 <div className="popup--container">
                     <div className="popup-backdrop--blur" />
-                    <Popup onCancel={handleClose}>
-                        <div className="popup--description popup--description--medium ">
-                            <h3>Withdraw fees for {token}</h3>
-                            <div className="field-wrapper">
-                                <label>Amount</label>
-                                <input
-                                    type="text"
-                                    onChange={handleAmountChange}
-                                    value={inputAmount}
-                                />
-                                <div>
-                                    <small>
-                                        Native {nativeTokenSymbol} amount:{" "}
-                                        {amount}
-                                    </small>
-                                </div>
-                                {Boolean(amountError) && (
-                                    <div className="field-error">
-                                        {amountError}
-                                    </div>
-                                )}
-                            </div>
-                            <div className="field-wrapper">
-                                <label>Address</label>
-                                <input
-                                    type="text"
-                                    placeholder={`Enter destination ${nativeTokenSymbol} address`}
-                                    onChange={handleAddressChange}
-                                    value={inputAddress}
-                                />
-                                {Boolean(addressError) && (
-                                    <div className="field-error">
-                                        {addressError}
-                                    </div>
-                                )}
-                            </div>
-                            {!Boolean(amountError) && !Boolean(addressError) && (
-                                <h4>
-                                    Please confirm you want to withdraw{" "}
-                                    {amountBN.toNumber()} {nativeTokenSymbol} to
-                                    address {inputAddress}
-                                </h4>
-                            )}
-                            {Boolean(error) && <PopupError>{error}</PopupError>}
+                    <Popup
+                        onCancel={handleClose}
+                        className="popup--padded-medium popup--size-medium popup--align-left"
+                    >
+                        <div>
+                            <h1>Withdraw earnings</h1>
+                            <h2>for {token}</h2>
                         </div>
+                        <div className="popup--content">
+                            {stage === "configuration" && (
+                                <>
+                                    <div className="field-wrapper">
+                                        <label className="field-label">
+                                            Amount
+                                        </label>
+                                        <input
+                                            type="text"
+                                            className="field-input field-input--full-width"
+                                            onChange={handleAmountChange}
+                                            value={inputAmount}
+                                        />
+
+                                        <div className="field-info field-info--supplemental field-info--flex">
+                                            <span>Native amount:</span>
+                                            <span>{amount}</span>
+                                        </div>
+                                        <div className="field-info">
+                                            This is the amount you will withdraw
+                                        </div>
+                                        {Boolean(amountError) && (
+                                            <div className="field-error">
+                                                {amountError}
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="field-wrapper">
+                                        <label className="field-label">
+                                            Wallet address
+                                        </label>
+                                        <input
+                                            type="text"
+                                            className="field-input field-input--full-width"
+                                            placeholder="Enter address here"
+                                            onChange={handleAddressChange}
+                                            value={address}
+                                        />
+                                        <div className="field-info">
+                                            This address is where you will
+                                            receive your rewards
+                                        </div>
+                                        {Boolean(addressError) && (
+                                            <div className="field-error">
+                                                {addressError}
+                                            </div>
+                                        )}
+                                    </div>
+                                    {Boolean(error) && (
+                                        <div className="form-error-wrapper">
+                                            <h2 className="form-error-header">
+                                                Error
+                                            </h2>
+                                            <p className="form-error-text">
+                                                {error}
+                                            </p>
+                                        </div>
+                                    )}
+                                </>
+                            )}
+                            {stage === "confirmation" && (
+                                <>
+                                    <div className="field-wrapper">
+                                        <p>You are about to send</p>
+                                        <p className="fee-confirmation-data">
+                                            {amountBN.toNumber()}{" "}
+                                            {nativeTokenSymbol}
+                                        </p>
+                                    </div>
+                                    <div className="field-wrapper">
+                                        <p>To the following address:</p>
+                                        <p className="fee-confirmation-data">
+                                            {address}
+                                        </p>
+                                    </div>
+                                    <div className="field-wrapper">
+                                        <p className="field-info--supplemental">
+                                            Please double check that the wallet
+                                            you are sending to is compatible
+                                            with the tokens that are being sent.{" "}
+                                            <br />
+                                            Sending tokens to an incompatible
+                                            wallet or wrong address will result
+                                            in irretrievably lost funds.
+                                        </p>
+                                    </div>
+                                </>
+                            )}
+                            {stage === "processing" && (
+                                <>
+                                    <div className="fee-withdrawal-status">
+                                        <IconCheckCircle
+                                            className="fee-withdrawal-icon"
+                                            width={60}
+                                            height={60}
+                                        />
+                                        <span className="collateral-status--over">
+                                            Withdraw in progress
+                                        </span>
+                                    </div>
+                                    <div className="field-wrapper">
+                                        <p className="field-info--supplemental">
+                                            The transaction has been initiated.
+                                            <br />
+                                            Depending on the network you are
+                                            using it might take considerable
+                                            amount of time to complete the
+                                            transaction.
+                                        </p>
+                                    </div>
+                                </>
+                            )}
+                        </div>
+
                         <div className="popup--buttons">
-                            <button
-                                className="button"
-                                onClick={handleConfirm}
-                                disabled={
-                                    Boolean(error) ||
-                                    Boolean(amountError) ||
-                                    pending
-                                }
-                            >
-                                Confirm
-                            </button>
-                            <button
-                                className="button button--white"
-                                onClick={handleClose}
-                            >
-                                Cancel
-                            </button>
+                            {stage === "configuration" && (
+                                <button
+                                    className="button button--white"
+                                    onClick={handleClose}
+                                >
+                                    Cancel
+                                </button>
+                            )}
+                            {stage === "confirmation" && (
+                                <button
+                                    className="button button--white"
+                                    onClick={handlePrev}
+                                >
+                                    Back
+                                </button>
+                            )}
+                            {stage === "configuration" && (
+                                <button
+                                    className="button"
+                                    onClick={handleContinue}
+                                    disabled={
+                                        !Boolean(amount) ||
+                                        Boolean(amountError) ||
+                                        !Boolean(address) ||
+                                        Boolean(addressError)
+                                    }
+                                >
+                                    Continue
+                                </button>
+                            )}
+                            {stage === "confirmation" && (
+                                <button
+                                    className="button"
+                                    onClick={handleContinue}
+                                >
+                                    Confirm & Send
+                                </button>
+                            )}
+                            {stage === "processing" && (
+                                <button
+                                    className="button"
+                                    onClick={handleClose}
+                                >
+                                    Done
+                                </button>
+                            )}
                         </div>
                     </Popup>
                 </div>
