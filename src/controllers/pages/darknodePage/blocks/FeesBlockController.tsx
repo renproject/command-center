@@ -269,6 +269,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
         blockState,
         quoteCurrency,
         tokenPrices,
+        fetchBlockState,
     } = NetworkContainer.useContainer();
 
     const { setOverlay } = PopupContainer.useContainer();
@@ -445,6 +446,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                 if (response.status === 200) {
                     showSuccess("Fees successfully claimed!");
                     setStage("processing");
+                    await fetchBlockState();
                 }
             } catch (err) {
                 console.error("Claiming error:", err, err?.response);
@@ -477,6 +479,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
         nativeTokenSymbol,
         nonce,
         showSuccess,
+        fetchBlockState,
     ]);
 
     const handlePrev = useCallback(() => {
