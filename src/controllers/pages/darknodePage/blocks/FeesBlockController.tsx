@@ -444,13 +444,14 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                 console.log("rrr", response);
                 if (response.status === 200) {
                     showSuccess("Fees successfully claimed!");
-                    // handleClose();
+                    setStage("processing");
                 }
             } catch (err) {
-                console.log("in app", err.response);
+                console.error("Claiming error:", err, err?.response);
+                console.error(err?.data?.error?.message);
+
                 setStage("configuration");
                 setError("Claiming failed");
-
                 if (
                     (err?.response?.data?.error?.message || "").includes(
                         "bad to",
@@ -458,7 +459,6 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                 ) {
                     setAddressError("incorrect address");
                 }
-                console.error(err?.data?.error?.message);
             }
         }
     }, [
@@ -695,7 +695,7 @@ export const FeesSwitcherController: React.FC<Props> = ({
     isOperator,
     darknodeDetails,
 }) => {
-    const [source, setSource] = useState<FeesSource>("eth");
+    const [source, setSource] = useState<FeesSource>("renvm");
     return (
         <div className="fees-switcher">
             <div className="fees-switcher--control">
