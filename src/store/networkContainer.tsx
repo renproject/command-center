@@ -65,6 +65,8 @@ export class DarknodesState extends Record({
     multiAddress: "",
     ethBalance: null as BigNumber | null,
     feesEarned: OrderedMap<TokenString, TokenAmount | null>(),
+    renVmFeesEarned: OrderedMap<TokenString, TokenAmount | null>(),
+    renVmFeesPending: OrderedMap<TokenString, TokenAmount | null>(),
     feesEarnedInEth: null as BigNumber | null,
     feesEarnedInUsd: null as BigNumber | null,
     renVmFeesEarnedInUsd: null as BigNumber | null,
@@ -672,15 +674,22 @@ const useNetworkContainer = () => {
                 getNodeFeesCollection(renVmDarknodeId, blockState, "claimable"),
                 tokenPrices,
             );
+            const pendingFees = updatePrices(
+                getNodeFeesCollection(renVmDarknodeId, blockState, "pending"),
+                tokenPrices,
+            );
 
             const totalUsd = withdrawableFees
                 .map((tokenAmount) => tokenAmount.amountInUsd)
-                .reduce(
-                    (prev, current) => prev.plus(current),
-                    new BigNumber(0),
-                );
+                .reduce((acc, current) => acc.plus(current), new BigNumber(0));
 
-            return [key, details.set("renVmFeesEarnedInUsd", totalUsd)];
+            return [
+                key,
+                details
+                    .set("renVmFeesEarnedInUsd", totalUsd)
+                    .set("renVmFeesEarned", withdrawableFees)
+                    .set("renVmFeesPending", pendingFees),
+            ];
         });
     }, [blockState, darknodeDetails, tokenPrices]);
 

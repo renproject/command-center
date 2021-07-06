@@ -23,6 +23,7 @@
         "@fortawesome/free-solid-svg-icons": "^5.15.1",
         "@fortawesome/react-fontawesome": "^0.1.14",
         "@ledgerhq/hw-transport-webusb": "^5.38.0",
+        "@renproject/chains": "^2.4.4",
         "@renproject/contracts": "^0.6.1",
         "@renproject/fonts": "^1.0.2",
         "@renproject/interfaces": "^1.0.12",

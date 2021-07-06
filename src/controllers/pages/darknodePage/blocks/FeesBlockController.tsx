@@ -278,15 +278,19 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
         darknodeIDHexToBase58(darknodeDetails?.ID || ""),
     );
 
-    const withdrawableFees = updatePrices(
-        getNodeFeesCollection(renVmDarknodeId, blockState, "claimable"),
-        tokenPrices,
-    );
-    // console.log("withdrawable", withdrawable?.toJS());
-    const pendingFees = updatePrices(
-        getNodeFeesCollection(renVmDarknodeId, blockState, "pending"),
-        tokenPrices,
-    );
+    const withdrawableFees =
+        darknodeDetails?.renVmFeesEarned ||
+        updatePrices(
+            getNodeFeesCollection(renVmDarknodeId, blockState, "claimable"),
+            tokenPrices,
+        );
+
+    const pendingFees =
+        darknodeDetails?.renVmFeesPending ||
+        updatePrices(
+            getNodeFeesCollection(renVmDarknodeId, blockState, "pending"),
+            tokenPrices,
+        );
     // console.log("pending", pending?.toJS());
 
     const [token, setToken] = useState("");
@@ -299,7 +303,6 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                   blockState,
               )
             : null;
-    console.log(nonce);
     const [open, setOpen] = useState(false);
     const [error, setError] = useState("");
     const [amount, setAmount] = useState(0);
@@ -309,7 +312,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
     const [addressError, setAddressError] = useState("");
     // const [pending, setPending] = useState(false);
     const tokenAmount = withdrawableFees.find(
-        (entry) => entry.symbol === token,
+        (entry) => entry?.symbol === token,
     );
     const maxAmount = Math.floor(tokenAmount?.amount.toNumber() || 0);
     useEffect(() => {

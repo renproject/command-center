@@ -1,10 +1,5 @@
-import BigNumber from "bignumber.js";
 import { List, OrderedSet } from "immutable";
 import React, { useEffect, useMemo } from "react";
-import {
-    darknodeIDBase58ToRenVmID,
-    darknodeIDHexToBase58,
-} from "../../../lib/darknode/darknodeID";
 import { RegistrationStatus } from "../../../lib/ethereum/contractReads";
 
 import {
@@ -14,6 +9,7 @@ import {
 import { Web3Container } from "../../../store/web3Container";
 import { ErrorBoundary } from "../../common/ErrorBoundary";
 import { DarknodeCardList } from "./DarknodeCardList";
+import { RenVmFeesAll } from "./RenVmFeesAll";
 import { WithdrawAll } from "./WithdrawAll";
 
 /**
@@ -53,13 +49,6 @@ export const AllDarknodes: React.FC<{}> = () => {
         [address, hiddenDarknodes],
     );
 
-    //.map((darknode) => {
-    //             const details = darknodeDetails.get(darknode);
-    //             if (details) {
-    //                 return details.set("renVmFeesEarnedInUsd", new BigNumber(42));
-    //             }
-    //             return details;
-    //         })
     const shownDarknodeList = !accountDarknodeList
         ? accountDarknodeList
         : accountDarknodeList.filter(
@@ -83,9 +72,19 @@ export const AllDarknodes: React.FC<{}> = () => {
         <div className="home" key={`${address || ""} ${network.name}`}>
             <div className="container">
                 {shownDarknodeList && shownDarknodeList.size > 0 ? (
-                    <ErrorBoundary>
-                        <WithdrawAll darknodeList={withdrawableDetails} />
-                    </ErrorBoundary>
+                    <>
+                        <ErrorBoundary>
+                            <h2>Ethereum Fees</h2>
+                            <WithdrawAll darknodeList={withdrawableDetails} />
+                            <h2>RenVM Fees</h2>
+                            <p className="field-info field-info--supplemental">
+                                RenVM rewards needs to be claimed individually
+                                for each Darknode. Click on the Darknode below
+                                the summary table to proceed.
+                            </p>
+                            <RenVmFeesAll darknodeList={withdrawableDetails} />
+                        </ErrorBoundary>
+                    </>
                 ) : null}
                 {darknodeRegisteringList.size > 0 ? (
                     <>
