@@ -18,6 +18,7 @@ interface Props {
     active: boolean;
     faded: boolean;
     feesEarnedInUsd: BigNumber | string | null | undefined;
+    renVmFeesEarnedInUsd?: BigNumber;
     ethBalance: BigNumber | string | null | undefined;
     quoteCurrency: Currency;
     connected: boolean;
@@ -35,6 +36,7 @@ export const SidebarIcon: React.FC<Props> = ({
     faded,
     quoteCurrency,
     feesEarnedInUsd,
+    renVmFeesEarnedInUsd = new BigNumber(0),
     ethBalance,
     connected,
     hideMobileMenu,
@@ -47,6 +49,9 @@ export const SidebarIcon: React.FC<Props> = ({
 
     const darknodeIDBase58 = darknodeIDHexToBase58(darknodeID);
 
+    const totalFeesInUsd = renVmFeesEarnedInUsd.plus(
+        new BigNumber(feesEarnedInUsd || 0),
+    );
     return (
         <Link
             className="no-underline"
@@ -89,9 +94,7 @@ export const SidebarIcon: React.FC<Props> = ({
                                         <ConvertCurrency
                                             from={Currency.USD}
                                             to={quoteCurrency}
-                                            amount={
-                                                new BigNumber(feesEarnedInUsd)
-                                            }
+                                            amount={totalFeesInUsd}
                                         />
                                     </span>{" "}
                                     <span className="currency-symbol">

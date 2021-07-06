@@ -1,7 +1,7 @@
 import { Currency, CurrencyIcon, Record } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import { List, Map, OrderedMap, OrderedSet } from "immutable";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { createContainer } from "unstated-next";
 import { PromiEvent } from "web3-core";
 
@@ -9,11 +9,16 @@ import { MultiStepPopup } from "../controllers/common/popups/MultiStepPopup";
 import { ConvertCurrency } from "../controllers/common/TokenBalance";
 import { updatePrices } from "../controllers/common/tokenBalanceUtils";
 import { retryNTimes } from "../controllers/pages/renvmStatsPage/renvmContainer";
+import {
+    darknodeIDBase58ToRenVmID,
+    darknodeIDHexToBase58,
+} from "../lib/darknode/darknodeID";
 import { NodeStatistics, queryBlockState } from "../lib/darknode/jsonrpc";
 import {
     BlockState,
     toNativeTokenSymbol,
 } from "../lib/darknode/utils/blockStateUtils";
+import { getNodeFeesCollection } from "../lib/darknode/utils/feesUtils";
 import {
     getRenVMFromLightnode,
     resolveRenVM,
@@ -657,16 +662,27 @@ const useNetworkContainer = () => {
         }
     };
 
-    const withdrawRenVMReward = async (
-        darknodeId: string,
-        tokenSymbol: string,
-    ) => {
-        if (!address) {
-            throw new Error(`Unable to retrieve account address.`);
-        }
-        const symbol = toNativeTokenSymbol(tokenSymbol);
-        console.info("withdrawRenVMReward", darknodeId, symbol);
-    };
+    const updatedDarknodeDetails = useMemo(() => {
+        return darknodeDetails.mapEntries(([key, details]) => {
+            const renVmDarknodeId = darknodeIDBase58ToRenVmID(
+                darknodeIDHexToBase58(details?.ID || ""),
+            );
+            console.log("renVmDarknodeId", renVmDarknodeId);
+            const withdrawableFees = updatePrices(
+                getNodeFeesCollection(renVmDarknodeId, blockState, "claimable"),
+                tokenPrices,
+            );
+
+            const totalUsd = withdrawableFees
+                .map((tokenAmount) => tokenAmount.amountInUsd)
+                .reduce(
+                    (prev, current) => prev.plus(current),
+                    new BigNumber(0),
+                );
+
+            return [key, details.set("renVmFeesEarnedInUsd", totalUsd)];
+        });
+    }, [blockState, darknodeDetails, tokenPrices]);
 
     const withdrawReward = async (
         darknodeIDs: string[],
@@ -904,7 +920,7 @@ const useNetworkContainer = () => {
     return {
         tokenPrices,
         registrySync,
-        darknodeDetails,
+        darknodeDetails: updatedDarknodeDetails,
         pendingRewards,
         pendingTotalInUsd,
         quoteCurrency,
@@ -928,7 +944,6 @@ const useNetworkContainer = () => {
         updateCycleAndPendingRewards,
         updateDarknodeDetails,
         updateOperatorDarknodes,
-        withdrawRenVMReward,
         withdrawReward,
         showRegisterPopup,
         showDeregisterPopup,

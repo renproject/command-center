@@ -23,7 +23,7 @@ import { WithdrawAll } from "./WithdrawAll";
 export const AllDarknodes: React.FC<{}> = () => {
     const { address, renNetwork: network } = Web3Container.useContainer();
     const {
-        darknodeDetails: darknodeDetailsPure,
+        darknodeDetails, // TODO: crit simplify
         darknodeNames,
         darknodeRegisteringList,
         registrySync,
@@ -33,7 +33,6 @@ export const AllDarknodes: React.FC<{}> = () => {
         blockState,
     } = NetworkContainer.useContainer();
 
-    const darknodeDetails = darknodeDetailsPure;
     console.log("ddjs", darknodeDetails.toJS());
     // TODO: here
     const accountDarknodeList = useMemo(

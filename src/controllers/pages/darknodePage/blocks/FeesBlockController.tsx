@@ -305,9 +305,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
     const [amount, setAmount] = useState(0);
     const [inputAmount, setInputAmount] = useState(0);
     const [amountError, setAmountError] = useState("");
-    const [address, setAddress] = useState(
-        "", // TODO: crit change
-    );
+    const [address, setAddress] = useState("");
     const [addressError, setAddressError] = useState("");
     // const [pending, setPending] = useState(false);
     const tokenAmount = withdrawableFees.find(
