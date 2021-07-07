@@ -1,3 +1,4 @@
+// import { validateAddress } from "@renproject/chains";
 import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -39,7 +40,21 @@ import { ReactComponent as IconCheckCircle } from "../../../../styles/images/ico
 import { FeesBlock } from "../../../../views/darknodeBlocks/FeesBlock";
 import { Popup } from "../../../common/popups/Popup";
 import { updatePrices } from "../../../common/tokenBalanceUtils";
-import * as Chains from "@renproject/chains";
+
+// TODO: finish validation
+export const validateDestinationAddress = (
+    token: string,
+    address: string,
+    network: string,
+) => {
+    console.log(token, address, network);
+    switch (token.toLowerCase()) {
+        case "btc":
+            return true;
+        default:
+            return true;
+    }
+};
 
 interface Props {
     isOperator: boolean;
@@ -323,7 +338,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
         );
     }, [maxAmount, tokenAmount?.asset?.decimals]);
 
-    const addressValidator = useMemo(() => {}, [nativeTokenSymbol]);
+    // const addressValidator = useMemo(() => {}, [nativeTokenSymbol]);
     // useEffect(() => {
     //
     // }, [address]);
