@@ -123,7 +123,9 @@
         "ts-unused-exports": "^7.0.0"
     },
     "resolutions": {
-        "scrypt": "https://registry.npmjs.org/scrypt-js/-/scrypt-js-3.0.0.tgz"
+        "scrypt": "https://registry.npmjs.org/scrypt-js/-/scrypt-js-3.0.0.tgz",
+        "bitcore-lib": "8.25.10",
+        "bitcore-lib-cash": "8.25.10"
     },
     "browserslist": [
         ">0.2%",

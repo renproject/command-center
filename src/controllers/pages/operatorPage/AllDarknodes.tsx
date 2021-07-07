@@ -26,10 +26,8 @@ export const AllDarknodes: React.FC<{}> = () => {
         darknodeList,
         hiddenDarknodes,
         fetchBlockState,
-        blockState,
     } = NetworkContainer.useContainer();
 
-    console.log("ddjs", darknodeDetails.toJS());
     // TODO: here
     const accountDarknodeList = useMemo(
         () => (address ? darknodeList.get(address, null) : null),
@@ -39,10 +37,6 @@ export const AllDarknodes: React.FC<{}> = () => {
     useEffect(() => {
         fetchBlockState().catch(console.error);
     }, [fetchBlockState]);
-
-    console.log("bs", blockState);
-    console.log("a", accountDarknodeList?.toJS());
-    console.log("h", hiddenDarknodes?.toJS());
 
     const accountHiddenDarknodes = useMemo(
         () => (address ? hiddenDarknodes.get(address, null) : null),
@@ -67,7 +61,6 @@ export const AllDarknodes: React.FC<{}> = () => {
             details.registrationStatus === RegistrationStatus.Registered,
     );
 
-    console.log("details", withdrawableDetails?.toJS());
     return (
         <div className="home" key={`${address || ""} ${network.name}`}>
             <div className="container">

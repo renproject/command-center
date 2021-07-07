@@ -2,7 +2,6 @@ import { sha256 } from "ethereumjs-util";
 import {
     numberToLeftPaddedBase64String,
     sanitizeBase64String,
-    stringTo43APaddedString,
 } from "../general/encodingUtils";
 import {
     base64Sha256FromTwoBase64Strings,
@@ -19,7 +18,7 @@ export const claimFeesDigest = (
     to: string,
     nonce: number,
 ) => {
-    console.log("signing", { asset, network, node, amount, to, nonce });
+    console.debug("signing", { asset, network, node, amount, to, nonce });
     const assetHash = base64Sha256FromUtf8String(asset);
     const networkHash = base64Sha256FromUtf8String(network);
     const nodeHash = sanitizeBase64String(node);
@@ -27,7 +26,7 @@ export const claimFeesDigest = (
     const toHash = base64Sha256FromUtf8String(to);
     const nonceHash = numberToLeftPaddedBase64String(nonce.toString());
 
-    console.log("signing merkle data", {
+    console.debug("signing merkle data", {
         assetHash,
         networkHash,
         nodeHash,
@@ -40,7 +39,7 @@ export const claimFeesDigest = (
     const h45 = base64Sha256FromTwoBase64Strings(toHash, nonceHash);
     const h2345 = base64Sha256FromTwoBase64Strings(h23, h45); // good one
     //root
-    console.log(h01, h2345);
+    console.debug(h01, h2345);
     return base64Sha256FromTwoBase64Strings(h01, h2345);
 };
 

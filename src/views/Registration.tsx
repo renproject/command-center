@@ -5,7 +5,6 @@ import { DarknodeAction } from "../controllers/pages/darknodePage/DarknodePage";
 import { RegistrationStatus } from "../lib/ethereum/contractReads";
 import { classNames } from "../lib/react/className";
 import { StatusDot, StatusDotColor } from "../views/StatusDot";
-import { InfoLabel } from "./infoLabel/InfoLabel";
 
 export const statusText = {
     [RegistrationStatus.Unknown]: "Loading...",

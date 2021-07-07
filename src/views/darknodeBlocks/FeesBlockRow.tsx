@@ -10,7 +10,6 @@ import {
     AnyTokenBalance,
     ConvertCurrency,
 } from "../../controllers/common/TokenBalance";
-import { getMinimumAmountForToken } from "../../lib/darknode/utils/feesUtils";
 
 import { TokenString } from "../../lib/ethereum/tokens";
 import { TokenAmount } from "../../lib/graphQL/queries/queries";

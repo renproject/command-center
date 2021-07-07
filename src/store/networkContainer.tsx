@@ -16,7 +16,6 @@ import {
 import { NodeStatistics, queryBlockState } from "../lib/darknode/jsonrpc";
 import {
     BlockState,
-    toNativeTokenSymbol,
 } from "../lib/darknode/utils/blockStateUtils";
 import { getNodeFeesCollection } from "../lib/darknode/utils/feesUtils";
 import {
@@ -669,7 +668,6 @@ const useNetworkContainer = () => {
             const renVmDarknodeId = darknodeIDBase58ToRenVmID(
                 darknodeIDHexToBase58(details?.ID || ""),
             );
-            console.log("renVmDarknodeId", renVmDarknodeId);
             const withdrawableFees = updatePrices(
                 getNodeFeesCollection(renVmDarknodeId, blockState, "claimable"),
                 tokenPrices,

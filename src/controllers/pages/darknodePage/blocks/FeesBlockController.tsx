@@ -19,7 +19,7 @@ import {
     DarknodeFeeStatus,
     RegistrationStatus,
 } from "../../../../lib/ethereum/contractReads";
-import { TokenString } from "../../../../lib/ethereum/tokens";
+import { Token, TokenString } from "../../../../lib/ethereum/tokens";
 import {
     base64StringToHexString,
     hexStringToBase64String,
@@ -39,22 +39,30 @@ import { ReactComponent as IconCheckCircle } from "../../../../styles/images/ico
 import { FeesBlock } from "../../../../views/darknodeBlocks/FeesBlock";
 import { Popup } from "../../../common/popups/Popup";
 import { updatePrices } from "../../../common/tokenBalanceUtils";
-// import { Bitcoin } from "@renproject/chains";
+import Chains from "@renproject/chains";
 
-// (window as any).Bitcoin = Bitcoin;
-// TODO: finish validation
+const chainMap = {
+    [Token.ETH]: Chains.Ethereum,
+    [Token.REN]: Chains.Ethereum,
+    [Token.BTC]: Chains.Bitcoin,
+    [Token.ZEC]: Chains.Zcash,
+    [Token.BCH]: Chains.BitcoinCash,
+    [Token.FIL]: Chains.Filecoin,
+    [Token.LUNA]: Chains.Terra,
+    [Token.DOGE]: Chains.Dogecoin,
+    [Token.DGB]: Chains.DigiByte,
+}
+
 const validateAddress = (token: string, address: string, network: string) => {
-    console.log(token, address, network);
-    // const renNetwork = network as any;
-    switch (token.toLowerCase()) {
-        case "btc":
-            // return Bitcoin.utils.addressIsValid(address, renNetwork);
-            return true;
-        case "zec":
-            return true; // Zcash.utils.addressIsValid(address, renNetwork);
-        default:
-            return true;
+    const renNetwork = network as any;
+
+    const chain = chainMap[token as Token];
+    if (chain) {
+        // We can't import the correct version of @renproject/interfaces, so for
+        // now we cast the type.
+        return (chain.utils.addressIsValid as (address: string, network?: string) => boolean)(address, renNetwork);
     }
+    return true;
 };
 
 interface Props {
@@ -366,18 +374,10 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
         (event) => {
             const newAddress = event.target.value;
             setAddress(newAddress);
-            if (!newAddress) {
-                setAddressError("please enter suitable address");
-            }
-            if (
-                !validateAddress(nativeTokenSymbol, newAddress, renNetwork.name)
-            ) {
-                setAddressError("address is invalid");
-            } else {
-                setAddressError("");
-            }
+            // Clear any errors.
+            setAddressError("");
         },
-        [nativeTokenSymbol, renNetwork.name],
+        [setAddress, setAddressError],
     );
     const destinationAddress = address;
 
@@ -385,7 +385,6 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
         (event) => {
             const value = event.target.value;
             setInputAmount(value);
-            console.log(value);
             const newAmount = Number(value);
             const newNativeAmount = convertToNativeAmount(
                 newAmount,
@@ -419,11 +418,21 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
         },
         [open, handleOpen],
     );
-    (window as any).web33 = web3;
+    // (window as any).web33 = web3;
 
     const [stage, setStage] = useState<FeeWithdrawalStage>("configuration");
 
     const handleContinue = useCallback(async () => {
+
+        if (
+            !validateAddress(nativeTokenSymbol, address, renNetwork.name)
+        ) {
+            setAddressError("Address is invalid.");
+            return;
+        } else if (!address) {
+            setAddressError("Please enter an address.");
+        }
+
         // console.log("confirming");
         if (stage === "configuration") {
             if (!amountError && !addressError) {
@@ -443,7 +452,6 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                 nonce,
             );
             const hexDigest = base64StringToHexString(base64Digest);
-            console.log("fees hash", hexDigest);
             setPending(true);
             const hexSignature = await web3.eth.personal
                 .sign(hexDigest, signingAddress, "")
@@ -452,19 +460,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                 });
             setPending(true);
             const signature = hexStringToBase64String(hexSignature);
-            console.info("hex signature", hexSignature);
-            console.info("base64 signature", signature);
             try {
-                console.log(
-                    "claiming fees",
-                    network,
-                    token,
-                    renVmDarknodeId,
-                    amount,
-                    destinationAddress,
-                    nonce,
-                    signature,
-                );
                 const response = await claimFees(
                     renNetwork,
                     token,
@@ -474,7 +470,6 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                     nonce,
                     signature,
                 );
-                console.log("rrr", response);
                 if (response.status === 200) {
                     showSuccess("Fees successfully claimed!");
                     setStage("processing");
@@ -497,6 +492,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
             }
         }
     }, [
+        address,
         amount,
         web3,
         network,

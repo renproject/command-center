@@ -2,7 +2,6 @@ import { List, OrderedMap } from "immutable";
 import React, { useMemo } from "react";
 import { RegistrationStatus } from "../../../lib/ethereum/contractReads";
 import { TokenAmount } from "../../../lib/graphQL/queries/queries";
-import { GraphContainer } from "../../../store/graphContainer";
 
 import {
     DarknodesState,
@@ -19,7 +18,6 @@ interface Props {
 
 export const RenVmFeesAll: React.FC<Props> = ({ darknodeList }) => {
     const { quoteCurrency } = NetworkContainer.useContainer();
-    const { renVM } = GraphContainer.useContainer();
 
     const withdrawable = useMemo(
         () =>

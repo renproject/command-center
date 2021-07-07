@@ -221,10 +221,8 @@ export const claimFees = async (
             request.params.tx.in as any,
         ).toString("base64"),
     );
-    console.log(txHash);
     request.params.tx.hash = txHash;
 
-    console.log("claiming fees request", request.params.tx.in.v);
     const response = await Axios.post<RPCResponse<any>>(lightnode, request, {
         timeout: DEFAULT_REQUEST_TIMEOUT,
     }).catch((err) => {

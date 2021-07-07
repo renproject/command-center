@@ -26,7 +26,6 @@ export const DarknodeCardController: React.FC<Props> = ({
         quoteCurrency,
         hideDarknode,
         removeRegisteringDarknode,
-        blockState,
     } = NetworkContainer.useContainer();
 
     // If we have the public key and the status is unregistered (or the status is not available yet), then link to
