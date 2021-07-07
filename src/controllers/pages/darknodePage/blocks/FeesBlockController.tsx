@@ -1,4 +1,3 @@
-// import { validateAddress } from "@renproject/chains";
 import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -40,17 +39,19 @@ import { ReactComponent as IconCheckCircle } from "../../../../styles/images/ico
 import { FeesBlock } from "../../../../views/darknodeBlocks/FeesBlock";
 import { Popup } from "../../../common/popups/Popup";
 import { updatePrices } from "../../../common/tokenBalanceUtils";
+// import { Bitcoin } from "@renproject/chains";
 
+// (window as any).Bitcoin = Bitcoin;
 // TODO: finish validation
-export const validateDestinationAddress = (
-    token: string,
-    address: string,
-    network: string,
-) => {
+const validateAddress = (token: string, address: string, network: string) => {
     console.log(token, address, network);
+    // const renNetwork = network as any;
     switch (token.toLowerCase()) {
         case "btc":
+            // return Bitcoin.utils.addressIsValid(address, renNetwork);
             return true;
+        case "zec":
+            return true; // Zcash.utils.addressIsValid(address, renNetwork);
         default:
             return true;
     }
@@ -311,7 +312,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
 
     const [token, setToken] = useState("");
     const nativeTokenSymbol = toNativeTokenSymbol(token);
-    const nonce =
+    const lastNonce =
         blockState !== null
             ? getNodeLastNonceClaimed(
                   renVmDarknodeId,
@@ -326,7 +327,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
     const [amountError, setAmountError] = useState("");
     const [address, setAddress] = useState("");
     const [addressError, setAddressError] = useState("");
-    // const [pending, setPending] = useState(false);
+    const [pending, setPending] = useState(false);
     const tokenAmount = withdrawableFees.find(
         (entry) => entry?.symbol === token,
     );
@@ -351,7 +352,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
     const handleClose = useCallback(() => {
         setOpen(false);
         setOverlay(false);
-        // setPending(false);
+        setPending(false);
         setError("");
         setAmount(0);
         setAddress("");
@@ -361,15 +362,23 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
         setStage("configuration");
     }, [setOverlay]);
 
-    const handleAddressChange = useCallback((event) => {
-        const value = event.target.value;
-        setAddress(value);
-        if (!value) {
-            setAddressError("please enter suitable address");
-        } else {
-            setAddressError("");
-        }
-    }, []);
+    const handleAddressChange = useCallback(
+        (event) => {
+            const newAddress = event.target.value;
+            setAddress(newAddress);
+            if (!newAddress) {
+                setAddressError("please enter suitable address");
+            }
+            if (
+                !validateAddress(nativeTokenSymbol, newAddress, renNetwork.name)
+            ) {
+                setAddressError("address is invalid");
+            } else {
+                setAddressError("");
+            }
+        },
+        [nativeTokenSymbol, renNetwork.name],
+    );
     const destinationAddress = address;
 
     const handleAmountChange = useCallback(
@@ -416,15 +425,15 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
 
     const handleContinue = useCallback(async () => {
         // console.log("confirming");
-        // setPending(true);
         if (stage === "configuration") {
             if (!amountError && !addressError) {
                 setStage("confirmation");
             }
         } else if (stage === "confirmation") {
-            if (!darknodeDetails?.ID || !signingAddress || nonce === null) {
+            if (!darknodeDetails?.ID || !signingAddress || lastNonce === null) {
                 return;
             }
+            const nonce = lastNonce + 1;
             const base64Digest = claimFeesDigest(
                 nativeTokenSymbol,
                 network,
@@ -435,12 +444,13 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
             );
             const hexDigest = base64StringToHexString(base64Digest);
             console.log("fees hash", hexDigest);
-
-            const hexSignature = await web3.eth.personal.sign(
-                hexDigest,
-                signingAddress,
-                "",
-            );
+            setPending(true);
+            const hexSignature = await web3.eth.personal
+                .sign(hexDigest, signingAddress, "")
+                .finally(() => {
+                    setPending(false);
+                });
+            setPending(true);
             const signature = hexStringToBase64String(hexSignature);
             console.info("hex signature", hexSignature);
             console.info("base64 signature", signature);
@@ -468,12 +478,13 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                 if (response.status === 200) {
                     showSuccess("Fees successfully claimed!");
                     setStage("processing");
+                    setPending(false);
                     await fetchBlockState();
                 }
             } catch (err) {
                 console.error("Claiming error:", err, err?.response);
                 console.error(err?.data?.error?.message);
-
+                setPending(false);
                 setStage("configuration");
                 setError("Claiming failed");
                 if (
@@ -499,7 +510,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
         addressError,
         amountError,
         nativeTokenSymbol,
-        nonce,
+        lastNonce,
         showSuccess,
         fetchBlockState,
     ]);
@@ -692,6 +703,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                             )}
                             {stage === "confirmation" && (
                                 <button
+                                    disabled={pending}
                                     className="button"
                                     onClick={handleContinue}
                                 >

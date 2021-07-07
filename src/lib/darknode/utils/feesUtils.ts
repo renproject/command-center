@@ -135,7 +135,7 @@ export const getNodeLastNonceClaimed = (
     if (nodeData && nodeData.nonce) {
         return Number(nodeData.nonce);
     }
-    return 0;
+    return -1;
 };
 
 export const getTokenUnassignedFees = (
