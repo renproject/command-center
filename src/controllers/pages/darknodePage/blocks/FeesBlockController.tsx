@@ -291,7 +291,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
         web3,
         renNetwork,
     } = Web3Container.useContainer();
-    const { showSuccess } = NotificationsContainer.useContainer();
+    const { showPending } = NotificationsContainer.useContainer();
 
     const network = renNetwork.name;
     const {
@@ -471,7 +471,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                     signature,
                 );
                 if (response.status === 200) {
-                    showSuccess("Fees withdrawal started!");
+                    showPending("Fees withdrawal started!");
                     setStage("processing");
                     setTimeout(() => {
                         setPending(false);
@@ -509,7 +509,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
         amountError,
         nativeTokenSymbol,
         lastNonce,
-        showSuccess,
+        showPending,
         fetchBlockState,
     ]);
 
