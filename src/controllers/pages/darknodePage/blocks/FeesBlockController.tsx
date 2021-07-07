@@ -1,3 +1,4 @@
+import { Loading } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -51,7 +52,7 @@ const chainMap = {
     [Token.LUNA]: Chains.Terra,
     [Token.DOGE]: Chains.Dogecoin,
     [Token.DGB]: Chains.DigiByte,
-}
+};
 
 const validateAddress = (token: string, address: string, network: string) => {
     const renNetwork = network as any;
@@ -60,7 +61,10 @@ const validateAddress = (token: string, address: string, network: string) => {
     if (chain) {
         // We can't import the correct version of @renproject/interfaces, so for
         // now we cast the type.
-        return (chain.utils.addressIsValid as (address: string, network?: string) => boolean)(address, renNetwork);
+        return (chain.utils.addressIsValid as (
+            address: string,
+            network?: string,
+        ) => boolean)(address, renNetwork);
     }
     return true;
 };
@@ -288,7 +292,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
         renNetwork,
     } = Web3Container.useContainer();
     const { showSuccess } = NotificationsContainer.useContainer();
-    
+
     const network = renNetwork.name;
     const {
         blockState,
@@ -418,15 +422,11 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
         },
         [open, handleOpen],
     );
-    // (window as any).web33 = web3;
 
     const [stage, setStage] = useState<FeeWithdrawalStage>("configuration");
 
     const handleContinue = useCallback(async () => {
-
-        if (
-            !validateAddress(nativeTokenSymbol, address, renNetwork.name)
-        ) {
+        if (!validateAddress(nativeTokenSymbol, address, renNetwork.name)) {
             setAddressError("Address is invalid.");
             return;
         } else if (!address) {
@@ -471,10 +471,12 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                     signature,
                 );
                 if (response.status === 200) {
-                    showSuccess("Fees successfully claimed!");
+                    showSuccess("Fees withdrawal started!");
                     setStage("processing");
-                    setPending(false);
-                    await fetchBlockState();
+                    setTimeout(() => {
+                        setPending(false);
+                        fetchBlockState().catch(console.error);
+                    }, 25 * 1000);
                 }
             } catch (err) {
                 console.error("Claiming error:", err, err?.response);
@@ -643,23 +645,44 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                             {stage === "processing" && (
                                 <>
                                     <div className="fee-withdrawal-status">
-                                        <IconCheckCircle
-                                            className="fee-withdrawal-icon"
-                                            width={60}
-                                            height={60}
-                                        />
-                                        <span className="collateral-status--over">
-                                            Withdraw in progress
-                                        </span>
+                                        {pending ? (
+                                            <>
+                                                <Loading className="loading--big fee-withdrawal-icon" />
+                                                <span className="field-info--supplemental">
+                                                    Initiating withdrawal
+                                                </span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <IconCheckCircle
+                                                    className="fee-withdrawal-icon"
+                                                    width={60}
+                                                    height={60}
+                                                />
+                                                <span className="collateral-status--over">
+                                                    Withdraw in progress
+                                                </span>
+                                            </>
+                                        )}
                                     </div>
                                     <div className="field-wrapper">
-                                        <p className="field-info--supplemental">
-                                            The transaction has been initiated.
-                                            <br />
-                                            Depending on the network you are
-                                            using it might take up to a few
-                                            hours to complete the transaction.
-                                        </p>
+                                        {pending ? (
+                                            <p className="field-info--supplemental">
+                                                Initiating withdrawal
+                                                transaction. Please wait a
+                                                moment.
+                                            </p>
+                                        ) : (
+                                            <p className="field-info--supplemental">
+                                                The transaction has been
+                                                initiated.
+                                                <br />
+                                                Depending on the network you are
+                                                using it might take up to a few
+                                                hours to complete the
+                                                transaction.
+                                            </p>
+                                        )}
                                     </div>
                                 </>
                             )}
@@ -709,6 +732,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                                 <button
                                     className="button"
                                     onClick={handleClose}
+                                    disabled={pending}
                                 >
                                     Done
                                 </button>
