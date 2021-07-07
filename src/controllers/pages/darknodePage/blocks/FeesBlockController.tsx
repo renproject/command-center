@@ -288,7 +288,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
         renNetwork,
     } = Web3Container.useContainer();
     const { showSuccess } = NotificationsContainer.useContainer();
-
+    
     const network = renNetwork.name;
     const {
         blockState,
@@ -550,7 +550,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                     >
                         <div>
                             <h1>Withdraw earnings</h1>
-                            <h2>for {token}</h2>
+                            <h2>for {nativeTokenSymbol}</h2>
                         </div>
                         <div className="popup--content">
                             {stage === "configuration" && (
@@ -657,9 +657,8 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                                             The transaction has been initiated.
                                             <br />
                                             Depending on the network you are
-                                            using it might take considerable
-                                            amount of time to complete the
-                                            transaction.
+                                            using it might take up to a few
+                                            hours to complete the transaction.
                                         </p>
                                     </div>
                                 </>
