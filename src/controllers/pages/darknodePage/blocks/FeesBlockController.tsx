@@ -833,7 +833,17 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                                     className="button"
                                     onClick={handleContinue}
                                 >
-                                    Confirm & Send
+                                    {pending ? (
+                                        <>
+                                            Waiting for signature{" "}
+                                            <Loading
+                                                className="status--button--spinner"
+                                                alt
+                                            />
+                                        </>
+                                    ) : (
+                                        <>Confirm & Send</>
+                                    )}
                                 </button>
                             )}
                             {stage === "processing" && (
