@@ -37,9 +37,16 @@ export const getMinimumAmountForToken = (
     if (!data) {
         return new BigNumber(-1);
     }
-    const { gasLimit, gasCap, dustAmount } = data;
-    const fee = new BigNumber(gasLimit).times(new BigNumber(gasCap));
-    return fee.plus(dustAmount);
+    const { gasLimit, gasCap, dustAmount, minimumAmount } = data;
+
+    const fee = new BigNumber(gasLimit)
+        .times(new BigNumber(gasCap))
+        // RenVM subtracts `dustAmount + 1` to ensure the change back to itself
+        // is greater than the dust amount.
+        .plus(dustAmount)
+        .plus(1);
+
+    return fee.plus(minimumAmount);
 };
 
 export const getFeeDataForToken = (symbol: string, blockState: BlockState) => {

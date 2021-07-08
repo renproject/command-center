@@ -118,6 +118,10 @@
             border-bottom: 2px solid $primary;
         }
     }
+    &--divider {
+        margin-left: 10px;
+        margin-right: 10px;
+    }
 }
 
 .fees-block {

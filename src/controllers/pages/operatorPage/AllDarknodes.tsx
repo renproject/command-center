@@ -77,9 +77,9 @@ export const AllDarknodes: React.FC<{}> = () => {
                             <WithdrawAll darknodeList={withdrawableDetails} />
                             <h2>RenVM Fees</h2>
                             <p className="field-info field-info--supplemental">
-                                RenVM rewards needs to be claimed individually
-                                for each Darknode. Click on the Darknode below
-                                the summary table to proceed.
+                                RenVM rewards currently needs to be claimed
+                                individually for each Darknode. Click on the
+                                Darknode below the summary table to proceed.
                             </p>
                             <RenVmFeesAll darknodeList={withdrawableDetails} />
                         </ErrorBoundary>

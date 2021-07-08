@@ -298,3 +298,58 @@ export const claimFees = async (
     console.info(request, response);
     return response;
 };
+
+export enum ClaimFeesStatus {
+    Pending = "pending",
+    Executing = "executing",
+    Done = "done",
+}
+
+export const getClaimFeesStatus = async (
+    renNetwork: RenNetworkDetails,
+    renVMHash: string,
+): Promise<{
+    status: ClaimFeesStatus;
+    revert?: string;
+}> => {
+    const lightnode = getLightnode(renNetwork, true);
+    if (!lightnode) {
+        throw new Error(`No lightnode to claim fees.`);
+    }
+
+    const request = {
+        id: 1,
+        jsonrpc: "2.0",
+        method: "ren_queryTx",
+        params: { txHash: renVMHash },
+    };
+
+    const response = await Axios.post<
+        RPCResponse<{
+            tx:
+                | { out: undefined }
+                | {
+                      out: {
+                          v: {
+                              revert: string;
+                          };
+                      };
+                  };
+            txStatus: ClaimFeesStatus;
+        }>
+    >(lightnode, request, {
+        timeout: DEFAULT_REQUEST_TIMEOUT,
+    }).catch((err) => {
+        throw err;
+    });
+
+    const result = response.data.result;
+
+    return {
+        status: result.txStatus,
+        revert:
+            result.tx.out && result.tx.out.v.revert !== ""
+                ? result.tx.out.v.revert
+                : undefined,
+    };
+};

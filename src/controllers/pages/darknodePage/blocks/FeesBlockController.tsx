@@ -1,4 +1,4 @@
-import { Loading } from "@renproject/react-components";
+import { Loading, sleep } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -8,6 +8,8 @@ import {
 } from "../../../../lib/darknode/darknodeID";
 import {
     claimFees,
+    ClaimFeesStatus,
+    getClaimFeesStatus,
     getTransactionHash,
 } from "../../../../lib/darknode/jsonrpc";
 import {
@@ -331,7 +333,6 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
             getNodeFeesCollection(renVmDarknodeId, blockState, "pending"),
             tokenPrices,
         );
-    // console.log("pending", pending?.toJS());
 
     const [token, setToken] = useState("");
     const nativeTokenSymbol = toNativeTokenSymbol(token);
@@ -449,7 +450,6 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
     const withdrawCallback = useCallback(
         // eslint-disable-next-line @typescript-eslint/require-await
         async (tokenSymbol: string) => {
-            // console.log("withdraw", tokenSymbol);
             if (!open) {
                 setToken(tokenSymbol);
                 handleOpen();
@@ -474,7 +474,6 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
             return;
         }
 
-        // console.log("confirming");
         if (stage === FeeWithdrawalStage.Configuration) {
             if (!amountError && !addressError) {
                 setStage(FeeWithdrawalStage.Confirmation);
@@ -524,15 +523,35 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                     showPending("Fees withdrawal started!");
                     setRenVMHash(renVMHash);
                     setStage(FeeWithdrawalStage.Processing);
-                    setTimeout(async () => {
+
+                    // Wait until the transaction is done.
+                    for (let i = 0; i < 20; i++) {
                         try {
-                            await fetchBlockState();
-                            await updateDarknodeDetails(darknodeDetails.ID);
+                            const { status, revert } = await getClaimFeesStatus(
+                                renNetwork,
+                                renVMHash,
+                            );
+                            if (revert) {
+                                setPending(false);
+                                setStage(FeeWithdrawalStage.Configuration);
+                                setError(`Claiming failed - ${revert}`);
+                                return;
+                            } else if (status === ClaimFeesStatus.Done) {
+                                break;
+                            }
                         } catch (error) {
                             console.error(error);
                         }
-                        setPending(false);
-                    }, 25 * 1000);
+                        await sleep(5 * 1000);
+                    }
+
+                    try {
+                        await fetchBlockState();
+                        await updateDarknodeDetails(darknodeDetails.ID);
+                    } catch (error) {
+                        console.error(error);
+                    }
+                    setPending(false);
                 }
             } catch (err) {
                 console.error("Claiming error:", err, err?.response);
@@ -748,11 +767,11 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                                             </p>
                                         )}
                                         {renVMHash ? (
-                                            <p>
+                                            <p className="withdrawal-hash">
                                                 <ExternalLink
-                                                    href={`${DEV_TOOLS}/tx/RJaKqGUBgLCycPu3EQUOIYd-HtmcEvcFjCMkZcbm8EE`}
+                                                    href={`${DEV_TOOLS}/tx/${renVMHash}`}
                                                 >
-                                                    See transaction status.
+                                                    See transaction status. →
                                                 </ExternalLink>
                                             </p>
                                         ) : null}
@@ -844,9 +863,7 @@ export const FeesSwitcherController: React.FC<Props> = ({
                             {symbol === "eth" ? "Ethereum" : "RenVM"}
                         </span>
                         {symbol === "eth" && (
-                            <span style={{ marginLeft: 10, marginRight: 10 }}>
-                                |
-                            </span>
+                            <span className="fees-switcher--divider">|</span>
                         )}
                     </span>
                 ))}
