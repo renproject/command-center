@@ -524,8 +524,9 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                     setRenVMHash(renVMHash);
                     setStage(FeeWithdrawalStage.Processing);
 
-                    // Wait until the transaction is done.
-                    for (let i = 0; i < 20; i++) {
+                    // Wait until the transaction is done - re-fetching the
+                    // status every 5 seconds.
+                    while (true) {
                         try {
                             const { status, revert } = await getClaimFeesStatus(
                                 renNetwork,
@@ -732,7 +733,14 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                                             <>
                                                 <Loading className="loading--big fee-withdrawal-icon" />
                                                 <span className="field-info--supplemental">
-                                                    Initiating withdrawal
+                                                    {renVMHash ? (
+                                                        <>Withdrawing</>
+                                                    ) : (
+                                                        <>
+                                                            Initiating
+                                                            withdrawal
+                                                        </>
+                                                    )}
                                                 </span>
                                             </>
                                         ) : (
@@ -743,7 +751,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                                                     height={60}
                                                 />
                                                 <span className="collateral-status--over">
-                                                    Withdraw in progress
+                                                    Withdraw complete
                                                 </span>
                                             </>
                                         )}
@@ -751,34 +759,42 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                                     <div className="field-wrapper">
                                         {pending ? (
                                             <p className="field-info--supplemental">
-                                                Initiating withdrawal
-                                                transaction. Please wait a
-                                                moment.
+                                                {renVMHash ? (
+                                                    <>
+                                                        RenVM is processing your
+                                                        withdrawal request.
+                                                        Please wait a moment.
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        Initiating withdrawal
+                                                        transaction. Please wait
+                                                        a moment.
+                                                    </>
+                                                )}
                                             </p>
                                         ) : (
                                             <p className="field-info--supplemental">
-                                                The transaction has been
-                                                initiated.
-                                                <br />
-                                                Depending on the network you are
-                                                using it might take up to a few
-                                                hours to complete the
-                                                transaction.
+                                                Depending on network conditions,
+                                                it may take up to a few hours
+                                                for the transaction to be
+                                                confirmed.
                                             </p>
                                         )}
-                                        {renVMHash ? (
-                                            <p className="withdrawal-hash">
-                                                <ExternalLink
-                                                    href={`${DEV_TOOLS}/tx/${renVMHash}`}
-                                                >
-                                                    See transaction status. →
-                                                </ExternalLink>
-                                            </p>
-                                        ) : null}
                                     </div>
                                 </>
                             )}
                         </div>
+
+                        {renVMHash ? (
+                            <div className="withdrawal-hash">
+                                <ExternalLink
+                                    href={`${DEV_TOOLS}/tx/${renVMHash}`}
+                                >
+                                    See transaction status. →
+                                </ExternalLink>
+                            </div>
+                        ) : null}
 
                         <div className="popup--buttons">
                             {stage === "configuration" && (
