@@ -1,6 +1,7 @@
 import { RenNetworkDetails } from "@renproject/contracts";
 import { Record } from "@renproject/react-components";
 import Axios from "axios";
+import BigNumber from "bignumber.js";
 
 import {
     retryNTimes,
@@ -157,7 +158,7 @@ export const claimFees = async (
     renNetwork: RenNetworkDetails,
     token: string,
     node: string,
-    amount: number,
+    amount: BigNumber,
     to: string,
     nonce: number,
     signature: string,
@@ -203,7 +204,7 @@ export const claimFees = async (
                         type: "ethSign",
                         network: renNetwork.name,
                         node,
-                        amount: String(amount),
+                        amount: amount.toFixed(),
                         to,
                         nonce: String(nonce),
                         signature,

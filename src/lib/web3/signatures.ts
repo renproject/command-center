@@ -1,3 +1,4 @@
+import BigNumber from "bignumber.js";
 import { sha256 } from "ethereumjs-util";
 import {
     numberToLeftPaddedBase64String,
@@ -14,7 +15,7 @@ export const claimFeesDigest = (
     asset: string,
     network: string,
     node: string,
-    amount: number,
+    amount: BigNumber,
     to: string,
     nonce: number,
 ) => {
@@ -22,7 +23,7 @@ export const claimFeesDigest = (
     const assetHash = base64Sha256FromUtf8String(asset);
     const networkHash = base64Sha256FromUtf8String(network);
     const nodeHash = sanitizeBase64String(node);
-    const amountHash = numberToLeftPaddedBase64String(amount.toString());
+    const amountHash = numberToLeftPaddedBase64String(amount.toFixed());
     const toHash = base64Sha256FromUtf8String(to);
     const nonceHash = numberToLeftPaddedBase64String(nonce.toString());
 
