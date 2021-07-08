@@ -78,7 +78,9 @@ export const getTokenFeeForEpoch = (
     );
     if (epochEntry) {
         const { amount, numNodes } = epochEntry;
-        return new BigNumber(amount).div(perNode ? numNodes : 1).integerValue(BigNumber.ROUND_DOWN);
+        return new BigNumber(amount)
+            .div(perNode ? numNodes : 1)
+            .integerValue(BigNumber.ROUND_DOWN);
     }
     return new BigNumber(0);
 };
@@ -152,7 +154,9 @@ export const getTokenUnassignedFees = (
     const { unassigned } = data;
     if (perNode) {
         const numNodes = blockState.System.epoch.numNodes;
-        return new BigNumber(unassigned).div(numNodes).integerValue(BigNumber.ROUND_DOWN);
+        return new BigNumber(unassigned)
+            .div(numNodes)
+            .integerValue(BigNumber.ROUND_DOWN);
     }
     return new BigNumber(unassigned);
 };

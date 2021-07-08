@@ -75,16 +75,23 @@ export const FeesWithdrawal: React.FC<FeesWithdrawalProps> = ({
         setLoading(false);
     }, [token, amount, isRenVMFee, withdrawCallback]);
 
-    let minimumUiAmount = minimumClaimAmount
-        .div(new BigNumber(Math.pow(10, amount?.asset?.decimals || 0)))
+    let minimumUiAmount = minimumClaimAmount.div(
+        new BigNumber(Math.pow(10, amount?.asset?.decimals || 0)),
+    );
     let isDisabled = false;
     let title = "";
     if (disabled) {
         isDisabled = true;
         title = "Must be operator to withdraw";
-    } else if (!amount || new BigNumber(amount.amount).lte(1) || (isRenVMFee && new BigNumber(amount.amount).lte(minimumClaimAmount))) {
+    } else if (
+        !amount ||
+        new BigNumber(amount.amount).lte(1) ||
+        (isRenVMFee && new BigNumber(amount.amount).lte(minimumClaimAmount))
+    ) {
         isDisabled = true;
-        title = `Minum withdraw is ${minimumUiAmount.toFixed()} ${amount ? amount.symbol : ""}`;
+        title = `Minum withdraw is ${minimumUiAmount.toFixed()} ${
+            amount ? amount.symbol : ""
+        }`;
     } else if (!isRenVMFee && (!amount.asset || !amount.asset.tokenAddress)) {
         isDisabled = true;
         title = "Unable to look up token address";

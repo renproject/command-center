@@ -14,9 +14,7 @@ import {
     darknodeIDHexToBase58,
 } from "../lib/darknode/darknodeID";
 import { NodeStatistics, queryBlockState } from "../lib/darknode/jsonrpc";
-import {
-    BlockState,
-} from "../lib/darknode/utils/blockStateUtils";
+import { BlockState } from "../lib/darknode/utils/blockStateUtils";
 import { getNodeFeesCollection } from "../lib/darknode/utils/feesUtils";
 import {
     getRenVMFromLightnode,

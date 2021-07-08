@@ -39,8 +39,10 @@ const useGithubAPIContainer = () => {
     const [latestDarknodeVersion, setLatestDarknodeVersion] = useState(
         null as string | null,
     );
-    const [latestDarknodeVersionDaysAgo, setLatestDarknodeVersionDaysAgo] =
-        useState(null as string | null);
+    const [
+        latestDarknodeVersionDaysAgo,
+        setLatestDarknodeVersionDaysAgo,
+    ] = useState(null as string | null);
 
     const [latestCLIVersionFull, setLatestCLIVersionFull] = useState(
         null as string | null,

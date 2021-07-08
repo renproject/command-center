@@ -31,10 +31,12 @@ export type TokenAmountCollection = OrderedMap<string, TokenAmount>;
 
 export const parseTokenAmount = (amount: RawTokenAmount): TokenAmount => ({
     ...amount,
-    asset: amount.asset ? {
-        ...amount.asset,
-        decimals: parseInt(amount.asset.decimals),
-    } : amount.asset,
+    asset: amount.asset
+        ? {
+              ...amount.asset,
+              decimals: parseInt(amount.asset.decimals),
+          }
+        : amount.asset,
     amount: new BigNumber(amount.amount),
     amountInUsd: new BigNumber(amount.amountInUsd),
     amountInEth: new BigNumber(amount.amountInEth),

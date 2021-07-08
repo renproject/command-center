@@ -224,9 +224,9 @@ export const queryRenVMSubgraph = async (
             parseTokenAmount,
         ),
 
-        assets: response.data.assets.map(asset => ({
+        assets: response.data.assets.map((asset) => ({
             ...asset,
-            decimals: parseInt(asset.decimals, 10)
+            decimals: parseInt(asset.decimals, 10),
         })),
     };
 };

@@ -396,7 +396,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
             if (darknodeDetails) {
                 await updateDarknodeDetails(darknodeDetails.ID);
             }
-        })().catch(console.error)
+        })().catch(console.error);
     }, [setOverlay, darknodeDetails, fetchBlockState, updateDarknodeDetails]);
 
     const handleAddressChange = useCallback(
