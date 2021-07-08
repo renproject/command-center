@@ -29,15 +29,12 @@ type FeeData = {
     unassigned: Numeric;
 };
 
-export const getMinimumAmountForToken = (
-    symbol: string,
-    blockState: BlockState,
-) => {
+export const getClaimFeeForToken = (symbol: string, blockState: BlockState) => {
     const data = blockState[symbol];
     if (!data) {
         return new BigNumber(-1);
     }
-    const { gasLimit, gasCap, dustAmount, minimumAmount } = data;
+    const { gasLimit, gasCap, dustAmount } = data;
 
     const fee = new BigNumber(gasLimit)
         .times(new BigNumber(gasCap))
@@ -46,6 +43,19 @@ export const getMinimumAmountForToken = (
         .plus(dustAmount)
         .plus(1);
 
+    return fee;
+};
+
+export const getMinimumAmountForToken = (
+    symbol: string,
+    blockState: BlockState,
+) => {
+    const data = blockState[symbol];
+    if (!data) {
+        return new BigNumber(-1);
+    }
+    const { minimumAmount } = data;
+    const fee = getClaimFeeForToken(symbol, blockState);
     return fee.plus(minimumAmount);
 };
 

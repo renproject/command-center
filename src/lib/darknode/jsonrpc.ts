@@ -239,7 +239,7 @@ export const claimFees = async (
         jsonrpc: "2.0",
         params: {
             tx: {
-                hash: "xeP7Ehi4g7S3erp8z-7yU1td07757diRYtwd0s-4SzI", // TODO: where to find it?
+                hash: "",
                 in: {
                     t: {
                         struct: [

@@ -20,6 +20,7 @@ import {
     getNodeFeesCollection,
     getNodeLastNonceClaimed,
     getMinimumAmountForToken,
+    getClaimFeeForToken,
 } from "../../../../lib/darknode/utils/feesUtils";
 
 import {
@@ -283,10 +284,20 @@ const convertToNativeAmount = (
         new BigNumber(Math.pow(10, decimals || 0)),
     );
 
-const convertToAmount = (value: BigNumber | string, decimals: number) => {
-    return new BigNumber(value)
-        .div(new BigNumber(Math.pow(10, decimals || 0)))
-        .toNumber();
+const convertToAmount = (
+    value: BigNumber | string,
+    decimals: number,
+    decimalsPlaces?: number,
+): string => {
+    let amount = new BigNumber(value).div(
+        new BigNumber(Math.pow(10, decimals || 0)),
+    );
+
+    if (decimalsPlaces !== undefined) {
+        amount = amount.decimalPlaces(decimalsPlaces, BigNumber.ROUND_CEIL);
+    }
+
+    return amount.toFixed();
 };
 
 enum FeeWithdrawalStage {
@@ -348,7 +359,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
     const [open, setOpen] = useState(false);
     const [error, setError] = useState("");
     const [amount, setAmount] = useState(new BigNumber(0));
-    const [inputAmount, setInputAmount] = useState(0);
+    const [inputAmount, setInputAmount] = useState("0");
     const [amountError, setAmountError] = useState("");
     const [address, setAddress] = useState("");
     const [addressError, setAddressError] = useState("");
@@ -374,6 +385,21 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
     const minAmount = blockState
         ? getMinimumAmountForToken(nativeTokenSymbol, blockState)
         : null;
+
+    const claimFee = blockState
+        ? getClaimFeeForToken(nativeTokenSymbol, blockState)
+        : null;
+    const claimFeeReadable = claimFee
+        ? convertToAmount(claimFee, tokenAmount?.asset?.decimals || 0, 6)
+        : null;
+
+    const amountAfterFees = claimFee
+        ? BigNumber.max(amount.minus(claimFee), new BigNumber(0))
+        : amount;
+    const amountAfterFeesReadable = convertToAmount(
+        amountAfterFees,
+        tokenAmount?.asset?.decimals || 0,
+    );
 
     const handleOpen = useCallback(() => {
         setOverlay(true);
@@ -655,9 +681,26 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                             {stage === "configuration" && (
                                 <>
                                     <div className="field-wrapper">
-                                        <label className="field-label">
-                                            Amount
-                                        </label>
+                                        <div
+                                            style={{
+                                                display: "flex",
+                                                justifyContent: "space-between",
+                                            }}
+                                        >
+                                            <label className="field-label">
+                                                Amount
+                                            </label>
+                                            {claimFeeReadable ? (
+                                                <div
+                                                    className="field-label"
+                                                    style={{ opacity: 0.8 }}
+                                                >
+                                                    Transaction fee:{" "}
+                                                    {claimFeeReadable}{" "}
+                                                    {nativeTokenSymbol}
+                                                </div>
+                                            ) : null}
+                                        </div>
                                         <input
                                             type="text"
                                             className="field-input field-input--full-width"
@@ -670,7 +713,10 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                                             <span>{amount}</span>
                                         </div> */}
                                         <div className="field-info">
-                                            This is the amount you will withdraw
+                                            <div>
+                                                This is the amount you will
+                                                withdraw
+                                            </div>
                                         </div>
                                         {Boolean(amountError) && (
                                             <div className="field-error">
@@ -716,7 +762,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                                     <div className="field-wrapper">
                                         <p>You are about to send</p>
                                         <p className="fee-confirmation-data">
-                                            {amountBN.toFixed()}{" "}
+                                            {amountAfterFeesReadable}{" "}
                                             {nativeTokenSymbol}
                                         </p>
                                     </div>

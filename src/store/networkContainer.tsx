@@ -598,7 +598,6 @@ const useNetworkContainer = () => {
         ); /* , (darknodeID) => {
                             addDarknode({ darknodeID, address, network: renNetwork.name });
                     }, ); */
-        // console.log("currDark", currentDarknodes);
         addDarknodes(currentDarknodes);
 
         // The lists are merged in the reducer as well, but we combine them again
