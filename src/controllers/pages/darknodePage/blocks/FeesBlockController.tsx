@@ -49,6 +49,7 @@ import { updatePrices } from "../../../common/tokenBalanceUtils";
 import Chains from "@renproject/chains";
 import { ExternalLink } from "../../../../views/ExternalLink";
 import { DEV_TOOLS } from "../../../../lib/react/environmentVariables";
+import { EncodedData, Encodings } from "../../../../lib/general/encodedData";
 
 const chainMap = {
     [Token.ETH]: Chains.Ethereum,
@@ -499,6 +500,19 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                     setPending(false);
                 });
             setPending(true);
+            const signatureBuffer = new EncodedData(
+                hexSignature,
+                Encodings.HEX,
+            ).toBuffer();
+            if (signatureBuffer.length < 65) {
+                throw new Error(
+                    "Invalid signature returned from Web3 provider.",
+                );
+            }
+            // Ensure that signature recovery ID is either 27 or 28.
+            if (signatureBuffer[64] < 27) {
+                signatureBuffer[64] += 27;
+            }
             const signature = hexStringToBase64String(hexSignature);
             try {
                 const renVMHash = getTransactionHash(
@@ -762,8 +776,8 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                                                 {renVMHash ? (
                                                     <>
                                                         RenVM is processing your
-                                                        withdrawal request.
-                                                        Please wait a moment.
+                                                        withdrawal request. This
+                                                        can take a few minutes.
                                                     </>
                                                 ) : (
                                                     <>
