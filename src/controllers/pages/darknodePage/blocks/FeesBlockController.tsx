@@ -543,6 +543,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
             const signature = sanitizeBase64String(
                 signatureBuffer.toString("base64"),
             );
+            let dismissNotification: (() => void) | undefined;
             try {
                 const renVMHash = getTransactionHash(
                     renNetwork,
@@ -563,7 +564,10 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                     signature,
                 );
                 if (response.status === 200) {
-                    showPending("Fees withdrawal started!");
+                    const { update, dismiss } = showPending(
+                        `Withdrawing ${amountAfterFeesReadable} ${nativeTokenSymbol}.`,
+                    );
+                    dismissNotification = dismiss;
                     setRenVMHash(renVMHash);
                     setStage(FeeWithdrawalStage.Processing);
 
@@ -578,7 +582,12 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                             if (revert) {
                                 setPending(false);
                                 setStage(FeeWithdrawalStage.Configuration);
-                                setError(`Claiming failed - ${revert}`);
+                                setError(`Withdraw failed - ${revert}`);
+
+                                update({
+                                    type: "error",
+                                    message: `Rewards withdrawal failed.`,
+                                });
                                 return;
                             } else if (status === ClaimFeesStatus.Done) {
                                 break;
@@ -589,20 +598,29 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                         await sleep(5 * 1000);
                     }
 
+                    setPending(false);
+                    update({
+                        type: "success",
+                        message: `Withdrew ${amountAfterFeesReadable} ${nativeTokenSymbol}!`,
+                        autoDismiss: 10 * 1000,
+                    });
+
                     try {
                         await fetchBlockState();
                         await updateDarknodeDetails(darknodeDetails.ID);
                     } catch (error) {
                         console.error(error);
                     }
-                    setPending(false);
                 }
             } catch (err) {
-                console.error("Claiming error:", err, err?.response);
+                console.error("Withdraw error:", err, err?.response);
                 console.error(err?.data?.error?.message);
                 setPending(false);
+                if (dismissNotification) {
+                    dismissNotification();
+                }
                 setStage(FeeWithdrawalStage.Configuration);
-                setError("Claiming failed.");
+                setError("Withdraw failed.");
                 if (
                     (err?.response?.data?.error?.message || "").includes(
                         "bad to",
@@ -613,7 +631,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                     );
                 } else if (err?.response?.data?.error?.message) {
                     setError(
-                        `Claiming failed (${err?.response?.data?.error?.message})`,
+                        `Withdraw failed (${err?.response?.data?.error?.message})`,
                     );
                 }
             }
@@ -634,6 +652,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
         amountError,
         nativeTokenSymbol,
         lastNonce,
+        amountAfterFeesReadable,
         showPending,
         fetchBlockState,
         updateDarknodeDetails,

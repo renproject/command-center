@@ -1,4 +1,4 @@
-import { CustomNotificationObject } from "bnc-notify";
+import { CustomNotificationObject, UpdateNotification } from "bnc-notify";
 import { List } from "immutable";
 import { useEffect, useState } from "react";
 import { createContainer } from "unstated-next";
@@ -25,40 +25,44 @@ const useNotificationsContainer = () => {
     }, [notify, notifications]);
 
     const showSuccess = (message: string, autoDismiss?: number) =>
-        setNotifications((current) =>
-            current.push({
-                type: "success",
-                message,
-                autoDismiss,
-            }),
-        );
+        notify?.notification({
+            type: "success",
+            message,
+            autoDismiss,
+        }) || {
+            dismiss: () => {},
+            update: ((..._: any[]) => {}) as UpdateNotification,
+        };
 
     const showError = (message: string, autoDismiss?: number) =>
-        setNotifications((current) =>
-            current.push({
-                type: "error",
-                message,
-                autoDismiss,
-            }),
-        );
+        notify?.notification({
+            type: "error",
+            message,
+            autoDismiss,
+        }) || {
+            dismiss: () => {},
+            update: ((..._: any[]) => {}) as UpdateNotification,
+        };
 
     const showHint = (message: string, autoDismiss?: number) =>
-        setNotifications((current) =>
-            current.push({
-                type: "hint",
-                message,
-                autoDismiss,
-            }),
-        );
+        notify?.notification({
+            type: "hint",
+            message,
+            autoDismiss,
+        }) || {
+            dismiss: () => {},
+            update: ((..._: any[]) => {}) as UpdateNotification,
+        };
 
     const showPending = (message: string, autoDismiss?: number) =>
-        setNotifications((current) =>
-            current.push({
-                type: "pending",
-                message,
-                autoDismiss,
-            }),
-        );
+        notify?.notification({
+            type: "pending",
+            message,
+            autoDismiss,
+        }) || {
+            dismiss: () => {},
+            update: ((..._: any[]) => {}) as UpdateNotification,
+        };
 
     return {
         showSuccess,
