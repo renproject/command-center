@@ -37,7 +37,9 @@ export const getMinimumAmountForToken = (
     if (!data) {
         return new BigNumber(-1);
     }
-    return new BigNumber(data.dustAmount);
+    const { gasLimit, gasCap, dustAmount } = data;
+    const fee = new BigNumber(gasLimit).times(new BigNumber(gasCap));
+    return fee.plus(dustAmount);
 };
 
 export const getFeeDataForToken = (symbol: string, blockState: BlockState) => {
@@ -76,7 +78,7 @@ export const getTokenFeeForEpoch = (
     );
     if (epochEntry) {
         const { amount, numNodes } = epochEntry;
-        return new BigNumber(amount).div(perNode ? numNodes : 1);
+        return new BigNumber(amount).div(perNode ? numNodes : 1).integerValue(BigNumber.ROUND_DOWN);
     }
     return new BigNumber(0);
 };
@@ -150,7 +152,7 @@ export const getTokenUnassignedFees = (
     const { unassigned } = data;
     if (perNode) {
         const numNodes = blockState.System.epoch.numNodes;
-        return new BigNumber(unassigned).div(numNodes);
+        return new BigNumber(unassigned).div(numNodes).integerValue(BigNumber.ROUND_DOWN);
     }
     return new BigNumber(unassigned);
 };

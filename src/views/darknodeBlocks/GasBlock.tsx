@@ -47,7 +47,6 @@ export const GasBlock: React.FC<Props> = ({ darknodeBalance }) => {
                     <div className="block--advanced--bottom">
                         <div className="topup">
                             <p className="topup--title">
-                                Your Darknode no longer needs ETH to operate.
                                 You can withdraw your funds using the Darknode
                                 CLI.
                             </p>

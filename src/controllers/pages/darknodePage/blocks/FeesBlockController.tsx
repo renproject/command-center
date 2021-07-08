@@ -6,7 +6,10 @@ import {
     darknodeIDBase58ToRenVmID,
     darknodeIDHexToBase58,
 } from "../../../../lib/darknode/darknodeID";
-import { claimFees } from "../../../../lib/darknode/jsonrpc";
+import {
+    claimFees,
+    getTransactionHash,
+} from "../../../../lib/darknode/jsonrpc";
 import {
     BlockState,
     toNativeTokenSymbol,
@@ -42,6 +45,8 @@ import { FeesBlock } from "../../../../views/darknodeBlocks/FeesBlock";
 import { Popup } from "../../../common/popups/Popup";
 import { updatePrices } from "../../../common/tokenBalanceUtils";
 import Chains from "@renproject/chains";
+import { ExternalLink } from "../../../../views/ExternalLink";
+import { DEV_TOOLS } from "../../../../lib/react/environmentVariables";
 
 const chainMap = {
     [Token.ETH]: Chains.Ethereum,
@@ -291,6 +296,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
     isOperator,
     darknodeDetails,
 }) => {
+    const { updateDarknodeDetails } = NetworkContainer.useContainer();
     const {
         address: signingAddress,
         web3,
@@ -345,6 +351,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
     const [address, setAddress] = useState("");
     const [addressError, setAddressError] = useState("");
     const [pending, setPending] = useState(false);
+    const [renVMHash, setRenVMHash] = useState<string | null>(null);
     const tokenAmount = withdrawableFees.find(
         (entry) => entry?.symbol === token,
     );
@@ -355,11 +362,11 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
         [tokenAmount?.amount],
     );
     useEffect(() => {
-            setAmount(maxAmount);
-            setInputAmount(
-                convertToAmount(maxAmount, tokenAmount?.asset?.decimals || 0),
-            );
-            // eslint-disable-next-line react-hooks/exhaustive-deps
+        setAmount(maxAmount);
+        setInputAmount(
+            convertToAmount(maxAmount, tokenAmount?.asset?.decimals || 0),
+        );
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [tokenAmount?.asset?.decimals, maxAmount.toFixed(), setInputAmount]);
 
     const minAmount = blockState
@@ -382,7 +389,15 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
         setAddressError("");
         setToken("");
         setStage(FeeWithdrawalStage.Configuration);
-    }, [setOverlay]);
+        setRenVMHash(null);
+
+        (async () => {
+            await fetchBlockState();
+            if (darknodeDetails) {
+                await updateDarknodeDetails(darknodeDetails.ID);
+            }
+        })().catch(console.error)
+    }, [setOverlay, darknodeDetails, fetchBlockState, updateDarknodeDetails]);
 
     const handleAddressChange = useCallback(
         (event) => {
@@ -417,8 +432,13 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                 minAmount &&
                 newNativeAmount.isLessThanOrEqualTo(minAmount)
             ) {
-                const minimum = convertToAmount(minAmount, tokenAmount?.asset?.decimals || 0);
-                setAmountError(`Must withdraw at least ${minimum} ${nativeTokenSymbol}.`);
+                const minimum = convertToAmount(
+                    minAmount,
+                    tokenAmount?.asset?.decimals || 0,
+                );
+                setAmountError(
+                    `Must withdraw at least ${minimum} ${nativeTokenSymbol}.`,
+                );
             } else {
                 setAmountError("");
             }
@@ -482,6 +502,15 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
             setPending(true);
             const signature = hexStringToBase64String(hexSignature);
             try {
+                const renVMHash = getTransactionHash(
+                    renNetwork,
+                    token,
+                    renVmDarknodeId,
+                    amount,
+                    destinationAddress,
+                    nonce,
+                    signature,
+                );
                 const response = await claimFees(
                     renNetwork,
                     token,
@@ -493,10 +522,16 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                 );
                 if (response.status === 200) {
                     showPending("Fees withdrawal started!");
+                    setRenVMHash(renVMHash);
                     setStage(FeeWithdrawalStage.Processing);
-                    setTimeout(() => {
+                    setTimeout(async () => {
+                        try {
+                            await fetchBlockState();
+                            await updateDarknodeDetails(darknodeDetails.ID);
+                        } catch (error) {
+                            console.error(error);
+                        }
                         setPending(false);
-                        fetchBlockState().catch(console.error);
                     }, 25 * 1000);
                 }
             } catch (err) {
@@ -512,6 +547,10 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                 ) {
                     setAddressError(
                         "Address rejected by RenVM. Please try another address.",
+                    );
+                } else if (err?.response?.data?.error?.message) {
+                    setError(
+                        `Claiming failed (${err?.response?.data?.error?.message})`,
                     );
                 }
             }
@@ -534,6 +573,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
         lastNonce,
         showPending,
         fetchBlockState,
+        updateDarknodeDetails,
     ]);
 
     const handlePrev = useCallback(() => {
@@ -659,8 +699,9 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                                             with the tokens that are being sent.{" "}
                                             <br />
                                             Sending tokens to an incompatible
-                                            wallet or wrong address will result
-                                            in irretrievably lost funds.
+                                            wallet or a wrong address will
+                                            result in funds becoming
+                                            unrecoverable.
                                         </p>
                                     </div>
                                 </>
@@ -706,6 +747,15 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                                                 transaction.
                                             </p>
                                         )}
+                                        {renVMHash ? (
+                                            <p>
+                                                <ExternalLink
+                                                    href={`${DEV_TOOLS}/tx/RJaKqGUBgLCycPu3EQUOIYd-HtmcEvcFjCMkZcbm8EE`}
+                                                >
+                                                    See transaction status.
+                                                </ExternalLink>
+                                            </p>
+                                        ) : null}
                                     </div>
                                 </>
                             )}
@@ -793,7 +843,11 @@ export const FeesSwitcherController: React.FC<Props> = ({
                         >
                             {symbol === "eth" ? "Ethereum" : "RenVM"}
                         </span>
-                        {symbol === "eth" && " | "}
+                        {symbol === "eth" && (
+                            <span style={{ marginLeft: 10, marginRight: 10 }}>
+                                |
+                            </span>
+                        )}
                     </span>
                 ))}
             </div>

@@ -105,15 +105,16 @@
     position: relative;
     &--control {
         position: absolute;
-        top: 4px;
-        right: 5px;
+        top: 20px;
+        right: 20px;
         font-size: 14px;
         color: rgba(255, 255, 255, 0.4);
     }
     &--button {
         cursor: pointer;
+
         &--active {
-            color: rgba(255, 255, 255, 0.8);
+            color: #ffffff;
             border-bottom: 2px solid $primary;
         }
     }

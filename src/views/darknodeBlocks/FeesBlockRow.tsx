@@ -30,7 +30,7 @@ interface FeesWithdrawalProps {
         tokenAddress: string,
     ) => Promise<void>;
     isRenVMFee?: boolean;
-    dustAmount?: BigNumber;
+    minimumClaimAmount?: BigNumber;
 }
 
 export const FeesWithdrawal: React.FC<FeesWithdrawalProps> = ({
@@ -39,7 +39,7 @@ export const FeesWithdrawal: React.FC<FeesWithdrawalProps> = ({
     disabled,
     withdrawCallback,
     isRenVMFee = false,
-    dustAmount = new BigNumber(-1),
+    minimumClaimAmount = new BigNumber(-1),
 }) => {
     const [loading, setLoading] = useState(false);
 
@@ -75,18 +75,16 @@ export const FeesWithdrawal: React.FC<FeesWithdrawalProps> = ({
         setLoading(false);
     }, [token, amount, isRenVMFee, withdrawCallback]);
 
-    // let minimumUiAmount = Math.pow(10, amount?.asset.decimals)
+    let minimumUiAmount = minimumClaimAmount
+        .div(new BigNumber(Math.pow(10, amount?.asset?.decimals || 0)))
     let isDisabled = false;
     let title = "";
     if (disabled) {
         isDisabled = true;
         title = "Must be operator to withdraw";
-    } else if (!amount || new BigNumber(amount.amount).lte(1)) {
+    } else if (!amount || new BigNumber(amount.amount).lte(1) || (isRenVMFee && new BigNumber(amount.amount).lte(minimumClaimAmount))) {
         isDisabled = true;
-        title = "No fees to withdraw";
-    } else if (isRenVMFee && new BigNumber(amount.amount).lte(dustAmount)) {
-        isDisabled = true;
-        title = `Fee is lower than the minimum amount`;
+        title = `Minum withdraw is ${minimumUiAmount.toFixed()} ${amount ? amount.symbol : ""}`;
     } else if (!isRenVMFee && (!amount.asset || !amount.asset.tokenAddress)) {
         isDisabled = true;
         title = "Unable to look up token address";
@@ -129,7 +127,7 @@ interface FeesBlockRowProps {
         tokenAddress: string,
     ) => Promise<void>;
     isRenVMFee?: boolean;
-    dustAmount?: BigNumber;
+    minimumClaimAmount?: BigNumber;
 }
 
 export const FeesBlockRow: React.FC<FeesBlockRowProps> = ({
@@ -142,7 +140,7 @@ export const FeesBlockRow: React.FC<FeesBlockRowProps> = ({
     percent,
     withdrawCallback,
     isRenVMFee = false,
-    dustAmount = new BigNumber(-1),
+    minimumClaimAmount = new BigNumber(-1),
 }) => {
     return (
         <>
@@ -194,7 +192,7 @@ export const FeesBlockRow: React.FC<FeesBlockRowProps> = ({
                             amount={balance}
                             withdrawCallback={withdrawCallback}
                             isRenVMFee={isRenVMFee}
-                            dustAmount={dustAmount}
+                            minimumClaimAmount={minimumClaimAmount}
                         />
                     </td>
                 ) : null}

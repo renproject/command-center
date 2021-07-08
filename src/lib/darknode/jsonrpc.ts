@@ -154,6 +154,72 @@ export const queryBlockState = async (network: RenNetworkDetails) => {
     return response.data as any;
 };
 
+export const getTransactionHash = (
+    renNetwork: RenNetworkDetails,
+    token: string,
+    node: string,
+    amount: BigNumber,
+    to: string,
+    nonce: number,
+    signature: string,
+) => {
+    const request = {
+        method: "ren_submitTx",
+        id: 1,
+        jsonrpc: "2.0",
+        params: {
+            tx: {
+                hash: "xeP7Ehi4g7S3erp8z-7yU1td07757diRYtwd0s-4SzI", // TODO: where to find it?
+                in: {
+                    t: {
+                        struct: [
+                            {
+                                type: "string",
+                            },
+                            {
+                                network: "string",
+                            },
+                            {
+                                node: "bytes32",
+                            },
+                            {
+                                amount: "u256",
+                            },
+                            {
+                                to: "string",
+                            },
+                            {
+                                nonce: "u64",
+                            },
+                            {
+                                signature: "bytes",
+                            },
+                        ],
+                    },
+                    v: {
+                        type: "ethSign",
+                        network: renNetwork.name,
+                        node,
+                        amount: amount.toFixed(),
+                        to,
+                        nonce: String(nonce),
+                        signature,
+                    },
+                },
+                selector: `${toNativeTokenSymbol(token)}/claimFees`,
+                version: "1",
+            },
+        },
+    };
+    return sanitizeBase64String(
+        hashTransaction(
+            request.params.tx.version,
+            request.params.tx.selector,
+            request.params.tx.in as any,
+        ).toString("base64"),
+    );
+};
+
 export const claimFees = async (
     renNetwork: RenNetworkDetails,
     token: string,

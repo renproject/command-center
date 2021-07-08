@@ -178,7 +178,7 @@ export const FeesBlock: React.FC<FeesBlockProps> = ({
                                                     ],
                                                     _i,
                                                 ) => {
-                                                    const dustAmount = blockState
+                                                    const minimumClaimAmount = blockState
                                                         ? getMinimumAmountForToken(
                                                               token,
                                                               blockState,
@@ -207,8 +207,8 @@ export const FeesBlock: React.FC<FeesBlockProps> = ({
                                                             isRenVMFee={
                                                                 isRenVMFee
                                                             }
-                                                            dustAmount={
-                                                                dustAmount
+                                                            minimumClaimAmount={
+                                                                minimumClaimAmount
                                                             }
                                                         />
                                                     );

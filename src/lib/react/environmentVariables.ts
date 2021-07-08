@@ -20,3 +20,6 @@ export const PORTIS_KEY = process.env.REACT_APP_PORTIS_KEY || "";
 export const DEFAULT_REQUEST_TIMEOUT = 60 * 1000;
 
 export const MINIMUM_SHIFTED_AMOUNT = 0.0007;
+
+// TODO: Once testnet dev tools are deployed, add link.
+export const DEV_TOOLS = "https://renproject.github.io/dev-tools/#";

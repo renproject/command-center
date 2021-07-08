@@ -650,5 +650,6 @@
 }
 
 .fee-confirmation-data {
+    @extend .ellipsis;
     font-size: 20px;
 }
