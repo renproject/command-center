@@ -8,7 +8,6 @@ import {
     FontAwesomeIconProps,
 } from "@fortawesome/react-fontawesome";
 import { naturalTime } from "@renproject/react-components";
-import BigNumber from "bignumber.js";
 import React, { useEffect, useState } from "react";
 
 import { RegistrationStatus } from "../../../lib/ethereum/contractReads";
@@ -16,8 +15,6 @@ import { isDefined } from "../../../lib/general/isDefined";
 import { GraphContainer } from "../../../store/graphContainer";
 import { DarknodesState } from "../../../store/networkContainer";
 import { SECONDS } from "../../common/BackgroundTasks";
-
-const lowValue = new BigNumber(Math.pow(10, 18)).multipliedBy(0.01);
 
 enum NotificationType {
     Warning = "notification--warning",

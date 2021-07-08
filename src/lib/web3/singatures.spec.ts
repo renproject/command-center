@@ -1,19 +1,21 @@
-import { claimFeesDigest, prependBytes32 } from "./signatures";
+import { base64StringToHexString } from "../general/encodingUtils";
+import { claimFeesDigest } from "./signatures";
 
 describe("signatures", () => {
-    it("merkles", () => {
-        const node = "d7XRfplad6PSXZGf48wUl80TC84AAAAAAAAAAAAAAAA";
-        const amount = 3500000;
-        const to = "3BXVSSgpDzN79JLyUwcWtCTVCG48D35s2t";
-        const nonce = 5;
+    test("creates signature", () => {
+        const asset = "ZEC";
+        const network = "testnet";
+        const node = "xoFRPv_xsoti6yaZAoZT5zNkU7sAAAAAAAAAAAAAAAA";
+        const amount = 449767;
+        const to = "tmJ8ngiRiaUVGtExgNgd5nzRF1fSRd47qvP";
+        const nonce = 0;
 
-        const result = claimFeesDigest(node, amount, to, nonce);
-        expect(result).toEqual("7hynGPeQIo_5VuEWQiMaQ1ayKeTEjCqKA5r81ep5SGU");
-    });
+        const result = claimFeesDigest(asset, network, node, amount, to, nonce);
+        expect(result).toEqual("r0UE-lKA9DONHg13fOlOdU0PX1MIU5b798eaXdE_ahg");
 
-    it("prepends bytes", () => {
-        const num = 5;
-        const result = prependBytes32(num);
-        expect(result.toString()).toEqual("AAA");
+        const resultHex = base64StringToHexString(result);
+        expect(resultHex).toEqual(
+            "af4504fa5280f4338d1e0d777ce94e754d0f5f53085396fbf7c79a5dd13f6a18",
+        );
     });
 });

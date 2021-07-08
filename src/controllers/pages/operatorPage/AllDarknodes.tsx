@@ -1,5 +1,5 @@
-import { List } from "immutable";
-import React, { useMemo } from "react";
+import { List, OrderedSet } from "immutable";
+import React, { useEffect, useMemo } from "react";
 import { RegistrationStatus } from "../../../lib/ethereum/contractReads";
 
 import {
@@ -9,6 +9,7 @@ import {
 import { Web3Container } from "../../../store/web3Container";
 import { ErrorBoundary } from "../../common/ErrorBoundary";
 import { DarknodeCardList } from "./DarknodeCardList";
+import { RenVmFeesAll } from "./RenVmFeesAll";
 import { WithdrawAll } from "./WithdrawAll";
 
 /**
@@ -18,14 +19,13 @@ import { WithdrawAll } from "./WithdrawAll";
 export const AllDarknodes: React.FC<{}> = () => {
     const { address, renNetwork: network } = Web3Container.useContainer();
     const {
-        darknodeDetails,
+        darknodeDetails, // TODO: crit simplify
         darknodeNames,
         darknodeRegisteringList,
         registrySync,
         darknodeList,
         hiddenDarknodes,
-        // fetchBlockState,
-        // blockState,
+        fetchBlockState,
     } = NetworkContainer.useContainer();
 
     // TODO: here
@@ -34,13 +34,15 @@ export const AllDarknodes: React.FC<{}> = () => {
         [address, darknodeList],
     );
 
-    // useEffect(() => {
-    //     fetchBlockState().catch(console.error);
-    // }, [fetchBlockState]);
+    useEffect(() => {
+        fetchBlockState().catch(console.error);
 
-    // console.log("bs", blockState);
-    // console.log("a", accountDarknodeList?.toJS());
-    // console.log("h", hiddenDarknodes?.toJS());
+        const interval = setInterval(() => {
+            fetchBlockState().catch(console.error);
+        }, 180 * 1000);
+
+        return () => clearInterval(interval);
+    }, [fetchBlockState]);
 
     const accountHiddenDarknodes = useMemo(
         () => (address ? hiddenDarknodes.get(address, null) : null),
@@ -55,27 +57,33 @@ export const AllDarknodes: React.FC<{}> = () => {
                   !accountHiddenDarknodes.contains(d),
           );
 
-    const shownDarknodeDetails = shownDarknodeList
-        ? (shownDarknodeList
-              .toList()
-              .map((darknode) => darknodeDetails.get(darknode))
-              .filter((x) => !!x) as List<DarknodesState>)
-        : shownDarknodeList;
+    const shownDarknodeDetails = (shownDarknodeList || OrderedSet())
+        .toList()
+        .map((darknode) => darknodeDetails.get(darknode))
+        .filter((x) => !!x) as List<DarknodesState>;
 
-    const withdrawableDetails = shownDarknodeDetails
-        ? shownDarknodeDetails.filter(
-              (details) =>
-                  details.registrationStatus === RegistrationStatus.Registered,
-          )
-        : shownDarknodeDetails;
+    const withdrawableDetails = shownDarknodeDetails.filter(
+        (details) =>
+            details.registrationStatus === RegistrationStatus.Registered,
+    );
 
     return (
         <div className="home" key={`${address || ""} ${network.name}`}>
             <div className="container">
                 {shownDarknodeList && shownDarknodeList.size > 0 ? (
-                    <ErrorBoundary>
-                        <WithdrawAll darknodeList={withdrawableDetails} />
-                    </ErrorBoundary>
+                    <>
+                        <ErrorBoundary>
+                            <h2>Ethereum Fees</h2>
+                            <WithdrawAll darknodeList={withdrawableDetails} />
+                            <h2>RenVM Fees</h2>
+                            <p className="field-info field-info--supplemental">
+                                RenVM rewards currently needs to be claimed
+                                individually for each Darknode. Click on the
+                                Darknode below the summary table to proceed.
+                            </p>
+                            <RenVmFeesAll darknodeList={withdrawableDetails} />
+                        </ErrorBoundary>
+                    </>
                 ) : null}
                 {darknodeRegisteringList.size > 0 ? (
                     <>

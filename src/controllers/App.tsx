@@ -27,8 +27,11 @@ import { ScrollToTop } from "./ScrollToTop";
  * and running background app loops.
  */
 export const App = () => {
-    const { address, loggedInBefore, promptLogin } =
-        Web3Container.useContainer();
+    const {
+        address,
+        loggedInBefore,
+        promptLogin,
+    } = Web3Container.useContainer();
 
     const withAccount = useCallback(
         <T extends React.ComponentClass | React.StatelessComponent>(

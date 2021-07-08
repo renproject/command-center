@@ -10,8 +10,11 @@ import { StatusDot, StatusDotColor } from "../../../views/StatusDot";
 
 export const HighlightAllDarknodes: React.FC<{}> = () => {
     const { address } = Web3Container.useContainer();
-    const { darknodeDetails, darknodeList, hiddenDarknodes } =
-        NetworkContainer.useContainer();
+    const {
+        darknodeDetails,
+        darknodeList,
+        hiddenDarknodes,
+    } = NetworkContainer.useContainer();
 
     const accountDarknodeList = useMemo(
         () => (address ? darknodeList.get(address, null) : null),

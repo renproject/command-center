@@ -2,6 +2,7 @@ import { toChecksumAddress } from "web3-utils";
 import { Ox } from "../ethereum/contractReads";
 
 import { EncodedData, Encodings } from "../general/encodedData";
+import { bufferToUrlBase64 } from "../general/encodingUtils";
 
 export const darknodeIDBase58ToHex = (darknodeIDBase: string): string =>
     toChecksumAddress(
@@ -23,11 +24,7 @@ export const darknodeIDBase58ToRenVmID = (darknodeID: string) => {
     const address = decoded.slice(2);
     const bytes32 = Buffer.alloc(32, 0);
     address.copy(bytes32);
-    return bytes32
-        .toString("base64")
-        .replace(/\+/g, "-")
-        .replace(/\//g, "_")
-        .replace(/\=+$/, "");
+    return bufferToUrlBase64(bytes32);
 };
 
 export const renVMIDToBase58 = (renVMID: string) => {

@@ -14,6 +14,11 @@
     border-color: white transparent white transparent;
 }
 
+.loading--big.lds-dual-ring:after {
+    width: 56px;
+    height: 56px;
+}
+
 @keyframes lds-dual-ring {
     0% {
         transform: rotate(0deg);

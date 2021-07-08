@@ -45,7 +45,6 @@ export const DarknodeCardList: React.FC<Props> = ({
                                 const details =
                                     darknodeDetails.get(darknodeID) || null;
                                 const name = darknodeNames.get(darknodeID);
-
                                 return (
                                     <ErrorBoundary key={darknodeID}>
                                         <DarknodeCardController

@@ -494,3 +494,54 @@ label {
         margin-bottom: 0;
     }
 }
+
+.field-wrapper {
+    margin: 24px 0;
+}
+
+.field-input {
+    border-radius: 4px;
+}
+
+.field-label {
+    font-size: 14px;
+    margin: 6px 0;
+}
+
+.field-info {
+    font-size: 14px;
+    margin: 6px 0;
+    &--supplemental {
+        color: $mid-grey;
+    }
+    &--flex {
+        display: flex;
+        justify-content: space-between;
+    }
+}
+
+.field-error {
+    font-size: 14px;
+    margin: 6px 0;
+    color: $red;
+}
+
+.form-error-wrapper {
+    color: $red;
+    margin: 24px 0;
+}
+
+.form-error-header {
+    font-size: 24px;
+}
+
+.form-error-text {
+    font-size: 16px;
+}
+
+.field-input {
+    border-radius: 2px;
+    &--full-width {
+        width: 100%;
+    }
+}

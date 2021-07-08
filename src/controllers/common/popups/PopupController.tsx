@@ -9,8 +9,12 @@ import { ErrorBoundary } from "../ErrorBoundary";
  * foreground with the rest of the page in the background
  */
 export const PopupController: React.FC = ({ children }) => {
-    const { popup, overlay, onCancel, dismissible } =
-        PopupContainer.useContainer();
+    const {
+        popup,
+        overlay,
+        onCancel,
+        dismissible,
+    } = PopupContainer.useContainer();
 
     const onClickHandler = () => {
         if (dismissible) {

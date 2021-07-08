@@ -51,19 +51,19 @@ export const AllTokenDetails = OrderedMap<Token, TokenDetail>()
         coinGeckoID: "republic-protocol",
     })
     .set(Token.BTC, {
-        symbol: "renBTC",
+        symbol: "BTC",
         decimals: 8,
         coinGeckoID: "bitcoin",
         feesToken: true,
     })
     .set(Token.ZEC, {
-        symbol: "renZEC",
+        symbol: "ZEC",
         decimals: 8,
         coinGeckoID: "zcash",
         feesToken: true,
     })
     .set(Token.BCH, {
-        symbol: "renBCH",
+        symbol: "BCH",
         decimals: 8,
         coinGeckoID: "bitcoin-cash",
         feesToken: true,

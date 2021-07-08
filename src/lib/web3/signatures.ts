@@ -1,40 +1,59 @@
+import BigNumber from "bignumber.js";
 import { sha256 } from "ethereumjs-util";
+import {
+    numberToLeftPaddedBase64String,
+    sanitizeBase64String,
+} from "../general/encodingUtils";
+import {
+    base64Sha256FromTwoBase64Strings,
+    base64Sha256FromUtf8String,
+} from "../general/sha256";
+import { marshalString, marshalTypedPackValue } from "../pack/marshal";
+import { TypedPackValue } from "../pack/pack";
 
 export const claimFeesDigest = (
-    darknodeId: string,
-    amount: number,
-    address: string,
+    asset: string,
+    network: string,
+    node: string,
+    amount: BigNumber,
+    to: string,
     nonce: number,
 ) => {
-    const hash = (x: any) => x.toString(); // sha256;
-    const nodeHash = hash(stringToBuffer(darknodeId));
-    const amountHash = hash(toBytes32(stringToBuffer(amount.toString())));
-    const toHash = hash(sha256(stringToBuffer(address)));
-    const nonceHash = hash(toBytes32(stringToBuffer(nonce.toString())));
+    console.debug("signing", { asset, network, node, amount, to, nonce });
+    const assetHash = base64Sha256FromUtf8String(asset);
+    const networkHash = base64Sha256FromUtf8String(network);
+    const nodeHash = sanitizeBase64String(node);
+    const amountHash = numberToLeftPaddedBase64String(amount.toFixed());
+    const toHash = base64Sha256FromUtf8String(to);
+    const nonceHash = numberToLeftPaddedBase64String(nonce.toString());
 
-    const h01 = hash(nodeHash + amountHash);
-    const h23 = hash(toHash + nonceHash);
-    return hash(h01 + h23);
+    console.debug("signing merkle data", {
+        assetHash,
+        networkHash,
+        nodeHash,
+        amountHash,
+        toHash,
+        nonceHash,
+    });
+    const h01 = base64Sha256FromTwoBase64Strings(assetHash, networkHash);
+    const h23 = base64Sha256FromTwoBase64Strings(nodeHash, amountHash);
+    const h45 = base64Sha256FromTwoBase64Strings(toHash, nonceHash);
+    const h2345 = base64Sha256FromTwoBase64Strings(h23, h45); // good one
+    //root
+    console.debug(h01, h2345);
+    return base64Sha256FromTwoBase64Strings(h01, h2345);
 };
 
-export const toBytes32 = (value: Buffer) => {
-    const bytes32 = Buffer.alloc(32, 0);
-    value.copy(bytes32);
-    return bytes32;
-};
-
-export const prependBytes32 = (value: number) => {
-    const bytes32 = Buffer.alloc(32, 0);
-    const strBuff = stringToBuffer(value.toString());
-    strBuff.copy(bytes32);
-    return bytes32;
-};
-
-const stringToBuffer = (str: string) => {
-    const buffer = new ArrayBuffer(str.length * 2); // 2 bytes for each char
-    const bufferView = new Uint16Array(buffer);
-    for (var i = 0, strLen = str.length; i < strLen; i++) {
-        bufferView[i] = str.charCodeAt(i);
-    }
-    return new Buffer(buffer);
+export const hashTransaction = (
+    version: string,
+    selector: string,
+    packValue: TypedPackValue,
+) => {
+    return sha256(
+        Buffer.concat([
+            marshalString(version),
+            marshalString(selector),
+            marshalTypedPackValue(packValue),
+        ]),
+    );
 };

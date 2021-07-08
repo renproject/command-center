@@ -150,7 +150,7 @@ export const queryRenVMSubgraph = async (
         assets: Array<{
             symbol: string;
             tokenAddress: string;
-            decimals: number;
+            decimals: string;
         }>;
     }>({
         query: QUERY_RENVM,
@@ -224,6 +224,9 @@ export const queryRenVMSubgraph = async (
             parseTokenAmount,
         ),
 
-        assets: response.data.assets,
+        assets: response.data.assets.map((asset) => ({
+            ...asset,
+            decimals: parseInt(asset.decimals, 10),
+        })),
     };
 };

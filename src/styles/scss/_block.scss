@@ -96,7 +96,7 @@
 .gas-block--advanced--unit {
     margin-left: 3px;
     font-size: 22px;
-    opacity: 0.6;
+    color: rgba(255, 255, 255, 0.4);
 }
 
 /**** FEES BLOCK *****/
@@ -105,17 +105,22 @@
     position: relative;
     &--control {
         position: absolute;
-        top: 4px;
-        right: 5px;
+        top: 20px;
+        right: 20px;
         font-size: 14px;
         color: rgba(255, 255, 255, 0.4);
     }
     &--button {
         cursor: pointer;
+
         &--active {
-            color: rgba(255, 255, 255, 0.8);
+            color: #ffffff;
             border-bottom: 2px solid $primary;
         }
+    }
+    &--divider {
+        margin-left: 10px;
+        margin-right: 10px;
     }
 }
 

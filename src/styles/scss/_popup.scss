@@ -28,6 +28,19 @@
     a {
         color: $primary;
     }
+
+    &--size-medium {
+        width: 100%;
+        max-width: 480px;
+    }
+
+    &--padded-medium {
+        padding: 34px;
+    }
+
+    &--align-left {
+        text-align: left;
+    }
 }
 
 .popup h2,
@@ -189,6 +202,12 @@ $noWeb3Padding: 20px;
     height: 40px;
 }
 
+.popup--content {
+    font-size: 14px;
+    text-align: left;
+    margin: 48px 0;
+}
+
 .popup--description {
     font-size: 16px;
     margin: 20px 0;
@@ -233,11 +252,29 @@ $noWeb3Padding: 20px;
     filter: blur(2px);
 }
 
+.popup-backdrop--blur {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    pointer-events: none;
+    backdrop-filter: blur(2px);
+    z-index: 15;
+}
+
 .popup--container {
     position: absolute;
     top: 0;
     width: 100%;
 }
+//.popup--blur--fixed {
+//    position: fixed;
+//    height: 100%;
+//    width: 100%;
+//    pointer-events: none;
+//    filter: blur(2px);
+//}
 
 /* Multi Step */
 

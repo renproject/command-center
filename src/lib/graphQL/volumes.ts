@@ -26,7 +26,7 @@ export enum VolumeNetwork {
     BSC = "BSC",
     BSCTestnet = "BSCTestnet",
     Fantom = "Fantom",
-    Polygon = "Polygon"
+    Polygon = "Polygon",
 }
 
 const getNetworkBlockTime = (volumeNetwork: VolumeNetwork) => {
@@ -473,8 +473,9 @@ const normalizeVolumes = (
                 : tokenLockedHistoric;
             data.quoteLocked[symbol] = tokenLocked;
             data.quoteLockedTotal = data.quoteLockedTotal.plus(tokenLocked);
-            data.quoteLockedTotalHistoric =
-                data.quoteLockedTotalHistoric.plus(tokenLockedHistoric);
+            data.quoteLockedTotalHistoric = data.quoteLockedTotalHistoric.plus(
+                tokenLockedHistoric,
+            );
         });
     }
 

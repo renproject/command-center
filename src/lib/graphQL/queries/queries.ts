@@ -11,7 +11,7 @@ export interface RawTokenAmount {
     amountInEth: string;
     amountInUsd: string;
     asset: {
-        decimals: number;
+        decimals: string;
         tokenAddress?: string;
     } | null;
 }
@@ -31,6 +31,12 @@ export type TokenAmountCollection = OrderedMap<string, TokenAmount>;
 
 export const parseTokenAmount = (amount: RawTokenAmount): TokenAmount => ({
     ...amount,
+    asset: amount.asset
+        ? {
+              ...amount.asset,
+              decimals: parseInt(amount.asset.decimals),
+          }
+        : amount.asset,
     amount: new BigNumber(amount.amount),
     amountInUsd: new BigNumber(amount.amountInUsd),
     amountInEth: new BigNumber(amount.amountInEth),

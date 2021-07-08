@@ -1,6 +1,5 @@
 import { List, OrderedMap } from "immutable";
-import moment from "moment";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useMemo } from "react";
 import {
     DarknodeFeeStatus,
     RegistrationStatus,
@@ -12,7 +11,6 @@ import {
     DarknodesState,
     NetworkContainer,
 } from "../../../store/networkContainer";
-import { PopupContainer } from "../../../store/popupContainer";
 // import { UIContainer } from "../../../store/uiContainer";
 import { FeesBlock } from "../../../views/darknodeBlocks/FeesBlock";
 // import { NotClaimed } from "../../../views/popups/NotClaimed";
@@ -25,7 +23,7 @@ interface Props {
 export const WithdrawAll: React.FC<Props> = ({ darknodeList }) => {
     const { quoteCurrency, pendingRewards } = NetworkContainer.useContainer();
     const { renVM, subgraphOutOfSync } = GraphContainer.useContainer();
-    const { currentCycle, previousCycle, timeSinceLastEpoch } = renVM || {};
+    const { currentCycle, previousCycle } = renVM || {};
     // const {
     //     claimWarningShown,
     //     setClaimWarningShown,
@@ -197,7 +195,6 @@ export const WithdrawAll: React.FC<Props> = ({ darknodeList }) => {
             darknodeList,
             pendingRewards,
             previousCycle,
-            timeSinceLastEpoch,
             subgraphOutOfSync,
         ],
     );

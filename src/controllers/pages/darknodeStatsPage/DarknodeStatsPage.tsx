@@ -60,6 +60,12 @@ export const DarknodeStatsPage = () => {
 
     useEffect(() => {
         fetchBlockState().catch(console.error);
+
+        const interval = setInterval(() => {
+            fetchBlockState().catch(console.error);
+        }, 180 * 1000);
+
+        return () => clearInterval(interval);
     }, [fetchBlockState]);
 
     useEffect(() => {

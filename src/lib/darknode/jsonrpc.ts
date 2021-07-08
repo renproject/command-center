@@ -1,6 +1,7 @@
 import { RenNetworkDetails } from "@renproject/contracts";
 import { Record } from "@renproject/react-components";
 import Axios from "axios";
+import BigNumber from "bignumber.js";
 
 import {
     retryNTimes,
@@ -8,12 +9,13 @@ import {
 } from "../../controllers/pages/renvmStatsPage/renvmContainer";
 
 import { getLightnode } from "../../store/mapContainer";
+import { sanitizeBase64String } from "../general/encodingUtils";
 import { DEFAULT_REQUEST_TIMEOUT } from "../react/environmentVariables";
+import { hashTransaction } from "../web3/signatures";
 import {
     QueryBlockStateResponse,
     toNativeTokenSymbol,
 } from "./utils/blockStateUtils";
-// import { queryBlockStateResponse } from "./utils/mocks/fees.bs.testnet.mock";
 
 interface ResponseQueryStat {
     version: string;
@@ -152,22 +154,82 @@ export const queryBlockState = async (network: RenNetworkDetails) => {
     return response.data as any;
 };
 
-export type ClaimFeesParams = {
-    darknodeId: string;
-    amount: string;
-    epoch: string;
-    to: string;
-    signature: string;
+export const getTransactionHash = (
+    renNetwork: RenNetworkDetails,
+    token: string,
+    node: string,
+    amount: BigNumber,
+    to: string,
+    nonce: number,
+    signature: string,
+) => {
+    const request = {
+        method: "ren_submitTx",
+        id: 1,
+        jsonrpc: "2.0",
+        params: {
+            tx: {
+                hash: "xeP7Ehi4g7S3erp8z-7yU1td07757diRYtwd0s-4SzI", // TODO: where to find it?
+                in: {
+                    t: {
+                        struct: [
+                            {
+                                type: "string",
+                            },
+                            {
+                                network: "string",
+                            },
+                            {
+                                node: "bytes32",
+                            },
+                            {
+                                amount: "u256",
+                            },
+                            {
+                                to: "string",
+                            },
+                            {
+                                nonce: "u64",
+                            },
+                            {
+                                signature: "bytes",
+                            },
+                        ],
+                    },
+                    v: {
+                        type: "ethSign",
+                        network: renNetwork.name,
+                        node,
+                        amount: amount.toFixed(),
+                        to,
+                        nonce: String(nonce),
+                        signature,
+                    },
+                },
+                selector: `${toNativeTokenSymbol(token)}/claimFees`,
+                version: "1",
+            },
+        },
+    };
+    return sanitizeBase64String(
+        hashTransaction(
+            request.params.tx.version,
+            request.params.tx.selector,
+            request.params.tx.in as any,
+        ).toString("base64"),
+    );
 };
 
 export const claimFees = async (
-    network: RenNetworkDetails,
+    renNetwork: RenNetworkDetails,
     token: string,
     node: string,
-    amount: string,
+    amount: BigNumber,
     to: string,
+    nonce: number,
+    signature: string,
 ) => {
-    const lightnode = getLightnode(network, true);
+    const lightnode = getLightnode(renNetwork, true);
     if (!lightnode) {
         throw new Error(`No lightnode to claim fees.`);
     }
@@ -177,53 +239,41 @@ export const claimFees = async (
         jsonrpc: "2.0",
         params: {
             tx: {
-                hash: "eKT2CEAd3ZuzIsQ5mrqKO9Yv24e7ql9fSi-ltOUXfBM",
+                hash: "",
                 in: {
                     t: {
                         struct: [
                             {
-                                txid: "bytes",
+                                type: "string",
                             },
                             {
-                                txindex: "u32",
+                                network: "string",
+                            },
+                            {
+                                node: "bytes32",
                             },
                             {
                                 amount: "u256",
                             },
                             {
-                                payload: "bytes",
-                            },
-                            {
-                                phash: "bytes32",
-                            },
-                            {
                                 to: "string",
                             },
                             {
-                                nonce: "bytes32",
+                                nonce: "u64",
                             },
                             {
-                                nhash: "bytes32",
-                            },
-                            {
-                                gpubkey: "bytes",
-                            },
-                            {
-                                ghash: "bytes32",
+                                signature: "bytes",
                             },
                         ],
                     },
                     v: {
-                        amount: "401480",
-                        ghash: "9VxewtRVSJmKnc2jhplArqWeSOxE50msbMJd1hx2X7U",
-                        gpubkey: "A4knRXgAkxx9RNyUywAhtOiB-ZNcEjTckvRW4y7AGdXX",
-                        nhash: "MUdOHf1As-OXFjQMI0PogV6Lx5PKbSPN7fpvZu21okM",
-                        nonce: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACs",
-                        payload: "",
-                        phash: "xdJGAYb3IzySfn2y3McDwOUAtlPKgic7e_rYBF2FpHA",
-                        to: "bc1qj4cj3406k5pe4m0m7ngth35w73aghljghpykqf",
-                        txid: "aCjatCwWSIALMAzSsTGPgSadDgZT8Nsc2iAqn413ewY",
-                        txindex: "0",
+                        type: "ethSign",
+                        network: renNetwork.name,
+                        node,
+                        amount: amount.toFixed(),
+                        to,
+                        nonce: String(nonce),
+                        signature,
                     },
                 },
                 selector: `${toNativeTokenSymbol(token)}/claimFees`,
@@ -231,5 +281,75 @@ export const claimFees = async (
             },
         },
     };
-    console.info(request);
+    const txHash = sanitizeBase64String(
+        hashTransaction(
+            request.params.tx.version,
+            request.params.tx.selector,
+            request.params.tx.in as any,
+        ).toString("base64"),
+    );
+    request.params.tx.hash = txHash;
+
+    const response = await Axios.post<RPCResponse<any>>(lightnode, request, {
+        timeout: DEFAULT_REQUEST_TIMEOUT,
+    }).catch((err) => {
+        throw err;
+    });
+    console.info(request, response);
+    return response;
+};
+
+export enum ClaimFeesStatus {
+    Pending = "pending",
+    Executing = "executing",
+    Done = "done",
+}
+
+export const getClaimFeesStatus = async (
+    renNetwork: RenNetworkDetails,
+    renVMHash: string,
+): Promise<{
+    status: ClaimFeesStatus;
+    revert?: string;
+}> => {
+    const lightnode = getLightnode(renNetwork, true);
+    if (!lightnode) {
+        throw new Error(`No lightnode to claim fees.`);
+    }
+
+    const request = {
+        id: 1,
+        jsonrpc: "2.0",
+        method: "ren_queryTx",
+        params: { txHash: renVMHash },
+    };
+
+    const response = await Axios.post<
+        RPCResponse<{
+            tx:
+                | { out: undefined }
+                | {
+                      out: {
+                          v: {
+                              revert: string;
+                          };
+                      };
+                  };
+            txStatus: ClaimFeesStatus;
+        }>
+    >(lightnode, request, {
+        timeout: DEFAULT_REQUEST_TIMEOUT,
+    }).catch((err) => {
+        throw err;
+    });
+
+    const result = response.data.result;
+
+    return {
+        status: result.txStatus,
+        revert:
+            result.tx.out && result.tx.out.v.revert !== ""
+                ? result.tx.out.v.revert
+                : undefined,
+    };
 };
