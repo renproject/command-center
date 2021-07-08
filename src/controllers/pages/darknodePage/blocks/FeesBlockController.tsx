@@ -31,6 +31,7 @@ import { Token, TokenString } from "../../../../lib/ethereum/tokens";
 import {
     base64StringToHexString,
     hexStringToBase64String,
+    sanitizeBase64String,
 } from "../../../../lib/general/encodingUtils";
 import { TokenAmount } from "../../../../lib/graphQL/queries/queries";
 import { classNames } from "../../../../lib/react/className";
@@ -539,7 +540,9 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
             if (signatureBuffer[64] < 27) {
                 signatureBuffer[64] += 27;
             }
-            const signature = hexStringToBase64String(hexSignature);
+            const signature = sanitizeBase64String(
+                signatureBuffer.toString("base64"),
+            );
             try {
                 const renVMHash = getTransactionHash(
                     renNetwork,
