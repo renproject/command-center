@@ -509,9 +509,9 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                     "Invalid signature returned from Web3 provider.",
                 );
             }
-            // Ensure that signature recovery ID is either 27 or 28.
-            if (signatureBuffer[64] < 27) {
-                signatureBuffer[64] += 27;
+            // Ensure that signature recovery ID is either 0 or 1.
+            if (signatureBuffer[64] > 1) {
+                signatureBuffer[64] = signatureBuffer[64] % 27;
             }
             const signature = hexStringToBase64String(hexSignature);
             try {
