@@ -586,7 +586,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
 
                                 update({
                                     type: "error",
-                                    message: `Rewards withdrawal failed.`,
+                                    message: `${nativeTokenSymbol} withdrawal failed.`,
                                 });
                                 return;
                             } else if (status === ClaimFeesStatus.Done) {
