@@ -74,7 +74,7 @@ export const tokenArrayToMap = <T extends { symbol: string }>(
 
 export const getPeriodTimespan = (
     type: string,
-    volumeNetwork: VolumeNetwork,
+    volumeNetwork: VolumeNetwork = VolumeNetwork.Ethereum,
 ): number => {
     const minutes = 60; // 60 seconds
     const hours = 60 * minutes;

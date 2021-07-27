@@ -7,6 +7,7 @@ import {
     ethereumSubgraphUrl,
     fantomSubgraphUrl,
     polygonSubgraphUrl,
+    renVmTrackerUrl,
 } from "./client";
 
 import { createContainer } from "unstated-next";
@@ -33,11 +34,14 @@ const useGraphClientContainer = () => {
         [renNetwork],
     );
 
+    const renVmTracker = useMemo(() => apolloClient(renVmTrackerUrl()), []);
+
     return {
         ethereumSubgraph,
         bscSubgraph,
         fantomSubgraph,
         polygonSubgraph,
+        renVmTracker,
     };
 };
 

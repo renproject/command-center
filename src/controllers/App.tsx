@@ -18,6 +18,7 @@ import { DarknodePage } from "./pages/darknodePage/DarknodePage";
 import { DarknodeStatsPage } from "./pages/darknodeStatsPage/DarknodeStatsPage";
 import { IntegratorStatsPage } from "./pages/integratorStatsPage/IntegratorStatsPage";
 import { NetworkStatsPage } from "./pages/networkStatsPage/NetworkStatsPage";
+import { NewNetworkStatsPage } from "./pages/networkStatsPage/NewNetworkStatsPage";
 import { AllDarknodes } from "./pages/operatorPage/AllDarknodes";
 import { RenVMStatsPage } from "./pages/renvmStatsPage/RenVMStatsPage";
 import { ScrollToTop } from "./ScrollToTop";
@@ -74,6 +75,11 @@ export const App = () => {
                                     path="/network"
                                     exact
                                     component={NetworkStatsPage}
+                                />
+                                <Route
+                                    path="/new-network"
+                                    exact
+                                    component={NewNetworkStatsPage}
                                 />
                                 <Route
                                     path="/integrators"

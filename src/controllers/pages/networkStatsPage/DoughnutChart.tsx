@@ -20,11 +20,16 @@ const colors = [
     "#003B7C",
 ];
 
+export type DoughnutChartData =
+    | { [token: string]: BigNumber }
+    | null
+    | undefined;
+
 interface Props {
-    data: { [token: string]: BigNumber } | null | undefined;
+    data: DoughnutChartData;
     quoteCurrency: Currency;
     title: string;
-    altData: { [token: string]: BigNumber } | undefined | null;
+    altData: DoughnutChartData;
 }
 
 export const DoughnutChart: React.FC<Props> = ({

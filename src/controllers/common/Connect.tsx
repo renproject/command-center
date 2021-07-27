@@ -10,6 +10,7 @@ import { NotificationsContainer } from "../../store/notificationsContainer";
 import { PopupContainer } from "../../store/popupContainer";
 import { UIContainer } from "../../store/uiContainer";
 import { Web3Container } from "../../store/web3Container";
+import { TrackerContainer } from "../../store/trackerContainer";
 import { IntegratorsContainer } from "../pages/integratorStatsPage/integratorsContainer";
 import { NetworkStatsContainer } from "../pages/networkStatsPage/networkStatsContainer";
 import { RenVMContainer } from "../pages/renvmStatsPage/renvmContainer";
@@ -28,9 +29,11 @@ export const Connect: React.FC = ({ children }) => (
                                     <RenVMContainer.Provider>
                                         <GithubAPIContainer.Provider>
                                             <NetworkStatsContainer.Provider>
-                                                <IntegratorsContainer.Provider>
-                                                    {children}
-                                                </IntegratorsContainer.Provider>
+                                                <TrackerContainer.Provider>
+                                                    <IntegratorsContainer.Provider>
+                                                        {children}
+                                                    </IntegratorsContainer.Provider>
+                                                </TrackerContainer.Provider>
                                             </NetworkStatsContainer.Provider>
                                         </GithubAPIContainer.Provider>
                                     </RenVMContainer.Provider>

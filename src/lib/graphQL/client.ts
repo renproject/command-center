@@ -28,6 +28,11 @@ export const polygonSubgraphUrl = (renNetwork: RenNetworkDetails) => {
     }`;
 };
 
+// TODO: make network dependant
+export const renVmTrackerUrl = () => {
+    return `https://renvm-tracker.herokuapp.com/`;
+};
+
 export const apolloClient = (graphUrl: string) => {
     const client = new ApolloClient<unknown>({
         uri: graphUrl,
