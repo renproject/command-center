@@ -183,7 +183,7 @@ export const DoughnutChart: React.FC<Props> = ({
                                                               />
                                                               {data[
                                                                   token
-                                                              ].toFormat()}
+                                                              ].toFormat(2)}
                                                           </>
                                                       ) : (
                                                           <span className="overview--chart--legend--faded">

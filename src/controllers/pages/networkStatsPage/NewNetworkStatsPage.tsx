@@ -70,15 +70,16 @@ export const NewNetworkStatsPage = () => {
     const volumeChain = networkStatsChainToTrackerChain(volumeSelectedChain);
 
     const [volumeTab, setVolumeTab] = useState<StatTab>(StatTab.History);
-    const doughnutData = useMemo(
-        () =>
-            snapshotDataToTokenAmounts(
-                volumeData,
-                TrackerType.Volume,
-                volumeChain,
-            ),
-        [volumeData, volumeChain],
-    );
+    const doughnutData = useMemo(() => {
+        if (volumeLoading || !volumeData) {
+            return {};
+        }
+        return snapshotDataToTokenAmounts(
+            volumeData,
+            TrackerType.Volume,
+            volumeChain,
+        );
+    }, [volumeLoading, volumeData, volumeChain]);
     console.log("dh", doughnutData);
 
     const [lockedSelectedChain, setLockedSelectedChain] = useState(
@@ -171,7 +172,6 @@ export const NewNetworkStatsPage = () => {
                                                 title="Volume"
                                                 quoteCurrency={quoteCurrency}
                                                 data={doughnutData}
-                                                altData={undefined}
                                             />
                                         )
                                     ) : (

@@ -1,6 +1,7 @@
 import { ApolloClient, gql } from "@apollo/react-hooks";
 import BigNumber from "bignumber.js";
 import { NetworkStatsChain } from "../../../controllers/pages/networkStatsPage/networkStatsContainer";
+import { unifyTokenRecords } from "../../general/debugUtils";
 import { getPeriodTimespan, PeriodType } from "../volumes";
 
 export enum TrackerChain {
@@ -31,12 +32,18 @@ type SnapshotAmount = {
     amountInUsd: string;
 };
 
+type SnapshotPrice = {
+    asset: string;
+    decimals: number;
+    priceInUsd: number;
+};
+
 type Snapshot = {
     id: string;
     timestamp: number;
     locked: Array<SnapshotAmount>;
     volume: Array<SnapshotAmount>;
-    //prices
+    prices: Array<SnapshotPrice>;
 };
 
 export type BigNumberRecord = Record<string, BigNumber>;
@@ -69,6 +76,10 @@ const LOCKED_FRAGMENT = `
     fragment LockedSnapshot on Snapshot {
         id
         timestamp
+        prices {
+            asset,
+            decimals
+        },
         locked {
             asset
             chain
@@ -111,9 +122,16 @@ export const buildRenVmTrackerQuery = (
     const snapshotQuery = `
         ${type === TrackerType.Volume ? VOLUME_FRAGMENT : LOCKED_FRAGMENT}
         query GetSnapshots {
+            assets: Snapshot(timestamp: "1627221600"){
+                prices {
+                    asset,
+                    decimals
+                }
+            },
             ${subQueries.reverse().join(",")}
         }
     `;
+    console.log(snapshotQuery);
     return gql(snapshotQuery);
 };
 export const getResolutionPoints = (period: PeriodType) => {
@@ -141,7 +159,15 @@ export const getResolutionInterval = (period: PeriodType) => {
 };
 
 export const getSnapshots = (records: SnapshotRecord) => {
-    return Object.entries(records).map(([, snapshot]) => snapshot);
+    return Object.entries(records)
+        .filter(([key]) => key !== "assets")
+        .map(([, snapshot]) => snapshot);
+};
+
+export const getAssetData = (records: SnapshotRecord) => {
+    return Object.entries(records)
+        .filter(([key]) => key === "assets")
+        .map(([, snapshot]) => snapshot.prices)[0];
 };
 
 export const getFirstAndLastSnapshot = (snapshots: Array<Snapshot>) => {
@@ -171,10 +197,20 @@ export const getDistinctAssets = (entries: Array<SnapshotAmount>) => {
         .filter((value, index, self) => self.indexOf(value) === index);
 };
 
+enum AmountKind {
+    Usd = "Usd",
+    Native = "Native",
+}
+
+const getAmount = (entry: SnapshotAmount, kind: AmountKind) => {
+    return kind === AmountKind.Usd ? entry.amountInUsd : entry.amount;
+};
+
 export const snapshotDataToTokenAmounts = (
     data: SnapshotRecord,
     type: TrackerType,
     chain: TrackerChain,
+    amountKind = AmountKind.Usd,
 ) => {
     const snapshots = getSnapshots(data);
     console.log("snapshots", snapshots);
@@ -185,9 +221,7 @@ export const snapshotDataToTokenAmounts = (
     const lastAmounts = getAmountsFromSnapshot(last, type);
     const lastChainAmounts = getAmountsForChain(lastAmounts, chain);
     console.log("first last amounts", firstChainAmounts, lastChainAmounts);
-    const assets = getDistinctAssets(
-        lastChainAmounts.concat(firstChainAmounts),
-    );
+    const assets = getAssetData(data).map((entry) => entry.asset);
     console.log("tokens", assets);
     const amounts: BigNumberRecord = {};
     assets.forEach((asset) => {
@@ -199,13 +233,15 @@ export const snapshotDataToTokenAmounts = (
         );
         let difference = new BigNumber(0);
         if (lastEntry && firstEntry) {
-            difference = new BigNumber(lastEntry.amount).minus(
-                firstEntry.amount,
+            difference = new BigNumber(getAmount(lastEntry, amountKind)).minus(
+                getAmount(firstEntry, amountKind),
             );
+        } else if (lastEntry) {
+            difference = new BigNumber(getAmount(lastEntry, amountKind));
         }
 
         amounts[asset] = difference;
     });
-    console.log("amounts", amounts);
+    console.log("amounts", unifyTokenRecords(amounts));
     return amounts;
 };

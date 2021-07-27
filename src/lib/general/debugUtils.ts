@@ -39,5 +39,8 @@ const tokenKeys = ["BTC", "ZEC", "BCH", "FIL", "DOGE", "DGB", "LUNA"];
 const tokenReplacer = createBnReplacer(tokenKeys);
 // eslint-disable-next-line
 export const unifyTokenRecords = (obj: any) => {
+    if (!obj) {
+        return undefined;
+    }
     return JSON.parse(JSON.stringify(obj, tokenReplacer));
 };

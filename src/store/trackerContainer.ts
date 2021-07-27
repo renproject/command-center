@@ -13,13 +13,13 @@ const useTrackerContainer = () => {
     const { renVmTracker } = GraphClientContainer.useContainer();
 
     const [volumeData, setVolumeData] = useState<SnapshotRecord>({});
-    const [volumeLoading, setVolumeLoading] = useState(false);
+    const [volumeLoading, setVolumeLoading] = useState(true);
     const [volumePeriod, setVolumePeriod] = useState<PeriodType>(
         PeriodType.ALL,
     );
 
     const [lockedData, setLockedData] = useState<SnapshotRecord>({});
-    const [lockedLoading, setLockedLoading] = useState(false);
+    const [lockedLoading, setLockedLoading] = useState(true);
     const [lockedPeriod, setLockedPeriod] = useState<PeriodType>(
         PeriodType.ALL,
     );
