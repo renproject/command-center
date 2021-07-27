@@ -4,20 +4,21 @@ import { createContainer } from "unstated-next";
 import { GraphClientContainer } from "../lib/graphQL/ApolloWithNetwork";
 import {
     queryRenVmTracker,
+    SnapshotRecord,
     TrackerType,
 } from "../lib/graphQL/queries/renVmTracker";
-import { getPeriodTimespan, PeriodType } from "../lib/graphQL/volumes";
+import { PeriodType } from "../lib/graphQL/volumes";
 
 const useTrackerContainer = () => {
     const { renVmTracker } = GraphClientContainer.useContainer();
 
-    const [volumeData, setVolumeData] = useState<any>({});
+    const [volumeData, setVolumeData] = useState<SnapshotRecord>({});
     const [volumeLoading, setVolumeLoading] = useState(false);
     const [volumePeriod, setVolumePeriod] = useState<PeriodType>(
         PeriodType.ALL,
     );
 
-    const [lockedData, setLockedData] = useState<any>({});
+    const [lockedData, setLockedData] = useState<SnapshotRecord>({});
     const [lockedLoading, setLockedLoading] = useState(false);
     const [lockedPeriod, setLockedPeriod] = useState<PeriodType>(
         PeriodType.ALL,
@@ -26,9 +27,8 @@ const useTrackerContainer = () => {
     useEffect(() => {
         setVolumeLoading(true);
         queryRenVmTracker(renVmTracker, TrackerType.Volume, volumePeriod)
-            .then((data) => {
-                console.log("data", data);
-                setVolumeData(data);
+            .then((response) => {
+                setVolumeData(response.data);
                 setVolumeLoading(false);
             })
             .catch(console.error);

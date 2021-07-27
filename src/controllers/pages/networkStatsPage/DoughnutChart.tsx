@@ -38,6 +38,7 @@ export const DoughnutChart: React.FC<Props> = ({
     title,
     altData,
 }) => {
+    console.log("data", data);
     const tokens = React.useMemo(
         () =>
             data
@@ -49,6 +50,8 @@ export const DoughnutChart: React.FC<Props> = ({
                 : undefined,
         [data],
     );
+
+    console.log("tokens", tokens);
 
     return (
         <div

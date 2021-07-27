@@ -120,7 +120,7 @@ export const NewNetworkStatsPage = () => {
                             }
                             className="stat--extra-big"
                         >
-                            {volumeLoading ? (
+                            {!volumeLoading ? (
                                 <div>
                                     <span className="stat-amount">
                                         <CurrencyIcon
@@ -156,7 +156,7 @@ export const NewNetworkStatsPage = () => {
                                     assetsPeriod={volumePeriod}
                                 />
                                 <>
-                                    {volumeLoading ? (
+                                    {!volumeLoading ? (
                                         volumeTab === StatTab.History ? (
                                             <span>Graph</span>
                                         ) : (

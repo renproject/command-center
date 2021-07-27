@@ -1,6 +1,6 @@
 export const renVmTrackerMock = {
     data: {
-        prev: {
+        s1627220700: {
             id: "30724",
             timestamp: 1627220700,
             locked: [
@@ -453,7 +453,7 @@ export const renVmTrackerMock = {
                 },
             ],
         },
-        next: {
+        s1627320600: {
             id: "30803",
             timestamp: 1627320600,
             locked: [

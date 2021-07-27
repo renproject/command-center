@@ -1,9 +1,16 @@
 import { PeriodType } from "../volumes";
+
+import { renVmTrackerMock } from "./mocks/renvm-tracker.mock";
 import {
     buildRenVmTrackerQuery,
     getResolutionPoints,
+    snapshotDataToTokenAmounts,
+    SnapshotRecord,
+    TrackerChain,
     TrackerType,
 } from "./renVmTracker";
+
+const snapshotData = renVmTrackerMock.data as SnapshotRecord;
 
 describe("tracker utils", () => {
     xit("generates query", () => {
@@ -22,5 +29,13 @@ describe("tracker utils", () => {
         expect(getResolutionPoints(PeriodType.MONTH)).toEqual(62);
         expect(getResolutionPoints(PeriodType.YEAR)).toEqual(73);
         // expect(getResolutionPoints(PeriodType.ALL)).toEqual(71);
+    });
+
+    it("maps", () => {
+        const result = snapshotDataToTokenAmounts(
+            snapshotData,
+            TrackerType.Volume,
+            TrackerChain.Ethereum,
+        );
     });
 });
