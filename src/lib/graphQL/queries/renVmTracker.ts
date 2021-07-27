@@ -1,5 +1,6 @@
 import { ApolloClient, gql } from "@apollo/react-hooks";
 import BigNumber from "bignumber.js";
+import { NetworkStatsChain } from "../../../controllers/pages/networkStatsPage/networkStatsContainer";
 import { getPeriodTimespan, PeriodType } from "../volumes";
 
 export enum TrackerChain {
@@ -9,6 +10,19 @@ export enum TrackerChain {
     Fantom = "Fantom",
     Avalanche = "Avalanche",
 }
+
+export const networkStatsChainToTrackerChain = (chain: NetworkStatsChain) => {
+    switch (chain) {
+        case NetworkStatsChain.Ethereum:
+            return TrackerChain.Ethereum;
+        case NetworkStatsChain.BinanceSmartChain:
+            return TrackerChain.BinanceSmartChain;
+        case NetworkStatsChain.Fantom:
+            return TrackerChain.Fantom;
+        case NetworkStatsChain.Polygon:
+            return TrackerChain.Polygon;
+    }
+};
 
 type SnapshotAmount = {
     asset: string;
@@ -94,12 +108,13 @@ export const buildRenVmTrackerQuery = (
         const subQuery = getSnapshotSubQuery(timestamp.toString(), type);
         subQueries.push(subQuery);
     }
-    return gql`
+    const snapshotQuery = `
         ${type === TrackerType.Volume ? VOLUME_FRAGMENT : LOCKED_FRAGMENT}
         query GetSnapshots {
             ${subQueries.reverse().join(",")}
         }
     `;
+    return gql(snapshotQuery);
 };
 export const getResolutionPoints = (period: PeriodType) => {
     const timespan = getPeriodTimespan(period);

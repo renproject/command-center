@@ -1,30 +1,25 @@
-import { Currency, CurrencyIcon, Loading } from "@renproject/react-components";
+import { CurrencyIcon, Loading } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import React, { useMemo, useState } from "react";
-import { GraphClientContainer } from "../../../lib/graphQL/ApolloWithNetwork";
+import {
+    networkStatsChainToTrackerChain,
+    snapshotDataToTokenAmounts,
+    TrackerChain,
+    TrackerType,
+} from "../../../lib/graphQL/queries/renVmTracker";
 
 import {
     PeriodType,
     QuotePeriodData,
-    QuoteSeriesData,
     SeriesData,
 } from "../../../lib/graphQL/volumes";
-import { GraphContainer } from "../../../store/graphContainer";
 import { NetworkContainer } from "../../../store/networkContainer";
 import { TrackerContainer } from "../../../store/trackerContainer";
-import { ReactComponent as IconValueLocked } from "../../../styles/images/icon-value-locked.svg";
 import { ReactComponent as IconVolume } from "../../../styles/images/icon-volume.svg";
-import { Change } from "../../../views/Change";
 import { Stat, Stats } from "../../../views/Stat";
 import { ChainSelector } from "./ChainSelector";
-import { Collateral } from "./Collateral";
 import { DoughnutChart } from "./DoughnutChart";
-import { Graph } from "./Graph";
-import { Map } from "immutable";
-import {
-    NetworkStatsChain,
-    NetworkStatsContainer,
-} from "./networkStatsContainer";
+import { NetworkStatsChain } from "./networkStatsContainer";
 import { NetworkStatsStyles } from "./NetworkStatsStyles";
 import { PeriodSelector } from "./PeriodSelector";
 import { StatTab, StatTabs } from "./StatTabs";
@@ -64,18 +59,30 @@ const VOLUME_AXIS = 0;
 export const NewNetworkStatsPage = () => {
     const { quoteCurrency } = NetworkContainer.useContainer();
     const {
+        volumeData,
         volumePeriod,
         volumeLoading,
         setVolumePeriod,
     } = TrackerContainer.useContainer();
-
     const [volumeSelectedChain, setVolumeSelectedChain] = useState(
         NetworkStatsChain.Ethereum,
     );
+    const volumeChain = networkStatsChainToTrackerChain(volumeSelectedChain);
+
     const [volumeTab, setVolumeTab] = useState<StatTab>(StatTab.History);
+    const doughnutData = useMemo(
+        () =>
+            snapshotDataToTokenAmounts(
+                volumeData,
+                TrackerType.Volume,
+                volumeChain,
+            ),
+        [volumeData, volumeChain],
+    );
+    console.log("dh", doughnutData);
 
     const [lockedSelectedChain, setLockedSelectedChain] = useState(
-        NetworkStatsChain.Ethereum,
+        TrackerChain,
     );
     const [lockedTab, setLockedTab] = useState<StatTab>(StatTab.History);
 
@@ -163,7 +170,7 @@ export const NewNetworkStatsPage = () => {
                                             <DoughnutChart
                                                 title="Volume"
                                                 quoteCurrency={quoteCurrency}
-                                                data={undefined}
+                                                data={doughnutData}
                                                 altData={undefined}
                                             />
                                         )

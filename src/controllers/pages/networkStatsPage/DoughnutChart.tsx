@@ -8,6 +8,8 @@ import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
 import React from "react";
 import { Doughnut } from "react-chartjs-2";
+import { unifyTokenRecords } from "../../../lib/general/debugUtils";
+import { BigNumberRecord } from "../../../lib/graphQL/queries/renVmTracker";
 import { SimpleTable } from "../../../views/SimpleTable";
 
 import { TokenIcon } from "../../../views/tokenIcon/TokenIcon";
@@ -20,16 +22,13 @@ const colors = [
     "#003B7C",
 ];
 
-export type DoughnutChartData =
-    | { [token: string]: BigNumber }
-    | null
-    | undefined;
+export type DoughnutChartData = BigNumberRecord | null;
 
 interface Props {
-    data: DoughnutChartData;
+    data?: DoughnutChartData;
     quoteCurrency: Currency;
     title: string;
-    altData: DoughnutChartData;
+    altData?: DoughnutChartData;
 }
 
 export const DoughnutChart: React.FC<Props> = ({
@@ -38,7 +37,8 @@ export const DoughnutChart: React.FC<Props> = ({
     title,
     altData,
 }) => {
-    console.log("data", data);
+    console.log("data", unifyTokenRecords(data));
+    console.log("altData", unifyTokenRecords(altData));
     const tokens = React.useMemo(
         () =>
             data
