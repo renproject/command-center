@@ -252,3 +252,19 @@ export const snapshotDataToTokenAmountRecords = (
     console.log("amounts", unifyTokenRecords(amounts));
     return amounts;
 };
+
+export const snapshotDataToTimeSeries = (
+    data: SnapshotRecord,
+    type: TrackerType,
+    chain: TrackerChain,
+    amountKind = AmountKind.Usd,
+) => {
+    const snapshots = getSnapshots(data);
+    const points = snapshots.map((snapshot, index) => {
+        const timestamp = snapshot.timestamp;
+        const value = 42 + index;
+        return [timestamp, value];
+    });
+    console.log("points", points);
+    return points as Array<[number, number]>;
+};

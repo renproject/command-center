@@ -2,7 +2,7 @@ import HighchartsReact from "highcharts-react-official";
 import Highcharts from "highcharts/highstock";
 import React, { useMemo } from "react";
 
-interface Line {
+export interface Line {
     name: string;
     data: Array<[number, number]>;
     axis?: number;
@@ -100,7 +100,7 @@ export const Graph: React.FC<Props> = ({ lines }) => {
         () => getOptions(lines.filter((line) => line !== undefined) as Line[]),
         [lines],
     );
-
+    console.log("lines", lines);
     return (
         <div className="highcharts--with-outside-tooltip">
             <div

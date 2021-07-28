@@ -87,14 +87,14 @@ export const missingPrices = (
     });
 };
 
-export const convertAmount = (
+export const convertTokenAmount = (
     amount: BigNumber | number | string,
-    from: Token,
+    token: Token,
     to: Currency,
     tokenPrices: TokenPrices,
 ) => {
     const fallback = new BigNumber(0);
-    const tokenPriceMap = tokenPrices.get(from);
+    const tokenPriceMap = tokenPrices.get(token);
     if (!tokenPriceMap) {
         return fallback;
     }
