@@ -4,7 +4,7 @@ import { createContainer } from "unstated-next";
 import { GraphClientContainer } from "../lib/graphQL/ApolloWithNetwork";
 import {
     queryRenVmTracker,
-    SnapshotRecord,
+    SnapshotRecords,
     TrackerType,
 } from "../lib/graphQL/queries/renVmTracker";
 import { PeriodType } from "../lib/graphQL/volumes";
@@ -12,13 +12,13 @@ import { PeriodType } from "../lib/graphQL/volumes";
 const useTrackerContainer = () => {
     const { renVmTracker } = GraphClientContainer.useContainer();
 
-    const [volumeData, setVolumeData] = useState<SnapshotRecord>({});
+    const [volumeData, setVolumeData] = useState<SnapshotRecords>({});
     const [volumeLoading, setVolumeLoading] = useState(true);
     const [volumePeriod, setVolumePeriod] = useState<PeriodType>(
         PeriodType.ALL,
     );
 
-    const [lockedData, setLockedData] = useState<SnapshotRecord>({});
+    const [lockedData, setLockedData] = useState<SnapshotRecords>({});
     const [lockedLoading, setLockedLoading] = useState(true);
     const [lockedPeriod, setLockedPeriod] = useState<PeriodType>(
         PeriodType.ALL,

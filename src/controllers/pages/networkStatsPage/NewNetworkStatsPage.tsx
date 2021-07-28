@@ -3,7 +3,7 @@ import BigNumber from "bignumber.js";
 import React, { useMemo, useState } from "react";
 import { Token } from "../../../lib/ethereum/tokens";
 import {
-    AmountKind,
+    TokenCurrency,
     networkStatsChainToTrackerChain,
     snapshotDataToVolumeData,
     TrackerChain,

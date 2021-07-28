@@ -1,15 +1,14 @@
 import { Currency, CurrencyIcon, Loading } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import React, { useEffect, useMemo, useState } from "react";
-import { Token } from "../../../lib/ethereum/tokens";
 import { GraphClientContainer } from "../../../lib/graphQL/ApolloWithNetwork";
 import {
-    AmountKind,
+    TokenCurrency,
     networkStatsChainToTrackerChain,
     queryRenVmTracker,
     snapshotDataToTimeSeries,
     snapshotDataToVolumeData,
-    SnapshotRecord,
+    SnapshotRecords,
     TrackerType,
 } from "../../../lib/graphQL/queries/renVmTracker";
 
@@ -17,7 +16,6 @@ import { PeriodType } from "../../../lib/graphQL/volumes";
 import { NetworkContainer } from "../../../store/networkContainer";
 import { ReactComponent as IconVolume } from "../../../styles/images/icon-volume.svg";
 import { Stat } from "../../../views/Stat";
-import { convertTokenAmount } from "../../common/tokenBalanceUtils";
 import { ChainSelector } from "./ChainSelector";
 import { DoughnutChart } from "./DoughnutChart";
 import { Graph, Line } from "./Graph";
@@ -45,7 +43,7 @@ export const getPeriodPercentChange = <K extends string>(
 export const useVolumeData = (type: TrackerType) => {
     const { renVmTracker } = GraphClientContainer.useContainer();
 
-    const [volumeData, setVolumeData] = useState<SnapshotRecord>({});
+    const [volumeData, setVolumeData] = useState<SnapshotRecords>({});
     const [volumeLoading, setVolumeLoading] = useState(true);
     const [volumePeriod, setVolumePeriod] = useState<PeriodType>(
         PeriodType.ALL,
@@ -99,44 +97,31 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
             return fallback;
         }
         console.log("tokenPrices", tokenPrices?.toJS());
-        if (quoteCurrency === Currency.USD || tokenPrices === null) {
+        if (tokenPrices !== null) {
             return snapshotDataToVolumeData(
                 volumeData,
                 trackerType,
                 volumeChain,
-                AmountKind.Usd,
+                quoteCurrency,
+                tokenPrices,
             );
         }
         return fallback;
-        // const { amountRecords, difference } = snapshotDataToVolumeData(
-        //     volumeData,
-        //     trackerType,
-        //     volumeChain,
-        //     AmountKind.Token,
-        // );
-        // console.log("here");
-        // const convertedAmounts = Object.fromEntries(
-        //     Object.entries(amountRecords).map(([asset, amount]) => [
-        //         asset,
-        //         convertTokenAmount(
-        //             amount,
-        //             asset as Token,
-        //             quoteCurrency,
-        //             tokenPrices,
-        //         ),
-        //     ]),
-        // );
-        // return { amountRecords: convertedAmounts, difference };
     }, [volumeLoading, volumeData, volumeChain, quoteCurrency, tokenPrices]);
     console.log("dh", doughnutData);
 
     const linesData = useMemo(() => {
-        const series = snapshotDataToTimeSeries(
-            volumeData,
-            trackerType,
-            volumeChain,
-            AmountKind.Usd,
-        );
+        let series: Array<[number, number]> = [];
+        if (tokenPrices) {
+            series = snapshotDataToTimeSeries(
+                volumeData,
+                trackerType,
+                volumeChain,
+                quoteCurrency,
+                tokenPrices,
+            );
+        }
+
         console.log("series", series);
 
         const line: Line = {
@@ -147,7 +132,7 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
         return [line];
     }, [quoteCurrency, volumeData, trackerType, volumeChain]);
 
-    console.log("ld", linesData);
+    console.log("ld", linesData[0].data[0]);
     const volumePeriodTotal = new BigNumber(42);
     return (
         <div className="stat-with-period">

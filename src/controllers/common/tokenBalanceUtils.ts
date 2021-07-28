@@ -110,3 +110,20 @@ export const convertTokenAmount = (
         .multipliedBy(toPrice)
         .decimalPlaces(2, BigNumber.ROUND_FLOOR);
 };
+
+export const getConversionRate = (
+    from: Currency,
+    to: Currency,
+    tokenPrices: TokenPrices,
+) => {
+    const btcPrice = tokenPrices.get(Token.BTC);
+    if (!btcPrice) {
+        return 1;
+    }
+    const btcFrom = btcPrice.get(from);
+    const btcTo = btcPrice.get(to);
+    if (!btcFrom || !btcTo) {
+        return 1;
+    }
+    return btcTo / btcFrom;
+};
