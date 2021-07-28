@@ -5,7 +5,7 @@ import { Token } from "../../../lib/ethereum/tokens";
 import {
     AmountKind,
     networkStatsChainToTrackerChain,
-    snapshotDataToTokenAmountRecords,
+    snapshotDataToVolumeData,
     TrackerChain,
     TrackerType,
 } from "../../../lib/graphQL/queries/renVmTracker";

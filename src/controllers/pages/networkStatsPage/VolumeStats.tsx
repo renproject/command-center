@@ -8,7 +8,7 @@ import {
     networkStatsChainToTrackerChain,
     queryRenVmTracker,
     snapshotDataToTimeSeries,
-    snapshotDataToTokenAmountRecords,
+    snapshotDataToVolumeData,
     SnapshotRecord,
     TrackerType,
 } from "../../../lib/graphQL/queries/renVmTracker";
@@ -92,36 +92,41 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
     const volumeChain = networkStatsChainToTrackerChain(volumeSelectedChain);
 
     const doughnutData = useMemo(() => {
+        const fallback = {
+            amountRecords: {},
+        };
         if (volumeLoading || !volumeData) {
-            return {};
+            return fallback;
         }
         console.log("tokenPrices", tokenPrices?.toJS());
         if (quoteCurrency === Currency.USD || tokenPrices === null) {
-            return snapshotDataToTokenAmountRecords(
+            return snapshotDataToVolumeData(
                 volumeData,
                 trackerType,
                 volumeChain,
                 AmountKind.Usd,
             );
         }
-        const amountRecords = snapshotDataToTokenAmountRecords(
-            volumeData,
-            trackerType,
-            volumeChain,
-            AmountKind.Token,
-        );
-        console.log("here");
-        return Object.fromEntries(
-            Object.entries(amountRecords).map(([asset, amount]) => [
-                asset,
-                convertTokenAmount(
-                    amount,
-                    asset as Token,
-                    quoteCurrency,
-                    tokenPrices,
-                ),
-            ]),
-        );
+        return fallback;
+        // const { amountRecords, difference } = snapshotDataToVolumeData(
+        //     volumeData,
+        //     trackerType,
+        //     volumeChain,
+        //     AmountKind.Token,
+        // );
+        // console.log("here");
+        // const convertedAmounts = Object.fromEntries(
+        //     Object.entries(amountRecords).map(([asset, amount]) => [
+        //         asset,
+        //         convertTokenAmount(
+        //             amount,
+        //             asset as Token,
+        //             quoteCurrency,
+        //             tokenPrices,
+        //         ),
+        //     ]),
+        // );
+        // return { amountRecords: convertedAmounts, difference };
     }, [volumeLoading, volumeData, volumeChain, quoteCurrency, tokenPrices]);
     console.log("dh", doughnutData);
 
@@ -209,7 +214,7 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
                                 <DoughnutChart
                                     title="Volume"
                                     quoteCurrency={quoteCurrency}
-                                    data={doughnutData}
+                                    data={doughnutData.amountRecords}
                                 />
                             )
                         ) : (

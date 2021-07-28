@@ -56,7 +56,7 @@ interface SnapshotResponse {
     data: SnapshotRecord;
 }
 
-export enum TrackerType {
+export enum TrackerType { // rename to SnapshotType
     Locked = "locked",
     Volume = "volume",
 }
@@ -193,12 +193,6 @@ export const getAmountsForChain = (
     return amounts.filter((entry) => entry.chain === chain);
 };
 
-export const getDistinctAssets = (entries: Array<SnapshotAmount>) => {
-    return entries
-        .map((entry) => entry.asset)
-        .filter((value, index, self) => self.indexOf(value) === index);
-};
-
 export enum AmountKind {
     Usd = "Usd",
     Token = "Token",
@@ -208,7 +202,42 @@ const getAmount = (entry: SnapshotAmount, kind: AmountKind) => {
     return kind === AmountKind.Usd ? entry.amountInUsd : entry.amount;
 };
 
-export const snapshotDataToTokenAmountRecords = (
+const sumSnapshotAmounts = (
+    snapshot: Snapshot,
+    type: TrackerType,
+    chain: TrackerChain,
+    kind: AmountKind,
+) => {
+    if (kind === AmountKind.Usd) {
+        const amounts = getAmountsFromSnapshot(snapshot, type);
+        const chainAmounts = getAmountsForChain(amounts, chain);
+        return chainAmounts.reduce(
+            (acc, curr) => acc.plus(curr.amountInUsd),
+            new BigNumber(0),
+        );
+    }
+    return new BigNumber(1);
+};
+
+const getVolumeData = (
+    start: Snapshot,
+    end: Snapshot,
+    type: TrackerType,
+    chain: TrackerChain,
+    amountKind: AmountKind,
+) => {
+    const summedStart = sumSnapshotAmounts(start, type, chain, amountKind);
+    const summedEnd = sumSnapshotAmounts(end, type, chain, amountKind);
+    const difference = summedEnd.minus(summedStart);
+    const startAmountsAll = getAmountsFromSnapshot(start, type);
+    const startAmounts = getAmountsForChain(startAmountsAll, chain);
+    const endAmountsAll = getAmountsFromSnapshot(end, type);
+    const endAmounts = getAmountsForChain(endAmountsAll, chain);
+
+    return { difference, startAmounts, endAmounts };
+};
+
+export const snapshotDataToVolumeData = (
     data: SnapshotRecord,
     type: TrackerType,
     chain: TrackerChain,
@@ -218,22 +247,21 @@ export const snapshotDataToTokenAmountRecords = (
     console.log("snapshots", snapshots);
     const { first, last } = getFirstAndLastSnapshot(snapshots);
     console.log("first last", first, last);
-    const firstAmounts = getAmountsFromSnapshot(first, type);
-    const firstChainAmounts = getAmountsForChain(firstAmounts, chain);
-    const lastAmounts = getAmountsFromSnapshot(last, type);
-    const lastChainAmounts = getAmountsForChain(lastAmounts, chain);
-    console.log("first last amounts", firstChainAmounts, lastChainAmounts);
+    const { difference, startAmounts, endAmounts } = getVolumeData(
+        first,
+        last,
+        type,
+        chain,
+        amountKind,
+    );
+    console.log("first last amounts", startAmounts, endAmounts);
     const assetsData = getAssetData(data);
     const assets = assetsData.map((entry) => entry.asset);
     console.log("tokens", assets);
-    const amounts: BigNumberRecord = {};
+    const amountRecords: BigNumberRecord = {};
     assets.forEach((asset) => {
-        const lastEntry = lastChainAmounts.find(
-            (entry) => entry.asset === asset,
-        );
-        const firstEntry = firstChainAmounts.find(
-            (entry) => entry.asset === asset,
-        );
+        const lastEntry = endAmounts.find((entry) => entry.asset === asset);
+        const firstEntry = startAmounts.find((entry) => entry.asset === asset);
         let difference = new BigNumber(0);
         if (lastEntry && firstEntry) {
             difference = new BigNumber(getAmount(lastEntry, amountKind)).minus(
@@ -247,10 +275,10 @@ export const snapshotDataToTokenAmountRecords = (
             const decimals = assetData?.decimals || 0;
             difference = difference.shiftedBy(-decimals);
         }
-        amounts[asset] = difference;
+        amountRecords[asset] = difference;
     });
-    console.log("amounts", unifyTokenRecords(amounts));
-    return amounts;
+    console.log("amounts", unifyTokenRecords(amountRecords));
+    return { amountRecords, difference };
 };
 
 export const snapshotDataToTimeSeries = (
@@ -262,8 +290,13 @@ export const snapshotDataToTimeSeries = (
     const snapshots = getSnapshots(data);
     const points = snapshots.map((snapshot, index) => {
         const timestamp = snapshot.timestamp;
-        const value = 42 + index;
-        return [timestamp, value];
+        const value = sumSnapshotAmounts(
+            snapshot,
+            type,
+            chain,
+            amountKind,
+        ).toNumber();
+        return [timestamp * 1000, value];
     });
     console.log("points", points);
     return points as Array<[number, number]>;
