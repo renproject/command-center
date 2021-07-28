@@ -1,6 +1,8 @@
 import { ApolloClient, gql } from "@apollo/react-hooks";
+import { Currency } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import { NetworkStatsChain } from "../../../controllers/pages/networkStatsPage/networkStatsContainer";
+import { TokenPrices } from "../../ethereum/tokens";
 import { unifyTokenRecords } from "../../general/debugUtils";
 import { getPeriodTimespan, PeriodType } from "../volumes";
 
@@ -197,16 +199,16 @@ export const getDistinctAssets = (entries: Array<SnapshotAmount>) => {
         .filter((value, index, self) => self.indexOf(value) === index);
 };
 
-enum AmountKind {
+export enum AmountKind {
     Usd = "Usd",
-    Native = "Native",
+    Token = "Token",
 }
 
 const getAmount = (entry: SnapshotAmount, kind: AmountKind) => {
     return kind === AmountKind.Usd ? entry.amountInUsd : entry.amount;
 };
 
-export const snapshotDataToTokenAmounts = (
+export const snapshotDataToTokenAmountRecords = (
     data: SnapshotRecord,
     type: TrackerType,
     chain: TrackerChain,
@@ -221,7 +223,8 @@ export const snapshotDataToTokenAmounts = (
     const lastAmounts = getAmountsFromSnapshot(last, type);
     const lastChainAmounts = getAmountsForChain(lastAmounts, chain);
     console.log("first last amounts", firstChainAmounts, lastChainAmounts);
-    const assets = getAssetData(data).map((entry) => entry.asset);
+    const assetsData = getAssetData(data);
+    const assets = assetsData.map((entry) => entry.asset);
     console.log("tokens", assets);
     const amounts: BigNumberRecord = {};
     assets.forEach((asset) => {
@@ -239,7 +242,11 @@ export const snapshotDataToTokenAmounts = (
         } else if (lastEntry) {
             difference = new BigNumber(getAmount(lastEntry, amountKind));
         }
-
+        if (amountKind === AmountKind.Token) {
+            const assetData = assetsData.find((entry) => entry.asset === asset);
+            const decimals = assetData?.decimals || 0;
+            difference = difference.shiftedBy(-decimals);
+        }
         amounts[asset] = difference;
     });
     console.log("amounts", unifyTokenRecords(amounts));

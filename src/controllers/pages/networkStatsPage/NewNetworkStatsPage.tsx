@@ -1,9 +1,11 @@
-import { CurrencyIcon, Loading } from "@renproject/react-components";
+import { Currency, CurrencyIcon, Loading } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import React, { useMemo, useState } from "react";
+import { Token } from "../../../lib/ethereum/tokens";
 import {
+    AmountKind,
     networkStatsChainToTrackerChain,
-    snapshotDataToTokenAmounts,
+    snapshotDataToTokenAmountRecords,
     TrackerChain,
     TrackerType,
 } from "../../../lib/graphQL/queries/renVmTracker";
@@ -17,6 +19,7 @@ import { NetworkContainer } from "../../../store/networkContainer";
 import { TrackerContainer } from "../../../store/trackerContainer";
 import { ReactComponent as IconVolume } from "../../../styles/images/icon-volume.svg";
 import { Stat, Stats } from "../../../views/Stat";
+import { convertAmount } from "../../common/tokenBalanceUtils";
 import { ChainSelector } from "./ChainSelector";
 import { DoughnutChart } from "./DoughnutChart";
 import { NetworkStatsChain } from "./networkStatsContainer";
@@ -57,7 +60,8 @@ const timeSeries = (
 const VOLUME_AXIS = 0;
 
 export const NewNetworkStatsPage = () => {
-    const { quoteCurrency } = NetworkContainer.useContainer();
+    const { quoteCurrency, tokenPrices } = NetworkContainer.useContainer();
+    console.log("tp", tokenPrices?.toJS());
     const {
         volumeData,
         volumePeriod,
@@ -74,12 +78,34 @@ export const NewNetworkStatsPage = () => {
         if (volumeLoading || !volumeData) {
             return {};
         }
-        return snapshotDataToTokenAmounts(
+        console.log("tokenPrices", tokenPrices?.toJS());
+        if (quoteCurrency === Currency.USD || tokenPrices === null) {
+            return snapshotDataToTokenAmountRecords(
+                volumeData,
+                TrackerType.Volume,
+                volumeChain,
+                AmountKind.Usd,
+            );
+        }
+        const amountRecords = snapshotDataToTokenAmountRecords(
             volumeData,
             TrackerType.Volume,
             volumeChain,
+            AmountKind.Token,
         );
-    }, [volumeLoading, volumeData, volumeChain]);
+        console.log("here");
+        return Object.fromEntries(
+            Object.entries(amountRecords).map(([asset, amount]) => [
+                asset,
+                convertAmount(
+                    amount,
+                    asset as Token,
+                    quoteCurrency,
+                    tokenPrices,
+                ),
+            ]),
+        );
+    }, [volumeLoading, volumeData, volumeChain, quoteCurrency, tokenPrices]);
     console.log("dh", doughnutData);
 
     const [lockedSelectedChain, setLockedSelectedChain] = useState(

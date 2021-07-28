@@ -51,10 +51,10 @@ export const updatePrices = <T extends TokenAmount | null | undefined>(
         updatePrice(amount, symbol as Token, tokenPrices),
     );
 };
+
 /**
  * Only update token values that don't already have price information.
  */
-
 export const missingPrices = (
     tokenAmounts: OrderedMap<TokenString, TokenAmount | null>,
     tokenPrices: TokenPrices | null,
@@ -85,4 +85,28 @@ export const missingPrices = (
         }
         return amount;
     });
+};
+
+export const convertAmount = (
+    amount: BigNumber | number | string,
+    from: Token,
+    to: Currency,
+    tokenPrices: TokenPrices,
+) => {
+    const fallback = new BigNumber(0);
+    const tokenPriceMap = tokenPrices.get(from);
+    if (!tokenPriceMap) {
+        return fallback;
+    }
+    const toPrice = tokenPriceMap.get(to);
+
+    if (!toPrice) {
+        return fallback;
+    }
+
+    const bnAmount = new BigNumber(amount);
+
+    return bnAmount
+        .multipliedBy(toPrice)
+        .decimalPlaces(2, BigNumber.ROUND_FLOOR);
 };

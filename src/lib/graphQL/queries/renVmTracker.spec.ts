@@ -4,7 +4,7 @@ import { renVmTrackerMock } from "./mocks/renvm-tracker.mock";
 import {
     buildRenVmTrackerQuery,
     getResolutionPoints,
-    snapshotDataToTokenAmounts,
+    snapshotDataToTokenAmountRecords,
     SnapshotRecord,
     TrackerChain,
     TrackerType,
@@ -32,7 +32,7 @@ describe("tracker utils", () => {
     });
 
     it("maps", () => {
-        const result = snapshotDataToTokenAmounts(
+        const result = snapshotDataToTokenAmountRecords(
             snapshotData,
             TrackerType.Volume,
             TrackerChain.Ethereum,
