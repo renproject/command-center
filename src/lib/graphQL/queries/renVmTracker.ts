@@ -15,6 +15,13 @@ export enum TrackerChain {
     Avalanche = "Avalanche",
 }
 
+const allTrackedChains = [
+    TrackerChain.Ethereum,
+    TrackerChain.BinanceSmartChain,
+    TrackerChain.Fantom,
+    TrackerChain.Polygon,
+];
+
 export const networkStatsChainToTrackerChain = (chain: NetworkStatsChain) => {
     switch (chain) {
         case NetworkStatsChain.Ethereum:
@@ -134,6 +141,8 @@ export const buildRenVmTrackerQuery = (
         ${type === TrackerType.Volume ? VOLUME_FRAGMENT : LOCKED_FRAGMENT}
         query GetSnapshots {
             assets: Snapshot(timestamp: "${endTimestamp}"){
+                id,
+                timestamp,
                 prices {
                     asset,
                     decimals
@@ -338,6 +347,26 @@ export const snapshotDataToVolumeData = (
     });
     console.log("amounts", unifyTokenRecords(amountRecords));
     return { amountRecords, difference };
+};
+
+export const snapshotDataToAllChainVolumeData = (
+    data: SnapshotRecords,
+    type: TrackerType,
+    currency: TokenCurrency | Currency,
+    tokenPrices: TokenPrices,
+) => {
+    let sum = new BigNumber(0);
+    allTrackedChains.forEach((chain) => {
+        const { difference } = snapshotDataToVolumeData(
+            data,
+            type,
+            chain,
+            currency,
+            tokenPrices,
+        );
+        sum = sum.plus(difference);
+    });
+    return sum;
 };
 
 export const snapshotDataToTimeSeries = (

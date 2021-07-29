@@ -1,6 +1,11 @@
 import BigNumber from "bignumber.js";
 import React from "react";
-import { TrackerType } from "../../../lib/graphQL/queries/renVmTracker";
+import {
+    snapshotDataToAllChainVolumeData,
+    snapshotDataToVolumeData,
+    TrackerChain,
+    TrackerType,
+} from "../../../lib/graphQL/queries/renVmTracker";
 
 import { PeriodType } from "../../../lib/graphQL/volumes";
 import { GraphContainer } from "../../../store/graphContainer";
@@ -13,7 +18,7 @@ import {
     NetworkStatsContainer,
 } from "./networkStatsContainer";
 import { NetworkStatsStyles } from "./NetworkStatsStyles";
-import { VolumeStats } from "./VolumeStats";
+import { useVolumeData, VolumeStats } from "./VolumeStats";
 
 export const getPeriodPercentChange = <K extends string>(
     periodType: PeriodType,
@@ -58,9 +63,22 @@ export const NewNetworkStatsPage = () => {
     const {
         total,
         mintedTotal,
-        b,
         numberOfDarknodes,
     } = NetworkStatsContainer.useContainer();
+
+    const { volumeData, volumeLoading } = useVolumeData(
+        TrackerType.Locked,
+        PeriodType.ALL,
+    );
+    const allChainTotal =
+        tokenPrices === null || volumeLoading
+            ? new BigNumber(0)
+            : snapshotDataToAllChainVolumeData(
+                  volumeData,
+                  TrackerType.Locked,
+                  quoteCurrency,
+                  tokenPrices,
+              );
 
     const bondedRenAmount = (numberOfDarknodes || new BigNumber(0)).times(
         100000,
@@ -96,7 +114,7 @@ export const NewNetworkStatsPage = () => {
             <div className="col-lg-12 col-xl-4">
                 <div className="collateral-padding" />
                 <Collateral
-                    total={total}
+                    total={allChainTotal}
                     minted={mintedTotal}
                     bondedRenValue={bondedRenValue}
                     bondedRen={bondedRenAmount}

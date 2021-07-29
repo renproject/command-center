@@ -41,28 +41,30 @@ export const getPeriodPercentChange = <K extends string>(
     return null;
 };
 
-export const useVolumeData = (type: TrackerType) => {
+export const useVolumeData = (
+    type: TrackerType,
+    periodType = PeriodType.ALL,
+) => {
     const { renVmTracker } = GraphClientContainer.useContainer();
 
     const [volumeData, setVolumeData] = useState<SnapshotRecords>({});
     const [volumeLoading, setVolumeLoading] = useState(true);
-    const [volumePeriod, setVolumePeriod] = useState<PeriodType>(
-        PeriodType.ALL,
-    );
+    const [volumePeriod, setVolumePeriod] = useState<PeriodType>(periodType);
 
     useEffect(() => {
         setVolumeLoading(true);
         queryRenVmTracker(renVmTracker, type, volumePeriod)
             .then((response) => {
+                console.log(response);
                 setVolumeData(response.data);
                 setVolumeLoading(false);
             })
             .catch(console.error);
-    }, [volumePeriod, type]);
+    }, [renVmTracker, volumePeriod, type]);
 
     return {
         volumeData,
-        volumeLoading,
+        volumeLoading: volumeLoading || !volumeData,
         volumePeriod,
         setVolumePeriod,
     };
@@ -105,11 +107,7 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
             amountRecords: {},
             difference: 0,
         };
-        if (volumeLoading || !volumeData) {
-            return fallback;
-        }
-        console.log("tokenPrices", tokenPrices?.toJS());
-        if (tokenPrices !== null) {
+        if (!volumeLoading && tokenPrices) {
             return snapshotDataToVolumeData(
                 volumeData,
                 trackerType,
@@ -119,12 +117,19 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
             );
         }
         return fallback;
-    }, [volumeLoading, volumeData, volumeChain, quoteCurrency, tokenPrices]);
+    }, [
+        volumeLoading,
+        trackerType,
+        volumeData,
+        volumeChain,
+        quoteCurrency,
+        tokenPrices,
+    ]);
     console.log("dh", calculatedVolumeData);
 
     const linesData = useMemo(() => {
         let series: Array<[number, number]> = [];
-        if (tokenPrices) {
+        if (!volumeLoading && tokenPrices) {
             series = snapshotDataToTimeSeries(
                 volumeData,
                 trackerType,
@@ -133,8 +138,7 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
                 tokenPrices,
             );
         }
-
-        console.log("series", series);
+        // console.log("series", series);
 
         const line: Line = {
             name: `${historyChartLabel} (${quoteCurrency.toUpperCase()})`,
@@ -142,7 +146,15 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
             data: series,
         };
         return [line];
-    }, [quoteCurrency, volumeData, trackerType, volumeChain]);
+    }, [
+        quoteCurrency,
+        historyChartLabel,
+        tokenPrices,
+        volumeLoading,
+        volumeData,
+        trackerType,
+        volumeChain,
+    ]);
 
     console.log("ld", linesData[0].data[0]);
     const volumePeriodTotal = calculatedVolumeData.difference;
