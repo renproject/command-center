@@ -358,10 +358,12 @@ export const NetworkStatsPage = () => {
             <div className="col-lg-12 col-xl-4">
                 <div className="collateral-padding" />
                 <Collateral
-                    l={total}
+                    total={total}
                     minted={mintedTotal}
-                    b={b}
-                    bRen={(numberOfDarknodes || new BigNumber(0)).times(100000)}
+                    bondedRenValue={b}
+                    bondedRen={(numberOfDarknodes || new BigNumber(0)).times(
+                        100000,
+                    )}
                     quoteCurrency={quoteCurrency}
                     mintFee={btcMintFee}
                     burnFee={btcBurnFee}

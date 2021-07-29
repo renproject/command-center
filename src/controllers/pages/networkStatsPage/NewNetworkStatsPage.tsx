@@ -62,9 +62,13 @@ export const NewNetworkStatsPage = () => {
         numberOfDarknodes,
     } = NetworkStatsContainer.useContainer();
 
+    const bondedRenAmount = (numberOfDarknodes || new BigNumber(0)).times(
+        100000,
+    );
     const renPrice = tokenPrices
         ? getRenPriceIn(quoteCurrency, tokenPrices)
         : 0;
+    const bondedRenValue = bondedRenAmount.times(renPrice);
     return (
         <NetworkStatsStyles className="network-stats container">
             {/* <div className="no-xl-or-larger col-lg-12 col-xl-4">
@@ -92,10 +96,10 @@ export const NewNetworkStatsPage = () => {
             <div className="col-lg-12 col-xl-4">
                 <div className="collateral-padding" />
                 <Collateral
-                    l={total}
+                    total={total}
                     minted={mintedTotal}
-                    b={b}
-                    bRen={(numberOfDarknodes || new BigNumber(0)).times(100000)}
+                    bondedRenValue={bondedRenValue}
+                    bondedRen={bondedRenAmount}
                     quoteCurrency={quoteCurrency}
                     mintFee={btcMintFee}
                     burnFee={btcBurnFee}
