@@ -1,31 +1,18 @@
-import { Currency, CurrencyIcon, Loading } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
-import React, { useMemo, useState } from "react";
-import { Token } from "../../../lib/ethereum/tokens";
-import {
-    TokenCurrency,
-    networkStatsChainToTrackerChain,
-    snapshotDataToVolumeData,
-    TrackerChain,
-    TrackerType,
-} from "../../../lib/graphQL/queries/renVmTracker";
+import React from "react";
+import { TrackerType } from "../../../lib/graphQL/queries/renVmTracker";
 
-import {
-    PeriodType,
-    QuotePeriodData,
-    SeriesData,
-} from "../../../lib/graphQL/volumes";
+import { PeriodType } from "../../../lib/graphQL/volumes";
+import { GraphContainer } from "../../../store/graphContainer";
 import { NetworkContainer } from "../../../store/networkContainer";
-import { TrackerContainer } from "../../../store/trackerContainer";
-import { ReactComponent as IconVolume } from "../../../styles/images/icon-volume.svg";
-import { Stat, Stats } from "../../../views/Stat";
-import { convertTokenAmount } from "../../common/tokenBalanceUtils";
-import { ChainSelector } from "./ChainSelector";
-import { DoughnutChart } from "./DoughnutChart";
-import { NetworkStatsChain } from "./networkStatsContainer";
+import { Stats } from "../../../views/Stat";
+import { getRenPriceIn } from "../../common/tokenBalanceUtils";
+import { Collateral } from "./Collateral";
+import {
+    NetworkStatsChain,
+    NetworkStatsContainer,
+} from "./networkStatsContainer";
 import { NetworkStatsStyles } from "./NetworkStatsStyles";
-import { PeriodSelector } from "./PeriodSelector";
-import { StatTab, StatTabs } from "./StatTabs";
 import { VolumeStats } from "./VolumeStats";
 
 export const getPeriodPercentChange = <K extends string>(
@@ -47,8 +34,37 @@ export const getPeriodPercentChange = <K extends string>(
 
 const VOLUME_AXIS = 0;
 
+const volumeTooltipRenderer = (
+    period: PeriodType,
+    chain: NetworkStatsChain,
+) => {
+    return `Total amount of volume transacted via RenVM on ${chain.toString()}`;
+};
+
+const lockedTooltipRenderer = (
+    period: PeriodType,
+    chain: NetworkStatsChain,
+) => {
+    if (period === PeriodType.ALL) {
+        return `The total value (TVL) of all digital assets currently minted on ${chain.toString()} by RenVM.`;
+    }
+    return `The 1 ${period.toLowerCase()} change in RenVM's locked digital assets.`;
+};
+
 export const NewNetworkStatsPage = () => {
-    const volumePeriodTotal = new BigNumber(42);
+    const { renVM } = GraphContainer.useContainer();
+    const { btcMintFee, btcBurnFee } = renVM || {};
+    const { quoteCurrency, tokenPrices } = NetworkContainer.useContainer();
+    const {
+        total,
+        mintedTotal,
+        b,
+        numberOfDarknodes,
+    } = NetworkStatsContainer.useContainer();
+
+    const renPrice = tokenPrices
+        ? getRenPriceIn(quoteCurrency, tokenPrices)
+        : 0;
     return (
         <NetworkStatsStyles className="network-stats container">
             {/* <div className="no-xl-or-larger col-lg-12 col-xl-4">
@@ -57,11 +73,33 @@ export const NewNetworkStatsPage = () => {
             </div> */}
             <div className="col-lg-12 col-xl-8">
                 <Stats>
-                    <VolumeStats />
+                    <VolumeStats
+                        trackerType={TrackerType.Volume}
+                        title="Volume"
+                        titleTooltip="Total amount of volume transacted via RenVM."
+                        historyChartLabel="Accumulative Volume"
+                        tooltipRenderer={volumeTooltipRenderer}
+                    />
+                    <VolumeStats
+                        trackerType={TrackerType.Locked}
+                        title="Value Minted"
+                        titleTooltip="The total value (TVL) of all digital assets currently minted on Ethereum by RenVM."
+                        historyChartLabel="Locked"
+                        tooltipRenderer={lockedTooltipRenderer}
+                    />
                 </Stats>
             </div>
             <div className="col-lg-12 col-xl-4">
                 <div className="collateral-padding" />
+                <Collateral
+                    l={total}
+                    minted={mintedTotal}
+                    b={b}
+                    bRen={(numberOfDarknodes || new BigNumber(0)).times(100000)}
+                    quoteCurrency={quoteCurrency}
+                    mintFee={btcMintFee}
+                    burnFee={btcBurnFee}
+                />
             </div>
         </NetworkStatsStyles>
     );

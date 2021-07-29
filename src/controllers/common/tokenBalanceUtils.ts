@@ -118,12 +118,29 @@ export const getConversionRate = (
 ) => {
     const btcPrice = tokenPrices.get(Token.BTC);
     if (!btcPrice) {
+        console.error("Couldn't find token", Token.BTC);
         return 1;
     }
     const btcFrom = btcPrice.get(from);
     const btcTo = btcPrice.get(to);
     if (!btcFrom || !btcTo) {
+        console.error("Couldn't find conversion rate", from, to);
         return 1;
     }
     return btcTo / btcFrom;
+};
+
+export const getRenPriceIn = (currency: Currency, tokenPrices: TokenPrices) => {
+    const renPrice = tokenPrices.get(Token.REN);
+    if (!renPrice) {
+        console.error("Couldn't find REN");
+        return 0;
+    }
+
+    const price = renPrice.get(currency);
+    if (!price) {
+        console.error("Couldn't find REN rate");
+        return 0;
+    }
+    return price;
 };

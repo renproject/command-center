@@ -15,6 +15,7 @@ import {
 import { PeriodType } from "../../../lib/graphQL/volumes";
 import { NetworkContainer } from "../../../store/networkContainer";
 import { ReactComponent as IconVolume } from "../../../styles/images/icon-volume.svg";
+import { ReactComponent as IconValueLocked } from "../../../styles/images/icon-value-locked.svg";
 import { Stat } from "../../../views/Stat";
 import { ChainSelector } from "./ChainSelector";
 import { DoughnutChart } from "./DoughnutChart";
@@ -68,11 +69,21 @@ export const useVolumeData = (type: TrackerType) => {
 };
 
 type VolumeStatsProps = {
-    trackerType?: TrackerType;
+    trackerType: TrackerType;
+    title: string;
+    historyChartLabel: string;
+    titleTooltip: string;
+    tooltipRenderer: (
+        volumePeriod: PeriodType,
+        chain: NetworkStatsChain,
+    ) => string;
 };
 
 export const VolumeStats: React.FC<VolumeStatsProps> = ({
-    trackerType = TrackerType.Volume,
+    trackerType,
+    title,
+    historyChartLabel,
+    tooltipRenderer,
 }) => {
     const { quoteCurrency, tokenPrices } = NetworkContainer.useContainer();
     console.log("tp", tokenPrices?.toJS());
@@ -89,9 +100,10 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
     const [volumeTab, setVolumeTab] = useState<StatTab>(StatTab.History);
     const volumeChain = networkStatsChainToTrackerChain(volumeSelectedChain);
 
-    const doughnutData = useMemo(() => {
+    const calculatedVolumeData = useMemo(() => {
         const fallback = {
             amountRecords: {},
+            difference: 0,
         };
         if (volumeLoading || !volumeData) {
             return fallback;
@@ -108,7 +120,7 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
         }
         return fallback;
     }, [volumeLoading, volumeData, volumeChain, quoteCurrency, tokenPrices]);
-    console.log("dh", doughnutData);
+    console.log("dh", calculatedVolumeData);
 
     const linesData = useMemo(() => {
         let series: Array<[number, number]> = [];
@@ -125,7 +137,7 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
         console.log("series", series);
 
         const line: Line = {
-            name: `Accumulative Volume (${quoteCurrency.toUpperCase()})`,
+            name: `${historyChartLabel} (${quoteCurrency.toUpperCase()})`,
             axis: 0,
             data: series,
         };
@@ -133,7 +145,7 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
     }, [quoteCurrency, volumeData, trackerType, volumeChain]);
 
     console.log("ld", linesData[0].data[0]);
-    const volumePeriodTotal = new BigNumber(42);
+    const volumePeriodTotal = calculatedVolumeData.difference;
     return (
         <div className="stat-with-period">
             <PeriodSelector
@@ -143,7 +155,7 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
             <Stat
                 message={
                     <>
-                        Volume{" "}
+                        {title}{" "}
                         <span className="stat--subtitle">
                             (
                             {volumePeriod === PeriodType.ALL
@@ -153,9 +165,17 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
                         </span>
                     </>
                 }
-                icon={<IconVolume />}
+                icon={
+                    trackerType === TrackerType.Volume ? (
+                        <IconVolume />
+                    ) : (
+                        <IconValueLocked />
+                    )
+                }
                 big={true}
-                infoLabel={<>Total amount of volume transacted via RenVM.</>}
+                infoLabel={
+                    <>{tooltipRenderer(volumePeriod, volumeSelectedChain)}</>
+                }
                 className="stat--extra-big"
             >
                 {!volumeLoading ? (
@@ -197,9 +217,9 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
                                 <Graph lines={linesData} />
                             ) : (
                                 <DoughnutChart
-                                    title="Volume"
+                                    title={title}
                                     quoteCurrency={quoteCurrency}
-                                    data={doughnutData.amountRecords}
+                                    data={calculatedVolumeData.amountRecords}
                                 />
                             )
                         ) : (
