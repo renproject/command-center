@@ -93,6 +93,8 @@ const useNetworkContainer = () => {
         fetchRenVM,
         subgraphOutOfSync,
     } = GraphContainer.useContainer();
+    const { numberOfDarknodes } = renVMGraph || {};
+
     const { ethereumSubgraph } = GraphClientContainer.useContainer();
 
     const [tokenPrices, setTokenPrices] = useState(null as TokenPrices | null);
@@ -919,6 +921,7 @@ const useNetworkContainer = () => {
 
     return {
         tokenPrices,
+        numberOfDarknodes,
         registrySync,
         darknodeDetails: updatedDarknodeDetails,
         pendingRewards,

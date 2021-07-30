@@ -2,8 +2,6 @@ import BigNumber from "bignumber.js";
 import React from "react";
 import {
     snapshotDataToAllChainVolumeData,
-    snapshotDataToVolumeData,
-    TrackerChain,
     TrackerType,
 } from "../../../lib/graphQL/queries/renVmTracker";
 
@@ -19,25 +17,6 @@ import {
 } from "./networkStatsContainer";
 import { NetworkStatsStyles } from "./NetworkStatsStyles";
 import { useVolumeData, VolumeStats } from "./VolumeStats";
-
-export const getPeriodPercentChange = <K extends string>(
-    periodType: PeriodType,
-    property: K,
-    seriesData?: Array<{ [key in K]?: string }> | undefined,
-) => {
-    if (periodType !== PeriodType.ALL && seriesData && seriesData.length > 1) {
-        const historic = seriesData;
-        const prev = historic[0];
-        const curr = historic[historic.length - 1];
-        return new BigNumber((curr[property] || "0") as string)
-            .minus((prev[property] || "0") as string)
-            .dividedBy((curr[property] || "0") as string)
-            .multipliedBy(100);
-    }
-    return null;
-};
-
-const VOLUME_AXIS = 0;
 
 const volumeTooltipRenderer = (
     period: PeriodType,
@@ -60,11 +39,7 @@ export const NewNetworkStatsPage = () => {
     const { renVM } = GraphContainer.useContainer();
     const { btcMintFee, btcBurnFee } = renVM || {};
     const { quoteCurrency, tokenPrices } = NetworkContainer.useContainer();
-    const {
-        total,
-        mintedTotal,
-        numberOfDarknodes,
-    } = NetworkStatsContainer.useContainer();
+    const { numberOfDarknodes } = NetworkStatsContainer.useContainer();
 
     const { volumeData, volumeLoading } = useVolumeData(
         TrackerType.Locked,
@@ -115,7 +90,6 @@ export const NewNetworkStatsPage = () => {
                 <div className="collateral-padding" />
                 <Collateral
                     total={allChainTotal}
-                    minted={mintedTotal}
                     bondedRenValue={bondedRenValue}
                     bondedRen={bondedRenAmount}
                     quoteCurrency={quoteCurrency}

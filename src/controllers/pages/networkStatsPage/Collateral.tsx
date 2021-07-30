@@ -13,7 +13,6 @@ import { Stat, Stats } from "../../../views/Stat";
 import { TokenIcon } from "../../../views/tokenIcon/TokenIcon";
 
 interface Props {
-    minted: BigNumber;
     total: BigNumber;
     bondedRenValue: BigNumber | null;
     bondedRen: BigNumber;

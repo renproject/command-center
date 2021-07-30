@@ -72,7 +72,6 @@ export const NetworkStatsPage = () => {
         lockedTab,
         setLockedTab,
         total,
-        mintedTotal,
         b,
         numberOfDarknodes,
         volumeSelectedChain,
@@ -359,7 +358,6 @@ export const NetworkStatsPage = () => {
                 <div className="collateral-padding" />
                 <Collateral
                     total={total}
-                    minted={mintedTotal}
                     bondedRenValue={b}
                     bondedRen={(numberOfDarknodes || new BigNumber(0)).times(
                         100000,

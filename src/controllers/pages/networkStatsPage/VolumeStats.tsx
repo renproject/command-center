@@ -1,9 +1,11 @@
-import { Currency, CurrencyIcon, Loading } from "@renproject/react-components";
+import { CurrencyIcon, Loading } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import React, { useEffect, useMemo, useState } from "react";
 import { GraphClientContainer } from "../../../lib/graphQL/ApolloWithNetwork";
 import {
-    TokenCurrency,
+    getFirstAndLastSnapshot,
+    getResolutionInterval,
+    getSnapshots,
     networkStatsChainToTrackerChain,
     queryRenVmTracker,
     snapshotDataToTimeSeries,
@@ -14,8 +16,8 @@ import {
 
 import { PeriodType } from "../../../lib/graphQL/volumes";
 import { NetworkContainer } from "../../../store/networkContainer";
-import { ReactComponent as IconVolume } from "../../../styles/images/icon-volume.svg";
 import { ReactComponent as IconValueLocked } from "../../../styles/images/icon-value-locked.svg";
+import { ReactComponent as IconVolume } from "../../../styles/images/icon-volume.svg";
 import { Stat } from "../../../views/Stat";
 import { ChainSelector } from "./ChainSelector";
 import { DoughnutChart } from "./DoughnutChart";
@@ -41,15 +43,38 @@ export const getPeriodPercentChange = <K extends string>(
     return null;
 };
 
+const updateVolumeData = (
+    oldData: SnapshotRecords,
+    updateData: SnapshotRecords,
+) => {
+    const newSnapshot = Object.values(updateData)[0];
+    const oldCount = Object.keys(oldData).length;
+    const newData = {
+        ...oldData,
+        [`s${newSnapshot.timestamp}`]: newSnapshot,
+    };
+    const newCount = Object.keys(newData).length;
+    //preserve data size
+    if (newCount > oldCount) {
+        const snapshots = getSnapshots(oldData);
+        const { first } = getFirstAndLastSnapshot(snapshots);
+        delete newData[`s${first.timestamp}`];
+    }
+    return newData;
+};
+
 export const useVolumeData = (
     type: TrackerType,
-    periodType = PeriodType.ALL,
+    initialPeriod = PeriodType.ALL,
+    initialVolume: SnapshotRecords = {},
 ) => {
     const { renVmTracker } = GraphClientContainer.useContainer();
 
-    const [volumeData, setVolumeData] = useState<SnapshotRecords>({});
+    const [volumeData, setVolumeData] = useState<SnapshotRecords>(
+        initialVolume,
+    );
     const [volumeLoading, setVolumeLoading] = useState(true);
-    const [volumePeriod, setVolumePeriod] = useState<PeriodType>(periodType);
+    const [volumePeriod, setVolumePeriod] = useState<PeriodType>(initialPeriod);
 
     useEffect(() => {
         setVolumeLoading(true);
@@ -60,7 +85,22 @@ export const useVolumeData = (
                 setVolumeLoading(false);
             })
             .catch(console.error);
-    }, [renVmTracker, volumePeriod, type]);
+
+        const resolution = getResolutionInterval(volumePeriod); // TBD: this can be quicker, like every 2 minutes
+        const interval = setInterval(() => {
+            console.log("updating");
+            queryRenVmTracker(renVmTracker, type, volumePeriod, true)
+                .then((response) => {
+                    console.log(response);
+                    setVolumeData((data) =>
+                        updateVolumeData(data, response.data),
+                    );
+                })
+                .catch(console.error);
+        }, resolution * 1000);
+
+        return () => clearInterval(interval);
+    }, [renVmTracker, type, volumePeriod]);
 
     return {
         volumeData,
@@ -75,10 +115,8 @@ type VolumeStatsProps = {
     title: string;
     historyChartLabel: string;
     titleTooltip: string;
-    tooltipRenderer: (
-        volumePeriod: PeriodType,
-        chain: NetworkStatsChain,
-    ) => string;
+    tooltipRenderer: (period: PeriodType, chain: NetworkStatsChain) => string;
+    initialVolume?: SnapshotRecords;
 };
 
 export const VolumeStats: React.FC<VolumeStatsProps> = ({
@@ -86,6 +124,7 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
     title,
     historyChartLabel,
     tooltipRenderer,
+    initialVolume = {},
 }) => {
     const { quoteCurrency, tokenPrices } = NetworkContainer.useContainer();
     console.log("tp", tokenPrices?.toJS());
@@ -94,7 +133,7 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
         volumeLoading,
         volumePeriod,
         setVolumePeriod,
-    } = useVolumeData(trackerType);
+    } = useVolumeData(trackerType, PeriodType.ALL, initialVolume);
 
     const [volumeSelectedChain, setVolumeSelectedChain] = useState(
         NetworkStatsChain.Ethereum,
@@ -224,18 +263,16 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
                         assetsPeriod={volumePeriod}
                     />
                     <>
-                        {!volumeLoading ? (
-                            volumeTab === StatTab.History ? (
-                                <Graph lines={linesData} />
-                            ) : (
-                                <DoughnutChart
-                                    title={title}
-                                    quoteCurrency={quoteCurrency}
-                                    data={calculatedVolumeData.amountRecords}
-                                />
-                            )
-                        ) : (
+                        {volumeLoading ? (
                             <Loading alt={true} />
+                        ) : volumeTab === StatTab.History ? (
+                            <Graph lines={linesData} />
+                        ) : (
+                            <DoughnutChart
+                                title={title}
+                                quoteCurrency={quoteCurrency}
+                                data={calculatedVolumeData.amountRecords}
+                            />
                         )}
                     </>
                 </div>

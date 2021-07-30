@@ -3,6 +3,7 @@ import { PeriodType } from "../volumes";
 import { renVmTrackerMock } from "./mocks/renvm-tracker.mock";
 import {
     buildRenVmTrackerQuery,
+    getResolutionEndTimestamp,
     getResolutionPoints,
     snapshotDataToVolumeData,
     SnapshotRecords,
@@ -29,6 +30,13 @@ describe("tracker utils", () => {
         expect(getResolutionPoints(PeriodType.MONTH)).toEqual(62);
         expect(getResolutionPoints(PeriodType.YEAR)).toEqual(73);
         // expect(getResolutionPoints(PeriodType.ALL)).toEqual(71);
+    });
+
+    it("calcualtes end timestamp", () => {
+        const ts = 1627579175851;
+        const result = getResolutionEndTimestamp(80, ts);
+
+        expect(result).toEqual(1627579120);
     });
 
     it("maps", () => {

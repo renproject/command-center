@@ -74,7 +74,7 @@ const snapshotCurrencies: Array<Currency | TokenCurrency> = [
 
 export enum TrackerType { // rename to SnapshotType
     Locked = "locked",
-    Volume = "volume",
+    Volume = "volume", // TODO: Transacted
 }
 
 const VOLUME_FRAGMENT = `
@@ -107,8 +107,8 @@ const LOCKED_FRAGMENT = `
     }
 `;
 
-const getSnapshotSubQuery = (ts: string, type: TrackerType) => `
-    s${ts}: Snapshot(timestamp: "${ts}") {
+const getSnapshotSubQuery = (timestamp: string, type: TrackerType) => `
+    s${timestamp}: Snapshot(timestamp: "${timestamp}") {
         ...${type === TrackerType.Volume ? "VolumeSnapshot" : "LockedSnapshot"}
     }`;
 
@@ -116,8 +116,11 @@ export const queryRenVmTracker = async (
     client: ApolloClient<object>,
     type: TrackerType,
     period: PeriodType,
+    isUpdate = false,
 ): Promise<SnapshotResponse> => {
-    const query = buildRenVmTrackerQuery(type, period);
+    const query = isUpdate
+        ? buildRenVmTrackerUpdateQuery(type, getResolutionEndTimestamp())
+        : buildRenVmTrackerQuery(type, period);
     return client.query<SnapshotRecords>({
         query,
     });
@@ -129,8 +132,7 @@ export const buildRenVmTrackerQuery = (
 ) => {
     const interval = getResolutionInterval(period);
     const points = getResolutionPoints(period);
-    console.log(points);
-    const endTimestamp = Math.floor(Date.now() / 1000);
+    const endTimestamp = getResolutionEndTimestamp();
     const subQueries = [];
     for (let i = 0; i < points; i++) {
         const timestamp = Math.ceil(endTimestamp - i * interval);
@@ -154,6 +156,21 @@ export const buildRenVmTrackerQuery = (
     console.log(snapshotQuery);
     return gql(snapshotQuery);
 };
+
+export const buildRenVmTrackerUpdateQuery = (
+    type: TrackerType,
+    timestamp: number,
+) => {
+    const snapshotQuery = `
+        ${type === TrackerType.Volume ? VOLUME_FRAGMENT : LOCKED_FRAGMENT}
+        query GetSnapshots {
+            ${getSnapshotSubQuery(timestamp.toString(), type)}
+        }
+    `;
+    console.log("update query", snapshotQuery);
+    return gql(snapshotQuery);
+};
+
 export const getResolutionPoints = (period: PeriodType) => {
     const timespan = getPeriodTimespan(period);
     const interval = getResolutionInterval(period);
@@ -178,6 +195,16 @@ export const getResolutionInterval = (period: PeriodType) => {
     return 5 * 24 * 3600;
 };
 
+export const getResolutionEndTimestamp = (
+    resolution = 80,
+    date = Date.now(),
+) => {
+    // "round" timestamp to {resolution} seconds
+    const seconds = Math.floor(date / 1000);
+    const remainder = seconds % resolution;
+    return seconds - remainder;
+};
+
 export const getSnapshots = (records: SnapshotRecords) => {
     return Object.entries(records)
         .filter(([key]) => key !== "assets")
@@ -187,7 +214,8 @@ export const getSnapshots = (records: SnapshotRecords) => {
 export const getAssetsData = (records: SnapshotRecords) => {
     return Object.entries(records)
         .filter(([key]) => key === "assets")
-        .map(([, snapshot]) => snapshot.prices)[0];
+        .map(([, snapshot]) => snapshot.prices)[0]
+        .filter((entry) => entry.asset !== "System");
 };
 
 export const getFirstAndLastSnapshot = (snapshots: Array<Snapshot>) => {
@@ -308,9 +336,9 @@ export const snapshotDataToVolumeData = (
     tokenPrices: TokenPrices,
 ) => {
     const snapshots = getSnapshots(data);
-    console.log("snapshots", snapshots);
+    // console.log("snapshots", snapshots);
     const { first, last } = getFirstAndLastSnapshot(snapshots);
-    console.log("first last", first, last);
+    // console.log("first last", first, last);
     const assetsData = getAssetsData(data);
     const { difference, startAmounts, endAmounts } = getVolumeData(
         first,
@@ -321,8 +349,9 @@ export const snapshotDataToVolumeData = (
         assetsData,
         tokenPrices,
     );
-    console.log("first last amounts", startAmounts, endAmounts);
+    // console.log("first last amounts", startAmounts, endAmounts);
     const assets = assetsData.map((entry) => entry.asset);
+    console.log("assets", assets);
     console.log("tokens", assets);
     const amountRecords: BigNumberRecord = {};
     assets.forEach((asset) => {
@@ -345,7 +374,7 @@ export const snapshotDataToVolumeData = (
         }
         amountRecords[asset] = difference;
     });
-    console.log("amounts", unifyTokenRecords(amountRecords));
+    // console.log("amounts", unifyTokenRecords(amountRecords));
     return { amountRecords, difference };
 };
 
