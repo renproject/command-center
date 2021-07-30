@@ -100,7 +100,6 @@ export const Graph: React.FC<Props> = ({ lines }) => {
         () => getOptions(lines.filter((line) => line !== undefined) as Line[]),
         [lines],
     );
-    console.log("lines", lines);
     return (
         <div className="highcharts--with-outside-tooltip">
             <div

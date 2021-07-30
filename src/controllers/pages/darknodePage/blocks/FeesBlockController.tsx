@@ -32,6 +32,7 @@ import {
     base64StringToHexString,
     sanitizeBase64String,
 } from "../../../../lib/general/encodingUtils";
+import { convertToBaseAmount } from "../../../../lib/general/tokenAmountUtils";
 import { TokenAmount } from "../../../../lib/graphQL/queries/queries";
 import { classNames } from "../../../../lib/react/className";
 import { claimFeesDigest } from "../../../../lib/web3/signatures";
@@ -276,14 +277,6 @@ export const FeesBlockController: React.FC<Props> = ({
     );
 };
 
-const convertToNativeAmount = (
-    value: BigNumber | string,
-    decimals: number,
-): BigNumber =>
-    new BigNumber(value).multipliedBy(
-        new BigNumber(Math.pow(10, decimals || 0)),
-    );
-
 const convertToAmount = (
     value: BigNumber | string,
     decimals: number,
@@ -442,7 +435,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
         (event) => {
             const value = event.target.value;
             setInputAmount(value);
-            const newNativeAmount = convertToNativeAmount(
+            const newNativeAmount = convertToBaseAmount(
                 value,
                 tokenAmount?.asset?.decimals || 0,
             );

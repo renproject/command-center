@@ -11,7 +11,7 @@ import {
     snapshotDataToTimeSeries,
     snapshotDataToVolumeData,
     SnapshotRecords,
-    TrackerType,
+    TrackerVolumeType,
 } from "../../../lib/graphQL/queries/renVmTracker";
 
 import { PeriodType } from "../../../lib/graphQL/volumes";
@@ -64,7 +64,7 @@ const updateVolumeData = (
 };
 
 export const useVolumeData = (
-    type: TrackerType,
+    type: TrackerVolumeType,
     initialPeriod = PeriodType.ALL,
     initialVolume: SnapshotRecords = {},
 ) => {
@@ -111,7 +111,7 @@ export const useVolumeData = (
 };
 
 type VolumeStatsProps = {
-    trackerType: TrackerType;
+    trackerType: TrackerVolumeType;
     title: string;
     historyChartLabel: string;
     titleTooltip: string;
@@ -127,7 +127,6 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
     initialVolume = {},
 }) => {
     const { quoteCurrency, tokenPrices } = NetworkContainer.useContainer();
-    console.log("tp", tokenPrices?.toJS());
     const {
         volumeData,
         volumeLoading,
@@ -164,7 +163,6 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
         quoteCurrency,
         tokenPrices,
     ]);
-    console.log("dh", calculatedVolumeData);
 
     const linesData = useMemo(() => {
         let series: Array<[number, number]> = [];
@@ -195,7 +193,6 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
         volumeChain,
     ]);
 
-    console.log("ld", linesData[0].data[0]);
     const volumePeriodTotal = calculatedVolumeData.difference;
     return (
         <div className="stat-with-period">
@@ -217,7 +214,7 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
                     </>
                 }
                 icon={
-                    trackerType === TrackerType.Volume ? (
+                    trackerType === TrackerVolumeType.Transacted ? (
                         <IconVolume />
                     ) : (
                         <IconValueLocked />

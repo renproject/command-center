@@ -2,7 +2,7 @@ import BigNumber from "bignumber.js";
 import React from "react";
 import {
     snapshotDataToAllChainVolumeData,
-    TrackerType,
+    TrackerVolumeType,
 } from "../../../lib/graphQL/queries/renVmTracker";
 
 import { PeriodType } from "../../../lib/graphQL/volumes";
@@ -42,7 +42,7 @@ export const NewNetworkStatsPage = () => {
     const { numberOfDarknodes } = NetworkStatsContainer.useContainer();
 
     const { volumeData, volumeLoading } = useVolumeData(
-        TrackerType.Locked,
+        TrackerVolumeType.Locked,
         PeriodType.ALL,
     );
     const allChainTotal =
@@ -50,7 +50,7 @@ export const NewNetworkStatsPage = () => {
             ? new BigNumber(0)
             : snapshotDataToAllChainVolumeData(
                   volumeData,
-                  TrackerType.Locked,
+                  TrackerVolumeType.Locked,
                   quoteCurrency,
                   tokenPrices,
               );
@@ -71,14 +71,14 @@ export const NewNetworkStatsPage = () => {
             <div className="col-lg-12 col-xl-8">
                 <Stats>
                     <VolumeStats
-                        trackerType={TrackerType.Volume}
+                        trackerType={TrackerVolumeType.Transacted}
                         title="Volume"
                         titleTooltip="Total amount of volume transacted via RenVM."
                         historyChartLabel="Accumulative Volume"
                         tooltipRenderer={volumeTooltipRenderer}
                     />
                     <VolumeStats
-                        trackerType={TrackerType.Locked}
+                        trackerType={TrackerVolumeType.Locked}
                         title="Value Minted"
                         titleTooltip="The total value (TVL) of all digital assets currently minted on Ethereum by RenVM."
                         historyChartLabel="Locked"

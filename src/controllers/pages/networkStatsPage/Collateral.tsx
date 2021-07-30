@@ -61,7 +61,6 @@ export const Collateral: React.FC<Props> = ({
     const overCollateralized =
         GREYCORE_ACTIVE || bondedRenValue === null || total.lte(bondedRenValue);
 
-    console.log("fees", mintFee, burnFee);
     return (
         <div className="collateral">
             <Stats className="collateral-stats--top">

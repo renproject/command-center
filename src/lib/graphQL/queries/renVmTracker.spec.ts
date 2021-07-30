@@ -8,7 +8,7 @@ import {
     snapshotDataToVolumeData,
     SnapshotRecords,
     TrackerChain,
-    TrackerType,
+    TrackerVolumeType,
 } from "./renVmTracker";
 
 const snapshotData = renVmTrackerMock.data as SnapshotRecords;
@@ -16,7 +16,7 @@ const snapshotData = renVmTrackerMock.data as SnapshotRecords;
 describe("tracker utils", () => {
     xit("generates query", () => {
         const result = buildRenVmTrackerQuery(
-            TrackerType.Volume,
+            TrackerVolumeType.Transacted,
             PeriodType.DAY,
         );
 
