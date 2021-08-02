@@ -282,6 +282,7 @@ export const Collateral: React.FC<Props> = ({
                     }
                     big={true}
                 >
+                    {/* TODO: Populate this dynamically. */}
                     <SimpleTable>
                         <div>
                             <span>
@@ -292,7 +293,7 @@ export const Collateral: React.FC<Props> = ({
                             <span style={{ marginLeft: "40px" }}>Mint</span>
                             <span>
                                 {mintFee !== undefined ? (
-                                    <>{25 / 100}%</>
+                                    <>{15 / 100}%</>
                                 ) : (
                                     <Loading />
                                 )}
