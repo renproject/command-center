@@ -31,6 +31,7 @@ export enum NetworkStatsChain {
     BinanceSmartChain = "Binance Smart Chain",
     Fantom = "Fantom",
     Polygon = "Polygon",
+    Avalanche = "Avalanche",
 }
 
 const useNetworkStatsContainer = () => {

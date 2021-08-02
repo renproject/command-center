@@ -1,7 +1,7 @@
 import { ApolloClient as ApolloClientInterface } from "@apollo/react-hooks";
 import { RenNetworkDetails } from "@renproject/contracts";
 import ApolloClient from "apollo-boost";
-import { InMemoryCache, defaultDataIdFromObject } from "apollo-cache-inmemory";
+import { InMemoryCache } from "apollo-cache-inmemory";
 import fetch from "node-fetch";
 
 export const ethereumSubgraphUrl = (renNetwork: RenNetworkDetails) =>

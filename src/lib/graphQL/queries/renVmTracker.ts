@@ -20,6 +20,7 @@ const allTrackedChains = [
     TrackerChain.BinanceSmartChain,
     TrackerChain.Fantom,
     TrackerChain.Polygon,
+    TrackerChain.Avalanche,
 ];
 
 export const networkStatsChainToTrackerChain = (chain: NetworkStatsChain) => {
@@ -32,6 +33,8 @@ export const networkStatsChainToTrackerChain = (chain: NetworkStatsChain) => {
             return TrackerChain.Fantom;
         case NetworkStatsChain.Polygon:
             return TrackerChain.Polygon;
+        case NetworkStatsChain.Avalanche:
+            return TrackerChain.Avalanche;
     }
 };
 
@@ -86,6 +89,19 @@ const FRAGMENT_VOLUME_FIELDS = `
             amountInEth
 `;
 
+const VOLUMES_FRAGMENT = `
+    fragment VolumesSnapshot on Snapshot {
+        id
+        timestamp
+        volume {
+            ${FRAGMENT_VOLUME_FIELDS}
+        }
+        locked {
+            ${FRAGMENT_VOLUME_FIELDS}
+        }
+    }
+`;
+
 const TRANSACTED_FRAGMENT = `
     fragment VolumeSnapshot on Snapshot {
         id
@@ -106,13 +122,9 @@ const LOCKED_FRAGMENT = `
     }
 `;
 
-const getSnapshotSubQuery = (timestamp: string, type: TrackerVolumeType) => `
+const getSnapshotSubQuery = (timestamp: string) => `
     s${timestamp}: Snapshot(timestamp: "${timestamp}") {
-        ...${
-            type === TrackerVolumeType.Transacted
-                ? "VolumeSnapshot"
-                : "LockedSnapshot"
-        }
+        ...VolumesSnapshot
     }`;
 
 export const queryRenVmTracker = async (
@@ -140,7 +152,7 @@ export const buildRenVmTrackerQuery = (
     const subQueries = [];
     for (let i = 0; i < points; i++) {
         const timestamp = Math.ceil(endTimestamp - i * interval);
-        const subQuery = getSnapshotSubQuery(timestamp.toString(), type);
+        const subQuery = getSnapshotSubQuery(timestamp.toString());
         subQueries.push(subQuery);
     }
 
@@ -170,13 +182,9 @@ export const buildRenVmTrackerUpdateQuery = (
     timestamp: number,
 ) => {
     const snapshotQuery = `
-        ${
-            type === TrackerVolumeType.Transacted
-                ? TRANSACTED_FRAGMENT
-                : LOCKED_FRAGMENT
-        }
+        ${VOLUMES_FRAGMENT}
         query GetSnapshots {
-            ${getSnapshotSubQuery(timestamp.toString(), type)}
+            ${getSnapshotSubQuery(timestamp.toString())}
         }
     `;
     return gql(snapshotQuery);
@@ -349,7 +357,7 @@ const getVolumeData = (
 
 export const snapshotDataToVolumeData = (
     data: SnapshotRecords,
-    type: TrackerVolumeType,
+    trackerType: TrackerVolumeType,
     chain: TrackerChain,
     currency: TokenAmountType | Currency,
     tokenPrices: TokenPrices,
@@ -358,38 +366,46 @@ export const snapshotDataToVolumeData = (
     const { first, last } = getFirstAndLastSnapshot(snapshots);
     const assetsData = getAssetsData(data);
 
-    const { difference, startAmounts, endAmounts } = getVolumeData(
-        first,
-        last,
-        type,
-        chain,
-        currency,
-        assetsData,
-        tokenPrices,
-    );
+    const volumeData: Record<TrackerVolumeType, any> = {}[
+        (TrackerVolumeType.Transacted, TrackerVolumeType.Locked)
+    ].forEach((type: TrackerVolumeType) => {
+        const { difference, startAmounts, endAmounts } = getVolumeData(
+            first,
+            last,
+            type,
+            chain,
+            currency,
+            assetsData,
+            tokenPrices,
+        );
 
-    const assets = assetsData.map((entry) => entry.asset);
-    const amountRecords: BigNumberRecord = {};
+        const assets = assetsData.map((entry) => entry.asset);
+        const amountRecords: BigNumberRecord = {};
 
-    assets.forEach((asset) => {
-        const lastEntry = endAmounts.find((entry) => entry.asset === asset);
-        const firstEntry = startAmounts.find((entry) => entry.asset === asset);
-
-        let difference = new BigNumber(0);
-        if (lastEntry && firstEntry) {
-            difference = new BigNumber(
-                getAmount(lastEntry, currency, assetsData, tokenPrices),
-            ).minus(getAmount(firstEntry, currency, assetsData, tokenPrices));
-        } else if (lastEntry) {
-            difference = new BigNumber(
-                getAmount(lastEntry, currency, assetsData, tokenPrices),
+        assets.forEach((asset) => {
+            const lastEntry = endAmounts.find((entry) => entry.asset === asset);
+            const firstEntry = startAmounts.find(
+                (entry) => entry.asset === asset,
             );
-        }
 
-        amountRecords[asset] = difference;
+            let difference = new BigNumber(0);
+            if (lastEntry && firstEntry) {
+                difference = new BigNumber(
+                    getAmount(lastEntry, currency, assetsData, tokenPrices),
+                ).minus(
+                    getAmount(firstEntry, currency, assetsData, tokenPrices),
+                );
+            } else if (lastEntry) {
+                difference = new BigNumber(
+                    getAmount(lastEntry, currency, assetsData, tokenPrices),
+                );
+            }
+
+            amountRecords[asset] = difference;
+        });
+
+        volumeData[type] = { amountRecords, difference };
     });
-
-    return { amountRecords, difference };
 };
 
 export const snapshotDataToAllChainVolumeData = (
