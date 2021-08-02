@@ -1,7 +1,9 @@
 import { ApolloClient, gql } from "@apollo/react-hooks";
+import { Asset } from "@renproject/interfaces";
 import { Currency } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import { getConversionRate } from "../../../controllers/common/tokenBalanceUtils";
+import { ChainOption } from "../../../controllers/pages/networkStatsPage/ChainSelector";
 import { NetworkStatsChain } from "../../../controllers/pages/networkStatsPage/networkStatsContainer";
 import { TokenPrices } from "../../ethereum/tokens";
 import { convertToStandardAmount } from "../../general/tokenAmountUtils";
@@ -23,18 +25,20 @@ const allTrackedChains = [
     TrackerChain.Avalanche,
 ];
 
-export const networkStatsChainToTrackerChain = (chain: NetworkStatsChain) => {
+export const chainOptionToTrackerChain = (chain: ChainOption) => {
     switch (chain) {
-        case NetworkStatsChain.Ethereum:
+        case ChainOption.Ethereum:
             return TrackerChain.Ethereum;
-        case NetworkStatsChain.BinanceSmartChain:
+        case ChainOption.BinanceSmartChain:
             return TrackerChain.BinanceSmartChain;
-        case NetworkStatsChain.Fantom:
+        case ChainOption.Fantom:
             return TrackerChain.Fantom;
-        case NetworkStatsChain.Polygon:
+        case ChainOption.Polygon:
             return TrackerChain.Polygon;
-        case NetworkStatsChain.Avalanche:
+        case ChainOption.Avalanche:
             return TrackerChain.Avalanche;
+        default:
+            return TrackerChain.Ethereum;
     }
 };
 
@@ -114,17 +118,14 @@ export const queryRenVmTracker = async (
     isUpdate = false,
 ): Promise<SnapshotResponse> => {
     const query = isUpdate
-        ? buildRenVmTrackerUpdateQuery(type, getResolutionEndTimestamp())
-        : buildRenVmTrackerQuery(type, period);
+        ? buildRenVmTrackerUpdateQuery(getResolutionEndTimestamp())
+        : buildRenVmTrackerQuery(period);
     return client.query<SnapshotRecords>({
         query,
     });
 };
 
-export const buildRenVmTrackerQuery = (
-    type: TrackerVolumeType,
-    period: PeriodType,
-) => {
+export const buildRenVmTrackerQuery = (period: PeriodType) => {
     const interval = getResolutionInterval(period);
     const points = getResolutionPoints(period);
     const endTimestamp = getResolutionEndTimestamp();
@@ -153,10 +154,7 @@ export const buildRenVmTrackerQuery = (
     return gql(snapshotQuery);
 };
 
-export const buildRenVmTrackerUpdateQuery = (
-    type: TrackerVolumeType,
-    timestamp: number,
-) => {
+export const buildRenVmTrackerUpdateQuery = (timestamp: number) => {
     const snapshotQuery = `
         ${VOLUMES_FRAGMENT}
         query GetSnapshots {
@@ -376,15 +374,30 @@ export const snapshotDataToVolumeData = (
     return { amountRecords, difference };
 };
 
+const mergeAmountRecords = (
+    assetsData: any,
+    acc: BigNumberRecord,
+    curr: BigNumberRecord,
+) => {
+    let records: BigNumberRecord = {};
+    assetsData.forEach((assetData: SnapshotAssetData) => {
+        const token = assetData.asset;
+        records[token] = new BigNumber(acc[token] || 0).plus(curr[token] || 0);
+    });
+    return records;
+};
+
 export const snapshotDataToAllChainVolumeData = (
     data: SnapshotRecords,
     type: TrackerVolumeType,
     currency: TokenAmountType | Currency,
     tokenPrices: TokenPrices,
 ) => {
+    const assetsData = getAssetsData(data);
     let sum = new BigNumber(0);
+    let records: BigNumberRecord = {};
     allTrackedChains.forEach((chain) => {
-        const { difference } = snapshotDataToVolumeData(
+        const { difference, amountRecords } = snapshotDataToVolumeData(
             data,
             type,
             chain,
@@ -392,8 +405,9 @@ export const snapshotDataToAllChainVolumeData = (
             tokenPrices,
         );
         sum = sum.plus(difference);
+        records = mergeAmountRecords(assetsData, records, amountRecords);
     });
-    return sum;
+    return { difference: sum, amountRecords: records };
 };
 
 export const snapshotDataToTimeSeries = (

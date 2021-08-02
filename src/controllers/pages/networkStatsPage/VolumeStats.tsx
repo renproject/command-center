@@ -3,11 +3,12 @@ import BigNumber from "bignumber.js";
 import React, { useEffect, useMemo, useState } from "react";
 import { GraphClientContainer } from "../../../lib/graphQL/ApolloWithNetwork";
 import {
+    chainOptionToTrackerChain,
     getFirstAndLastSnapshot,
     getResolutionInterval,
     getSnapshots,
-    networkStatsChainToTrackerChain,
     queryRenVmTracker,
+    snapshotDataToAllChainVolumeData,
     snapshotDataToTimeSeries,
     snapshotDataToVolumeData,
     SnapshotRecords,
@@ -19,11 +20,9 @@ import { NetworkContainer } from "../../../store/networkContainer";
 import { ReactComponent as IconValueLocked } from "../../../styles/images/icon-value-locked.svg";
 import { ReactComponent as IconVolume } from "../../../styles/images/icon-volume.svg";
 import { Stat } from "../../../views/Stat";
-import { ChainSelector } from "./ChainSelector";
+import { ChainOption } from "./ChainSelector";
 import { DoughnutChart } from "./DoughnutChart";
 import { Graph, Line } from "./Graph";
-import { NetworkStatsChain } from "./networkStatsContainer";
-import { PeriodSelector } from "./PeriodSelector";
 import { StatTab, StatTabs } from "./StatTabs";
 
 export const getPeriodPercentChange = <K extends string>(
@@ -64,10 +63,10 @@ const updateVolumeData = (
 };
 
 export const useVolumeData = (
-    type: TrackerVolumeType,
     initialPeriod = PeriodType.ALL,
     initialVolume: SnapshotRecords = {},
 ) => {
+    const type = TrackerVolumeType.Locked; // TODO: remove
     const { renVmTracker } = GraphClientContainer.useContainer();
 
     const [volumeData, setVolumeData] = useState<SnapshotRecords>(
@@ -115,8 +114,12 @@ type VolumeStatsProps = {
     title: string;
     historyChartLabel: string;
     titleTooltip: string;
-    tooltipRenderer: (period: PeriodType, chain: NetworkStatsChain) => string;
+    tooltipRenderer: (period: PeriodType, chain: ChainOption) => string;
     initialVolume?: SnapshotRecords;
+    volumeData: SnapshotRecords;
+    volumePeriod: PeriodType;
+    volumeLoading: boolean;
+    chainOption: ChainOption;
 };
 
 export const VolumeStats: React.FC<VolumeStatsProps> = ({
@@ -124,22 +127,14 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
     title,
     historyChartLabel,
     tooltipRenderer,
-    initialVolume = {},
+    volumeData,
+    volumePeriod,
+    volumeLoading,
+    chainOption,
 }) => {
     const [volumeTab, setVolumeTab] = useState<StatTab>(StatTab.History);
 
     const { quoteCurrency, tokenPrices } = NetworkContainer.useContainer();
-    const {
-        volumeData,
-        volumeLoading,
-        volumePeriod,
-        setVolumePeriod,
-    } = useVolumeData(trackerType, PeriodType.ALL, initialVolume);
-
-    const [volumeSelectedChain, setVolumeSelectedChain] = useState(
-        NetworkStatsChain.Ethereum,
-    );
-    const volumeChain = networkStatsChainToTrackerChain(volumeSelectedChain);
 
     const calculatedVolumeData = useMemo(() => {
         const fallback = {
@@ -147,20 +142,31 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
             difference: 0,
         };
         if (!volumeLoading && tokenPrices) {
-            return snapshotDataToVolumeData(
+            if (chainOption !== ChainOption.All) {
+                const trackerChain = chainOptionToTrackerChain(chainOption);
+                return snapshotDataToVolumeData(
+                    volumeData,
+                    trackerType,
+                    trackerChain,
+                    quoteCurrency,
+                    tokenPrices,
+                );
+            }
+            const data = snapshotDataToAllChainVolumeData(
                 volumeData,
                 trackerType,
-                volumeChain,
                 quoteCurrency,
                 tokenPrices,
             );
+            console.log("data", data);
+            return data;
         }
         return fallback;
     }, [
         volumeLoading,
         trackerType,
         volumeData,
-        volumeChain,
+        chainOption,
         quoteCurrency,
         tokenPrices,
     ]);
@@ -168,13 +174,16 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
     const linesData = useMemo(() => {
         let series: Array<[number, number]> = [];
         if (!volumeLoading && tokenPrices) {
-            series = snapshotDataToTimeSeries(
-                volumeData,
-                trackerType,
-                volumeChain,
-                quoteCurrency,
-                tokenPrices,
-            );
+            if (chainOption !== ChainOption.All) {
+                const trackerChain = chainOptionToTrackerChain(chainOption);
+                series = snapshotDataToTimeSeries(
+                    volumeData,
+                    trackerType,
+                    trackerChain,
+                    quoteCurrency,
+                    tokenPrices,
+                );
+            }
         }
         // console.log("series", series);
 
@@ -191,16 +200,12 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
         volumeLoading,
         volumeData,
         trackerType,
-        volumeChain,
+        chainOption,
     ]);
 
     const volumePeriodTotal = calculatedVolumeData.difference;
     return (
         <div className="stat-with-period">
-            <PeriodSelector
-                selected={volumePeriod}
-                onChange={setVolumePeriod}
-            />
             <Stat
                 message={
                     <>
@@ -222,9 +227,7 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
                     )
                 }
                 big={true}
-                infoLabel={
-                    <>{tooltipRenderer(volumePeriod, volumeSelectedChain)}</>
-                }
+                infoLabel={<>{tooltipRenderer(volumePeriod, chainOption)}</>}
                 className="stat--extra-big"
             >
                 {!volumeLoading ? (
@@ -248,12 +251,6 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
                     <Loading alt />
                 )}
                 <div className="overview--bottom">
-                    <div className="overview--select-chain">
-                        <ChainSelector
-                            selected={volumeSelectedChain}
-                            onChange={setVolumeSelectedChain}
-                        />
-                    </div>
                     <StatTabs
                         selected={volumeTab}
                         onChange={setVolumeTab}

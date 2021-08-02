@@ -1,15 +1,40 @@
 import React, { useCallback } from "react";
 import styled from "styled-components";
 
-import { NetworkStatsChain } from "./networkStatsContainer";
+export enum ChainOption {
+    All = "All",
+    Ethereum = "Ethereum",
+    BinanceSmartChain = "BinanceSmartChain",
+    Fantom = "Fantom",
+    Polygon = "Polygon",
+    Avalanche = "Avalanche",
+}
 
 const ChainDotColors = {
-    // [NetworkStatsChain.All]: "#006FE8",
-    [NetworkStatsChain.Ethereum]: "#627EEA",
-    [NetworkStatsChain.BinanceSmartChain]: "#F9B72D",
-    [NetworkStatsChain.Fantom]: "#1969ff",
-    [NetworkStatsChain.Polygon]: "#8247e5",
+    [ChainOption.All]: "#006FE8",
+    [ChainOption.Ethereum]: "#627EEA",
+    [ChainOption.BinanceSmartChain]: "#F9B72D",
+    [ChainOption.Fantom]: "#1969ff",
+    [ChainOption.Polygon]: "#8247e5",
 };
+
+const ChainLabel: Record<ChainOption, string> = {
+    [ChainOption.All]: "All",
+    [ChainOption.Ethereum]: "Ethereum",
+    [ChainOption.BinanceSmartChain]: "BSC",
+    [ChainOption.Fantom]: "Fantom",
+    [ChainOption.Polygon]: "Polygon",
+    [ChainOption.Avalanche]: "Avalanche",
+};
+
+const availableChains: Array<ChainOption> = [
+    ChainOption.All,
+    ChainOption.Ethereum,
+    ChainOption.BinanceSmartChain,
+    ChainOption.Fantom,
+    ChainOption.Polygon,
+    ChainOption.Avalanche,
+];
 
 const ChainDotDiv = styled.div`
     background: rgb(255, 187, 0);
@@ -43,21 +68,21 @@ const ChainOptionDiv = styled.div`
     }
 `;
 
-const ChainOption = ({
+const ChainButton = ({
     value,
     selected,
     onChange,
 }: {
-    value: NetworkStatsChain;
-    selected: NetworkStatsChain;
-    onChange: (value: NetworkStatsChain) => void;
+    value: ChainOption;
+    selected: boolean;
+    onChange: (value: ChainOption) => void;
 }) => {
     const onClick = useCallback(() => {
         onChange(value);
     }, [onChange, value]);
     return (
         <ChainOptionDiv
-            className={selected === value ? "selected" : ""}
+            className={selected ? "selected" : ""}
             role="button"
             onClick={onClick}
         >
@@ -72,34 +97,22 @@ const ChainSelectorDiv = styled.div`
 `;
 
 export const ChainSelector = ({
-    selected,
+    value,
     onChange,
 }: {
-    selected: NetworkStatsChain;
-    onChange: (value: NetworkStatsChain) => void;
+    value: ChainOption;
+    onChange: (value: ChainOption) => void;
 }) => {
     return (
         <ChainSelectorDiv>
-            <ChainOption
-                value={NetworkStatsChain.Ethereum}
-                selected={selected}
-                onChange={onChange}
-            />
-            <ChainOption
-                value={NetworkStatsChain.BinanceSmartChain}
-                selected={selected}
-                onChange={onChange}
-            />
-            <ChainOption
-                value={NetworkStatsChain.Fantom}
-                selected={selected}
-                onChange={onChange}
-            />
-            <ChainOption
-                value={NetworkStatsChain.Polygon}
-                selected={selected}
-                onChange={onChange}
-            />
+            {availableChains.map((chain) => (
+                <ChainButton
+                    key={chain}
+                    value={chain}
+                    onChange={onChange}
+                    selected={chain === value}
+                />
+            ))}
         </ChainSelectorDiv>
     );
 };

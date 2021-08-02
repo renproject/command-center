@@ -268,6 +268,13 @@
     border-top: 1px solid #ffffff19;
 }
 
+.selectors {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 8px;
+}
+
 .stat--extra-big > div {
     font-size: 42px;
 }
@@ -409,7 +416,7 @@
 }
 
 .collateral-padding {
-    height: 35px;
+    height: 43px;
     width: 100%;
 
     @media (max-width: $max-lg) {

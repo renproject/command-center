@@ -1,7 +1,9 @@
 import BigNumber from "bignumber.js";
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { isEmptyObject } from "../../../lib/general/isDefined";
 import {
     snapshotDataToAllChainVolumeData,
+    SnapshotRecords,
     TrackerVolumeType,
 } from "../../../lib/graphQL/queries/renVmTracker";
 
@@ -10,25 +12,18 @@ import { GraphContainer } from "../../../store/graphContainer";
 import { NetworkContainer } from "../../../store/networkContainer";
 import { Stats } from "../../../views/Stat";
 import { getRenPriceIn } from "../../common/tokenBalanceUtils";
+import { ChainOption, ChainSelector } from "./ChainSelector";
 import { Collateral } from "./Collateral";
-import {
-    NetworkStatsChain,
-    NetworkStatsContainer,
-} from "./networkStatsContainer";
+import { NetworkStatsContainer } from "./networkStatsContainer";
 import { NetworkStatsStyles } from "./NetworkStatsStyles";
+import { PeriodSelector } from "./PeriodSelector";
 import { useVolumeData, VolumeStats } from "./VolumeStats";
 
-const volumeTooltipRenderer = (
-    period: PeriodType,
-    chain: NetworkStatsChain,
-) => {
+const volumeTooltipRenderer = (period: PeriodType, chain: ChainOption) => {
     return `Total amount of volume transacted via RenVM on ${chain.toString()}`;
 };
 
-const lockedTooltipRenderer = (
-    period: PeriodType,
-    chain: NetworkStatsChain,
-) => {
+const lockedTooltipRenderer = (period: PeriodType, chain: ChainOption) => {
     if (period === PeriodType.ALL) {
         return `The total value (TVL) of all digital assets currently minted on ${chain.toString()} by RenVM.`;
     }
@@ -40,20 +35,32 @@ export const NewNetworkStatsPage = () => {
     const { btcMintFee, btcBurnFee } = renVM || {};
     const { quoteCurrency, tokenPrices } = NetworkContainer.useContainer();
     const { numberOfDarknodes } = NetworkStatsContainer.useContainer();
+    const [totalVolumeData, setTotalVolumeData] = useState<SnapshotRecords>({});
+    const {
+        volumeData,
+        volumeLoading,
+        volumePeriod,
+        setVolumePeriod,
+    } = useVolumeData(PeriodType.ALL);
 
-    const { volumeData, volumeLoading } = useVolumeData(
-        TrackerVolumeType.Locked,
-        PeriodType.ALL,
-    );
-    const allChainTotal =
-        tokenPrices === null || volumeLoading
+    useEffect(() => {
+        if (!isEmptyObject(volumeData)) {
+            setTotalVolumeData(volumeData);
+        }
+    }, [volumeData]);
+
+    const [chainOption, setChainOption] = useState(ChainOption.All);
+
+    const allChainTotal = useMemo(() => {
+        return tokenPrices === null || isEmptyObject(totalVolumeData)
             ? new BigNumber(0)
             : snapshotDataToAllChainVolumeData(
-                  volumeData,
+                  totalVolumeData,
                   TrackerVolumeType.Locked,
                   quoteCurrency,
                   tokenPrices,
-              );
+              ).difference;
+    }, [totalVolumeData, tokenPrices, quoteCurrency]);
 
     const bondedRenAmount = (numberOfDarknodes || new BigNumber(0)).times(
         100000,
@@ -69,20 +76,38 @@ export const NewNetworkStatsPage = () => {
                 {collateral}
             </div> */}
             <div className="col-lg-12 col-xl-8">
+                <div className="selectors">
+                    <ChainSelector
+                        value={chainOption}
+                        onChange={setChainOption}
+                    />
+                    <PeriodSelector
+                        value={volumePeriod}
+                        onChange={setVolumePeriod}
+                    />
+                </div>
                 <Stats>
                     <VolumeStats
+                        volumeData={volumeData}
+                        volumeLoading={volumeLoading}
+                        volumePeriod={volumePeriod}
                         trackerType={TrackerVolumeType.Transacted}
                         title="Volume"
                         titleTooltip="Total amount of volume transacted via RenVM."
                         historyChartLabel="Accumulative Volume"
                         tooltipRenderer={volumeTooltipRenderer}
+                        chainOption={chainOption}
                     />
                     <VolumeStats
+                        volumeData={volumeData}
+                        volumeLoading={volumeLoading}
+                        volumePeriod={volumePeriod}
                         trackerType={TrackerVolumeType.Locked}
                         title="Value Minted"
                         titleTooltip="The total value (TVL) of all digital assets currently minted on Ethereum by RenVM."
                         historyChartLabel="Locked"
                         tooltipRenderer={lockedTooltipRenderer}
+                        chainOption={chainOption}
                     />
                 </Stats>
             </div>
