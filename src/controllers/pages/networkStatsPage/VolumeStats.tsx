@@ -126,6 +126,8 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
     tooltipRenderer,
     initialVolume = {},
 }) => {
+    const [volumeTab, setVolumeTab] = useState<StatTab>(StatTab.History);
+
     const { quoteCurrency, tokenPrices } = NetworkContainer.useContainer();
     const {
         volumeData,
@@ -137,7 +139,6 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
     const [volumeSelectedChain, setVolumeSelectedChain] = useState(
         NetworkStatsChain.Ethereum,
     );
-    const [volumeTab, setVolumeTab] = useState<StatTab>(StatTab.History);
     const volumeChain = networkStatsChainToTrackerChain(volumeSelectedChain);
 
     const calculatedVolumeData = useMemo(() => {

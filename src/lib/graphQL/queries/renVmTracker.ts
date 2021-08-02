@@ -102,26 +102,6 @@ const VOLUMES_FRAGMENT = `
     }
 `;
 
-const TRANSACTED_FRAGMENT = `
-    fragment VolumeSnapshot on Snapshot {
-        id
-        timestamp
-        volume {
-            ${FRAGMENT_VOLUME_FIELDS}
-        }
-    }
-`;
-
-const LOCKED_FRAGMENT = `
-    fragment LockedSnapshot on Snapshot {
-        id
-        timestamp
-        locked {
-            ${FRAGMENT_VOLUME_FIELDS}
-        }
-    }
-`;
-
 const getSnapshotSubQuery = (timestamp: string) => `
     s${timestamp}: Snapshot(timestamp: "${timestamp}") {
         ...VolumesSnapshot
@@ -157,11 +137,7 @@ export const buildRenVmTrackerQuery = (
     }
 
     const snapshotQuery = `
-        ${
-            type === TrackerVolumeType.Transacted
-                ? TRANSACTED_FRAGMENT
-                : LOCKED_FRAGMENT
-        }
+        ${VOLUMES_FRAGMENT}
         query GetSnapshots {
             assets: Snapshot(timestamp: "${endTimestamp}"){
                 id,
@@ -357,7 +333,7 @@ const getVolumeData = (
 
 export const snapshotDataToVolumeData = (
     data: SnapshotRecords,
-    trackerType: TrackerVolumeType,
+    type: TrackerVolumeType,
     chain: TrackerChain,
     currency: TokenAmountType | Currency,
     tokenPrices: TokenPrices,
@@ -366,46 +342,38 @@ export const snapshotDataToVolumeData = (
     const { first, last } = getFirstAndLastSnapshot(snapshots);
     const assetsData = getAssetsData(data);
 
-    const volumeData: Record<TrackerVolumeType, any> = {}[
-        (TrackerVolumeType.Transacted, TrackerVolumeType.Locked)
-    ].forEach((type: TrackerVolumeType) => {
-        const { difference, startAmounts, endAmounts } = getVolumeData(
-            first,
-            last,
-            type,
-            chain,
-            currency,
-            assetsData,
-            tokenPrices,
-        );
+    const { difference, startAmounts, endAmounts } = getVolumeData(
+        first,
+        last,
+        type,
+        chain,
+        currency,
+        assetsData,
+        tokenPrices,
+    );
 
-        const assets = assetsData.map((entry) => entry.asset);
-        const amountRecords: BigNumberRecord = {};
+    const assets = assetsData.map((entry) => entry.asset);
+    const amountRecords: BigNumberRecord = {};
 
-        assets.forEach((asset) => {
-            const lastEntry = endAmounts.find((entry) => entry.asset === asset);
-            const firstEntry = startAmounts.find(
-                (entry) => entry.asset === asset,
+    assets.forEach((asset) => {
+        const lastEntry = endAmounts.find((entry) => entry.asset === asset);
+        const firstEntry = startAmounts.find((entry) => entry.asset === asset);
+
+        let difference = new BigNumber(0);
+        if (lastEntry && firstEntry) {
+            difference = new BigNumber(
+                getAmount(lastEntry, currency, assetsData, tokenPrices),
+            ).minus(getAmount(firstEntry, currency, assetsData, tokenPrices));
+        } else if (lastEntry) {
+            difference = new BigNumber(
+                getAmount(lastEntry, currency, assetsData, tokenPrices),
             );
+        }
 
-            let difference = new BigNumber(0);
-            if (lastEntry && firstEntry) {
-                difference = new BigNumber(
-                    getAmount(lastEntry, currency, assetsData, tokenPrices),
-                ).minus(
-                    getAmount(firstEntry, currency, assetsData, tokenPrices),
-                );
-            } else if (lastEntry) {
-                difference = new BigNumber(
-                    getAmount(lastEntry, currency, assetsData, tokenPrices),
-                );
-            }
-
-            amountRecords[asset] = difference;
-        });
-
-        volumeData[type] = { amountRecords, difference };
+        amountRecords[asset] = difference;
     });
+
+    return { amountRecords, difference };
 };
 
 export const snapshotDataToAllChainVolumeData = (
