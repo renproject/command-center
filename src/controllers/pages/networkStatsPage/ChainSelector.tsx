@@ -22,7 +22,7 @@ const ChainDotColors = {
 };
 
 export const ChainLabel: Record<ChainOption, string> = {
-    [ChainOption.All]: "All Chains",
+    [ChainOption.All]: "All",
     [ChainOption.Ethereum]: "Ethereum",
     [ChainOption.BinanceSmartChain]: "BSC",
     [ChainOption.Fantom]: "Fantom",
@@ -63,14 +63,18 @@ const ChainOptionDiv = styled.div`
     justify-content: center;
     padding: 0 10px;
 
-    & + div {
-        margin-left: 10px;
-    }
+    margin: 5px;
 
     &.selected {
         color: #001b3a;
         background: white;
     }
+`;
+
+const ChainSelelectorWrapper = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+    margin: 5px -5px;
 `;
 
 const ChainButton = ({
@@ -92,14 +96,10 @@ const ChainButton = ({
             onClick={onClick}
         >
             <ChainDotDiv style={{ background: ChainDotColors[value] }} />
-            <span style={{ marginTop: 1 }}>{value}</span>
+            <span style={{ marginTop: 1 }}>{ChainLabel[value]}</span>
         </ChainOptionDiv>
     );
 };
-
-const ChainSelectorDiv = styled.div`
-    display: flex;
-`;
 
 export const ChainSelector = ({
     value,
@@ -109,7 +109,7 @@ export const ChainSelector = ({
     onChange: (value: ChainOption) => void;
 }) => {
     return (
-        <ChainSelectorDiv>
+        <ChainSelelectorWrapper>
             {availableChains.map((chain) => (
                 <ChainButton
                     key={chain}
@@ -118,6 +118,6 @@ export const ChainSelector = ({
                     selected={chain === value}
                 />
             ))}
-        </ChainSelectorDiv>
+        </ChainSelelectorWrapper>
     );
 };

@@ -269,10 +269,19 @@
 }
 
 .selectors {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    @media (min-width: $min-md) {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
     padding-bottom: 8px;
+    &--chain {
+
+    }
+    &--period {
+        margin-left: 10px;
+    }
 }
 
 .stat--extra-big > div {
@@ -305,8 +314,6 @@
     padding-top: 3px;
 
     color: #006fe8;
-
-    margin-bottom: 6px;
 
     & + .period-option {
         margin-left: 5px;

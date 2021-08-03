@@ -188,13 +188,14 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
                     quoteCurrency,
                     tokenPrices,
                 );
+            } else {
+                series = snaphostDataToAllChainTimeSeries(
+                    volumeData,
+                    trackerType,
+                    quoteCurrency,
+                    tokenPrices,
+                );
             }
-            series = snaphostDataToAllChainTimeSeries(
-                volumeData,
-                trackerType,
-                quoteCurrency,
-                tokenPrices,
-            );
         }
         // console.log("series", series);
 

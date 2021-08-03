@@ -83,14 +83,18 @@ export const NewNetworkStatsPage = () => {
             </div> */}
             <div className="col-lg-12 col-xl-8">
                 <div className="selectors">
-                    <ChainSelector
-                        value={chainOption}
-                        onChange={setChainOption}
-                    />
-                    <PeriodSelector
-                        value={volumePeriod}
-                        onChange={setVolumePeriod}
-                    />
+                    <div className="selectors--chain">
+                        <ChainSelector
+                            value={chainOption}
+                            onChange={setChainOption}
+                        />
+                    </div>
+                    <div className="selectors--period">
+                        <PeriodSelector
+                            value={volumePeriod}
+                            onChange={setVolumePeriod}
+                        />
+                    </div>
                 </div>
                 <Stats>
                     <VolumeStats
