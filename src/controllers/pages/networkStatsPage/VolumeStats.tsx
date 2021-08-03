@@ -16,7 +16,7 @@ import {
     TrackerVolumeType,
 } from "../../../lib/graphQL/queries/renVmTracker";
 
-import { PeriodType } from "../../../lib/graphQL/volumes";
+import { PeriodOption } from "../../../lib/graphQL/volumes";
 import { NetworkContainer } from "../../../store/networkContainer";
 import { ReactComponent as IconValueLocked } from "../../../styles/images/icon-value-locked.svg";
 import { ReactComponent as IconVolume } from "../../../styles/images/icon-volume.svg";
@@ -27,11 +27,15 @@ import { Graph, Line } from "./Graph";
 import { StatTab, StatTabs } from "./StatTabs";
 
 export const getPeriodPercentChange = <K extends string>(
-    periodType: PeriodType,
+    periodType: PeriodOption,
     property: K,
     seriesData?: Array<{ [key in K]?: string }> | undefined,
 ) => {
-    if (periodType !== PeriodType.ALL && seriesData && seriesData.length > 1) {
+    if (
+        periodType !== PeriodOption.ALL &&
+        seriesData &&
+        seriesData.length > 1
+    ) {
         const historic = seriesData;
         const prev = historic[0];
         const curr = historic[historic.length - 1];
@@ -64,7 +68,7 @@ const updateVolumeData = (
 };
 
 export const useVolumeData = (
-    initialPeriod = PeriodType.ALL,
+    initialPeriod = PeriodOption.ALL,
     initialVolume: SnapshotRecords = {},
 ) => {
     const type = TrackerVolumeType.Locked; // TODO: remove
@@ -74,7 +78,9 @@ export const useVolumeData = (
         initialVolume,
     );
     const [volumeLoading, setVolumeLoading] = useState(true);
-    const [volumePeriod, setVolumePeriod] = useState<PeriodType>(initialPeriod);
+    const [volumePeriod, setVolumePeriod] = useState<PeriodOption>(
+        initialPeriod,
+    );
 
     useEffect(() => {
         setVolumeLoading(true);
@@ -115,10 +121,10 @@ type VolumeStatsProps = {
     title: string;
     historyChartLabel: string;
     titleTooltip: string;
-    tooltipRenderer: (period: PeriodType, chain: ChainOption) => string;
+    tooltipRenderer: (period: PeriodOption, chain: ChainOption) => string;
     initialVolume?: SnapshotRecords;
     volumeData: SnapshotRecords;
-    volumePeriod: PeriodType;
+    volumePeriod: PeriodOption;
     volumeLoading: boolean;
     chainOption: ChainOption;
 };
@@ -217,7 +223,7 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
                         {title}{" "}
                         <span className="stat--subtitle">
                             (
-                            {volumePeriod === PeriodType.ALL
+                            {volumePeriod === PeriodOption.ALL
                                 ? volumePeriod
                                 : `1${volumePeriod.slice(0, 1).toUpperCase()}`}
                             )

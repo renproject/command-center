@@ -8,14 +8,17 @@ export enum ChainOption {
     Fantom = "Fantom",
     Polygon = "Polygon",
     Avalanche = "Avalanche",
+    Solana = "Solana",
 }
 
 const ChainDotColors = {
-    [ChainOption.All]: "#006FE8",
+    [ChainOption.All]: "#000000",
     [ChainOption.Ethereum]: "#627EEA",
     [ChainOption.BinanceSmartChain]: "#F9B72D",
     [ChainOption.Fantom]: "#1969ff",
     [ChainOption.Polygon]: "#8247e5",
+    [ChainOption.Avalanche]: "#e84142",
+    [ChainOption.Solana]: "#00ffbd",
 };
 
 export const ChainLabel: Record<ChainOption, string> = {
@@ -25,6 +28,7 @@ export const ChainLabel: Record<ChainOption, string> = {
     [ChainOption.Fantom]: "Fantom",
     [ChainOption.Polygon]: "Polygon",
     [ChainOption.Avalanche]: "Avalanche",
+    [ChainOption.Solana]: "Solana",
 };
 
 const availableChains: Array<ChainOption> = [
@@ -34,6 +38,7 @@ const availableChains: Array<ChainOption> = [
     ChainOption.Fantom,
     ChainOption.Polygon,
     ChainOption.Avalanche,
+    ChainOption.Solana,
 ];
 
 const ChainDotDiv = styled.div`

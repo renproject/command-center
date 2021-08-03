@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 
-import { PeriodType } from "../../../lib/graphQL/volumes";
+import { PeriodOption } from "../../../lib/graphQL/volumes";
 
 export enum StatTab {
     History = "History",
@@ -36,8 +36,8 @@ export const StatTabs = ({
 }: {
     selected: string;
     onChange: (value: StatTab) => void;
-    volumePeriod: PeriodType;
-    assetsPeriod: PeriodType | null;
+    volumePeriod: PeriodOption;
+    assetsPeriod: PeriodOption | null;
 }) => {
     return (
         <div className="stat-tabs">
@@ -47,7 +47,7 @@ export const StatTabs = ({
                 onChange={onChange}
             >
                 History (
-                {volumePeriod === PeriodType.ALL ? (
+                {volumePeriod === PeriodOption.ALL ? (
                     "ALL"
                 ) : (
                     <>1{volumePeriod.slice(0, 1).toUpperCase()}</>
@@ -63,7 +63,7 @@ export const StatTabs = ({
                 {assetsPeriod ? (
                     <>
                         (
-                        {assetsPeriod === PeriodType.ALL ? (
+                        {assetsPeriod === PeriodOption.ALL ? (
                             "ALL"
                         ) : (
                             <>1{assetsPeriod.slice(0, 1).toUpperCase()}</>

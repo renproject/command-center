@@ -6,7 +6,7 @@ import { getConversionRate } from "../../../controllers/common/tokenBalanceUtils
 import { ChainOption } from "../../../controllers/pages/networkStatsPage/ChainSelector";
 import { TokenPrices } from "../../ethereum/tokens";
 import { convertToStandardAmount } from "../../general/tokenAmountUtils";
-import { getPeriodTimespan, PeriodType } from "../volumes";
+import { getPeriodTimespan, PeriodOption } from "../volumes";
 
 export enum TrackerChain {
     Ethereum = "Ethereum",
@@ -14,6 +14,7 @@ export enum TrackerChain {
     Polygon = "Polygon",
     Fantom = "Fantom",
     Avalanche = "Avalanche",
+    Solana = "Solana",
 }
 
 const allTrackedChains: Array<TrackerChain> = [
@@ -22,6 +23,7 @@ const allTrackedChains: Array<TrackerChain> = [
     TrackerChain.Fantom,
     TrackerChain.Polygon,
     TrackerChain.Avalanche,
+    TrackerChain.Solana,
 ];
 
 export const chainOptionToTrackerChain = (chain: ChainOption) => {
@@ -34,6 +36,10 @@ export const chainOptionToTrackerChain = (chain: ChainOption) => {
             return TrackerChain.Fantom;
         case ChainOption.Polygon:
             return TrackerChain.Polygon;
+        case ChainOption.Avalanche:
+            return TrackerChain.Avalanche;
+        case ChainOption.Solana:
+            return TrackerChain.Solana;
         case ChainOption.Avalanche:
             return TrackerChain.Avalanche;
         default:
@@ -113,7 +119,7 @@ const getSnapshotSubQuery = (timestamp: string) => `
 export const queryRenVmTracker = async (
     client: ApolloClient<object>,
     type: TrackerVolumeType,
-    period: PeriodType,
+    period: PeriodOption,
     isUpdate = false,
 ): Promise<SnapshotResponse> => {
     const query = isUpdate
@@ -124,7 +130,7 @@ export const queryRenVmTracker = async (
     });
 };
 
-export const buildRenVmTrackerQuery = (period: PeriodType) => {
+export const buildRenVmTrackerQuery = (period: PeriodOption) => {
     const interval = getResolutionInterval(period);
     const points = getResolutionPoints(period);
     const endTimestamp = getResolutionEndTimestamp();
@@ -163,25 +169,25 @@ export const buildRenVmTrackerUpdateQuery = (timestamp: number) => {
     return gql(snapshotQuery);
 };
 
-export const getResolutionPoints = (period: PeriodType) => {
+export const getResolutionPoints = (period: PeriodOption) => {
     const timespan = getPeriodTimespan(period);
     const interval = getResolutionInterval(period);
     return timespan / interval;
 };
 
-export const getResolutionInterval = (period: PeriodType) => {
+export const getResolutionInterval = (period: PeriodOption) => {
     switch (period) {
-        case PeriodType.HOUR:
+        case PeriodOption.HOUR:
             return 80;
-        case PeriodType.DAY:
+        case PeriodOption.DAY:
             return 30 * 60;
-        case PeriodType.WEEK:
+        case PeriodOption.WEEK:
             return 2 * 3600;
-        case PeriodType.MONTH:
+        case PeriodOption.MONTH:
             return 12 * 3600;
-        case PeriodType.YEAR:
+        case PeriodOption.YEAR:
             return 5 * 24 * 3600;
-        case PeriodType.ALL:
+        case PeriodOption.ALL:
             return 6 * 24 * 3600;
     }
     return 5 * 24 * 3600;

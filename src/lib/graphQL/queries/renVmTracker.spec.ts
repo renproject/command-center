@@ -1,4 +1,4 @@
-import { PeriodType } from "../volumes";
+import { PeriodOption } from "../volumes";
 
 import { renVmTrackerMock } from "./mocks/renvm-tracker.mock";
 import {
@@ -17,18 +17,18 @@ describe("tracker utils", () => {
     xit("generates query", () => {
         const result = buildRenVmTrackerQuery(
             TrackerVolumeType.Transacted,
-            PeriodType.DAY,
+            PeriodOption.DAY,
         );
 
         expect(result).toEqual("x");
     });
 
     it("generates resolution points", () => {
-        expect(getResolutionPoints(PeriodType.HOUR)).toEqual(45);
-        expect(getResolutionPoints(PeriodType.DAY)).toEqual(48);
-        expect(getResolutionPoints(PeriodType.WEEK)).toEqual(84);
-        expect(getResolutionPoints(PeriodType.MONTH)).toEqual(62);
-        expect(getResolutionPoints(PeriodType.YEAR)).toEqual(73);
+        expect(getResolutionPoints(PeriodOption.HOUR)).toEqual(45);
+        expect(getResolutionPoints(PeriodOption.DAY)).toEqual(48);
+        expect(getResolutionPoints(PeriodOption.WEEK)).toEqual(84);
+        expect(getResolutionPoints(PeriodOption.MONTH)).toEqual(62);
+        expect(getResolutionPoints(PeriodOption.YEAR)).toEqual(73);
         // expect(getResolutionPoints(PeriodType.ALL)).toEqual(71);
     });
 

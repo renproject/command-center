@@ -7,7 +7,7 @@ import {
     TrackerVolumeType,
 } from "../../../lib/graphQL/queries/renVmTracker";
 
-import { PeriodType } from "../../../lib/graphQL/volumes";
+import { PeriodOption } from "../../../lib/graphQL/volumes";
 import { GraphContainer } from "../../../store/graphContainer";
 import { NetworkContainer } from "../../../store/networkContainer";
 import { Stats } from "../../../views/Stat";
@@ -18,12 +18,12 @@ import { NetworkStatsStyles } from "./NetworkStatsStyles";
 import { PeriodSelector } from "./PeriodSelector";
 import { useVolumeData, VolumeStats } from "./VolumeStats";
 
-const volumeTooltipRenderer = (period: PeriodType, chain: ChainOption) => {
+const volumeTooltipRenderer = (period: PeriodOption, chain: ChainOption) => {
     return `Total amount of volume transacted via RenVM on ${chain.toString()}`;
 };
 
-const lockedTooltipRenderer = (period: PeriodType, chain: ChainOption) => {
-    if (period === PeriodType.ALL) {
+const lockedTooltipRenderer = (period: PeriodOption, chain: ChainOption) => {
+    if (period === PeriodOption.ALL) {
         return `The total value (TVL) of all digital assets currently minted on ${chain.toString()} by RenVM.`;
     }
     return `The 1 ${period.toLowerCase()} change in RenVM's locked digital assets.`;
@@ -43,7 +43,7 @@ export const NewNetworkStatsPage = () => {
         volumeLoading,
         volumePeriod,
         setVolumePeriod,
-    } = useVolumeData(PeriodType.ALL);
+    } = useVolumeData(PeriodOption.ALL);
 
     useEffect(() => {
         if (!isEmptyObject(volumeData)) {

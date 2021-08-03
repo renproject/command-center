@@ -1,13 +1,13 @@
 import React, { useCallback } from "react";
 
-import { PeriodType } from "../../../lib/graphQL/volumes";
+import { PeriodOption } from "../../../lib/graphQL/volumes";
 
-const availablePeriods: Array<PeriodType> = [
-    PeriodType.HOUR,
-    PeriodType.DAY,
-    PeriodType.WEEK,
-    PeriodType.MONTH,
-    PeriodType.ALL,
+const availablePeriods: Array<PeriodOption> = [
+    PeriodOption.HOUR,
+    PeriodOption.DAY,
+    PeriodOption.WEEK,
+    PeriodOption.MONTH,
+    PeriodOption.ALL,
 ];
 
 const PeriodButton = ({
@@ -15,9 +15,9 @@ const PeriodButton = ({
     selected,
     onChange,
 }: {
-    value: PeriodType;
+    value: PeriodOption;
     selected: boolean;
-    onChange: (value: PeriodType) => void;
+    onChange: (value: PeriodOption) => void;
 }) => {
     const onClick = useCallback(() => {
         onChange(value);
@@ -39,8 +39,8 @@ export const PeriodSelector = ({
     value,
     onChange,
 }: {
-    value: PeriodType;
-    onChange: (value: PeriodType) => void;
+    value: PeriodOption;
+    onChange: (value: PeriodOption) => void;
 }) => {
     return (
         <div className="period-selector">
