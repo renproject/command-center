@@ -664,9 +664,6 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
     const earningFees =
         darknodeDetails?.registrationStatus === RegistrationStatus.Registered;
 
-    const amountBN = new BigNumber(amount || 0).div(
-        new BigNumber(Math.pow(10, tokenAmount?.asset?.decimals || 0)),
-    );
     return (
         <>
             <FeesBlock

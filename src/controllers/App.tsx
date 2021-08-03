@@ -17,7 +17,7 @@ import { Sidebar } from "./common/sidebar/Sidebar";
 import { DarknodePage } from "./pages/darknodePage/DarknodePage";
 import { DarknodeStatsPage } from "./pages/darknodeStatsPage/DarknodeStatsPage";
 import { IntegratorStatsPage } from "./pages/integratorStatsPage/IntegratorStatsPage";
-import { NewNetworkStatsPage } from "./pages/networkStatsPage/NewNetworkStatsPage";
+import { NetworkStatsPage } from "./pages/networkStatsPage/NetworkStatsPage";
 import { AllDarknodes } from "./pages/operatorPage/AllDarknodes";
 import { RenVMStatsPage } from "./pages/renvmStatsPage/RenVMStatsPage";
 import { ScrollToTop } from "./ScrollToTop";
@@ -68,7 +68,7 @@ export const App = () => {
                                 <Route
                                     path="/"
                                     exact
-                                    component={NewNetworkStatsPage}
+                                    component={NetworkStatsPage}
                                 />
                                 <Route
                                     path="/integrators"

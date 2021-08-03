@@ -33,7 +33,7 @@ const lockedTooltipRenderer = (period: PeriodOption, chain: ChainOption) => {
     return `The 1 ${period.toLowerCase()} change in RenVM's locked digital assets on ${chainLabel}.`;
 };
 
-export const NewNetworkStatsPage = () => {
+export const NetworkStatsPage = () => {
     const { renVM } = GraphContainer.useContainer();
     const { btcMintFee, btcBurnFee } = renVM || {};
     const {

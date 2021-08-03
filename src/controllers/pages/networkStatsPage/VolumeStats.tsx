@@ -5,7 +5,6 @@ import { GraphClientContainer } from "../../../lib/graphQL/ApolloWithNetwork";
 import {
     chainOptionToTrackerChain,
     getFirstAndLastSnapshot,
-    getResolutionInterval,
     getSnapshots,
     queryRenVmTracker,
     snaphostDataToAllChainTimeSeries,
@@ -86,24 +85,20 @@ export const useVolumeData = (
         setVolumeLoading(true);
         queryRenVmTracker(renVmTracker, type, volumePeriod)
             .then((response) => {
-                console.log(response);
                 setVolumeData(response.data);
                 setVolumeLoading(false);
             })
             .catch(console.error);
 
-        const resolution = getResolutionInterval(volumePeriod); // TBD: this can be quicker, like every 2 minutes
         const interval = setInterval(() => {
-            console.log("updating");
             queryRenVmTracker(renVmTracker, type, volumePeriod, true)
                 .then((response) => {
-                    console.log(response);
                     setVolumeData((data) =>
                         updateVolumeData(data, response.data),
                     );
                 })
                 .catch(console.error);
-        }, resolution * 1000);
+        }, 120 * 1000);
 
         return () => clearInterval(interval);
     }, [renVmTracker, type, volumePeriod]);
@@ -197,7 +192,6 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
                 );
             }
         }
-        // console.log("series", series);
 
         const line: Line = {
             name: `${historyChartLabel} (${quoteCurrency.toUpperCase()})`,

@@ -1,5 +1,4 @@
 import { ApolloClient, gql } from "@apollo/react-hooks";
-import { Asset } from "@renproject/interfaces";
 import { Currency } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import { getConversionRate } from "../../../controllers/common/tokenBalanceUtils";
@@ -40,8 +39,6 @@ export const chainOptionToTrackerChain = (chain: ChainOption) => {
             return TrackerChain.Avalanche;
         case ChainOption.Solana:
             return TrackerChain.Solana;
-        case ChainOption.Avalanche:
-            return TrackerChain.Avalanche;
         default:
             return TrackerChain.Ethereum;
     }
