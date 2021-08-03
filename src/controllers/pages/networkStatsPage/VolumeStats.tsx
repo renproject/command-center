@@ -8,6 +8,7 @@ import {
     getResolutionInterval,
     getSnapshots,
     queryRenVmTracker,
+    snaphostDataToAllChainTimeSeries,
     snapshotDataToAllChainVolumeData,
     snapshotDataToTimeSeries,
     snapshotDataToVolumeData,
@@ -152,14 +153,12 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
                     tokenPrices,
                 );
             }
-            const data = snapshotDataToAllChainVolumeData(
+            return snapshotDataToAllChainVolumeData(
                 volumeData,
                 trackerType,
                 quoteCurrency,
                 tokenPrices,
             );
-            console.log("data", data);
-            return data;
         }
         return fallback;
     }, [
@@ -184,6 +183,12 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
                     tokenPrices,
                 );
             }
+            series = snaphostDataToAllChainTimeSeries(
+                volumeData,
+                trackerType,
+                quoteCurrency,
+                tokenPrices,
+            );
         }
         // console.log("series", series);
 

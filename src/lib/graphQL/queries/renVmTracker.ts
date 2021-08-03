@@ -4,7 +4,6 @@ import { Currency } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import { getConversionRate } from "../../../controllers/common/tokenBalanceUtils";
 import { ChainOption } from "../../../controllers/pages/networkStatsPage/ChainSelector";
-import { NetworkStatsChain } from "../../../controllers/pages/networkStatsPage/networkStatsContainer";
 import { TokenPrices } from "../../ethereum/tokens";
 import { convertToStandardAmount } from "../../general/tokenAmountUtils";
 import { getPeriodTimespan, PeriodType } from "../volumes";
@@ -17,7 +16,7 @@ export enum TrackerChain {
     Avalanche = "Avalanche",
 }
 
-const allTrackedChains = [
+const allTrackedChains: Array<TrackerChain> = [
     TrackerChain.Ethereum,
     TrackerChain.BinanceSmartChain,
     TrackerChain.Fantom,
@@ -428,8 +427,35 @@ export const snapshotDataToTimeSeries = (
             currency,
             assetsData,
             tokenPrices,
-        ).toNumber();
-        return [timestamp * 1000, value];
+        );
+        return [timestamp * 1000, value.toNumber()];
+    });
+    return points as Array<[number, number]>;
+};
+
+export const snaphostDataToAllChainTimeSeries = (
+    data: SnapshotRecords,
+    type: TrackerVolumeType,
+    currency: Currency,
+    tokenPrices: TokenPrices,
+) => {
+    const snapshots = getSnapshots(data);
+    const assetsData = getAssetsData(data);
+    const points = snapshots.map((snapshot) => {
+        const timestamp = snapshot.timestamp;
+        let sum = new BigNumber(0);
+        allTrackedChains.forEach((chain) => {
+            const value = sumSnapshotAmounts(
+                snapshot,
+                type,
+                chain,
+                currency,
+                assetsData,
+                tokenPrices,
+            );
+            sum = sum.plus(value);
+        });
+        return [timestamp * 1000, sum.toNumber()];
     });
     return points as Array<[number, number]>;
 };

@@ -14,7 +14,6 @@ import { Stats } from "../../../views/Stat";
 import { getRenPriceIn } from "../../common/tokenBalanceUtils";
 import { ChainOption, ChainSelector } from "./ChainSelector";
 import { Collateral } from "./Collateral";
-import { NetworkStatsContainer } from "./networkStatsContainer";
 import { NetworkStatsStyles } from "./NetworkStatsStyles";
 import { PeriodSelector } from "./PeriodSelector";
 import { useVolumeData, VolumeStats } from "./VolumeStats";
@@ -33,8 +32,11 @@ const lockedTooltipRenderer = (period: PeriodType, chain: ChainOption) => {
 export const NewNetworkStatsPage = () => {
     const { renVM } = GraphContainer.useContainer();
     const { btcMintFee, btcBurnFee } = renVM || {};
-    const { quoteCurrency, tokenPrices } = NetworkContainer.useContainer();
-    const { numberOfDarknodes } = NetworkStatsContainer.useContainer();
+    const {
+        quoteCurrency,
+        tokenPrices,
+        numberOfDarknodes,
+    } = NetworkContainer.useContainer();
     const [totalVolumeData, setTotalVolumeData] = useState<SnapshotRecords>({});
     const {
         volumeData,

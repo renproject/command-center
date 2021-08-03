@@ -18,8 +18,8 @@ const ChainDotColors = {
     [ChainOption.Polygon]: "#8247e5",
 };
 
-const ChainLabel: Record<ChainOption, string> = {
-    [ChainOption.All]: "All",
+export const ChainLabel: Record<ChainOption, string> = {
+    [ChainOption.All]: "All Chains",
     [ChainOption.Ethereum]: "Ethereum",
     [ChainOption.BinanceSmartChain]: "BSC",
     [ChainOption.Fantom]: "Fantom",
