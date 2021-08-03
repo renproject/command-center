@@ -272,7 +272,7 @@
     @media (min-width: $min-md) {
         display: flex;
         justify-content: space-between;
-        align-items: center;
+        align-items: flex-start;
     }
 
     padding-bottom: 8px;
@@ -421,15 +421,15 @@
 .stat-amount--value {
     margin-right: 10px;
 }
-
-.collateral-padding {
-    height: 43px;
-    width: 100%;
-
-    @media (max-width: $max-lg) {
-        display: none;
-    }
-}
+//
+//.collateral-padding {
+//    height: 43px;
+//    width: 100%;
+//
+//    @media (max-width: $max-lg) {
+//        display: none;
+//    }
+//}
 
 .network-fees {
     display: flex;

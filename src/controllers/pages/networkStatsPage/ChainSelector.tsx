@@ -63,7 +63,7 @@ const ChainOptionDiv = styled.div`
     justify-content: center;
     padding: 0 10px;
 
-    margin: 5px;
+    margin: 0px 5px 5px;
 
     &.selected {
         color: #001b3a;
@@ -74,7 +74,7 @@ const ChainOptionDiv = styled.div`
 const ChainSelelectorWrapper = styled.div`
     display: flex;
     flex-wrap: wrap;
-    margin: 5px -5px;
+    margin: 0 -5px;
 `;
 
 const ChainButton = ({

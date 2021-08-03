@@ -271,7 +271,7 @@ export const Collateral: React.FC<Props> = ({
                             <span style={{ marginLeft: "40px" }}>Mint</span>
                             <span>
                                 {mintFee !== undefined ? (
-                                    <>{25 / 100}%</>
+                                    <>{15 / 100}%</>
                                 ) : (
                                     <Loading />
                                 )}

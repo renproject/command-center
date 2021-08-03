@@ -122,7 +122,6 @@ export const NewNetworkStatsPage = () => {
                 </Stats>
             </div>
             <div className="col-lg-12 col-xl-4">
-                <div className="collateral-padding" />
                 <Collateral
                     total={allChainTotal}
                     bondedRenValue={bondedRenValue}
