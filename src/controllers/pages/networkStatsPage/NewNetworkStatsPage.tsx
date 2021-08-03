@@ -12,21 +12,25 @@ import { GraphContainer } from "../../../store/graphContainer";
 import { NetworkContainer } from "../../../store/networkContainer";
 import { Stats } from "../../../views/Stat";
 import { getRenPriceIn } from "../../common/tokenBalanceUtils";
-import { ChainOption, ChainSelector } from "./ChainSelector";
+import { ChainLabel, ChainOption, ChainSelector } from "./ChainSelector";
 import { Collateral } from "./Collateral";
 import { NetworkStatsStyles } from "./NetworkStatsStyles";
 import { PeriodSelector } from "./PeriodSelector";
 import { useVolumeData, VolumeStats } from "./VolumeStats";
 
 const volumeTooltipRenderer = (period: PeriodOption, chain: ChainOption) => {
-    return `Total amount of volume transacted via RenVM on ${chain.toString()}`;
+    const chainLabel =
+        chain === ChainOption.All ? "all chains" : ChainLabel[chain];
+    return `Total amount of volume transacted via RenVM on ${chainLabel}.`;
 };
 
 const lockedTooltipRenderer = (period: PeriodOption, chain: ChainOption) => {
+    const chainLabel =
+        chain === ChainOption.All ? "all chains" : ChainLabel[chain];
     if (period === PeriodOption.ALL) {
-        return `The total value (TVL) of all digital assets currently minted on ${chain.toString()} by RenVM.`;
+        return `The total value (TVL) of all digital assets currently minted on ${chainLabel} by RenVM.`;
     }
-    return `The 1 ${period.toLowerCase()} change in RenVM's locked digital assets.`;
+    return `The 1 ${period.toLowerCase()} change in RenVM's locked digital assets on ${chainLabel}.`;
 };
 
 export const NewNetworkStatsPage = () => {

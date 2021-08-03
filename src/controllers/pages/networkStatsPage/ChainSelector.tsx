@@ -12,7 +12,7 @@ export enum ChainOption {
 }
 
 const ChainDotColors = {
-    [ChainOption.All]: "#000000",
+    [ChainOption.All]: "#888888",
     [ChainOption.Ethereum]: "#627EEA",
     [ChainOption.BinanceSmartChain]: "#F9B72D",
     [ChainOption.Fantom]: "#1969ff",
