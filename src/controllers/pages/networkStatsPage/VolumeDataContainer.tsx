@@ -11,6 +11,10 @@ import {
 import { PeriodOption } from "../../../lib/graphQL/volumes";
 import { updateVolumeData } from "./VolumeData";
 
+// Re-fetch the volume stats every 10 minutes. If mints and burns become more
+// frequent in the future, this could be made more frequent.
+const VOLUME_REFRESH_PERIOD = 10 * 60 * 1000;
+
 export const useVolumeData = () => {
     const type = TrackerVolumeType.Locked; // TODO: remove
     const { renVmTracker } = GraphClientContainer.useContainer();
@@ -59,7 +63,7 @@ export const useVolumeData = () => {
                     );
                 })
                 .catch(console.error);
-        }, 10 * 1000);
+        }, VOLUME_REFRESH_PERIOD);
 
         return () => clearInterval(interval);
     }, [renVmTracker, type, volumePeriod, volumeData]);
