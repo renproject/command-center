@@ -20,7 +20,7 @@ export class DarknodeRegistryLogicV1 extends Contract {
         options?: ContractOptions,
     );
     clone(): DarknodeRegistryLogicV1;
-    address: string;
+    address?: string;
     methods: {
         VERSION(): TransactionObject<string>;
 

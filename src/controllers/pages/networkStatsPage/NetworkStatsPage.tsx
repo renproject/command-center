@@ -1,5 +1,4 @@
-import BigNumber from "bignumber.js";
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
     snapshotDataToAllChainVolumeData,
     TrackerVolumeType,
@@ -14,7 +13,8 @@ import { ChainLabel, ChainOption, ChainSelector } from "./ChainSelector";
 import { Collateral } from "./Collateral";
 import { NetworkStatsStyles } from "./NetworkStatsStyles";
 import { PeriodSelector } from "./PeriodSelector";
-import { useVolumeData, VolumeStats } from "./VolumeStats";
+import { VolumeStats } from "./VolumeData";
+import { VolumeDataContainer } from "./VolumeDataContainer";
 
 const volumeTooltipRenderer = (period: PeriodOption, chain: ChainOption) => {
     const chainLabel =
@@ -46,7 +46,7 @@ export const NetworkStatsPage = () => {
         volumeError,
         volumePeriod,
         setVolumePeriod,
-    } = useVolumeData(PeriodOption.ALL);
+    } = VolumeDataContainer.useContainer();
 
     const [chainOption, setChainOption] = useState(ChainOption.All);
 

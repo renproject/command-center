@@ -90,12 +90,11 @@
         "unstated-next": "^1.1.0",
         "use-resize-observer": "^7.0.0",
         "wallet-address-validator": "^0.2.4",
-        "web3": "2.0.0-alpha.1",
-        "web3-core": "2.0.0-alpha.1",
-        "web3-eth": "2.0.0-alpha.1",
-        "web3-eth-contract": "2.0.0-alpha.1",
-        "web3-providers": "2.0.0-alpha.1",
-        "web3-utils": "2.0.0-alpha.1"
+        "web3": "1.4.0",
+        "web3-core": "1.4.0",
+        "web3-eth": "1.4.0",
+        "web3-eth-contract": "1.4.0",
+        "web3-utils": "1.4.0"
     },
     "devDependencies": {
         "@ledgerhq/hw-transport-u2f": "^5.36.0-deprecated",

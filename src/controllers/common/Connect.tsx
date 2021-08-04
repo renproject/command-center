@@ -11,6 +11,7 @@ import { PopupContainer } from "../../store/popupContainer";
 import { UIContainer } from "../../store/uiContainer";
 import { Web3Container } from "../../store/web3Container";
 import { IntegratorsContainer } from "../pages/integratorStatsPage/integratorsContainer";
+import { VolumeDataContainer } from "../pages/networkStatsPage/VolumeDataContainer";
 import { RenVMContainer } from "../pages/renvmStatsPage/renvmContainer";
 
 export const Connect: React.FC = ({ children }) => (
@@ -27,7 +28,9 @@ export const Connect: React.FC = ({ children }) => (
                                     <RenVMContainer.Provider>
                                         <GithubAPIContainer.Provider>
                                             <IntegratorsContainer.Provider>
-                                                {children}
+                                                <VolumeDataContainer.Provider>
+                                                    {children}
+                                                </VolumeDataContainer.Provider>
                                             </IntegratorsContainer.Provider>
                                         </GithubAPIContainer.Provider>
                                     </RenVMContainer.Provider>

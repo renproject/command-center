@@ -20,7 +20,7 @@ export class DarknodePayment extends Contract {
         options?: ContractOptions,
     );
     clone(): DarknodePayment;
-    address: string;
+    address?: string;
     methods: {
         ETHEREUM(): TransactionObject<string>;
 
