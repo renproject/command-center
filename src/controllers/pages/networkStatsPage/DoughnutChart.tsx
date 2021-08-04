@@ -8,6 +8,8 @@ import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
 import React from "react";
 import { Doughnut } from "react-chartjs-2";
+import { unifyTokenRecords } from "../../../lib/general/debugUtils";
+import { BigNumberRecord } from "../../../lib/graphQL/queries/renVmTracker";
 import { SimpleTable } from "../../../views/SimpleTable";
 
 import { TokenIcon } from "../../../views/tokenIcon/TokenIcon";
@@ -20,24 +22,26 @@ const colors = [
     "#003B7C",
 ];
 
+export type DoughnutChartData = BigNumberRecord | null;
+
 interface Props {
-    data: { [token: string]: BigNumber } | null | undefined;
+    data?: DoughnutChartData;
     quoteCurrency: Currency;
     title: string;
-    altData: { [token: string]: BigNumber } | undefined | null;
 }
 
 export const DoughnutChart: React.FC<Props> = ({
     data,
     quoteCurrency,
     title,
-    altData,
 }) => {
     const tokens = React.useMemo(
         () =>
             data
-                ? OrderedMap<string, BigNumber>(Object.entries(data))
-                      .sortBy((value) => value.toNumber())
+                ? OrderedMap<string, { quote: BigNumber; amount: BigNumber }>(
+                      Object.entries(data),
+                  )
+                      .sortBy(({ quote }) => quote.toNumber())
                       .reverse()
                       .keySeq()
                       .toArray()
@@ -67,7 +71,7 @@ export const DoughnutChart: React.FC<Props> = ({
                                     datasets: [
                                         {
                                             data: tokens.map((token) =>
-                                                data[token].toNumber(),
+                                                data[token].quote.toNumber(),
                                             ),
                                             backgroundColor: colors,
                                             borderColor: "#001A38",
@@ -155,6 +159,14 @@ export const DoughnutChart: React.FC<Props> = ({
                             <SimpleTable>
                                 {data && tokens
                                     ? tokens.map((token) => {
+                                          const entry = data[token];
+                                          const standardAmount = entry.standardAmount.toFormat(
+                                              entry.standardAmount.isGreaterThan(
+                                                  100,
+                                              )
+                                                  ? 0
+                                                  : 2,
+                                          );
                                           return (
                                               <div key={token}>
                                                   <div>
@@ -165,26 +177,30 @@ export const DoughnutChart: React.FC<Props> = ({
                                                       <span>{token}</span>
                                                   </div>
                                                   <div>
-                                                      {!data[token].isZero() ||
-                                                      !altData ? (
-                                                          <>
-                                                              <CurrencyIcon
-                                                                  currency={
-                                                                      quoteCurrency
-                                                                  }
-                                                              />
-                                                              {data[
-                                                                  token
-                                                              ].toFormat()}
-                                                          </>
-                                                      ) : (
+                                                      {entry.standardAmount.isGreaterThan(
+                                                          0,
+                                                      ) ? (
                                                           <span className="overview--chart--legend--faded">
-                                                              {altData[
-                                                                  token
-                                                              ].toFormat()}{" "}
+                                                              {standardAmount}{" "}
                                                               {token}
+                                                              {" - "}
                                                           </span>
-                                                      )}
+                                                      ) : entry.amount.isGreaterThan(
+                                                            0,
+                                                        ) ? (
+                                                          <span className="overview--chart--legend--faded">
+                                                              {entry.amount.toFormat(
+                                                                  0,
+                                                              )}{" "}
+                                                              {" - "}
+                                                          </span>
+                                                      ) : null}
+                                                      <CurrencyIcon
+                                                          currency={
+                                                              quoteCurrency
+                                                          }
+                                                      />
+                                                      {entry.quote.toFormat(2)}
                                                   </div>
                                               </div>
                                           );

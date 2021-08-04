@@ -1,6 +1,7 @@
 import { ApolloClient as ApolloClientInterface } from "@apollo/react-hooks";
 import { RenNetworkDetails } from "@renproject/contracts";
 import ApolloClient from "apollo-boost";
+import { InMemoryCache } from "apollo-cache-inmemory";
 import fetch from "node-fetch";
 
 export const ethereumSubgraphUrl = (renNetwork: RenNetworkDetails) =>
@@ -28,14 +29,35 @@ export const polygonSubgraphUrl = (renNetwork: RenNetworkDetails) => {
     }`;
 };
 
-export const apolloClient = (graphUrl: string) => {
+// TODO: make network dependant
+export const renVmTrackerUrl = (renNetwork: RenNetworkDetails) => {
+    return renNetwork.name === "mainnet"
+        ? `https://renvm-tracker.herokuapp.com/`
+        : `https://renvm-tracker-testnet.herokuapp.com/`;
+};
+
+export const apolloClient = (graphUrl: string, cache?: any) => {
     const client = new ApolloClient<unknown>({
         uri: graphUrl,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         fetch: fetch as any,
+        cache: cache,
     });
     client.defaultOptions.query = {
         fetchPolicy: "no-cache",
+    };
+    return (client as unknown) as ApolloClientInterface<object>;
+};
+
+export const apolloClientWithCache = (graphUrl: string) => {
+    const client = new ApolloClient<unknown>({
+        uri: graphUrl,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        fetch: fetch as any,
+        cache: new InMemoryCache(),
+    });
+    client.defaultOptions.query = {
+        fetchPolicy: "cache-first",
     };
     return (client as unknown) as ApolloClientInterface<object>;
 };

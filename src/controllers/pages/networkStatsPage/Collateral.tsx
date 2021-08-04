@@ -13,13 +13,12 @@ import { Stat, Stats } from "../../../views/Stat";
 import { TokenIcon } from "../../../views/tokenIcon/TokenIcon";
 
 interface Props {
-    minted: BigNumber;
-    l: BigNumber;
-    b: BigNumber | null;
-    bRen: BigNumber;
+    total: BigNumber | null;
+    bondedRenValue: BigNumber | null;
+    bondedRen: BigNumber | null;
     quoteCurrency: Currency;
-    mintFee: number | undefined;
-    burnFee: number | undefined;
+    mintFee?: number;
+    burnFee?: number;
 }
 
 const RowBullet = () => (
@@ -32,29 +31,38 @@ const RowBullet = () => (
 const GREYCORE_ACTIVE = true;
 
 export const Collateral: React.FC<Props> = ({
-    l,
-    b,
-    bRen,
+    total,
+    bondedRenValue,
+    bondedRen,
     quoteCurrency,
     mintFee,
     burnFee,
 }) => {
+    // TODO: do we need this?
     const lDivB =
-        b === null || l.isZero()
+        bondedRenValue === null || !total
             ? 0
-            : b.isEqualTo(0)
+            : bondedRenValue.isEqualTo(0)
             ? 100
-            : BigNumber.min(l.div(b), 1).multipliedBy(100).toNumber();
+            : BigNumber.min(total.div(bondedRenValue), 1)
+                  .multipliedBy(100)
+                  .toNumber();
     const bDivL =
-        b === null || l.isZero()
+        bondedRenValue === null || !total
             ? 100
-            : l.isEqualTo(0)
+            : total.isEqualTo(0)
             ? 100
-            : BigNumber.min(b.div(l), 1).multipliedBy(100).toNumber();
+            : BigNumber.min(bondedRenValue.div(total), 1)
+                  .multipliedBy(100)
+                  .toNumber();
     // const r3 = Math.max(0, 33 - lDivR);
 
-    const loadingCollateralization = b === null || l.isZero();
-    const overCollateralized = GREYCORE_ACTIVE || b === null || l.lte(b);
+    const loadingCollateralization = bondedRenValue === null || !total;
+    const overCollateralized =
+        GREYCORE_ACTIVE ||
+        bondedRenValue === null ||
+        !total ||
+        total.lte(bondedRenValue);
 
     return (
         <div className="collateral">
@@ -81,12 +89,10 @@ export const Collateral: React.FC<Props> = ({
                     <div className="collateral-status-outer">
                         <div className="collateral-pre-status">
                             RenVM is currently
-                            {loadingCollateralization ? <>...</> : null}
+                            {loadingCollateralization && <>...</>}
                         </div>
                         <div className="collateral-status">
-                            {loadingCollateralization ? (
-                                <Loading alt={true} />
-                            ) : null}
+                            {loadingCollateralization && <Loading alt={true} />}
                             <span
                                 style={{
                                     display: "flex",
@@ -139,7 +145,7 @@ export const Collateral: React.FC<Props> = ({
                     </div>
 
                     <div className="collateral-chart-section">
-                        {!GREYCORE_ACTIVE ? (
+                        {!GREYCORE_ACTIVE && (
                             <div className="collateral-chart">
                                 <div className="collateral-chart--bar">
                                     <div
@@ -164,7 +170,7 @@ export const Collateral: React.FC<Props> = ({
                                             B
                                         </span>
                                     </div>
-                                    {!overCollateralized ? (
+                                    {overCollateralized && (
                                         <div
                                             style={{ width: `${bDivL}%` }}
                                             className="collateral-chart--b-line"
@@ -182,10 +188,10 @@ export const Collateral: React.FC<Props> = ({
                                                 B
                                             </span>
                                         </div>
-                                    ) : null}
+                                    )}
                                 </div>
                             </div>
-                        ) : null}
+                        )}
                         <SimpleTable>
                             <div>
                                 <div
@@ -200,59 +206,40 @@ export const Collateral: React.FC<Props> = ({
                                     <RowBullet /> Value Locked (L)
                                 </div>
                                 <div className="collateral-table--row--right">
-                                    <span className="monospace nowrap">
-                                        <CurrencyIcon
-                                            currency={quoteCurrency}
-                                        />
-                                        {l.toFormat(2)}
-                                    </span>
+                                    {total ? (
+                                        <span className="monospace nowrap">
+                                            <CurrencyIcon
+                                                currency={quoteCurrency}
+                                            />
+                                            {total.toFormat(2)}
+                                        </span>
+                                    ) : null}
                                     <InfoLabel>
                                         The total value (TVL) of all digital
                                         assets currently locked in RenVM.
                                     </InfoLabel>
                                 </div>
                             </div>
-                            {/* <div>
-                                <div className="collateral-table--row--left row--b">
-                                    <RowBullet /> Value in motion
-                                </div>
-                                <div className="collateral-table--row--right">
-                                    {l && minted && minted.gt(0) ? (
-                                        <span className="collateral-chart--bow--small monospace nowrap">
-                                            <CurrencyIcon
-                                                currency={quoteCurrency}
-                                            />
-                                            {BigNumber.max(
-                                                l.minus(minted),
-                                                0,
-                                            ).toFormat(2)}
-                                        </span>
-                                    ) : null}{" "}
-                                    <InfoLabel>
-                                        The value of digital assets currently
-                                        being minted or burned through RenVM.
-                                        Equal to the value locked minus the
-                                        value minted.
-                                    </InfoLabel>
-                                </div>
-                            </div> */}
                             <div>
                                 <div className="collateral-table--row--left row--b">
                                     <RowBullet /> Value Bonded&nbsp;(B)
                                 </div>
                                 <div className="collateral-table--row--right">
-                                    <span className="monospace">
-                                        {bRen.toFormat(0)} REN{" "}
-                                        {b ? (
-                                            <span className="collateral-chart--bow--small monospace nowrap">
-                                                (
-                                                <CurrencyIcon
-                                                    currency={quoteCurrency}
-                                                />
-                                                {b.toFormat(2)})
-                                            </span>
-                                        ) : null}
-                                    </span>{" "}
+                                    {bondedRen ? (
+                                        <span className="monospace">
+                                            {bondedRen.toFormat(0)} REN{" "}
+                                            {bondedRenValue !== null && (
+                                                <span className="collateral-chart--bow--small monospace nowrap">
+                                                    (
+                                                    <CurrencyIcon
+                                                        currency={quoteCurrency}
+                                                    />
+                                                    {bondedRenValue.toFormat(2)}
+                                                    )
+                                                </span>
+                                            )}
+                                        </span>
+                                    ) : null}{" "}
                                     <InfoLabel>
                                         The collective value bonded by
                                         darknodes. Each node is required to bond

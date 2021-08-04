@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { provider } from "web3-providers";
+import { provider } from "web3-core";
 
 import cipherIcon from "../../styles/images/browsers/cipher.png";
 import metamaskIcon from "../../styles/images/browsers/metamask.svg";

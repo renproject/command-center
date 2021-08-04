@@ -51,10 +51,10 @@ export const updatePrices = <T extends TokenAmount | null | undefined>(
         updatePrice(amount, symbol as Token, tokenPrices),
     );
 };
+
 /**
  * Only update token values that don't already have price information.
  */
-
 export const missingPrices = (
     tokenAmounts: OrderedMap<TokenString, TokenAmount | null>,
     tokenPrices: TokenPrices | null,
@@ -85,4 +85,62 @@ export const missingPrices = (
         }
         return amount;
     });
+};
+
+export const convertTokenAmount = (
+    amount: BigNumber | number | string,
+    token: Token,
+    to: Currency,
+    tokenPrices: TokenPrices,
+) => {
+    const fallback = new BigNumber(0);
+    const tokenPriceMap = tokenPrices.get(token);
+    if (!tokenPriceMap) {
+        return fallback;
+    }
+    const toPrice = tokenPriceMap.get(to);
+
+    if (!toPrice) {
+        return fallback;
+    }
+
+    const bnAmount = new BigNumber(amount);
+
+    return bnAmount
+        .multipliedBy(toPrice)
+        .decimalPlaces(2, BigNumber.ROUND_FLOOR);
+};
+
+export const getConversionRate = (
+    from: Currency,
+    to: Currency,
+    tokenPrices: TokenPrices,
+) => {
+    const btcPrice = tokenPrices.get(Token.BTC);
+    if (!btcPrice) {
+        console.error("Couldn't find token", Token.BTC);
+        return 1;
+    }
+    const btcFrom = btcPrice.get(from);
+    const btcTo = btcPrice.get(to);
+    if (!btcFrom || !btcTo) {
+        console.error("Couldn't find conversion rate", from, to);
+        return 1;
+    }
+    return btcTo / btcFrom;
+};
+
+export const getRenPriceIn = (currency: Currency, tokenPrices: TokenPrices) => {
+    const renPrice = tokenPrices.get(Token.REN);
+    if (!renPrice) {
+        console.error("Couldn't find REN");
+        return 0;
+    }
+
+    const price = renPrice.get(currency);
+    if (!price) {
+        console.error("Couldn't find REN rate");
+        return 0;
+    }
+    return price;
 };

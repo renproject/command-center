@@ -1,15 +1,65 @@
 import React, { useCallback } from "react";
 import styled from "styled-components";
 
-import { NetworkStatsChain } from "./networkStatsContainer";
+export enum ChainOption {
+    All = "All",
+    Ethereum = "Ethereum",
+    BinanceSmartChain = "BinanceSmartChain",
+    Fantom = "Fantom",
+    Polygon = "Polygon",
+    Avalanche = "Avalanche",
+    Solana = "Solana",
+}
 
 const ChainDotColors = {
-    // [NetworkStatsChain.All]: "#006FE8",
-    [NetworkStatsChain.Ethereum]: "#627EEA",
-    [NetworkStatsChain.BinanceSmartChain]: "#F9B72D",
-    [NetworkStatsChain.Fantom]: "#1969ff",
-    [NetworkStatsChain.Polygon]: "#8247e5",
+    [ChainOption.All]: "#888888",
+    [ChainOption.Ethereum]: "#627EEA",
+    [ChainOption.BinanceSmartChain]: "#F9B72D",
+    [ChainOption.Fantom]: "#1969ff",
+    [ChainOption.Polygon]: "#8247e5",
+    [ChainOption.Avalanche]: "#e84142",
+    [ChainOption.Solana]: "#00ffbd",
 };
+
+export const ChainLineColors = {
+    [ChainOption.All]: "#006FE8",
+    [ChainOption.Ethereum]: "#627EEA",
+    [ChainOption.BinanceSmartChain]: "#F9B72D",
+    [ChainOption.Fantom]: "#1969ff",
+    [ChainOption.Polygon]: "#8247e5",
+    [ChainOption.Avalanche]: "#e84142",
+    [ChainOption.Solana]: "#00ffbd",
+};
+
+export const ChainLineColorsTransparent = {
+    [ChainOption.All]: "#006FE8",
+    [ChainOption.Ethereum]: "#627EEA66",
+    [ChainOption.BinanceSmartChain]: "#F9B72D66",
+    [ChainOption.Fantom]: "#1969ff66",
+    [ChainOption.Polygon]: "#8247e566",
+    [ChainOption.Avalanche]: "#e8414266",
+    [ChainOption.Solana]: "#00ffbd66",
+};
+
+export const ChainLabel: Record<ChainOption, string> = {
+    [ChainOption.All]: "All",
+    [ChainOption.Ethereum]: "Ethereum",
+    [ChainOption.BinanceSmartChain]: "BSC",
+    [ChainOption.Fantom]: "Fantom",
+    [ChainOption.Polygon]: "Polygon",
+    [ChainOption.Avalanche]: "Avalanche",
+    [ChainOption.Solana]: "Solana",
+};
+
+const availableChains: Array<ChainOption> = [
+    ChainOption.All,
+    ChainOption.Ethereum,
+    ChainOption.BinanceSmartChain,
+    ChainOption.Fantom,
+    ChainOption.Polygon,
+    ChainOption.Avalanche,
+    ChainOption.Solana,
+];
 
 const ChainDotDiv = styled.div`
     background: rgb(255, 187, 0);
@@ -33,9 +83,7 @@ const ChainOptionDiv = styled.div`
     justify-content: center;
     padding: 0 10px;
 
-    & + div {
-        margin-left: 10px;
-    }
+    margin: 0px 5px 5px;
 
     &.selected {
         color: #001b3a;
@@ -43,63 +91,53 @@ const ChainOptionDiv = styled.div`
     }
 `;
 
-const ChainOption = ({
+const ChainSelelectorWrapper = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -5px;
+`;
+
+const ChainButton = ({
     value,
     selected,
     onChange,
 }: {
-    value: NetworkStatsChain;
-    selected: NetworkStatsChain;
-    onChange: (value: NetworkStatsChain) => void;
+    value: ChainOption;
+    selected: boolean;
+    onChange: (value: ChainOption) => void;
 }) => {
     const onClick = useCallback(() => {
         onChange(value);
     }, [onChange, value]);
     return (
         <ChainOptionDiv
-            className={selected === value ? "selected" : ""}
+            className={selected ? "selected" : ""}
             role="button"
             onClick={onClick}
         >
             <ChainDotDiv style={{ background: ChainDotColors[value] }} />
-            <span style={{ marginTop: 1 }}>{value}</span>
+            <span style={{ marginTop: 1 }}>{ChainLabel[value]}</span>
         </ChainOptionDiv>
     );
 };
 
-const ChainSelectorDiv = styled.div`
-    display: flex;
-`;
-
 export const ChainSelector = ({
-    selected,
+    value,
     onChange,
 }: {
-    selected: NetworkStatsChain;
-    onChange: (value: NetworkStatsChain) => void;
+    value: ChainOption;
+    onChange: (value: ChainOption) => void;
 }) => {
     return (
-        <ChainSelectorDiv>
-            <ChainOption
-                value={NetworkStatsChain.Ethereum}
-                selected={selected}
-                onChange={onChange}
-            />
-            <ChainOption
-                value={NetworkStatsChain.BinanceSmartChain}
-                selected={selected}
-                onChange={onChange}
-            />
-            <ChainOption
-                value={NetworkStatsChain.Fantom}
-                selected={selected}
-                onChange={onChange}
-            />
-            <ChainOption
-                value={NetworkStatsChain.Polygon}
-                selected={selected}
-                onChange={onChange}
-            />
-        </ChainSelectorDiv>
+        <ChainSelelectorWrapper>
+            {availableChains.map((chain) => (
+                <ChainButton
+                    key={chain}
+                    value={chain}
+                    onChange={onChange}
+                    selected={chain === value}
+                />
+            ))}
+        </ChainSelelectorWrapper>
     );
 };

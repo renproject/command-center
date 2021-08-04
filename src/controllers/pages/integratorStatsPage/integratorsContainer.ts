@@ -15,7 +15,7 @@ import {
 } from "../../../lib/graphQL/queries/queries";
 import {
     getPeriodTimespan,
-    PeriodType,
+    PeriodOption,
     tokenArrayToMap,
     VolumeNetwork,
 } from "../../../lib/graphQL/volumes";
@@ -182,7 +182,7 @@ const useIntegratorsContainer = () => {
                 // An extra segment is fetched at the start to calculate the volume of
                 // the first segment.
                 const periodSecondsCount = getPeriodTimespan(
-                    PeriodType.DAY,
+                    PeriodOption.DAY,
                     renNetwork.isTestnet
                         ? VolumeNetwork.EthereumTestnet
                         : VolumeNetwork.Ethereum,

@@ -1,15 +1,23 @@
 import React, { useCallback } from "react";
 
-import { PeriodType } from "../../../lib/graphQL/volumes";
+import { PeriodOption } from "../../../lib/graphQL/volumes";
 
-const PeriodOption = ({
+const availablePeriods: Array<PeriodOption> = [
+    PeriodOption.HOUR,
+    PeriodOption.DAY,
+    PeriodOption.WEEK,
+    PeriodOption.MONTH,
+    PeriodOption.ALL,
+];
+
+const PeriodButton = ({
     value,
     selected,
     onChange,
 }: {
-    value: PeriodType;
-    selected: PeriodType;
-    onChange: (value: PeriodType) => void;
+    value: PeriodOption;
+    selected: boolean;
+    onChange: (value: PeriodOption) => void;
 }) => {
     const onClick = useCallback(() => {
         onChange(value);
@@ -17,7 +25,7 @@ const PeriodOption = ({
     return (
         <div
             className={`period-option ${
-                selected === value ? "period-option--selected" : ""
+                selected ? "period-option--selected" : ""
             }`}
             role="button"
             onClick={onClick}
@@ -28,40 +36,22 @@ const PeriodOption = ({
 };
 
 export const PeriodSelector = ({
-    selected,
+    value,
     onChange,
 }: {
-    selected: PeriodType;
-    onChange: (value: PeriodType) => void;
+    value: PeriodOption;
+    onChange: (value: PeriodOption) => void;
 }) => {
     return (
         <div className="period-selector">
-            <PeriodOption
-                value={PeriodType.HOUR}
-                selected={selected}
-                onChange={onChange}
-            />
-            <PeriodOption
-                value={PeriodType.DAY}
-                selected={selected}
-                onChange={onChange}
-            />
-            <PeriodOption
-                value={PeriodType.WEEK}
-                selected={selected}
-                onChange={onChange}
-            />
-            <PeriodOption
-                value={PeriodType.MONTH}
-                selected={selected}
-                onChange={onChange}
-            />
-            {/* <PeriodOption value={PeriodType.YEAR} selected={selected} onChange={onChange} /> */}
-            <PeriodOption
-                value={PeriodType.ALL}
-                selected={selected}
-                onChange={onChange}
-            />
+            {availablePeriods.map((period) => (
+                <PeriodButton
+                    key={period}
+                    value={period}
+                    selected={value === period}
+                    onChange={onChange}
+                />
+            ))}
         </div>
     );
 };

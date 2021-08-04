@@ -71,11 +71,6 @@ export const App = () => {
                                     component={NetworkStatsPage}
                                 />
                                 <Route
-                                    path="/network"
-                                    exact
-                                    component={NetworkStatsPage}
-                                />
-                                <Route
                                     path="/integrators"
                                     exact
                                     component={IntegratorStatsPage}

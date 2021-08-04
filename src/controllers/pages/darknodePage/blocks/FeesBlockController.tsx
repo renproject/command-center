@@ -30,9 +30,9 @@ import {
 import { Token, TokenString } from "../../../../lib/ethereum/tokens";
 import {
     base64StringToHexString,
-    hexStringToBase64String,
     sanitizeBase64String,
 } from "../../../../lib/general/encodingUtils";
+import { convertToBaseAmount } from "../../../../lib/general/tokenAmountUtils";
 import { TokenAmount } from "../../../../lib/graphQL/queries/queries";
 import { classNames } from "../../../../lib/react/className";
 import { claimFeesDigest } from "../../../../lib/web3/signatures";
@@ -277,14 +277,6 @@ export const FeesBlockController: React.FC<Props> = ({
     );
 };
 
-const convertToNativeAmount = (
-    value: BigNumber | string,
-    decimals: number,
-): BigNumber =>
-    new BigNumber(value).multipliedBy(
-        new BigNumber(Math.pow(10, decimals || 0)),
-    );
-
 const convertToAmount = (
     value: BigNumber | string,
     decimals: number,
@@ -443,7 +435,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
         (event) => {
             const value = event.target.value;
             setInputAmount(value);
-            const newNativeAmount = convertToNativeAmount(
+            const newNativeAmount = convertToBaseAmount(
                 value,
                 tokenAmount?.asset?.decimals || 0,
             );
@@ -672,9 +664,6 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
     const earningFees =
         darknodeDetails?.registrationStatus === RegistrationStatus.Registered;
 
-    const amountBN = new BigNumber(amount || 0).div(
-        new BigNumber(Math.pow(10, tokenAmount?.asset?.decimals || 0)),
-    );
     return (
         <>
             <FeesBlock
@@ -699,7 +688,7 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                             <h1>Withdraw earnings</h1>
                             <h2>for {nativeTokenSymbol}</h2>
                         </div>
-                        <div className="popup--content">
+                        <div className="popup--content popup--content--medium-height">
                             {stage === "configuration" && (
                                 <>
                                     <div className="field-wrapper">
@@ -844,8 +833,10 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                                                 {renVMHash ? (
                                                     <>
                                                         RenVM is processing your
-                                                        withdrawal request. This
-                                                        can take a few minutes.
+                                                        withdrawal request.{" "}
+                                                        <br />
+                                                        This can take a few
+                                                        minutes.
                                                     </>
                                                 ) : (
                                                     <>
@@ -868,17 +859,15 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                             )}
                         </div>
 
-                        {renVMHash ? (
-                            <div className="withdrawal-hash">
+                        <div className="popup--buttons">
+                            {Boolean(renVMHash) && (
                                 <ExternalLink
+                                    className="button button--alt"
                                     href={`${DEV_TOOLS}/tx/${renVMHash}`}
                                 >
                                     See transaction status. →
                                 </ExternalLink>
-                            </div>
-                        ) : null}
-
-                        <div className="popup--buttons">
+                            )}
                             {stage === "configuration" && (
                                 <button
                                     className="button button--white"

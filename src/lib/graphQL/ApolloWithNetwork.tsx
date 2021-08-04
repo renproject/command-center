@@ -1,12 +1,13 @@
 import { useMemo } from "react";
-
 import { Web3Container } from "../../store/web3Container";
 import {
     apolloClient,
+    apolloClientWithCache,
     bscSubgraphUrl,
     ethereumSubgraphUrl,
     fantomSubgraphUrl,
     polygonSubgraphUrl,
+    renVmTrackerUrl,
 } from "./client";
 
 import { createContainer } from "unstated-next";
@@ -33,11 +34,17 @@ const useGraphClientContainer = () => {
         [renNetwork],
     );
 
+    const renVmTracker = useMemo(
+        () => apolloClientWithCache(renVmTrackerUrl(renNetwork)),
+        [renNetwork],
+    );
+
     return {
         ethereumSubgraph,
         bscSubgraph,
         fantomSubgraph,
         polygonSubgraph,
+        renVmTracker,
     };
 };
 

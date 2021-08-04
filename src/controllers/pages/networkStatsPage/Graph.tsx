@@ -2,25 +2,13 @@ import HighchartsReact from "highcharts-react-official";
 import Highcharts from "highcharts/highstock";
 import React, { useMemo } from "react";
 
-interface Line {
+export interface Line {
     name: string;
     data: Array<[number, number]>;
     axis?: number;
     hidden?: boolean;
+    color?: string;
 }
-
-const colors = [
-    "#006FE8",
-    "#99B898",
-    "#FECEAB",
-    "#FF847C",
-    "#E84A5F",
-    "#A8E6CE",
-    "#DCEDC2",
-    "#FFD3B5",
-    "#FFAAA6",
-    "#FF8C94 ",
-];
 
 /**
  * DOCS: https://api.highcharts.com/highstock/
@@ -81,10 +69,10 @@ const getOptions = (seriesData: Line[]) => ({
         },
     ],
 
-    series: seriesData.map(({ name, data, axis, hidden }, i) => ({
+    series: seriesData.map(({ name, data, axis, hidden, color }, i) => ({
         name,
         data,
-        color: colors[i % colors.length],
+        color: color || "#006FE8",
         yAxis: axis || 0,
         visible: !hidden,
         lineWidth: 3,
@@ -100,7 +88,6 @@ export const Graph: React.FC<Props> = ({ lines }) => {
         () => getOptions(lines.filter((line) => line !== undefined) as Line[]),
         [lines],
     );
-
     return (
         <div className="highcharts--with-outside-tooltip">
             <div

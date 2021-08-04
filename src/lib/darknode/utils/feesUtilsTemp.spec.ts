@@ -10,7 +10,7 @@ const blockState = queryBlockStateResponse.result.state.v as any;
 const id = "v3MrT4oPN_ZVbmRg59RD7CcFCroAAAAAAAAAAAAAAAA";
 // "xoFRPv_xsoti6yaZAoZT5zNkU7sAAAAAAAAAAAAAAAA"
 
-describe("my node", () => {
+xdescribe("my node", () => {
     test("entered at", () => {
         const result = getNodeEnteredAt(id, blockState);
         expect(result).to.eql(1);

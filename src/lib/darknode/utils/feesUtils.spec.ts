@@ -152,7 +152,7 @@ describe("node fees - basic utils", () => {
     describe("minimum amount", () => {
         test("gets minimum amount", () => {
             const result = getMinimumAmountForToken("BTC", blockState);
-            expect(result.toNumber()).to.equal(546);
+            expect(result.toNumber()).to.equal(1894);
         });
     });
 
@@ -172,7 +172,7 @@ describe("node fees - basic utils", () => {
                 "BTC",
                 blockState,
             );
-            expect(result).to.equal(0);
+            expect(result).to.equal(-1);
         });
 
         test("not exists", () => {
@@ -270,7 +270,7 @@ describe("node fees", () => {
                 "DOGE",
                 blockState,
             );
-            expect(result.toNumber()).to.equal(61318999999.99999);
+            expect(result.toNumber()).to.equal(61318999999);
         });
 
         test("not exists", () => {

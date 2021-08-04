@@ -161,7 +161,6 @@
 .collateral-chart--b-line {
     height: 100%;
     border-right: 2px dashed #192d42;
-    position: relative;
     left: 0;
     z-index: 4;
     position: absolute;
@@ -269,6 +268,21 @@
     border-top: 1px solid #ffffff19;
 }
 
+.selectors {
+    @media (min-width: $min-md) {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    padding-bottom: 8px;
+    &--chain {
+    }
+    &--period {
+        margin-left: 10px;
+    }
+}
+
 .stat--extra-big > div {
     font-size: 42px;
 }
@@ -299,8 +313,6 @@
     padding-top: 3px;
 
     color: #006fe8;
-
-    margin-bottom: 6px;
 
     & + .period-option {
         margin-left: 5px;
@@ -408,15 +420,15 @@
 .stat-amount--value {
     margin-right: 10px;
 }
-
-.collateral-padding {
-    height: 35px;
-    width: 100%;
-
-    @media (max-width: $max-lg) {
-        display: none;
-    }
-}
+//
+//.collateral-padding {
+//    height: 43px;
+//    width: 100%;
+//
+//    @media (max-width: $max-lg) {
+//        display: none;
+//    }
+//}
 
 .network-fees {
     display: flex;
@@ -441,4 +453,11 @@
     .stat--title--outer {
         margin-bottom: 10px;
     }
+}
+
+.overview--bottom > div.volume--error {
+    display: block;
+    width: auto;
+    margin: 0 auto;
+    font-size: 14px;
 }
