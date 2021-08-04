@@ -1,5 +1,6 @@
-import { CurrencyIcon, Loading } from "@renproject/react-components";
+import { CurrencyIcon, Loading, sleep } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
+import { OrderedMap } from "immutable";
 import React, { useEffect, useMemo, useState } from "react";
 import { GraphClientContainer } from "../../../lib/graphQL/ApolloWithNetwork";
 import {
@@ -20,7 +21,12 @@ import { NetworkContainer } from "../../../store/networkContainer";
 import { ReactComponent as IconValueLocked } from "../../../styles/images/icon-value-locked.svg";
 import { ReactComponent as IconVolume } from "../../../styles/images/icon-volume.svg";
 import { Stat } from "../../../views/Stat";
-import { ChainOption } from "./ChainSelector";
+import {
+    ChainLabel,
+    ChainLineColors,
+    ChainLineColorsTransparent,
+    ChainOption,
+} from "./ChainSelector";
 import { DoughnutChart } from "./DoughnutChart";
 import { Graph, Line } from "./Graph";
 import { StatTab, StatTabs } from "./StatTabs";
@@ -47,9 +53,12 @@ export const getPeriodPercentChange = <K extends string>(
 };
 
 const updateVolumeData = (
-    oldData: SnapshotRecords,
+    oldData: SnapshotRecords | undefined,
     updateData: SnapshotRecords,
 ) => {
+    if (!oldData) {
+        return updateData;
+    }
     const newSnapshot = Object.values(updateData)[0];
     const oldCount = Object.keys(oldData).length;
     const newData = {
@@ -66,46 +75,64 @@ const updateVolumeData = (
     return newData;
 };
 
-export const useVolumeData = (
-    initialPeriod = PeriodOption.ALL,
-    initialVolume: SnapshotRecords = {},
-) => {
+export const useVolumeData = (initialPeriod = PeriodOption.ALL) => {
     const type = TrackerVolumeType.Locked; // TODO: remove
     const { renVmTracker } = GraphClientContainer.useContainer();
 
-    const [volumeData, setVolumeData] = useState<SnapshotRecords>(
-        initialVolume,
-    );
-    const [volumeLoading, setVolumeLoading] = useState(true);
+    const [volumeDataMap, setVolumeDataMap] = useState<
+        OrderedMap<PeriodOption, SnapshotRecords>
+    >(OrderedMap());
     const [volumePeriod, setVolumePeriod] = useState<PeriodOption>(
         initialPeriod,
     );
+    const [volumeError, setVolumeError] = useState(false);
+
+    const volumeData = volumeDataMap.get(volumePeriod);
 
     useEffect(() => {
-        setVolumeLoading(true);
-        queryRenVmTracker(renVmTracker, type, volumePeriod)
-            .then((response) => {
-                setVolumeData(response.data);
-                setVolumeLoading(false);
-            })
-            .catch(console.error);
+        setVolumeError(false);
+
+        if (!volumeData) {
+            queryRenVmTracker(renVmTracker, type, volumePeriod)
+                .then((response: any) => {
+                    setVolumeDataMap((map) =>
+                        map.set(volumePeriod, response.data),
+                    );
+                })
+                .catch((error) => {
+                    console.error(error);
+                    setVolumeError(true);
+                });
+        }
 
         const interval = setInterval(() => {
             queryRenVmTracker(renVmTracker, type, volumePeriod, true)
                 .then((response) => {
-                    setVolumeData((data) =>
-                        updateVolumeData(data, response.data),
+                    setVolumeDataMap((map) =>
+                        // If there's no existing entry, then don't update it
+                        // since it would be an incomplete entry.
+                        map.get(volumePeriod)
+                            ? map.set(
+                                  volumePeriod,
+                                  updateVolumeData(
+                                      map.get(volumePeriod),
+                                      response.data,
+                                  ),
+                              )
+                            : map,
                     );
                 })
                 .catch(console.error);
-        }, 120 * 1000);
+        }, 10 * 1000);
 
         return () => clearInterval(interval);
-    }, [renVmTracker, type, volumePeriod]);
+    }, [renVmTracker, type, volumePeriod, volumeData]);
 
     return {
+        allVolumeData: volumeDataMap.get(PeriodOption.ALL),
         volumeData,
-        volumeLoading: volumeLoading || !volumeData,
+        volumeLoading: !volumeData,
+        volumeError: volumeError && !volumeData,
         volumePeriod,
         setVolumePeriod,
     };
@@ -121,6 +148,7 @@ type VolumeStatsProps = {
     volumeData: SnapshotRecords;
     volumePeriod: PeriodOption;
     volumeLoading: boolean;
+    volumeError: boolean;
     chainOption: ChainOption;
 };
 
@@ -132,6 +160,7 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
     volumeData,
     volumePeriod,
     volumeLoading,
+    volumeError,
     chainOption,
 }) => {
     const [volumeTab, setVolumeTab] = useState<StatTab>(StatTab.History);
@@ -171,37 +200,61 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
         tokenPrices,
     ]);
 
-    const linesData = useMemo(() => {
-        let series: Array<[number, number]> = [];
-        if (!volumeLoading && tokenPrices) {
-            if (chainOption !== ChainOption.All) {
-                const trackerChain = chainOptionToTrackerChain(chainOption);
-                series = snapshotDataToTimeSeries(
-                    volumeData,
-                    trackerType,
-                    trackerChain,
-                    quoteCurrency,
-                    tokenPrices,
-                );
-            } else {
-                series = snaphostDataToAllChainTimeSeries(
-                    volumeData,
-                    trackerType,
-                    quoteCurrency,
-                    tokenPrices,
-                );
+    const linesData: Line[] = useMemo(() => {
+        return [
+            ChainOption.All,
+            ChainOption.Ethereum,
+            ChainOption.BinanceSmartChain,
+            ChainOption.Fantom,
+            ChainOption.Polygon,
+            ChainOption.Avalanche,
+            ChainOption.Solana,
+        ].map((chainOptionInner) => {
+            let series: Array<[number, number]> = [];
+            if (!volumeLoading && tokenPrices) {
+                if (chainOptionInner !== ChainOption.All) {
+                    const trackerChain = chainOptionToTrackerChain(
+                        chainOptionInner,
+                    );
+                    series = snapshotDataToTimeSeries(
+                        volumeData,
+                        trackerType,
+                        trackerChain,
+                        quoteCurrency,
+                        tokenPrices,
+                    );
+                    const first = series[0];
+                    series = series.map(([x, y]) => [x, y - first[1]]);
+                } else {
+                    series = snaphostDataToAllChainTimeSeries(
+                        volumeData,
+                        trackerType,
+                        quoteCurrency,
+                        tokenPrices,
+                    );
+                    const first = series[0];
+                    series = series.map(([x, y]) => [x, y - first[1]]);
+                }
             }
-        }
 
-        const line: Line = {
-            name: `${historyChartLabel} (${quoteCurrency.toUpperCase()})`,
-            axis: 0,
-            data: series,
-        };
-        return [line];
+            const line: Line = {
+                name: `${
+                    ChainLabel[chainOptionInner] || chainOptionInner
+                } (${quoteCurrency.toUpperCase()})`,
+                axis: 0,
+                data: series,
+                color:
+                    chainOption === chainOptionInner
+                        ? ChainLineColors[chainOptionInner]
+                        : ChainLineColorsTransparent[chainOptionInner],
+                hidden:
+                    chainOption !== ChainOption.All &&
+                    chainOptionInner !== chainOption,
+            };
+            return line;
+        });
     }, [
         quoteCurrency,
-        historyChartLabel,
         tokenPrices,
         volumeLoading,
         volumeData,
@@ -253,9 +306,9 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
                             </span>
                         </span>
                     </div>
-                ) : (
+                ) : !volumeError ? (
                     <Loading alt />
-                )}
+                ) : null}
                 <div className="overview--bottom">
                     <StatTabs
                         selected={volumeTab}
@@ -264,7 +317,11 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
                         assetsPeriod={volumePeriod}
                     />
                     <>
-                        {volumeLoading ? (
+                        {volumeError ? (
+                            <div className="volume--error">
+                                Unable to fetch data
+                            </div>
+                        ) : volumeLoading ? (
                             <Loading alt={true} />
                         ) : volumeTab === StatTab.History ? (
                             <Graph lines={linesData} />

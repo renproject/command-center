@@ -90,16 +90,22 @@ export const DarknodeStatsPage = () => {
         tokenPrices,
     );
     const currentNetworkRenVmInUsd = currentNetworkRenVM.reduce(
-        (sum, entry) => sum.plus(entry.amountInUsd),
-        new BigNumber(0),
+        (sum, entry) =>
+            entry.amountInUsd
+                ? new BigNumber(sum || 0).plus(entry.amountInUsd)
+                : sum,
+        undefined as BigNumber | undefined,
     );
     const previousNetworkRenVm = updatePrices(
         getFeesCollection("previous", blockState),
         tokenPrices,
     );
     const previousNetworkRenVmInUsd = previousNetworkRenVm.reduce(
-        (sum, entry) => sum.plus(entry.amountInUsd),
-        new BigNumber(0),
+        (sum, entry) =>
+            entry.amountInUsd
+                ? new BigNumber(sum || 0).plus(entry.amountInUsd)
+                : sum,
+        undefined as BigNumber | undefined,
     );
 
     const current =
@@ -150,12 +156,18 @@ export const DarknodeStatsPage = () => {
             ? previousInUsd.times(numberOfDarknodesLastEpoch)
             : undefined;
 
-    const currentNetworkInUsdMerged = currentNetworkRenVmInUsd.plus(
-        currentNetworkInUsd || 0,
-    );
-    const previousNetworkInUsdMerged = previousNetworkRenVmInUsd.plus(
-        previousNetworkInUsd || 0,
-    );
+    const currentNetworkInUsdMerged =
+        currentNetworkRenVmInUsd || currentNetworkInUsd
+            ? new BigNumber(currentNetworkRenVmInUsd || 0).plus(
+                  currentNetworkInUsd || 0,
+              )
+            : undefined;
+    const previousNetworkInUsdMerged =
+        previousNetworkRenVmInUsd || previousNetworkInUsd
+            ? new BigNumber(previousNetworkRenVmInUsd || 0).plus(
+                  previousNetworkInUsd || 0,
+              )
+            : undefined;
 
     const currentNetwork = useMemo(
         () =>

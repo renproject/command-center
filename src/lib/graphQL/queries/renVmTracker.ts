@@ -1,11 +1,16 @@
 import { ApolloClient, gql } from "@apollo/react-hooks";
+import { RenNetwork } from "@renproject/interfaces";
 import { Currency } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
+import moment from "moment";
 import { getConversionRate } from "../../../controllers/common/tokenBalanceUtils";
 import { ChainOption } from "../../../controllers/pages/networkStatsPage/ChainSelector";
 import { TokenPrices } from "../../ethereum/tokens";
 import { convertToStandardAmount } from "../../general/tokenAmountUtils";
-import { getPeriodTimespan, PeriodOption } from "../volumes";
+import { DEFAULT_REN_NETWORK } from "../../react/environmentVariables";
+import { PeriodOption } from "../volumes";
+
+const HISTORIC_RESOLUTION = 50;
 
 export enum TrackerChain {
     Ethereum = "Ethereum",
@@ -67,7 +72,10 @@ type Snapshot = {
     prices: Array<SnapshotAssetData>;
 };
 
-export type BigNumberRecord = Record<string, BigNumber>;
+export type BigNumberRecord = Record<
+    string,
+    { amount: BigNumber; standardAmount: BigNumber; quote: BigNumber }
+>;
 
 export type SnapshotRecords = Record<string, Snapshot>;
 
@@ -121,23 +129,27 @@ export const queryRenVmTracker = async (
 ): Promise<SnapshotResponse> => {
     const query = isUpdate
         ? buildRenVmTrackerUpdateQuery(getResolutionEndTimestamp())
-        : buildRenVmTrackerQuery(period);
+        : buildRenVmTrackerQuery(period, DEFAULT_REN_NETWORK);
     return client.query<SnapshotRecords>({
         query,
     });
 };
 
-export const buildRenVmTrackerQuery = (period: PeriodOption) => {
-    const interval = getResolutionInterval(period);
-    const points = getResolutionPoints(period);
+export const buildRenVmTrackerQuery = (
+    period: PeriodOption,
+    network: RenNetwork,
+) => {
+    const timespan = getPeriodTimespanInSeconds(period, network);
+    const interval = timespan / HISTORIC_RESOLUTION;
+
     const endTimestamp = getResolutionEndTimestamp();
 
-    const subQueries = [];
-    for (let i = 0; i < points; i++) {
-        const timestamp = Math.ceil(endTimestamp - i * interval);
-        const subQuery = getSnapshotSubQuery(timestamp.toString());
-        subQueries.push(subQuery);
-    }
+    const subQueries = Array.from(new Array(HISTORIC_RESOLUTION)).map(
+        (_, i) => {
+            const timestamp = Math.ceil(endTimestamp - i * interval);
+            return getSnapshotSubQuery(timestamp.toString());
+        },
+    );
 
     const snapshotQuery = `
         ${VOLUMES_FRAGMENT}
@@ -166,28 +178,62 @@ export const buildRenVmTrackerUpdateQuery = (timestamp: number) => {
     return gql(snapshotQuery);
 };
 
-export const getResolutionPoints = (period: PeriodOption) => {
-    const timespan = getPeriodTimespan(period);
-    const interval = getResolutionInterval(period);
-    return timespan / interval;
+const getNetworkStart = (renNetwork: RenNetwork) => {
+    if (renNetwork === RenNetwork.Mainnet) {
+        return "2020-05-27T00+00";
+    } else {
+        return "2020-06-20T00+00";
+    }
 };
 
-export const getResolutionInterval = (period: PeriodOption) => {
+// TODO: Why use
+// const getResolutionInterval = (period: PeriodOption) => {
+//     switch (period) {
+//         case PeriodOption.HOUR:
+//             return 80;
+//         case PeriodOption.DAY:
+//             return 30 * 60;
+//         case PeriodOption.WEEK:
+//             return 2 * 3600;
+//         case PeriodOption.MONTH:
+//             return 12 * 3600;
+//         case PeriodOption.YEAR:
+//             return 5 * 24 * 3600;
+//         case PeriodOption.ALL:
+//             return 6 * 24 * 3600;
+//     }
+//     return 5 * 24 * 3600;
+// };
+
+export const getPeriodTimespanInSeconds = (
+    period: PeriodOption,
+    renNetwork: RenNetwork,
+): number => {
+    const minutes = 60; // 60 seconds
+    const hours = 60 * minutes;
+    const days = 24 * hours;
+    const weeks = 7 * days;
+    const months = 31 * days;
+    const years = 365 * days;
+
     switch (period) {
         case PeriodOption.HOUR:
-            return 80;
+            return 1 * hours;
         case PeriodOption.DAY:
-            return 30 * 60;
+            return 1 * days;
         case PeriodOption.WEEK:
-            return 2 * 3600;
+            return 1 * weeks;
         case PeriodOption.MONTH:
-            return 12 * 3600;
+            return 1 * months;
         case PeriodOption.YEAR:
-            return 5 * 24 * 3600;
+            return 1 * years;
         case PeriodOption.ALL:
-            return 6 * 24 * 3600;
+            return Math.floor(
+                moment().diff(getNetworkStart(renNetwork)) / 1000,
+            );
+        default:
+            throw new Error(`Unknown period type ${period}`);
     }
-    return 5 * 24 * 3600;
 };
 
 export const getResolutionEndTimestamp = (
@@ -250,14 +296,14 @@ export enum TokenAmountType {
     StandardUnits = "StandardUnits",
 }
 
-const getAmount = (
+const getQuoteAmount = (
     entry: SnapshotAmount,
     currency: TokenAmountType | Currency,
     assetsData: Array<SnapshotAssetData>,
     tokenPrices: TokenPrices,
-) => {
+): BigNumber => {
     if (currency === TokenAmountType.BaseUnits) {
-        return entry.amount;
+        return new BigNumber(entry.amount);
     }
 
     if (currency === TokenAmountType.StandardUnits) {
@@ -270,17 +316,17 @@ const getAmount = (
     if (snapshotCurrencies.includes(currency)) {
         switch (currency) {
             case Currency.USD:
-                return entry.amountInUsd;
+                return new BigNumber(entry.amountInUsd);
             case Currency.BTC:
-                return entry.amountInBtc;
+                return new BigNumber(entry.amountInBtc);
             case Currency.ETH:
-                return entry.amountInEth;
+                return new BigNumber(entry.amountInEth);
         }
     }
 
     const rate = getConversionRate(Currency.USD, currency, tokenPrices);
     const converted = new BigNumber(entry.amountInUsd).multipliedBy(rate);
-    return converted.toString();
+    return converted;
 };
 
 const sumSnapshotAmounts = (
@@ -294,7 +340,7 @@ const sumSnapshotAmounts = (
     const chainAmounts = getChainAmountsFromSnapshot(snapshot, type, chain);
     return chainAmounts.reduce(
         (acc, curr) =>
-            acc.plus(getAmount(curr, currency, assetData, tokenPrices)),
+            acc.plus(getQuoteAmount(curr, currency, assetData, tokenPrices)),
         new BigNumber(0),
     );
 };
@@ -360,17 +406,71 @@ export const snapshotDataToVolumeData = (
         const firstEntry = startAmounts.find((entry) => entry.asset === asset);
 
         let difference = new BigNumber(0);
+        let differenceStandard = new BigNumber(0);
+        let differenceQuote = new BigNumber(0);
         if (lastEntry && firstEntry) {
+            differenceQuote = new BigNumber(
+                getQuoteAmount(lastEntry, currency, assetsData, tokenPrices),
+            ).minus(
+                getQuoteAmount(firstEntry, currency, assetsData, tokenPrices),
+            );
             difference = new BigNumber(
-                getAmount(lastEntry, currency, assetsData, tokenPrices),
-            ).minus(getAmount(firstEntry, currency, assetsData, tokenPrices));
+                getQuoteAmount(
+                    lastEntry,
+                    TokenAmountType.BaseUnits,
+                    assetsData,
+                    tokenPrices,
+                ),
+            ).minus(
+                getQuoteAmount(
+                    firstEntry,
+                    TokenAmountType.BaseUnits,
+                    assetsData,
+                    tokenPrices,
+                ),
+            );
+            differenceStandard = new BigNumber(
+                getQuoteAmount(
+                    lastEntry,
+                    TokenAmountType.StandardUnits,
+                    assetsData,
+                    tokenPrices,
+                ),
+            ).minus(
+                getQuoteAmount(
+                    firstEntry,
+                    TokenAmountType.StandardUnits,
+                    assetsData,
+                    tokenPrices,
+                ),
+            );
         } else if (lastEntry) {
-            difference = new BigNumber(
-                getAmount(lastEntry, currency, assetsData, tokenPrices),
+            differenceQuote = new BigNumber(
+                getQuoteAmount(lastEntry, currency, assetsData, tokenPrices),
+            );
+            differenceStandard = new BigNumber(
+                getQuoteAmount(
+                    lastEntry,
+                    TokenAmountType.BaseUnits,
+                    assetsData,
+                    tokenPrices,
+                ),
+            );
+            differenceStandard = new BigNumber(
+                getQuoteAmount(
+                    lastEntry,
+                    TokenAmountType.StandardUnits,
+                    assetsData,
+                    tokenPrices,
+                ),
             );
         }
 
-        amountRecords[asset] = difference;
+        amountRecords[asset] = {
+            quote: differenceQuote,
+            standardAmount: differenceStandard,
+            amount: difference,
+        };
     });
 
     return { amountRecords, difference };
@@ -384,7 +484,18 @@ const mergeAmountRecords = (
     let records: BigNumberRecord = {};
     assetsData.forEach((assetData: SnapshotAssetData) => {
         const token = assetData.asset;
-        records[token] = new BigNumber(acc[token] || 0).plus(curr[token] || 0);
+        records[token] = {
+            quote: (acc[token] ? acc[token].quote : new BigNumber(0)).plus(
+                curr[token] ? curr[token].quote : new BigNumber(0),
+            ),
+            amount: (acc[token] ? acc[token].amount : new BigNumber(0)).plus(
+                curr[token] ? curr[token].amount : new BigNumber(0),
+            ),
+            standardAmount: (acc[token]
+                ? acc[token].standardAmount
+                : new BigNumber(0)
+            ).plus(curr[token] ? curr[token].standardAmount : new BigNumber(0)),
+        };
     });
     return records;
 };
@@ -430,7 +541,7 @@ export const snapshotDataToTimeSeries = (
             currency,
             assetsData,
             tokenPrices,
-        );
+        ).decimalPlaces(0);
         return [timestamp * 1000, value.toNumber()];
     });
     return points as Array<[number, number]>;
@@ -446,18 +557,19 @@ export const snaphostDataToAllChainTimeSeries = (
     const assetsData = getAssetsData(data);
     const points = snapshots.map((snapshot) => {
         const timestamp = snapshot.timestamp;
-        let sum = new BigNumber(0);
-        allTrackedChains.forEach((chain) => {
-            const value = sumSnapshotAmounts(
-                snapshot,
-                type,
-                chain,
-                currency,
-                assetsData,
-                tokenPrices,
-            );
-            sum = sum.plus(value);
-        });
+        const sum = allTrackedChains
+            .reduce((sum, chain) => {
+                const value = sumSnapshotAmounts(
+                    snapshot,
+                    type,
+                    chain,
+                    currency,
+                    assetsData,
+                    tokenPrices,
+                );
+                return sum.plus(value);
+            }, new BigNumber(0))
+            .decimalPlaces(0);
         return [timestamp * 1000, sum.toNumber()];
     });
     return points as Array<[number, number]>;

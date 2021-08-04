@@ -277,7 +277,6 @@
 
     padding-bottom: 8px;
     &--chain {
-
     }
     &--period {
         margin-left: 10px;
@@ -454,4 +453,11 @@
     .stat--title--outer {
         margin-bottom: 10px;
     }
+}
+
+.overview--bottom > div.volume--error {
+    display: block;
+    width: auto;
+    margin: 0 auto;
+    font-size: 14px;
 }

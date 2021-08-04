@@ -35,8 +35,8 @@ const useGraphClientContainer = () => {
     );
 
     const renVmTracker = useMemo(
-        () => apolloClientWithCache(renVmTrackerUrl()),
-        [],
+        () => apolloClientWithCache(renVmTrackerUrl(renNetwork)),
+        [renNetwork],
     );
 
     return {

@@ -1,9 +1,7 @@
 import BigNumber from "bignumber.js";
-import React, { useEffect, useMemo, useState } from "react";
-import { isEmptyObject } from "../../../lib/general/isDefined";
+import React, { useMemo, useState } from "react";
 import {
     snapshotDataToAllChainVolumeData,
-    SnapshotRecords,
     TrackerVolumeType,
 } from "../../../lib/graphQL/queries/renVmTracker";
 
@@ -30,7 +28,7 @@ const lockedTooltipRenderer = (period: PeriodOption, chain: ChainOption) => {
     if (period === PeriodOption.ALL) {
         return `The total value (TVL) of all digital assets currently minted on ${chainLabel} by RenVM.`;
     }
-    return `The 1 ${period.toLowerCase()} change in RenVM's locked digital assets on ${chainLabel}.`;
+    return `The 1 ${period.toLowerCase()} change in RenVM's locked digital assets on ${chainLabel}. Reflects changes in asset prices, so may be greater than the change in volume.`;
 };
 
 export const NetworkStatsPage = () => {
@@ -41,40 +39,37 @@ export const NetworkStatsPage = () => {
         tokenPrices,
         numberOfDarknodes,
     } = NetworkContainer.useContainer();
-    const [totalVolumeData, setTotalVolumeData] = useState<SnapshotRecords>({});
     const {
+        allVolumeData,
         volumeData,
         volumeLoading,
+        volumeError,
         volumePeriod,
         setVolumePeriod,
     } = useVolumeData(PeriodOption.ALL);
 
-    useEffect(() => {
-        if (!isEmptyObject(volumeData)) {
-            setTotalVolumeData(volumeData);
-        }
-    }, [volumeData]);
-
     const [chainOption, setChainOption] = useState(ChainOption.All);
 
     const allChainTotal = useMemo(() => {
-        return tokenPrices === null || isEmptyObject(totalVolumeData)
-            ? new BigNumber(0)
+        return tokenPrices === null || !allVolumeData
+            ? null
             : snapshotDataToAllChainVolumeData(
-                  totalVolumeData,
+                  allVolumeData,
                   TrackerVolumeType.Locked,
                   quoteCurrency,
                   tokenPrices,
               ).difference;
-    }, [totalVolumeData, tokenPrices, quoteCurrency]);
+    }, [allVolumeData, tokenPrices, quoteCurrency]);
 
-    const bondedRenAmount = (numberOfDarknodes || new BigNumber(0)).times(
-        100000,
-    );
+    const bondedRenAmount = numberOfDarknodes
+        ? numberOfDarknodes.times(100000)
+        : null;
     const renPrice = tokenPrices
         ? getRenPriceIn(quoteCurrency, tokenPrices)
         : 0;
-    const bondedRenValue = bondedRenAmount.times(renPrice);
+    const bondedRenValue = bondedRenAmount
+        ? bondedRenAmount.times(renPrice)
+        : null;
     return (
         <NetworkStatsStyles className="network-stats container">
             {/* <div className="no-xl-or-larger col-lg-12 col-xl-4">
@@ -98,8 +93,9 @@ export const NetworkStatsPage = () => {
                 </div>
                 <Stats>
                     <VolumeStats
-                        volumeData={volumeData}
+                        volumeData={volumeData || {}}
                         volumeLoading={volumeLoading}
+                        volumeError={volumeError}
                         volumePeriod={volumePeriod}
                         trackerType={TrackerVolumeType.Transacted}
                         title="Volume"
@@ -109,11 +105,12 @@ export const NetworkStatsPage = () => {
                         chainOption={chainOption}
                     />
                     <VolumeStats
-                        volumeData={volumeData}
+                        volumeData={volumeData || {}}
                         volumeLoading={volumeLoading}
+                        volumeError={volumeError}
                         volumePeriod={volumePeriod}
                         trackerType={TrackerVolumeType.Locked}
-                        title="Value Minted"
+                        title="Value Locked"
                         titleTooltip="The total value (TVL) of all digital assets currently minted on Ethereum by RenVM."
                         historyChartLabel="Locked"
                         tooltipRenderer={lockedTooltipRenderer}

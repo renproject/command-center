@@ -21,6 +21,26 @@ const ChainDotColors = {
     [ChainOption.Solana]: "#00ffbd",
 };
 
+export const ChainLineColors = {
+    [ChainOption.All]: "#006FE8",
+    [ChainOption.Ethereum]: "#627EEA",
+    [ChainOption.BinanceSmartChain]: "#F9B72D",
+    [ChainOption.Fantom]: "#1969ff",
+    [ChainOption.Polygon]: "#8247e5",
+    [ChainOption.Avalanche]: "#e84142",
+    [ChainOption.Solana]: "#00ffbd",
+};
+
+export const ChainLineColorsTransparent = {
+    [ChainOption.All]: "#006FE8",
+    [ChainOption.Ethereum]: "#627EEA66",
+    [ChainOption.BinanceSmartChain]: "#F9B72D66",
+    [ChainOption.Fantom]: "#1969ff66",
+    [ChainOption.Polygon]: "#8247e566",
+    [ChainOption.Avalanche]: "#e8414266",
+    [ChainOption.Solana]: "#00ffbd66",
+};
+
 export const ChainLabel: Record<ChainOption, string> = {
     [ChainOption.All]: "All",
     [ChainOption.Ethereum]: "Ethereum",

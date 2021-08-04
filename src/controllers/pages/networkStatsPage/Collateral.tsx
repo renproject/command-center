@@ -13,9 +13,9 @@ import { Stat, Stats } from "../../../views/Stat";
 import { TokenIcon } from "../../../views/tokenIcon/TokenIcon";
 
 interface Props {
-    total: BigNumber;
+    total: BigNumber | null;
     bondedRenValue: BigNumber | null;
-    bondedRen: BigNumber;
+    bondedRen: BigNumber | null;
     quoteCurrency: Currency;
     mintFee?: number;
     burnFee?: number;
@@ -40,7 +40,7 @@ export const Collateral: React.FC<Props> = ({
 }) => {
     // TODO: do we need this?
     const lDivB =
-        bondedRenValue === null || total.isZero()
+        bondedRenValue === null || !total
             ? 0
             : bondedRenValue.isEqualTo(0)
             ? 100
@@ -48,7 +48,7 @@ export const Collateral: React.FC<Props> = ({
                   .multipliedBy(100)
                   .toNumber();
     const bDivL =
-        bondedRenValue === null || total.isZero()
+        bondedRenValue === null || !total
             ? 100
             : total.isEqualTo(0)
             ? 100
@@ -57,9 +57,12 @@ export const Collateral: React.FC<Props> = ({
                   .toNumber();
     // const r3 = Math.max(0, 33 - lDivR);
 
-    const loadingCollateralization = bondedRenValue === null || total.isZero();
+    const loadingCollateralization = bondedRenValue === null || !total;
     const overCollateralized =
-        GREYCORE_ACTIVE || bondedRenValue === null || total.lte(bondedRenValue);
+        GREYCORE_ACTIVE ||
+        bondedRenValue === null ||
+        !total ||
+        total.lte(bondedRenValue);
 
     return (
         <div className="collateral">
@@ -203,12 +206,14 @@ export const Collateral: React.FC<Props> = ({
                                     <RowBullet /> Value Locked (L)
                                 </div>
                                 <div className="collateral-table--row--right">
-                                    <span className="monospace nowrap">
-                                        <CurrencyIcon
-                                            currency={quoteCurrency}
-                                        />
-                                        {total.toFormat(2)}
-                                    </span>
+                                    {total ? (
+                                        <span className="monospace nowrap">
+                                            <CurrencyIcon
+                                                currency={quoteCurrency}
+                                            />
+                                            {total.toFormat(2)}
+                                        </span>
+                                    ) : null}
                                     <InfoLabel>
                                         The total value (TVL) of all digital
                                         assets currently locked in RenVM.
@@ -220,18 +225,21 @@ export const Collateral: React.FC<Props> = ({
                                     <RowBullet /> Value Bonded&nbsp;(B)
                                 </div>
                                 <div className="collateral-table--row--right">
-                                    <span className="monospace">
-                                        {bondedRen.toFormat(0)} REN{" "}
-                                        {bondedRenValue !== null && (
-                                            <span className="collateral-chart--bow--small monospace nowrap">
-                                                (
-                                                <CurrencyIcon
-                                                    currency={quoteCurrency}
-                                                />
-                                                {bondedRenValue.toFormat(2)})
-                                            </span>
-                                        )}
-                                    </span>{" "}
+                                    {bondedRen ? (
+                                        <span className="monospace">
+                                            {bondedRen.toFormat(0)} REN{" "}
+                                            {bondedRenValue !== null && (
+                                                <span className="collateral-chart--bow--small monospace nowrap">
+                                                    (
+                                                    <CurrencyIcon
+                                                        currency={quoteCurrency}
+                                                    />
+                                                    {bondedRenValue.toFormat(2)}
+                                                    )
+                                                </span>
+                                            )}
+                                        </span>
+                                    ) : null}{" "}
                                     <InfoLabel>
                                         The collective value bonded by
                                         darknodes. Each node is required to bond
