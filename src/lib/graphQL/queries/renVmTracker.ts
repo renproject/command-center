@@ -21,7 +21,7 @@ export enum TrackerChain {
     Solana = "Solana",
 }
 
-const allTrackedChains: Array<TrackerChain> = [
+export const allTrackedChains: Array<TrackerChain> = [
     TrackerChain.Ethereum,
     TrackerChain.BinanceSmartChain,
     TrackerChain.Fantom,

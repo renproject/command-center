@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import {
+    allTrackedChains,
     snapshotDataToAllChainVolumeData,
     TrackerVolumeType,
 } from "../../../lib/graphQL/queries/renVmTracker";
@@ -70,6 +71,14 @@ export const NetworkStatsPage = () => {
     const bondedRenValue = bondedRenAmount
         ? bondedRenAmount.times(renPrice)
         : null;
+
+    const fees = allTrackedChains.map((chain) => {
+        return {
+            mint: 15,
+            burn: 15,
+            chain: chain,
+        };
+    });
     return (
         <NetworkStatsStyles className="network-stats container">
             {/* <div className="no-xl-or-larger col-lg-12 col-xl-4">
@@ -120,6 +129,7 @@ export const NetworkStatsPage = () => {
             </div>
             <div className="col-lg-12 col-xl-4">
                 <Collateral
+                    fees={fees}
                     total={allChainTotal}
                     bondedRenValue={bondedRenValue}
                     bondedRen={bondedRenAmount}
