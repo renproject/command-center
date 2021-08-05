@@ -12,7 +12,7 @@ import { InfoLabel } from "../../../views/infoLabel/InfoLabel";
 import { SimpleTable } from "../../../views/SimpleTable";
 import { Stat, Stats } from "../../../views/Stat";
 import { TokenIcon } from "../../../views/tokenIcon/TokenIcon";
-import { ChainIconName, ChainLabel, ChainOption } from "./ChainSelector";
+import { ChainIconName, ChainLabel } from "./ChainSelector";
 
 type ChainFee = {
     chain: TrackerChain;
@@ -26,8 +26,6 @@ interface Props {
     bondedRen: BigNumber | null;
     quoteCurrency: Currency;
     fees: Array<ChainFee>;
-    mintFee?: number;
-    burnFee?: number;
 }
 
 const RowBullet = () => (
@@ -45,8 +43,6 @@ export const Collateral: React.FC<Props> = ({
     bondedRen,
     quoteCurrency,
     fees,
-    mintFee,
-    burnFee,
 }) => {
     // TODO: do we need this?
     const lDivB =

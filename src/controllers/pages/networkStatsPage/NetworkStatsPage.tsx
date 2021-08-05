@@ -33,8 +33,6 @@ const lockedTooltipRenderer = (period: PeriodOption, chain: ChainOption) => {
 };
 
 export const NetworkStatsPage = () => {
-    const { renVM } = GraphContainer.useContainer();
-    const { btcMintFee, btcBurnFee } = renVM || {};
     const {
         quoteCurrency,
         tokenPrices,
@@ -134,8 +132,6 @@ export const NetworkStatsPage = () => {
                     bondedRenValue={bondedRenValue}
                     bondedRen={bondedRenAmount}
                     quoteCurrency={quoteCurrency}
-                    mintFee={btcMintFee}
-                    burnFee={btcBurnFee}
                 />
             </div>
         </NetworkStatsStyles>
