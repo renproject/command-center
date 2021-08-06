@@ -277,14 +277,15 @@ export const Collateral: React.FC<Props> = ({
                 >
                     {/* TODO: Populate this dynamically. */}
                     <SimpleTable>
-                        {fees.map((fee) => (
-                            <FeeRow
-                                iconName={ChainIconName[fee.chain]}
-                                chainName={ChainLabel[fee.chain]}
-                                mintFee={fee.mint}
-                                burnFee={fee.burn}
-                            />
-                        ))}
+                        {fees.map((fee) => {
+                            return (
+                                <FeeRow
+                                    chain={fee.chain}
+                                    mintFee={fee.mint}
+                                    burnFee={fee.burn}
+                                />
+                            );
+                        })}
                     </SimpleTable>
                 </Stat>
             </Stats>
@@ -293,27 +294,28 @@ export const Collateral: React.FC<Props> = ({
 };
 
 type FeeRowProps = {
-    chainName: string;
-    iconName: string;
+    chain: TrackerChain;
     burnFee: number;
     mintFee: number;
     loading?: boolean;
 };
 
-const FeeRow: React.FC<FeeRowProps> = ({
-    chainName,
-    iconName,
-    burnFee,
-    mintFee,
-}) => (
-    <div className="fee-row">
-        <div>
-            <TokenIcon token={iconName} /> <span>{chainName}</span>
+const FeeRow: React.FC<FeeRowProps> = ({ chain, burnFee, mintFee }) => {
+    const iconName = ChainIconName[chain];
+    const chainName = ChainLabel[chain];
+    return (
+        <div className="fee-row">
+            <div className="fee-row--chain">
+                <span className="fee-row--icon-wrapper">
+                    <TokenIcon className="fee-row--icon" token={iconName} />
+                </span>{" "}
+                <span>{chainName}</span>
+            </div>
+            <div>
+                <span>{mintFee / 100}% Mint</span>
+                <span> / </span>
+                <span>{burnFee / 100}% Burn</span>
+            </div>
         </div>
-        <div>
-            <span>{mintFee / 100}% Mint</span>
-            <span> / </span>
-            <span>{burnFee / 100}% Burn</span>
-        </div>
-    </div>
-);
+    );
+};
