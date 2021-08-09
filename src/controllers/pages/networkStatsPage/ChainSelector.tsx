@@ -9,6 +9,7 @@ export enum ChainOption {
     Polygon = "Polygon",
     Avalanche = "Avalanche",
     Solana = "Solana",
+    Arbitrum = "Arbitrum",
 }
 
 const ChainDotColors = {
@@ -19,6 +20,7 @@ const ChainDotColors = {
     [ChainOption.Polygon]: "#8247e5",
     [ChainOption.Avalanche]: "#e84142",
     [ChainOption.Solana]: "#00ffbd",
+    [ChainOption.Arbitrum]: "#28A0F0",
 };
 
 export const ChainLineColors = {
@@ -29,16 +31,20 @@ export const ChainLineColors = {
     [ChainOption.Polygon]: "#8247e5",
     [ChainOption.Avalanche]: "#e84142",
     [ChainOption.Solana]: "#00ffbd",
+    [ChainOption.Arbitrum]: "#28A0F0",
 };
 
 export const ChainLineColorsTransparent = {
     [ChainOption.All]: "#006FE8",
+
+    // 66 opacity added:
     [ChainOption.Ethereum]: "#627EEA66",
     [ChainOption.BinanceSmartChain]: "#F9B72D66",
     [ChainOption.Fantom]: "#1969ff66",
     [ChainOption.Polygon]: "#8247e566",
     [ChainOption.Avalanche]: "#e8414266",
     [ChainOption.Solana]: "#00ffbd66",
+    [ChainOption.Arbitrum]: "#28A0F066",
 };
 
 export const ChainLabel: Record<ChainOption, string> = {
@@ -49,9 +55,10 @@ export const ChainLabel: Record<ChainOption, string> = {
     [ChainOption.Polygon]: "Polygon",
     [ChainOption.Avalanche]: "Avalanche",
     [ChainOption.Solana]: "Solana",
+    [ChainOption.Arbitrum]: "Arbitrum",
 };
 
-const availableChains: Array<ChainOption> = [
+export const availableChains: Array<ChainOption> = [
     ChainOption.All,
     ChainOption.Ethereum,
     ChainOption.BinanceSmartChain,
@@ -59,6 +66,7 @@ const availableChains: Array<ChainOption> = [
     ChainOption.Polygon,
     ChainOption.Avalanche,
     ChainOption.Solana,
+    ChainOption.Arbitrum,
 ];
 
 const ChainDotDiv = styled.div`
