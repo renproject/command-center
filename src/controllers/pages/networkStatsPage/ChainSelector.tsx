@@ -66,7 +66,7 @@ export const availableChains: Array<ChainOption> = [
     ChainOption.Polygon,
     ChainOption.Avalanche,
     ChainOption.Solana,
-    ChainOption.Arbitrum,
+    // ChainOption.Arbitrum,
 ];
 
 const ChainDotDiv = styled.div`
