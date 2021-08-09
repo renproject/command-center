@@ -20,6 +20,7 @@ import { ReactComponent as IconValueLocked } from "../../../styles/images/icon-v
 import { ReactComponent as IconVolume } from "../../../styles/images/icon-volume.svg";
 import { Stat } from "../../../views/Stat";
 import {
+    availableChains,
     ChainLabel,
     ChainLineColors,
     ChainLineColorsTransparent,
@@ -136,15 +137,7 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
     ]);
 
     const linesData: Line[] = useMemo(() => {
-        return [
-            ChainOption.All,
-            ChainOption.Ethereum,
-            ChainOption.BinanceSmartChain,
-            ChainOption.Fantom,
-            ChainOption.Polygon,
-            ChainOption.Avalanche,
-            ChainOption.Solana,
-        ].map((chainOptionInner) => {
+        return availableChains.map((chainOptionInner) => {
             let series: Array<[number, number]> = [];
             if (!volumeLoading && tokenPrices) {
                 if (chainOptionInner !== ChainOption.All) {
