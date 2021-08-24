@@ -70,7 +70,7 @@ export const getFeeDataForToken = (symbol: string, blockState: BlockState) => {
     return data.fees as FeeData;
 };
 
-const DARKNODE_PAYOUT_PERCENT = 0.5; // 0.4287;
+const DARKNODE_PAYOUT_PERCENT = 0.46435;
 
 export const getTokenFeeForEpoch = (
     symbol: string,
