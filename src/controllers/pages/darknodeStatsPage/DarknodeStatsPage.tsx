@@ -306,7 +306,7 @@ export const DarknodeStatsPage = () => {
                         fees={fundCollection}
                         feesInUsd={fundCollectionInUsd}
                         message="Community fund"
-                        infoLabel="7.5% of rewards are collected towards a fund controlled by the Ren community."
+                        infoLabel="7.12% of rewards are collected towards a fund controlled by the Ren community."
                         quoteCurrency={quoteCurrency}
                         dark={true}
                     />
