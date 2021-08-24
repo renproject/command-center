@@ -16,6 +16,9 @@ import { ReactComponent as ColorEthChain } from "./icons/color/eth-chain.svg";
 import { ReactComponent as ColorBSCChain } from "./icons/color/bsc-chain.svg";
 import { ReactComponent as ColorFantomChain } from "./icons/color/fantom-chain.svg";
 import { ReactComponent as ColorPolygonChain } from "./icons/color/polygon-chain.svg";
+import { ReactComponent as ColorAvalancheChain } from "./icons/color/avalanche-chain.svg";
+import { ReactComponent as ColorSolanaChain } from "./icons/color/solana-chain.svg";
+
 // White icons
 import { ReactComponent as WhiteBCH } from "./icons/white/bch.svg";
 import { ReactComponent as WhiteBTC } from "./icons/white/btc.svg";
@@ -45,6 +48,8 @@ const icons = {
         BSCChain: ColorBSCChain,
         FantomChain: ColorFantomChain,
         PolygonChain: ColorPolygonChain,
+        AvalancheChain: ColorAvalancheChain,
+        SolanaChain: ColorSolanaChain,
     },
     white: {
         BTC: WhiteBTC,

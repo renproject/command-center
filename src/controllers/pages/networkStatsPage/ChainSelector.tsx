@@ -58,6 +58,17 @@ export const ChainLabel: Record<ChainOption, string> = {
     [ChainOption.Arbitrum]: "Arbitrum",
 };
 
+export const ChainIconName: Record<ChainOption, string> = {
+    [ChainOption.All]: "All",
+    [ChainOption.Ethereum]: "EthChain",
+    [ChainOption.BinanceSmartChain]: "BSCChain",
+    [ChainOption.Fantom]: "FantomChain",
+    [ChainOption.Polygon]: "PolygonChain",
+    [ChainOption.Avalanche]: "AvalancheChain",
+    [ChainOption.Solana]: "SolanaChain",
+    [ChainOption.Arbitrum]: "Arbitrum",
+};
+
 export const availableChains: Array<ChainOption> = [
     ChainOption.All,
     ChainOption.Ethereum,

@@ -47,26 +47,14 @@ export const GasBlock: React.FC<Props> = ({ darknodeBalance }) => {
                     <div className="block--advanced--bottom">
                         <div className="topup">
                             <p className="topup--title">
+                                A gas balance is no longer needed to claim and
+                                withdraw darknode rewards, so deposit is no
+                                longer necessary.
+                            </p>
+                            <p className="topup--title">
                                 You can withdraw your funds using the Darknode
                                 CLI.
                             </p>
-                            <div className="topup--form">
-                                <div className="topup--input">
-                                    <input
-                                        type="text"
-                                        disabled
-                                        min={0}
-                                        placeholder="Amount in ETH"
-                                    />
-                                </div>
-                                <button
-                                    type="submit"
-                                    className="topup--submit hover green"
-                                    disabled
-                                >
-                                    <span>Deposit</span>
-                                </button>
-                            </div>
                         </div>
                     </div>
                 </div>

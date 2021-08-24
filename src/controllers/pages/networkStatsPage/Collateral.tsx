@@ -1,6 +1,7 @@
 import { Currency, CurrencyIcon, Loading } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import React from "react";
+import { TrackerChain } from "../../../lib/graphQL/queries/renVmTracker";
 
 import { classNames } from "../../../lib/react/className";
 import { ReactComponent as IconCheckCircle } from "../../../styles/images/icon-check-circle.svg";
@@ -11,14 +12,20 @@ import { InfoLabel } from "../../../views/infoLabel/InfoLabel";
 import { SimpleTable } from "../../../views/SimpleTable";
 import { Stat, Stats } from "../../../views/Stat";
 import { TokenIcon } from "../../../views/tokenIcon/TokenIcon";
+import { ChainIconName, ChainLabel } from "./ChainSelector";
+
+type ChainFee = {
+    chain: TrackerChain;
+    mint: number;
+    burn: number;
+};
 
 interface Props {
     total: BigNumber | null;
     bondedRenValue: BigNumber | null;
     bondedRen: BigNumber | null;
     quoteCurrency: Currency;
-    mintFee?: number;
-    burnFee?: number;
+    fees: Array<ChainFee>;
 }
 
 const RowBullet = () => (
@@ -35,8 +42,7 @@ export const Collateral: React.FC<Props> = ({
     bondedRenValue,
     bondedRen,
     quoteCurrency,
-    mintFee,
-    burnFee,
+    fees,
 }) => {
     // TODO: do we need this?
     const lDivB =
@@ -271,110 +277,45 @@ export const Collateral: React.FC<Props> = ({
                 >
                     {/* TODO: Populate this dynamically. */}
                     <SimpleTable>
-                        <div>
-                            <span>
-                                <TokenIcon token="EthChain" /> Ethereum
-                            </span>
-                        </div>
-                        <div>
-                            <span style={{ marginLeft: "40px" }}>Mint</span>
-                            <span>
-                                {mintFee !== undefined ? (
-                                    <>{15 / 100}%</>
-                                ) : (
-                                    <Loading />
-                                )}
-                            </span>
-                        </div>
-                        <div>
-                            <span style={{ marginLeft: "40px" }}>Burn</span>
-                            <span>
-                                {burnFee !== undefined ? (
-                                    <>{15 / 100}%</>
-                                ) : (
-                                    <Loading />
-                                )}
-                            </span>
-                        </div>
-                        <div>
-                            <span>
-                                <TokenIcon token="BSCChain" /> Binance Smart
-                                Chain
-                            </span>
-                        </div>
-                        <div>
-                            <span style={{ marginLeft: "40px" }}>Mint</span>
-                            <span>
-                                {mintFee !== undefined ? (
-                                    <>{15 / 100}%</>
-                                ) : (
-                                    <Loading />
-                                )}
-                            </span>
-                        </div>
-                        <div>
-                            <span style={{ marginLeft: "40px" }}>Burn</span>
-                            <span>
-                                {burnFee !== undefined ? (
-                                    <>{15 / 100}%</>
-                                ) : (
-                                    <Loading />
-                                )}
-                            </span>
-                        </div>
-                        <div>
-                            <span>
-                                <TokenIcon token="FantomChain" /> Fantom
-                            </span>
-                        </div>
-                        <div>
-                            <span style={{ marginLeft: "40px" }}>Mint</span>
-                            <span>
-                                {mintFee !== undefined ? (
-                                    <>{15 / 100}%</>
-                                ) : (
-                                    <Loading />
-                                )}
-                            </span>
-                        </div>
-                        <div>
-                            <span style={{ marginLeft: "40px" }}>Burn</span>
-                            <span>
-                                {burnFee !== undefined ? (
-                                    <>{15 / 100}%</>
-                                ) : (
-                                    <Loading />
-                                )}
-                            </span>
-                        </div>
-                        <div>
-                            <span>
-                                <TokenIcon token="PolygonChain" /> Polygon
-                            </span>
-                        </div>
-                        <div>
-                            <span style={{ marginLeft: "40px" }}>Mint</span>
-                            <span>
-                                {mintFee !== undefined ? (
-                                    <>{15 / 100}%</>
-                                ) : (
-                                    <Loading />
-                                )}
-                            </span>
-                        </div>
-                        <div>
-                            <span style={{ marginLeft: "40px" }}>Burn</span>
-                            <span>
-                                {burnFee !== undefined ? (
-                                    <>{15 / 100}%</>
-                                ) : (
-                                    <Loading />
-                                )}
-                            </span>
-                        </div>
+                        {fees.map((fee) => {
+                            return (
+                                <FeeRow
+                                    chain={fee.chain}
+                                    mintFee={fee.mint}
+                                    burnFee={fee.burn}
+                                />
+                            );
+                        })}
                     </SimpleTable>
                 </Stat>
             </Stats>
+        </div>
+    );
+};
+
+type FeeRowProps = {
+    chain: TrackerChain;
+    burnFee: number;
+    mintFee: number;
+    loading?: boolean;
+};
+
+const FeeRow: React.FC<FeeRowProps> = ({ chain, burnFee, mintFee }) => {
+    const iconName = ChainIconName[chain];
+    const chainName = ChainLabel[chain];
+    return (
+        <div className="fee-row">
+            <div className="fee-row--chain">
+                <span className="fee-row--icon-wrapper">
+                    <TokenIcon className="fee-row--icon" token={iconName} />
+                </span>{" "}
+                <span>{chainName}</span>
+            </div>
+            <div>
+                <span>{mintFee / 100}% Mint</span>
+                <span> / </span>
+                <span>{burnFee / 100}% Burn</span>
+            </div>
         </div>
     );
 };
