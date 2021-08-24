@@ -3,14 +3,10 @@ import { Record } from "@renproject/react-components";
 import Axios from "axios";
 import BigNumber from "bignumber.js";
 
-import {
-    retryNTimes,
-    RPCResponse,
-} from "../../controllers/pages/renvmStatsPage/renvmContainer";
-
 import { getLightnode } from "../../store/mapContainer";
 import { sanitizeBase64String } from "../general/encodingUtils";
 import { DEFAULT_REQUEST_TIMEOUT } from "../react/environmentVariables";
+import { retryNTimes } from "../retryNTimes";
 import { hashTransaction } from "../web3/signatures";
 import {
     QueryBlockStateResponse,
@@ -50,6 +46,12 @@ export class NodeStatistics extends Record({
 
     cores: 0,
 }) {}
+
+export interface RPCResponse<T> {
+    jsonrpc: "2.0";
+    id: number;
+    result: T;
+}
 
 export const queryStat = async (lightnode: string, darknodeID: string) => {
     const request = {

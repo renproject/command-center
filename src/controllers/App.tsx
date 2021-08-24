@@ -19,7 +19,6 @@ import { DarknodeStatsPage } from "./pages/darknodeStatsPage/DarknodeStatsPage";
 import { IntegratorStatsPage } from "./pages/integratorStatsPage/IntegratorStatsPage";
 import { NetworkStatsPage } from "./pages/networkStatsPage/NetworkStatsPage";
 import { AllDarknodes } from "./pages/operatorPage/AllDarknodes";
-import { RenVMStatsPage } from "./pages/renvmStatsPage/RenVMStatsPage";
 import { ScrollToTop } from "./ScrollToTop";
 
 /**
@@ -90,11 +89,6 @@ export const App = () => {
                                     exact
                                     component={DarknodeStatsPage}
                                 />
-                                <Route
-                                    path="/renvm"
-                                    exact
-                                    component={RenVMStatsPage}
-                                />
 
                                 {/* Operator pages */}
                                 <Route
@@ -106,35 +100,6 @@ export const App = () => {
                                     path="/darknode/:darknodeID"
                                     exact
                                     component={DarknodePage}
-                                />
-
-                                {/* RenVM TX */}
-                                <Route
-                                    path="/tx/:txHash"
-                                    exact
-                                    component={RenVMStatsPage}
-                                />
-                                <Route
-                                    path="/renvm/tx/:txHash"
-                                    exact
-                                    component={RenVMStatsPage}
-                                />
-
-                                {/* RenVM Block */}
-                                <Route
-                                    path="/block/:blockNumber"
-                                    exact
-                                    component={RenVMStatsPage}
-                                />
-                                <Route
-                                    path="/renvm/:blockNumber"
-                                    exact
-                                    component={RenVMStatsPage}
-                                />
-                                <Route
-                                    path="/renvm/block/:blockNumber"
-                                    exact
-                                    component={RenVMStatsPage}
                                 />
 
                                 {/* Developer catalog */}

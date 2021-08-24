@@ -17,6 +17,7 @@ interface Props {
     message: string;
     infoLabel: string;
     quoteCurrency: Currency;
+    dark?: boolean;
 }
 
 export const FeesStat: React.FC<Props> = ({
@@ -25,11 +26,12 @@ export const FeesStat: React.FC<Props> = ({
     message,
     infoLabel,
     quoteCurrency,
+    dark,
 }) => (
     <Stat
         className="network-fees-stat"
         message={message}
-        dark={true}
+        dark={dark}
         big={true}
         style={{ flexBasis: "0", flexGrow: 5 }}
         icon={<RewardsIcon />}
@@ -59,36 +61,42 @@ export const FeesStat: React.FC<Props> = ({
                     )}
                 </span>
                 <div className="network-fees">
-                    {fees
-                        .filter(
-                            (reward) =>
-                                reward && reward.asset && reward.amount.gt(0),
-                        )
-                        .sortBy((reward) =>
-                            reward ? reward.amountInUsd.toNumber() : 0,
-                        )
-                        .reverse()
-                        .map((reward, symbol) =>
-                            reward ? (
-                                <div key={symbol}>
-                                    <TokenIcon
-                                        white={true}
-                                        token={symbol.replace(/^ren/, "")}
-                                    />
-                                    <AnyTokenBalance
-                                        amount={reward.amount}
-                                        decimals={
-                                            reward.asset
-                                                ? reward.asset.decimals
-                                                : 0
-                                        }
-                                    />{" "}
-                                    {symbol}
-                                </div>
-                            ) : null,
-                        )
-                        .valueSeq()
-                        .toArray()}
+                    <div className="network-fees-inner">
+                        {fees
+                            .filter(
+                                (reward) =>
+                                    reward &&
+                                    reward.asset &&
+                                    reward.amount.gt(0),
+                            )
+                            .sortBy((reward) =>
+                                reward ? reward.amountInUsd.toNumber() : 0,
+                            )
+                            .reverse()
+                            .map((reward, symbol) =>
+                                reward ? (
+                                    <div key={symbol}>
+                                        <TokenIcon
+                                            white={true}
+                                            token={symbol.replace(/^ren/, "")}
+                                        />
+                                        <div>
+                                            <AnyTokenBalance
+                                                amount={reward.amount}
+                                                decimals={
+                                                    reward.asset
+                                                        ? reward.asset.decimals
+                                                        : 0
+                                                }
+                                            />
+                                        </div>{" "}
+                                        <div>{symbol}</div>
+                                    </div>
+                                ) : null,
+                            )
+                            .valueSeq()
+                            .toArray()}
+                    </div>
                 </div>
             </>
         ) : (

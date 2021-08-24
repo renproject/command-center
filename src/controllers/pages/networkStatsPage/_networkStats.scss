@@ -432,15 +432,21 @@
 
 .network-fees {
     display: flex;
+    width: 100%;
 
-    flex-wrap: wrap;
-
-    > div {
+    > div > div {
         display: flex;
         font-size: 14px;
         align-items: center;
         justify-content: center;
         padding: 5px;
+        flex-wrap: nowrap;
+
+        > div {
+            display: flex;
+            flex-wrap: nowrap;
+            margin-right: 5px;
+        }
 
         img,
         svg {
@@ -449,7 +455,18 @@
     }
 }
 
+.network-fees-inner {
+    @extend .no-scrollbar;
+    overflow-x: scroll;
+
+    display: flex;
+    align-items: center;
+}
+
 .stat.network-fees-stat {
+    overflow: hidden;
+    min-width: 350px;
+
     .stat--title--outer {
         margin-bottom: 10px;
     }

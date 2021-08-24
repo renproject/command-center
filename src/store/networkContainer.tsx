@@ -8,7 +8,6 @@ import { PromiEvent } from "web3-core";
 import { MultiStepPopup } from "../controllers/common/popups/MultiStepPopup";
 import { ConvertCurrency } from "../controllers/common/TokenBalance";
 import { updatePrices } from "../controllers/common/tokenBalanceUtils";
-import { retryNTimes } from "../controllers/pages/renvmStatsPage/renvmContainer";
 import {
     darknodeIDBase58ToRenVmID,
     darknodeIDHexToBase58,
@@ -52,6 +51,7 @@ import {
     catchBackgroundException,
     catchInteractionException,
 } from "../lib/react/errors";
+import { retryNTimes } from "../lib/retryNTimes";
 import { GraphContainer } from "./graphContainer";
 import { PopupContainer } from "./popupContainer";
 import useStorageState from "./useStorageState/useStorageState";
@@ -197,10 +197,9 @@ const useNetworkContainer = () => {
             operatorHiddenDarknodes = operatorHiddenDarknodes.add(darknodeID);
 
             setHiddenDarknodes((latestHiddenDarknodes) =>
-                (latestHiddenDarknodes || Map()).set(
-                    operator,
-                    operatorHiddenDarknodes,
-                ),
+                (
+                    latestHiddenDarknodes || Map<string, OrderedSet<string>>()
+                ).set(operator, operatorHiddenDarknodes),
             );
         } catch (error) {
             catchInteractionException(
@@ -220,10 +219,9 @@ const useNetworkContainer = () => {
             );
 
             setHiddenDarknodes((latestHiddenDarknodes) =>
-                (latestHiddenDarknodes || Map()).set(
-                    operator,
-                    operatorHiddenDarknodes,
-                ),
+                (
+                    latestHiddenDarknodes || Map<string, OrderedSet<string>>()
+                ).set(operator, operatorHiddenDarknodes),
             );
         } catch (error) {
             catchInteractionException(
@@ -258,7 +256,10 @@ const useNetworkContainer = () => {
         );
 
         setDarknodeList((latestDarknodeList) =>
-            (latestDarknodeList || Map()).set(address, newList),
+            (latestDarknodeList || Map<string, OrderedSet<string>>()).set(
+                address,
+                newList,
+            ),
         );
         setDarknodeNames(newNames);
         setDarknodeRegisteringList(newDarknodeRegisteringList);
@@ -267,30 +268,38 @@ const useNetworkContainer = () => {
     const storeEmptyDarknodeList = () => {
         if (address) {
             setDarknodeList((latestDarknodeList) =>
-                (latestDarknodeList || Map()).set(address, OrderedSet()),
+                (latestDarknodeList || Map<string, OrderedSet<string>>()).set(
+                    address,
+                    OrderedSet(),
+                ),
             );
         }
     };
 
     const addRegisteringDarknode = (darknodeID: string) => {
         setDarknodeRegisteringList((latestDarknodeRegisteringList) =>
-            (latestDarknodeRegisteringList || Map()).set(darknodeID, true),
+            (latestDarknodeRegisteringList || Map<string, boolean>()).set(
+                darknodeID,
+                true,
+            ),
         );
     };
 
     const removeRegisteringDarknode = (darknodeID: string) => {
         return setDarknodeRegisteringList((latestDarknodeRegisteringList) =>
-            (latestDarknodeRegisteringList || Map()).remove(darknodeID),
+            (latestDarknodeRegisteringList || Map<string, boolean>()).remove(
+                darknodeID,
+            ),
         );
     };
 
     const addToWithdrawAddresses = (token: Token, withdrawAddress: string) => {
-        const foundList = withdrawAddresses.get(token, List());
+        const foundList = withdrawAddresses.get(token, List<string>());
         if (foundList.contains(withdrawAddress)) {
             return;
         }
         return setWithdrawAddresses((latestWithdrawAddresses) =>
-            (latestWithdrawAddresses || Map()).set(
+            (latestWithdrawAddresses || Map<Token, List<string>>()).set(
                 token,
                 foundList.push(withdrawAddress),
             ),
@@ -309,7 +318,7 @@ const useNetworkContainer = () => {
             return;
         }
         return setWithdrawAddresses((latestWithdrawAddresses) =>
-            (latestWithdrawAddresses || Map()).set(
+            (latestWithdrawAddresses || Map<Token, List<string>>()).set(
                 token,
                 list.remove(foundIndex),
             ),
@@ -324,7 +333,10 @@ const useNetworkContainer = () => {
 
     const storeDarknodeName = (darknodeID: string, name: string) => {
         return setDarknodeNames((latestDarknodeNames) =>
-            (latestDarknodeNames || Map()).set(darknodeID, name),
+            (latestDarknodeNames || Map<string, string>()).set(
+                darknodeID,
+                name,
+            ),
         );
     };
 

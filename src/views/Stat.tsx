@@ -8,7 +8,7 @@ interface StatProps
         React.HTMLAttributes<HTMLDivElement>,
         HTMLDivElement
     > {
-    message: React.ReactNode;
+    message?: React.ReactNode;
     icon?: React.ReactNode;
     big?: boolean;
     nested?: boolean;
@@ -42,17 +42,19 @@ export const Stat = ({
         )}
     >
         <div className="hr" />
-        <div className="stat--title--outer">
-            <h2 className="stat--title">
-                {icon ? (
-                    <span className="stat--title--icon">{icon}</span>
+        {message ? (
+            <div className="stat--title--outer">
+                <h2 className="stat--title">
+                    {icon ? (
+                        <span className="stat--title--icon">{icon}</span>
+                    ) : null}
+                    <span>{message}</span>
+                </h2>
+                {infoLabel ? (
+                    <InfoLabel direction={"bottom"}>{infoLabel}</InfoLabel>
                 ) : null}
-                <span>{message}</span>
-            </h2>
-            {infoLabel ? (
-                <InfoLabel direction={"bottom"}>{infoLabel}</InfoLabel>
-            ) : null}
-        </div>
+            </div>
+        ) : null}
         <div
             className={classNames(
                 "stat--children",

@@ -27,6 +27,9 @@ type FeeData = {
     nodes: FeeNode[];
     epochs: FeeEpoch[];
     unassigned: Numeric;
+    reserved: {
+        fund: Numeric;
+    };
 };
 
 export const getClaimFeeForToken = (symbol: string, blockState: BlockState) => {
@@ -67,6 +70,8 @@ export const getFeeDataForToken = (symbol: string, blockState: BlockState) => {
     return data.fees as FeeData;
 };
 
+const DARKNODE_PAYOUT_PERCENT = 0.5; // 0.4287;
+
 export const getTokenFeeForEpoch = (
     symbol: string,
     epoch: "current" | "previous" | number,
@@ -74,7 +79,9 @@ export const getTokenFeeForEpoch = (
     perNode = false,
 ) => {
     if (epoch === "current") {
-        return getTokenUnassignedFees(symbol, blockState, perNode).div(2);
+        return getTokenUnassignedFees(symbol, blockState, perNode).times(
+            DARKNODE_PAYOUT_PERCENT,
+        );
     }
     const data = getFeeDataForToken(symbol, blockState);
     if (data === null) {
@@ -187,7 +194,9 @@ export const getNodePendingFee = (
     if (!exists) {
         return new BigNumber(0);
     }
-    return getTokenUnassignedFees(symbol, blockState, true).div(2); // 50% assigned to next epoch
+    return getTokenUnassignedFees(symbol, blockState, true).times(
+        DARKNODE_PAYOUT_PERCENT,
+    ); // 50% assigned to next epoch
 };
 
 export const getNodeClaimedFee = (
@@ -282,6 +291,20 @@ export const getFeesCollection = (
         let amount = new BigNumber(0);
         if (blockState !== null) {
             amount = getTokenFeeForEpoch(symbol, epoch, blockState);
+        }
+        const tokenAmount = toTokenAmount(amount, token.symbol, token.decimals);
+        return [symbol, tokenAmount];
+    });
+};
+
+export const getFundCollection = (blockState: BlockState | null) => {
+    return FeeTokens.mapEntries(([symbol, token]) => {
+        let amount = new BigNumber(0);
+        if (blockState !== null) {
+            const data = getFeeDataForToken(symbol, blockState);
+            if (data !== null) {
+                amount = new BigNumber(data.reserved.fund);
+            }
         }
         const tokenAmount = toTokenAmount(amount, token.symbol, token.decimals);
         return [symbol, tokenAmount];

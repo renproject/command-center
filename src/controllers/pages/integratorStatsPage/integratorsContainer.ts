@@ -126,15 +126,15 @@ const useIntegratorsContainer = () => {
     // const [search, setSearch] = useState("");
     const search: string = "";
 
-    const [integrators, setIntegrators] = useState<
+    const [integrators, setIntegrators] = useState(
         OrderedMap<
             number,
             | Array<{ now: Integrator; day: Integrator }>
             | null
             | undefined
             | string
-        >
-    >(OrderedMap());
+        >(),
+    );
     const currentPage = useMemo(
         () => (page !== null ? integrators.get(page) : page),
         [integrators, page],

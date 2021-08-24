@@ -5,10 +5,10 @@ import { useCallback, useState } from "react";
 import semver from "semver";
 import { createContainer } from "unstated-next";
 
-import { retryNTimes } from "../controllers/pages/renvmStatsPage/renvmContainer";
 import { useTaskSchedule } from "../hooks/useTaskSchedule";
 import { DEFAULT_REQUEST_TIMEOUT } from "../lib/react/environmentVariables";
 import { catchBackgroundException } from "../lib/react/errors";
+import { retryNTimes } from "../lib/retryNTimes";
 
 const DARKNODE_ENDPOINT =
     "https://api.github.com/repos/renproject/darknode-release/releases/latest";

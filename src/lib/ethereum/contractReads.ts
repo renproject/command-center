@@ -7,7 +7,6 @@ import Web3 from "web3";
 import { sha3, toChecksumAddress } from "web3-utils";
 
 import { updatePrices } from "../../controllers/common/tokenBalanceUtils";
-import { retryNTimes } from "../../controllers/pages/renvmStatsPage/renvmContainer";
 import { getLightnode } from "../../store/mapContainer";
 import { DarknodesState } from "../../store/networkContainer";
 import { darknodeIDHexToBase58 } from "../darknode/darknodeID";
@@ -18,6 +17,7 @@ import { Darknode, queryDarknode } from "../graphQL/queries/darknode";
 import { TokenAmount } from "../graphQL/queries/queries";
 import { RenVM } from "../graphQL/queries/renVM";
 import { catchBackgroundException } from "../react/errors";
+import { retryNTimes } from "../retryNTimes";
 import { getDarknodePayment, getDarknodeRegistry } from "./contract";
 import { getDarknodeStatus, isRegisteredInEpoch } from "./darknodeStatus";
 import { FeeTokens, Token, TokenPrices, TokenString } from "./tokens";
@@ -83,8 +83,13 @@ const retrieveDarknodesInLogs = async (
     renNetwork: RenNetworkDetails,
     fromBlock: string | number,
     operatorAddress: string,
-) => {
-    let darknodes = OrderedSet();
+): Promise<
+    OrderedSet<{ darknodeID: string; operator: string | undefined }>
+> => {
+    let darknodes = OrderedSet<{
+        darknodeID: string;
+        operator: string | undefined;
+    }>();
 
     /**
      * Sample log:
@@ -191,7 +196,10 @@ export const getOperatorDarknodes = async (
     reportProgress?: (progress: number, total: number) => void,
     onDarknode?: (darknodeID: string) => void,
 ): Promise<OrderedSet<string>> => {
-    let darknodes = OrderedSet();
+    let darknodes = OrderedSet<{
+        darknodeID: string;
+        operator: string | undefined;
+    }>();
 
     const darknodeRegistry = getDarknodeRegistry(web3, renNetwork);
 
@@ -209,31 +217,23 @@ export const getOperatorDarknodes = async (
     );
 
     const operatorPromises = darknodes
-        .map(
-            async ({
-                operator,
-                darknodeID,
-            }: {
-                operator: string;
-                darknodeID: string;
-            }) => {
-                if (operator) {
-                    return [darknodeID, operator];
-                } else {
-                    // For backwards compatibility.
-                    return [
-                        darknodeID,
-                        await retryNTimes(
-                            async () =>
-                                await darknodeRegistry.methods
-                                    .getDarknodeOperator(darknodeID)
-                                    .call(/**/),
-                            2,
-                        ),
-                    ] as [string, string];
-                }
-            },
-        )
+        .map(async ({ operator, darknodeID }) => {
+            if (operator) {
+                return [darknodeID, operator];
+            } else {
+                // For backwards compatibility.
+                return [
+                    darknodeID,
+                    await retryNTimes(
+                        async () =>
+                            await darknodeRegistry.methods
+                                .getDarknodeOperator(darknodeID)
+                                .call(/**/),
+                        2,
+                    ),
+                ] as [string, string];
+            }
+        })
         .toArray();
 
     let operatorDarknodes = OrderedSet<string>();

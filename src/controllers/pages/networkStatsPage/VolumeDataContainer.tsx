@@ -19,9 +19,9 @@ export const useVolumeData = () => {
     const type = TrackerVolumeType.Locked; // TODO: remove
     const { renVmTracker } = GraphClientContainer.useContainer();
 
-    const [volumeDataMap, setVolumeDataMap] = useState<
-        OrderedMap<PeriodOption, SnapshotRecords>
-    >(OrderedMap());
+    const [volumeDataMap, setVolumeDataMap] = useState(
+        OrderedMap<PeriodOption, SnapshotRecords>(),
+    );
     const [volumePeriod, setVolumePeriod] = useState<PeriodOption>(
         PeriodOption.ALL,
     );

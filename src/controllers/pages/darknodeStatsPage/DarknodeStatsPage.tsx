@@ -4,6 +4,7 @@ import React, { useEffect, useMemo } from "react";
 import {
     getAggregatedFeesCollection,
     getFeesCollection,
+    getFundCollection,
 } from "../../../lib/darknode/utils/feesUtils";
 import { isDefined } from "../../../lib/general/isDefined";
 import { multiplyTokenAmount } from "../../../lib/graphQL/queries/queries";
@@ -142,6 +143,9 @@ export const DarknodeStatsPage = () => {
         new BigNumber(0),
     );
     const totalFeesInUsdMerged = totalFeesRenVmInUsd.plus(totalFeesInUsd || 0);
+    const totalFeesMerged = fees
+        ? mergeFees(totalFeesRenVm, fees)
+        : totalFeesRenVm;
 
     const currentInUsd =
         currentCycle && pendingTotalInUsd.get(currentCycle, undefined);
@@ -201,128 +205,129 @@ export const DarknodeStatsPage = () => {
             ? mergeFees(previousNetwork, previousNetworkRenVm)
             : previousNetworkRenVm;
 
+    // Community fund
+    const fundCollection = updatePrices(
+        getFundCollection(blockState),
+        tokenPrices,
+    );
+    const fundCollectionInUsd = fundCollection.reduce(
+        (sum, entry) =>
+            entry.amountInUsd
+                ? new BigNumber(sum || 0).plus(entry.amountInUsd)
+                : sum,
+        undefined as BigNumber | undefined,
+    );
+
     return (
         <OverviewDiv className="overview container">
-            <Stats>
-                <Stat icon={<IconDarknodesOnline />} message="Darknodes online">
-                    <Stats>
-                        <Stat
-                            message="Registered"
-                            big
-                            infoLabel="The current number of registered Darknodes. The smaller number indicates the change in registrations last Epoch."
-                        >
-                            {isDefined(numberOfDarknodes) ? (
-                                <>
-                                    <span className="stat-amount--value">
-                                        {numberOfDarknodes.toFormat(0)}
-                                    </span>
-                                    {isDefined(numberOfDarknodesLastEpoch) ? (
-                                        <Change
-                                            className="stat--children--diff"
-                                            change={numberOfDarknodes
-                                                .minus(
-                                                    numberOfDarknodesLastEpoch,
-                                                )
-                                                .toNumber()}
-                                        />
-                                    ) : null}
-                                </>
-                            ) : (
-                                <Loading alt={true} />
-                            )}
-                        </Stat>
-                        <Stat
-                            message="Change next Epoch"
-                            big
-                            infoLabel="The change in registrations at the beginning of the next Epoch."
-                        >
-                            {isDefined(pendingRegistrations) &&
-                            isDefined(pendingDeregistrations) ? (
-                                <>
+            <Stat icon={<IconDarknodesOnline />} message="Darknodes online">
+                <Stats>
+                    <Stat
+                        message="Registered"
+                        big
+                        infoLabel="The current number of registered Darknodes. The smaller number indicates the change in registrations last Epoch."
+                    >
+                        {isDefined(numberOfDarknodes) ? (
+                            <>
+                                <span className="stat-amount--value">
+                                    {numberOfDarknodes.toFormat(0)}
+                                </span>
+                                {isDefined(numberOfDarknodesLastEpoch) ? (
                                     <Change
-                                        change={pendingRegistrations
-                                            .minus(pendingDeregistrations)
+                                        className="stat--children--diff"
+                                        change={numberOfDarknodes
+                                            .minus(numberOfDarknodesLastEpoch)
                                             .toNumber()}
                                     />
-                                    <Change
-                                        className="stat--children--diff positive"
-                                        prefix={"+"}
-                                        change={pendingRegistrations.toNumber()}
-                                    />
-                                    <Change
-                                        className="stat--children--diff negative"
-                                        prefix={
-                                            pendingDeregistrations.isZero()
-                                                ? "-"
-                                                : ""
-                                        }
-                                        change={new BigNumber(0)
-                                            .minus(pendingDeregistrations)
-                                            .toNumber()}
-                                    />
-                                </>
-                            ) : (
-                                <Loading alt={true} />
-                            )}
-                        </Stat>
-                        <Stat
-                            message="% Ren Bonded"
-                            big
-                            infoLabel="Each Darknode is required to bond 100,000K REN to encourage good behavior. This number represents the percentage of the total amount of REN (1B) which is currently bonded."
-                        >
-                            {isDefined(percent) ? (
-                                <>{percent}%</>
-                            ) : (
-                                <Loading alt={true} />
-                            )}
-                        </Stat>
-                    </Stats>
-                </Stat>
-                <Stat icon={<IconIncome />} message="Network rewards">
-                    <Stats>
-                        {/* <FeesStat
-                            fees={updatedFees}
-                            feesInUsd={totalFees}
-                            message="Total network fees"
-                            infoLabel="The fees paid to the network across all epochs."
-                            quoteCurrency={quoteCurrency}
-                        /> */}
-                        <Stat
-                            message="Total network fees"
-                            big
-                            infoLabel="The fees paid to the network across all epochs, using the USD price at the time of the mint or burn."
-                            style={{ flexBasis: "0", flexGrow: 3 }}
-                        >
-                            {Boolean(totalFeesInUsdMerged) ? (
-                                <>
-                                    <CurrencyIcon currency={quoteCurrency} />
-                                    <ConvertCurrency
-                                        from={Currency.USD}
-                                        to={quoteCurrency}
-                                        amount={totalFeesInUsdMerged}
-                                    />
-                                </>
-                            ) : (
-                                <Loading alt={true} />
-                            )}
-                        </Stat>
-                        <FeesStat
-                            fees={previousNetworkMerged}
-                            feesInUsd={previousNetworkInUsdMerged}
-                            message="Last cycle"
-                            infoLabel="The amount of rewards earned by the entire network of Darknodes in the last Epoch."
-                            quoteCurrency={quoteCurrency}
-                        />
-                        <FeesStat
-                            fees={currentNetworkMerged}
-                            feesInUsd={currentNetworkInUsdMerged}
-                            message="Current cycle"
-                            infoLabel="Rewards earned in this current Epoch so far by the entire Darknode network."
-                            quoteCurrency={quoteCurrency}
-                        />
-                    </Stats>
-                </Stat>
-            </Stats>
+                                ) : null}
+                            </>
+                        ) : (
+                            <Loading alt={true} />
+                        )}
+                    </Stat>
+                    <Stat
+                        message="Change next Epoch"
+                        big
+                        infoLabel="The change in registrations at the beginning of the next Epoch."
+                    >
+                        {isDefined(pendingRegistrations) &&
+                        isDefined(pendingDeregistrations) ? (
+                            <>
+                                <Change
+                                    change={pendingRegistrations
+                                        .minus(pendingDeregistrations)
+                                        .toNumber()}
+                                />
+                                <Change
+                                    className="stat--children--diff positive"
+                                    prefix={"+"}
+                                    change={pendingRegistrations.toNumber()}
+                                />
+                                <Change
+                                    className="stat--children--diff negative"
+                                    prefix={
+                                        pendingDeregistrations.isZero()
+                                            ? "-"
+                                            : ""
+                                    }
+                                    change={new BigNumber(0)
+                                        .minus(pendingDeregistrations)
+                                        .toNumber()}
+                                />
+                            </>
+                        ) : (
+                            <Loading alt={true} />
+                        )}
+                    </Stat>
+                    <Stat
+                        message="% Ren Bonded"
+                        big
+                        infoLabel="Each Darknode is required to bond 100,000K REN to encourage good behavior. This number represents the percentage of the total amount of REN (1B) which is currently bonded."
+                    >
+                        {isDefined(percent) ? (
+                            <>{percent}%</>
+                        ) : (
+                            <Loading alt={true} />
+                        )}
+                    </Stat>
+                </Stats>
+            </Stat>
+            <Stat icon={<IconIncome />} message="Network rewards">
+                <Stats style={{ flexWrap: "wrap" }}>
+                    <FeesStat
+                        fees={totalFeesMerged}
+                        feesInUsd={totalFeesInUsdMerged}
+                        message="Total network fees"
+                        infoLabel="The fees paid to the network across all epochs, using the USD price at the time of the mint or burn."
+                        quoteCurrency={quoteCurrency}
+                        dark={true}
+                    />
+                    <FeesStat
+                        fees={fundCollection}
+                        feesInUsd={fundCollectionInUsd}
+                        message="Community fund"
+                        infoLabel="7.5% of rewards are collected towards a fund controlled by the Ren community."
+                        quoteCurrency={quoteCurrency}
+                        dark={true}
+                    />
+                    <FeesStat
+                        fees={previousNetworkMerged}
+                        feesInUsd={previousNetworkInUsdMerged}
+                        message="Last cycle"
+                        infoLabel="The amount of rewards earned by the entire network of Darknodes in the last Epoch."
+                        quoteCurrency={quoteCurrency}
+                        dark={true}
+                    />
+                    <FeesStat
+                        fees={currentNetworkMerged}
+                        feesInUsd={currentNetworkInUsdMerged}
+                        message="Current cycle"
+                        infoLabel="Rewards earned in this current Epoch so far by the entire Darknode network."
+                        quoteCurrency={quoteCurrency}
+                        dark={true}
+                    />
+                </Stats>
+            </Stat>
             <div className="overview--bottom">
                 <DarknodeMap darknodes={darknodes} />
                 <Stats className="overview--bottom--right">

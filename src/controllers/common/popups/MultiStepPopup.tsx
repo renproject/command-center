@@ -1,4 +1,4 @@
-import { Asset } from "@renproject/interfaces";
+import { RenNetworkDetails } from "@renproject/contracts";
 import { Loading } from "@renproject/react-components";
 import { List, Map } from "immutable";
 import React, { useEffect, useState } from "react";
@@ -15,9 +15,12 @@ import { PopupContainer } from "../../../store/popupContainer";
 import { Web3Container } from "../../../store/web3Container";
 import Warn from "../../../styles/images/warn.svg";
 import { ExternalLink } from "../../../views/ExternalLink";
-import { txUrl } from "../../pages/renvmStatsPage/RenVMTransaction";
 import { Popup } from "./Popup";
 import { PopupError } from "./PopupController";
+
+export const txUrl = (txHash: string, network: RenNetworkDetails): string => {
+    return `${network.etherscan}/tx/${txHash}`;
+};
 
 interface Props {
     steps: Array<{
@@ -289,11 +292,7 @@ export const MultiStepPopup: React.FC<Props> = ({
                                                 right: 0,
                                                 position: "absolute",
                                             }}
-                                            href={txUrl(
-                                                txHash,
-                                                Asset.ETH,
-                                                renNetwork,
-                                            )}
+                                            href={txUrl(txHash, renNetwork)}
                                         >
                                             View in Explorer
                                         </ExternalLink>
@@ -307,9 +306,7 @@ export const MultiStepPopup: React.FC<Props> = ({
                 ) : (
                     <>
                         {lastTxHash ? (
-                            <ExternalLink
-                                href={txUrl(lastTxHash, Asset.ETH, renNetwork)}
-                            >
+                            <ExternalLink href={txUrl(lastTxHash, renNetwork)}>
                                 View in Explorer
                             </ExternalLink>
                         ) : (

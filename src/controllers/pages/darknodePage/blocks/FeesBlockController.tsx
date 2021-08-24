@@ -222,11 +222,17 @@ export const FeesBlockController: React.FC<Props> = ({
 
     let summedPendingRewards = OrderedMap<string, TokenAmount | null>();
     if (previousCycle && showPreviousPending) {
-        pendingRewards.get(previousCycle, OrderedMap());
+        pendingRewards.get(
+            previousCycle,
+            OrderedMap<string, TokenAmount | null>(),
+        );
         // summedPendingRewards = OrderedMap();
     }
     if (currentCycle && showCurrentPending) {
-        summedPendingRewards = pendingRewards.get(currentCycle, OrderedMap());
+        summedPendingRewards = pendingRewards.get(
+            currentCycle,
+            OrderedMap<string, TokenAmount | null>(),
+        );
     }
     if (
         previousCycle &&
@@ -235,8 +241,14 @@ export const FeesBlockController: React.FC<Props> = ({
         showCurrentPending
     ) {
         summedPendingRewards = mergeFees(
-            pendingRewards.get(previousCycle, OrderedMap()),
-            pendingRewards.get(currentCycle, OrderedMap()),
+            pendingRewards.get(
+                previousCycle,
+                OrderedMap<string, TokenAmount | null>(),
+            ),
+            pendingRewards.get(
+                currentCycle,
+                OrderedMap<string, TokenAmount | null>(),
+            ),
         );
     }
 

@@ -195,9 +195,7 @@ const useMapContainer = () => {
     const { renNetwork: network } = Web3Container.useContainer();
 
     // eslint-disable-next-line prefer-const
-    let [darknodes, setDarknodes] = useState<Map<string, DarknodeLocation>>(
-        Map(),
-    );
+    let [darknodes, setDarknodes] = useState(Map<string, DarknodeLocation>());
     const sessionMapCount = useRef(0);
     const [darknodeCount, setDarknodeCount] = useState<number | null>(null);
     const getLocation = async (ip: string): Promise<Location | null> => {

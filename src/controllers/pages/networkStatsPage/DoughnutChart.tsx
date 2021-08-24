@@ -8,7 +8,6 @@ import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
 import React from "react";
 import { Doughnut } from "react-chartjs-2";
-import { unifyTokenRecords } from "../../../lib/general/debugUtils";
 import { BigNumberRecord } from "../../../lib/graphQL/queries/renVmTracker";
 import { SimpleTable } from "../../../views/SimpleTable";
 
