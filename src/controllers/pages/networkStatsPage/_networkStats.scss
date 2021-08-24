@@ -478,3 +478,20 @@
     margin: 0 auto;
     font-size: 14px;
 }
+
+.fee-row {
+    margin: 3px 0;
+    &--chain{
+        display: flex;
+        align-items: center;
+    }
+    &--icon-wrapper{
+        display: flex;
+        align-items: center;
+        width: 30px
+    }
+    &--icon{
+        margin-right: 0!important;
+        width: 25px!important;
+    }
+}

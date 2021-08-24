@@ -22,7 +22,7 @@ export enum TrackerChain {
     Arbitrum = "Arbitrum",
 }
 
-const allTrackedChains: Array<TrackerChain> = [
+export const allTrackedChains: Array<TrackerChain> = [
     TrackerChain.Ethereum,
     TrackerChain.BinanceSmartChain,
     TrackerChain.Fantom,
