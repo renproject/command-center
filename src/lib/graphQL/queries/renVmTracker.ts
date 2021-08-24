@@ -19,6 +19,7 @@ export enum TrackerChain {
     Fantom = "Fantom",
     Avalanche = "Avalanche",
     Solana = "Solana",
+    Arbitrum = "Arbitrum",
 }
 
 export const allTrackedChains: Array<TrackerChain> = [
@@ -28,6 +29,7 @@ export const allTrackedChains: Array<TrackerChain> = [
     TrackerChain.Polygon,
     TrackerChain.Avalanche,
     TrackerChain.Solana,
+    TrackerChain.Arbitrum,
 ];
 
 export const chainOptionToTrackerChain = (chain: ChainOption) => {
@@ -44,6 +46,8 @@ export const chainOptionToTrackerChain = (chain: ChainOption) => {
             return TrackerChain.Avalanche;
         case ChainOption.Solana:
             return TrackerChain.Solana;
+        case ChainOption.Arbitrum:
+            return TrackerChain.Arbitrum;
         default:
             return TrackerChain.Ethereum;
     }
