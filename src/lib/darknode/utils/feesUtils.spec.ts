@@ -102,7 +102,7 @@ describe("fees", () => {
     describe("gets token fee data", () => {
         test("current epoch", () => {
             const reward = getTokenFeeForEpoch("BTC", "current", blockState);
-            expect(reward.toNumber()).to.equal(25000000);
+            expect(reward.toNumber()).to.equal(23217500);
         });
 
         test("previous epoch", () => {
@@ -127,7 +127,7 @@ describe("fees", () => {
                 blockState,
                 true,
             );
-            expect(reward.toNumber()).to.equal(2500000);
+            expect(reward.toNumber()).to.equal(2321750);
         });
 
         test("current epoch as TokenAmount", () => {
@@ -135,7 +135,7 @@ describe("fees", () => {
             const amounts = getTokenFeeAmounts(reward, "BTC", 8, null);
             expect(unify(amounts)).to.eql(
                 unify({
-                    amount: 25000000,
+                    amount: 23217500,
                     amountInUsd: 0,
                     amountInEth: 0,
                     symbol: "BTC",
@@ -334,7 +334,7 @@ describe("node fees - aggregations", () => {
                 blockState,
                 "pending",
             );
-            expect(unify(result.get("BTC" as Token)).amount).to.eql(2500000);
+            expect(unify(result.get("BTC" as Token)).amount).to.eql(2321750);
             expect(unify(result.get("ZEC" as Token)).amount).to.eql(0);
         });
 
@@ -344,7 +344,7 @@ describe("node fees - aggregations", () => {
                 blockState,
                 "pending",
             );
-            expect(unify(result.get("BTC" as Token)).amount).to.eql(2500000);
+            expect(unify(result.get("BTC" as Token)).amount).to.eql(2321750);
             expect(unify(result.get("ZEC" as Token)).amount).to.eql(0);
         });
     });

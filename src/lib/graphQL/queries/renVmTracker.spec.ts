@@ -1,35 +1,29 @@
+import { RenNetwork } from "@renproject/interfaces";
+import { Currency } from "@renproject/react-components";
+import { OrderedMap, Map } from "immutable";
+import { Token } from "../../ethereum/tokens";
 import { PeriodOption } from "../volumes";
 
 import { renVmTrackerMock } from "./mocks/renvm-tracker.mock";
 import {
     buildRenVmTrackerQuery,
     getResolutionEndTimestamp,
-    getResolutionPoints,
     snapshotDataToVolumeData,
     SnapshotRecords,
     TrackerChain,
     TrackerVolumeType,
 } from "./renVmTracker";
 
-const snapshotData = renVmTrackerMock.data as SnapshotRecords;
+const snapshotData = renVmTrackerMock.data as any as SnapshotRecords;
 
 describe("tracker utils", () => {
-    xit("generates query", () => {
+    it("generates query", () => {
         const result = buildRenVmTrackerQuery(
-            TrackerVolumeType.Transacted,
-            PeriodOption.DAY,
+            PeriodOption.ALL,
+            RenNetwork.Mainnet,
         );
 
-        expect(result).toEqual("x");
-    });
-
-    it("generates resolution points", () => {
-        expect(getResolutionPoints(PeriodOption.HOUR)).toEqual(45);
-        expect(getResolutionPoints(PeriodOption.DAY)).toEqual(48);
-        expect(getResolutionPoints(PeriodOption.WEEK)).toEqual(84);
-        expect(getResolutionPoints(PeriodOption.MONTH)).toEqual(62);
-        expect(getResolutionPoints(PeriodOption.YEAR)).toEqual(73);
-        // expect(getResolutionPoints(PeriodType.ALL)).toEqual(71);
+        expect(result).toBeTruthy();
     });
 
     it("calcualtes end timestamp", () => {
@@ -40,10 +34,17 @@ describe("tracker utils", () => {
     });
 
     it("maps", () => {
-        // const result = snapshotDataToVolumeData(
-        //     snapshotData,
-        //     TrackerType.Volume,
-        //     TrackerChain.Ethereum,
-        // );
+        const result = snapshotDataToVolumeData(
+            snapshotData,
+            TrackerVolumeType.Locked,
+            TrackerChain.Ethereum,
+            Currency.USD,
+            OrderedMap<Token, Map<Currency, number>>().set(
+                Token.BTC,
+                Map<Currency, number>().set(Currency.USD, 1),
+            ),
+        );
+
+        expect(result.difference.toFixed()).toEqual("712723205.72");
     });
 });

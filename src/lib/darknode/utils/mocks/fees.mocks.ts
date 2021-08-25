@@ -5,7 +5,7 @@ export const partialFees = {
             amount: "1263406574",
             amountInEth: "5.804930484386976444",
             amountInUsd: "5298.92",
-            asset: { __typename: "Asset", decimals: 8 },
+            asset: { __typename: "Asset", decimals: "8" },
             symbol: "renBCH",
         },
     ],

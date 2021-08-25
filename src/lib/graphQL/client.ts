@@ -32,8 +32,8 @@ export const polygonSubgraphUrl = (renNetwork: RenNetworkDetails) => {
 // TODO: make network dependant
 export const renVmTrackerUrl = (renNetwork: RenNetworkDetails) => {
     return renNetwork.name === "mainnet"
-        ? `https://renvm-tracker.herokuapp.com/`
-        : `https://renvm-tracker-testnet.herokuapp.com/`;
+        ? `https://stats.renproject.io/`
+        : `https://stats-testnet.renproject.io/`;
 };
 
 export const apolloClient = (graphUrl: string, cache?: any) => {
@@ -46,7 +46,7 @@ export const apolloClient = (graphUrl: string, cache?: any) => {
     client.defaultOptions.query = {
         fetchPolicy: "no-cache",
     };
-    return (client as unknown) as ApolloClientInterface<object>;
+    return client as unknown as ApolloClientInterface<object>;
 };
 
 export const apolloClientWithCache = (graphUrl: string) => {
@@ -59,5 +59,5 @@ export const apolloClientWithCache = (graphUrl: string) => {
     client.defaultOptions.query = {
         fetchPolicy: "cache-first",
     };
-    return (client as unknown) as ApolloClientInterface<object>;
+    return client as unknown as ApolloClientInterface<object>;
 };
