@@ -32,7 +32,7 @@ export const polygonSubgraphUrl = (renNetwork: RenNetworkDetails) => {
 // TODO: make network dependant
 export const renVmTrackerUrl = (renNetwork: RenNetworkDetails) => {
     return renNetwork.name === "mainnet"
-        ? `https://stats.renproject.io/`
+        ? `https://renvm-tracker-staging.herokuapp.com/`
         : `https://stats-testnet.renproject.io/`;
 };
 

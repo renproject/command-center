@@ -69,7 +69,7 @@ type SnapshotAssetData = {
 };
 
 type Snapshot = {
-    id: string;
+    _id: string;
     timestamp: number;
     locked: Array<SnapshotAmount>;
     volume: Array<SnapshotAmount>;
@@ -109,7 +109,7 @@ const FRAGMENT_VOLUME_FIELDS = `
 
 const VOLUMES_FRAGMENT = `
     fragment VolumesSnapshot on Snapshot {
-        id
+        _id
         timestamp
         volume {
             ${FRAGMENT_VOLUME_FIELDS}
@@ -159,7 +159,7 @@ export const buildRenVmTrackerQuery = (
         ${VOLUMES_FRAGMENT}
         query GetSnapshots {
             assets: Snapshot(timestamp: "${endTimestamp}"){
-                id,
+                _id,
                 timestamp,
                 prices {
                     asset,
