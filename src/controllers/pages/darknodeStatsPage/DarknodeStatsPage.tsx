@@ -1,4 +1,4 @@
-import { Currency, CurrencyIcon, Loading } from "@renproject/react-components";
+import { Loading } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import React, { useEffect, useMemo } from "react";
 import {
@@ -20,7 +20,6 @@ import { DarknodeMap } from "../../../views/darknodeMap/DarknodeMap";
 import { EpochProgress } from "../../../views/EpochProgress";
 import { ExternalLink } from "../../../views/ExternalLink";
 import { Stat, Stats } from "../../../views/Stat";
-import { ConvertCurrency } from "../../common/TokenBalance";
 import { updatePrices } from "../../common/tokenBalanceUtils";
 import { mergeFees } from "../darknodePage/blocks/FeesBlockController";
 import { OverviewDiv } from "./DarknodeStatsStyles";
@@ -51,10 +50,8 @@ export const DarknodeStatsPage = () => {
         tokenPrices,
         fetchBlockState,
     } = NetworkContainer.useContainer();
-    const {
-        latestCLIVersion,
-        latestCLIVersionDaysAgo,
-    } = GithubAPIContainer.useContainer();
+    const { latestCLIVersion, latestCLIVersionDaysAgo } =
+        GithubAPIContainer.useContainer();
 
     const { renNetwork } = Web3Container.useContainer();
     const { darknodes, fetchDarknodes } = MapContainer.useContainer();
@@ -86,28 +83,30 @@ export const DarknodeStatsPage = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [renNetwork && renNetwork.name]);
 
-    const currentNetworkRenVM = updatePrices(
-        getFeesCollection("current", blockState),
-        tokenPrices,
-    );
-    const currentNetworkRenVmInUsd = currentNetworkRenVM.reduce(
-        (sum, entry) =>
-            entry.amountInUsd
-                ? new BigNumber(sum || 0).plus(entry.amountInUsd)
-                : sum,
-        undefined as BigNumber | undefined,
-    );
-    const previousNetworkRenVm = updatePrices(
-        getFeesCollection("previous", blockState),
-        tokenPrices,
-    );
-    const previousNetworkRenVmInUsd = previousNetworkRenVm.reduce(
-        (sum, entry) =>
-            entry.amountInUsd
-                ? new BigNumber(sum || 0).plus(entry.amountInUsd)
-                : sum,
-        undefined as BigNumber | undefined,
-    );
+    const currentNetworkRenVM = blockState
+        ? updatePrices(getFeesCollection("current", blockState), tokenPrices)
+        : null;
+    const currentNetworkRenVmInUsd = currentNetworkRenVM
+        ? currentNetworkRenVM.reduce(
+              (sum, entry) =>
+                  entry.amountInUsd
+                      ? new BigNumber(sum || 0).plus(entry.amountInUsd)
+                      : sum,
+              undefined as BigNumber | undefined,
+          )
+        : currentNetworkRenVM;
+    const previousNetworkRenVm = blockState
+        ? updatePrices(getFeesCollection("previous", blockState), tokenPrices)
+        : null;
+    const previousNetworkRenVmInUsd = previousNetworkRenVm
+        ? previousNetworkRenVm.reduce(
+              (sum, entry) =>
+                  entry.amountInUsd
+                      ? new BigNumber(sum || 0).plus(entry.amountInUsd)
+                      : sum,
+              undefined as BigNumber | undefined,
+          )
+        : null;
 
     const current =
         (isDefined(currentCycle) &&
@@ -133,19 +132,23 @@ export const DarknodeStatsPage = () => {
               new BigNumber(0),
           )
         : null;
-    const totalFeesRenVm = updatePrices(
-        getAggregatedFeesCollection(blockState),
-        tokenPrices,
-    );
+    const totalFeesRenVm = blockState
+        ? updatePrices(getAggregatedFeesCollection(blockState), tokenPrices)
+        : null;
 
-    const totalFeesRenVmInUsd = totalFeesRenVm.reduce(
-        (sum, feeItem) => sum.plus(feeItem.amountInUsd),
-        new BigNumber(0),
-    );
-    const totalFeesInUsdMerged = totalFeesRenVmInUsd.plus(totalFeesInUsd || 0);
-    const totalFeesMerged = fees
-        ? mergeFees(totalFeesRenVm, fees)
-        : totalFeesRenVm;
+    const totalFeesRenVmInUsd = totalFeesRenVm
+        ? totalFeesRenVm.reduce(
+              (sum, feeItem) => sum.plus(feeItem.amountInUsd),
+              new BigNumber(0),
+          )
+        : null;
+    const totalFeesInUsdMerged = totalFeesRenVmInUsd
+        ? totalFeesRenVmInUsd.plus(totalFeesInUsd || 0)
+        : null;
+    const totalFeesMerged =
+        fees && totalFeesRenVm
+            ? mergeFees(totalFeesRenVm, fees)
+            : totalFeesRenVm;
 
     const currentInUsd =
         currentCycle && pendingTotalInUsd.get(currentCycle, undefined);
@@ -196,27 +199,28 @@ export const DarknodeStatsPage = () => {
     );
 
     const currentNetworkMerged =
-        currentNetwork !== undefined
+        currentNetwork && currentNetworkRenVM
             ? mergeFees(currentNetwork, currentNetworkRenVM)
             : currentNetworkRenVM;
 
     const previousNetworkMerged =
-        previousNetwork !== undefined
+        previousNetwork && previousNetworkRenVm
             ? mergeFees(previousNetwork, previousNetworkRenVm)
             : previousNetworkRenVm;
 
     // Community fund
-    const fundCollection = updatePrices(
-        getFundCollection(blockState),
-        tokenPrices,
-    );
-    const fundCollectionInUsd = fundCollection.reduce(
-        (sum, entry) =>
-            entry.amountInUsd
-                ? new BigNumber(sum || 0).plus(entry.amountInUsd)
-                : sum,
-        undefined as BigNumber | undefined,
-    );
+    const fundCollection = blockState
+        ? updatePrices(getFundCollection(blockState), tokenPrices)
+        : null;
+    const fundCollectionInUsd = fundCollection
+        ? fundCollection.reduce(
+              (sum, entry) =>
+                  entry.amountInUsd
+                      ? new BigNumber(sum || 0).plus(entry.amountInUsd)
+                      : sum,
+              null as BigNumber | null,
+          )
+        : null;
 
     return (
         <OverviewDiv className="overview container">

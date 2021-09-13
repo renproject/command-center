@@ -59,18 +59,19 @@ export const updateVolumeData = (
         return updateData;
     }
     const newSnapshot = Object.values(updateData)[0];
-    const oldCount = Object.keys(oldData).length;
+    const snapshots = getSnapshots(oldData);
+    const { last } = getFirstAndLastSnapshot(snapshots);
+
+    // Replace last snapshot with new snapshot, to avoid the volume graphs
+    // stretching at the far-right of the graphs.
     const newData = {
         ...oldData,
         [`s${newSnapshot.timestamp}`]: newSnapshot,
     };
-    const newCount = Object.keys(newData).length;
-    //preserve data size
-    if (newCount > oldCount) {
-        const snapshots = getSnapshots(oldData);
-        const { first } = getFirstAndLastSnapshot(snapshots);
-        delete newData[`s${first.timestamp}`];
+    if (newSnapshot.timestamp !== last.timestamp) {
+        delete newData[`s${last.timestamp}`];
     }
+
     return newData;
 };
 
@@ -141,9 +142,8 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
             let series: Array<[number, number]> = [];
             if (!volumeLoading && tokenPrices) {
                 if (chainOptionInner !== ChainOption.All) {
-                    const trackerChain = chainOptionToTrackerChain(
-                        chainOptionInner,
-                    );
+                    const trackerChain =
+                        chainOptionToTrackerChain(chainOptionInner);
                     series = snapshotDataToTimeSeries(
                         volumeData,
                         trackerType,
