@@ -20,7 +20,7 @@ import { catchBackgroundException } from "../react/errors";
 import { retryNTimes } from "../retryNTimes";
 import { getDarknodePayment, getDarknodeRegistry } from "./contract";
 import { getDarknodeStatus, isRegisteredInEpoch } from "./darknodeStatus";
-import { FeeTokens, Token, TokenPrices, TokenString } from "./tokens";
+import { Token, TokenPrices, TokenString } from "./tokens";
 
 export const NULL = "0x0000000000000000000000000000000000000000";
 

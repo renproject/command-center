@@ -48,21 +48,27 @@ import { ReactComponent as IconCheckCircle } from "../../../../styles/images/ico
 import { FeesBlock } from "../../../../views/darknodeBlocks/FeesBlock";
 import { Popup } from "../../../common/popups/Popup";
 import { updatePrices } from "../../../common/tokenBalanceUtils";
-import Chains from "@renproject/chains";
+import {
+    Bitcoin,
+    Zcash,
+    BitcoinCash,
+    Dogecoin,
+    DigiByte,
+} from "@renproject/chains-bitcoin";
+import { Filecoin } from "@renproject/chains-filecoin";
+import { Terra } from "@renproject/chains-terra";
 import { ExternalLink } from "../../../../views/ExternalLink";
 import { DEV_TOOLS } from "../../../../lib/react/environmentVariables";
 import { EncodedData, Encodings } from "../../../../lib/general/encodedData";
 
 const chainMap = {
-    [Token.ETH]: Chains.Ethereum,
-    [Token.REN]: Chains.Ethereum,
-    [Token.BTC]: Chains.Bitcoin,
-    [Token.ZEC]: Chains.Zcash,
-    [Token.BCH]: Chains.BitcoinCash,
-    [Token.FIL]: Chains.Filecoin,
-    [Token.LUNA]: Chains.Terra,
-    [Token.DOGE]: Chains.Dogecoin,
-    [Token.DGB]: Chains.DigiByte,
+    [Token.BTC]: Bitcoin,
+    [Token.ZEC]: Zcash,
+    [Token.BCH]: BitcoinCash,
+    [Token.FIL]: Filecoin,
+    [Token.LUNA]: Terra,
+    [Token.DOGE]: Dogecoin,
+    [Token.DGB]: DigiByte,
 };
 
 const validateAddress = (token: string, address: string, network: string) => {
