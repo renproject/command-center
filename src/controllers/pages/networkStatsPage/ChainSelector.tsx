@@ -66,7 +66,7 @@ export const ChainIconName: Record<ChainOption, string> = {
     [ChainOption.Polygon]: "PolygonChain",
     [ChainOption.Avalanche]: "AvalancheChain",
     [ChainOption.Solana]: "SolanaChain",
-    [ChainOption.Arbitrum]: "Arbitrum",
+    [ChainOption.Arbitrum]: "ArbitrumChain",
 };
 
 export const availableChains: Array<ChainOption> = [
@@ -77,7 +77,7 @@ export const availableChains: Array<ChainOption> = [
     ChainOption.Polygon,
     ChainOption.Avalanche,
     ChainOption.Solana,
-    // ChainOption.Arbitrum,
+    ChainOption.Arbitrum,
 ];
 
 const ChainDotDiv = styled.div`
@@ -114,6 +114,10 @@ const ChainSelelectorWrapper = styled.div`
     display: flex;
     flex-wrap: wrap;
     margin: 0 -5px;
+    @media (max-width: 768px) {
+        justify-content: center !important;
+        margin-bottom: 20px;
+    }
 `;
 
 const ChainButton = ({

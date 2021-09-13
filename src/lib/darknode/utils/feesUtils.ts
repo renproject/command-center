@@ -302,7 +302,7 @@ export const getFundCollection = (blockState: BlockState | null) => {
         let amount = new BigNumber(0);
         if (blockState !== null) {
             const data = getFeeDataForToken(symbol, blockState);
-            if (data !== null) {
+            if (data && data.reserved) {
                 amount = new BigNumber(data.reserved.fund);
             }
         }

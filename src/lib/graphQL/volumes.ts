@@ -16,15 +16,12 @@ export enum VolumeNetwork {
     Ethereum = "Ethereum",
     EthereumTestnet = "EthereumTestnet",
     BSC = "BSC",
-    BSCTestnet = "BSCTestnet",
     Fantom = "Fantom",
     Polygon = "Polygon",
 }
 
 const getNetworkStart = (volumeNetwork: VolumeNetwork) => {
     switch (volumeNetwork) {
-        case VolumeNetwork.BSCTestnet:
-            return "2020-11-03T00+00";
         case VolumeNetwork.BSC:
             return "2021-02-11T00+00";
         case VolumeNetwork.EthereumTestnet:
@@ -52,7 +49,7 @@ export const tokenArrayToMap = <T extends { symbol: string }>(
 
 export const getPeriodTimespan = (
     type: string,
-    volumeNetwork: VolumeNetwork = VolumeNetwork.Ethereum,
+    volumeNetwork: VolumeNetwork,
 ): number => {
     const minutes = 60; // 60 seconds
     const hours = 60 * minutes;
