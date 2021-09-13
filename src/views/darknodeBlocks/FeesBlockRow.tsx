@@ -33,7 +33,7 @@ interface FeesWithdrawalProps {
     minimumClaimAmount?: BigNumber;
 }
 
-export const FeesWithdrawal: React.FC<FeesWithdrawalProps> = ({
+const FeesWithdrawal: React.FC<FeesWithdrawalProps> = ({
     token,
     amount,
     disabled,

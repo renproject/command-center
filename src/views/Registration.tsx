@@ -6,7 +6,7 @@ import { RegistrationStatus } from "../lib/ethereum/contractReads";
 import { classNames } from "../lib/react/className";
 import { StatusDot, StatusDotColor } from "../views/StatusDot";
 
-export const statusText = {
+const statusText = {
     [RegistrationStatus.Unknown]: "Loading...",
     [RegistrationStatus.Unregistered]: "Deregistered",
     [RegistrationStatus.RegistrationPending]: "Registration pending",

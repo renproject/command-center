@@ -33,7 +33,7 @@ export const NULL = "0x0000000000000000000000000000000000000000";
  *
  * @param hex The string to remove "0x" from.
  */
-export const strip0x = (hex: string): string =>
+const strip0x = (hex: string): string =>
     hex.substring(0, 2) === "0x" ? hex.slice(2) : hex;
 
 /**
@@ -259,40 +259,6 @@ export const getOperatorDarknodes = async (
     }
 
     return operatorDarknodes;
-};
-
-// ////////////////////////////////////////////////////////////////////////// //
-// Darknode Payment contract //////////////////////////////////////////////// //
-// ////////////////////////////////////////////////////////////////////////// //
-
-// Sum up fees into the total ETH value (in wei).
-export const sumUpFeeMap = (
-    feesEarned: OrderedMap<Token, TokenAmount | null>,
-    tokenPrices: TokenPrices,
-): [BigNumber | null] => {
-    // let totalEth: BigNumber | null = null;
-
-    const feesEarnedInEth = FeeTokens.map((tokenDetails, token) => {
-        const price = tokenPrices.get(token, undefined);
-        const decimals = tokenDetails
-            ? new BigNumber(tokenDetails.decimals.toString()).toNumber()
-            : 0;
-        const tokenFees = feesEarned.get(token, null);
-        return tokenFees
-            ? tokenFees.amount
-                  .div(Math.pow(10, decimals))
-                  .multipliedBy(price ? price.get(Currency.ETH, 0) : 0)
-            : tokenFees;
-    });
-
-    const totalEth = feesEarnedInEth.reduce((acc, inEth) => {
-        return inEth ? (acc || new BigNumber(0)).plus(inEth) : acc;
-    }, null as BigNumber | null);
-
-    // Convert to wei
-    return [
-        totalEth ? totalEth.multipliedBy(new BigNumber(10).pow(18)) : totalEth,
-    ];
 };
 
 // ////////////////////////////////////////////////////////////////////////// //

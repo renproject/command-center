@@ -25,11 +25,6 @@ export const stringTo43APaddedString = (value: string) => {
     return value.padEnd(43, "A");
 };
 
-export const hexStringToBase64String = (value: string) => {
-    const buffer = new EncodedData(value, Encodings.HEX).toBuffer();
-    return sanitizeBase64String(buffer.toString("base64"));
-};
-
 export const base64StringToHexString = (value: string) => {
     const buffer = new EncodedData(value, Encodings.BASE64).toBuffer();
     return sanitizeBase64String(buffer.toString("hex"));

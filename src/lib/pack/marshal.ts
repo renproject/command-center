@@ -9,7 +9,7 @@ import {
     TypedPackValue,
 } from "./pack";
 
-export const marshalPackType = (type: PackType) => {
+const marshalPackType = (type: PackType) => {
     switch (type) {
         case "nil":
             return 0;
@@ -61,27 +61,27 @@ export const marshalPackType = (type: PackType) => {
     throw new Error(`Unknown type ${String(type)}.`);
 };
 
-export const marshalUint = (value: number, length: number) => {
+const marshalUint = (value: number, length: number) => {
     try {
         return new BN(
             typeof value === "number" ? value : (value as string).toString(),
         ).toArrayLike(Buffer, "be", length);
     } catch (error) {
-        error.message = `Unable to marshal uint${
+        (error as any).message = `Unable to marshal uint${
             length * 8
-        } '${value}': ${String(error.message)}`;
+        } '${value}': ${String((error as any).message)}`;
         throw error;
     }
 };
 
 const marshalU = (length: number) => (value: number) =>
     marshalUint(value, length);
-export const marshalU8 = marshalU(8 / 8);
-export const marshalU16 = marshalU(16 / 8);
-export const marshalU32 = marshalU(32 / 8);
-export const marshalU64 = marshalU(64 / 8);
-export const marshalU128 = marshalU(128 / 8);
-export const marshalU256 = marshalU(256 / 8);
+const marshalU8 = marshalU(8 / 8);
+const marshalU16 = marshalU(16 / 8);
+const marshalU32 = marshalU(32 / 8);
+const marshalU64 = marshalU(64 / 8);
+const marshalU128 = marshalU(128 / 8);
+const marshalU256 = marshalU(256 / 8);
 
 const withLength = (value: Buffer) =>
     Buffer.concat([marshalU32(value.length), value]);
@@ -90,7 +90,7 @@ export const marshalString = (value: string) => {
     return withLength(Buffer.from(value));
 };
 
-export const marshalPackStructType = (type: PackStructType) => {
+const marshalPackStructType = (type: PackStructType) => {
     const length = marshalU32(type.struct.length);
 
     return Buffer.concat([
@@ -113,7 +113,7 @@ export const marshalPackStructType = (type: PackStructType) => {
     ]);
 };
 
-export const marshalPackTypeDefinition = (type: PackTypeDefinition): Buffer => {
+const marshalPackTypeDefinition = (type: PackTypeDefinition): Buffer => {
     if (typeof type === "object") {
         return Buffer.concat([
             Buffer.from([marshalPackType("struct")]),
@@ -125,7 +125,7 @@ export const marshalPackTypeDefinition = (type: PackTypeDefinition): Buffer => {
     throw new Error(`Unable to marshal type ${String(type)}.`);
 };
 
-export const marshalPackPrimitive = (
+const marshalPackPrimitive = (
     type: PackPrimitive,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     value: any,
@@ -170,7 +170,7 @@ export const marshalPackPrimitive = (
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const marshalPackStruct = (type: PackStructType, value: any): Buffer => {
+const marshalPackStruct = (type: PackStructType, value: any): Buffer => {
     return Buffer.concat(
         type.struct.map((member) => {
             const keys = Object.keys(member);
@@ -185,8 +185,10 @@ export const marshalPackStruct = (type: PackStructType, value: any): Buffer => {
             try {
                 return marshalPackValue(memberType, value[key]);
             } catch (error) {
-                error.message = `Unable to marshal struct field ${key}: ${String(
-                    error.message,
+                (
+                    error as Error
+                ).message = `Unable to marshal struct field ${key}: ${String(
+                    (error as Error).message,
                 )}`;
                 throw error;
             }
@@ -194,7 +196,7 @@ export const marshalPackStruct = (type: PackStructType, value: any): Buffer => {
     );
 };
 
-export const marshalPackValue = (
+const marshalPackValue = (
     type: PackTypeDefinition,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     value: any,

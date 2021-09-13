@@ -1,27 +1,71 @@
-import {
-    Currency,
-    CurrencyIcon,
-    Loading,
-    textCurrencyIcon,
-} from "@renproject/react-components";
+import { Currency, CurrencyIcon, Loading } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
+import Highcharts from "highcharts";
+import HighchartsReact from "highcharts-react-official";
 import { OrderedMap } from "immutable";
 import React from "react";
-import { Doughnut } from "react-chartjs-2";
 import { BigNumberRecord } from "../../../lib/graphQL/queries/renVmTracker";
 import { SimpleTable } from "../../../views/SimpleTable";
 
 import { TokenIcon } from "../../../views/tokenIcon/TokenIcon";
 
-const colors = [
-    "#004CA0",
-    // "#005EC4",
-    "#006FE8",
-    // "#002A58",
-    "#003B7C",
-];
+const colors = ["#004CA0", "#005EC4", "#006FE8", "#002A58", "#003B7C"];
 
-export type DoughnutChartData = BigNumberRecord | null;
+type DoughnutChartData = BigNumberRecord | null;
+
+const getOptions = (
+    seriesData: DoughnutChartData | undefined,
+    quoteCurrency: Currency,
+) => ({
+    chart: {
+        plotBackgroundColor: null,
+        plotBorderWidth: null,
+        plotShadow: false,
+        type: "pie",
+        backgroundColor: null,
+        borderColor: null,
+        height: "40%",
+    },
+    title: null,
+    tooltip: {
+        pointFormat: `{series.name}: <b>{point.yPretty:.1f} ${quoteCurrency.toUpperCase()}</b>`,
+    },
+    accessibility: {
+        point: {
+            valueSuffix: "%",
+        },
+    },
+    plotOptions: {
+        pie: {
+            allowPointSelect: true,
+            cursor: "pointer",
+            borderWidth: 0,
+            dataLabels: {
+                enabled: false,
+            },
+        },
+    },
+    series: [
+        {
+            name: "Volume",
+            colorByPoint: true,
+            innerSize: "60%",
+            data: seriesData
+                ? OrderedMap<string, { quote: BigNumber; amount: BigNumber }>(
+                      Object.entries(seriesData),
+                  )
+                      .toArray()
+                      .map(([key, value], i) => ({
+                          name: key,
+                          y: value.quote.toNumber(),
+                          yPretty: value.quote.toFormat(0),
+                          color: colors[i % colors.length],
+                          borderColor: null,
+                      }))
+                : [],
+        },
+    ],
+});
 
 interface Props {
     data?: DoughnutChartData;
@@ -48,6 +92,12 @@ export const DoughnutChart: React.FC<Props> = ({
         [data],
     );
 
+    const options = React.useMemo(
+        () => getOptions(data, quoteCurrency),
+        [data, quoteCurrency],
+    );
+    console.log(options);
+
     return (
         <div
             className="overview--chart--outer"
@@ -58,100 +108,13 @@ export const DoughnutChart: React.FC<Props> = ({
                     <>
                         <div
                             className="overview--chart--canvas"
-                            style={{ maxWidth: "calc(100vw - 80px)" }}
+                            style={{ maxWidth: "100%" }}
                         >
-                            <Doughnut
-                                height={186}
-                                width={186}
-                                legend={{ display: false }}
-                                data={{
-                                    maintainAspectRation: true,
-                                    labels: tokens,
-                                    datasets: [
-                                        {
-                                            data: tokens.map((token) =>
-                                                data[token].quote.toNumber(),
-                                            ),
-                                            backgroundColor: colors,
-                                            borderColor: "#001A38",
-                                            maintainAspectRation: true,
-                                            // hoverBackgroundColor: [],
-                                        },
-                                    ],
-                                }}
-                                options={{
-                                    tooltips: {
-                                        callbacks: {
-                                            title: (
-                                                tooltipItem: Array<{
-                                                    index: string;
-                                                }>,
-                                                line: {
-                                                    labels: {
-                                                        [key: string]: string;
-                                                    };
-                                                },
-                                            ) => {
-                                                return (
-                                                    title +
-                                                    " - " +
-                                                    line.labels[
-                                                        tooltipItem[0].index
-                                                    ]
-                                                );
-                                            },
-                                            label: (
-                                                tooltipItem: {
-                                                    index: string;
-                                                },
-                                                line: {
-                                                    datasets: Array<{
-                                                        data: number[];
-                                                        _meta: Array<{
-                                                            total: number;
-                                                        }>;
-                                                    }>;
-                                                    labels: {
-                                                        [key: string]: string;
-                                                    };
-                                                },
-                                            ) => {
-                                                const dataset =
-                                                    line.datasets[0];
-                                                const percent = dataset._meta[0]
-                                                    ? Math.round(
-                                                          (dataset.data[
-                                                              tooltipItem.index
-                                                          ] /
-                                                              dataset._meta[0]
-                                                                  .total) *
-                                                              100,
-                                                      )
-                                                    : undefined;
-                                                return `${textCurrencyIcon(
-                                                    quoteCurrency,
-                                                )}${new BigNumber(
-                                                    line.datasets[0].data[
-                                                        tooltipItem.index
-                                                    ],
-                                                ).toFormat()} ${quoteCurrency.toUpperCase()}${
-                                                    percent !== undefined
-                                                        ? ` - ${percent}%`
-                                                        : ""
-                                                }`;
-                                            },
-                                        },
-                                        backgroundColor: "#00050B",
-                                        borderWidth: 0,
-                                        titleFontSize: 14,
-                                        titleFontColor: "#fff",
-                                        bodyFontColor: "#fff",
-                                        bodyFontSize: 14,
-                                        displayColors: false,
-                                        xPadding: 10,
-                                        yPadding: 10,
-                                    },
-                                }}
+                            <HighchartsReact
+                                className={"highcharts--outer"}
+                                highcharts={Highcharts}
+                                constructorType={"chart"}
+                                options={options}
                             />
                         </div>
                         <div className="overview--chart--legend">
@@ -159,13 +122,14 @@ export const DoughnutChart: React.FC<Props> = ({
                                 {data && tokens
                                     ? tokens.map((token) => {
                                           const entry = data[token];
-                                          const standardAmount = entry.standardAmount.toFormat(
-                                              entry.standardAmount.isGreaterThan(
-                                                  100,
-                                              )
-                                                  ? 0
-                                                  : 2,
-                                          );
+                                          const standardAmount =
+                                              entry.standardAmount.toFormat(
+                                                  entry.standardAmount.isGreaterThan(
+                                                      100,
+                                                  )
+                                                      ? 0
+                                                      : 2,
+                                              );
                                           return (
                                               <div key={token}>
                                                   <div>

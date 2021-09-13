@@ -39,10 +39,8 @@ const useGithubAPIContainer = () => {
     const [latestDarknodeVersion, setLatestDarknodeVersion] = useState(
         null as string | null,
     );
-    const [
-        latestDarknodeVersionDaysAgo,
-        setLatestDarknodeVersionDaysAgo,
-    ] = useState(null as string | null);
+    const [latestDarknodeVersionDaysAgo, setLatestDarknodeVersionDaysAgo] =
+        useState(null as string | null);
 
     const [latestCLIVersionFull, setLatestCLIVersionFull] = useState(
         null as string | null,
@@ -95,9 +93,9 @@ const useGithubAPIContainer = () => {
         } catch (error) {
             if (
                 error &&
-                error.message &&
-                error.message.match &&
-                error.message.match(API_LIMIT_ERROR)
+                (error as any).message &&
+                (error as any).message.match &&
+                (error as any).message.match(API_LIMIT_ERROR)
             ) {
                 interval = 2 * HOUR;
             } else {
@@ -143,9 +141,9 @@ const useGithubAPIContainer = () => {
         } catch (error) {
             if (
                 error &&
-                error.message &&
-                error.message.match &&
-                error.message.match(API_LIMIT_ERROR)
+                (error as any).message &&
+                (error as any).message.match &&
+                (error as any).message.match(API_LIMIT_ERROR)
             ) {
                 interval = 2 * HOUR;
             } else {

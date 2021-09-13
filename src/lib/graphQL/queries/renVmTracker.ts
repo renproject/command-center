@@ -172,7 +172,7 @@ export const buildRenVmTrackerQuery = (
     return gql(snapshotQuery);
 };
 
-export const buildRenVmTrackerUpdateQuery = (timestamp: number) => {
+const buildRenVmTrackerUpdateQuery = (timestamp: number) => {
     const snapshotQuery = `
         ${VOLUMES_FRAGMENT}
         query GetSnapshots {
@@ -209,7 +209,7 @@ const getNetworkStart = (renNetwork: RenNetwork) => {
 //     return 5 * 24 * 3600;
 // };
 
-export const getPeriodTimespanInSeconds = (
+const getPeriodTimespanInSeconds = (
     period: PeriodOption,
     renNetwork: RenNetwork,
 ): number => {
@@ -256,7 +256,7 @@ export const getSnapshots = (records: SnapshotRecords) => {
         .map(([, snapshot]) => snapshot);
 };
 
-export const getAssetsData = (records: SnapshotRecords) => {
+const getAssetsData = (records: SnapshotRecords) => {
     return Object.entries(records)
         .filter(([key]) => key === "assets")
         .map(([, snapshot]) => snapshot.prices)[0]
@@ -270,7 +270,7 @@ export const getFirstAndLastSnapshot = (snapshots: Array<Snapshot>) => {
     };
 };
 
-export const getAmountsFromSnapshot = (
+const getAmountsFromSnapshot = (
     snapshot: Snapshot,
     type: TrackerVolumeType,
 ) => {
@@ -279,14 +279,14 @@ export const getAmountsFromSnapshot = (
     ];
 };
 
-export const getAmountsForChain = (
+const getAmountsForChain = (
     amounts: Array<SnapshotAmount>,
     chain: TrackerChain,
 ) => {
     return amounts.filter((entry) => entry.chain === chain);
 };
 
-export const getChainAmountsFromSnapshot = (
+const getChainAmountsFromSnapshot = (
     snapshot: Snapshot,
     type: TrackerVolumeType,
     chain: TrackerChain,
@@ -295,7 +295,7 @@ export const getChainAmountsFromSnapshot = (
     return getAmountsForChain(amounts, chain);
 };
 
-export enum TokenAmountType {
+enum TokenAmountType {
     BaseUnits = "BaseUnits",
     StandardUnits = "StandardUnits",
 }

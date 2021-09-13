@@ -22,81 +22,16 @@ export interface PackStructType {
     struct: Array<{ [name: string]: PackTypeDefinition }>;
 }
 
-export interface PackArrayType {
+interface PackArrayType {
     list: PackTypeDefinition;
 }
 
 // Not implemented.
-export type PackListType = never;
+type PackListType = never;
 
-export type PackNilType = "nil";
+type PackNilType = "nil";
 
 export type PackType = PackPrimitive | PackNilType | "list" | "struct";
-
-export type MarshalledPackArray<T> = Array<T>;
-export type MarshalledPackStruct<T extends object> = T;
-
-export type Marshalled<Type extends PackType> = Type extends PackPrimitive.Bool
-    ? boolean
-    : Type extends PackPrimitive.U8
-    ? string
-    : Type extends PackPrimitive.U16
-    ? string
-    : Type extends PackPrimitive.U32
-    ? string
-    : Type extends PackPrimitive.U64
-    ? string
-    : Type extends PackPrimitive.U128
-    ? string
-    : Type extends PackPrimitive.U256
-    ? string
-    : Type extends PackPrimitive.Str
-    ? string
-    : Type extends PackPrimitive.Bytes
-    ? string
-    : Type extends PackPrimitive.Bytes32
-    ? string
-    : Type extends PackPrimitive.Bytes65
-    ? string
-    : Type extends PackNilType
-    ? string
-    : Type extends "list"
-    ? Array<any>
-    : Type extends "struct"
-    ? any
-    : never;
-
-export type Unmarshalled<
-    Type extends PackType
-> = Type extends PackPrimitive.Bool
-    ? boolean
-    : Type extends PackPrimitive.U8
-    ? BigNumber
-    : Type extends PackPrimitive.U16
-    ? BigNumber
-    : Type extends PackPrimitive.U32
-    ? BigNumber
-    : Type extends PackPrimitive.U64
-    ? BigNumber
-    : Type extends PackPrimitive.U128
-    ? BigNumber
-    : Type extends PackPrimitive.U256
-    ? BigNumber
-    : Type extends PackPrimitive.Str
-    ? string
-    : Type extends PackPrimitive.Bytes
-    ? Buffer
-    : Type extends PackPrimitive.Bytes32
-    ? Buffer
-    : Type extends PackPrimitive.Bytes65
-    ? Buffer
-    : Type extends PackNilType
-    ? undefined
-    : Type extends "list"
-    ? Array<any>
-    : Type extends "struct"
-    ? any
-    : never;
 
 export type PackTypeDefinition =
     | PackPrimitive
@@ -111,7 +46,7 @@ export interface TypedPackValue<V = any> {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const unmarshalPackPrimitive = (type: PackPrimitive, value: any) => {
+const unmarshalPackPrimitive = (type: PackPrimitive, value: any) => {
     switch (type) {
         // Booleans
         case PackPrimitive.Bool:
@@ -135,7 +70,7 @@ export const unmarshalPackPrimitive = (type: PackPrimitive, value: any) => {
     }
 };
 
-export const unmarshalPackStruct = (type: PackStructType, value: object) => {
+const unmarshalPackStruct = (type: PackStructType, value: object) => {
     const struct = {};
 
     for (const member of type.struct) {
@@ -162,19 +97,16 @@ export const unmarshalPackStruct = (type: PackStructType, value: object) => {
 /**
  * Unmarshals a pack array.
  */
-export const unmarshalPackArray = (
+const unmarshalPackArray = (
     type: PackArrayType,
     value: Array<any>,
 ): Array<any> => {
     return value.map((element) => unmarshalPackValue(type.list, element));
 };
 
-export const unmarshalPackValue = (
-    type: PackTypeDefinition,
-    value: unknown,
-) => {
+const unmarshalPackValue = (type: PackTypeDefinition, value: unknown) => {
     if (Array.isArray(value)) {
-        return unmarshalPackArray((type as any) as PackArrayType, value);
+        return unmarshalPackArray(type as any as PackArrayType, value);
     } else if (typeof type === "object") {
         return unmarshalPackStruct(type, value as object);
     } else if (typeof type === "string") {
@@ -186,8 +118,4 @@ export const unmarshalPackValue = (
             !type ? ` for value ${String(value)}` : ""
         }.`,
     );
-};
-
-export const unmarshalTypedPackValue = ({ t, v }: TypedPackValue) => {
-    return unmarshalPackValue(t, v);
 };

@@ -15,7 +15,7 @@ export const retryNTimes = async <T>(
             } else {
                 const errorMessage = extractError(error);
                 if (errorMessage) {
-                    error.message += ` (${errorMessage})`;
+                    (error as Error).message += ` (${errorMessage})`;
                 }
                 throw error;
             }

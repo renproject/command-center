@@ -1,5 +1,6 @@
 // general modifier for showing tooltip outside of chart canvas
 .highcharts--with-outside-tooltip {
+    max-width: 100%;
     .highcharts-container {
         overflow: visible !important;
 
@@ -10,5 +11,12 @@
 
     div[data-highcharts-chart] {
         overflow: visible !important;
+    }
+}
+
+.overview--chart--canvas {
+    > div > div,
+    > div > div > svg {
+        max-width: 100%;
     }
 }

@@ -124,7 +124,8 @@ export const MultiStepPopup: React.FC<Props> = ({
                 }
 
                 if (callResult !== null) {
-                    const promiEvent = callResult as PromiEvent<TransactionReceipt>;
+                    const promiEvent =
+                        callResult as PromiEvent<TransactionReceipt>;
                     const txHash = await waitForTX(promiEvent);
                     // eslint-disable-next-line no-loop-func
                     setTxHashes((currentTxHashes) =>
@@ -143,7 +144,7 @@ export const MultiStepPopup: React.FC<Props> = ({
                     }
                 }
             } catch (error) {
-                const isCancelled = (error.message || "").match(
+                const isCancelled = ((error as any).message || "").match(
                     ErrorCanceledByUser,
                 );
                 if (error && !isCancelled) {
@@ -152,7 +153,7 @@ export const MultiStepPopup: React.FC<Props> = ({
                         shownToUser: "As message box in MultiStepPopup",
                     });
                 }
-                setRunError(error);
+                setRunError(error as any);
                 setRunning(false);
                 setCancelled(isCancelled);
                 return;

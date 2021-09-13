@@ -7,9 +7,7 @@ import {
     DarknodesState,
     NetworkContainer,
 } from "../../../store/networkContainer";
-// import { UIContainer } from "../../../store/uiContainer";
 import { FeesBlock } from "../../../views/darknodeBlocks/FeesBlock";
-// import { NotClaimed } from "../../../views/popups/NotClaimed";
 import { mergeFees } from "../darknodePage/blocks/FeesBlockController";
 
 interface Props {
@@ -88,8 +86,4 @@ export const RenVmFeesAll: React.FC<Props> = ({ darknodeList }) => {
             isRenVMFee={true}
         />
     );
-};
-
-export const RenVMWithdrawall = () => {
-    return null;
 };

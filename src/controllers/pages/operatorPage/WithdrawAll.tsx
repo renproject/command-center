@@ -11,9 +11,7 @@ import {
     DarknodesState,
     NetworkContainer,
 } from "../../../store/networkContainer";
-// import { UIContainer } from "../../../store/uiContainer";
 import { FeesBlock } from "../../../views/darknodeBlocks/FeesBlock";
-// import { NotClaimed } from "../../../views/popups/NotClaimed";
 import { mergeFees } from "../darknodePage/blocks/FeesBlockController";
 
 interface Props {
@@ -30,10 +28,8 @@ export const WithdrawAll: React.FC<Props> = ({ darknodeList }) => {
     // } = UIContainer.useContainer();
 
     // const { setPopup, clearPopup } = PopupContainer.useContainer();
-    const {
-        withdrawReward,
-        updateDarknodeDetails,
-    } = NetworkContainer.useContainer();
+    const { withdrawReward, updateDarknodeDetails } =
+        NetworkContainer.useContainer();
 
     const withdrawCallback = useCallback(
         async (tokenSymbol: string, tokenAddress: string) => {
@@ -72,32 +68,6 @@ export const WithdrawAll: React.FC<Props> = ({ darknodeList }) => {
         [darknodeList, updateDarknodeDetails, withdrawReward],
     );
 
-    // const [darknodeNotClaimed, setDarknodeNotClaimed] = useState<string | null>(
-    //     null,
-    // );
-    // useEffect(() => {
-    //     if (!claimWarningShown && darknodeNotClaimed) {
-    //         setClaimWarningShown(true);
-    //         setPopup({
-    //             popup: (
-    //                 <NotClaimed
-    //                     darknode={darknodeNotClaimed}
-    //                     onCancel={clearPopup}
-    //                 />
-    //             ),
-    //             onCancel: clearPopup,
-    //             dismissible: true,
-    //             overlay: true,
-    //         });
-    //     }
-    // }, [
-    //     darknodeNotClaimed,
-    //     claimWarningShown,
-    //     clearPopup,
-    //     setPopup,
-    //     setClaimWarningShown,
-    // ]);
-
     const withdrawable = useMemo(
         () =>
             darknodeList &&
@@ -131,23 +101,6 @@ export const WithdrawAll: React.FC<Props> = ({ darknodeList }) => {
                         darknodeDetails &&
                         darknodeDetails.cycleStatus.get(currentCycle) ===
                             DarknodeFeeStatus.NOT_CLAIMED;
-
-                    // const earningFees: boolean =
-                    //     !!darknodeDetails &&
-                    //     darknodeDetails.registrationStatus ===
-                    //         RegistrationStatus.Registered;
-
-                    // // If the darknode hasn't claimed within 1 day of a new epoch, show
-                    // // a warning popup.
-                    // const day = moment.duration(5, "hours").asSeconds();
-                    // if (
-                    //     showPreviousPending &&
-                    //     timeSinceLastEpoch &&
-                    //     earningFees &&
-                    //     timeSinceLastEpoch.gt(day)
-                    // ) {
-                    //     setDarknodeNotClaimed(darknodeDetails.ID);
-                    // }
 
                     let summedPendingRewards = OrderedMap<
                         string,
@@ -258,8 +211,4 @@ export const WithdrawAll: React.FC<Props> = ({ darknodeList }) => {
             withdrawCallback={withdrawCallback}
         />
     );
-};
-
-export const RenVMWithdrawall = () => {
-    return null;
 };

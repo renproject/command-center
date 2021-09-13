@@ -3,12 +3,10 @@ import {
     FontAwesomeIcon,
     FontAwesomeIconProps,
 } from "@fortawesome/react-fontawesome";
-import filesize from "filesize";
 import React from "react";
-import { Doughnut } from "react-chartjs-2";
 import { NodeStatistics } from "../../lib/darknode/jsonrpc";
 
-import { Block, BlockBody, BlockTitle } from "./Block";
+import { Block, BlockTitle } from "./Block";
 
 interface Props {
     nodeStatistics: NodeStatistics | null;
@@ -26,7 +24,8 @@ export const ResourcesBlock: React.FC<Props> = ({ nodeStatistics }) => (
             </h3>
         </BlockTitle>
 
-        {nodeStatistics ? (
+        {/* TODO: Reimplement without chartjs. (reinstall `filesize`) */}
+        {/* {nodeStatistics ? (
             <BlockBody>
                 <div className="resources--block--charts">
                     <div className="resources--chart--and--label">
@@ -115,6 +114,6 @@ export const ResourcesBlock: React.FC<Props> = ({ nodeStatistics }) => (
                     </div>
                 </div>
             </BlockBody>
-        ) : null}
+        ) : null} */}
     </Block>
 );

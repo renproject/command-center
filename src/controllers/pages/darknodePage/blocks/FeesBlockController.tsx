@@ -72,10 +72,12 @@ const validateAddress = (token: string, address: string, network: string) => {
     if (chain) {
         // We can't import the correct version of @renproject/interfaces, so for
         // now we cast the type.
-        return (chain.utils.addressIsValid as (
-            address: string,
-            network?: string,
-        ) => boolean)(address, renNetwork);
+        return (
+            chain.utils.addressIsValid as (
+                address: string,
+                network?: string,
+            ) => boolean
+        )(address, renNetwork);
     }
     return true;
 };
@@ -189,44 +191,12 @@ export const FeesBlockController: React.FC<Props> = ({
             darknodeDetails.registrationStatus ===
                 RegistrationStatus.DeregistrationPending);
 
-    // useEffect(() => {
-    //     // If the darknode hasn't claimed within 1 day of a new epoch, show a
-    //     // warning popup.
-    //     const day = moment.duration(5, "hours").asSeconds();
-    //     if (
-    //         isOperator &&
-    //         !claimWarningShown &&
-    //         showPreviousPending &&
-    //         earningFees &&
-    //         timeSinceLastEpoch &&
-    //         timeSinceLastEpoch.gt(day)
-    //     ) {
-    //         setClaimWarningShown(true);
-    //         setPopup({
-    //             popup: <NotClaimed onCancel={clearPopup} />,
-    //             onCancel: clearPopup,
-    //             dismissible: true,
-    //             overlay: true,
-    //         });
-    //     }
-    // }, [
-    //     showPreviousPending,
-    //     timeSinceLastEpoch,
-    //     claimWarningShown,
-    //     setClaimWarningShown,
-    //     clearPopup,
-    //     setPopup,
-    //     earningFees,
-    //     isOperator,
-    // ]);
-
     let summedPendingRewards = OrderedMap<string, TokenAmount | null>();
     if (previousCycle && showPreviousPending) {
         pendingRewards.get(
             previousCycle,
             OrderedMap<string, TokenAmount | null>(),
         );
-        // summedPendingRewards = OrderedMap();
     }
     if (currentCycle && showCurrentPending) {
         summedPendingRewards = pendingRewards.get(
@@ -256,10 +226,8 @@ export const FeesBlockController: React.FC<Props> = ({
     const withdrawable = darknodeDetails ? darknodeDetails.feesEarned : null;
     const pending = summedPendingRewards;
 
-    const {
-        withdrawReward,
-        updateDarknodeDetails,
-    } = NetworkContainer.useContainer();
+    const { withdrawReward, updateDarknodeDetails } =
+        NetworkContainer.useContainer();
 
     const withdrawCallback = useCallback(
         async (tokenSymbol: string, tokenAddress: string) => {
@@ -311,7 +279,7 @@ enum FeeWithdrawalStage {
     Processing = "processing",
 }
 
-export const RenVmFeesBlockController: React.FC<Props> = ({
+const RenVmFeesBlockController: React.FC<Props> = ({
     isOperator,
     darknodeDetails,
 }) => {
@@ -324,12 +292,8 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
     const { showPending } = NotificationsContainer.useContainer();
 
     const network = renNetwork.name;
-    const {
-        blockState,
-        quoteCurrency,
-        tokenPrices,
-        fetchBlockState,
-    } = NetworkContainer.useContainer();
+    const { blockState, quoteCurrency, tokenPrices, fetchBlockState } =
+        NetworkContainer.useContainer();
 
     const { setOverlay } = PopupContainer.useContainer();
 
@@ -616,9 +580,13 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                         console.error(error);
                     }
                 }
-            } catch (err) {
-                console.error("Withdraw error:", err, err?.response);
-                console.error(err?.data?.error?.message);
+            } catch (error) {
+                console.error(
+                    "Withdraw error:",
+                    error,
+                    (error as any)?.response,
+                );
+                console.error((error as any)?.data?.error?.message);
                 setPending(false);
                 if (dismissNotification) {
                     dismissNotification();
@@ -626,16 +594,18 @@ export const RenVmFeesBlockController: React.FC<Props> = ({
                 setStage(FeeWithdrawalStage.Configuration);
                 setError("Withdraw failed.");
                 if (
-                    (err?.response?.data?.error?.message || "").includes(
-                        "bad to",
-                    )
+                    (
+                        (error as any)?.response?.data?.error?.message || ""
+                    ).includes("bad to")
                 ) {
                     setAddressError(
                         "Address rejected by RenVM. Please try another address.",
                     );
-                } else if (err?.response?.data?.error?.message) {
+                } else if ((error as any)?.response?.data?.error?.message) {
                     setError(
-                        `Withdraw failed (${err?.response?.data?.error?.message})`,
+                        `Withdraw failed (${
+                            (error as any)?.response?.data?.error?.message
+                        })`,
                     );
                 }
             }

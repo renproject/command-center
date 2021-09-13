@@ -6,7 +6,6 @@ import {
 } from "../../../lib/graphQL/queries/renVmTracker";
 
 import { PeriodOption } from "../../../lib/graphQL/volumes";
-import { GraphContainer } from "../../../store/graphContainer";
 import { NetworkContainer } from "../../../store/networkContainer";
 import { Stats } from "../../../views/Stat";
 import { getRenPriceIn } from "../../common/tokenBalanceUtils";
@@ -33,11 +32,8 @@ const lockedTooltipRenderer = (period: PeriodOption, chain: ChainOption) => {
 };
 
 export const NetworkStatsPage = () => {
-    const {
-        quoteCurrency,
-        tokenPrices,
-        numberOfDarknodes,
-    } = NetworkContainer.useContainer();
+    const { quoteCurrency, tokenPrices, numberOfDarknodes } =
+        NetworkContainer.useContainer();
     const {
         allVolumeData,
         volumeData,

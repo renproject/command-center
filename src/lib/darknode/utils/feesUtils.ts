@@ -109,11 +109,7 @@ export const getTokenFeeForEpoch = (
     return new BigNumber(0);
 };
 
-export const toTokenAmount = (
-    amount: BigNumber,
-    symbol: string,
-    decimals: number,
-) => {
+const toTokenAmount = (amount: BigNumber, symbol: string, decimals: number) => {
     const data: TokenAmount = {
         amount: amount,
         amountInEth: new BigNumber(0),

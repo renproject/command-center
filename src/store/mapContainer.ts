@@ -10,21 +10,11 @@ import { DEFAULT_REQUEST_TIMEOUT } from "../lib/react/environmentVariables";
 import { peerResponse } from "./vDot2Peers";
 import { Web3Container } from "./web3Container";
 
-export const SESSION_MAP_LIMIT = 30;
+const SESSION_MAP_LIMIT = 30;
 
 export interface DarknodeLocation {
     darknodeID: string;
     point: Point;
-}
-
-// const sampleDarknodes: DarknodeLocation[] = [];
-
-export interface QueryResponse {
-    jsonrpc: "2.0";
-    id: number;
-    result: {
-        peers: string[];
-    };
 }
 
 const parallelLimit = <T>(
@@ -149,24 +139,8 @@ const getAllDarknodes = async (network: RenNetworkDetails) => {
     if (!lightnode) {
         throw new Error(`No lightnode to fetch darknode locations.`);
     }
-    // const request = {
-    //     jsonrpc: "2.0",
-    //     method: "ren_queryPeers",
-    //     params: {},
-    //     id: 67,
-    // };
-    // const response = (
-    //     await retryNTimes(
-    //         async () =>
-    //             await Axios.post<QueryResponse>(lightnode, request, {
-    //                 timeout: DEFAULT_REQUEST_TIMEOUT,
-    //             }),
-    //         2,
-    //     )
-    // ).data;
     const response = peerResponse;
     return Promise.resolve(response.result.peers);
-    // return darknodeIDs.map(parseMultiAddress);
 };
 
 interface Location {
