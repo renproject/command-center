@@ -165,6 +165,7 @@ export const Sidebar = () => {
                             activePath={location.pathname}
                             onClick={hideMobileMenu}
                         />
+                        {/*
                         <MenuItem
                             path="/renvm"
                             title="RenVM"
@@ -172,7 +173,7 @@ export const Sidebar = () => {
                             activePath={location.pathname}
                             onClick={hideMobileMenu}
                         />
-                        {/* <MenuItem icon={<FontAwesomeIcon icon={faTimes as FontAwesomeIconProps["icon"]} />} onClick={hideMobileMenu} className={"sidebar--close"} />
+                         <MenuItem icon={<FontAwesomeIcon icon={faTimes as FontAwesomeIconProps["icon"]} />} onClick={hideMobileMenu} className={"sidebar--close"} />
                         <MenuItem path="/" title="Darknodes" icon={<FontAwesomeIcon icon={faGlobeAmericas as FontAwesomeIconProps["icon"]} />} onClick={hideMobileMenu} activePath={location.pathname} />
                         <MenuItem path="/renvm" title="RenVM" icon={<RenVMIcon />} onClick={hideMobileMenu} activePath={location.pathname} /> */}
                     </div>
