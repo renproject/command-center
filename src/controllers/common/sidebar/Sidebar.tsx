@@ -1,3 +1,6 @@
+import React, { useEffect, useMemo, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+
 import {
     faExternalLinkAlt,
     faPlus,
@@ -8,8 +11,6 @@ import {
     FontAwesomeIcon,
     FontAwesomeIconProps,
 } from "@fortawesome/react-fontawesome";
-import React, { useEffect, useMemo, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
 
 import { darknodeIDHexToBase58 } from "../../../lib/darknode/darknodeID";
 import { RegistrationStatus } from "../../../lib/ethereum/contractReads";
@@ -17,7 +18,6 @@ import { classNames } from "../../../lib/react/className";
 import { NetworkContainer } from "../../../store/networkContainer";
 import { UIContainer } from "../../../store/uiContainer";
 import { Web3Container } from "../../../store/web3Container";
-import { ReactComponent as RenVMIcon } from "../../../styles/images/Icon-HyperDrive.svg";
 import { ReactComponent as IntegratorsIcon } from "../../../styles/images/icon-integrators.svg";
 import { ReactComponent as NetworkIcon } from "../../../styles/images/icon-network.svg";
 import { ReactComponent as OverviewIcon } from "../../../styles/images/Icon-Overview.svg";
@@ -78,11 +78,8 @@ export const Sidebar = () => {
         darknodeList,
         hiddenDarknodes,
     } = NetworkContainer.useContainer();
-    const {
-        address,
-        web3BrowserName,
-        promptLogin,
-    } = Web3Container.useContainer();
+    const { address, web3BrowserName, promptLogin } =
+        Web3Container.useContainer();
     const { mobileMenuActive, hideMobileMenu } = UIContainer.useContainer();
     const { selectedDarknodeID } = UIContainer.useContainer();
 
@@ -217,9 +214,8 @@ export const Sidebar = () => {
                                     );
                                 })
                                 .map((darknodeID: string) => {
-                                    const details = darknodeDetails.get(
-                                        darknodeID,
-                                    );
+                                    const details =
+                                        darknodeDetails.get(darknodeID);
                                     return (
                                         <SidebarIcon
                                             key={darknodeID}

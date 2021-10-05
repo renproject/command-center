@@ -1,8 +1,9 @@
-import { Currency, CurrencyIcon, Loading } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
-import React from "react";
-import { TrackerChain } from "../../../lib/graphQL/queries/renVmTracker";
+import React, { useMemo } from "react";
 
+import { Currency, CurrencyIcon, Loading } from "@renproject/react-components";
+
+import { TrackerChain } from "../../../lib/graphQL/queries/renVmTracker";
 import { classNames } from "../../../lib/react/className";
 import { ReactComponent as IconCheckCircle } from "../../../styles/images/icon-check-circle.svg";
 import { ReactComponent as IconCollateralization } from "../../../styles/images/icon-collateralization.svg";
@@ -16,8 +17,8 @@ import { ChainIconName, ChainLabel } from "./ChainSelector";
 
 type ChainFee = {
     chain: TrackerChain;
-    mint: number;
-    burn: number;
+    mint: string | undefined;
+    burn: string | undefined;
 };
 
 interface Props {
@@ -295,14 +296,31 @@ export const Collateral: React.FC<Props> = ({
 
 type FeeRowProps = {
     chain: TrackerChain;
-    burnFee: number;
-    mintFee: number;
+    burnFee: string | undefined;
+    mintFee: string | undefined;
     loading?: boolean;
 };
 
 const FeeRow: React.FC<FeeRowProps> = ({ chain, burnFee, mintFee }) => {
     const iconName = ChainIconName[chain];
     const chainName = ChainLabel[chain];
+
+    const mintFeePercent = useMemo(
+        () =>
+            mintFee
+                ? new BigNumber(mintFee).dividedBy(100).toFixed()
+                : undefined,
+        [mintFee],
+    );
+
+    const burnFeePercent = useMemo(
+        () =>
+            burnFee
+                ? new BigNumber(burnFee).dividedBy(100).toFixed()
+                : undefined,
+        [burnFee],
+    );
+
     return (
         <div className="fee-row">
             <div className="fee-row--chain">
@@ -311,11 +329,19 @@ const FeeRow: React.FC<FeeRowProps> = ({ chain, burnFee, mintFee }) => {
                 </span>{" "}
                 <span>{chainName}</span>
             </div>
-            <div>
-                <span>{mintFee / 100}% Mint</span>
-                <span> / </span>
-                <span>{burnFee / 100}% Burn</span>
-            </div>
+            {mintFeePercent !== undefined && burnFeePercent !== undefined ? (
+                <div>
+                    <span>{mintFeePercent}% Mint</span>
+                    <span> / </span>
+                    <span>{burnFeePercent}% Burn</span>
+                </div>
+            ) : (
+                <Loading
+                    alt={true}
+                    className="loading--small"
+                    style={{ height: 20, width: 20 }}
+                />
+            )}
         </div>
     );
 };

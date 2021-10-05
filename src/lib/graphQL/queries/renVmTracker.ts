@@ -1,8 +1,10 @@
+import BigNumber from "bignumber.js";
+import moment from "moment";
+
 import { ApolloClient, gql } from "@apollo/react-hooks";
 import { RenNetwork } from "@renproject/interfaces";
 import { Currency } from "@renproject/react-components";
-import BigNumber from "bignumber.js";
-import moment from "moment";
+
 import { getConversionRate } from "../../../controllers/common/tokenBalanceUtils";
 import { ChainOption } from "../../../controllers/pages/networkStatsPage/ChainSelector";
 import { TokenPrices } from "../../ethereum/tokens";
@@ -69,7 +71,6 @@ type SnapshotAssetData = {
 };
 
 type Snapshot = {
-    _id: string;
     timestamp: number;
     locked: Array<SnapshotAmount>;
     volume: Array<SnapshotAmount>;
@@ -109,7 +110,6 @@ const FRAGMENT_VOLUME_FIELDS = `
 
 const VOLUMES_FRAGMENT = `
     fragment VolumesSnapshot on Snapshot {
-        _id
         timestamp
         volume {
             ${FRAGMENT_VOLUME_FIELDS}
@@ -159,7 +159,6 @@ export const buildRenVmTrackerQuery = (
         ${VOLUMES_FRAGMENT}
         query GetSnapshots {
             assets: Snapshot(timestamp: "${endTimestamp}"){
-                _id,
                 timestamp,
                 prices {
                     asset,

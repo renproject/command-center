@@ -1,11 +1,12 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+
 import {
     allTrackedChains,
     snapshotDataToAllChainVolumeData,
     TrackerVolumeType,
 } from "../../../lib/graphQL/queries/renVmTracker";
-
 import { PeriodOption } from "../../../lib/graphQL/volumes";
+import { retryNTimes } from "../../../lib/retryNTimes";
 import { NetworkContainer } from "../../../store/networkContainer";
 import { Stats } from "../../../views/Stat";
 import { getRenPriceIn } from "../../common/tokenBalanceUtils";
@@ -32,8 +33,13 @@ const lockedTooltipRenderer = (period: PeriodOption, chain: ChainOption) => {
 };
 
 export const NetworkStatsPage = () => {
-    const { quoteCurrency, tokenPrices, numberOfDarknodes } =
-        NetworkContainer.useContainer();
+    const {
+        quoteCurrency,
+        tokenPrices,
+        numberOfDarknodes,
+        blockState,
+        fetchBlockState,
+    } = NetworkContainer.useContainer();
     const {
         allVolumeData,
         volumeData,
@@ -66,13 +72,27 @@ export const NetworkStatsPage = () => {
         ? bondedRenAmount.times(renPrice)
         : null;
 
-    const fees = allTrackedChains.map((chain) => {
-        return {
-            mint: 15,
-            burn: 15,
-            chain: chain,
-        };
-    });
+    useEffect(() => {
+        retryNTimes(fetchBlockState, 5);
+    }, [fetchBlockState]);
+
+    // TODO: Optimize
+    const fees = useMemo(
+        () =>
+            allTrackedChains.map((chain) => {
+                return {
+                    mint: blockState?.["BTC"].fees.chains.filter(
+                        (x) => x.chain === chain,
+                    )[0]?.mintFee,
+                    burn: blockState?.["BTC"].fees.chains.filter(
+                        (x) => x.chain === chain,
+                    )[0]?.burnFee,
+                    chain: chain,
+                };
+            }),
+        [blockState],
+    );
+
     return (
         <NetworkStatsStyles className="network-stats container">
             {/* <div className="no-xl-or-larger col-lg-12 col-xl-4">

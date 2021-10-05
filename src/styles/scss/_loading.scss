@@ -19,6 +19,11 @@
     height: 56px;
 }
 
+.loading--small.lds-dual-ring:after {
+    width: 10px !important;
+    height: 10px !important;
+}
+
 @keyframes lds-dual-ring {
     0% {
         transform: rotate(0deg);
