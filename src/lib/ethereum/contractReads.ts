@@ -1,10 +1,11 @@
-import { ApolloClient } from "@apollo/react-hooks";
-import { RenNetworkDetails } from "@renproject/contracts";
-import { Currency } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import { List, OrderedMap, OrderedSet } from "immutable";
 import Web3 from "web3";
 import { sha3, toChecksumAddress } from "web3-utils";
+
+import { ApolloClient } from "@apollo/react-hooks";
+import { RenNetworkDetails } from "@renproject/contracts";
+import { Currency } from "@renproject/react-components";
 
 import { updatePrices } from "../../controllers/common/tokenBalanceUtils";
 import { getLightnode } from "../../store/mapContainer";

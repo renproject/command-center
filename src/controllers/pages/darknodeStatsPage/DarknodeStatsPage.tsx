@@ -1,6 +1,8 @@
-import { Loading } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import React, { useEffect, useMemo } from "react";
+
+import { Loading } from "@renproject/react-components";
+
 import {
     getAggregatedFeesCollection,
     getFeesCollection,
@@ -142,13 +144,14 @@ export const DarknodeStatsPage = () => {
               new BigNumber(0),
           )
         : null;
-    const totalFeesInUsdMerged = totalFeesRenVmInUsd
-        ? totalFeesRenVmInUsd.plus(totalFeesInUsd || 0)
-        : null;
-    const totalFeesMerged =
-        fees && totalFeesRenVm
-            ? mergeFees(totalFeesRenVm, fees)
-            : totalFeesRenVm;
+    const totalFeesInUsdMerged = totalFeesRenVmInUsd;
+    // totalFeesRenVmInUsd
+    // ? totalFeesRenVmInUsd.plus(totalFeesInUsd || 0)
+    // : null;
+    const totalFeesMerged = totalFeesRenVm;
+    // fees && totalFeesRenVm
+    //     ? mergeFees(totalFeesRenVm, fees)
+    //     : totalFeesRenVm;
 
     const currentInUsd =
         currentCycle && pendingTotalInUsd.get(currentCycle, undefined);

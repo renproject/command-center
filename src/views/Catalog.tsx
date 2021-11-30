@@ -1,8 +1,10 @@
-import { sleep } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import { Map } from "immutable";
 import React, { useCallback, useMemo, useState } from "react";
 import { Point } from "react-simple-maps";
+
+import { sleep } from "@renproject/react-components";
+
 import { SECONDS } from "../controllers/common/BackgroundTasks";
 import { DarknodeAction } from "../controllers/pages/darknodePage/DarknodePage";
 import { NodeStatistics } from "../lib/darknode/jsonrpc";
@@ -97,12 +99,8 @@ const defaultDarknodeLocations = Map<
     });
 
 export const Catalog = () => {
-    const {
-        address,
-        balance,
-        promptLogin,
-        web3BrowserName,
-    } = Web3Container.useContainer();
+    const { address, balance, promptLogin, web3BrowserName } =
+        Web3Container.useContainer();
     const { quoteCurrency, pendingRewards } = NetworkContainer.useContainer();
     const { renVM } = GraphContainer.useContainer();
     const { currentCycle, previousCycle } = renVM || {};
@@ -117,9 +115,10 @@ export const Catalog = () => {
 
     const [name, setName] = useState("Darknode name");
     const [renaming, setRenaming] = useState(false);
-    const updateName = useCallback((_darknodeID, newName) => setName(newName), [
-        setName,
-    ]);
+    const updateName = useCallback(
+        (_darknodeID, newName) => setName(newName),
+        [setName],
+    );
 
     const loginCallback = useMemo(
         () => async () => {
@@ -150,16 +149,35 @@ export const Catalog = () => {
                 <hr />
                 <h4>White</h4>
                 <Flex>
-                    <TokenIcon token={"BTC"} white={true} />
-                    <TokenIcon token={"ZEC"} white={true} />
+                    <TokenIcon token={"ArbETH"} white={true} />
+                    <TokenIcon token={"AVAX"} white={true} />
+                    <TokenIcon token={"BADGER"} white={true} />
                     <TokenIcon token={"BCH"} white={true} />
+                    <TokenIcon token={"BNB"} white={true} />
+                    <TokenIcon token={"BTC"} white={true} />
+                    <TokenIcon token={"BUSD"} white={true} />
+                    <TokenIcon token={"CRV"} white={true} />
                     <TokenIcon token={"DAI"} white={true} />
-                    <TokenIcon token={"ETH"} white={true} />
-                    <TokenIcon token={"REN"} white={true} />
-                    <TokenIcon token={"LUNA"} white={true} />
-                    <TokenIcon token={"FIL"} white={true} />
                     <TokenIcon token={"DGB"} white={true} />
                     <TokenIcon token={"DOGE"} white={true} />
+                    <TokenIcon token={"ETH"} white={true} />
+                    <TokenIcon token={"EURT"} white={true} />
+                    <TokenIcon token={"FIL"} white={true} />
+                    <TokenIcon token={"FTM"} white={true} />
+                    <TokenIcon token={"FTT"} white={true} />
+                    <TokenIcon token={"gETH"} white={true} />
+                    <TokenIcon token={"KNC"} white={true} />
+                    <TokenIcon token={"LINK"} white={true} />
+                    <TokenIcon token={"LUNA"} white={true} />
+                    <TokenIcon token={"MATIC"} white={true} />
+                    <TokenIcon token={"MIM"} white={true} />
+                    <TokenIcon token={"REN"} white={true} />
+                    <TokenIcon token={"ROOK"} white={true} />
+                    <TokenIcon token={"SUSHI"} white={true} />
+                    <TokenIcon token={"UNI"} white={true} />
+                    <TokenIcon token={"USDC"} white={true} />
+                    <TokenIcon token={"USDT"} white={true} />
+                    <TokenIcon token={"ZEC"} white={true} />
                 </Flex>
             </CatalogItem>
 
