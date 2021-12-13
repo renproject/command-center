@@ -9,12 +9,8 @@ export const AccountDropdown: React.FC = () => {
     const [shown, setShown] = useState(false);
     const [copied, setCopied] = useState(false);
 
-    const {
-        address,
-        web3BrowserName,
-        promptLogin,
-        logout,
-    } = Web3Container.useContainer();
+    const { address, ensName, web3BrowserName, promptLogin, logout } =
+        Web3Container.useContainer();
 
     const ref = useRef(null as HTMLDivElement | null);
 
@@ -78,7 +74,11 @@ export const AccountDropdown: React.FC = () => {
                                 {web3BrowserName}{" "}
                             </div>
                             <div className="header--account--address">
-                                {address.substring(0, 8)}...{address.slice(-5)}
+                                {ensName ??
+                                    `${address.substring(
+                                        0,
+                                        8,
+                                    )}...${address.slice(-5)}`}
                             </div>
                         </div>
                     </>

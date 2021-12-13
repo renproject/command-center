@@ -19,6 +19,7 @@
     },
     "dependencies": {
         "@apollo/react-hooks": "^4.0.0",
+        "@ensdomains/ensjs": "^2.0.1",
         "@fortawesome/free-regular-svg-icons": "^5.15.4",
         "@fortawesome/free-solid-svg-icons": "^5.15.4",
         "@fortawesome/react-fontawesome": "^0.1.15",

@@ -18,6 +18,8 @@ import { toChecksumAddress } from "web3-utils";
 
 import BigNumber from "bignumber.js";
 import Notify, { API as NotifyInstance } from "bnc-notify";
+// @ts-ignore
+import ENS, { getEnsAddress } from "@ensdomains/ensjs";
 import { LoggedOut } from "../controllers/common/popups/LoggedOut";
 import { getWeb3BrowserName, Web3Browser } from "../lib/ethereum/browsers";
 import { getReadOnlyWeb3 } from "../lib/ethereum/getWeb3";
@@ -200,6 +202,7 @@ const useWeb3Container = (initialState = RenNetwork.Testnet) => {
 
     // Login data
     const [address, setAddress] = useState<string | null>(null);
+    const [ensName, setEnsName] = useState<string | null>(null);
     const [web3BrowserName, setWeb3BrowserName] = useState(
         Web3Browser.Web3Browser,
     );
@@ -297,11 +300,30 @@ const useWeb3Container = (initialState = RenNetwork.Testnet) => {
         }
     }, [walletAddress, address, clearPopup, logout, setPopup]);
 
+    useEffect(() => {
+        const resolveEnsAddress = async () => {
+            if (address && web3.currentProvider) {
+                const ens = new ENS({
+                    provider: web3.currentProvider,
+                    ensAddress: getEnsAddress("1"),
+                });
+
+                const ensName = await ens.getName(address);
+                setEnsName(ensName.name);
+            } else {
+                setEnsName(null);
+            }
+        };
+
+        resolveEnsAddress();
+    }, [address, web3, setEnsName]);
+
     return {
         renNetwork,
         web3,
         setWeb3,
         address,
+        ensName,
         balance,
         web3BrowserName,
         setWeb3BrowserName,
