@@ -121,6 +121,18 @@
             "url": "app.badger.finance",
             "urlHref": "https://app.badger.finance/bridge",
             "logo": "/integrators/badger.svg"
+        },
+        "integrator-0xa9975b1c616b4841a1cc299bc6f684b4d1e23a61": {
+            "name": "VarenX (Legacy)",
+            "url": "varenx.com",
+            "urlHref": "https://varen.com/",
+            "logo": "/integrators/varen.svg"
+        },
+        "integrator-0x82f2e6c57b7fde0ebb42f22bfc6b4a297e7d9be8": {
+            "name": "VarenX",
+            "url": "varenx.com",
+            "urlHref": "https://varen.com/",
+            "logo": "/integrators/varen.svg"
         }
     }
 }
