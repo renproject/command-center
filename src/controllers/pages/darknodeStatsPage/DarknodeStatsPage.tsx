@@ -1,5 +1,5 @@
 import BigNumber from "bignumber.js";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import { Loading } from "@renproject/react-components";
 
@@ -26,10 +26,16 @@ import { updatePrices } from "../../common/tokenBalanceUtils";
 import { mergeFees } from "../darknodePage/blocks/FeesBlockController";
 import { OverviewDiv } from "./DarknodeStatsStyles";
 import { FeesStat } from "./FeesStat";
+import { TokenAmount } from "../../../lib/graphQL/queries/queries";
+import { OrderedMap } from "immutable";
 
 const REN_TOTAL_SUPPLY = new BigNumber(1000000000);
 
 export const DarknodeStatsPage = () => {
+    const [withdrawAmount, setWithdrawAmount] = useState(0);
+    const [withdraw, setWithdraw] = useState<{
+        [key: string]: TokenAmount;
+    }>({});
     const { renVM } = GraphContainer.useContainer();
     const {
         currentCycle,
@@ -57,6 +63,56 @@ export const DarknodeStatsPage = () => {
 
     const { renNetwork } = Web3Container.useContainer();
     const { darknodes, fetchDarknodes } = MapContainer.useContainer();
+
+    useEffect(() => {
+        const sse = new EventSource(
+            "https://api.zapper.fi/v1/balances?addresses%5B%5D=0x7556aea47efc2a628e7eebc325de44572454b1e9&addresses%5B%5D=0x5291fbb0ee9f51225f0928ff6a83108c86327636&api_key=96e0cc51-a62e-42ca-acee-910ea7d2a241",
+        );
+        sse.addEventListener("balance", function (e: any) {
+            const parsedData = JSON.parse(e.data);
+            if (
+                parsedData.network === "ethereum" ||
+                parsedData.network === "fantom"
+            ) {
+                for (let [key, value] of Object.entries<any>(
+                    parsedData.balances,
+                )) {
+                    value.products.forEach((product: any) => {
+                        product.assets.forEach((asset: any) => {
+                            setWithdrawAmount(
+                                (prevState) => prevState + asset.balanceUSD,
+                            );
+                            const token = asset.tokens[0];
+                            const amount = new BigNumber(token.balanceRaw);
+                            const symbol = token.symbol;
+                            const decimals = token.decimals;
+                            setWithdraw((prevState) => ({
+                                ...prevState,
+                                [`${symbol}`]: {
+                                    amount: prevState[`${symbol}`]?.amount
+                                        ? prevState[`${symbol}`].amount.plus(
+                                              amount,
+                                          )
+                                        : amount,
+                                    amountInEth: new BigNumber(0),
+                                    amountInUsd: new BigNumber(0),
+                                    asset: { decimals },
+                                    symbol,
+                                },
+                            }));
+                        });
+                    });
+                }
+            }
+        });
+        sse.addEventListener("start", function (e: any) {
+            setWithdraw({});
+            setWithdrawAmount(0);
+        });
+        sse.addEventListener("end", function (e: any) {
+            sse.close();
+        });
+    }, []);
 
     useEffect(() => {
         fetchBlockState().catch(console.error);
@@ -213,16 +269,31 @@ export const DarknodeStatsPage = () => {
 
     // Community fund
     const fundCollection = blockState
-        ? updatePrices(getFundCollection(blockState), tokenPrices)
+        ? renNetwork.name === "mainnet"
+            ? updatePrices(
+                  getFundCollection(blockState).merge(OrderedMap(withdraw)),
+                  tokenPrices,
+              )
+            : updatePrices(getFundCollection(blockState), tokenPrices)
         : null;
     const fundCollectionInUsd = fundCollection
-        ? fundCollection.reduce(
-              (sum, entry) =>
-                  entry.amountInUsd
-                      ? new BigNumber(sum || 0).plus(entry.amountInUsd)
-                      : sum,
-              null as BigNumber | null,
-          )
+        ? renNetwork.name === "mainnet"
+            ? fundCollection
+                  .reduce(
+                      (sum, entry) =>
+                          entry.amountInUsd
+                              ? new BigNumber(sum || 0).plus(entry.amountInUsd)
+                              : sum,
+                      null as BigNumber | null,
+                  )!
+                  .plus(withdrawAmount)
+            : fundCollection.reduce(
+                  (sum, entry) =>
+                      entry.amountInUsd
+                          ? new BigNumber(sum || 0).plus(entry.amountInUsd)
+                          : sum,
+                  null as BigNumber | null,
+              )
         : null;
 
     return (
