@@ -28,6 +28,7 @@ import { OverviewDiv } from "./DarknodeStatsStyles";
 import { FeesStat } from "./FeesStat";
 import { TokenAmount } from "../../../lib/graphQL/queries/queries";
 import { OrderedMap } from "immutable";
+import { Token } from "../../../lib/ethereum/tokens";
 
 const REN_TOTAL_SUPPLY = new BigNumber(1000000000);
 
@@ -271,29 +272,26 @@ export const DarknodeStatsPage = () => {
     const fundCollection = blockState
         ? renNetwork.name === "mainnet"
             ? updatePrices(
-                  getFundCollection(blockState).merge(OrderedMap(withdraw)),
+                  getFundCollection(blockState).mergeWith(
+                      (oldVal, newVal) => ({
+                          ...oldVal,
+                          amount: oldVal.amount.plus(newVal.amount),
+                      }),
+                      OrderedMap(withdraw as any),
+                  ),
                   tokenPrices,
               )
             : updatePrices(getFundCollection(blockState), tokenPrices)
         : null;
+
     const fundCollectionInUsd = fundCollection
-        ? renNetwork.name === "mainnet"
-            ? fundCollection
-                  .reduce(
-                      (sum, entry) =>
-                          entry.amountInUsd
-                              ? new BigNumber(sum || 0).plus(entry.amountInUsd)
-                              : sum,
-                      null as BigNumber | null,
-                  )!
-                  .plus(withdrawAmount)
-            : fundCollection.reduce(
-                  (sum, entry) =>
-                      entry.amountInUsd
-                          ? new BigNumber(sum || 0).plus(entry.amountInUsd)
-                          : sum,
-                  null as BigNumber | null,
-              )
+        ? fundCollection.reduce(
+              (sum, entry) =>
+                  entry.amountInUsd
+                      ? new BigNumber(sum || 0).plus(entry.amountInUsd)
+                      : sum,
+              null as BigNumber | null,
+          )
         : null;
 
     return (
