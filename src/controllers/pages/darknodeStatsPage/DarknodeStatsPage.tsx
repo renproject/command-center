@@ -31,12 +31,29 @@ import { OrderedMap } from "immutable";
 import { Token } from "../../../lib/ethereum/tokens";
 
 const REN_TOTAL_SUPPLY = new BigNumber(1000000000);
+interface ZapperToken {
+    decimals: number;
+    symbol: string;
+    balanceRaw: string;
+    balanceUSD: number;
+}
+interface ZapperAsset {
+    tokens: ZapperToken;
+    balanceUSD: number;
+}
+interface ZapperProduct {
+    assets: ZapperAsset[];
+}
+interface ZapperBalance {
+    [key: string]: {
+        products: ZapperProduct[];
+    };
+}
 
 export const DarknodeStatsPage = () => {
-    const [withdrawAmount, setWithdrawAmount] = useState(0);
-    const [withdraw, setWithdraw] = useState<{
-        [key: string]: TokenAmount;
-    }>({});
+    const [withdraw, setWithdraw] = useState<OrderedMap<Token, TokenAmount>>(
+        OrderedMap<Token, TokenAmount>(),
+    );
     const { renVM } = GraphContainer.useContainer();
     const {
         currentCycle,
@@ -69,48 +86,45 @@ export const DarknodeStatsPage = () => {
         const sse = new EventSource(
             "https://api.zapper.fi/v1/balances?addresses%5B%5D=0x7556aea47efc2a628e7eebc325de44572454b1e9&addresses%5B%5D=0x5291fbb0ee9f51225f0928ff6a83108c86327636&api_key=96e0cc51-a62e-42ca-acee-910ea7d2a241",
         );
-        sse.addEventListener("balance", function (e: any) {
-            const parsedData = JSON.parse(e.data);
+        sse.addEventListener("balance", function (e) {
+            const parsedData = JSON.parse((e as MessageEvent).data);
             if (
                 parsedData.network === "ethereum" ||
                 parsedData.network === "fantom"
             ) {
-                for (let [key, value] of Object.entries<any>(
-                    parsedData.balances,
+                for (let [key, value] of Object.entries(
+                    parsedData.balances as ZapperBalance,
                 )) {
-                    value.products.forEach((product: any) => {
-                        product.assets.forEach((asset: any) => {
-                            setWithdrawAmount(
-                                (prevState) => prevState + asset.balanceUSD,
-                            );
-                            const token = asset.tokens[0];
+                    value.products.forEach((product: ZapperProduct) => {
+                        product.assets.forEach((asset: ZapperAsset) => {
+                            const token = asset.tokens[0] as ZapperToken;
                             const amount = new BigNumber(token.balanceRaw);
-                            const symbol = token.symbol;
+                            const symbol = token.symbol as Token;
                             const decimals = token.decimals;
-                            setWithdraw((prevState) => ({
-                                ...prevState,
-                                [`${symbol}`]: {
-                                    amount: prevState[`${symbol}`]?.amount
-                                        ? prevState[`${symbol}`].amount.plus(
-                                              amount,
-                                          )
+                            setWithdraw((prevState) =>
+                                prevState.set(symbol, {
+                                    amount: prevState.has(symbol)
+                                        ? (
+                                              prevState.get(
+                                                  symbol,
+                                              ) as TokenAmount
+                                          ).amount.plus(amount)
                                         : amount,
                                     amountInEth: new BigNumber(0),
                                     amountInUsd: new BigNumber(0),
                                     asset: { decimals },
                                     symbol,
-                                },
-                            }));
+                                }),
+                            );
                         });
                     });
                 }
             }
         });
-        sse.addEventListener("start", function (e: any) {
-            setWithdraw({});
-            setWithdrawAmount(0);
+        sse.addEventListener("start", function (e) {
+            setWithdraw(OrderedMap<Token, TokenAmount>());
         });
-        sse.addEventListener("end", function (e: any) {
+        sse.addEventListener("end", function (e) {
             sse.close();
         });
     }, []);
@@ -277,7 +291,7 @@ export const DarknodeStatsPage = () => {
                           ...oldVal,
                           amount: oldVal.amount.plus(newVal.amount),
                       }),
-                      OrderedMap(withdraw as any),
+                      withdraw,
                   ),
                   tokenPrices,
               )
