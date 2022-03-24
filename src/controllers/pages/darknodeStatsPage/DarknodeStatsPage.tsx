@@ -50,6 +50,11 @@ interface ZapperBalance {
     };
 }
 
+const WithdrawAddresses = [
+    "0x7556aea47efc2a628e7eebc325de44572454b1e9",
+    "0x5291fbb0ee9f51225f0928ff6a83108c86327636",
+];
+
 export const DarknodeStatsPage = () => {
     const [withdraw, setWithdraw] = useState<OrderedMap<Token, TokenAmount>>(
         OrderedMap<Token, TokenAmount>(),
@@ -84,7 +89,9 @@ export const DarknodeStatsPage = () => {
 
     useEffect(() => {
         const sse = new EventSource(
-            "https://api.zapper.fi/v1/balances?addresses%5B%5D=0x7556aea47efc2a628e7eebc325de44572454b1e9&addresses%5B%5D=0x5291fbb0ee9f51225f0928ff6a83108c86327636&api_key=96e0cc51-a62e-42ca-acee-910ea7d2a241",
+            `https://api.zapper.fi/v1/balances?addresses%5B%5D=${WithdrawAddresses.join(
+                "&addresses%5B%5D=",
+            )}&api_key=96e0cc51-a62e-42ca-acee-910ea7d2a241`,
         );
         sse.addEventListener("balance", function (e) {
             const parsedData = JSON.parse((e as MessageEvent).data);
