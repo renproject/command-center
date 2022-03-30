@@ -107,6 +107,7 @@ export const DarknodeStatsPage = () => {
                         product.assets.forEach((asset: ZapperAsset) => {
                             const token = asset.tokens[0] as ZapperToken;
                             const amount = new BigNumber(token.balanceRaw);
+                            const amountInUsd = new BigNumber(token.balanceUSD);
                             const symbol = token.symbol as Token;
                             const decimals = token.decimals;
                             setWithdraw((prevState) =>
@@ -119,7 +120,13 @@ export const DarknodeStatsPage = () => {
                                           ).amount.plus(amount)
                                         : amount,
                                     amountInEth: new BigNumber(0),
-                                    amountInUsd: new BigNumber(0),
+                                    amountInUsd: prevState.has(symbol)
+                                        ? (
+                                              prevState.get(
+                                                  symbol,
+                                              ) as TokenAmount
+                                          ).amountInUsd.plus(amountInUsd)
+                                        : amountInUsd,
                                     asset: { decimals },
                                     symbol,
                                 }),
@@ -294,14 +301,16 @@ export const DarknodeStatsPage = () => {
     const fundCollection = blockState
         ? renNetwork.name === "mainnet"
             ? updatePrices(
-                  getFundCollection(blockState).mergeWith(
-                      (oldVal, newVal) => ({
-                          ...oldVal,
-                          amount: oldVal.amount.plus(newVal.amount),
-                      }),
-                      withdraw,
-                  ),
+                  getFundCollection(blockState),
                   tokenPrices,
+              ).mergeWith(
+                  (oldVal, newVal) => ({
+                      ...oldVal,
+                      amount: oldVal.amount.plus(newVal.amount),
+                      amountInEth: oldVal.amountInEth.plus(newVal.amountInEth),
+                      amountInUsd: oldVal.amountInUsd.plus(newVal.amountInUsd),
+                  }),
+                  withdraw,
               )
             : updatePrices(getFundCollection(blockState), tokenPrices)
         : null;

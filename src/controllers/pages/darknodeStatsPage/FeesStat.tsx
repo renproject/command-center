@@ -41,24 +41,11 @@ export const FeesStat: React.FC<Props> = ({
             <>
                 <span>
                     <CurrencyIcon currency={quoteCurrency} />
-                    {quoteCurrency === Currency.BTC ? (
-                        <AnyTokenBalance
-                            amount={
-                                (
-                                    fees.get(Token.BTC) || {
-                                        amount: new BigNumber(0),
-                                    }
-                                ).amount
-                            }
-                            decimals={8}
-                        />
-                    ) : (
-                        <ConvertCurrency
-                            from={Currency.USD}
-                            to={quoteCurrency}
-                            amount={feesInUsd}
-                        />
-                    )}
+                    <ConvertCurrency
+                        from={Currency.USD}
+                        to={quoteCurrency}
+                        amount={feesInUsd}
+                    />
                 </span>
                 <div className="network-fees">
                     <div className="network-fees-inner">
