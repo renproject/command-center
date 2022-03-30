@@ -18,8 +18,6 @@ export enum Token {
     LUNA = "LUNA",
     DOGE = "DOGE",
     DGB = "DGB",
-    renBTC = "renBTC",
-    FTM = "FTM",
 }
 
 export type TokenString = string;
@@ -84,18 +82,6 @@ export const AllTokenDetails = OrderedMap<Token, TokenDetail>()
         coinGeckoID: "digibyte",
         feesToken: true,
     })
-    .set(Token.renBTC, {
-        symbol: "renBTC",
-        decimals: 8,
-        coinGeckoID: "renbtc",
-        feesToken: true,
-    })
-    .set(Token.FTM, {
-        symbol: "FTM",
-        decimals: 18,
-        coinGeckoID: "fantom",
-        feesToken: true,
-    });
 
 export const FeeTokens: OrderedMap<Token, TokenDetail> = AllTokenDetails.filter(
     (details) => details.feesToken,
