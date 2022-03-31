@@ -1,5 +1,5 @@
 import BigNumber from "bignumber.js";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import { Loading } from "@renproject/react-components";
 
@@ -26,10 +26,39 @@ import { updatePrices } from "../../common/tokenBalanceUtils";
 import { mergeFees } from "../darknodePage/blocks/FeesBlockController";
 import { OverviewDiv } from "./DarknodeStatsStyles";
 import { FeesStat } from "./FeesStat";
+import { TokenAmount } from "../../../lib/graphQL/queries/queries";
+import { OrderedMap } from "immutable";
+import { Token } from "../../../lib/ethereum/tokens";
 
 const REN_TOTAL_SUPPLY = new BigNumber(1000000000);
+interface ZapperToken {
+    decimals: number;
+    symbol: string;
+    balanceRaw: string;
+    balanceUSD: number;
+}
+interface ZapperAsset {
+    tokens: ZapperToken;
+    balanceUSD: number;
+}
+interface ZapperProduct {
+    assets: ZapperAsset[];
+}
+interface ZapperBalance {
+    [key: string]: {
+        products: ZapperProduct[];
+    };
+}
+
+const WithdrawAddresses = [
+    "0x7556aea47efc2a628e7eebc325de44572454b1e9",
+    "0x5291fbb0ee9f51225f0928ff6a83108c86327636",
+];
 
 export const DarknodeStatsPage = () => {
+    const [withdraw, setWithdraw] = useState<OrderedMap<Token, TokenAmount>>(
+        OrderedMap<Token, TokenAmount>(),
+    );
     const { renVM } = GraphContainer.useContainer();
     const {
         currentCycle,
@@ -57,6 +86,63 @@ export const DarknodeStatsPage = () => {
 
     const { renNetwork } = Web3Container.useContainer();
     const { darknodes, fetchDarknodes } = MapContainer.useContainer();
+
+    useEffect(() => {
+        // Public API Key '96e0cc51-a62e-42ca-acee-910ea7d2a241' is from https://docs.zapper.fi/zapper-api/endpoints
+        const sse = new EventSource(
+            `https://api.zapper.fi/v1/balances?addresses%5B%5D=${WithdrawAddresses.join(
+                "&addresses%5B%5D=",
+            )}&api_key=96e0cc51-a62e-42ca-acee-910ea7d2a241`,
+        );
+        sse.addEventListener("balance", function (e) {
+            const parsedData = JSON.parse((e as MessageEvent).data);
+            if (
+                parsedData.network === "ethereum" ||
+                parsedData.network === "fantom"
+            ) {
+                for (let [key, value] of Object.entries(
+                    parsedData.balances as ZapperBalance,
+                )) {
+                    value.products.forEach((product: ZapperProduct) => {
+                        product.assets.forEach((asset: ZapperAsset) => {
+                            const token = asset.tokens[0] as ZapperToken;
+                            const amount = new BigNumber(token.balanceRaw);
+                            const amountInUsd = new BigNumber(token.balanceUSD);
+                            const symbol = token.symbol as Token;
+                            const decimals = token.decimals;
+                            setWithdraw((prevState) =>
+                                prevState.set(symbol, {
+                                    amount: prevState.has(symbol)
+                                        ? (
+                                              prevState.get(
+                                                  symbol,
+                                              ) as TokenAmount
+                                          ).amount.plus(amount)
+                                        : amount,
+                                    amountInEth: new BigNumber(0),
+                                    amountInUsd: prevState.has(symbol)
+                                        ? (
+                                              prevState.get(
+                                                  symbol,
+                                              ) as TokenAmount
+                                          ).amountInUsd.plus(amountInUsd)
+                                        : amountInUsd,
+                                    asset: { decimals },
+                                    symbol,
+                                }),
+                            );
+                        });
+                    });
+                }
+            }
+        });
+        sse.addEventListener("start", function (e) {
+            setWithdraw(OrderedMap<Token, TokenAmount>());
+        });
+        sse.addEventListener("end", function (e) {
+            sse.close();
+        });
+    }, []);
 
     useEffect(() => {
         fetchBlockState().catch(console.error);
@@ -213,8 +299,22 @@ export const DarknodeStatsPage = () => {
 
     // Community fund
     const fundCollection = blockState
-        ? updatePrices(getFundCollection(blockState), tokenPrices)
+        ? renNetwork.name === "mainnet"
+            ? updatePrices(
+                  getFundCollection(blockState),
+                  tokenPrices,
+              ).mergeWith(
+                  (oldVal, newVal) => ({
+                      ...oldVal,
+                      amount: oldVal.amount.plus(newVal.amount),
+                      amountInEth: oldVal.amountInEth.plus(newVal.amountInEth),
+                      amountInUsd: oldVal.amountInUsd.plus(newVal.amountInUsd),
+                  }),
+                  withdraw,
+              )
+            : updatePrices(getFundCollection(blockState), tokenPrices)
         : null;
+
     const fundCollectionInUsd = fundCollection
         ? fundCollection.reduce(
               (sum, entry) =>

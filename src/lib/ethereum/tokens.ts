@@ -81,7 +81,7 @@ export const AllTokenDetails = OrderedMap<Token, TokenDetail>()
         decimals: 8, // this was 18
         coinGeckoID: "digibyte",
         feesToken: true,
-    });
+    })
 
 export const FeeTokens: OrderedMap<Token, TokenDetail> = AllTokenDetails.filter(
     (details) => details.feesToken,
