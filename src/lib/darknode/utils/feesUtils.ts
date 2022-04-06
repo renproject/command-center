@@ -1,6 +1,6 @@
 import BigNumber from "bignumber.js";
 import { updatePrice } from "../../../controllers/common/tokenBalanceUtils";
-import { FeeTokens, Token, TokenPrices, tokenFeeDivisorPower } from "../../ethereum/tokens";
+import { FeeTokens, Token, TokenPrices, AllTokenDetails } from "../../ethereum/tokens";
 import { TokenAmount } from "../../graphQL/queries/queries";
 import {
     BlockState,
@@ -59,9 +59,9 @@ export const getMinimumAmountForToken = (
     }
     const { minimumAmount } = data;
     const fee = getClaimFeeForToken(symbol, blockState);
-    const token = Token[symbol];
-    return tokenFeeDivisorPower.has(token) ?
-        fee.plus(minimumAmount).div(new BigNumber(Math.pow(10, tokenFeeDivisorPower.get(token) || 1))) :
+    const feeDivisor = AllTokenDetails.get(Token[symbol])?.feeDivisor;
+    return feeDivisor ?
+        fee.plus(minimumAmount).div(new BigNumber(Math.pow(10, feeDivisor))) :
         fee.plus(minimumAmount);
 };
 

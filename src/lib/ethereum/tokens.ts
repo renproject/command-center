@@ -27,6 +27,7 @@ interface TokenDetail {
     decimals: number;
     coinGeckoID: string;
     feesToken?: boolean;
+    feeDivisor?: number;
 }
 
 export const AllTokenDetails = OrderedMap<Token, TokenDetail>()
@@ -69,6 +70,7 @@ export const AllTokenDetails = OrderedMap<Token, TokenDetail>()
         decimals: 6,
         coinGeckoID: "terra-luna",
         feesToken: true,
+        feeDivisor: 5
     })
     .set(Token.DOGE, {
         symbol: "DOGE",
@@ -119,6 +121,3 @@ export const getPrices = async (
         }, Promise.resolve(OrderedMap<Token, Map<Currency, number>>()));
 
 export type TokenPrices = OrderedMap<Token, Map<Currency, number>>;
-
-export const tokenFeeDivisorPower = OrderedMap<Token, number>()
-    .set(Token.LUNA, 5)
