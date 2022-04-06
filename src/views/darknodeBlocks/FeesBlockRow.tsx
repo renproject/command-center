@@ -186,7 +186,7 @@ export const FeesBlockRow: React.FC<FeesBlockRowProps> = ({
                         </>
                     ) : null}
                 </td>
-                {true || tab === FeesBlockTab.Withdrawable &&
+                {tab === FeesBlockTab.Withdrawable &&
                     isOperator &&
                     canWithdraw ? (
                     <td>
