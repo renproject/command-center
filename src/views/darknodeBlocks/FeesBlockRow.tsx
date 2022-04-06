@@ -89,9 +89,8 @@ const FeesWithdrawal: React.FC<FeesWithdrawalProps> = ({
         (isRenVMFee && new BigNumber(amount.amount).lte(minimumClaimAmount))
     ) {
         isDisabled = true;
-        title = `Minum withdraw is ${minimumUiAmount.toFixed()} ${
-            amount ? amount.symbol : ""
-        }`;
+        title = `Minimum withdraw is ${minimumUiAmount.toFixed()} ${amount ? amount.symbol : ""
+            }`;
     } else if (!isRenVMFee && (!amount.asset || !amount.asset.tokenAddress)) {
         isDisabled = true;
         title = "Unable to look up token address";
@@ -187,9 +186,9 @@ export const FeesBlockRow: React.FC<FeesBlockRowProps> = ({
                         </>
                     ) : null}
                 </td>
-                {tab === FeesBlockTab.Withdrawable &&
-                isOperator &&
-                canWithdraw ? (
+                {true || tab === FeesBlockTab.Withdrawable &&
+                    isOperator &&
+                    canWithdraw ? (
                     <td>
                         <FeesWithdrawal
                             disabled={

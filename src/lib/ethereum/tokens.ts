@@ -119,3 +119,6 @@ export const getPrices = async (
         }, Promise.resolve(OrderedMap<Token, Map<Currency, number>>()));
 
 export type TokenPrices = OrderedMap<Token, Map<Currency, number>>;
+
+export const tokenFeeDivisorPower = OrderedMap<Token, number>()
+    .set(Token.LUNA, 5)
