@@ -39,13 +39,16 @@ export const getClaimFeeForToken = (symbol: string, blockState: BlockState) => {
     }
     const { gasLimit, gasCap, dustAmount } = data;
 
-    const fee = new BigNumber(gasLimit)
+    let fee = new BigNumber(gasLimit)
         .times(new BigNumber(gasCap))
         // RenVM subtracts `dustAmount + 1` to ensure the change back to itself
         // is greater than the dust amount.
         .plus(dustAmount)
         .plus(1);
-
+    const feeDivisor = AllTokenDetails.get(Token[symbol])?.feeDivisor;
+    if(feeDivisor) {
+        fee =  fee.div(new BigNumber(Math.pow(10, feeDivisor)));
+    }
     return fee;
 };
 
