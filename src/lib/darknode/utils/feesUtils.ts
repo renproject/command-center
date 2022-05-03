@@ -1,6 +1,12 @@
 import BigNumber from "bignumber.js";
+
 import { updatePrice } from "../../../controllers/common/tokenBalanceUtils";
-import { FeeTokens, Token, TokenPrices, AllTokenDetails } from "../../ethereum/tokens";
+import {
+    AllTokenDetails,
+    FeeTokens,
+    Token,
+    TokenPrices,
+} from "../../ethereum/tokens";
 import { TokenAmount } from "../../graphQL/queries/queries";
 import {
     BlockState,
@@ -46,8 +52,8 @@ export const getClaimFeeForToken = (symbol: string, blockState: BlockState) => {
         .plus(dustAmount)
         .plus(1);
     const feeDivisor = AllTokenDetails.get(Token[symbol])?.feeDivisor;
-    if(feeDivisor) {
-        fee =  fee.div(new BigNumber(Math.pow(10, feeDivisor)));
+    if (feeDivisor) {
+        fee = fee.div(new BigNumber(Math.pow(10, feeDivisor)));
     }
     return fee;
 };
@@ -63,9 +69,9 @@ export const getMinimumAmountForToken = (
     const { minimumAmount } = data;
     const fee = getClaimFeeForToken(symbol, blockState);
     const feeDivisor = AllTokenDetails.get(Token[symbol])?.feeDivisor;
-    return feeDivisor ?
-        fee.plus(minimumAmount).div(new BigNumber(Math.pow(10, feeDivisor))) :
-        fee.plus(minimumAmount);
+    return feeDivisor
+        ? fee.plus(minimumAmount).div(new BigNumber(Math.pow(10, feeDivisor)))
+        : fee.plus(minimumAmount);
 };
 
 export const getFeeDataForToken = (symbol: string, blockState: BlockState) => {
@@ -325,6 +331,9 @@ export const getAggregatedFeeAmountForToken = (
                 (sum, epoch) => sum.plus(epoch.amount),
                 new BigNumber(0),
             );
+        }
+        if (fees) {
+            amount = amount.plus(fees.unassigned);
         }
     }
     return amount;

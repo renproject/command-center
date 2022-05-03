@@ -1,4 +1,5 @@
 import BigNumber from "bignumber.js";
+import { OrderedMap } from "immutable";
 import React, { useEffect, useMemo, useState } from "react";
 
 import { Loading } from "@renproject/react-components";
@@ -8,8 +9,12 @@ import {
     getFeesCollection,
     getFundCollection,
 } from "../../../lib/darknode/utils/feesUtils";
+import { Token } from "../../../lib/ethereum/tokens";
 import { isDefined } from "../../../lib/general/isDefined";
-import { multiplyTokenAmount } from "../../../lib/graphQL/queries/queries";
+import {
+    multiplyTokenAmount,
+    TokenAmount,
+} from "../../../lib/graphQL/queries/queries";
 import { GithubAPIContainer } from "../../../store/githubApiContainer";
 import { GraphContainer } from "../../../store/graphContainer";
 import { MapContainer } from "../../../store/mapContainer";
@@ -26,9 +31,6 @@ import { updatePrices } from "../../common/tokenBalanceUtils";
 import { mergeFees } from "../darknodePage/blocks/FeesBlockController";
 import { OverviewDiv } from "./DarknodeStatsStyles";
 import { FeesStat } from "./FeesStat";
-import { TokenAmount } from "../../../lib/graphQL/queries/queries";
-import { OrderedMap } from "immutable";
-import { Token } from "../../../lib/ethereum/tokens";
 
 const REN_TOTAL_SUPPLY = new BigNumber(1000000000);
 interface ZapperToken {
@@ -230,14 +232,13 @@ export const DarknodeStatsPage = () => {
               new BigNumber(0),
           )
         : null;
-    const totalFeesInUsdMerged = totalFeesRenVmInUsd;
-    // totalFeesRenVmInUsd
-    // ? totalFeesRenVmInUsd.plus(totalFeesInUsd || 0)
-    // : null;
-    const totalFeesMerged = totalFeesRenVm;
-    // fees && totalFeesRenVm
-    //     ? mergeFees(totalFeesRenVm, fees)
-    //     : totalFeesRenVm;
+    const totalFeesInUsdMerged = totalFeesRenVmInUsd
+        ? totalFeesRenVmInUsd.plus(totalFeesInUsd || 0)
+        : null;
+    const totalFeesMerged =
+        fees && totalFeesRenVm
+            ? mergeFees(totalFeesRenVm, fees)
+            : totalFeesRenVm;
 
     const currentInUsd =
         currentCycle && pendingTotalInUsd.get(currentCycle, undefined);
