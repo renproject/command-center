@@ -68,6 +68,12 @@
         }
     },
     "mainnet": {
+        "zeroDAO": {
+            "name": "zeroDAO",
+            "url": "bridge.zerodao.com",
+            "urlHref": "https://bridge.zerodao.com",
+            "logo": "/integrators/zeroDAO.svg"
+        },
         "integrator-0x646972656374": {
             "name": "Direct burns",
             "url": "Burns from non-contract accounts including through RenBridge",
