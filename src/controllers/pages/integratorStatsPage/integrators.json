@@ -68,7 +68,7 @@
         }
     },
     "mainnet": {
-        "zeroDAO": {
+        "zeroDAO-0xa8bd3ffebf92538b3b830dd5b2516a5111db164d": {
             "name": "zeroDAO",
             "url": "bridge.zerodao.com",
             "urlHref": "https://bridge.zerodao.com",
