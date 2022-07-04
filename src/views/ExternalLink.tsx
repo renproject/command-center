@@ -5,7 +5,7 @@ interface Props extends React.AnchorHTMLAttributes<HTMLAnchorElement> {}
 export const URLs = {
     renProject: "https://renproject.io",
     renProjectDevelopers: "https://renproject.io/developers",
-    feedbackButton: "https://renprotocol.typeform.com/to/YdmFyB",
+    feedbackButton: "https://ko93wg99ztk.typeform.com/RenIssueTicket",
     ccGithub: "https://github.com/renproject/command-center",
     gitbook: "https://docs.renproject.io/ren",
     gitbookDevelopers: "https://docs.renproject.io/developers",
