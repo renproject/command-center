@@ -22,5 +22,5 @@ export const DEFAULT_REQUEST_TIMEOUT = 60 * 1000;
 // TODO: Once testnet dev tools are deployed, add link.
 export const DEV_TOOLS =
     DEFAULT_REN_NETWORK === "testnet"
-        ? "https://renproject.github.io/dev-tools-testnet/#"
-        : "https://renproject.github.io/dev-tools/#";
+        ? "https://explorer-testnet.renproject.io"
+        : "https://explorer.renproject.io";
