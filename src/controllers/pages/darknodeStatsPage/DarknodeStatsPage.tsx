@@ -138,7 +138,6 @@ export const DarknodeStatsPage = () => {
                         if (item.breakdown.length !== 0) {
                             item.breakdown.forEach((i: ZapperAsset) => {
                                 i.breakdown.forEach((balance: ZapperAsset) => {
-                                    console.log(balance);
                                     const token =
                                         balance.context as ZapperToken;
                                     const amountInUsd = new BigNumber(
