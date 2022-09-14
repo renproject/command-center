@@ -46,6 +46,7 @@ interface ZapperAsset {
     displayProps: {
         label: string;
     };
+    breakdown: [];
 }
 
 const WithdrawAddresses = [
@@ -98,6 +99,30 @@ export const DarknodeStatsPage = () => {
         };
     };
 
+    const updateWithdraw = (
+        token: ZapperToken,
+        symbol: Token,
+        amountInUsd: BigNumber,
+    ) => {
+        const amount = new BigNumber(token.balanceRaw);
+        const decimals = token.decimals;
+        setWithdraw((prevState) =>
+            prevState.set(symbol, {
+                amount: prevState.has(symbol)
+                    ? (prevState.get(symbol) as TokenAmount).amount.plus(amount)
+                    : amount,
+                amountInEth: new BigNumber(0),
+                amountInUsd: prevState.has(symbol)
+                    ? (prevState.get(symbol) as TokenAmount).amountInUsd.plus(
+                          amountInUsd,
+                      )
+                    : amountInUsd,
+                asset: { decimals },
+                symbol,
+            }),
+        );
+    };
+
     useEffect(() => {
         const sse = new EventSource(
             `https://api.zapper.fi/v2/balances?addresses%5B%5D=${WithdrawAddresses.join(
@@ -110,30 +135,26 @@ export const DarknodeStatsPage = () => {
             if (parsedData.appId === "convex") {
                 parsedData.app.data[0].breakdown.forEach(
                     (item: ZapperAsset) => {
-                        const token = item.context as ZapperToken;
-                        const amount = new BigNumber(token.balanceRaw);
-                        const amountInUsd = new BigNumber(item.balanceUSD);
-                        const symbol = item.displayProps.label.split(
-                            "/",
-                        )[0] as Token;
-                        const decimals = token.decimals;
-                        setWithdraw((prevState) =>
-                            prevState.set(symbol, {
-                                amount: prevState.has(symbol)
-                                    ? (
-                                          prevState.get(symbol) as TokenAmount
-                                      ).amount.plus(amount)
-                                    : amount,
-                                amountInEth: new BigNumber(0),
-                                amountInUsd: prevState.has(symbol)
-                                    ? (
-                                          prevState.get(symbol) as TokenAmount
-                                      ).amountInUsd.plus(amountInUsd)
-                                    : amountInUsd,
-                                asset: { decimals },
-                                symbol,
-                            }),
-                        );
+                        if (item.breakdown.length !== 0) {
+                            item.breakdown.forEach((i: ZapperAsset) => {
+                                i.breakdown.forEach((balance: ZapperAsset) => {
+                                    console.log(balance);
+                                    const token =
+                                        balance.context as ZapperToken;
+                                    const amountInUsd = new BigNumber(
+                                        balance.balanceUSD,
+                                    );
+                                    const symbol = balance.displayProps
+                                        .label as Token;
+                                    updateWithdraw(token, symbol, amountInUsd);
+                                });
+                            });
+                        } else {
+                            const token = item.context as ZapperToken;
+                            const amountInUsd = new BigNumber(item.balanceUSD);
+                            const symbol = item.displayProps.label as Token;
+                            updateWithdraw(token, symbol, amountInUsd);
+                        }
                     },
                 );
             }
