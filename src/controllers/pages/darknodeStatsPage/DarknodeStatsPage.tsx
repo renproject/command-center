@@ -1,9 +1,9 @@
 import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
 import React, { useEffect, useMemo, useState } from "react";
-
 import { Loading } from "@renproject/react-components";
-
+// @ts-ignore
+import EventSource from "eventsource";
 import {
     getAggregatedFeesCollection,
     getFeesCollection,
@@ -31,6 +31,7 @@ import { updatePrices } from "../../common/tokenBalanceUtils";
 import { mergeFees } from "../darknodePage/blocks/FeesBlockController";
 import { OverviewDiv } from "./DarknodeStatsStyles";
 import { FeesStat } from "./FeesStat";
+import { ZAPPER_API_KEY } from "../../../lib/react/environmentVariables";
 
 const REN_TOTAL_SUPPLY = new BigNumber(1000000000);
 interface ZapperToken {
@@ -40,16 +41,12 @@ interface ZapperToken {
     balanceUSD: number;
 }
 interface ZapperAsset {
-    tokens: ZapperToken;
+    context: ZapperToken;
     balanceUSD: number;
-}
-interface ZapperProduct {
-    assets: ZapperAsset[];
-}
-interface ZapperBalance {
-    [key: string]: {
-        products: ZapperProduct[];
+    displayProps: {
+        label: string;
     };
+    breakdown: [];
 }
 
 const WithdrawAddresses = [
@@ -89,59 +86,114 @@ export const DarknodeStatsPage = () => {
     const { renNetwork } = Web3Container.useContainer();
     const { darknodes, fetchDarknodes } = MapContainer.useContainer();
 
-    useEffect(() => {
-        // Public API Key '96e0cc51-a62e-42ca-acee-910ea7d2a241' is from https://docs.zapper.fi/zapper-api/endpoints
-        const sse = new EventSource(
-            `https://api.zapper.fi/v1/balances?addresses%5B%5D=${WithdrawAddresses.join(
-                "&addresses%5B%5D=",
-            )}&api_key=96e0cc51-a62e-42ca-acee-910ea7d2a241`,
+    const generateEventSourceDict = (apiKey: string) => {
+        return {
+            withCredentials: true,
+            headers: {
+                "Content-Type": "text/event-stream",
+                "User-Agent": "Mozilla/5.0",
+                Authorization: `Basic ${Buffer.from(`${apiKey}:`).toString(
+                    "base64",
+                )}`,
+            },
+        };
+    };
+
+    const updateWithdraw = (
+        token: ZapperToken,
+        symbol: Token,
+        amountInUsd: BigNumber,
+    ) => {
+        const amount = new BigNumber(token.balanceRaw);
+        const decimals = token.decimals;
+        setWithdraw((prevState) =>
+            prevState.set(symbol, {
+                amount: prevState.has(symbol)
+                    ? (prevState.get(symbol) as TokenAmount).amount.plus(amount)
+                    : amount,
+                amountInEth: new BigNumber(0),
+                amountInUsd: prevState.has(symbol)
+                    ? (prevState.get(symbol) as TokenAmount).amountInUsd.plus(
+                          amountInUsd,
+                      )
+                    : amountInUsd,
+                asset: { decimals },
+                symbol,
+            }),
         );
-        sse.addEventListener("balance", function (e) {
-            const parsedData = JSON.parse((e as MessageEvent).data);
+    };
+
+    useEffect(() => {
+        const sse = new EventSource(
+            `https://api.zapper.fi/v2/balances?addresses%5B%5D=${WithdrawAddresses.join(
+                "&addresses%5B%5D=",
+            )}`,
+            generateEventSourceDict(ZAPPER_API_KEY),
+        );
+        sse.addEventListener("balance", function (e: MessageEvent) {
+            const parsedData = JSON.parse(e.data);
+            if (parsedData.appId === "convex") {
+                parsedData.app.data[0].breakdown.forEach(
+                    (item: ZapperAsset) => {
+                        if (item.breakdown.length !== 0) {
+                            item.breakdown.forEach((i: ZapperAsset) => {
+                                i.breakdown.forEach((balance: ZapperAsset) => {
+                                    const token =
+                                        balance.context as ZapperToken;
+                                    const amountInUsd = new BigNumber(
+                                        balance.balanceUSD,
+                                    );
+                                    const symbol = balance.displayProps
+                                        .label as Token;
+                                    updateWithdraw(token, symbol, amountInUsd);
+                                });
+                            });
+                        } else {
+                            const token = item.context as ZapperToken;
+                            const amountInUsd = new BigNumber(item.balanceUSD);
+                            const symbol = item.displayProps.label as Token;
+                            updateWithdraw(token, symbol, amountInUsd);
+                        }
+                    },
+                );
+            }
             if (
-                parsedData.network === "ethereum" ||
-                parsedData.network === "fantom"
+                parsedData.appId === "tokens" &&
+                (parsedData.network === "ethereum" ||
+                    parsedData.network === "fantom")
             ) {
-                for (let [key, value] of Object.entries(
-                    parsedData.balances as ZapperBalance,
+                for (let [_, wallet] of Object.entries(
+                    parsedData.balance.wallet as ZapperAsset,
                 )) {
-                    value.products.forEach((product: ZapperProduct) => {
-                        product.assets.forEach((asset: ZapperAsset) => {
-                            const token = asset.tokens[0] as ZapperToken;
-                            const amount = new BigNumber(token.balanceRaw);
-                            const amountInUsd = new BigNumber(token.balanceUSD);
-                            const symbol = token.symbol as Token;
-                            const decimals = token.decimals;
-                            setWithdraw((prevState) =>
-                                prevState.set(symbol, {
-                                    amount: prevState.has(symbol)
-                                        ? (
-                                              prevState.get(
-                                                  symbol,
-                                              ) as TokenAmount
-                                          ).amount.plus(amount)
-                                        : amount,
-                                    amountInEth: new BigNumber(0),
-                                    amountInUsd: prevState.has(symbol)
-                                        ? (
-                                              prevState.get(
-                                                  symbol,
-                                              ) as TokenAmount
-                                          ).amountInUsd.plus(amountInUsd)
-                                        : amountInUsd,
-                                    asset: { decimals },
-                                    symbol,
-                                }),
-                            );
-                        });
-                    });
+                    const token = wallet.context as ZapperToken;
+                    const amount = new BigNumber(token.balanceRaw);
+                    const amountInUsd = new BigNumber(wallet.balanceUSD);
+                    const symbol = token.symbol as Token;
+                    const decimals = token.decimals;
+                    setWithdraw((prevState) =>
+                        prevState.set(symbol, {
+                            amount: prevState.has(symbol)
+                                ? (
+                                      prevState.get(symbol) as TokenAmount
+                                  ).amount.plus(amount)
+                                : amount,
+                            amountInEth: new BigNumber(0),
+                            amountInUsd: prevState.has(symbol)
+                                ? (
+                                      prevState.get(symbol) as TokenAmount
+                                  ).amountInUsd.plus(amountInUsd)
+                                : amountInUsd,
+                            asset: { decimals },
+                            symbol,
+                        }),
+                    );
                 }
             }
         });
-        sse.addEventListener("start", function (e) {
+        sse.addEventListener("start", function (e: MessageEvent) {
             setWithdraw(OrderedMap<Token, TokenAmount>());
         });
-        sse.addEventListener("end", function (e) {
+        sse.addEventListener("end", function (e: MessageEvent) {
             sse.close();
         });
     }, []);

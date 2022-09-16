@@ -24,3 +24,5 @@ export const DEV_TOOLS =
     DEFAULT_REN_NETWORK === "testnet"
         ? "https://explorer-testnet.renproject.io"
         : "https://explorer.renproject.io";
+
+export const ZAPPER_API_KEY = process.env.REACT_APP_ZAPPER_KEY || "";
