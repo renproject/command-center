@@ -30,6 +30,7 @@ import { ReactComponent as WhiteBNB } from "./icons/white/bnb.svg";
 import { ReactComponent as WhiteBTC } from "./icons/white/btc.svg";
 import { ReactComponent as WhiteBUSD } from "./icons/white/busd.svg";
 import { ReactComponent as WhiteCRV } from "./icons/white/crv.svg";
+import { ReactComponent as WhiteCVX } from "./icons/white/cvx.svg";
 import { ReactComponent as WhiteDAI } from "./icons/white/dai.svg";
 import { ReactComponent as WhiteDGB } from "./icons/white/dgb.svg";
 import { ReactComponent as WhiteDOGE } from "./icons/white/doge.svg";
@@ -49,6 +50,8 @@ import { ReactComponent as WhiteSUSHI } from "./icons/white/sushi.svg";
 import { ReactComponent as WhiteUNI } from "./icons/white/uni.svg";
 import { ReactComponent as WhiteUSDC } from "./icons/white/usdc.svg";
 import { ReactComponent as WhiteUSDT } from "./icons/white/usdt.svg";
+import { ReactComponent as WhiteWBTC } from "./icons/white/wbtc.svg";
+import { ReactComponent as WhiteWETH } from "./icons/white/weth.svg";
 import { ReactComponent as WhiteZEC } from "./icons/white/zec.svg";
 
 const icons = {
@@ -80,6 +83,7 @@ const icons = {
         BTC: WhiteBTC,
         BUSD: WhiteBUSD,
         CRV: WhiteCRV,
+        CVX: WhiteCVX,
         DAI: WhiteDAI,
         DGB: WhiteDGB,
         DOGE: WhiteDOGE,
@@ -100,6 +104,8 @@ const icons = {
         UNI: WhiteUNI,
         USDC: WhiteUSDC,
         USDT: WhiteUSDT,
+        WBTC: WhiteWBTC,
+        WETH: WhiteWETH,
         ZEC: WhiteZEC,
     },
 };
