@@ -386,6 +386,7 @@ export const snapshotDataToVolumeData = (
     chain: TrackerChain,
     currency: TokenAmountType | Currency,
     tokenPrices: TokenPrices,
+    period: PeriodOption,
 ) => {
     const snapshots = getSnapshots(data);
     const { first, last } = getFirstAndLastSnapshot(snapshots);
@@ -411,7 +412,7 @@ export const snapshotDataToVolumeData = (
         let difference = new BigNumber(0);
         let differenceStandard = new BigNumber(0);
         let differenceQuote = new BigNumber(0);
-        if (lastEntry && firstEntry) {
+        if (lastEntry && firstEntry && period !== PeriodOption.ALL) {
             differenceQuote = new BigNumber(
                 getQuoteAmount(lastEntry, currency, assetsData, tokenPrices),
             ).minus(
@@ -508,6 +509,7 @@ export const snapshotDataToAllChainVolumeData = (
     type: TrackerVolumeType,
     currency: TokenAmountType | Currency,
     tokenPrices: TokenPrices,
+    period: PeriodOption,
 ) => {
     const assetsData = getAssetsData(data);
     let sum = new BigNumber(0);
@@ -519,6 +521,7 @@ export const snapshotDataToAllChainVolumeData = (
             chain,
             currency,
             tokenPrices,
+            period,
         );
         sum = sum.plus(difference);
         records = mergeAmountRecords(assetsData, records, amountRecords);

@@ -59,6 +59,7 @@ export const NetworkStatsPage = () => {
                   TrackerVolumeType.Locked,
                   quoteCurrency,
                   tokenPrices,
+                  volumePeriod,
               ).difference;
     }, [allVolumeData, tokenPrices, quoteCurrency]);
 
