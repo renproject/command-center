@@ -96,7 +96,6 @@ export const DoughnutChart: React.FC<Props> = ({
         () => getOptions(data, quoteCurrency),
         [data, quoteCurrency],
     );
-    console.log(options);
 
     return (
         <div

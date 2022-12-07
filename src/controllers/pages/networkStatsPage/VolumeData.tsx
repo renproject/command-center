@@ -118,6 +118,7 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
                     trackerChain,
                     quoteCurrency,
                     tokenPrices,
+                    volumePeriod
                 );
             }
             return snapshotDataToAllChainVolumeData(
@@ -125,6 +126,7 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
                 trackerType,
                 quoteCurrency,
                 tokenPrices,
+                volumePeriod
             );
         }
         return fallback;
