@@ -35,7 +35,7 @@ jobs:
     - name: DeployGHP
       uses: JamesIves/github-pages-deploy-action@v4
       with:
-        folder: build #folder
+        folder: build
 
 # FIXME: get the tests to pass
   # test:
