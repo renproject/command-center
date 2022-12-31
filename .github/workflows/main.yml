@@ -23,15 +23,21 @@ jobs:
     - name: lint
       run: yarn lint | true
 
-    - name: Build
-      run: yarn build
+    - run: yarn build
+      env:
+        CI: false
+        REACT_APP_BLOCKNATIVE_INFURA_KEY: ${{ secrets.REACT_APP_BLOCKNATIVE_INFURA_KEY }}
+        REACT_APP_BLOCKNATIVE_KEY: ${{ secrets.REACT_APP_BLOCKNATIVE_KEY }}
+        REACT_APP_DEV_INFURA_KEY: ${{ secrets.REACT_APP_DEV_INFURA_KEY }}
+        REACT_APP_INFURA_KEY: ${{ secrets.REACT_APP_INFURA_KEY }}
+        REACT_APP_SENTRY_DSN: ${{ secrets.REACT_APP_SENTRY_DSN }}
 
     - name: DeployGHP
       uses: JamesIves/github-pages-deploy-action@v4
       with:
         folder: build #folder
 
-  # FIXME: get the tests to pass
+# FIXME: get the tests to pass
   # test:
   #   runs-on: ubuntu-latest
   #   steps:
