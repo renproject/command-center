@@ -61,7 +61,7 @@ export const NetworkStatsPage = () => {
                   tokenPrices,
                   volumePeriod,
               ).difference;
-    }, [allVolumeData, tokenPrices, quoteCurrency]);
+    }, [allVolumeData, tokenPrices, quoteCurrency, volumePeriod]);
 
     const bondedRenAmount = numberOfDarknodes
         ? numberOfDarknodes.times(100000)

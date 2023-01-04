@@ -1,4 +1,4 @@
-import { Currency, CurrencyIcon, Loading } from "@renproject/react-components";
+import { Currency, Loading } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";

@@ -137,6 +137,7 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
         chainOption,
         quoteCurrency,
         tokenPrices,
+        volumePeriod
     ]);
 
     const linesData: Line[] = useMemo(() => {
