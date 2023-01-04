@@ -13,7 +13,8 @@
         "test": "react-scripts test --testPathIgnorePatterns=src/lib/ethereum",
         "test-contracts": "react-scripts test --testPathPattern=src/lib/ethereum --globalSetup=./src/test/globalSetup.ts --globalTeardown=./src/test/globalTeardown.ts",
         "start": "./.env || true; react-scripts start",
-        "build": "REACT_APP_SOURCE_VERSION=$SOURCE_VERSION react-scripts --max_old_space_size=4096 build",
+        "build": "env-cmd -f ./.env.gh-pages react-scripts --max_old_space_size=4096 build",
+        "postbuild": "echo $COMMIT_REF > build/build.html && cp build/index.html build/ipfs-404.html && cp build/index.html build/404.html",
         "analyze": "source-map-explorer 'build/static/js/*.js'",
         "eject": "react-scripts eject"
     },
@@ -54,6 +55,7 @@
         "bnc-onboard": "^1.34.1",
         "bs58": "^4.0.1",
         "d3-geo-projection": "^4.0.0",
+        "env-cmd": "^10.1.0",
         "ethereumjs-util": "^7.1.0",
         "eventsource": "^2.0.2",
         "graphql": "^15.5.1",

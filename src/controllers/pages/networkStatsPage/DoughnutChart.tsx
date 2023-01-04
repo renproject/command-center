@@ -145,7 +145,7 @@ export const DoughnutChart: React.FC<Props> = ({
                                                           <span className="overview--chart--legend--faded">
                                                               {standardAmount}{" "}
                                                               {token}
-                                                              {" - "}
+                                                              {/*{" - "}*/}
                                                           </span>
                                                       ) : entry.amount.isGreaterThan(
                                                             0,
@@ -157,12 +157,12 @@ export const DoughnutChart: React.FC<Props> = ({
                                                               {" - "}
                                                           </span>
                                                       ) : null}
-                                                      <CurrencyIcon
-                                                          currency={
-                                                              quoteCurrency
-                                                          }
-                                                      />
-                                                      {entry.quote.toFormat(2)}
+                                                      {/*<CurrencyIcon*/}
+                                                      {/*    currency={*/}
+                                                      {/*        quoteCurrency*/}
+                                                      {/*    }*/}
+                                                      {/*/>*/}
+                                                      {/*{entry.quote.toFormat(2)}*/}
                                                   </div>
                                               </div>
                                           );

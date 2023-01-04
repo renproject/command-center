@@ -1,21 +1,43 @@
 name: CI
 
-on: pull_request
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+
     - name: Setup Node.js environment
       uses: actions/setup-node@v2.1.0
+
     - name: Install dependencies
       run: yarn --skip-integrity-check
+
     - name: Verify dependencies
       run: yarn check --integrity
+
     - name: lint
       run: yarn lint | true
-  # FIXME: get the tests to pass
+
+    - run: yarn build
+      env:
+        CI: false
+        REACT_APP_BLOCKNATIVE_INFURA_KEY: ${{ secrets.REACT_APP_BLOCKNATIVE_INFURA_KEY }}
+        REACT_APP_BLOCKNATIVE_KEY: ${{ secrets.REACT_APP_BLOCKNATIVE_KEY }}
+        REACT_APP_DEV_INFURA_KEY: ${{ secrets.REACT_APP_DEV_INFURA_KEY }}
+        REACT_APP_INFURA_KEY: ${{ secrets.REACT_APP_INFURA_KEY }}
+        REACT_APP_SENTRY_DSN: ${{ secrets.REACT_APP_SENTRY_DSN }}
+
+    - name: DeployGHP
+      uses: JamesIves/github-pages-deploy-action@v4
+      with:
+        folder: build
+
+# FIXME: get the tests to pass
   # test:
   #   runs-on: ubuntu-latest
   #   steps:
