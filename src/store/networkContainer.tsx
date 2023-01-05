@@ -22,7 +22,7 @@ import {
 import { getDarknodePayment } from "../lib/ethereum/contract";
 import {
     DarknodeFeeStatus,
-    fetchDarknodeDetails,
+    fetchDarknodeDetails, fetchTokenTotalSupply,
     getOperatorDarknodes,
     NULL,
     RegistrationStatus,
@@ -563,12 +563,17 @@ const useNetworkContainer = () => {
         setPendingRewards(newPendingRewards);
     };
 
+    console.log("r:");
     const updateDarknodeDetails = async (
         darknodeID: string,
         latestRenVM?: RenVM,
     ) => {
+        console.log("r:update");
+
         const latestRenVMOrNull = latestRenVM || (await fetchRenVM());
         if (latestRenVMOrNull) {
+            console.log("r:fetching");
+
             const details = await fetchDarknodeDetails(
                 ethereumSubgraph,
                 latestRenVMOrNull,
@@ -579,6 +584,8 @@ const useNetworkContainer = () => {
                 subgraphOutOfSync,
             );
             storeDarknodeDetails(details);
+
+            await fetchTokenTotalSupply(web3, renNetwork);
         }
     };
 

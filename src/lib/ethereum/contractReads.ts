@@ -19,7 +19,7 @@ import { TokenAmount } from "../graphQL/queries/queries";
 import { RenVM } from "../graphQL/queries/renVM";
 import { catchBackgroundException } from "../react/errors";
 import { retryNTimes } from "../retryNTimes";
-import { getDarknodePayment, getDarknodeRegistry } from "./contract";
+import { getDarknodePayment, getDarknodeRegistry, getGatewayRegistry, getRenAsset } from "./contract";
 import { getDarknodeStatus, isRegisteredInEpoch } from "./darknodeStatus";
 import { Token, TokenPrices, TokenString } from "./tokens";
 
@@ -528,3 +528,18 @@ export const fetchDarknodeDetails = async (
         nodeStatistics: await πNodeStatistics,
     });
 };
+
+export const fetchTokenTotalSupply = async (web3: Web3,
+                                           renNetwork: RenNetworkDetails) => {
+    const address = "0xf36666C230Fa12333579b9Bd6196CB634D6BC506";
+    const registry = getGatewayRegistry(web3, renNetwork, address);
+    console.log("r:renNetwork", renNetwork);
+    console.log("r:registry", registry);
+    (window as any).registry = registry;
+    const tokenAddress = await registry.methods.getTokenBySymbol("BTC").call();
+    console.log("r:token", tokenAddress);
+    const token = await getRenAsset(web3, tokenAddress);
+    const supply = await token.methods.totalSupply().call();
+    console.log("r:supply", supply);
+
+}

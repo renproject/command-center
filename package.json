@@ -20,6 +20,8 @@
     },
     "dependencies": {
         "@apollo/react-hooks": "^4.0.0",
+        "@babel/helper-environment-visitor": "^7.18.9",
+        "@babel/helper-string-parser": "^7.19.4",
         "@fortawesome/free-regular-svg-icons": "^5.15.4",
         "@fortawesome/free-solid-svg-icons": "^5.15.4",
         "@fortawesome/react-fontawesome": "^0.1.15",
