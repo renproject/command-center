@@ -29,7 +29,7 @@ export const getRenToken = (web3: Web3, renNetwork: RenNetworkDetails) =>
     );
 
 const gatewayRegistryV2ABI = require("./contracts/GatewayRegistryV2.abi.json");
-export const getGatewayRegistry = (web3: Web3, renNetwork: RenNetworkDetails, address: string) => {
+export const getGatewayRegistry = (web3: Web3, address: string) => {
     return new web3.eth.Contract(
         gatewayRegistryV2ABI,
         address,

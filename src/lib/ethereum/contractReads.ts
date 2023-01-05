@@ -22,6 +22,7 @@ import { retryNTimes } from "../retryNTimes";
 import { getDarknodePayment, getDarknodeRegistry, getGatewayRegistry, getRenAsset } from "./contract";
 import { getDarknodeStatus, isRegisteredInEpoch } from "./darknodeStatus";
 import { Token, TokenPrices, TokenString } from "./tokens";
+import { getReadOnlyWeb3 } from "./getWeb3";
 
 export const NULL = "0x0000000000000000000000000000000000000000";
 
@@ -529,14 +530,121 @@ export const fetchDarknodeDetails = async (
     });
 };
 
-export const fetchTokenTotalSupply = async (web3: Web3,
-                                           renNetwork: RenNetworkDetails) => {
-    const address = "0xf36666C230Fa12333579b9Bd6196CB634D6BC506";
-    const registry = getGatewayRegistry(web3, renNetwork, address);
-    console.log("r:renNetwork", renNetwork);
+const registries = {
+    "Arbitrum": "0xf36666C230Fa12333579b9Bd6196CB634D6BC506",
+    "Avalanche": "0xf36666C230Fa12333579b9Bd6196CB634D6BC506",
+    "BinanceSmartChain": "0xf36666C230Fa12333579b9Bd6196CB634D6BC506",
+    "Catalog": "0x44c2CdaE368F90544A01522C413376fC72ebd4F2",
+    "Ethereum": "0xf36666C230Fa12333579b9Bd6196CB634D6BC506",
+    "Fantom": "0xf36666C230Fa12333579b9Bd6196CB634D6BC506",
+    "Kava": "0xf36666C230Fa12333579b9Bd6196CB634D6BC506",
+    "Moonbeam": "0xf36666C230Fa12333579b9Bd6196CB634D6BC506",
+    "Optimism": "0xf36666C230Fa12333579b9Bd6196CB634D6BC506",
+    "Polygon": "0xf36666C230Fa12333579b9Bd6196CB634D6BC506",
+    "Solana": "REGrPFKQhRneFFdUV3e9UDdzqUJyS6SKj88GdXFCRd2"
+}
+
+const getRegistry = (chain: string) => {
+    if(registries[chain]){
+        return registries[chain]
+    }
+    return "";
+}
+
+export const rpcUrls = {
+    "Ethereum": [
+        "https://cloudflare-eth.com",
+        "https://mainnet.infura.io/v3/${INFURA_API_KEY}",
+        "wss://mainnet.infura.io/ws/v3/${INFURA_API_KEY}",
+        "https://api.mycryptoapi.com/eth"
+    ],
+    "BinanceSmartChain": [
+        "https://bsc-dataseed1.binance.org",
+        "https://bsc-dataseed2.binance.org",
+        "https://bsc-dataseed3.binance.org",
+        "https://bsc-dataseed4.binance.org",
+        "https://bsc-dataseed1.defibit.io",
+        "https://bsc-dataseed2.defibit.io",
+        "https://bsc-dataseed3.defibit.io",
+        "https://bsc-dataseed4.defibit.io",
+        "https://bsc-dataseed1.ninicoin.io",
+        "https://bsc-dataseed2.ninicoin.io",
+        "https://bsc-dataseed3.ninicoin.io",
+        "https://bsc-dataseed4.ninicoin.io",
+        "wss://bsc-ws-node.nariox.org",
+        "https://bsc-dataseed.binance.org",
+        "https://rpc.ankr.com/bsc",
+        "https://bscrpc.com",
+        "https://bsc.mytokenpocket.vip",
+        "https://binance.nodereal.io",
+        "https://rpc-bsc.bnb48.club"
+    ],
+    "Polygon": [
+        "https://polygon-rpc.com",
+        "https://rpc-mainnet.matic.network",
+        "https://matic-mainnet.chainstacklabs.com",
+        "https://rpc-mainnet.maticvigil.com",
+        "https://rpc-mainnet.matic.quiknode.pro",
+        "https://matic-mainnet-full-rpc.bwarelabs.com",
+        "https://matic-mainnet-archive-rpc.bwarelabs.com",
+        "https://poly-rpc.gateway.pokt.network",
+        "https://rpc.ankr.com/polygon",
+        "https://polygon-mainnet.public.blastapi.io",
+        "https://polygon-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}",
+        "wss://polygon-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}"
+    ],
+    "Avalanche": [
+        "https://api.avax.network/ext/bc/C/rpc",
+        "https://rpc.ankr.com/avalanche",
+        "https://ava-mainnet.public.blastapi.io/ext/bc/C/rpc"
+    ],
+    "Arbitrum": [
+        "https://arb1.arbitrum.io/rpc",
+        "https://rpc.ankr.com/arbitrum",
+        "https://arb-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}"
+    ],
+    "Fantom": [
+        "https://rpc.ftm.tools",
+        "https://fantom-mainnet.gateway.pokt.network/v1/lb/62759259ea1b320039c9e7ac",
+        "https://rpc.ankr.com/fantom",
+        "https://rpc.fantom.network",
+        "https://rpc2.fantom.network",
+        "https://rpc3.fantom.network",
+        "https://rpcapi.fantom.network",
+        "https://fantom-mainnet.public.blastapi.io"
+    ],
+    "Kava": [
+        "https://evm.kava.io",
+        "https://evm2.kava.io",
+        "wss://wevm.kava.io",
+        "wss://wevm2.kava.io"
+    ],
+    "Moonbeam": [
+        "https://rpc.api.moonbeam.network",
+        "wss://wss.api.moonbeam.network"
+    ],
+    "Optimism": [
+        "https://mainnet.optimism.io/",
+        "https://opt-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}",
+        "wss://opt-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}"
+    ]
+}
+
+export const getRpcUrl  = (chain: string) => {
+    if(rpcUrls[chain]){
+        return rpcUrls[chain][0];
+    }
+    return "";
+}
+
+export const fetchTokenTotalSupply = async (chain: string, symbol: string) => {
+    const registryAddress = getRegistry(chain);
+    const rpcUrl = getRpcUrl(chain);
+    const web3 = getReadOnlyWeb3(rpcUrl);
+    const registry = getGatewayRegistry(web3, registryAddress);
     console.log("r:registry", registry);
     (window as any).registry = registry;
-    const tokenAddress = await registry.methods.getTokenBySymbol("BTC").call();
+    const tokenAddress = await registry.methods.getTokenBySymbol(symbol).call();
     console.log("r:token", tokenAddress);
     const token = await getRenAsset(web3, tokenAddress);
     const supply = await token.methods.totalSupply().call();

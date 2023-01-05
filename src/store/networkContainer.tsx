@@ -585,7 +585,6 @@ const useNetworkContainer = () => {
             );
             storeDarknodeDetails(details);
 
-            await fetchTokenTotalSupply(web3, renNetwork);
         }
     };
 

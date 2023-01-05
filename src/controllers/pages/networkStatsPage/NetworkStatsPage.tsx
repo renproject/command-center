@@ -16,6 +16,8 @@ import { NetworkStatsStyles } from "./NetworkStatsStyles";
 import { PeriodSelector } from "./PeriodSelector";
 import { VolumeStats } from "./VolumeData";
 import { VolumeDataContainer } from "./VolumeDataContainer";
+import { ValueStats } from "./ValueData";
+import { fetchTokenTotalSupply } from "../../../lib/ethereum/contractReads";
 
 const volumeTooltipRenderer = (period: PeriodOption, chain: ChainOption) => {
     const chainLabel =
@@ -94,6 +96,10 @@ export const NetworkStatsPage = () => {
         [blockState],
     );
 
+
+    fetchTokenTotalSupply("Ethereum", "BTC").catch(console.error);
+
+
     return (
         <NetworkStatsStyles className="network-stats container">
             {/* <div className="no-xl-or-larger col-lg-12 col-xl-4">
@@ -116,18 +122,21 @@ export const NetworkStatsPage = () => {
                     </div>
                 </div>
                 <Stats>
-                    <VolumeStats
-                        volumeData={volumeData || {}}
-                        volumeLoading={volumeLoading}
-                        volumeError={volumeError}
-                        volumePeriod={volumePeriod}
-                        trackerType={TrackerVolumeType.Transacted}
-                        title="Volume"
-                        titleTooltip="Total amount of volume transacted via RenVM."
-                        historyChartLabel="Accumulative Volume"
-                        tooltipRenderer={volumeTooltipRenderer}
-                        chainOption={chainOption}
-                    />
+                    <ValueStats chainOption={chainOption} />
+                    <div style={{display: "none"}}>
+                        <VolumeStats
+                            volumeData={volumeData || {}}
+                            volumeLoading={volumeLoading}
+                            volumeError={volumeError}
+                            volumePeriod={volumePeriod}
+                            trackerType={TrackerVolumeType.Transacted}
+                            title="Volume"
+                            titleTooltip="Total amount of volume transacted via RenVM."
+                            historyChartLabel="Accumulative Volume"
+                            tooltipRenderer={volumeTooltipRenderer}
+                            chainOption={chainOption}
+                        />
+                    </div>
                     <VolumeStats
                         volumeData={volumeData || {}}
                         volumeLoading={volumeLoading}
