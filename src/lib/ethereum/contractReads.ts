@@ -550,7 +550,7 @@ const getRegistry = (chain: string) => {
     }
     return "";
 }
-
+/* eslint-disable */
 export const rpcUrls = {
     "Ethereum": [
         "https://cloudflare-eth.com",

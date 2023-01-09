@@ -38,7 +38,7 @@ const getOptions = (seriesData: Line[], lockedMode = false) => ({
 
     chart: {
         backgroundColor: null,
-        height: "80%",
+        height: lockedMode ? "89%" : "80%",
     },
 
     yAxis: Array.from(
@@ -90,7 +90,7 @@ interface Props {
 export const Graph: React.FC<Props> = ({ lines, lockedMode }) => {
     const options = useMemo(
         () => getOptions(lines.filter((line) => line !== undefined) as Line[], lockedMode),
-        [lines],
+        [lines, lockedMode],
     );
 
     console.log("r: opts", options);

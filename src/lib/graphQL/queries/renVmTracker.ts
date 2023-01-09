@@ -5,12 +5,14 @@ import { ApolloClient, gql } from "@apollo/react-hooks";
 import { RenNetwork } from "@renproject/interfaces";
 import { Currency } from "@renproject/react-components";
 
-import { getConversionRate } from "../../../controllers/common/tokenBalanceUtils";
+import { convertTokenAmount, getConversionRate } from "../../../controllers/common/tokenBalanceUtils";
 import { ChainOption } from "../../../controllers/pages/networkStatsPage/ChainSelector";
 import { TokenPrices } from "../../ethereum/tokens";
 import { convertToStandardAmount } from "../../general/tokenAmountUtils";
 import { DEFAULT_REN_NETWORK } from "../../react/environmentVariables";
 import { PeriodOption } from "../volumes";
+import { TokenSupplies } from "../../../controllers/pages/networkStatsPage/VolumeDataContainer";
+import { getTokenSupply } from "../../../controllers/pages/networkStatsPage/VolumeData";
 
 const HISTORIC_RESOLUTION = 50;
 
@@ -387,6 +389,8 @@ export const snapshotDataToVolumeData = (
     currency: TokenAmountType | Currency,
     tokenPrices: TokenPrices,
     period: PeriodOption,
+    tokenSupplies: TokenSupplies,
+    lockedMode = false
 ) => {
     const snapshots = getSnapshots(data);
     const { first, last } = getFirstAndLastSnapshot(snapshots);
@@ -404,15 +408,27 @@ export const snapshotDataToVolumeData = (
 
     const assets = assetsData.map((entry) => entry.asset);
     const amountRecords: BigNumberRecord = {};
-
+    console.log("r: assetsData", assetsData); //TODO: USDT decimals is 6 here
     assets.forEach((asset) => {
         const lastEntry = endAmounts.find((entry) => entry.asset === asset);
         const firstEntry = startAmounts.find((entry) => entry.asset === asset);
-
         let difference = new BigNumber(0);
         let differenceStandard = new BigNumber(0);
         let differenceQuote = new BigNumber(0);
-        if (lastEntry && firstEntry && period !== PeriodOption.ALL) {
+        const tokenSupply = getTokenSupply(tokenSupplies, chain, asset);
+        if (lockedMode && tokenSupply !== null) {
+            difference = new BigNumber(
+                tokenSupply
+            )
+            const decimals =
+                assetsData.find((data) => data.asset === asset)?.decimals ||
+                0;
+            differenceStandard = new BigNumber(tokenSupply).shiftedBy(-decimals);
+            const rate = getConversionRate(asset as Currency, currency as Currency, tokenPrices);
+            console.log("r: rate", asset, currency, rate);
+            differenceQuote = convertTokenAmount(differenceStandard, asset as any, currency as Currency, tokenPrices);
+        }
+        else if (lastEntry && firstEntry && period !== PeriodOption.ALL) {
             differenceQuote = new BigNumber(
                 getQuoteAmount(lastEntry, currency, assetsData, tokenPrices),
             ).minus(
@@ -510,6 +526,8 @@ export const snapshotDataToAllChainVolumeData = (
     currency: TokenAmountType | Currency,
     tokenPrices: TokenPrices,
     period: PeriodOption,
+    tokenSupplies: TokenSupplies,
+    lockedMode = false
 ) => {
     const assetsData = getAssetsData(data);
     let sum = new BigNumber(0);
@@ -522,10 +540,22 @@ export const snapshotDataToAllChainVolumeData = (
             currency,
             tokenPrices,
             period,
+            tokenSupplies,
+            lockedMode
         );
-        sum = sum.plus(difference);
+
+        if (lockedMode){
+            sum = sum.plus(difference);
+        } else {
+            sum = sum.plus(difference);
+        }
         records = mergeAmountRecords(assetsData, records, amountRecords);
     });
+
+    if (lockedMode){
+        console.log("r: records", records, assetsData);
+    }
+
     return { difference: sum, amountRecords: records };
 };
 

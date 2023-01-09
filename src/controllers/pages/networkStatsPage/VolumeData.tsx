@@ -115,6 +115,7 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
                                                             volumeError,
                                                             chainOption,
                                                             lockedMode = false,
+                                                            tokenSupplies,
                                                         }) => {
     const [volumeTab, setVolumeTab] = useState<StatTab>(StatTab.History);
 
@@ -135,6 +136,8 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
                     quoteCurrency,
                     tokenPrices,
                     volumePeriod,
+                    tokenSupplies,
+                    lockedMode,
                 );
             }
             return snapshotDataToAllChainVolumeData(
@@ -143,6 +146,8 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
                 quoteCurrency,
                 tokenPrices,
                 volumePeriod,
+                tokenSupplies,
+                lockedMode,
             );
         }
         return fallback;
@@ -154,6 +159,8 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
         quoteCurrency,
         tokenPrices,
         volumePeriod,
+        tokenSupplies,
+        lockedMode,
     ]);
 
     const linesData: Line[] = useMemo(() => {
@@ -209,6 +216,7 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
         volumeData,
         trackerType,
         chainOption,
+        lockedMode,
     ]);
 
     const volumePeriodTotal = calculatedVolumeData.difference;
@@ -279,6 +287,7 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
                                 title={title}
                                 quoteCurrency={quoteCurrency}
                                 data={calculatedVolumeData.amountRecords}
+                                lockedMode={lockedMode}
                             />
                         )}
                     </>

@@ -22,7 +22,7 @@ import {
 import { getDarknodePayment } from "../lib/ethereum/contract";
 import {
     DarknodeFeeStatus,
-    fetchDarknodeDetails, fetchTokenTotalSupply,
+    fetchDarknodeDetails,
     getOperatorDarknodes,
     NULL,
     RegistrationStatus,
@@ -180,7 +180,9 @@ const useNetworkContainer = () => {
 
     const updateTokenPrices = async () => {
         try {
-            setTokenPrices(await getPrices(tokenPrices));
+            const prices = await getPrices(tokenPrices);
+            console.log("r: prices", prices.toObject());
+            setTokenPrices(prices);
         } catch (error) {
             catchBackgroundException(
                 error,

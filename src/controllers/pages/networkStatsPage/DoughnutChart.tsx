@@ -1,4 +1,4 @@
-import { Currency, Loading } from "@renproject/react-components";
+import { Currency, CurrencyIcon, Loading } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
@@ -71,12 +71,14 @@ interface Props {
     data?: DoughnutChartData;
     quoteCurrency: Currency;
     title: string;
+    lockedMode?: boolean;
 }
 
 export const DoughnutChart: React.FC<Props> = ({
     data,
     quoteCurrency,
     title,
+    lockedMode = false
 }) => {
     const tokens = React.useMemo(
         () =>
@@ -109,12 +111,12 @@ export const DoughnutChart: React.FC<Props> = ({
                             className="overview--chart--canvas"
                             style={{ maxWidth: "100%" }}
                         >
-                            <HighchartsReact
+                            {lockedMode ? null : <HighchartsReact
                                 className={"highcharts--outer"}
                                 highcharts={Highcharts}
                                 constructorType={"chart"}
                                 options={options}
-                            />
+                            />}
                         </div>
                         <div className="overview--chart--legend">
                             <SimpleTable>

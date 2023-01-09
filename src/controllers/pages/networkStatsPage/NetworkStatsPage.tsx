@@ -51,22 +51,24 @@ export const NetworkStatsPage = () => {
         setVolumePeriod,
         updateTokenSupply,
         tokenSupplies,
-        persistTokenSupplies
+        persistTokenSupplies,
     } = VolumeDataContainer.useContainer();
 
     const [chainOption, setChainOption] = useState(ChainOption.All);
+
 
     const allChainTotal = useMemo(() => {
         return tokenPrices === null || !allVolumeData
             ? null
             : snapshotDataToAllChainVolumeData(
-                  allVolumeData,
-                  TrackerVolumeType.Locked,
-                  quoteCurrency,
-                  tokenPrices,
-                  volumePeriod,
-              ).difference;
-    }, [allVolumeData, tokenPrices, quoteCurrency, volumePeriod]);
+                allVolumeData,
+                TrackerVolumeType.Locked,
+                quoteCurrency,
+                tokenPrices,
+                volumePeriod,
+                tokenSupplies,
+            ).difference;
+    }, [allVolumeData, tokenPrices, quoteCurrency, volumePeriod, tokenSupplies]);
 
     const bondedRenAmount = numberOfDarknodes
         ? numberOfDarknodes.times(100000)
@@ -102,18 +104,15 @@ export const NetworkStatsPage = () => {
     const refetchTokenSupplies = useCallback(() => {
         chainList.forEach((chainOption) => {
             console.log("r: chainOption", chainOption, volumeData);
-            if (volumeData!== undefined){
-               const assets = volumeData.assets.prices.map(entry => entry.asset);
-               console.log("r: assets", assets);
-               assets.forEach((asset) => {
-                   updateTokenSupply(chainOption, asset).finally();
-               })
+            if (volumeData !== undefined) {
+                const assets = volumeData.assets.prices.map(entry => entry.asset);
+                console.log("r: assets", assets);
+                assets.forEach((asset) => {
+                    updateTokenSupply(chainOption, asset).finally();
+                });
             }
         });
     }, [volumeData, updateTokenSupply]);
-
-    // fetchTokenTotalSupply("Ethereum", "BTC").catch(console.error);
-
 
     return (
         <NetworkStatsStyles className="network-stats container">
@@ -137,21 +136,21 @@ export const NetworkStatsPage = () => {
                     </div>
                 </div>
                 <Stats>
-                        <VolumeStats
-                            volumeData={volumeData || {}}
-                            volumeLoading={volumeLoading}
-                            volumeError={volumeError}
-                            volumePeriod={volumePeriod}
-                            trackerType={TrackerVolumeType.Transacted}
-                            title="Volume"
-                            titleTooltip="Total amount of volume transacted via RenVM."
-                            historyChartLabel="Accumulative Volume"
-                            tooltipRenderer={volumeTooltipRenderer}
-                            chainOption={chainOption}
-                            tokenSupplies={tokenSupplies}
-                        />
                     <VolumeStats
                         volumeData={volumeData || {}}
+                        volumeLoading={volumeLoading}
+                        volumeError={volumeError}
+                        volumePeriod={volumePeriod}
+                        trackerType={TrackerVolumeType.Transacted}
+                        title="Volume"
+                        titleTooltip="Total amount of volume transacted via RenVM."
+                        historyChartLabel="Accumulative Volume"
+                        tooltipRenderer={volumeTooltipRenderer}
+                        chainOption={chainOption}
+                        tokenSupplies={tokenSupplies}
+                    />
+                    <VolumeStats
+                        volumeData={allVolumeData || {}}
                         volumeLoading={volumeLoading}
                         volumeError={volumeError}
                         volumePeriod={PeriodOption.ALL}
