@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import {
     allTrackedChains,
@@ -16,8 +16,6 @@ import { NetworkStatsStyles } from "./NetworkStatsStyles";
 import { PeriodSelector } from "./PeriodSelector";
 import { VolumeStats } from "./VolumeData";
 import { VolumeDataContainer } from "./VolumeDataContainer";
-import { ValueStats } from "./ValueData";
-import { fetchTokenTotalSupply } from "../../../lib/ethereum/contractReads";
 
 const volumeTooltipRenderer = (period: PeriodOption, chain: ChainOption) => {
     const chainLabel =
@@ -34,6 +32,8 @@ const lockedTooltipRenderer = (period: PeriodOption, chain: ChainOption) => {
     return `The 1 ${period.toLowerCase()} change in RenVM's locked digital assets on ${chainLabel}. Reflects changes in asset prices, so may be greater than the change in volume.`;
 };
 
+const chainList = [ChainOption.Ethereum, ChainOption.BinanceSmartChain, ChainOption.Fantom, ChainOption.Polygon, ChainOption.Avalanche, ChainOption.Arbitrum];
+
 export const NetworkStatsPage = () => {
     const {
         quoteCurrency,
@@ -49,6 +49,9 @@ export const NetworkStatsPage = () => {
         volumeError,
         volumePeriod,
         setVolumePeriod,
+        updateTokenSupply,
+        tokenSupplies,
+        persistTokenSupplies
     } = VolumeDataContainer.useContainer();
 
     const [chainOption, setChainOption] = useState(ChainOption.All);
@@ -96,8 +99,20 @@ export const NetworkStatsPage = () => {
         [blockState],
     );
 
+    const refetchTokenSupplies = useCallback(() => {
+        chainList.forEach((chainOption) => {
+            console.log("r: chainOption", chainOption, volumeData);
+            if (volumeData!== undefined){
+               const assets = volumeData.assets.prices.map(entry => entry.asset);
+               console.log("r: assets", assets);
+               assets.forEach((asset) => {
+                   updateTokenSupply(chainOption, asset).finally();
+               })
+            }
+        });
+    }, [volumeData, updateTokenSupply]);
 
-    fetchTokenTotalSupply("Ethereum", "BTC").catch(console.error);
+    // fetchTokenTotalSupply("Ethereum", "BTC").catch(console.error);
 
 
     return (
@@ -122,8 +137,6 @@ export const NetworkStatsPage = () => {
                     </div>
                 </div>
                 <Stats>
-                    <ValueStats chainOption={chainOption} />
-                    <div style={{display: "none"}}>
                         <VolumeStats
                             volumeData={volumeData || {}}
                             volumeLoading={volumeLoading}
@@ -135,19 +148,21 @@ export const NetworkStatsPage = () => {
                             historyChartLabel="Accumulative Volume"
                             tooltipRenderer={volumeTooltipRenderer}
                             chainOption={chainOption}
+                            tokenSupplies={tokenSupplies}
                         />
-                    </div>
                     <VolumeStats
                         volumeData={volumeData || {}}
                         volumeLoading={volumeLoading}
                         volumeError={volumeError}
-                        volumePeriod={volumePeriod}
+                        volumePeriod={PeriodOption.ALL}
                         trackerType={TrackerVolumeType.Locked}
                         title="Value Locked"
                         titleTooltip="The total value (TVL) of all digital assets currently minted on Ethereum by RenVM."
                         historyChartLabel="Locked"
                         tooltipRenderer={lockedTooltipRenderer}
                         chainOption={chainOption}
+                        tokenSupplies={tokenSupplies}
+                        lockedMode={true}
                     />
                 </Stats>
             </div>
@@ -160,6 +175,8 @@ export const NetworkStatsPage = () => {
                     quoteCurrency={quoteCurrency}
                 />
             </div>
+            <button onClick={persistTokenSupplies}>Persist</button>
+            <button onClick={refetchTokenSupplies}>Refetch</button>
         </NetworkStatsStyles>
     );
 };

@@ -29,6 +29,7 @@ import {
 import { DoughnutChart } from "./DoughnutChart";
 import { Graph, Line } from "./Graph";
 import { StatTab, StatTabs } from "./StatTabs";
+import { TokenSupplies } from "./VolumeDataContainer";
 
 export const getPeriodPercentChange = <K extends string>(
     periodType: PeriodOption,
@@ -75,6 +76,18 @@ export const updateVolumeData = (
     return newData;
 };
 
+export const getTokenSupply = (tokenSupplies: TokenSupplies, chain: string, token: string) => {
+    const chainEntry = tokenSupplies[chain];
+    if (chainEntry !== undefined) {
+        const tokenEntry = chainEntry[token];
+        if (tokenEntry !== undefined) {
+            return new BigNumber(tokenEntry);
+        }
+        return null;
+    }
+    return null;
+};
+
 type VolumeStatsProps = {
     trackerType: TrackerVolumeType;
     title: string;
@@ -86,20 +99,23 @@ type VolumeStatsProps = {
     volumePeriod: PeriodOption;
     volumeLoading: boolean;
     volumeError: boolean;
+    tokenSupplies: TokenSupplies,
     chainOption: ChainOption;
+    lockedMode?: boolean,
 };
 
 export const VolumeStats: React.FC<VolumeStatsProps> = ({
-    trackerType,
-    title,
-    historyChartLabel,
-    tooltipRenderer,
-    volumeData,
-    volumePeriod,
-    volumeLoading,
-    volumeError,
-    chainOption,
-}) => {
+                                                            trackerType,
+                                                            title,
+                                                            historyChartLabel,
+                                                            tooltipRenderer,
+                                                            volumeData,
+                                                            volumePeriod,
+                                                            volumeLoading,
+                                                            volumeError,
+                                                            chainOption,
+                                                            lockedMode = false,
+                                                        }) => {
     const [volumeTab, setVolumeTab] = useState<StatTab>(StatTab.History);
 
     const { quoteCurrency, tokenPrices } = NetworkContainer.useContainer();
@@ -118,7 +134,7 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
                     trackerChain,
                     quoteCurrency,
                     tokenPrices,
-                    volumePeriod
+                    volumePeriod,
                 );
             }
             return snapshotDataToAllChainVolumeData(
@@ -126,7 +142,7 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
                 trackerType,
                 quoteCurrency,
                 tokenPrices,
-                volumePeriod
+                volumePeriod,
             );
         }
         return fallback;
@@ -137,7 +153,7 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
         chainOption,
         quoteCurrency,
         tokenPrices,
-        volumePeriod
+        volumePeriod,
     ]);
 
     const linesData: Line[] = useMemo(() => {
@@ -168,10 +184,12 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
                 }
             }
 
+            const legendLabel = `${
+                ChainLabel[chainOptionInner] || chainOptionInner
+            }` + (lockedMode ? "" : ` (${quoteCurrency.toUpperCase()})`);
+
             const line: Line = {
-                name: `${
-                    ChainLabel[chainOptionInner] || chainOptionInner
-                } (${quoteCurrency.toUpperCase()})`,
+                name: legendLabel,
                 axis: 0,
                 data: series,
                 color:
@@ -255,7 +273,7 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
                         ) : volumeLoading ? (
                             <Loading alt={true} />
                         ) : volumeTab === StatTab.History ? (
-                            <Graph lines={linesData} />
+                            <Graph lines={linesData} lockedMode={lockedMode} />
                         ) : (
                             <DoughnutChart
                                 title={title}

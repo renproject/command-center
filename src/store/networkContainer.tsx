@@ -563,16 +563,13 @@ const useNetworkContainer = () => {
         setPendingRewards(newPendingRewards);
     };
 
-    console.log("r:");
     const updateDarknodeDetails = async (
         darknodeID: string,
         latestRenVM?: RenVM,
     ) => {
-        console.log("r:update");
 
         const latestRenVMOrNull = latestRenVM || (await fetchRenVM());
         if (latestRenVMOrNull) {
-            console.log("r:fetching");
 
             const details = await fetchDarknodeDetails(
                 ethereumSubgraph,

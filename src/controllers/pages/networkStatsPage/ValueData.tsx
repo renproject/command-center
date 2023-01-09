@@ -9,6 +9,7 @@ import { NetworkContainer } from "../../../store/networkContainer";
 import { ReactComponent as IconValueLocked } from "../../../styles/images/icon-value-locked.svg";
 import { Stat } from "../../../views/Stat";
 import { ChainOption } from "./ChainSelector";
+import { TokenSupplies } from "./VolumeDataContainer";
 
 export const getPeriodPercentChange = <K extends string>(
     periodType: PeriodOption,
@@ -31,30 +32,6 @@ export const getPeriodPercentChange = <K extends string>(
     return null;
 };
 
-export const updateVolumeData = (
-    oldData: SnapshotRecords | undefined,
-    updateData: SnapshotRecords,
-) => {
-    if (!oldData) {
-        return updateData;
-    }
-    const newSnapshot = Object.values(updateData)[0];
-    const snapshots = getSnapshots(oldData);
-    const { last } = getFirstAndLastSnapshot(snapshots);
-
-    // Replace last snapshot with new snapshot, to avoid the volume graphs
-    // stretching at the far-right of the graphs.
-    const newData = {
-        ...oldData,
-        [`s${newSnapshot.timestamp}`]: newSnapshot,
-    };
-    if (newSnapshot.timestamp !== last.timestamp) {
-        delete newData[`s${last.timestamp}`];
-    }
-
-    return newData;
-};
-
 type VolumeStatsProps = {
     chainOption: ChainOption;
 };
@@ -66,7 +43,7 @@ export const ValueStats: React.FC<VolumeStatsProps> = ({
     const volumeError = false;
     const { quoteCurrency, tokenPrices } = NetworkContainer.useContainer();
 
-    console.log("r: tokenPrices", tokenPrices);
+    console.log("tokenPrices", tokenPrices);
 
     const volumePeriodTotal = "42";
     return (

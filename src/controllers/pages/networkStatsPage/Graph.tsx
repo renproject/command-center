@@ -13,7 +13,7 @@ export interface Line {
 /**
  * DOCS: https://api.highcharts.com/highstock/
  */
-const getOptions = (seriesData: Line[]) => ({
+const getOptions = (seriesData: Line[], lockedMode = false) => ({
     rangeSelector: {
         // selected: 1
         enabled: false,
@@ -26,9 +26,10 @@ const getOptions = (seriesData: Line[]) => ({
     },
 
     legend: {
-        enabled: false,
+        enabled: lockedMode,
         itemStyle: {
             color: "white",
+            fontWeight: "normal"
         },
         itemHoverStyle: {
             color: "#aaa",
@@ -68,7 +69,9 @@ const getOptions = (seriesData: Line[]) => ({
             },
         },
     ],
-
+    tooltip: {
+        enabled: !lockedMode
+    },
     series: seriesData.map(({ name, data, axis, hidden, color }, i) => ({
         name,
         data,
@@ -81,13 +84,16 @@ const getOptions = (seriesData: Line[]) => ({
 
 interface Props {
     lines: Array<Line | undefined>;
+    lockedMode?: boolean;
 }
 
-export const Graph: React.FC<Props> = ({ lines }) => {
+export const Graph: React.FC<Props> = ({ lines, lockedMode }) => {
     const options = useMemo(
-        () => getOptions(lines.filter((line) => line !== undefined) as Line[]),
+        () => getOptions(lines.filter((line) => line !== undefined) as Line[], lockedMode),
         [lines],
     );
+
+    console.log("r: opts", options);
     return (
         <div className="highcharts--with-outside-tooltip">
             <div

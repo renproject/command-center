@@ -533,7 +533,7 @@ export const fetchDarknodeDetails = async (
 const registries = {
     "Arbitrum": "0xf36666C230Fa12333579b9Bd6196CB634D6BC506",
     "Avalanche": "0xf36666C230Fa12333579b9Bd6196CB634D6BC506",
-    "BinanceSmartChain": "0xf36666C230Fa12333579b9Bd6196CB634D6BC506",
+    "BSC": "0xf36666C230Fa12333579b9Bd6196CB634D6BC506",
     "Catalog": "0x44c2CdaE368F90544A01522C413376fC72ebd4F2",
     "Ethereum": "0xf36666C230Fa12333579b9Bd6196CB634D6BC506",
     "Fantom": "0xf36666C230Fa12333579b9Bd6196CB634D6BC506",
@@ -558,7 +558,7 @@ export const rpcUrls = {
         "wss://mainnet.infura.io/ws/v3/${INFURA_API_KEY}",
         "https://api.mycryptoapi.com/eth"
     ],
-    "BinanceSmartChain": [
+    "BSC": [
         "https://bsc-dataseed1.binance.org",
         "https://bsc-dataseed2.binance.org",
         "https://bsc-dataseed3.binance.org",
@@ -649,5 +649,5 @@ export const fetchTokenTotalSupply = async (chain: string, symbol: string) => {
     const token = await getRenAsset(web3, tokenAddress);
     const supply = await token.methods.totalSupply().call();
     console.log("r:supply", supply);
-
+    return supply;
 }
