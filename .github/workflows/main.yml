@@ -1,9 +1,6 @@
 name: CI
 
-on:
-  push:
-    branches:
-      - master
+on: pull_request
 
 jobs:
   lint:
@@ -21,30 +18,4 @@ jobs:
       run: yarn check --integrity
 
     - name: lint
-      run: yarn lint | true
-
-    - run: yarn build
-      env:
-        CI: false
-        REACT_APP_BLOCKNATIVE_INFURA_KEY: ${{ secrets.REACT_APP_BLOCKNATIVE_INFURA_KEY }}
-        REACT_APP_BLOCKNATIVE_KEY: ${{ secrets.REACT_APP_BLOCKNATIVE_KEY }}
-        REACT_APP_DEV_INFURA_KEY: ${{ secrets.REACT_APP_DEV_INFURA_KEY }}
-        REACT_APP_INFURA_KEY: ${{ secrets.REACT_APP_INFURA_KEY }}
-        REACT_APP_SENTRY_DSN: ${{ secrets.REACT_APP_SENTRY_DSN }}
-
-    - name: DeployGHP
-      uses: JamesIves/github-pages-deploy-action@v4
-      with:
-        folder: build
-
-# FIXME: get the tests to pass
-  # test:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - uses: actions/checkout@v2
-  #   - name: Setup Node.js environment
-  #     uses: actions/setup-node@v2.1.0
-  #   - name: Install dependencies
-  #     run: yarn --network-concurrency 1 || yarn install --network-concurrency 1 && cd ./node_modules/darknode-sol && yarn --network-concurrency 1
-  #   - name: Test
-  #     run: cd ./node_modules/darknode-sol && (yarn ganache-cli -d  > /dev/null &) && sleep 5 && yarn truffle migrate && cd ../../ && yarn run test
+      run: yarn lint
