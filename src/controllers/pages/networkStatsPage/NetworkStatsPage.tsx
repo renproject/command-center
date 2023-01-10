@@ -101,18 +101,31 @@ export const NetworkStatsPage = () => {
         [blockState],
     );
 
+    const [fetched, setFetched] = useState(false);
     const refetchTokenSupplies = useCallback(() => {
-        chainList.forEach((chainOption) => {
-            console.log("r: chainOption", chainOption, volumeData);
-            if (volumeData !== undefined) {
-                const assets = volumeData.assets.prices.map(entry => entry.asset);
-                console.log("r: assets", assets);
-                assets.forEach((asset) => {
-                    updateTokenSupply(chainOption, asset).finally();
-                });
-            }
-        });
+        console.log("r: refetching");
+        if (volumeData === undefined){
+            return;
+        }
+            chainList.forEach((chainOption) => {
+                console.log("r: chainOption", chainOption, volumeData);
+                    const assets = volumeData.assets.prices.map(entry => entry.asset);
+                    console.log("r: assets", assets);
+                    assets.forEach((asset) => {
+                        updateTokenSupply(chainOption, asset).finally();
+                    });
+            });
+
+        console.log("r: refetching completed");
+        setFetched(true);
     }, [volumeData, updateTokenSupply]);
+
+    useEffect(() => {
+        if (!fetched && volumeData !== undefined){
+            console.log("r: initial fetching");
+            refetchTokenSupplies();
+        }
+    }, [refetchTokenSupplies, fetched, volumeData]);
 
     return (
         <NetworkStatsStyles className="network-stats container">

@@ -125,9 +125,14 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
         const fallback = {
             amountRecords: {},
             difference: 0,
+            aggregatedQuote: 0
         };
-        if (!volumeLoading && tokenPrices) {
+        if(!tokenPrices){
+            return fallback;
+        }
+        if (!volumeLoading) {
             if (chainOption !== ChainOption.All) {
+                console.log("snapshotDataToVolumeData");
                 const trackerChain = chainOptionToTrackerChain(chainOption);
                 return snapshotDataToVolumeData(
                     volumeData,
@@ -140,6 +145,7 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
                     lockedMode,
                 );
             }
+            console.log("snapshotDataToAllChainVolumeData");
             return snapshotDataToAllChainVolumeData(
                 volumeData,
                 trackerType,
@@ -219,7 +225,7 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
         lockedMode,
     ]);
 
-    const volumePeriodTotal = calculatedVolumeData.difference;
+    const volumePeriodTotal = lockedMode ? calculatedVolumeData.aggregatedQuote : calculatedVolumeData.difference;
     return (
         <div className="stat-with-period">
             <Stat

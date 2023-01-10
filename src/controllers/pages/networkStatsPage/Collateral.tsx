@@ -281,6 +281,7 @@ export const Collateral: React.FC<Props> = ({
                         {fees.map((fee) => {
                             return (
                                 <FeeRow
+                                    key={fee.chain}
                                     chain={fee.chain}
                                     mintFee={fee.mint}
                                     burnFee={fee.burn}

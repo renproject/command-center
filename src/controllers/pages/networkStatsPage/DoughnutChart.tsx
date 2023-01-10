@@ -52,16 +52,16 @@ const getOptions = (
             innerSize: "60%",
             data: seriesData
                 ? OrderedMap<string, { quote: BigNumber; amount: BigNumber }>(
-                      Object.entries(seriesData),
-                  )
-                      .toArray()
-                      .map(([key, value], i) => ({
-                          name: key,
-                          y: value.quote.toNumber(),
-                          yPretty: value.quote.toFormat(0),
-                          color: colors[i % colors.length],
-                          borderColor: null,
-                      }))
+                    Object.entries(seriesData),
+                )
+                    .toArray()
+                    .map(([key, value], i) => ({
+                        name: key,
+                        y: value.quote.toNumber(),
+                        yPretty: value.quote.toFormat(0),
+                        color: colors[i % colors.length],
+                        borderColor: null,
+                    }))
                 : [],
         },
     ],
@@ -75,21 +75,21 @@ interface Props {
 }
 
 export const DoughnutChart: React.FC<Props> = ({
-    data,
-    quoteCurrency,
-    title,
-    lockedMode = false
-}) => {
+                                                   data,
+                                                   quoteCurrency,
+                                                   title,
+                                                   lockedMode = false,
+                                               }) => {
     const tokens = React.useMemo(
         () =>
             data
                 ? OrderedMap<string, { quote: BigNumber; amount: BigNumber }>(
-                      Object.entries(data),
-                  )
-                      .sortBy(({ quote }) => quote.toNumber())
-                      .reverse()
-                      .keySeq()
-                      .toArray()
+                    Object.entries(data),
+                )
+                    .sortBy(({ quote }) => quote.toNumber())
+                    .reverse()
+                    .keySeq()
+                    .toArray()
                 : undefined,
         [data],
     );
@@ -122,53 +122,57 @@ export const DoughnutChart: React.FC<Props> = ({
                             <SimpleTable>
                                 {data && tokens
                                     ? tokens.map((token) => {
-                                          const entry = data[token];
-                                          const standardAmount =
-                                              entry.standardAmount.toFormat(
-                                                  entry.standardAmount.isGreaterThan(
-                                                      100,
-                                                  )
-                                                      ? 0
-                                                      : 2,
-                                              );
-                                          return (
-                                              <div key={token}>
-                                                  <div>
-                                                      <TokenIcon
-                                                          token={token}
-                                                          white={true}
-                                                      />
-                                                      <span>{token}</span>
-                                                  </div>
-                                                  <div>
-                                                      {entry.standardAmount.isGreaterThan(
-                                                          0,
-                                                      ) ? (
-                                                          <span className="overview--chart--legend--faded">
+                                        const entry = data[token];
+                                        const standardAmount =
+                                            entry.standardAmount.toFormat(
+                                                entry.standardAmount.isGreaterThan(
+                                                    100,
+                                                )
+                                                    ? 0
+                                                    : 2,
+                                            );
+                                        if (token === "USDT" || token === "BTC") {
+                                            console.log("r: rentry", token, entry, entry.amount.toFixed(), entry.standardAmount.toFixed(), entry.quote.toFixed());
+                                        }
+                                        return (
+                                            <div key={token}>
+                                                <div>
+                                                    <TokenIcon
+                                                        token={token}
+                                                        white={true}
+                                                    />
+                                                    <span>{token}</span>
+                                                </div>
+                                                <div>
+                                                    {entry.standardAmount.isGreaterThan(
+                                                        0,
+                                                    ) ? (
+                                                        <span className="overview--chart--legend--faded">
                                                               {standardAmount}{" "}
-                                                              {token}
-                                                              {/*{" - "}*/}
+                                                            {token}
                                                           </span>
-                                                      ) : entry.amount.isGreaterThan(
-                                                            0,
-                                                        ) ? (
-                                                          <span className="overview--chart--legend--faded">
+                                                    ) : entry.amount.isGreaterThan(
+                                                        0,
+                                                    ) ? (
+                                                        <span className="overview--chart--legend--faded">
                                                               {entry.amount.toFormat(
                                                                   0,
                                                               )}{" "}
-                                                              {" - "}
                                                           </span>
-                                                      ) : null}
-                                                      {/*<CurrencyIcon*/}
-                                                      {/*    currency={*/}
-                                                      {/*        quoteCurrency*/}
-                                                      {/*    }*/}
-                                                      {/*/>*/}
-                                                      {/*{entry.quote.toFormat(2)}*/}
-                                                  </div>
-                                              </div>
-                                          );
-                                      })
+                                                    ) : null}
+                                                    {entry.quote.isGreaterThan(0) ? <>
+                                                        <span className="overview--chart--legend--faded">{" - "}</span>
+                                                        <CurrencyIcon
+                                                            currency={
+                                                                quoteCurrency
+                                                            }
+                                                        />
+                                                        {entry.quote.toFormat(2)}
+                                                    </> : null}
+                                                </div>
+                                            </div>
+                                        );
+                                    })
                                     : null}
                             </SimpleTable>
                         </div>

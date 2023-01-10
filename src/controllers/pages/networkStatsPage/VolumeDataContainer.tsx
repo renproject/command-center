@@ -84,6 +84,7 @@ export const useVolumeData = () => {
 
 
     const setTokenSupply = useCallback((chain: Chain, token:Token, supply: Supply) => {
+        console.log("r: setting ts", chain);
         setTokenSupplies(supplies => {
             const chainSupplies = supplies[chain] || {};
             const newSupplies  = {
@@ -102,7 +103,7 @@ export const useVolumeData = () => {
             const supply = await fetchTokenTotalSupply(chain, token);
             setTokenSupply(chain, token, supply);
         } catch(err){
-            console.error({chain, token, err});
+            console.log("r: ts error", chain, token, err);
         }
     }, [setTokenSupply]);
 

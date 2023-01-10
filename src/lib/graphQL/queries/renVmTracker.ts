@@ -382,6 +382,8 @@ const getVolumeData = (
     return { difference, startAmounts, endAmounts };
 };
 
+const FROM_SNAPSHOT = false;
+
 export const snapshotDataToVolumeData = (
     data: SnapshotRecords,
     type: TrackerVolumeType,
@@ -405,6 +407,7 @@ export const snapshotDataToVolumeData = (
         assetsData,
         tokenPrices,
     );
+    let aggregatedQuote = new BigNumber(0);
 
     const assets = assetsData.map((entry) => entry.asset);
     const amountRecords: BigNumberRecord = {};
@@ -415,18 +418,44 @@ export const snapshotDataToVolumeData = (
         let difference = new BigNumber(0);
         let differenceStandard = new BigNumber(0);
         let differenceQuote = new BigNumber(0);
-        const tokenSupply = getTokenSupply(tokenSupplies, chain, asset);
-        if (lockedMode && tokenSupply !== null) {
-            difference = new BigNumber(
-                tokenSupply
-            )
-            const decimals =
-                assetsData.find((data) => data.asset === asset)?.decimals ||
-                0;
-            differenceStandard = new BigNumber(tokenSupply).shiftedBy(-decimals);
-            const rate = getConversionRate(asset as Currency, currency as Currency, tokenPrices);
-            console.log("r: rate", asset, currency, rate);
-            differenceQuote = convertTokenAmount(differenceStandard, asset as any, currency as Currency, tokenPrices);
+        if (lockedMode) {
+            const tokenSupply = getTokenSupply(tokenSupplies, chain, asset);
+            if(tokenSupply !== null) {
+                difference = new BigNumber(
+                    tokenSupply
+                )
+                const decimals =
+                    assetsData.find((data) => data.asset === asset)?.decimals ||
+                    0;
+                differenceStandard = new BigNumber(tokenSupply).shiftedBy(-decimals);
+
+                const rate = getConversionRate(asset as Currency, currency as Currency, tokenPrices);
+                differenceQuote = convertTokenAmount(differenceStandard, asset as any, currency as Currency, tokenPrices);
+                if (asset === "USDT" || asset === "BTC") {
+                    console.log("r: rdecimals", chain, decimals, tokenSupply.toFixed(), differenceStandard.toFixed(), differenceQuote.toFixed());
+                    console.log("r: rate", asset, currency, rate);
+                }
+            } else if (lastEntry && FROM_SNAPSHOT) {
+                differenceQuote = new BigNumber(
+                    getQuoteAmount(lastEntry, currency, assetsData, tokenPrices),
+                );
+                differenceStandard = new BigNumber(
+                    getQuoteAmount(
+                        lastEntry,
+                        TokenAmountType.BaseUnits,
+                        assetsData,
+                        tokenPrices,
+                    ),
+                );
+                differenceStandard = new BigNumber(
+                    getQuoteAmount(
+                        lastEntry,
+                        TokenAmountType.StandardUnits,
+                        assetsData,
+                        tokenPrices,
+                    ),
+                );
+            }
         }
         else if (lastEntry && firstEntry && period !== PeriodOption.ALL) {
             differenceQuote = new BigNumber(
@@ -485,6 +514,7 @@ export const snapshotDataToVolumeData = (
                 ),
             );
         }
+        aggregatedQuote = aggregatedQuote.plus(differenceQuote);
 
         amountRecords[asset] = {
             quote: differenceQuote,
@@ -493,7 +523,7 @@ export const snapshotDataToVolumeData = (
         };
     });
 
-    return { amountRecords, difference };
+    return { amountRecords, difference, aggregatedQuote };
 };
 
 const mergeAmountRecords = (
@@ -531,9 +561,10 @@ export const snapshotDataToAllChainVolumeData = (
 ) => {
     const assetsData = getAssetsData(data);
     let sum = new BigNumber(0);
+    let sumQuote = new BigNumber(0);
     let records: BigNumberRecord = {};
     allTrackedChains.forEach((chain) => {
-        const { difference, amountRecords } = snapshotDataToVolumeData(
+        const { difference, aggregatedQuote, amountRecords } = snapshotDataToVolumeData(
             data,
             type,
             chain,
@@ -544,11 +575,9 @@ export const snapshotDataToAllChainVolumeData = (
             lockedMode
         );
 
-        if (lockedMode){
-            sum = sum.plus(difference);
-        } else {
-            sum = sum.plus(difference);
-        }
+        sum = sum.plus(difference);
+        sumQuote = sumQuote.plus(aggregatedQuote);
+
         records = mergeAmountRecords(assetsData, records, amountRecords);
     });
 
@@ -556,7 +585,7 @@ export const snapshotDataToAllChainVolumeData = (
         console.log("r: records", records, assetsData);
     }
 
-    return { difference: sum, amountRecords: records };
+    return { difference: sum, aggregatedQuote: sumQuote, amountRecords: records };
 };
 
 export const snapshotDataToTimeSeries = (

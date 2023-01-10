@@ -124,7 +124,7 @@ export const getConversionRate = (
     const btcFrom = btcPrice.get(from);
     const btcTo = btcPrice.get(to);
     if (!btcFrom || !btcTo) {
-        console.error("Couldn't find conversion rate", from, to);
+        // console.error("Couldn't find conversion rate", from, to);
         return 1;
     }
     return btcTo / btcFrom;
