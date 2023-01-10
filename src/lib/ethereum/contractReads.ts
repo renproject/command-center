@@ -637,14 +637,21 @@ export const getRpcUrl  = (chain: string) => {
     return "";
 }
 
-export const fetchTokenTotalSupply = async (chain: string, symbol: string) => {
+const solanaBalances = {
+    BTC: 2900000000
+}
+
+export const fetchTokenTotalSupply = async (chain: string, tokenSymbol: string) => {
+    if (chain === "Solana"){
+        return new BigNumber(solanaBalances[tokenSymbol])
+    }
     const registryAddress = getRegistry(chain);
     const rpcUrl = getRpcUrl(chain);
     const web3 = getReadOnlyWeb3(rpcUrl);
     const registry = getGatewayRegistry(web3, registryAddress);
     console.log("r:fetchTokenTotalSupply", chain, registryAddress, registry);
     (window as any).registry = registry;
-    const tokenAddress = await registry.methods.getTokenBySymbol(symbol).call();
+    const tokenAddress = await registry.methods.getTokenBySymbol(tokenSymbol).call();
     console.log("r:token", tokenAddress);
     const token = await getRenAsset(web3, tokenAddress);
     const supply = await token.methods.totalSupply().call();

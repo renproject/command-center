@@ -382,7 +382,7 @@ const getVolumeData = (
     return { difference, startAmounts, endAmounts };
 };
 
-const FROM_SNAPSHOT = false;
+const FROM_SNAPSHOT = true;
 
 export const snapshotDataToVolumeData = (
     data: SnapshotRecords,

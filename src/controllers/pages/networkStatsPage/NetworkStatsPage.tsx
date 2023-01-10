@@ -27,12 +27,13 @@ const lockedTooltipRenderer = (period: PeriodOption, chain: ChainOption) => {
     const chainLabel =
         chain === ChainOption.All ? "all chains" : ChainLabel[chain];
     if (period === PeriodOption.ALL) {
-        return `The total value (TVL) of all digital assets currently minted on ${chainLabel} by RenVM.`;
+        return `Approximated total value (TVL) of all digital assets currently minted on ${chainLabel} by RenVM.`;
     }
     return `The 1 ${period.toLowerCase()} change in RenVM's locked digital assets on ${chainLabel}. Reflects changes in asset prices, so may be greater than the change in volume.`;
 };
 
 const chainList = [ChainOption.Ethereum, ChainOption.BinanceSmartChain, ChainOption.Fantom, ChainOption.Polygon, ChainOption.Avalanche, ChainOption.Arbitrum];
+
 
 export const NetworkStatsPage = () => {
     const {
@@ -67,7 +68,8 @@ export const NetworkStatsPage = () => {
                 tokenPrices,
                 volumePeriod,
                 tokenSupplies,
-            ).difference;
+                true
+            ).aggregatedQuote;
     }, [allVolumeData, tokenPrices, quoteCurrency, volumePeriod, tokenSupplies]);
 
     const bondedRenAmount = numberOfDarknodes
