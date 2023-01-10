@@ -93,7 +93,6 @@ export const Graph: React.FC<Props> = ({ lines, lockedMode }) => {
         [lines, lockedMode],
     );
 
-    console.log("r: opts", options);
     return (
         <div className="highcharts--with-outside-tooltip">
             <div

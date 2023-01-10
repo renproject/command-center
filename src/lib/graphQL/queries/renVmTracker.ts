@@ -411,7 +411,6 @@ export const snapshotDataToVolumeData = (
 
     const assets = assetsData.map((entry) => entry.asset);
     const amountRecords: BigNumberRecord = {};
-    console.log("r: assetsData", assetsData); //TODO: USDT decimals is 6 here
     assets.forEach((asset) => {
         const lastEntry = endAmounts.find((entry) => entry.asset === asset);
         const firstEntry = startAmounts.find((entry) => entry.asset === asset);
@@ -428,13 +427,7 @@ export const snapshotDataToVolumeData = (
                     assetsData.find((data) => data.asset === asset)?.decimals ||
                     0;
                 differenceStandard = new BigNumber(tokenSupply).shiftedBy(-decimals);
-
-                const rate = getConversionRate(asset as Currency, currency as Currency, tokenPrices);
                 differenceQuote = convertTokenAmount(differenceStandard, asset as any, currency as Currency, tokenPrices);
-                if (asset === "USDT" || asset === "BTC") {
-                    console.log("r: rdecimals", chain, decimals, tokenSupply.toFixed(), differenceStandard.toFixed(), differenceQuote.toFixed());
-                    console.log("r: rate", asset, currency, rate);
-                }
             } else if (lastEntry && FROM_SNAPSHOT) {
                 differenceQuote = new BigNumber(
                     getQuoteAmount(lastEntry, currency, assetsData, tokenPrices),
@@ -580,10 +573,6 @@ export const snapshotDataToAllChainVolumeData = (
 
         records = mergeAmountRecords(assetsData, records, amountRecords);
     });
-
-    if (lockedMode){
-        console.log("r: records", records, assetsData);
-    }
 
     return { difference: sum, aggregatedQuote: sumQuote, amountRecords: records };
 };

@@ -51,8 +51,7 @@ export const NetworkStatsPage = () => {
         volumePeriod,
         setVolumePeriod,
         updateTokenSupply,
-        tokenSupplies,
-        persistTokenSupplies,
+        tokenSupplies
     } = VolumeDataContainer.useContainer();
 
     const [chainOption, setChainOption] = useState(ChainOption.All);
@@ -105,30 +104,26 @@ export const NetworkStatsPage = () => {
 
     const [fetched, setFetched] = useState(false);
     const refetchTokenSupplies = useCallback(() => {
-        console.log("r: refetching");
         if (volumeData === undefined){
             return;
         }
             chainList.forEach((chainOption) => {
-                console.log("r: chainOption", chainOption, volumeData);
                     const assets = volumeData.assets.prices.map(entry => entry.asset);
-                    console.log("r: assets", assets);
                     assets.forEach((asset) => {
                         updateTokenSupply(chainOption, asset).finally();
                     });
             });
 
-        console.log("r: refetching completed");
         setFetched(true);
     }, [volumeData, updateTokenSupply]);
 
     useEffect(() => {
         if (!fetched && volumeData !== undefined){
-            console.log("r: initial fetching");
             refetchTokenSupplies();
         }
     }, [refetchTokenSupplies, fetched, volumeData]);
 
+    const lockedVolumeLoading = volumeData === undefined || tokenPrices === null || tokenPrices.isEmpty();
     return (
         <NetworkStatsStyles className="network-stats container">
             {/* <div className="no-xl-or-larger col-lg-12 col-xl-4">
@@ -166,7 +161,7 @@ export const NetworkStatsPage = () => {
                     />
                     <VolumeStats
                         volumeData={allVolumeData || {}}
-                        volumeLoading={volumeLoading}
+                        volumeLoading={lockedVolumeLoading}
                         volumeError={volumeError}
                         volumePeriod={PeriodOption.ALL}
                         trackerType={TrackerVolumeType.Locked}
@@ -189,8 +184,6 @@ export const NetworkStatsPage = () => {
                     quoteCurrency={quoteCurrency}
                 />
             </div>
-            <button onClick={persistTokenSupplies}>Persist</button>
-            <button onClick={refetchTokenSupplies}>Refetch</button>
         </NetworkStatsStyles>
     );
 };

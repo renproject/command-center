@@ -181,7 +181,6 @@ const useNetworkContainer = () => {
     const updateTokenPrices = async () => {
         try {
             const prices = await getPrices(tokenPrices);
-            console.log("r: prices", prices.toObject());
             setTokenPrices(prices);
         } catch (error) {
             catchBackgroundException(

@@ -84,7 +84,6 @@ export const useVolumeData = () => {
 
 
     const setTokenSupply = useCallback((chain: Chain, token:Token, supply: Supply) => {
-        console.log("r: setting ts", chain);
         setTokenSupplies(supplies => {
             const chainSupplies = supplies[chain] || {};
             const newSupplies  = {

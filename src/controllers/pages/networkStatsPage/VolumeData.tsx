@@ -132,7 +132,6 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
         }
         if (!volumeLoading) {
             if (chainOption !== ChainOption.All) {
-                console.log("snapshotDataToVolumeData");
                 const trackerChain = chainOptionToTrackerChain(chainOption);
                 return snapshotDataToVolumeData(
                     volumeData,
@@ -145,7 +144,6 @@ export const VolumeStats: React.FC<VolumeStatsProps> = ({
                     lockedMode,
                 );
             }
-            console.log("snapshotDataToAllChainVolumeData");
             return snapshotDataToAllChainVolumeData(
                 volumeData,
                 trackerType,

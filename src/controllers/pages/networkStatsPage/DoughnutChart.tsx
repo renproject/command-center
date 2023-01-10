@@ -131,9 +131,6 @@ export const DoughnutChart: React.FC<Props> = ({
                                                     ? 0
                                                     : 2,
                                             );
-                                        if (token === "USDT" || token === "BTC") {
-                                            console.log("r: rentry", token, entry, entry.amount.toFixed(), entry.standardAmount.toFixed(), entry.quote.toFixed());
-                                        }
                                         return (
                                             <div key={token}>
                                                 <div>
@@ -184,3 +181,4 @@ export const DoughnutChart: React.FC<Props> = ({
         </div>
     );
 };
+
