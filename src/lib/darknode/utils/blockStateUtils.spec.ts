@@ -18,12 +18,12 @@ describe("node basic utils", () => {
             "R22tRItPlzKCZ5xmhDUNIw/CenwAAAAAAAAAAAAAAAA",
             blockState,
         );
-        expect(result).to.equal(true);
+        expect(result).to.equal(false);
     });
 
     test("gets current epoch id", () => {
         const result = getCurrentEpochId(blockState);
-        expect(result).to.equal(4);
+        expect(result).to.equal(54);
     });
 
     test("gets node entered at", () => {
@@ -31,7 +31,7 @@ describe("node basic utils", () => {
             "R22tRItPlzKCZ5xmhDUNIw/CenwAAAAAAAAAAAAAAAA",
             blockState,
         );
-        expect(result).to.equal(1);
+        expect(result).to.equal(null);
     });
 
     test("gets node entered at for nonexisting node", () => {
