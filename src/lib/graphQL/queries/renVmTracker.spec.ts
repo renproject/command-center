@@ -1,6 +1,6 @@
 import { RenNetwork } from "@renproject/interfaces";
 import { Currency } from "@renproject/react-components";
-import { OrderedMap, Map } from "immutable";
+import { Map, OrderedMap } from "immutable";
 import { Token } from "../../ethereum/tokens";
 import { PeriodOption } from "../volumes";
 
@@ -43,6 +43,9 @@ describe("tracker utils", () => {
                 Token.BTC,
                 Map<Currency, number>().set(Currency.USD, 1),
             ),
+            PeriodOption.ALL,
+            {},
+            false
         );
 
         expect(result.difference.toFixed()).toEqual("712723205.72");

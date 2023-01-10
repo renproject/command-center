@@ -20,8 +20,8 @@ jobs:
       - name: Verify dependencies
         run: yarn check --integrity
 
-      - name: lint
-        run: yarn lint | true
+#      - name: lint
+#        run: yarn lint | true
 
       - run: yarn build
         env:

@@ -17,5 +17,5 @@ jobs:
     - name: Verify dependencies
       run: yarn check --integrity
 
-    - name: lint
-      run: yarn lint
+    - name: test
+      run: yarn test
