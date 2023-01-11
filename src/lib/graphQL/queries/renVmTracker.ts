@@ -382,8 +382,6 @@ const getVolumeData = (
     return { difference, startAmounts, endAmounts };
 };
 
-const FROM_SNAPSHOT = true;
-
 export const snapshotDataToVolumeData = (
     data: SnapshotRecords,
     type: TrackerVolumeType,
@@ -428,7 +426,7 @@ export const snapshotDataToVolumeData = (
                     0;
                 differenceStandard = new BigNumber(tokenSupply).shiftedBy(-decimals);
                 differenceQuote = convertTokenAmount(differenceStandard, asset as any, currency as Currency, tokenPrices);
-            } else if (lastEntry && FROM_SNAPSHOT) {
+            } else if (lastEntry) {
                 differenceQuote = new BigNumber(
                     getQuoteAmount(lastEntry, currency, assetsData, tokenPrices),
                 );

@@ -643,7 +643,6 @@ export const fetchTokenTotalSupply = async (chain: string, tokenSymbol: string) 
     const rpcUrl = getRpcUrl(chain);
     const web3 = getReadOnlyWeb3(rpcUrl);
     const registry = getGatewayRegistry(web3, registryAddress);
-    (window as any).registry = registry;
     const tokenAddress = await registry.methods.getTokenBySymbol(tokenSymbol).call();
     const token = await getRenAsset(web3, tokenAddress);
     const supply = await token.methods.totalSupply().call();
