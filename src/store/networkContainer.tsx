@@ -180,7 +180,8 @@ const useNetworkContainer = () => {
 
     const updateTokenPrices = async () => {
         try {
-            setTokenPrices(await getPrices(tokenPrices));
+            const prices = await getPrices(tokenPrices);
+            setTokenPrices(prices);
         } catch (error) {
             catchBackgroundException(
                 error,
@@ -567,8 +568,10 @@ const useNetworkContainer = () => {
         darknodeID: string,
         latestRenVM?: RenVM,
     ) => {
+
         const latestRenVMOrNull = latestRenVM || (await fetchRenVM());
         if (latestRenVMOrNull) {
+
             const details = await fetchDarknodeDetails(
                 ethereumSubgraph,
                 latestRenVMOrNull,
@@ -579,6 +582,7 @@ const useNetworkContainer = () => {
                 subgraphOutOfSync,
             );
             storeDarknodeDetails(details);
+
         }
     };
 

@@ -2,7 +2,6 @@ import { Currency, CurrencyIcon, Loading } from "@renproject/react-components";
 import BigNumber from "bignumber.js";
 import { OrderedMap } from "immutable";
 import React from "react";
-import { Token } from "../../../lib/ethereum/tokens";
 
 import { TokenAmount } from "../../../lib/graphQL/queries/queries";
 import { ReactComponent as RewardsIcon } from "../../../styles/images/icon-rewards-white.svg";

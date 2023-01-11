@@ -162,7 +162,7 @@ export const DarknodeStatsPage = () => {
                 (parsedData.network === "ethereum" ||
                     parsedData.network === "fantom")
             ) {
-                for (let [_, wallet] of Object.entries(
+                for (let [, wallet] of Object.entries(
                     parsedData.balance.wallet as ZapperAsset,
                 )) {
                     const token = wallet.context as ZapperToken;

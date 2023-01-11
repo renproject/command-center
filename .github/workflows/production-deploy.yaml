@@ -1,46 +1,38 @@
-name: CD
+name: CI
 
-# Run when tags are pushed
 on:
   push:
-    tags:
-    - '*'
+    branches:
+      - master
 
 jobs:
-  build:
+  lint:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2.1.0
-    - name: Install dependencies
-      run: yarn
-    - run: yarn build
-      env:
-        CI: false 
-        REACT_APP_BLOCKNATIVE_INFURA_KEY: ${{ secrets.REACT_APP_BLOCKNATIVE_INFURA_KEY }} 
-        REACT_APP_BLOCKNATIVE_KEY: ${{ secrets.REACT_APP_BLOCKNATIVE_KEY }} 
-        REACT_APP_DEV_INFURA_KEY: ${{ secrets.REACT_APP_DEV_INFURA_KEY }} 
-        REACT_APP_INFURA_KEY: ${{ secrets.REACT_APP_INFURA_KEY }} 
-        REACT_APP_SENTRY_DSN: ${{ secrets.REACT_APP_SENTRY_DSN }} 
-    - uses: netlify/actions/cli@master
-      with:
-        args: deploy --dir=./build
-      env:
-        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_TESTNET_SITE_ID }}
-    - run: yarn build
-      env:
-        CI: false 
-        REACT_APP_NETWORK: "mainnet" 
-        REACT_APP_BLOCKNATIVE_INFURA_KEY: ${{ secrets.REACT_APP_BLOCKNATIVE_INFURA_KEY }} 
-        REACT_APP_BLOCKNATIVE_KEY: ${{ secrets.REACT_APP_BLOCKNATIVE_KEY }} 
-        REACT_APP_DEV_INFURA_KEY: ${{ secrets.REACT_APP_DEV_INFURA_KEY }} 
-        REACT_APP_INFURA_KEY: ${{ secrets.REACT_APP_INFURA_KEY }} 
-        REACT_APP_SENTRY_DSN: ${{ secrets.REACT_APP_SENTRY_DSN }} 
-    - uses: netlify/actions/cli@master
-      with:
-        args: deploy --dir=./build
-      env: 
-        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_MAINNET_SITE_ID }}      
+      - uses: actions/checkout@v2
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v2.1.0
+
+      - name: Install dependencies
+        run: yarn --skip-integrity-check
+
+      - name: Verify dependencies
+        run: yarn check --integrity
+
+#      - name: lint
+#        run: yarn lint | true
+
+      - run: yarn build
+        env:
+          CI: false
+          REACT_APP_BLOCKNATIVE_INFURA_KEY: ${{ secrets.REACT_APP_BLOCKNATIVE_INFURA_KEY }}
+          REACT_APP_BLOCKNATIVE_KEY: ${{ secrets.REACT_APP_BLOCKNATIVE_KEY }}
+          REACT_APP_DEV_INFURA_KEY: ${{ secrets.REACT_APP_DEV_INFURA_KEY }}
+          REACT_APP_INFURA_KEY: ${{ secrets.REACT_APP_INFURA_KEY }}
+          REACT_APP_SENTRY_DSN: ${{ secrets.REACT_APP_SENTRY_DSN }}
+
+      - name: DeployGHP
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: build

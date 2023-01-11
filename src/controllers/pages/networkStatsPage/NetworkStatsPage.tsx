@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import {
     allTrackedChains,
@@ -27,10 +27,13 @@ const lockedTooltipRenderer = (period: PeriodOption, chain: ChainOption) => {
     const chainLabel =
         chain === ChainOption.All ? "all chains" : ChainLabel[chain];
     if (period === PeriodOption.ALL) {
-        return `The total value (TVL) of all digital assets currently minted on ${chainLabel} by RenVM.`;
+        return `Approximated total value (TVL) of all digital assets currently minted on ${chainLabel} by RenVM.`;
     }
     return `The 1 ${period.toLowerCase()} change in RenVM's locked digital assets on ${chainLabel}. Reflects changes in asset prices, so may be greater than the change in volume.`;
 };
+
+const chainList = [ChainOption.Ethereum, ChainOption.BinanceSmartChain, ChainOption.Fantom, ChainOption.Polygon, ChainOption.Avalanche, ChainOption.Arbitrum];
+
 
 export const NetworkStatsPage = () => {
     const {
@@ -47,21 +50,26 @@ export const NetworkStatsPage = () => {
         volumeError,
         volumePeriod,
         setVolumePeriod,
+        updateTokenSupply,
+        tokenSupplies
     } = VolumeDataContainer.useContainer();
 
     const [chainOption, setChainOption] = useState(ChainOption.All);
+
 
     const allChainTotal = useMemo(() => {
         return tokenPrices === null || !allVolumeData
             ? null
             : snapshotDataToAllChainVolumeData(
-                  allVolumeData,
-                  TrackerVolumeType.Locked,
-                  quoteCurrency,
-                  tokenPrices,
-                  volumePeriod,
-              ).difference;
-    }, [allVolumeData, tokenPrices, quoteCurrency]);
+                allVolumeData,
+                TrackerVolumeType.Locked,
+                quoteCurrency,
+                tokenPrices,
+                volumePeriod,
+                tokenSupplies,
+                true
+            ).aggregatedQuote;
+    }, [allVolumeData, tokenPrices, quoteCurrency, volumePeriod, tokenSupplies]);
 
     const bondedRenAmount = numberOfDarknodes
         ? numberOfDarknodes.times(100000)
@@ -94,6 +102,28 @@ export const NetworkStatsPage = () => {
         [blockState],
     );
 
+    const [fetched, setFetched] = useState(false);
+    const refetchTokenSupplies = useCallback(() => {
+        if (volumeData === undefined){
+            return;
+        }
+            chainList.forEach((chainOption) => {
+                    const assets = volumeData.assets.prices.map(entry => entry.asset);
+                    assets.forEach((asset) => {
+                        updateTokenSupply(chainOption, asset).finally();
+                    });
+            });
+
+        setFetched(true);
+    }, [volumeData, updateTokenSupply]);
+
+    useEffect(() => {
+        if (!fetched && volumeData !== undefined){
+            refetchTokenSupplies();
+        }
+    }, [refetchTokenSupplies, fetched, volumeData]);
+
+    const lockedVolumeLoading = volumeData === undefined || tokenPrices === null || tokenPrices.isEmpty();
     return (
         <NetworkStatsStyles className="network-stats container">
             {/* <div className="no-xl-or-larger col-lg-12 col-xl-4">
@@ -127,18 +157,21 @@ export const NetworkStatsPage = () => {
                         historyChartLabel="Accumulative Volume"
                         tooltipRenderer={volumeTooltipRenderer}
                         chainOption={chainOption}
+                        tokenSupplies={tokenSupplies}
                     />
                     <VolumeStats
-                        volumeData={volumeData || {}}
-                        volumeLoading={volumeLoading}
+                        volumeData={allVolumeData || {}}
+                        volumeLoading={lockedVolumeLoading}
                         volumeError={volumeError}
-                        volumePeriod={volumePeriod}
+                        volumePeriod={PeriodOption.ALL}
                         trackerType={TrackerVolumeType.Locked}
                         title="Value Locked"
                         titleTooltip="The total value (TVL) of all digital assets currently minted on Ethereum by RenVM."
                         historyChartLabel="Locked"
                         tooltipRenderer={lockedTooltipRenderer}
                         chainOption={chainOption}
+                        tokenSupplies={tokenSupplies}
+                        lockedMode={true}
                     />
                 </Stats>
             </div>
