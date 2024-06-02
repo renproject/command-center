@@ -157,6 +157,7 @@ export const Catalog = () => {
                     <TokenIcon token={"BTC"} white={true} />
                     <TokenIcon token={"BUSD"} white={true} />
                     <TokenIcon token={"CRV"} white={true} />
+                    <TokenIcon token={"CVX"} white={true} />
                     <TokenIcon token={"DAI"} white={true} />
                     <TokenIcon token={"DGB"} white={true} />
                     <TokenIcon token={"DOGE"} white={true} />
@@ -177,6 +178,8 @@ export const Catalog = () => {
                     <TokenIcon token={"UNI"} white={true} />
                     <TokenIcon token={"USDC"} white={true} />
                     <TokenIcon token={"USDT"} white={true} />
+                    <TokenIcon token={"WBTC"} white={true} />
+                    <TokenIcon token={"WETH"} white={true} />
                     <TokenIcon token={"ZEC"} white={true} />
                 </Flex>
             </CatalogItem>
